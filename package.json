@@ -1,42 +1,30 @@
 {
-  "name": "svelte-component-library",
-  "version": "1.0.0",
-  "description": "A component library built with Svelte.",
-  "main": "src/index.ts",
+  "name": "zabi-components",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "build": "vite build",
     "dev": "vite",
+    "build": "vite build",
     "preview": "vite preview",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
-  "keywords": [
-    "svelte",
-    "component",
-    "library"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
   "devDependencies": {
-    "@storybook/addon-actions": "^8.6.12",
-    "@storybook/addon-links": "^8.6.12",
+    "@storybook/addon-essentials": "^8.6.12",
+    "@storybook/addon-interactions": "^8.6.12",
+    "@storybook/addon-svelte-csf": "^5.0.0-next.0",
+    "@storybook/blocks": "^8.6.12",
     "@storybook/svelte": "^8.6.12",
+    "@storybook/svelte-vite": "^8.6.12",
+    "@storybook/test": "^8.6.12",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
-    "svelte": "^5.28.2",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.4"
-  },
-  "dependencies": {
-    "@babel/plugin-transform-class-properties": "^7.27.1",
-    "@babel/plugin-transform-nullish-coalescing-operator": "^7.27.1",
-    "@babel/plugin-transform-object-rest-spread": "^7.27.1",
-    "@babel/plugin-transform-optional-chaining": "^7.27.1",
-    "@babel/plugin-transform-private-methods": "^7.27.1",
-    "@babel/plugin-transform-private-property-in-object": "^7.27.1",
-    "eslint": "^9.25.1",
-    "fsevents": "^2.3.3",
-    "glob": "^11.0.2",
-    "rimraf": "^6.0.1",
-    "uuid": "^11.1.0"
+    "@tsconfig/svelte": "^5.0.4",
+    "storybook": "^8.6.12",
+    "svelte": "^5.23.1",
+    "svelte-check": "^4.1.5",
+    "typescript": "~5.7.2",
+    "vite": "^6.3.1"
   }
 }
