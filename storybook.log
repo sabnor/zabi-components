@@ -1,0 +1,23 @@
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: svelte-component-library@1.0.0
+npm error Found: svelte@3.59.2
+npm error node_modules/svelte
+npm error   dev svelte@"^3.0.0" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer svelte@"^5.0.0" from @sveltejs/vite-plugin-svelte@5.0.3
+npm error node_modules/@sveltejs/vite-plugin-svelte
+npm error   peer @sveltejs/vite-plugin-svelte@"^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0" from @storybook/svelte-vite@8.6.12
+npm error   node_modules/@storybook/svelte-vite
+npm error     dev @storybook/svelte-vite@"^8.6.12" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /Users/sabinanordell/.npm/_logs/2025-05-02T14_30_52_777Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /Users/sabinanordell/.npm/_logs/2025-05-02T14_30_52_777Z-debug-0.log
