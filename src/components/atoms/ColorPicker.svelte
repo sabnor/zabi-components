@@ -2,7 +2,6 @@
     import { createEventDispatcher, onMount } from "svelte";
     import Dropdown from "../molecules/Dropdown.svelte";
     import SlideUp from "../molecules/SlideUp.svelte";
-    import { isMobile } from "../../utils/responsive";
     import { Check } from "@lucide/svelte";
 
     export let value: string = "";
@@ -12,271 +11,52 @@
     export let size: "sm" | "md" | "lg" = "md";
     export let variant: "default" | "outlined" | "filled" | "ghost" =
         "outlined";
+    export let colors: Array<{
+        label: string;
+        value: string;
+        family: string;
+    }> = [
+        // Default color palette - can be customized by parent
+        { label: "Red", value: "#ef4444", family: "Basic" },
+        { label: "Blue", value: "#3b82f6", family: "Basic" },
+        { label: "Green", value: "#10b981", family: "Basic" },
+        { label: "Yellow", value: "#f59e0b", family: "Basic" },
+        { label: "Purple", value: "#8b5cf6", family: "Basic" },
+        { label: "Pink", value: "#ec4899", family: "Basic" },
+        { label: "Indigo", value: "#6366f1", family: "Basic" },
+        { label: "Gray", value: "#6b7280", family: "Basic" },
+        { label: "Black", value: "#000000", family: "Basic" },
+        { label: "White", value: "#ffffff", family: "Basic" },
+    ];
 
     let isExpanded = false;
     let isFocused = false;
     let isMobileDevice = false;
-    // Complete color palette using Tailwind classes
-    const colors: Array<{
-        label: string;
-        className: string;
-        family: string;
-    }> = [
-        // Plasma Red Scale
-        {
-            label: "Plasma Red 50",
-            className: "bg-plasma-red-50",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 100",
-            className: "bg-plasma-red-100",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 200",
-            className: "bg-plasma-red-200",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 300",
-            className: "bg-plasma-red-300",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 400",
-            className: "bg-plasma-red-400",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 500",
-            className: "bg-plasma-red-500",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 600",
-            className: "bg-plasma-red-600",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 700",
-            className: "bg-plasma-red-700",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 800",
-            className: "bg-plasma-red-800",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 900",
-            className: "bg-plasma-red-900",
-            family: "Plasma Red",
-        },
-        {
-            label: "Plasma Red 950",
-            className: "bg-plasma-red-950",
-            family: "Plasma Red",
-        },
-
-        // Matrix Green Scale
-        {
-            label: "Matrix Green 50",
-            className: "bg-matrix-green-50",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 100",
-            className: "bg-matrix-green-100",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 200",
-            className: "bg-matrix-green-200",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 300",
-            className: "bg-matrix-green-300",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 400",
-            className: "bg-matrix-green-400",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 500",
-            className: "bg-matrix-green-500",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 600",
-            className: "bg-matrix-green-600",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 700",
-            className: "bg-matrix-green-700",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 800",
-            className: "bg-matrix-green-800",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 900",
-            className: "bg-matrix-green-900",
-            family: "Matrix Green",
-        },
-        {
-            label: "Matrix Green 950",
-            className: "bg-matrix-green-950",
-            family: "Matrix Green",
-        },
-
-        // Blood Red Scale
-        {
-            label: "Blood Red 50",
-            className: "bg-blood-red-50",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 100",
-            className: "bg-blood-red-100",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 200",
-            className: "bg-blood-red-200",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 300",
-            className: "bg-blood-red-300",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 400",
-            className: "bg-blood-red-400",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 500",
-            className: "bg-blood-red-500",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 600",
-            className: "bg-blood-red-600",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 700",
-            className: "bg-blood-red-700",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 800",
-            className: "bg-blood-red-800",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 900",
-            className: "bg-blood-red-900",
-            family: "Blood Red",
-        },
-        {
-            label: "Blood Red 950",
-            className: "bg-blood-red-950",
-            family: "Blood Red",
-        },
-
-        // Cyber Amber Scale
-        {
-            label: "Cyber Amber 50",
-            className: "bg-cyber-amber-50",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 100",
-            className: "bg-cyber-amber-100",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 200",
-            className: "bg-cyber-amber-200",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 300",
-            className: "bg-cyber-amber-300",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 400",
-            className: "bg-cyber-amber-400",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 500",
-            className: "bg-cyber-amber-500",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 600",
-            className: "bg-cyber-amber-600",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 700",
-            className: "bg-cyber-amber-700",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 800",
-            className: "bg-cyber-amber-800",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 900",
-            className: "bg-cyber-amber-900",
-            family: "Cyber Amber",
-        },
-        {
-            label: "Cyber Amber 950",
-            className: "bg-cyber-amber-950",
-            family: "Cyber Amber",
-        },
-
-        // Dark Scale
-        { label: "Dark 600", className: "bg-dark-600", family: "Dark" },
-        { label: "Dark 700", className: "bg-dark-700", family: "Dark" },
-        { label: "Dark 800", className: "bg-dark-800", family: "Dark" },
-        { label: "Dark 900", className: "bg-dark-900", family: "Dark" },
-    ];
 
     const dispatch = createEventDispatcher();
     const componentId = `color-picker-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Subscribe to mobile state
-    $: isMobileDevice = $isMobile;
-
+    // Check if mobile device
     onMount(() => {
-        // Initialize mobile state
-        isMobileDevice = $isMobile;
+        isMobileDevice = window.innerWidth < 768;
+
+        const handleResize = () => {
+            isMobileDevice = window.innerWidth < 768;
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
     });
 
     function selectColor(color: {
         label: string;
-        className: string;
+        value: string;
         family: string;
     }) {
         if (disabled) return;
-        value = color.className;
+        value = color.value;
         isExpanded = false; // Collapse after selection
-        dispatch("change", { value: color.className });
+        dispatch("change", { value: color.value });
     }
 
     function toggleExpanded() {
@@ -344,7 +124,7 @@
     ].join(" ");
 
     // Make selected color reactive
-    $: selectedColor = colors.find((c) => c.className === value);
+    $: selectedColor = colors.find((c) => c.value === value);
 
     // Group colors by family
     $: colorGroups = colors.reduce(
@@ -392,7 +172,8 @@
                         <div class="flex items-center space-x-3">
                             {#if selectedColor}
                                 <div
-                                    class="w-8 h-8 rounded border border-stone-600 flex-shrink-0 {selectedColor.className}"
+                                    class="w-8 h-8 rounded border border-stone-600 flex-shrink-0"
+                                    style="background-color: {selectedColor.value}"
                                 ></div>
                             {:else}
                                 <div
@@ -425,7 +206,7 @@
                                     <button
                                         type="button"
                                         class="group relative flex flex-col items-center rounded-lg transition-all duration-200 hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-cyber-amber-500 focus:ring-opacity-50 {value ===
-                                        color.className
+                                        color.value
                                             ? 'bg-cyber-amber-500/20 ring-2 ring-cyber-amber-500'
                                             : ''} {disabled
                                             ? 'opacity-50 cursor-not-allowed'
@@ -438,11 +219,12 @@
                                     >
                                         <div
                                             class="w-8 h-8 rounded-lg group-hover:scale-110 transition-transform duration-200 {value ===
-                                            color.className
+                                            color.value
                                                 ? 'border-cyber-amber-500'
-                                                : ''} {color.className}"
+                                                : ''}"
+                                            style="background-color: {color.value}"
                                         ></div>
-                                        {#if value === color.className}
+                                        {#if value === color.value}
                                             <div
                                                 class="absolute -top-1 -right-1 w-4 h-4 bg-cyber-amber-500 rounded-full flex items-center justify-center"
                                             >
@@ -476,7 +258,8 @@
                 <div class="flex items-center space-x-3">
                     {#if selectedColor}
                         <div
-                            class="w-8 h-8 rounded border border-stone-600 flex-shrink-0 {selectedColor.className}"
+                            class="w-8 h-8 rounded border border-stone-600 flex-shrink-0"
+                            style="background-color: {selectedColor.value}"
                         ></div>
                     {:else}
                         <div
@@ -512,7 +295,7 @@
                                     <button
                                         type="button"
                                         class="group relative flex flex-col items-center rounded-lg transition-all duration-200 hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-cyber-amber-500 focus:ring-opacity-50 {value ===
-                                        color.className
+                                        color.value
                                             ? 'bg-cyber-amber-500/20 ring-2 ring-cyber-amber-500'
                                             : ''} {disabled
                                             ? 'opacity-50 cursor-not-allowed'
@@ -525,11 +308,12 @@
                                     >
                                         <div
                                             class="w-8 h-8 rounded-lg group-hover:scale-110 transition-transform duration-200 {value ===
-                                            color.className
+                                            color.value
                                                 ? 'border-cyber-amber-500'
-                                                : ''} {color.className}"
+                                                : ''}"
+                                            style="background-color: {color.value}"
                                         ></div>
-                                        {#if value === color.className}
+                                        {#if value === color.value}
                                             <div
                                                 class="absolute -top-1 -right-1 w-4 h-4 bg-cyber-amber-500 rounded-full flex items-center justify-center"
                                             >

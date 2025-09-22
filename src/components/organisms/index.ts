@@ -1,2 +1,2 @@
 // Organism Components - Complex components with state management
-export { default as NotificationManager } from './NotificationManager.svelte';
+export { default as ToastContainer } from './NotificationManager.svelte';
