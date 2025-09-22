@@ -1,0 +1,367 @@
+<script lang="ts">
+    import { createEventDispatcher } from "svelte";
+    import { onMount } from "svelte";
+    import { ChevronDown, X, AlertCircle, CheckCircle } from "@lucide/svelte";
+
+    export let value: string | number | undefined = undefined;
+    export let options: Array<{
+        value: string | number;
+        label: string;
+        disabled?: boolean;
+    }> = [];
+    export let placeholder: string = "Select an option";
+    export let label: string = "";
+    export let disabled: boolean = false;
+    export let required: boolean = false;
+    export let error: string = "";
+    export let success: string = "";
+    export let helpText: string = "";
+    export let size: "sm" | "md" | "lg" = "md";
+    export let variant: "default" | "outlined" | "filled" | "ghost" = "default";
+    export let searchable: boolean = false;
+    export let clearable: boolean = false;
+    export let name: string | undefined = undefined;
+    export let id: string | undefined = undefined;
+
+    const dispatch = createEventDispatcher<{
+        change: { value: string | number | undefined; event: Event };
+        focus: { event: FocusEvent };
+        blur: { event: FocusEvent };
+        clear: { event: Event };
+    }>();
+
+    let selectElement: HTMLSelectElement;
+    let isOpen = false;
+    let isFocused = false;
+    let searchQuery = "";
+    let filteredOptions: typeof options = [];
+
+    // Generate unique ID if not provided
+    $: selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Filter options based on search query
+    $: {
+        if (searchable && searchQuery) {
+            filteredOptions = options.filter((option) =>
+                option.label.toLowerCase().includes(searchQuery.toLowerCase()),
+            );
+        } else {
+            filteredOptions = options;
+        }
+    }
+
+    // Get the selected option
+    $: selectedOption = options.find((option) => option.value === value);
+
+    function handleChange(event: Event) {
+        const target = event.target as HTMLSelectElement;
+        value = target.value;
+        dispatch("change", { value, event });
+    }
+
+    function handleFocus(event: FocusEvent) {
+        isFocused = true;
+        dispatch("focus", { event });
+    }
+
+    function handleBlur(event: FocusEvent) {
+        isFocused = false;
+        dispatch("blur", { event });
+    }
+
+    function handleClear(event: Event) {
+        event.stopPropagation();
+        value = undefined;
+        dispatch("clear", { event });
+    }
+
+    function handleSearchInput(event: Event) {
+        const target = event.target as HTMLInputElement;
+        searchQuery = target.value;
+    }
+
+    // Focus method for external use
+    export function focus() {
+        selectElement?.focus();
+    }
+
+    // Blur method for external use
+    export function blur() {
+        selectElement?.blur();
+    }
+
+    // Size classes
+    $: sizeClasses = {
+        sm: "px-3 py-1.5 text-sm",
+        md: "px-4 py-2.5 text-base",
+        lg: "px-5 py-3 text-lg",
+    };
+
+    // Variant classes
+    $: variantClasses = {
+        default:
+            "bg-dark-700 border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
+        outlined:
+            "bg-dark-600 border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
+        filled: "bg-dark-600 border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
+        ghost: "bg-transparent border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
+    };
+
+    // State classes
+    $: stateClasses = error
+        ? "focus:ring-blood-red-500/20"
+        : success
+          ? "focus:ring-matrix-green-500/20"
+          : "";
+
+    // Container classes
+    $: containerClasses = [
+        "relative",
+        "group",
+        "transition-all",
+        "duration-200",
+        "ease-in-out",
+    ].join(" ");
+
+    // Select classes
+    $: selectClasses = [
+        "w-full",
+        "min-w-40 sm:min-w-48 md:min-w-56 lg:min-w-64", // Responsive minimum width for selects
+        "rounded-lg",
+        "transition-all",
+        "duration-200",
+        "ease-in-out",
+        "focus:outline-none",
+        "focus:ring-2",
+        "focus:ring-offset-2",
+        "focus:ring-offset-dark-900",
+        "disabled:opacity-50",
+        "disabled:cursor-not-allowed",
+        "cursor-pointer",
+        "appearance-none",
+        "pr-10",
+        sizeClasses[size],
+        variantClasses[variant],
+        stateClasses,
+        error ? "grainy-red" : success ? "grainy-green" : "grainy-texture",
+    ].join(" ");
+
+    // Label classes
+    $: labelClasses = [
+        "block",
+        "text-sm",
+        "font-medium",
+        "mb-2",
+        "transition-colors",
+        "duration-200",
+        error
+            ? "text-blood-red-400"
+            : success
+              ? "text-matrix-green-400"
+              : "text-gray-300",
+    ].join(" ");
+
+    // Help text classes
+    $: helpTextClasses = [
+        "mt-2",
+        "text-xs",
+        error
+            ? "text-blood-red-400"
+            : success
+              ? "text-matrix-green-400"
+              : "text-gray-400",
+    ].join(" ");
+
+    // Dropdown icon classes
+    $: iconClasses = [
+        "absolute",
+        "right-3",
+        "top-1/2",
+        "-translate-y-1/2",
+        "pointer-events-none",
+        "transition-transform",
+        "duration-200",
+        isOpen ? "rotate-180" : "",
+        size === "sm" ? "w-4 h-4" : size === "md" ? "w-5 h-5" : "w-6 h-6",
+    ].join(" ");
+
+    // Clear button classes
+    $: clearButtonClasses = [
+        "absolute",
+        "right-8",
+        "top-1/2",
+        "-translate-y-1/2",
+        "text-gray-400",
+        "hover:text-white",
+        "transition-colors",
+        "duration-200",
+        "focus:outline-none",
+        "focus:text-white",
+        size === "sm" ? "w-4 h-4" : size === "md" ? "w-5 h-5" : "w-6 h-6",
+    ].join(" ");
+</script>
+
+<div class={containerClasses}>
+    {#if label}
+        <label for={selectId} class={labelClasses}>
+            {label}
+            {#if required}
+                <span class="text-blood-red-500 ml-1">*</span>
+            {/if}
+        </label>
+    {/if}
+
+    <div class="relative">
+        <select
+            bind:this={selectElement}
+            id={selectId}
+            {value}
+            {disabled}
+            {required}
+            {name}
+            class={selectClasses}
+            on:change={handleChange}
+            on:focus={handleFocus}
+            on:blur={handleBlur}
+            aria-invalid={error ? "true" : "false"}
+            aria-describedby={error || success || helpText
+                ? `${selectId}-help`
+                : undefined}
+        >
+            {#if placeholder && !value}
+                <option value="" disabled>{placeholder}</option>
+            {/if}
+            {#each filteredOptions as option (option.value)}
+                <option
+                    value={option.value}
+                    disabled={option.disabled}
+                    class="bg-dark-800 text-white"
+                >
+                    {option.label}
+                </option>
+            {/each}
+        </select>
+
+        <!-- Clear button -->
+        {#if clearable && value !== undefined && value !== ""}
+            <button
+                type="button"
+                class={clearButtonClasses}
+                on:click={handleClear}
+                on:keydown={(e) => e.key === "Enter" && handleClear(e)}
+                tabindex="-1"
+                aria-label="Clear selection"
+            >
+                <X size={size === "sm" ? 12 : size === "md" ? 16 : 20} />
+            </button>
+        {/if}
+
+        <!-- Dropdown icon -->
+        <div class={iconClasses}>
+            <ChevronDown size={size === "sm" ? 16 : size === "md" ? 20 : 24} />
+        </div>
+
+        <!-- Focus indicator -->
+        <div
+            class="absolute inset-0 rounded-lg pointer-events-none transition-all duration-200 {isFocused
+                ? 'ring-2 ring-plasma-red-500/20'
+                : ''}"
+        ></div>
+    </div>
+
+    {#if error || success || helpText}
+        <div id="{selectId}-help" class={helpTextClasses}>
+            {#if error}
+                <div class="flex items-center gap-1">
+                    <AlertCircle size={16} class="flex-shrink-0" />
+                    <span>{error}</span>
+                </div>
+            {:else if success}
+                <div class="flex items-center gap-1">
+                    <CheckCircle size={16} class="flex-shrink-0" />
+                    <span>{success}</span>
+                </div>
+            {:else if helpText}
+                <span>{helpText}</span>
+            {/if}
+        </div>
+    {/if}
+</div>
+
+<style>
+    /* Custom focus styles for better accessibility */
+    :global(.select-focus-visible) {
+        outline: 2px solid var(--color-plasma-red-500);
+        outline-offset: 2px;
+    }
+
+    /* Smooth transitions for all interactive elements */
+    select {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Custom dropdown arrow styling */
+    select::-ms-expand {
+        display: none;
+    }
+
+    /* Option styling */
+    option {
+        background-color: var(--color-dark-800);
+        color: white;
+        padding: 0.5rem;
+    }
+
+    /* Hover effects */
+    .select-container:hover .select-icon {
+        transform: scale(1.1);
+    }
+
+    .select-container:active .select-icon {
+        transform: scale(0.95);
+    }
+
+    /* Clear button hover effects */
+    button[aria-label="Clear selection"] {
+        transition: all 0.2s ease;
+    }
+
+    button[aria-label="Clear selection"]:hover {
+        transform: scale(1.1);
+    }
+
+    button[aria-label="Clear selection"]:active {
+        transform: scale(0.95);
+    }
+
+    /* Focus ring animation */
+    .select-focus-ring {
+        animation: select-focus-ring-pulse 0.2s ease-out;
+    }
+
+    @keyframes select-focus-ring-pulse {
+        0% {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* Disabled state styling */
+    .select-disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .select-disabled:hover {
+        transform: none;
+    }
+
+    /* Required indicator styling */
+    .select-required {
+        color: var(--color-blood-red-500);
+    }
+</style>
