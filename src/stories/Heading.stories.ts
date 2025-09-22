@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import Heading from '../components/atoms/Heading.svelte';
+import Heading from '../../components/atoms/Heading.svelte';
 
 const meta = {
-    title: 'Components/Atoms/Heading',
+    title: 'Design System/Atoms/Heading',
     component: Heading,
     parameters: {
         layout: 'centered'

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import Checkbox from '../components/atoms/Checkbox.svelte';
+import Checkbox from '../../components/atoms/Checkbox.svelte';
 
 const meta = {
-    title: 'Components/Atoms/Checkbox',
+    title: 'Design System/Atoms/Checkbox',
     component: Checkbox,
     parameters: {
         layout: 'centered'

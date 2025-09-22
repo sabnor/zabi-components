@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/svelte';
 import KeyValueForm from '../components/molecules/KeyValueForm.svelte';
 
 const meta = {
-    title: 'Components/Molecules/KeyValueForm',
+    title: 'Design System/Molecules/KeyValueForm',
     component: KeyValueForm,
     parameters: {
         layout: 'centered'

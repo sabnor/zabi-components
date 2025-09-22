@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/svelte';
 import Dropdown from '../components/molecules/Dropdown.svelte';
 
 const meta = {
-    title: 'Components/Molecules/Dropdown',
+    title: 'Design System/Molecules/Dropdown',
     component: Dropdown,
     parameters: {
         layout: 'centered'

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/svelte';
 import SlideUp from '../components/molecules/SlideUp.svelte';
 
 const meta = {
-    title: 'Components/Molecules/SlideUp',
+    title: 'Design System/Molecules/SlideUp',
     component: SlideUp,
     parameters: {
         layout: 'fullscreen'

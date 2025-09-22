@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import Select from '../components/atoms/Select.svelte';
+import Select from '../../components/atoms/Select.svelte';
 
 const meta = {
-    title: 'Components/Atoms/Select',
+    title: 'Design System/Atoms/Select',
     component: Select,
     parameters: {
         layout: 'centered'
