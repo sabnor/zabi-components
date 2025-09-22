@@ -1,0 +1,66 @@
+---
+description: "SvelteKit Component Development Rules"
+globs: ["src/**/*.{svelte,ts}"]
+alwaysApply: true
+---
+# SvelteKit Component Development Rules
+
+1. **TypeScript Usage**
+   - Always use TypeScript for component development (`<script lang="ts">`)
+   - Define proper types for all props, events, and function returns
+   - Avoid using `any` type; prefer explicit typing
+
+2. **Component Structure**
+   - Keep components focused and single-responsibility
+   - Use proper semantic HTML elements
+   - Follow accessibility best practices (ARIA labels, roles, keyboard nav)
+   - Export props at the top of the script section
+   - Group related props and functions together
+
+3. **Styling**
+   - Use Tailwind CSS utility classes as the primary styling method
+   - Follow a mobile-first responsive design approach
+   - Avoid inline styles unless absolutely necessary
+   - Keep consistent spacing, typography, and layout patterns
+
+4. **Props and Events**
+   - Document all props with JSDoc comments
+   - Provide sensible default values for optional props
+   - Use TypeScript unions for prop constraints
+   - Forward native events when appropriate (`on:click`, `on:input` etc.)
+
+5. **State Management**
+   - Use Svelte stores for global/shared state
+   - Keep local component state minimal and focused
+   - Prefer reactive statements (`$:`) over manual updates
+   - Use lifecycle methods (`onMount`, `onDestroy`) properly
+
+6. **Performance**
+   - Avoid unnecessary reactivity and recomputation
+   - Use `{#key}` blocks for forced re-renders when required
+   - Implement proper cleanup in `onDestroy`
+   - Lazy load heavy components when possible
+
+7. **Testing**
+   - Write unit tests for components (Vitest/Playwright)
+   - Include accessibility tests
+   - Test different prop combinations
+   - Cover edge cases and error states
+
+8. **Documentation**
+   - Use Storybook for component documentation
+   - Follow CSF3 format for stories
+   - Include usage examples with interactive controls
+   - Document component API clearly
+
+9. **Error Handling**
+   - Validate props and input data
+   - Provide meaningful error messages
+   - Handle edge cases gracefully
+   - Implement proper cleanup and fallbacks
+
+10. **Code Organization**
+    - Use consistent file naming (PascalCase for components)
+    - Group related components in directories
+    - Keep component files focused and manageable
+    - Follow established project structure conventions
