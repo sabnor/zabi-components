@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/svelte';
 import NotificationManager from '../components/organisms/NotificationManager.svelte';
 
 const meta = {
-    title: 'Components/Organisms/NotificationManager',
+    title: 'Design System/Organisms/NotificationManager',
     component: NotificationManager,
     parameters: {
         layout: 'fullscreen'

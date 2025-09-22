@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/svelte';
 import Alert from '../components/molecules/Alert.svelte';
 
 const meta = {
-    title: 'Components/Molecules/Alert',
+    title: 'Design System/Molecules/Alert',
     component: Alert,
     parameters: {
         layout: 'centered'

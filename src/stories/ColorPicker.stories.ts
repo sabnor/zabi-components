@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import ColorPicker from '../components/atoms/ColorPicker.svelte';
+import ColorPicker from '../../components/atoms/ColorPicker.svelte';
 
 const meta = {
-    title: 'Components/Atoms/ColorPicker',
+    title: 'Design System/Atoms/ColorPicker',
     component: ColorPicker,
     parameters: {
         layout: 'centered'

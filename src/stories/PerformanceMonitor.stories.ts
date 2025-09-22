@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import PerformanceMonitor from '../components/atoms/PerformanceMonitor.svelte';
+import PerformanceMonitor from '../../components/atoms/PerformanceMonitor.svelte';
 
 const meta = {
-    title: 'Components/Atoms/PerformanceMonitor',
+    title: 'Design System/Atoms/PerformanceMonitor',
     component: PerformanceMonitor,
     parameters: {
         layout: 'fullscreen'

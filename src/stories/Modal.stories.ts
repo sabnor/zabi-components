@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/svelte';
 import Modal from '../components/molecules/Modal.svelte';
 
 const meta = {
-    title: 'Components/Molecules/Modal',
+    title: 'Design System/Molecules/Modal',
     component: Modal,
     parameters: {
         layout: 'fullscreen'

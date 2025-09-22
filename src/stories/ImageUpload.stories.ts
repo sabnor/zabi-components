@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/svelte';
 import ImageUpload from '../components/molecules/ImageUpload.svelte';
 
 const meta = {
-    title: 'Components/Molecules/ImageUpload',
+    title: 'Design System/Molecules/ImageUpload',
     component: ImageUpload,
     parameters: {
         layout: 'centered'

@@ -12,7 +12,19 @@ const config: StorybookConfig = {
   docs: {
     autodocs: 'tag'
   },
-  staticDirs: ['../static']
+  staticDirs: ['../static'],
+  options: {
+    storySort: {
+      order: [
+        'Design System',
+        'Design System/Atoms',
+        'Design System/Molecules',
+        'Design System/Organisms',
+        '*'
+      ],
+      method: 'alphabetical'
+    }
+  }
 };
 
 export default config;

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/svelte';
 import Badge from '../components/atoms/Badge.svelte';
 
 const meta = {
-    title: 'Components/Atoms/Badge',
+    title: 'Design System/Atoms/Badge',
     component: Badge,
     parameters: {
         layout: 'centered'

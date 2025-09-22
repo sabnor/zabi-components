@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import OptimizedImage from '../components/atoms/OptimizedImage.svelte';
+import OptimizedImage from '../../components/atoms/OptimizedImage.svelte';
 
 const meta = {
-    title: 'Components/Atoms/OptimizedImage',
+    title: 'Design System/Atoms/OptimizedImage',
     component: OptimizedImage,
     parameters: {
         layout: 'centered'
