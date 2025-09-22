@@ -4,23 +4,23 @@ import Button from '../components/Button.svelte';
 const meta = {
   title: 'Components/Button',
   component: Button,
+  parameters: {
+    layout: 'centered'
+  },
   tags: ['autodocs'],
   argTypes: {
     variant: {
       control: { type: 'select' },
-      options: ['primary', 'secondary', 'outline', 'ghost'],
+      options: ['primary', 'secondary']
     },
     size: {
       control: { type: 'select' },
-      options: ['sm', 'md', 'lg'],
+      options: ['sm', 'md', 'lg']
     },
-    backgroundColor: { control: 'color' },
-    disabled: { control: 'boolean' },
-    type: {
-      control: { type: 'select' },
-      options: ['button', 'submit', 'reset'],
-    },
-  },
+    disabled: {
+      control: { type: 'boolean' }
+    }
+  }
 } satisfies Meta<Button>;
 
 export default meta;
@@ -28,63 +28,30 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    variant: 'primary',
-    children: 'Button',
-  },
+    variant: 'primary'
+  }
 };
 
 export const Secondary: Story = {
   args: {
-    variant: 'secondary',
-    children: 'Button',
-  },
-};
-
-export const Outline: Story = {
-  args: {
-    variant: 'outline',
-    children: 'Button',
-  },
-};
-
-export const Ghost: Story = {
-  args: {
-    variant: 'ghost',
-    children: 'Button',
-  },
-};
-
-export const Small: Story = {
-  args: {
-    size: 'sm',
-    children: 'Small Button',
-  },
-};
-
-export const Medium: Story = {
-  args: {
-    size: 'md',
-    children: 'Medium Button',
-  },
+    variant: 'secondary'
+  }
 };
 
 export const Large: Story = {
   args: {
-    size: 'lg',
-    children: 'Large Button',
-  },
+    size: 'lg'
+  }
+};
+
+export const Small: Story = {
+  args: {
+    size: 'sm'
+  }
 };
 
 export const Disabled: Story = {
   args: {
-    disabled: true,
-    children: 'Disabled Button',
-  },
-};
-
-export const Submit: Story = {
-  args: {
-    type: 'submit',
-    children: 'Submit',
-  },
+    disabled: true
+  }
 };
