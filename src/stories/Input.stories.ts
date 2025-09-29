@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import Input from '../../components/atoms/Input.svelte';
+import Input from '../components/atoms/Input.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Input',

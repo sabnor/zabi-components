@@ -202,7 +202,7 @@
                             <div
                                 class="grid grid-cols-11 gap-3 p-1 bg-stone-800 rounded-lg border border-stone-700"
                             >
-                                {#each familyColors as color (color.className)}
+                                {#each familyColors as color (color.value)}
                                     <button
                                         type="button"
                                         class="group relative flex flex-col items-center rounded-lg transition-all duration-200 hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-cyber-amber-500 focus:ring-opacity-50 {value ===
@@ -291,7 +291,7 @@
                             <div
                                 class="grid grid-cols-8 gap-3 p-1 bg-stone-800 rounded-lg border border-stone-700"
                             >
-                                {#each familyColors as color (color.className)}
+                                {#each familyColors as color (color.value)}
                                     <button
                                         type="button"
                                         class="group relative flex flex-col items-center rounded-lg transition-all duration-200 hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-cyber-amber-500 focus:ring-opacity-50 {value ===

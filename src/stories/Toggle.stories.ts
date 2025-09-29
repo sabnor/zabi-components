@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import Toggle from '../../components/atoms/Toggle.svelte';
+import Toggle from '../components/atoms/Toggle.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Toggle',

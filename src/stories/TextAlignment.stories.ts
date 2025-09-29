@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import TextAlignment from '../../components/atoms/TextAlignment.svelte';
+import TextAlignment from '../components/atoms/TextAlignment.svelte';
 
 const meta = {
     title: 'Design System/Atoms/TextAlignment',
