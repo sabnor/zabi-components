@@ -1,5 +1,6 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
+    import { createEventDispatcher } from "svelte";
 
     export let notifications: Array<{
         id: string;

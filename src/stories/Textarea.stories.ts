@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import Textarea from '../../components/atoms/Textarea.svelte';
+import Textarea from '../components/atoms/Textarea.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Textarea',

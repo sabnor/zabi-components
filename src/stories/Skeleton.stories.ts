@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/svelte';
-import Skeleton from '../../components/atoms/Skeleton.svelte';
+import Skeleton from '../components/atoms/Skeleton.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Skeleton',
