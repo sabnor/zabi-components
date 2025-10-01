@@ -70,12 +70,6 @@ export interface NotificationManagerEvents extends CloseEvent { }
 
 // Re-export all event types for easy importing
 export type {
-    ClickEvent,
-    InputEvent,
-    ChangeEvent,
-    CheckedChangeEvent,
-    FileUploadEvent,
-    CloseEvent,
     ButtonEvents,
     InputEvents,
     TextareaEvents,
