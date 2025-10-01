@@ -18,9 +18,9 @@
     export let type: "button" | "submit" | "reset" = "button";
     export let className: string = "";
 
-    // Icon props
-    export let iconLeft: any = null;
-    export let iconRight: any = null;
+    // Icon props - can be string (emoji/text) or Svelte component
+    export let iconLeft: string | any = null;
+    export let iconRight: string | any = null;
 
     // Accessibility props
     export let ariaLabel: string = "";
@@ -143,13 +143,13 @@
 
     // Accessibility attributes
     $: accessibilityProps = {
-        "aria-busy": loading ? "true" : "false",
+        "aria-busy": loading,
         "aria-label": ariaLabel || (loading ? "Loading..." : undefined),
         "aria-describedby": ariaDescribedBy || undefined,
         "aria-expanded": ariaExpanded,
         "aria-controls": ariaControls,
         "aria-pressed": ariaPressed,
-        "aria-disabled": disabled ? "true" : "false",
+        "aria-disabled": disabled,
     };
 </script>
 
@@ -186,13 +186,25 @@
     {/if}
 
     {#if iconLeft && !loading}
-        <svelte:component this={iconLeft} class="h-4 w-4" />
+        {#if typeof iconLeft === "string"}
+            <span class="h-4 w-4 flex items-center justify-center"
+                >{iconLeft}</span
+            >
+        {:else}
+            <svelte:component this={iconLeft} class="h-4 w-4" />
+        {/if}
     {/if}
 
     <slot />
 
     {#if iconRight && !loading}
-        <svelte:component this={iconRight} class="h-4 w-4" />
+        {#if typeof iconRight === "string"}
+            <span class="h-4 w-4 flex items-center justify-center"
+                >{iconRight}</span
+            >
+        {:else}
+            <svelte:component this={iconRight} class="h-4 w-4" />
+        {/if}
     {/if}
 </button>
 
