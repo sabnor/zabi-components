@@ -62,14 +62,14 @@
     // Variant classes
     $: variantClasses = {
         default:
-            "bg-dark-700 border-0 text-plasma-red-500 focus:ring-plasma-red-500/20",
+            "bg-surface border border-primary text-primary focus:ring-primary focus:border-transparent",
         outlined:
-            "bg-dark-600 border-0 text-plasma-red-500 focus:ring-plasma-red-500/20",
-        filled: "bg-dark-600 border-0 text-plasma-red-500 focus:ring-plasma-red-500/20",
+            "bg-surface-secondary border border-primary text-primary focus:ring-primary focus:border-transparent",
+        filled: "bg-surface-secondary border border-primary text-primary focus:ring-primary focus:border-transparent",
     };
 
     // State classes
-    $: stateClasses = error ? "focus:ring-blood-red-500/20" : "";
+    $: stateClasses = error ? "focus:ring-error border-error" : "";
 
     // Container classes
     $: containerClasses = [
@@ -111,7 +111,7 @@
         "select-none",
         "transition-colors",
         "duration-200",
-        error ? "text-blood-red-400" : "text-gray-300",
+        error ? "text-error" : "text-primary",
         disabled ? "opacity-50 cursor-not-allowed" : "",
     ].join(" ");
 
@@ -119,7 +119,7 @@
     $: helpTextClasses = [
         "text-xs",
         "mt-1",
-        error ? "text-blood-red-400" : "text-gray-400",
+        error ? "text-error" : "text-tertiary",
     ].join(" ");
 
     // Check icon classes
@@ -195,7 +195,7 @@
         <!-- Focus indicator -->
         <div
             class="absolute inset-0 rounded pointer-events-none transition-all duration-200 {isFocused
-                ? 'ring-2 ring-plasma-red-500/20'
+                ? 'ring-2 ring-primary'
                 : ''}"
         ></div>
     </div>
@@ -205,7 +205,7 @@
             <label for={checkboxId} class={labelClasses}>
                 {label}
                 {#if required}
-                    <span class="text-blood-red-500 ml-1">*</span>
+                    <span class="text-error ml-1">*</span>
                 {/if}
             </label>
         {/if}

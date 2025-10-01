@@ -52,16 +52,16 @@
         }}
         class="relative inline-flex {sizeClasses[
             size
-        ]} flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-stone-900 {checked
-            ? 'bg-blue-600'
-            : 'bg-stone-600'} {disabled
+        ]} flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 {checked
+            ? 'bg-primary'
+            : 'bg-surface-tertiary'} {disabled
             ? 'opacity-50 cursor-not-allowed'
             : 'hover:bg-opacity-80'}"
     >
         <span
             class="pointer-events-none inline-block {thumbSizeClasses[
                 size
-            ]} transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out {translateClasses[
+            ]} transform rounded-full bg-surface shadow-lg ring-0 transition duration-200 ease-in-out {translateClasses[
                 size
             ]}"
         ></span>
@@ -70,7 +70,7 @@
     {#if label}
         <button
             type="button"
-            class="text-sm font-medium text-stone-300 cursor-pointer select-none hover:text-stone-100 transition-colors"
+            class="text-sm font-medium text-primary cursor-pointer select-none hover:text-secondary transition-colors"
             on:click={handleToggle}
             on:keydown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {

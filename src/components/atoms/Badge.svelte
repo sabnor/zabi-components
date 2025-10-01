@@ -38,14 +38,14 @@
 
     // Variant classes
     $: variantClasses = {
-        default: "bg-dark-700 text-white border-dark-600",
+        default: "bg-surface-secondary text-primary border border-primary",
         success:
-            "bg-matrix-green-900/20 text-matrix-green-400 border-matrix-green-500/30 grainy-green",
+            "bg-success-surface text-success-text border border-success/30",
         warning:
-            "bg-cyber-amber-900/20 text-cyber-amber-400 border-cyber-amber-500/30 grainy-amber",
-        error: "bg-blood-red-900/20 text-blood-red-400 border-blood-red-500/30 grainy-red",
-        info: "bg-blue-900/20 text-blue-400 border-blue-500/30 grainy-blue",
-        neutral: "bg-gray-800 text-gray-300 border-gray-600",
+            "bg-warning-surface text-warning-text border border-warning/30",
+        error: "bg-error-surface text-error-text border border-error/30",
+        info: "bg-info-surface text-info-text border border-info/30",
+        neutral: "bg-surface-tertiary text-secondary border border-secondary",
     };
 
     // Shape classes

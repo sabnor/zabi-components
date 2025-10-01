@@ -116,18 +116,18 @@
     // Variant classes
     $: variantClasses = {
         default:
-            "bg-dark-700 border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
+            "bg-surface border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
         outlined:
-            "bg-dark-600 border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
-        filled: "bg-dark-600 border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
-        ghost: "bg-transparent border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
+            "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
+        filled: "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
+        ghost: "bg-transparent border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
     };
 
     // State classes
     $: stateClasses = error
-        ? "focus:ring-blood-red-500/20"
+        ? "focus:ring-error border-error"
         : success
-          ? "focus:ring-matrix-green-500/20"
+          ? "focus:ring-success border-success"
           : "";
 
     // Resize classes
@@ -179,34 +179,24 @@
         "mb-2",
         "transition-colors",
         "duration-200",
-        error
-            ? "text-blood-red-400"
-            : success
-              ? "text-matrix-green-400"
-              : "text-gray-300",
+        error ? "text-error" : success ? "text-success" : "text-primary",
     ].join(" ");
 
     // Help text classes
     $: helpTextClasses = [
         "mt-2",
         "text-xs",
-        error
-            ? "text-blood-red-400"
-            : success
-              ? "text-matrix-green-400"
-              : "text-gray-400",
+        error ? "text-error" : success ? "text-success" : "text-tertiary",
     ].join(" ");
 
     // Character count classes
     $: charCountClasses = [
         "text-xs",
-        "text-gray-400",
+        "text-tertiary",
         "mt-1",
         "text-right",
-        maxLength && value.length > maxLength * 0.9
-            ? "text-cyber-amber-400"
-            : "",
-        maxLength && value.length >= maxLength ? "text-blood-red-400" : "",
+        maxLength && value.length > maxLength * 0.9 ? "text-warning" : "",
+        maxLength && value.length >= maxLength ? "text-error" : "",
     ].join(" ");
 </script>
 
@@ -215,7 +205,7 @@
         <label for={textareaId} class={labelClasses}>
             {label}
             {#if required}
-                <span class="text-blood-red-500 ml-1">*</span>
+                <span class="text-error ml-1">*</span>
             {/if}
         </label>
     {/if}
@@ -250,7 +240,7 @@
         <!-- Focus indicator -->
         <div
             class="absolute inset-0 rounded-lg pointer-events-none transition-all duration-200 {isFocused
-                ? 'ring-2 ring-plasma-red-500/20'
+                ? 'ring-2 ring-primary'
                 : ''}"
         ></div>
     </div>

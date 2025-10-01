@@ -13,12 +13,14 @@
     }
 
     $: alertClasses = {
-        error: "bg-red-500/20 text-red-100",
-        warning: "bg-yellow-500/20 text-yellow-100",
-        success: "bg-green-500/20 text-green-100",
-        info: "bg-blue-500/20 text-blue-100",
+        error: "bg-error-surface text-error-text border border-error/20",
+        warning:
+            "bg-warning-surface text-warning-text border border-warning/20",
+        success:
+            "bg-success-surface text-success-text border border-success/20",
+        info: "bg-info-surface text-info-text border border-info/20",
         "game-error":
-            "bg-gradient-to-br from-red-900 via-red-800 to-red-900 text-red-100 transform shadow-2xl",
+            "bg-gradient-to-br from-error-900 via-error-800 to-error-900 text-error-text transform shadow-2xl border border-error/30",
     };
 
     $: iconEmojis = {

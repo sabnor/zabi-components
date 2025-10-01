@@ -56,14 +56,14 @@
     const variantClasses = {
         default: {
             container: "border-b border-primary",
-            tab: "border-b-2 border-transparent text-secondary hover:text-primary hover:border-primary-300 transition-colors",
-            activeTab: "border-primary-500 text-primary",
+            tab: "border-b-2 border-transparent text-secondary hover:text-primary hover:border-primary-hover transition-colors",
+            activeTab: "border-primary text-primary",
             panel: "mt-4",
         },
         pills: {
             container: "bg-surface-secondary p-1 rounded-lg",
             tab: "rounded-md text-secondary hover:text-primary hover:bg-surface-tertiary transition-colors",
-            activeTab: "bg-surface-primary text-primary shadow-adaptive-sm",
+            activeTab: "bg-surface text-primary shadow-adaptive-sm",
             panel: "mt-4",
         },
         underline: {
@@ -76,7 +76,7 @@
             container: "space-y-2",
             tab: "border border-primary rounded-lg text-secondary hover:text-primary hover:bg-surface-secondary transition-colors",
             activeTab:
-                "bg-surface-primary text-primary shadow-adaptive-sm border-primary-500",
+                "bg-surface text-primary shadow-adaptive-sm border-primary",
             panel: "mt-4",
         },
     };
@@ -163,6 +163,7 @@
     <div
         bind:this={tabListElement}
         role="tablist"
+        tabindex="0"
         class="
             {variantClasses[variant].container}
             {orientation === 'vertical' ? 'flex-col space-y-1 mr-4' : ''}
@@ -247,7 +248,7 @@
                 transition:fade={{ duration: 200 }}
             >
                 {#if tab.id === activeTab}
-                    <slot name={tab.id} />
+                    <slot name="content" />
                 {/if}
             </div>
         {/each}
