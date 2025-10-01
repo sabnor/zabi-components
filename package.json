@@ -1,15 +1,57 @@
 {
   "name": "zabi-components",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A modern SvelteKit component library with TypeScript and Tailwind CSS",
   "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./atoms": {
+      "types": "./dist/atoms/index.d.ts",
+      "import": "./dist/atoms/index.js"
+    },
+    "./molecules": {
+      "types": "./dist/molecules/index.d.ts",
+      "import": "./dist/molecules/index.js"
+    },
+    "./organisms": {
+      "types": "./dist/organisms/index.d.ts",
+      "import": "./dist/organisms/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "svelte",
+    "sveltekit",
+    "components",
+    "ui",
+    "typescript",
+    "tailwind"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/zabi-components.git"
+  },
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build && npm run build:types",
+    "build:lib": "vite build --config vite.lib.config.ts && node scripts/generate-types.js",
+    "build:types": "tsc --project tsconfig.lib.json",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "prepublishOnly": "npm run build:lib"
   },
   "devDependencies": {
     "@storybook/addon-svelte-csf": "^5.0.8",
@@ -30,6 +72,18 @@
   },
   "dependencies": {
     "@lucide/svelte": "^0.544.0"
+  },
+  "peerDependencies": {
+    "svelte": "^4.0.0 || ^5.0.0",
+    "@sveltejs/kit": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "svelte": {
+      "optional": false
+    },
+    "@sveltejs/kit": {
+      "optional": true
+    }
   },
   "overrides": {
     "cookie": ">=0.7.0"

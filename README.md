@@ -1,47 +1,146 @@
-# Svelte + TS + Vite
+# Zabi Components
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+A modern SvelteKit component library with TypeScript and Tailwind CSS support.
 
-## Recommended IDE Setup
+## Features
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+- 🎨 **Modern Design**: Built with Tailwind CSS for consistent, responsive styling
+- 🔧 **TypeScript**: Full TypeScript support with comprehensive type definitions
+- 📦 **Modular**: Import only what you need with tree-shaking support
+- ♿ **Accessible**: Built with accessibility best practices
+- 🚀 **Performance**: Optimized for production with minimal bundle size
+- 📱 **Responsive**: Mobile-first design approach
 
-## Need an official Svelte framework?
+## Installation
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
-
-## Technical considerations
-
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+npm install zabi-components
 ```
+
+## Usage
+
+### Import All Components
+
+```typescript
+import { Button, Card, Input, Modal } from 'zabi-components';
+```
+
+### Import by Category
+
+```typescript
+// Atomic components
+import { Button, Input, Card } from 'zabi-components/atoms';
+
+// Molecular components  
+import { Modal, Alert, Dropdown } from 'zabi-components/molecules';
+
+// Organism components
+import { ToastContainer } from 'zabi-components/organisms';
+```
+
+### Basic Example
+
+```svelte
+<script lang="ts">
+  import { Button, Card, Input } from 'zabi-components';
+  
+  let name = '';
+  let showCard = false;
+</script>
+
+<Input bind:value={name} placeholder="Enter your name" />
+<Button on:click={() => showCard = !showCard}>
+  Toggle Card
+</Button>
+
+{#if showCard}
+  <Card>
+    <h2>Hello, {name}!</h2>
+  </Card>
+{/if}
+```
+
+## Component Categories
+
+### Atoms
+Basic building blocks of your UI:
+- `Badge` - Status indicators and labels
+- `Button` - Interactive buttons with variants
+- `Card` - Content containers
+- `Checkbox` - Form checkboxes
+- `ColorPicker` - Color selection input
+- `Heading` - Typography headings
+- `Input` - Text input fields
+- `OptimizedImage` - Performance-optimized images
+- `Select` - Dropdown selections
+- `Skeleton` - Loading placeholders
+- `Textarea` - Multi-line text input
+- `TextAlignment` - Text alignment controls
+- `Toggle` - Switch controls
+
+### Molecules
+Simple combinations of atoms:
+- `Alert` - Notification messages
+- `Modal` - Overlay dialogs
+- `FileUpload` - File upload interface
+- `DynamicForm` - Dynamic form builder
+- `Dropdown` - Dropdown menus
+- `SlideUp` - Slide-up animations
+
+### Organisms
+Complex components with state management:
+- `ToastContainer` - Notification management system
+
+## TypeScript Support
+
+The library includes comprehensive TypeScript definitions:
+
+```typescript
+import type { FieldConfig } from 'zabi-components';
+
+const formConfig: FieldConfig[] = [
+  {
+    key: 'email',
+    type: 'email',
+    label: 'Email Address',
+    required: true
+  }
+];
+```
+
+## Styling
+
+Components are styled with Tailwind CSS. Make sure to include Tailwind in your project:
+
+```bash
+npm install -D tailwindcss
+```
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build library
+npm run build:lib
+
+# Run Storybook
+npm run storybook
+```
+
+## Publishing
+
+To publish your component library:
+
+1. **Update version** in `package.json`
+2. **Build the library**: `npm run build:lib`
+3. **Test locally**: `npm pack` to create a tarball
+4. **Publish**: `npm publish`
+
+## License
+
+MIT

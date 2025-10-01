@@ -6,6 +6,10 @@ const config = {
     preprocess: vitePreprocess(),
     kit: {
         adapter: adapter()
+    },
+    compilerOptions: {
+        // Enable CSS extraction for library builds
+        css: 'injected'
     }
 };
 
