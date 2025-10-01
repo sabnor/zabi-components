@@ -12,3 +12,4 @@ export * from '../components/organisms/index.js';
 
 // Re-export types
 export type { FieldConfig } from '../components/molecules/KeyValueForm.types.js';
+export * from '../types/events.js';

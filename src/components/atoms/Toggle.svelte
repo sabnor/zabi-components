@@ -11,7 +11,7 @@
     function handleToggle() {
         if (disabled) return;
         checked = !checked;
-        dispatch("change", checked);
+        dispatch("change", { checked });
     }
 
     const sizeClasses = {

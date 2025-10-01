@@ -46,6 +46,16 @@
         dispatch("input", { [key]: value });
         dispatch("change", { values });
     }
+
+    function handleInput(event: CustomEvent) {
+        // Forward input events from child components
+        dispatch("input", event.detail);
+    }
+
+    function handleChange(event: CustomEvent) {
+        // Forward change events from child components
+        dispatch("change", event.detail);
+    }
 </script>
 
 <div class="flex flex-wrap gap-4">
@@ -71,7 +81,8 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:input={(e) => updateField(field.key, e.detail.value)}
+                    on:input={handleInput}
+                    on:change={handleChange}
                 />
             {:else if field.type === "select"}
                 <Select
@@ -82,7 +93,8 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:change={(e) => updateField(field.key, e.detail.value)}
+                    on:input={handleInput}
+                    on:change={handleChange}
                 />
             {:else if field.type === "checkbox"}
                 <Checkbox
@@ -91,13 +103,15 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:change={(e) => updateField(field.key, e.detail.checked)}
+                    on:input={handleInput}
+                    on:change={handleChange}
                 />
             {:else if field.type === "toggle"}
                 <Toggle
                     bind:checked={values[field.key]}
                     label={field.label}
-                    on:change={(e) => updateField(field.key, e.detail)}
+                    on:input={handleInput}
+                    on:change={handleChange}
                 />
             {:else if field.type === "colorpicker"}
                 <ColorPicker
@@ -106,7 +120,8 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:change={(e) => updateField(field.key, e.detail.value)}
+                    on:input={handleInput}
+                    on:change={handleChange}
                 />
             {:else if field.type === "textalignment"}
                 <TextAlignment
@@ -114,7 +129,8 @@
                     label={field.label}
                     required={field.required}
                     size="sm"
-                    on:change={(e) => updateField(field.key, e.detail.value)}
+                    on:input={handleInput}
+                    on:change={handleChange}
                 />
             {:else}
                 <Input
@@ -125,7 +141,8 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:input={(e) => updateField(field.key, e.detail.value)}
+                    on:input={handleInput}
+                    on:change={handleChange}
                 />
             {/if}
         </div>

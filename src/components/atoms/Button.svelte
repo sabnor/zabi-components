@@ -6,12 +6,14 @@
         | "primary"
         | "secondary"
         | "success"
-        | "warning"
         | "danger"
+        | "warning"
+        | "info"
+        | "neutral"
         | "ghost"
-        | "link" = "primary";
+        | "brand" = "primary";
 
-    export let size: "sm" | "md" | "lg" = "md";
+    export let size: "xs" | "sm" | "md" | "lg" | "xl" = "md";
     export let disabled: boolean = false;
     export let loading: boolean = false;
     export let fullWidth: boolean = false;
@@ -54,9 +56,11 @@
 
     // Size classes using semantic spacing tokens
     const sizeClasses = {
+        xs: "px-2 py-1 text-xs rounded-sm",
         sm: "px-3 py-1.5 text-sm rounded-md",
         md: "px-4 py-2 text-sm md:text-base rounded-md",
         lg: "px-5 py-3 text-base rounded-lg",
+        xl: "px-6 py-4 text-lg rounded-lg",
     };
 
     // Variant classes using semantic tokens
@@ -106,6 +110,30 @@
             "hover:bg-surface-secondary hover:border-primary",
             "active:bg-surface-active active:border-primary-active",
             "focus:ring-primary focus:ring-offset-primary",
+        ].join(" "),
+
+        info: [
+            "bg-info text-inverse border border-info",
+            "hover:bg-info-hover hover:border-info-hover",
+            "active:bg-info-active active:border-info-active",
+            "focus:ring-info focus:ring-offset-primary",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
+        ].join(" "),
+
+        neutral: [
+            "bg-neutral text-inverse border border-neutral",
+            "hover:bg-neutral-hover hover:border-neutral-hover",
+            "active:bg-neutral-active active:border-neutral-active",
+            "focus:ring-neutral focus:ring-offset-primary",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
+        ].join(" "),
+
+        brand: [
+            "bg-brand text-inverse border border-brand",
+            "hover:bg-brand-hover hover:border-brand-hover",
+            "active:bg-brand-active active:border-brand-active",
+            "focus:ring-brand focus:ring-offset-primary",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
         ].join(" "),
 
         link: [

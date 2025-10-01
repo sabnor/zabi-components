@@ -15,7 +15,7 @@
     export let value: string | undefined = undefined;
 
     const dispatch = createEventDispatcher<{
-        change: { checked: boolean; event: Event };
+        change: { checked: boolean };
         focus: { event: FocusEvent };
         blur: { event: FocusEvent };
     }>();
@@ -29,7 +29,7 @@
     function handleChange(event: Event) {
         const target = event.target as HTMLInputElement;
         checked = target.checked;
-        dispatch("change", { checked, event });
+        dispatch("change", { checked });
     }
 
     function handleFocus(event: FocusEvent) {

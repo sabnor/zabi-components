@@ -1,7 +1,8 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
 
-    export let variant: "default" | "interactive" = "default";
+    export let variant: "default" | "outlined" | "elevated" | "filled" =
+        "default";
     export let density: "compact" | "comfortable" | "spacious" = "comfortable";
     export let disabled: boolean = false;
     export let loading: boolean = false;
@@ -10,7 +11,7 @@
     export let ariaDescribedBy: string = "";
 
     const dispatch = createEventDispatcher<{
-        click: MouseEvent;
+        click: CustomEvent;
         hover: MouseEvent;
         leave: MouseEvent;
         focus: FocusEvent;
@@ -27,8 +28,9 @@
     // Variant classes
     const variantClasses = {
         default: "bg-card border border-primary",
-        interactive:
-            "bg-card border border-primary hover:bg-card-hover hover:border-primary-hover focus:bg-card-active focus:border-primary-hover focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 cursor-pointer",
+        outlined: "bg-card border-2 border-primary",
+        elevated: "bg-card border border-primary shadow-lg",
+        filled: "bg-surface-secondary border border-primary",
     };
 
     // Computed classes
@@ -45,15 +47,12 @@
 
     // Accessibility attributes
     $: accessibilityProps = {
-        role: variant === "interactive" ? "button" : "presentation",
-        tabindex: variant === "interactive" ? (disabled ? -1 : 0) : undefined,
-        "aria-disabled": variant === "interactive" ? disabled : undefined,
         "aria-busy": loading,
         "aria-label": ariaLabel || undefined,
         "aria-describedby": ariaDescribedBy || undefined,
     };
 
-    function handleClick(event: MouseEvent) {
+    function handleClick(event: CustomEvent) {
         if (disabled || loading) {
             event.preventDefault();
             return;
@@ -64,22 +63,6 @@
     function handleKeydown(event: KeyboardEvent) {
         if (disabled || loading) {
             return;
-        }
-
-        // Handle interactive cards
-        if (
-            variant === "interactive" &&
-            (event.key === "Enter" || event.key === " ")
-        ) {
-            event.preventDefault();
-            // Create a synthetic MouseEvent for consistency
-            const mouseEvent = new MouseEvent("click", {
-                bubbles: true,
-                cancelable: true,
-                clientX: 0,
-                clientY: 0,
-            });
-            handleClick(mouseEvent);
         }
 
         // Handle Escape key to blur focus

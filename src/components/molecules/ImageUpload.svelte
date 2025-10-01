@@ -11,7 +11,7 @@
 
     const dispatch = createEventDispatcher<{
         change: { value: string | null };
-        upload: { progress: number };
+        upload: { files: FileList };
         error: { message: string };
     }>();
 
@@ -27,12 +27,13 @@
         const input = event.target as HTMLInputElement;
         if (!input.files || input.files.length === 0) return;
 
-        const file = input.files[0];
-        
+        const files = input.files;
+        const file = files[0];
+
         // Check file size
         if (file.size > maxSize) {
-            dispatch("error", { 
-                message: `File size must be less than ${Math.round(maxSize / 1024 / 1024)}MB` 
+            dispatch("error", {
+                message: `File size must be less than ${Math.round(maxSize / 1024 / 1024)}MB`,
             });
             return;
         }
@@ -45,6 +46,9 @@
 
         selectedFile = file;
         previewUrl = URL.createObjectURL(file);
+
+        // Dispatch upload event with files
+        dispatch("upload", { files });
     }
 
     // Simulate upload (parent should handle actual upload)
@@ -59,12 +63,11 @@
             const progressInterval = setInterval(() => {
                 if (uploadProgress < 90) {
                     uploadProgress += Math.random() * 10;
-                    dispatch("upload", { progress: uploadProgress });
                 }
             }, 200);
 
             // Simulate upload delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
 
             clearInterval(progressInterval);
             uploadProgress = 100;
@@ -75,7 +78,6 @@
             dispatch("change", { value: previewUrl });
             showUploadDialog = false;
             resetUploadState();
-            dispatch("upload", { progress: 100 });
         } catch (error) {
             dispatch("error", { message: `Upload failed: ${error}` });
         } finally {
@@ -220,19 +222,33 @@
                 <!-- Preview and Upload -->
                 <div class="space-y-4">
                     <div class="relative">
-                        {#if selectedFile.type.startsWith('image/')}
+                        {#if selectedFile.type.startsWith("image/")}
                             <img
                                 src={previewUrl}
                                 alt="Preview"
                                 class="w-full h-48 object-cover rounded-lg border border-stone-600"
                             />
                         {:else}
-                            <div class="w-full h-48 bg-stone-700 rounded-lg border border-stone-600 flex items-center justify-center">
+                            <div
+                                class="w-full h-48 bg-stone-700 rounded-lg border border-stone-600 flex items-center justify-center"
+                            >
                                 <div class="text-center">
-                                    <svg class="w-12 h-12 text-stone-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    <svg
+                                        class="w-12 h-12 text-stone-400 mx-auto mb-2"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
                                     </svg>
-                                    <p class="text-stone-300 text-sm">{selectedFile.name}</p>
+                                    <p class="text-stone-300 text-sm">
+                                        {selectedFile.name}
+                                    </p>
                                 </div>
                             </div>
                         {/if}

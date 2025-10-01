@@ -16,8 +16,9 @@
     export let name: string | undefined = undefined;
 
     // State props
-    export let error: boolean | string = false;
-    export let success: boolean | string = false;
+    export let error: string = "";
+    export let success: string = "";
+    export let helpText: string = "";
 
     // Additional props
     export let maxLength: number | undefined = undefined;
@@ -39,13 +40,15 @@
     export let showPasswordToggle: boolean = false;
     export let showClearButton: boolean = false;
     export let size: "sm" | "md" | "lg" = "md";
+    export let variant: "outlined" | "filled" | "underlined" = "outlined";
+    export let className: string = "";
 
     // Accessibility props
     export let ariaLabel: string | undefined = undefined;
 
     const dispatch = createEventDispatcher<{
-        input: { value: string; event: Event };
-        change: { value: string; event: Event };
+        input: { value: string };
+        change: { value: string };
         focus: { event: FocusEvent };
         blur: { event: FocusEvent };
         keydown: { event: KeyboardEvent };
@@ -65,8 +68,6 @@
     $: hasValue = value !== "" && value !== null && value !== undefined;
 
     // Error and success message handling
-    $: errorMessage = typeof error === "string" ? error : "";
-    $: successMessage = typeof success === "string" ? success : "";
     $: hasError = Boolean(error);
     $: hasSuccess = Boolean(success);
 
@@ -75,14 +76,14 @@
         const target = event.target as HTMLInputElement;
         value = target.value;
         hasValue = value !== "";
-        dispatch("input", { value, event });
+        dispatch("input", { value });
     }
 
     function handleChange(event: Event) {
         const target = event.target as HTMLInputElement;
         value = target.value;
         hasValue = value !== "";
-        dispatch("change", { value, event });
+        dispatch("change", { value });
     }
 
     function handleFocus(event: FocusEvent) {
@@ -137,11 +138,19 @@
         lg: "px-5 py-3 text-base",
     };
 
+    // Variant classes
+    $: variantClasses = {
+        outlined: "border border-primary bg-surface",
+        filled: "border-0 bg-surface-secondary",
+        underlined:
+            "border-0 border-b border-primary bg-transparent rounded-none",
+    };
+
     // Base input classes using semantic tokens
     $: baseInputClasses = [
         "w-full",
         "min-w-0",
-        "rounded-md", // Using radius.md
+        variant === "underlined" ? "rounded-none" : "rounded-md",
         "transition-all",
         "duration-200",
         "ease-in-out",
@@ -155,14 +164,16 @@
         "read-only:cursor-default",
         "read-only:opacity-75",
         sizeClasses[size],
+        variantClasses[variant],
+        className,
     ].join(" ");
 
     // State-specific classes using semantic tokens
     $: stateClasses = hasError
-        ? "bg-surface border border-error text-primary placeholder-placeholder focus:ring-error focus:border-error"
+        ? "border-error text-primary placeholder-placeholder focus:ring-error focus:border-error"
         : hasSuccess
-          ? "bg-surface border border-success text-primary placeholder-placeholder focus:ring-success focus:border-success"
-          : "bg-surface border border-primary text-primary placeholder-placeholder focus:ring-focus focus:border-focus";
+          ? "border-success text-primary placeholder-placeholder focus:ring-success focus:border-success"
+          : "text-primary placeholder-placeholder focus:ring-focus focus:border-focus";
 
     // Disabled state classes
     $: disabledClasses = disabled
@@ -302,20 +313,20 @@
         </div>
     </div>
 
-    {#if hasError || hasSuccess || helperText}
+    {#if hasError || hasSuccess || helpText}
         <div id="{inputId}-help" class={helperTextClasses}>
             {#if hasError}
                 <div class="flex items-center gap-1">
                     <AlertCircle size={14} class="flex-shrink-0" />
-                    <span>{errorMessage}</span>
+                    <span>{error}</span>
                 </div>
             {:else if hasSuccess}
                 <div class="flex items-center gap-1">
                     <CheckCircle size={14} class="flex-shrink-0" />
-                    <span>{successMessage}</span>
+                    <span>{success}</span>
                 </div>
-            {:else if helperText}
-                <span>{helperText}</span>
+            {:else if helpText}
+                <span>{helpText}</span>
             {/if}
         </div>
     {/if}
