@@ -20,6 +20,13 @@
     export let grain: boolean | "auto" = "auto";
     export let grainType: "paper" | "canvas" | "cyber" = "paper";
 
+    // Accessibility props
+    export let ariaLabel: string = "";
+    export let ariaDescribedBy: string = "";
+    export let ariaExpanded: boolean | undefined = undefined;
+    export let ariaControls: string | undefined = undefined;
+    export let ariaPressed: boolean | undefined = undefined;
+
     const dispatch = createEventDispatcher();
 
     function handleClick(event: MouseEvent) {
@@ -56,15 +63,15 @@
     };
 
     const variantClasses = {
-        brand: "border border-stone-600 bg-stone-800 text-stone-100 hover:bg-stone-700 hover:border-stone-500 active:scale-[0.98] shadow-sm",
+        brand: "border border-primary text-primary bg-surface-primary hover:bg-surface-secondary hover:border-primary-600 active:scale-[0.98] shadow-adaptive-sm",
         primary:
-            "bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 hover:border-blue-700 active:scale-[0.98] shadow-sm hover:shadow-md",
+            "bg-primary-500 text-white border border-primary-500 hover:bg-primary-600 hover:border-primary-600 active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md",
         secondary:
-            "bg-stone-700 text-stone-100 border border-stone-600 hover:bg-stone-600 hover:border-stone-500 active:scale-[0.98] shadow-sm hover:shadow-md",
+            "bg-surface-secondary text-primary border border-primary hover:bg-surface-tertiary hover:border-primary-600 active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md",
         success:
-            "bg-green-600 text-white border border-green-600 hover:bg-green-700 hover:border-green-700 active:scale-[0.98] shadow-sm hover:shadow-md",
-        danger: "bg-red-600 text-white border border-red-600 hover:bg-red-700 hover:border-red-700 active:scale-[0.98] shadow-sm hover:shadow-md",
-        ghost: "bg-transparent text-stone-300 border border-stone-600 hover:bg-stone-800 hover:border-stone-500 active:scale-[0.98]",
+            "bg-success-500 text-white border border-success-500 hover:bg-success-600 hover:border-success-600 active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md",
+        danger: "bg-error-500 text-white border border-error-500 hover:bg-error-600 hover:border-error-600 active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md",
+        ghost: "bg-transparent text-secondary border border-primary hover:bg-surface-secondary hover:border-primary-600 active:scale-[0.98]",
     };
 
     $: buttonClasses = [
@@ -86,6 +93,11 @@
     on:click={handleClick}
     disabled={disabled || loading}
     aria-busy={loading ? "true" : "false"}
+    aria-label={ariaLabel || (loading ? "Loading..." : undefined)}
+    aria-describedby={ariaDescribedBy || undefined}
+    aria-expanded={ariaExpanded}
+    aria-controls={ariaControls}
+    aria-pressed={ariaPressed}
 >
     <!-- Paper grain effect overlay -->
     {#if shouldApplyGrain}
