@@ -53,7 +53,6 @@ declare module '$env/static/private' {
 	export const SSH_AUTH_SOCK: string;
 	export const __CF_USER_TEXT_ENCODING: string;
 	export const npm_execpath: string;
-	export const ELECTRON_RUN_AS_NODE: string;
 	export const PATH: string;
 	export const npm_package_json: string;
 	export const _: string;
@@ -150,7 +149,6 @@ declare module '$env/dynamic/private' {
 		SSH_AUTH_SOCK: string;
 		__CF_USER_TEXT_ENCODING: string;
 		npm_execpath: string;
-		ELECTRON_RUN_AS_NODE: string;
 		PATH: string;
 		npm_package_json: string;
 		_: string;
