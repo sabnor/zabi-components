@@ -31,14 +31,17 @@
     export let ariaControls: string | undefined = undefined;
     export let ariaPressed: boolean | undefined = undefined;
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{
+        click: MouseEvent | KeyboardEvent;
+    }>();
 
     function handleClick(event: CustomEvent) {
         if (disabled || loading) {
             event.preventDefault();
             return;
         }
-        dispatch("click", event);
+        // Pass the original event as the detail
+        dispatch("click", event.detail);
     }
 
     function handleKeydown(event: KeyboardEvent) {

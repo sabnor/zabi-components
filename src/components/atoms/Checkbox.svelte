@@ -13,6 +13,7 @@
     export let name: string | undefined = undefined;
     export let id: string | undefined = undefined;
     export let value: string | undefined = undefined;
+    export let className: string = "";
 
     const dispatch = createEventDispatcher<{
         change: { checked: boolean };
@@ -81,6 +82,7 @@
         "transition-all",
         "duration-200",
         "ease-in-out",
+        className,
     ].join(" ");
 
     // Checkbox classes

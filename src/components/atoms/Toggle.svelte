@@ -5,8 +5,11 @@
     export let disabled: boolean = false;
     export let label: string = "";
     export let size: "sm" | "md" | "lg" = "md";
+    export let className: string = "";
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{
+        change: { checked: boolean };
+    }>();
 
     function handleToggle() {
         if (disabled) return;
@@ -35,7 +38,7 @@
 </script>
 
 <div
-    class="flex items-center space-x-3 min-w-32 sm:min-w-36 md:min-w-40 lg:min-w-44"
+    class="flex items-center space-x-3 min-w-32 sm:min-w-36 md:min-w-40 lg:min-w-44 {className}"
 >
     <button
         type="button"
