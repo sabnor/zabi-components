@@ -8,7 +8,7 @@ import { set_private_env, set_public_env } from '../../../node_modules/@sveltejs
 export const options = {
 	app_template_contains_nonce: false,
 	async: false,
-	csp: {"mode":"auto","directives":{"upgrade-insecure-requests":false,"block-all-mixed-content":false},"reportOnly":{"upgrade-insecure-requests":false,"block-all-mixed-content":false}},
+	csp: { "mode": "auto", "directives": { "upgrade-insecure-requests": false, "block-all-mixed-content": false }, "reportOnly": { "upgrade-insecure-requests": false, "block-all-mixed-content": false } },
 	csrf_check_origin: true,
 	csrf_trusted_origins: [],
 	embedded: false,
@@ -33,11 +33,11 @@ export async function get_hooks() {
 	let handleError;
 	let handleValidationError;
 	let init;
-	
+
 
 	let reroute;
 	let transport;
-	
+
 
 	return {
 		handle,
