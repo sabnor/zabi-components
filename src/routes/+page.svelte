@@ -42,6 +42,11 @@
     let textAlignValue = "left";
     let formData = {};
 
+    // Button demo state
+    let isSaving = false;
+    let isDeleting = false;
+    let isPressed = false;
+
     const selectOptions = [
         { value: "option1", label: "Option 1" },
         { value: "option2", label: "Option 2" },
@@ -57,6 +62,26 @@
     function showToast() {
         // This would trigger a toast notification
         console.log("Toast notification triggered");
+    }
+
+    async function handleSave() {
+        isSaving = true;
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        isSaving = false;
+    }
+
+    async function handleDelete() {
+        if (confirm("Are you sure you want to delete this item?")) {
+            isDeleting = true;
+            // Simulate API call
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+            isDeleting = false;
+        }
+    }
+
+    function handleToggle() {
+        isPressed = !isPressed;
     }
 </script>
 
@@ -78,10 +103,12 @@
                 <p class="text-lg text-secondary">
                     A collection of reusable Svelte components built with
                     Tailwind CSS and TypeScript, featuring comprehensive scales
-                    with light and dark mode support.
+                    with light and dark mode support. Now with enhanced Button
+                    component featuring 7 variants, full accessibility, and
+                    semantic tokens.
                 </p>
             </div>
-            <ThemeToggle size="lg" variant="outline" />
+            <ThemeToggle size="lg" />
         </div>
 
         <!-- Scale Demo Section -->
@@ -92,7 +119,7 @@
                 </Heading>
                 <Button
                     on:click={() => (showScaleDemo = true)}
-                    variant="outline"
+                    variant="secondary"
                 >
                     View Scale Demo
                 </Button>
@@ -158,15 +185,167 @@
             >
 
             <!-- Buttons -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-medium text-primary">Buttons</h3>
-                <div class="flex flex-wrap gap-4">
-                    <Button>Primary Button</Button>
-                    <Button variant="secondary">Secondary Button</Button>
-                    <Button variant="outline">Outline Button</Button>
-                    <Button variant="ghost">Ghost Button</Button>
-                    <Button size="sm">Small Button</Button>
-                    <Button size="lg">Large Button</Button>
+            <div class="space-y-8">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-medium text-primary">
+                        Button Component
+                    </h3>
+                    <Badge variant="success">New & Improved</Badge>
+                </div>
+
+                <!-- All Variants -->
+                <div class="space-y-4">
+                    <h4 class="text-md font-medium text-secondary">
+                        All Variants
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <Button variant="primary">Primary</Button>
+                        <Button variant="secondary">Secondary</Button>
+                        <Button variant="success">Success</Button>
+                        <Button variant="warning">Warning</Button>
+                        <Button variant="danger">Danger</Button>
+                        <Button variant="ghost">Ghost</Button>
+                        <Button variant="link">Link</Button>
+                        <Button variant="primary" loading>Loading</Button>
+                    </div>
+                </div>
+
+                <!-- Sizes -->
+                <div class="space-y-4">
+                    <h4 class="text-md font-medium text-secondary">Sizes</h4>
+                    <div class="flex items-center gap-4">
+                        <Button size="sm">Small</Button>
+                        <Button size="md">Medium</Button>
+                        <Button size="lg">Large</Button>
+                    </div>
+                </div>
+
+                <!-- States -->
+                <div class="space-y-4">
+                    <h4 class="text-md font-medium text-secondary">States</h4>
+                    <div class="flex flex-wrap gap-4">
+                        <Button variant="primary">Normal</Button>
+                        <Button variant="primary" loading>Loading</Button>
+                        <Button variant="primary" disabled>Disabled</Button>
+                        <Button variant="primary" fullWidth>Full Width</Button>
+                    </div>
+                </div>
+
+                <!-- Interactive Examples -->
+                <div class="space-y-4">
+                    <h4 class="text-md font-medium text-secondary">
+                        Interactive Examples
+                    </h4>
+                    <div class="flex flex-wrap gap-4">
+                        <Button
+                            variant="primary"
+                            loading={isSaving}
+                            on:click={handleSave}
+                        >
+                            {isSaving ? "Saving..." : "Save Changes"}
+                        </Button>
+
+                        <Button
+                            variant="danger"
+                            loading={isDeleting}
+                            on:click={handleDelete}
+                        >
+                            {isDeleting ? "Deleting..." : "Delete Item"}
+                        </Button>
+
+                        <Button
+                            variant="secondary"
+                            ariaPressed={isPressed}
+                            on:click={handleToggle}
+                        >
+                            {isPressed ? "Pressed" : "Toggle"}
+                        </Button>
+
+                        <Button variant="ghost" ariaLabel="Settings">⚙️</Button>
+                    </div>
+                </div>
+
+                <!-- With Icons -->
+                <div class="space-y-4">
+                    <h4 class="text-md font-medium text-secondary">
+                        With Icons
+                    </h4>
+                    <div class="flex flex-wrap gap-4">
+                        <Button variant="primary" iconLeft="🔍">Search</Button>
+                        <Button variant="success" iconRight="✓">Confirm</Button>
+                        <Button variant="warning" iconLeft="⚠️" iconRight="→"
+                            >Proceed</Button
+                        >
+                        <Button variant="ghost" iconLeft="📁">Open</Button>
+                    </div>
+                </div>
+
+                <!-- Accessibility Features -->
+                <div class="space-y-4">
+                    <h4 class="text-md font-medium text-secondary">
+                        Accessibility Features
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="card p-4">
+                            <h5 class="font-medium text-primary mb-2">
+                                ARIA Support
+                            </h5>
+                            <div class="space-y-2">
+                                <Button ariaLabel="Close dialog" variant="ghost"
+                                    >×</Button
+                                >
+                                <Button
+                                    ariaPressed={isPressed}
+                                    on:click={handleToggle}
+                                >
+                                    Toggle Button
+                                </Button>
+                            </div>
+                        </div>
+                        <div class="card p-4">
+                            <h5 class="font-medium text-primary mb-2">
+                                Keyboard Navigation
+                            </h5>
+                            <p class="text-sm text-secondary">
+                                All buttons support Tab navigation, Enter/Space
+                                activation, and proper focus indicators.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Semantic Tokens -->
+                <div class="space-y-4">
+                    <h4 class="text-md font-medium text-secondary">
+                        Semantic Token Usage
+                    </h4>
+                    <div class="card p-4">
+                        <p class="text-sm text-secondary mb-3">
+                            All button variants use semantic design tokens for
+                            consistent theming and automatic light/dark mode
+                            support.
+                        </p>
+                        <div
+                            class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs"
+                        >
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-primary rounded"></div>
+                                <span>Primary</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-success rounded"></div>
+                                <span>Success</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-warning rounded"></div>
+                                <span>Warning</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-error rounded"></div>
+                                <span>Danger</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -323,8 +502,9 @@
                 <Modal bind:isOpen={showModal} title="Example Modal">
                     <p class="mb-4">This is a modal dialog example.</p>
                     <div class="flex gap-2">
-                        <Button on:click={() => (showModal = false)}
-                            >Close</Button
+                        <Button
+                            variant="primary"
+                            on:click={() => (showModal = false)}>Close</Button
                         >
                         <Button
                             variant="secondary"
@@ -342,7 +522,9 @@
                 >
                 <SlideUp bind:isOpen={showSlideUp} title="Slide Up Panel">
                     <p class="mb-4">This is a slide-up panel example.</p>
-                    <Button on:click={() => (showSlideUp = false)}>Close</Button
+                    <Button
+                        variant="primary"
+                        on:click={() => (showSlideUp = false)}>Close</Button
                     >
                 </SlideUp>
             </div>
@@ -404,7 +586,9 @@
                 <h3 class="text-lg font-medium text-gray-700">
                     Notification Manager
                 </h3>
-                <Button on:click={showToast}>Show Toast Notification</Button>
+                <Button variant="primary" on:click={showToast}
+                    >Show Toast Notification</Button
+                >
                 <NotificationManager />
             </div>
         </div>
