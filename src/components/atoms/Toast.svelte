@@ -7,7 +7,7 @@
         AlertTriangle,
         Info,
         X,
-    } from "lucide-svelte";
+    } from "@lucide/svelte";
 
     export let id: string = "";
     export let title: string = "";
@@ -44,28 +44,24 @@
     // Type classes
     const typeClasses = {
         success: {
-            container:
-                "bg-success-50 border-success-200 text-success-800 dark:bg-success-900/20 dark:border-success-800 dark:text-success-200",
-            icon: "text-success-500 dark:text-success-400",
-            close: "text-success-400 hover:text-success-600 dark:hover:text-success-300",
+            container: "bg-success-surface border-success text-success-text",
+            icon: "text-success",
+            close: "text-success hover:text-success-hover",
         },
         error: {
-            container:
-                "bg-error-50 border-error-200 text-error-800 dark:bg-error-900/20 dark:border-error-800 dark:text-error-200",
-            icon: "text-error-500 dark:text-error-400",
-            close: "text-error-400 hover:text-error-600 dark:hover:text-error-300",
+            container: "bg-error-surface border-error text-error-text",
+            icon: "text-error",
+            close: "text-error hover:text-error-hover",
         },
         warning: {
-            container:
-                "bg-warning-50 border-warning-200 text-warning-800 dark:bg-warning-900/20 dark:border-warning-800 dark:text-warning-200",
-            icon: "text-warning-500 dark:text-warning-400",
-            close: "text-warning-400 hover:text-warning-600 dark:hover:text-warning-300",
+            container: "bg-warning-surface border-warning text-warning-text",
+            icon: "text-warning",
+            close: "text-warning hover:text-warning-hover",
         },
         info: {
-            container:
-                "bg-primary-50 border-primary-200 text-primary-800 dark:bg-primary-900/20 dark:border-primary-800 dark:text-primary-200",
-            icon: "text-primary-500 dark:text-primary-400",
-            close: "text-primary-400 hover:text-primary-600 dark:hover:text-primary-300",
+            container: "bg-info-surface border-info text-info-text",
+            icon: "text-info",
+            close: "text-info hover:text-info-hover",
         },
     };
 
@@ -140,7 +136,6 @@
         "
         role="alert"
         aria-live="polite"
-        on:click={handleClick}
         on:mouseenter={handleMouseEnter}
         on:mouseleave={handleMouseLeave}
         transition:fly={{

@@ -54,13 +54,14 @@
 
     // Variant classes
     const variantClasses = {
-        default: "bg-neutral-900 text-white border-neutral-700",
-        dark: "bg-neutral-950 text-white border-neutral-800",
-        light: "bg-white text-neutral-900 border-neutral-200",
-        info: "bg-primary-500 text-white border-primary-600",
-        success: "bg-success-500 text-white border-success-600",
-        warning: "bg-warning-500 text-white border-warning-600",
-        error: "bg-error-500 text-white border-error-600",
+        default:
+            "bg-surface-elevated text-primary border-primary shadow-adaptive-lg",
+        dark: "bg-surface text-inverse border-primary shadow-adaptive-lg",
+        light: "bg-surface text-primary border-primary shadow-adaptive-lg",
+        info: "bg-info text-inverse border-info shadow-adaptive-lg",
+        success: "bg-success text-inverse border-success shadow-adaptive-lg",
+        warning: "bg-warning text-inverse border-warning shadow-adaptive-lg",
+        error: "bg-error text-inverse border-error shadow-adaptive-lg",
     };
 
     // Calculate tooltip position
@@ -196,6 +197,20 @@
         }
     }
 
+    function handleTriggerKeydown(event: KeyboardEvent) {
+        if (
+            trigger === "click" &&
+            (event.key === "Enter" || event.key === " ")
+        ) {
+            event.preventDefault();
+            if (isVisible) {
+                hideTooltip(event);
+            } else {
+                showTooltip(event);
+            }
+        }
+    }
+
     function handleTriggerFocus(event: FocusEvent) {
         if (trigger === "focus") {
             showTooltip(event);
@@ -269,22 +284,44 @@
 </script>
 
 <!-- Trigger element -->
-<div
-    bind:this={triggerElement}
-    on:click={handleTriggerClick}
-    on:focus={handleTriggerFocus}
-    on:blur={handleTriggerBlur}
-    on:mouseenter={handleTriggerMouseEnter}
-    on:mouseleave={handleTriggerMouseLeave}
-    class="inline-block"
->
-    <slot />
-</div>
+{#if trigger === "click"}
+    <button
+        bind:this={triggerElement}
+        type="button"
+        aria-describedby={isVisible ? "tooltip-{content}" : undefined}
+        on:click={handleTriggerClick}
+        on:keydown={handleTriggerKeydown}
+        on:focus={handleTriggerFocus}
+        on:blur={handleTriggerBlur}
+        on:mouseenter={handleTriggerMouseEnter}
+        on:mouseleave={handleTriggerMouseLeave}
+        class="inline-block"
+    >
+        <slot />
+    </button>
+{:else}
+    <div
+        bind:this={triggerElement}
+        role="button"
+        tabindex="0"
+        aria-describedby={isVisible ? "tooltip-{content}" : undefined}
+        on:click={handleTriggerClick}
+        on:keydown={handleTriggerKeydown}
+        on:focus={handleTriggerFocus}
+        on:blur={handleTriggerBlur}
+        on:mouseenter={handleTriggerMouseEnter}
+        on:mouseleave={handleTriggerMouseLeave}
+        class="inline-block"
+    >
+        <slot />
+    </div>
+{/if}
 
 <!-- Tooltip -->
 {#if isVisible && content}
     <div
         bind:this={tooltipElement}
+        id="tooltip-{content}"
         class="
             fixed z-tooltip
             {sizeClasses[size]}

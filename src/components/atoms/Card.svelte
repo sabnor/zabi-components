@@ -26,9 +26,9 @@
 
     // Variant classes
     const variantClasses = {
-        default: "bg-stone-800 border border-stone-700",
+        default: "bg-card border border-primary",
         interactive:
-            "bg-stone-800 border border-stone-700 hover:bg-stone-700 hover:border-stone-600 focus:bg-stone-700 focus:border-stone-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-stone-900 cursor-pointer",
+            "bg-card border border-primary hover:bg-card-hover hover:border-primary-hover focus:bg-card-active focus:border-primary-hover focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 cursor-pointer",
     };
 
     // Computed classes
@@ -141,11 +141,11 @@
     <!-- Loading overlay -->
     {#if loading}
         <div
-            class="absolute inset-0 bg-stone-800/50 rounded-lg flex items-center justify-center"
+            class="absolute inset-0 bg-surface/50 rounded-lg flex items-center justify-center"
             aria-hidden="true"
         >
             <div
-                class="animate-spin rounded-full h-6 w-6 border-2 border-stone-400 border-t-transparent"
+                class="animate-spin rounded-full h-6 w-6 border-2 border-tertiary border-t-transparent"
             ></div>
         </div>
     {/if}

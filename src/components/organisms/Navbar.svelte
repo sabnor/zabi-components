@@ -31,11 +31,10 @@
 
     // Variant classes
     const variantClasses = {
-        default:
-            "bg-surface-primary border-b border-primary shadow-adaptive-sm",
+        default: "bg-surface border-b border-primary shadow-adaptive-sm",
         transparent: "bg-transparent",
-        solid: "bg-surface-primary shadow-adaptive-md",
-        bordered: "bg-surface-primary border border-primary shadow-adaptive-sm",
+        solid: "bg-surface shadow-adaptive-md",
+        bordered: "bg-surface border border-primary shadow-adaptive-sm",
     };
 
     // Position classes
@@ -103,11 +102,10 @@
         navbar
         {positionClasses[position]}
         {variantClasses[variant]}
-        {isScrolled ? 'backdrop-blur-sm bg-surface-primary/95' : ''}
+        {isScrolled ? 'backdrop-blur-sm bg-surface/95' : ''}
         transition-all duration-200
         {className}
     "
-    role="navigation"
     aria-label="Main navigation"
 >
     <div class="max-w-7xl mx-auto">
@@ -118,7 +116,7 @@
                     {#if typeof brand === "string"}
                         <button
                             type="button"
-                            class="text-xl font-bold text-primary hover:text-primary-600 transition-colors"
+                            class="text-xl font-bold text-primary hover:text-primary-hover transition-colors"
                             on:click={handleBrandClick}
                         >
                             {brand}
@@ -126,7 +124,7 @@
                     {:else}
                         <a
                             href={brand.href || "#"}
-                            class="flex items-center space-x-2 text-xl font-bold text-primary hover:text-primary-600 transition-colors"
+                            class="flex items-center space-x-2 text-xl font-bold text-primary hover:text-primary-hover transition-colors"
                             on:click={(e) => handleBrandClick(e)}
                         >
                             {#if brand.logo}
@@ -160,7 +158,7 @@
                 <!-- Mobile menu button -->
                 <button
                     type="button"
-                    class="md:hidden p-2 rounded-lg text-primary hover:bg-surface-secondary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    class="md:hidden p-2 rounded-lg text-primary hover:bg-surface-secondary focus:outline-none focus:ring-2 focus:ring-primary"
                     on:click={toggleMenu}
                     aria-expanded={isMenuOpen}
                     aria-controls="mobile-menu"
@@ -196,7 +194,7 @@
         {#if isMenuOpen}
             <div
                 id="mobile-menu"
-                class="md:hidden border-t border-primary bg-surface-primary"
+                class="md:hidden border-t border-primary bg-surface"
                 transition:fly={{ y: -20, duration: 200 }}
             >
                 <div class="px-4 py-2 space-y-1">
@@ -211,7 +209,11 @@
 {#if isMenuOpen}
     <div
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 md:hidden"
+        role="button"
+        tabindex="0"
         on:click={() => (isMenuOpen = false)}
+        on:keydown={(e) => e.key === "Escape" && (isMenuOpen = false)}
+        aria-label="Close menu"
         transition:fade={{ duration: 200 }}
     ></div>
 {/if}

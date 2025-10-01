@@ -29,7 +29,7 @@
 
     const dispatch = createEventDispatcher();
 
-    function handleClick(event: MouseEvent) {
+    function handleClick(event: CustomEvent) {
         if (disabled || loading) {
             event.preventDefault();
             return;
@@ -54,7 +54,7 @@
         : "";
 
     const baseClasses =
-        "transition-all duration-200 inline-flex items-center justify-center gap-2 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden";
+        "transition-all duration-200 inline-flex items-center justify-center gap-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden";
 
     const sizeClasses = {
         sm: "px-3 py-1.5 text-sm",
@@ -63,15 +63,15 @@
     };
 
     const variantClasses = {
-        brand: "border border-primary text-primary bg-surface-primary hover:bg-surface-secondary hover:border-primary-600 active:scale-[0.98] shadow-adaptive-sm",
+        brand: "border border-primary text-primary bg-surface hover:bg-surface-secondary hover:border-primary-hover active:scale-[0.98] shadow-adaptive-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
         primary:
-            "bg-primary-500 text-white border border-primary-500 hover:bg-primary-600 hover:border-primary-600 active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md",
+            "bg-primary text-inverse border border-primary hover:bg-primary-hover hover:border-primary-hover active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
         secondary:
-            "bg-surface-secondary text-primary border border-primary hover:bg-surface-tertiary hover:border-primary-600 active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md",
+            "bg-surface-secondary text-primary border border-primary hover:bg-surface-tertiary hover:border-primary-hover active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
         success:
-            "bg-success-500 text-white border border-success-500 hover:bg-success-600 hover:border-success-600 active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md",
-        danger: "bg-error-500 text-white border border-error-500 hover:bg-error-600 hover:border-error-600 active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md",
-        ghost: "bg-transparent text-secondary border border-primary hover:bg-surface-secondary hover:border-primary-600 active:scale-[0.98]",
+            "bg-success text-inverse border border-success hover:bg-success-hover hover:border-success-hover active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2",
+        danger: "bg-error text-inverse border border-error hover:bg-error-hover hover:border-error-hover active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2",
+        ghost: "bg-transparent text-secondary border border-primary hover:bg-surface-secondary hover:border-primary-hover active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
     };
 
     $: buttonClasses = [

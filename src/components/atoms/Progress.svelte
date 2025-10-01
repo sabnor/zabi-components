@@ -17,6 +17,9 @@
         complete: { value: number; max: number };
     }>();
 
+    // Generate unique ID for accessibility
+    let progressId = `progress-${Math.random().toString(36).substr(2, 9)}`;
+
     // Calculate percentage
     $: percentage = Math.min(Math.max((value / max) * 100, 0), 100);
     $: isComplete = percentage >= 100;
@@ -42,20 +45,20 @@
 
     // Variant classes
     const variantClasses = {
-        default: "bg-primary-500",
-        success: "bg-success-500",
-        warning: "bg-warning-500",
-        error: "bg-error-500",
-        info: "bg-primary-500",
+        default: "bg-primary",
+        success: "bg-success",
+        warning: "bg-warning",
+        error: "bg-error",
+        info: "bg-info",
     };
 
     // Background classes
     const backgroundClasses = {
-        default: "bg-neutral-200 dark:bg-neutral-700",
-        success: "bg-success-100 dark:bg-success-900/20",
-        warning: "bg-warning-100 dark:bg-warning-900/20",
-        error: "bg-error-100 dark:bg-error-900/20",
-        info: "bg-primary-100 dark:bg-primary-900/20",
+        default: "bg-surface-tertiary",
+        success: "bg-success-surface",
+        warning: "bg-warning-surface",
+        error: "bg-error-surface",
+        info: "bg-info-surface",
     };
 
     // Dispatch complete event when progress reaches 100%
@@ -72,7 +75,9 @@
 <div class="progress-container {className}">
     {#if label}
         <div class="flex justify-between items-center mb-2">
-            <label class="text-sm font-medium text-primary">{label}</label>
+            <label for={progressId} class="text-sm font-medium text-primary"
+                >{label}</label
+            >
             {#if showValue}
                 <span class="text-sm text-secondary"
                     >{Math.round(percentage)}%</span
@@ -93,6 +98,7 @@
             >
                 <!-- Progress bar -->
                 <div
+                    id={progressId}
                     class="
                         h-full rounded-full transition-all duration-300 ease-out
                         {variantClasses[variant]}
@@ -121,6 +127,7 @@
         <div class="relative inline-block">
             <!-- Circular progress -->
             <svg
+                id={progressId}
                 class="transform -rotate-90 {sizeClasses[size].circular}"
                 viewBox="0 0 44 44"
                 role="progressbar"
