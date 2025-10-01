@@ -1,0 +1,57 @@
+# Source files
+src/
+!src/lib/
+
+# Development files
+.storybook/
+stories/
+*.stories.ts
+*.stories.js
+
+# Build artifacts
+.svelte-kit/
+build/
+storybook-static/
+
+# Development configs
+vite.config.ts
+svelte.config.js
+tailwind.config.js
+postcss.config.cjs
+tsconfig.json
+tsconfig.node.json
+vitest.workspace.ts
+
+# Development dependencies
+node_modules/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+debug-storybook.log
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp

@@ -1,0 +1,30 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "declaration": true,
+        "declarationMap": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "emitDeclarationOnly": true,
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": false,
+        "noEmit": false,
+        "module": "ESNext",
+        "target": "ES2020"
+    },
+    "include": [
+        "src/lib/**/*",
+        "src/components/**/*"
+    ],
+    "exclude": [
+        "src/routes/**/*",
+        "src/app.html",
+        "src/app.css",
+        "**/*.stories.ts",
+        "**/*.test.ts",
+        "**/*.spec.ts"
+    ]
+}
