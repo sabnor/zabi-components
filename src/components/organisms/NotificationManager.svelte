@@ -16,7 +16,7 @@
     export let maxNotifications = 5;
 
     const dispatch = createEventDispatcher<{
-        remove: { id: string };
+        close: void;
     }>();
 
     const baseClasses =
@@ -55,7 +55,7 @@
     }
 
     function removeNotification(id: string) {
-        dispatch("remove", { id });
+        dispatch("close");
     }
 
     // Auto-remove notifications after duration

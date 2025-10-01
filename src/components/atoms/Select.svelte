@@ -17,16 +17,20 @@
     export let success: string = "";
     export let helpText: string = "";
     export let size: "sm" | "md" | "lg" = "md";
-    export let variant: "default" | "outlined" | "filled" | "ghost" = "default";
+    export let variant: "outlined" | "filled" | "underlined" = "outlined";
     export let searchable: boolean = false;
     export let clearable: boolean = false;
     export let name: string | undefined = undefined;
     export let id: string | undefined = undefined;
+    export let className: string = "";
 
     const dispatch = createEventDispatcher<{
-        change: { value: string | number | undefined; event: Event };
+        input: { value: string };
+        change: { value: string };
         focus: { event: FocusEvent };
         blur: { event: FocusEvent };
+        keydown: { event: KeyboardEvent };
+        keyup: { event: KeyboardEvent };
         clear: { event: Event };
     }>();
 
@@ -53,10 +57,16 @@
     // Get the selected option
     $: selectedOption = options.find((option) => option.value === value);
 
+    function handleInput(event: Event) {
+        const target = event.target as HTMLSelectElement;
+        value = target.value;
+        dispatch("input", { value: String(value) });
+    }
+
     function handleChange(event: Event) {
         const target = event.target as HTMLSelectElement;
         value = target.value;
-        dispatch("change", { value, event });
+        dispatch("change", { value: String(value) });
     }
 
     function handleFocus(event: FocusEvent) {
@@ -67,6 +77,14 @@
     function handleBlur(event: FocusEvent) {
         isFocused = false;
         dispatch("blur", { event });
+    }
+
+    function handleKeydown(event: KeyboardEvent) {
+        dispatch("keydown", { event });
+    }
+
+    function handleKeyup(event: KeyboardEvent) {
+        dispatch("keyup", { event });
     }
 
     function handleClear(event: Event) {
@@ -99,12 +117,10 @@
 
     // Variant classes
     $: variantClasses = {
-        default:
-            "bg-surface border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-        outlined:
-            "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-        filled: "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-        ghost: "bg-transparent border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
+        outlined: "border border-primary bg-surface",
+        filled: "border-0 bg-surface-secondary",
+        underlined:
+            "border-0 border-b border-primary bg-transparent rounded-none",
     };
 
     // State classes
@@ -127,7 +143,7 @@
     $: selectClasses = [
         "w-full",
         "min-w-40 sm:min-w-48 md:min-w-56 lg:min-w-64", // Responsive minimum width for selects
-        "rounded-lg",
+        variant === "underlined" ? "rounded-none" : "rounded-lg",
         "transition-all",
         "duration-200",
         "ease-in-out",
@@ -143,7 +159,7 @@
         sizeClasses[size],
         variantClasses[variant],
         stateClasses,
-        error ? "grainy-red" : success ? "grainy-green" : "grainy-texture",
+        className,
     ].join(" ");
 
     // Label classes
@@ -212,9 +228,12 @@
             {required}
             {name}
             class={selectClasses}
+            on:input={handleInput}
             on:change={handleChange}
             on:focus={handleFocus}
             on:blur={handleBlur}
+            on:keydown={handleKeydown}
+            on:keyup={handleKeyup}
             aria-invalid={error ? "true" : "false"}
             aria-describedby={error || success || helpText
                 ? `${selectId}-help`

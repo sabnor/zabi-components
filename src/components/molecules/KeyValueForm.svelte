@@ -37,14 +37,23 @@
     }> = [];
 
     const dispatch = createEventDispatcher<{
-        input: { [key: string]: any };
-        change: { values: Record<string, any> };
+        input: Record<string, any>;
+        change: Record<string, any>;
     }>();
 
     function updateField(key: string, value: any) {
         values = { ...values, [key]: value };
         dispatch("input", { [key]: value });
         dispatch("change", { values });
+    }
+
+    function handleFieldChange(event: CustomEvent) {
+        // Handle both e.detail.value and e.detail.checked patterns
+        const detail = event.detail;
+        if (detail && typeof detail === "object") {
+            // Forward the event with the proper structure
+            dispatch("input", detail);
+        }
     }
 
     function handleInput(event: CustomEvent) {
@@ -81,8 +90,8 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:input={handleInput}
-                    on:change={handleChange}
+                    on:input={handleFieldChange}
+                    on:change={handleFieldChange}
                 />
             {:else if field.type === "select"}
                 <Select
@@ -93,8 +102,8 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:input={handleInput}
-                    on:change={handleChange}
+                    on:input={handleFieldChange}
+                    on:change={handleFieldChange}
                 />
             {:else if field.type === "checkbox"}
                 <Checkbox
@@ -103,15 +112,15 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:input={handleInput}
-                    on:change={handleChange}
+                    on:input={handleFieldChange}
+                    on:change={handleFieldChange}
                 />
             {:else if field.type === "toggle"}
                 <Toggle
                     bind:checked={values[field.key]}
                     label={field.label}
-                    on:input={handleInput}
-                    on:change={handleChange}
+                    on:input={handleFieldChange}
+                    on:change={handleFieldChange}
                 />
             {:else if field.type === "colorpicker"}
                 <ColorPicker
@@ -120,8 +129,8 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:input={handleInput}
-                    on:change={handleChange}
+                    on:input={handleFieldChange}
+                    on:change={handleFieldChange}
                 />
             {:else if field.type === "textalignment"}
                 <TextAlignment
@@ -129,8 +138,8 @@
                     label={field.label}
                     required={field.required}
                     size="sm"
-                    on:input={handleInput}
-                    on:change={handleChange}
+                    on:input={handleFieldChange}
+                    on:change={handleFieldChange}
                 />
             {:else}
                 <Input
@@ -141,8 +150,8 @@
                     required={field.required}
                     size="sm"
                     variant="outlined"
-                    on:input={handleInput}
-                    on:change={handleChange}
+                    on:input={handleFieldChange}
+                    on:change={handleFieldChange}
                 />
             {/if}
         </div>
