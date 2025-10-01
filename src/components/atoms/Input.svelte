@@ -1,28 +1,25 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { onMount } from "svelte";
-    import { Eye, EyeOff, AlertCircle, CheckCircle } from "@lucide/svelte";
+    import { Eye, EyeOff, AlertCircle, CheckCircle, X } from "@lucide/svelte";
 
+    // Core props
     export let value: string = "";
-    export let type:
-        | "text"
-        | "email"
-        | "password"
-        | "number"
-        | "tel"
-        | "url"
-        | "search" = "text";
-    export let placeholder: string = "";
+    export let type: "text" | "email" | "password" | "number" | "search" =
+        "text";
     export let label: string = "";
+    export let placeholder: string = "";
+    export let helperText: string = "";
     export let disabled: boolean = false;
     export let required: boolean = false;
     export let readonly: boolean = false;
-    export let error: string = "";
-    export let success: string = "";
-    export let helpText: string = "";
-    export let size: "sm" | "md" | "lg" = "md";
-    export let variant: "default" | "outlined" | "filled" | "ghost" = "default";
-    export let showPasswordToggle: boolean = false;
+    export let id: string | undefined = undefined;
+    export let name: string | undefined = undefined;
+
+    // State props
+    export let error: boolean | string = false;
+    export let success: boolean | string = false;
+
+    // Additional props
     export let maxLength: number | undefined = undefined;
     export let minLength: number | undefined = undefined;
     export let pattern: string | undefined = undefined;
@@ -37,8 +34,14 @@
         | "tel"
         | "url"
         | undefined = undefined;
-    export let name: string | undefined = undefined;
-    export let id: string | undefined = undefined;
+
+    // UI props
+    export let showPasswordToggle: boolean = false;
+    export let showClearButton: boolean = false;
+    export let size: "sm" | "md" | "lg" = "md";
+
+    // Accessibility props
+    export let ariaLabel: string | undefined = undefined;
 
     const dispatch = createEventDispatcher<{
         input: { value: string; event: Event };
@@ -47,6 +50,7 @@
         blur: { event: FocusEvent };
         keydown: { event: KeyboardEvent };
         keyup: { event: KeyboardEvent };
+        clear: { event: Event };
     }>();
 
     let inputElement: HTMLInputElement;
@@ -59,6 +63,12 @@
 
     // Check if input has value
     $: hasValue = value !== "" && value !== null && value !== undefined;
+
+    // Error and success message handling
+    $: errorMessage = typeof error === "string" ? error : "";
+    $: successMessage = typeof success === "string" ? success : "";
+    $: hasError = Boolean(error);
+    $: hasSuccess = Boolean(success);
 
     // Handle input events
     function handleInput(event: Event) {
@@ -97,6 +107,14 @@
         showPassword = !showPassword;
     }
 
+    function clearValue(event: Event) {
+        event.preventDefault();
+        value = "";
+        hasValue = false;
+        dispatch("clear", { event });
+        inputElement?.focus();
+    }
+
     // Focus method for external use
     export function focus() {
         inputElement?.focus();
@@ -112,29 +130,49 @@
         inputElement?.select();
     }
 
-    // Size classes
+    // Size classes using semantic tokens
     $: sizeClasses = {
         sm: "px-3 py-1.5 text-sm",
-        md: "px-4 py-2.5 text-base",
-        lg: "px-5 py-3 text-lg",
+        md: "px-4 py-2.5 text-sm",
+        lg: "px-5 py-3 text-base",
     };
 
-    // Variant classes
-    $: variantClasses = {
-        default:
-            "bg-surface border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-        outlined:
-            "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-        filled: "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-        ghost: "bg-transparent border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-    };
+    // Base input classes using semantic tokens
+    $: baseInputClasses = [
+        "w-full",
+        "min-w-0",
+        "rounded-md", // Using radius.md
+        "transition-all",
+        "duration-200",
+        "ease-in-out",
+        "focus:outline-none",
+        "focus:ring-2",
+        "focus:ring-focus",
+        "focus:ring-offset-2",
+        "focus:ring-offset-surface",
+        "disabled:opacity-50",
+        "disabled:cursor-not-allowed",
+        "read-only:cursor-default",
+        "read-only:opacity-75",
+        sizeClasses[size],
+    ].join(" ");
 
-    // State classes
-    $: stateClasses = error
-        ? "focus:ring-error border-error"
-        : success
-          ? "focus:ring-success border-success"
-          : "";
+    // State-specific classes using semantic tokens
+    $: stateClasses = hasError
+        ? "bg-surface border border-error text-primary placeholder-placeholder focus:ring-error focus:border-error"
+        : hasSuccess
+          ? "bg-surface border border-success text-primary placeholder-placeholder focus:ring-success focus:border-success"
+          : "bg-surface border border-primary text-primary placeholder-placeholder focus:ring-focus focus:border-focus";
+
+    // Disabled state classes
+    $: disabledClasses = disabled
+        ? "bg-surface-disabled text-disabled border-disabled cursor-not-allowed"
+        : "";
+
+    // Input classes combining all states
+    $: inputClasses = [baseInputClasses, stateClasses, disabledClasses].join(
+        " ",
+    );
 
     // Container classes
     $: containerClasses = [
@@ -145,29 +183,7 @@
         "ease-in-out",
     ].join(" ");
 
-    // Input classes
-    $: inputClasses = [
-        "w-full",
-        "min-w-0", // Allow input to shrink below minimum width
-        "rounded-lg",
-        "transition-all",
-        "duration-200",
-        "ease-in-out",
-        "focus:outline-none",
-        "focus:ring-2",
-        "focus:ring-offset-2",
-        "focus:ring-offset-dark-900",
-        "disabled:opacity-50",
-        "disabled:cursor-not-allowed",
-        "read-only:cursor-default",
-        "read-only:opacity-75",
-        sizeClasses[size],
-        variantClasses[variant],
-        stateClasses,
-        error ? "grainy-red" : success ? "grainy-green" : "grainy-texture",
-    ].join(" ");
-
-    // Label classes
+    // Label classes using semantic tokens
     $: labelClasses = [
         "block",
         "text-sm",
@@ -175,14 +191,37 @@
         "mb-2",
         "transition-colors",
         "duration-200",
-        error ? "text-error" : success ? "text-success" : "text-primary",
+        hasError ? "text-error" : hasSuccess ? "text-success" : "text-primary",
     ].join(" ");
 
-    // Help text classes
-    $: helpTextClasses = [
+    // Helper text classes using semantic tokens
+    $: helperTextClasses = [
         "mt-2",
         "text-xs",
-        error ? "text-error" : success ? "text-success" : "text-tertiary",
+        hasError
+            ? "text-error"
+            : hasSuccess
+              ? "text-success"
+              : "text-secondary",
+    ].join(" ");
+
+    // Button classes for password toggle and clear button
+    $: buttonClasses = [
+        "absolute",
+        "right-3",
+        "top-1/2",
+        "-translate-y-1/2",
+        "text-tertiary",
+        "hover:text-primary",
+        "transition-colors",
+        "duration-200",
+        "focus:outline-none",
+        "focus:text-primary",
+        "focus:ring-2",
+        "focus:ring-focus",
+        "focus:ring-offset-1",
+        "rounded-sm",
+        "p-1",
     ].join(" ");
 </script>
 
@@ -191,7 +230,7 @@
         <label for={inputId} class={labelClasses}>
             {label}
             {#if required}
-                <span class="text-error ml-1">*</span>
+                <span class="text-error ml-1" aria-label="required">*</span>
             {/if}
         </label>
     {/if}
@@ -218,61 +257,74 @@
             on:blur={handleBlur}
             on:keydown={handleKeydown}
             on:keyup={handleKeyup}
-            aria-invalid={error ? "true" : "false"}
-            aria-describedby={error || success || helpText
+            aria-invalid={hasError ? "true" : "false"}
+            aria-describedby={hasError || hasSuccess || helperText
                 ? `${inputId}-help`
                 : undefined}
+            aria-label={ariaLabel || (label ? undefined : "Input field")}
+            aria-required={required}
         />
 
-        {#if showPasswordToggle && type === "password"}
-            <button
-                type="button"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none focus:text-white"
-                on:click={togglePasswordVisibility}
-                on:keydown={(e) =>
-                    e.key === "Enter" && togglePasswordVisibility()}
-                tabindex="-1"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-                {#if showPassword}
-                    <EyeOff size={20} />
-                {:else}
-                    <Eye size={20} />
-                {/if}
-            </button>
-        {/if}
-
-        <!-- Focus indicator -->
+        <!-- Action buttons (password toggle and clear button) -->
         <div
-            class="absolute inset-0 rounded-lg pointer-events-none transition-all duration-200 {isFocused
-                ? 'ring-2 ring-primary'
-                : ''}"
-        ></div>
+            class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1"
+        >
+            {#if showClearButton && hasValue && !disabled && !readonly}
+                <button
+                    type="button"
+                    class={buttonClasses}
+                    on:click={clearValue}
+                    on:keydown={(e) => e.key === "Enter" && clearValue(e)}
+                    aria-label="Clear input"
+                >
+                    <X size={16} />
+                </button>
+            {/if}
+
+            {#if showPasswordToggle && type === "password"}
+                <button
+                    type="button"
+                    class={buttonClasses}
+                    on:click={togglePasswordVisibility}
+                    on:keydown={(e) =>
+                        e.key === "Enter" && togglePasswordVisibility()}
+                    aria-label={showPassword
+                        ? "Hide password"
+                        : "Show password"}
+                >
+                    {#if showPassword}
+                        <EyeOff size={16} />
+                    {:else}
+                        <Eye size={16} />
+                    {/if}
+                </button>
+            {/if}
+        </div>
     </div>
 
-    {#if error || success || helpText}
-        <div id="{inputId}-help" class={helpTextClasses}>
-            {#if error}
+    {#if hasError || hasSuccess || helperText}
+        <div id="{inputId}-help" class={helperTextClasses}>
+            {#if hasError}
                 <div class="flex items-center gap-1">
-                    <AlertCircle size={16} class="flex-shrink-0" />
-                    <span>{error}</span>
+                    <AlertCircle size={14} class="flex-shrink-0" />
+                    <span>{errorMessage}</span>
                 </div>
-            {:else if success}
+            {:else if hasSuccess}
                 <div class="flex items-center gap-1">
-                    <CheckCircle size={16} class="flex-shrink-0" />
-                    <span>{success}</span>
+                    <CheckCircle size={14} class="flex-shrink-0" />
+                    <span>{successMessage}</span>
                 </div>
-            {:else if helpText}
-                <span>{helpText}</span>
+            {:else if helperText}
+                <span>{helperText}</span>
             {/if}
         </div>
     {/if}
 </div>
 
 <style>
-    /* Custom focus styles for better accessibility */
+    /* Enhanced focus styles using semantic tokens */
     :global(.input-focus-visible) {
-        outline: 2px solid var(--color-plasma-red-500);
+        outline: 2px solid rgb(var(--color-focus-ring));
         outline-offset: 2px;
     }
 
@@ -281,31 +333,14 @@
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Custom scrollbar for textarea-like inputs */
-    input::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    input::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    input::-webkit-scrollbar-thumb {
-        background: var(--color-dark-600);
-        border-radius: 2px;
-    }
-
-    input::-webkit-scrollbar-thumb:hover {
-        background: var(--color-dark-500);
-    }
-
-    /* Placeholder styling */
+    /* Placeholder styling using semantic tokens */
     input::placeholder {
         transition: color 0.2s ease;
+        color: rgb(var(--color-text-placeholder));
     }
 
     input:focus::placeholder {
-        color: var(--color-gray-300);
+        color: rgb(var(--color-text-tertiary));
     }
 
     /* Number input spinner styling */
@@ -326,16 +361,32 @@
         -webkit-appearance: none;
     }
 
-    /* Password toggle button hover effects */
+    /* Action button hover effects */
     button[aria-label] {
         transition: all 0.2s ease;
     }
 
     button[aria-label]:hover {
-        transform: scale(1.1);
+        transform: scale(1.05);
     }
 
     button[aria-label]:active {
         transform: scale(0.95);
+    }
+
+    /* Focus ring animation */
+    .focus-ring {
+        animation: focus-ring-pulse 0.2s ease-out;
+    }
+
+    @keyframes focus-ring-pulse {
+        0% {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
     }
 </style>

@@ -5,70 +5,106 @@ const meta = {
     title: 'Design System/Atoms/Input',
     component: Input,
     parameters: {
-        layout: 'centered'
+        layout: 'centered',
+        docs: {
+            description: {
+                component: 'A modern, accessible input component with full semantic token support, comprehensive state management, and excellent accessibility features.'
+            }
+        }
     },
     tags: ['autodocs'],
     argTypes: {
+        // Core props
         value: {
-            control: { type: 'text' }
+            control: { type: 'text' },
+            description: 'The input value'
         },
         type: {
             control: { type: 'select' },
-            options: ['text', 'email', 'password', 'number', 'tel', 'url', 'search']
-        },
-        placeholder: {
-            control: { type: 'text' }
+            options: ['text', 'email', 'password', 'number', 'search'],
+            description: 'The input type'
         },
         label: {
-            control: { type: 'text' }
+            control: { type: 'text' },
+            description: 'The input label (required for accessibility)'
+        },
+        placeholder: {
+            control: { type: 'text' },
+            description: 'Placeholder text'
+        },
+        helperText: {
+            control: { type: 'text' },
+            description: 'Helper text displayed below the input'
         },
         disabled: {
-            control: { type: 'boolean' }
+            control: { type: 'boolean' },
+            description: 'Whether the input is disabled'
         },
         required: {
-            control: { type: 'boolean' }
+            control: { type: 'boolean' },
+            description: 'Whether the input is required'
         },
         readonly: {
-            control: { type: 'boolean' }
+            control: { type: 'boolean' },
+            description: 'Whether the input is readonly'
         },
+        id: {
+            control: { type: 'text' },
+            description: 'Unique ID for the input'
+        },
+        name: {
+            control: { type: 'text' },
+            description: 'Name attribute for form submission'
+        },
+
+        // State props
         error: {
-            control: { type: 'text' }
+            control: { type: 'text' },
+            description: 'Error message or boolean indicating error state'
         },
         success: {
-            control: { type: 'text' }
+            control: { type: 'text' },
+            description: 'Success message or boolean indicating success state'
         },
-        helpText: {
-            control: { type: 'text' }
-        },
-        size: {
-            control: { type: 'select' },
-            options: ['sm', 'md', 'lg']
-        },
-        variant: {
-            control: { type: 'select' },
-            options: ['default', 'outlined', 'filled', 'ghost']
-        },
-        showPasswordToggle: {
-            control: { type: 'boolean' }
-        },
+
+        // Additional props
         maxLength: {
-            control: { type: 'number' }
+            control: { type: 'number' },
+            description: 'Maximum character length'
         },
         minLength: {
-            control: { type: 'number' }
+            control: { type: 'number' },
+            description: 'Minimum character length'
         },
         pattern: {
-            control: { type: 'text' }
+            control: { type: 'text' },
+            description: 'Pattern for validation'
         },
         autocomplete: {
             control: { type: 'select' },
-            options: ['on', 'off', 'name', 'email', 'username', 'current-password', 'new-password', 'tel', 'url']
+            options: ['on', 'off', 'name', 'email', 'username', 'current-password', 'new-password', 'tel', 'url'],
+            description: 'Autocomplete behavior'
         },
-        name: {
-            control: { type: 'text' }
+
+        // UI props
+        showPasswordToggle: {
+            control: { type: 'boolean' },
+            description: 'Show password visibility toggle (for password inputs)'
         },
-        id: {
-            control: { type: 'text' }
+        showClearButton: {
+            control: { type: 'boolean' },
+            description: 'Show clear button when input has value'
+        },
+        size: {
+            control: { type: 'select' },
+            options: ['sm', 'md', 'lg'],
+            description: 'Input size'
+        },
+
+        // Accessibility props
+        ariaLabel: {
+            control: { type: 'text' },
+            description: 'ARIA label for accessibility (used when no visible label)'
         }
     }
 } satisfies Meta<Input>;
@@ -94,7 +130,8 @@ export const Email: Story = {
     args: {
         type: 'email',
         label: 'Email Address',
-        placeholder: 'Enter your email'
+        placeholder: 'you@example.com',
+        required: true
     }
 };
 
@@ -103,7 +140,8 @@ export const Password: Story = {
         type: 'password',
         label: 'Password',
         placeholder: 'Enter your password',
-        showPasswordToggle: true
+        showPasswordToggle: true,
+        required: true
     }
 };
 
@@ -112,6 +150,15 @@ export const Number: Story = {
         type: 'number',
         label: 'Number Input',
         placeholder: 'Enter a number'
+    }
+};
+
+export const Search: Story = {
+    args: {
+        type: 'search',
+        label: 'Search',
+        placeholder: 'Search...',
+        showClearButton: true
     }
 };
 
@@ -155,10 +202,19 @@ export const WithSuccess: Story = {
     }
 };
 
-export const WithHelpText: Story = {
+export const WithHelperText: Story = {
     args: {
-        label: 'Input with Help',
-        helpText: 'This is helpful information about the input'
+        label: 'Input with Helper Text',
+        helperText: 'This is helpful information about the input'
+    }
+};
+
+export const WithClearButton: Story = {
+    args: {
+        label: 'Input with Clear Button',
+        value: 'Text to clear',
+        showClearButton: true,
+        placeholder: 'Type something...'
     }
 };
 
@@ -178,35 +234,11 @@ export const Large: Story = {
     }
 };
 
-export const Outlined: Story = {
-    args: {
-        variant: 'outlined',
-        label: 'Outlined Input',
-        placeholder: 'Outlined variant'
-    }
-};
-
-export const Filled: Story = {
-    args: {
-        variant: 'filled',
-        label: 'Filled Input',
-        placeholder: 'Filled variant'
-    }
-};
-
-export const Ghost: Story = {
-    args: {
-        variant: 'ghost',
-        label: 'Ghost Input',
-        placeholder: 'Ghost variant'
-    }
-};
-
 export const AllSizes: Story = {
     render: () => ({
         Component: 'div',
         props: {
-            class: 'flex flex-col gap-4'
+            class: 'flex flex-col gap-4 w-80'
         },
         children: [
             {
@@ -225,38 +257,11 @@ export const AllSizes: Story = {
     })
 };
 
-export const AllVariants: Story = {
-    render: () => ({
-        Component: 'div',
-        props: {
-            class: 'flex flex-col gap-4'
-        },
-        children: [
-            {
-                Component: Input,
-                props: { variant: 'default', label: 'Default', placeholder: 'Default variant' }
-            },
-            {
-                Component: Input,
-                props: { variant: 'outlined', label: 'Outlined', placeholder: 'Outlined variant' }
-            },
-            {
-                Component: Input,
-                props: { variant: 'filled', label: 'Filled', placeholder: 'Filled variant' }
-            },
-            {
-                Component: Input,
-                props: { variant: 'ghost', label: 'Ghost', placeholder: 'Ghost variant' }
-            }
-        ]
-    })
-};
-
 export const AllTypes: Story = {
     render: () => ({
         Component: 'div',
         props: {
-            class: 'flex flex-col gap-4'
+            class: 'flex flex-col gap-4 w-80'
         },
         children: [
             {
@@ -265,7 +270,7 @@ export const AllTypes: Story = {
             },
             {
                 Component: Input,
-                props: { type: 'email', label: 'Email', placeholder: 'Email input' }
+                props: { type: 'email', label: 'Email', placeholder: 'you@example.com' }
             },
             {
                 Component: Input,
@@ -277,15 +282,128 @@ export const AllTypes: Story = {
             },
             {
                 Component: Input,
-                props: { type: 'tel', label: 'Telephone', placeholder: 'Phone number' }
+                props: { type: 'search', label: 'Search', placeholder: 'Search...', showClearButton: true }
+            }
+        ]
+    })
+};
+
+export const AllStates: Story = {
+    render: () => ({
+        Component: 'div',
+        props: {
+            class: 'flex flex-col gap-4 w-80'
+        },
+        children: [
+            {
+                Component: Input,
+                props: { label: 'Default State', placeholder: 'Default input' }
             },
             {
                 Component: Input,
-                props: { type: 'url', label: 'URL', placeholder: 'Website URL' }
+                props: { label: 'Error State', error: 'This field has an error', value: 'Invalid input' }
             },
             {
                 Component: Input,
-                props: { type: 'search', label: 'Search', placeholder: 'Search...' }
+                props: { label: 'Success State', success: 'This field is valid', value: 'Valid input' }
+            },
+            {
+                Component: Input,
+                props: { label: 'Disabled State', disabled: true, value: 'Disabled input' }
+            },
+            {
+                Component: Input,
+                props: { label: 'Readonly State', readonly: true, value: 'Readonly input' }
+            }
+        ]
+    })
+};
+
+export const FormExample: Story = {
+    render: () => ({
+        Component: 'div',
+        props: {
+            class: 'flex flex-col gap-4 w-80 p-6 bg-surface rounded-lg border border-primary'
+        },
+        children: [
+            {
+                Component: 'h3',
+                props: {
+                    class: 'text-lg font-semibold text-primary mb-2'
+                },
+                children: 'Contact Form'
+            },
+            {
+                Component: Input,
+                props: {
+                    type: 'text',
+                    label: 'Full Name',
+                    placeholder: 'Enter your full name',
+                    required: true
+                }
+            },
+            {
+                Component: Input,
+                props: {
+                    type: 'email',
+                    label: 'Email Address',
+                    placeholder: 'you@example.com',
+                    required: true
+                }
+            },
+            {
+                Component: Input,
+                props: {
+                    type: 'password',
+                    label: 'Password',
+                    placeholder: 'Enter your password',
+                    showPasswordToggle: true,
+                    required: true
+                }
+            },
+            {
+                Component: Input,
+                props: {
+                    type: 'search',
+                    label: 'Search',
+                    placeholder: 'Search for something...',
+                    showClearButton: true
+                }
+            }
+        ]
+    })
+};
+
+export const AccessibilityExample: Story = {
+    render: () => ({
+        Component: 'div',
+        props: {
+            class: 'flex flex-col gap-4 w-80'
+        },
+        children: [
+            {
+                Component: Input,
+                props: {
+                    label: 'Accessible Input with Label',
+                    placeholder: 'This input has a proper label',
+                    helperText: 'This helper text is associated with the input via aria-describedby'
+                }
+            },
+            {
+                Component: Input,
+                props: {
+                    ariaLabel: 'Input without visible label',
+                    placeholder: 'This input uses aria-label for accessibility'
+                }
+            },
+            {
+                Component: Input,
+                props: {
+                    label: 'Required Field',
+                    placeholder: 'This field is required',
+                    required: true,
+                    helperText: 'Required fields are marked with an asterisk and aria-required'
+                }
             }
         ]
     })

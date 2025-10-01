@@ -1,91 +1,160 @@
-import { y as attr, z as attr_class, F as clsx, x as slot, G as bind_props, J as stringify, K as attributes, N as attr_style, O as ensure_array_like, P as element, Q as spread_props, T as sanitize_slots, V as head } from "../../chunks/index.js";
+import { y as attributes, z as clsx, x as slot, F as bind_props, G as attr_class, J as stringify, K as attr, N as attr_style, O as ensure_array_like, P as element, Q as spread_props, T as sanitize_slots, V as head } from "../../chunks/index.js";
 import { l as ssr_context, m as fallback, k as escape_html } from "../../chunks/context.js";
+function html(value) {
+  var html2 = String(value ?? "");
+  var open = "<!---->";
+  return open + html2 + "<!---->";
+}
 function onDestroy(fn) {
   /** @type {SSRContext} */
   ssr_context.r.on_destroy(fn);
 }
+const $$css$6 = {
+  hash: "svelte-v0x5nl",
+  code: "\n    /* Ensure proper focus styles for reduced motion users */\n    @media (prefers-reduced-motion: reduce) {button.svelte-v0x5nl {transition:none;}\n    }\n    \n    /* Ensure proper contrast for disabled state */button.svelte-v0x5nl:disabled {opacity:0.6;}\n    \n    /* Loading state animation */\n    @keyframes svelte-v0x5nl-spin {\n        from {\n            transform: rotate(0deg);\n        }\n        to {\n            transform: rotate(360deg);\n        }\n    }.animate-spin.svelte-v0x5nl {\n        animation: svelte-v0x5nl-spin 1s linear infinite;}"
+};
 function Button($$renderer, $$props) {
+  $$renderer.global.css.add($$css$6);
   $$renderer.component(($$renderer2) => {
-    let shouldApplyGrain, grainClasses, buttonClasses;
-    let text = fallback($$props["text"], "");
-    let onClick = fallback($$props["onClick"], () => {
-    });
-    let variant = fallback($$props["variant"], "brand");
+    let buttonClasses, accessibilityProps;
+    let variant2 = fallback($$props["variant"], "primary");
     let size = fallback($$props["size"], "md");
     let disabled = fallback($$props["disabled"], false);
     let loading = fallback($$props["loading"], false);
     let fullWidth = fallback($$props["fullWidth"], false);
     let type = fallback($$props["type"], "button");
     let className = fallback($$props["className"], "");
-    let uppercased = fallback($$props["uppercased"], variant === "brand");
-    let grain = fallback($$props["grain"], "auto");
-    let grainType = fallback($$props["grainType"], "paper");
+    let iconLeft = fallback($$props["iconLeft"], null);
+    let iconRight = fallback($$props["iconRight"], null);
     let ariaLabel = fallback($$props["ariaLabel"], "");
     let ariaDescribedBy = fallback($$props["ariaDescribedBy"], "");
     let ariaExpanded = fallback($$props["ariaExpanded"], void 0);
     let ariaControls = fallback($$props["ariaControls"], void 0);
     let ariaPressed = fallback($$props["ariaPressed"], void 0);
-    const baseClasses = "transition-all duration-200 inline-flex items-center justify-center gap-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden";
+    const baseClasses = "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 relative overflow-hidden";
     const sizeClasses = {
-      sm: "px-3 py-1.5 text-sm",
-      md: "px-4 py-2 text-sm md:text-base",
-      lg: "px-5 py-3 text-base"
+      sm: "px-3 py-1.5 text-sm rounded-md",
+      md: "px-4 py-2 text-sm md:text-base rounded-md",
+      lg: "px-5 py-3 text-base rounded-lg"
     };
     const variantClasses = {
-      brand: "border border-primary text-primary bg-surface hover:bg-surface-secondary hover:border-primary-hover active:scale-[0.98] shadow-adaptive-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-      primary: "bg-primary text-inverse border border-primary hover:bg-primary-hover hover:border-primary-hover active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-      secondary: "bg-surface-secondary text-primary border border-primary hover:bg-surface-tertiary hover:border-primary-hover active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-      success: "bg-success text-inverse border border-success hover:bg-success-hover hover:border-success-hover active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2",
-      danger: "bg-error text-inverse border border-error hover:bg-error-hover hover:border-error-hover active:scale-[0.98] shadow-adaptive-sm hover:shadow-adaptive-md focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2",
-      ghost: "bg-transparent text-secondary border border-primary hover:bg-surface-secondary hover:border-primary-hover active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      primary: [
+        "bg-primary text-inverse border border-primary",
+        "hover:bg-primary-hover hover:border-primary-hover",
+        "active:bg-primary-active active:border-primary-active",
+        "focus:ring-primary focus:ring-offset-primary",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      secondary: [
+        "bg-surface-secondary text-primary border border-primary",
+        "hover:bg-surface-tertiary hover:border-primary-hover",
+        "active:bg-surface-active active:border-primary-active",
+        "focus:ring-primary focus:ring-offset-primary",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      success: [
+        "bg-success text-inverse border border-success",
+        "hover:bg-success-hover hover:border-success-hover",
+        "active:bg-success-active active:border-success-active",
+        "focus:ring-success focus:ring-offset-primary",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      warning: [
+        "bg-warning text-inverse border border-warning",
+        "hover:bg-warning-hover hover:border-warning-hover",
+        "active:bg-warning-active active:border-warning-active",
+        "focus:ring-warning focus:ring-offset-primary",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      danger: [
+        "bg-error text-inverse border border-error",
+        "hover:bg-error-hover hover:border-error-hover",
+        "active:bg-error-active active:border-error-active",
+        "focus:ring-error focus:ring-offset-primary",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      ghost: [
+        "bg-transparent text-primary border border-transparent",
+        "hover:bg-surface-secondary hover:border-primary",
+        "active:bg-surface-active active:border-primary-active",
+        "focus:ring-primary focus:ring-offset-primary"
+      ].join(" "),
+      link: [
+        "bg-transparent text-primary border border-transparent p-0",
+        "hover:text-primary-hover hover:underline",
+        "active:text-primary-active",
+        "focus:ring-primary focus:ring-offset-primary",
+        "shadow-none"
+      ].join(" ")
     };
-    shouldApplyGrain = grain === true || grain === "auto" && variant !== "ghost";
-    grainClasses = shouldApplyGrain ? [
-      "btn-grain",
-      grainType !== "paper" ? `btn-grain-${grainType}` : "",
-      variant === "brand" && grainType === "paper" ? "btn-grain-cyber" : ""
-    ].filter(Boolean).join(" ") : "";
+    const disabledClasses = disabled ? [
+      "bg-surface-disabled text-disabled border-border-disabled",
+      "hover:bg-surface-disabled hover:text-disabled hover:border-border-disabled",
+      "active:bg-surface-disabled active:text-disabled active:border-border-disabled",
+      "shadow-none"
+    ].join(" ") : "";
     buttonClasses = [
       baseClasses,
       sizeClasses[size],
-      variantClasses[variant],
+      disabled ? disabledClasses : variantClasses[variant2],
       fullWidth ? "w-full" : "",
-      uppercased ? "uppercase tracking-wide font-title font-bold" : "",
-      grainClasses,
       className
     ].filter(Boolean).join(" ");
-    $$renderer2.push(`<button${attr("type", type)}${attr_class(clsx(buttonClasses))}${attr("disabled", disabled || loading, true)}${attr("aria-busy", loading ? "true" : "false")}${attr("aria-label", ariaLabel || (loading ? "Loading..." : void 0))}${attr("aria-describedby", ariaDescribedBy || void 0)}${attr("aria-expanded", ariaExpanded)}${attr("aria-controls", ariaControls)}${attr("aria-pressed", ariaPressed)}>`);
-    if (shouldApplyGrain) {
+    accessibilityProps = {
+      "aria-busy": loading ? "true" : "false",
+      "aria-label": ariaLabel || (loading ? "Loading..." : void 0),
+      "aria-describedby": ariaDescribedBy || void 0,
+      "aria-expanded": ariaExpanded,
+      "aria-controls": ariaControls,
+      "aria-pressed": ariaPressed,
+      "aria-disabled": disabled ? "true" : "false"
+    };
+    $$renderer2.push(`<button${attributes(
+      {
+        type,
+        class: clsx(buttonClasses),
+        disabled: disabled || loading,
+        ...accessibilityProps
+      },
+      "svelte-v0x5nl"
+    )}>`);
+    if (loading) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="absolute inset-0 rounded-lg pointer-events-none" style="background-image: repeating-radial-gradient(circle at center, rgba(0,0,0,0.1) 0 1px, transparent 1px 100%), repeating-radial-gradient(circle at center, rgba(255,255,255,0.05) 0 1px, transparent 1px 100%); mix-blend-mode: overlay; opacity: 0.6;"></div>`);
+      $$renderer2.push(`<svg class="animate-spin h-4 w-4 svelte-v0x5nl" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--> `);
-    if (loading) {
+    if (iconLeft && !loading) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>`);
+      $$renderer2.push(`<!---->`);
+      iconLeft?.($$renderer2, { class: "h-4 w-4" });
+      $$renderer2.push(`<!---->`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--> <!--[-->`);
-    slot($$renderer2, $$props, "default", {}, () => {
-      $$renderer2.push(`${escape_html(text)}`);
-    });
+    slot($$renderer2, $$props, "default", {}, null);
+    $$renderer2.push(`<!--]--> `);
+    if (iconRight && !loading) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<!---->`);
+      iconRight?.($$renderer2, { class: "h-4 w-4" });
+      $$renderer2.push(`<!---->`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
     $$renderer2.push(`<!--]--></button>`);
     bind_props($$props, {
-      text,
-      onClick,
-      variant,
+      variant: variant2,
       size,
       disabled,
       loading,
       fullWidth,
       type,
       className,
-      uppercased,
-      grain,
-      grainType,
+      iconLeft,
+      iconRight,
       ariaLabel,
       ariaDescribedBy,
       ariaExpanded,
@@ -102,7 +171,7 @@ function Badge($$renderer, $$props) {
   $$renderer.global.css.add($$css$5);
   $$renderer.component(($$renderer2) => {
     let sizeClasses, variantClasses, shapeClasses, dotClasses, badgeClasses, iconClasses, closeButtonClasses;
-    let variant = fallback($$props["variant"], "default");
+    let variant2 = fallback($$props["variant"], "default");
     let size = fallback($$props["size"], "md");
     let shape = fallback($$props["shape"], "rounded");
     let dot = fallback($$props["dot"], false);
@@ -140,7 +209,7 @@ function Badge($$renderer, $$props) {
       "select-none",
       "cursor-default",
       sizeClasses[size],
-      variantClasses[variant],
+      variantClasses[variant2],
       shapeClasses[shape],
       closable ? "cursor-pointer hover:opacity-80" : ""
     ].join(" ");
@@ -214,7 +283,7 @@ function Badge($$renderer, $$props) {
       $$renderer2.push(`<!--]--></span>`);
     }
     $$renderer2.push(`<!--]--></div>`);
-    bind_props($$props, { variant, size, shape, dot, closable, icon, iconPosition });
+    bind_props($$props, { variant: variant2, size, shape, dot, closable, icon, iconPosition });
   });
 }
 const $$css$4 = {
@@ -225,7 +294,7 @@ function Card($$renderer, $$props) {
   $$renderer.global.css.add($$css$4);
   $$renderer.component(($$renderer2) => {
     let baseClasses, accessibilityProps;
-    let variant = fallback($$props["variant"], "default");
+    let variant2 = fallback($$props["variant"], "default");
     let density = fallback($$props["density"], "comfortable");
     let disabled = fallback($$props["disabled"], false);
     let loading = fallback($$props["loading"], false);
@@ -243,16 +312,16 @@ function Card($$renderer, $$props) {
     };
     baseClasses = [
       "transition-all duration-200",
-      variantClasses[variant],
+      variantClasses[variant2],
       densityClasses[density],
       disabled ? "opacity-50 cursor-not-allowed" : "",
       loading ? "animate-pulse" : "",
       className
     ].filter(Boolean).join(" ");
     accessibilityProps = {
-      role: variant === "interactive" ? "button" : "presentation",
-      tabindex: variant === "interactive" ? disabled ? -1 : 0 : void 0,
-      "aria-disabled": variant === "interactive" ? disabled : void 0,
+      role: variant2 === "interactive" ? "button" : "presentation",
+      tabindex: variant2 === "interactive" ? disabled ? -1 : 0 : void 0,
+      "aria-disabled": variant2 === "interactive" ? disabled : void 0,
       "aria-busy": loading,
       "aria-label": ariaLabel || void 0,
       "aria-describedby": ariaDescribedBy || void 0
@@ -272,7 +341,7 @@ function Card($$renderer, $$props) {
     }
     $$renderer2.push(`<!--]--></div>`);
     bind_props($$props, {
-      variant,
+      variant: variant2,
       density,
       disabled,
       loading,
@@ -294,10 +363,10 @@ function Checkbox($$renderer, $$props) {
     let disabled = fallback($$props["disabled"], false);
     let required = fallback($$props["required"], false);
     let label = fallback($$props["label"], "");
-    let helpText = fallback($$props["helpText"], "");
+    let helpText2 = fallback($$props["helpText"], "");
     let error = fallback($$props["error"], "");
     let size = fallback($$props["size"], "md");
-    let variant = fallback($$props["variant"], "default");
+    let variant2 = fallback($$props["variant"], "default");
     let indeterminate = fallback($$props["indeterminate"], false);
     let name = fallback($$props["name"], void 0);
     let id = fallback($$props["id"], void 0);
@@ -338,7 +407,7 @@ function Checkbox($$renderer, $$props) {
       "disabled:cursor-not-allowed",
       "cursor-pointer",
       sizeClasses[size],
-      variantClasses[variant],
+      variantClasses[variant2],
       stateClasses,
       error ? "grainy-red" : "grainy-texture"
     ].join(" ");
@@ -369,7 +438,7 @@ function Checkbox($$renderer, $$props) {
       "duration-200",
       "ease-in-out"
     ].join(" ");
-    $$renderer2.push(`<div${attr_class(clsx(containerClasses), "svelte-1wpeqgu")}><div class="relative svelte-1wpeqgu"><input type="checkbox"${attr("id", checkboxId)}${attr("checked", checked, true)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("name", name)}${attr("value", value)} class="sr-only svelte-1wpeqgu"${attr("aria-invalid", error ? "true" : "false")}${attr("aria-describedby", error || helpText ? `${checkboxId}-help` : void 0)}/> <div${attr_class(clsx(checkboxClasses), "svelte-1wpeqgu")}>`);
+    $$renderer2.push(`<div${attr_class(clsx(containerClasses), "svelte-1wpeqgu")}><div class="relative svelte-1wpeqgu"><input type="checkbox"${attr("id", checkboxId)}${attr("checked", checked, true)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("name", name)}${attr("value", value)} class="sr-only svelte-1wpeqgu"${attr("aria-invalid", error ? "true" : "false")}${attr("aria-describedby", error || helpText2 ? `${checkboxId}-help` : void 0)}/> <div${attr_class(clsx(checkboxClasses), "svelte-1wpeqgu")}>`);
     if (checked && !indeterminate) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<svg${attr_class(clsx(checkIconClasses), "svelte-1wpeqgu")} fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" class="svelte-1wpeqgu"></path></svg>`);
@@ -398,7 +467,7 @@ function Checkbox($$renderer, $$props) {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--> `);
-    if (error || helpText) {
+    if (error || helpText2) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<div${attr("id", `${stringify(checkboxId)}-help`)}${attr_class(clsx(helpTextClasses), "svelte-1wpeqgu")}>`);
       if (error) {
@@ -406,9 +475,9 @@ function Checkbox($$renderer, $$props) {
         $$renderer2.push(`<div class="flex items-center gap-1 svelte-1wpeqgu"><svg class="w-3 h-3 flex-shrink-0 svelte-1wpeqgu" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" class="svelte-1wpeqgu"></path></svg> <span class="svelte-1wpeqgu">${escape_html(error)}</span></div>`);
       } else {
         $$renderer2.push("<!--[!-->");
-        if (helpText) {
+        if (helpText2) {
           $$renderer2.push("<!--[-->");
-          $$renderer2.push(`<span class="svelte-1wpeqgu">${escape_html(helpText)}</span>`);
+          $$renderer2.push(`<span class="svelte-1wpeqgu">${escape_html(helpText2)}</span>`);
         } else {
           $$renderer2.push("<!--[!-->");
         }
@@ -424,10 +493,10 @@ function Checkbox($$renderer, $$props) {
       disabled,
       required,
       label,
-      helpText,
+      helpText: helpText2,
       error,
       size,
-      variant,
+      variant: variant2,
       indeterminate,
       name,
       id,
@@ -1300,7 +1369,7 @@ function ColorPicker($$renderer, $$props) {
     let required = fallback($$props["required"], false);
     let disabled = fallback($$props["disabled"], false);
     let size = fallback($$props["size"], "md");
-    let variant = fallback($$props["variant"], "outlined");
+    let variant2 = fallback($$props["variant"], "outlined");
     let colors = fallback(
       $$props["colors"],
       () => [
@@ -1354,7 +1423,7 @@ function ColorPicker($$renderer, $$props) {
       "disabled:opacity-50",
       "disabled:cursor-not-allowed",
       sizeClasses[size],
-      variantClasses[variant],
+      variantClasses[variant2],
       "grainy-texture"
     ].join(" ");
     selectedColor = colors.find((c) => c.value === value);
@@ -1461,7 +1530,7 @@ function ColorPicker($$renderer, $$props) {
       $$render_inner($$inner_renderer);
     } while (!$$settled);
     $$renderer2.subsume($$inner_renderer);
-    bind_props($$props, { value, label, required, disabled, size, variant, colors });
+    bind_props($$props, { value, label, required, disabled, size, variant: variant2, colors });
   });
 }
 function Heading($$renderer, $$props) {
@@ -1583,23 +1652,24 @@ function Input($$renderer, $$props) {
     let inputId, sizeClasses, variantClasses, stateClasses, containerClasses, inputClasses, labelClasses, helpTextClasses;
     let value = fallback($$props["value"], "");
     let type = fallback($$props["type"], "text");
-    let placeholder = fallback($$props["placeholder"], "");
     let label = fallback($$props["label"], "");
+    let placeholder = fallback($$props["placeholder"], "");
+    let helperText = fallback($$props["helperText"], "");
     let disabled = fallback($$props["disabled"], false);
     let required = fallback($$props["required"], false);
     let readonly = fallback($$props["readonly"], false);
-    let error = fallback($$props["error"], "");
-    let success = fallback($$props["success"], "");
-    let helpText = fallback($$props["helpText"], "");
-    let size = fallback($$props["size"], "md");
-    let variant = fallback($$props["variant"], "default");
-    let showPasswordToggle = fallback($$props["showPasswordToggle"], false);
+    let id = fallback($$props["id"], void 0);
+    let name = fallback($$props["name"], void 0);
+    let error = fallback($$props["error"], false);
+    let success = fallback($$props["success"], false);
     let maxLength = fallback($$props["maxLength"], void 0);
     let minLength = fallback($$props["minLength"], void 0);
     let pattern = fallback($$props["pattern"], void 0);
     let autocomplete = fallback($$props["autocomplete"], void 0);
-    let name = fallback($$props["name"], void 0);
-    let id = fallback($$props["id"], void 0);
+    let showPasswordToggle = fallback($$props["showPasswordToggle"], false);
+    let showClearButton = fallback($$props["showClearButton"], false);
+    let size = fallback($$props["size"], "md");
+    let ariaLabel = fallback($$props["ariaLabel"], void 0);
     function focus() {
     }
     function blur() {
@@ -1723,23 +1793,24 @@ function Input($$renderer, $$props) {
     bind_props($$props, {
       value,
       type,
-      placeholder,
       label,
+      placeholder,
+      helperText,
       disabled,
       required,
       readonly,
+      id,
+      name,
       error,
       success,
-      helpText,
-      size,
-      variant,
-      showPasswordToggle,
       maxLength,
       minLength,
       pattern,
       autocomplete,
-      name,
-      id,
+      showPasswordToggle,
+      showClearButton,
+      size,
+      ariaLabel,
       focus,
       blur,
       select
@@ -1775,7 +1846,7 @@ function OptimizedImage($$renderer, $$props) {
 function ThemeToggle($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let size = fallback($$props["size"], "md");
-    let variant = fallback($$props["variant"], "default");
+    let variant2 = fallback($$props["variant"], "default");
     const sizeClasses = {
       sm: "w-8 h-8 text-sm",
       md: "w-10 h-10 text-base",
@@ -1786,13 +1857,13 @@ function ThemeToggle($$renderer, $$props) {
       minimal: "bg-transparent hover:bg-surface-secondary",
       outline: "bg-transparent border border-primary hover:bg-surface-secondary"
     };
-    $$renderer2.push(`<button${attr_class(` ${stringify(sizeClasses[size])} ${stringify(variantClasses[variant])} rounded-lg transition-all duration-200 flex items-center justify-center text-primary hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-surface-primary `)}${attr("aria-label", "Switch to dark mode")}${attr("title", "Switch to dark mode")}>`);
+    $$renderer2.push(`<button${attr_class(` ${stringify(sizeClasses[size])} ${stringify(variantClasses[variant2])} rounded-lg transition-all duration-200 flex items-center justify-center text-primary hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-surface-primary `)}${attr("aria-label", "Switch to dark mode")}${attr("title", "Switch to dark mode")}>`);
     {
       $$renderer2.push("<!--[!-->");
       $$renderer2.push(`<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`);
     }
     $$renderer2.push(`<!--]--></button>`);
-    bind_props($$props, { size, variant });
+    bind_props($$props, { size, variant: variant2 });
   });
 }
 const $$css$1 = {
@@ -1811,9 +1882,9 @@ function Select($$renderer, $$props) {
     let required = fallback($$props["required"], false);
     let error = fallback($$props["error"], "");
     let success = fallback($$props["success"], "");
-    let helpText = fallback($$props["helpText"], "");
+    let helpText2 = fallback($$props["helpText"], "");
     let size = fallback($$props["size"], "md");
-    let variant = fallback($$props["variant"], "default");
+    let variant2 = fallback($$props["variant"], "default");
     let searchable = fallback($$props["searchable"], false);
     let clearable = fallback($$props["clearable"], false);
     let name = fallback($$props["name"], void 0);
@@ -1868,7 +1939,7 @@ function Select($$renderer, $$props) {
       "appearance-none",
       "pr-10",
       sizeClasses[size],
-      variantClasses[variant],
+      variantClasses[variant2],
       stateClasses,
       error ? "grainy-red" : success ? "grainy-green" : "grainy-texture"
     ].join(" ");
@@ -1935,7 +2006,7 @@ function Select($$renderer, $$props) {
         name,
         class: selectClasses,
         "aria-invalid": error ? "true" : "false",
-        "aria-describedby": error || success || helpText ? `${selectId}-help` : void 0
+        "aria-describedby": error || success || helpText2 ? `${selectId}-help` : void 0
       },
       ($$renderer3) => {
         if (placeholder && !value) {
@@ -1982,7 +2053,7 @@ function Select($$renderer, $$props) {
     $$renderer2.push(`<!--]--> <div${attr_class(clsx(iconClasses), "svelte-1qdann5")}>`);
     Chevron_down($$renderer2, { size: size === "sm" ? 16 : size === "md" ? 20 : 24 });
     $$renderer2.push(`<!----></div> <div${attr_class(`absolute inset-0 rounded-lg pointer-events-none transition-all duration-200 ${stringify("")}`, "svelte-1qdann5")}></div></div> `);
-    if (error || success || helpText) {
+    if (error || success || helpText2) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<div${attr("id", `${stringify(selectId)}-help`)}${attr_class(clsx(helpTextClasses), "svelte-1qdann5")}>`);
       if (error) {
@@ -1999,9 +2070,9 @@ function Select($$renderer, $$props) {
           $$renderer2.push(`<!----> <span class="svelte-1qdann5">${escape_html(success)}</span></div>`);
         } else {
           $$renderer2.push("<!--[!-->");
-          if (helpText) {
+          if (helpText2) {
             $$renderer2.push("<!--[-->");
-            $$renderer2.push(`<span class="svelte-1qdann5">${escape_html(helpText)}</span>`);
+            $$renderer2.push(`<span class="svelte-1qdann5">${escape_html(helpText2)}</span>`);
           } else {
             $$renderer2.push("<!--[!-->");
           }
@@ -2023,9 +2094,9 @@ function Select($$renderer, $$props) {
       required,
       error,
       success,
-      helpText,
+      helpText: helpText2,
       size,
-      variant,
+      variant: variant2,
       searchable,
       clearable,
       name,
@@ -2059,9 +2130,9 @@ function Textarea($$renderer, $$props) {
     let readonly = fallback($$props["readonly"], false);
     let error = fallback($$props["error"], "");
     let success = fallback($$props["success"], "");
-    let helpText = fallback($$props["helpText"], "");
+    let helpText2 = fallback($$props["helpText"], "");
     let size = fallback($$props["size"], "md");
-    let variant = fallback($$props["variant"], "default");
+    let variant2 = fallback($$props["variant"], "default");
     let rows = fallback($$props["rows"], 4);
     let maxLength = fallback($$props["maxLength"], void 0);
     let minLength = fallback($$props["minLength"], void 0);
@@ -2120,7 +2191,7 @@ function Textarea($$renderer, $$props) {
       "read-only:opacity-75",
       "overflow-hidden",
       sizeClasses[size],
-      variantClasses[variant],
+      variantClasses[variant2],
       stateClasses,
       resizeClasses[resize],
       error ? "grainy-red" : success ? "grainy-green" : "grainy-texture"
@@ -2161,7 +2232,7 @@ function Textarea($$renderer, $$props) {
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div class="relative svelte-1bsl3nr"><textarea${attr("id", textareaId)}${attr("placeholder", placeholder)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("readonly", readonly, true)}${attr("maxlength", maxLength)}${attr("minlength", minLength)}${attr("name", name)}${attr("rows", rows)}${attr_class(clsx(textareaClasses), "svelte-1bsl3nr")}${attr("aria-invalid", error ? "true" : "false")}${attr("aria-describedby", error || success || helpText || maxLength ? `${textareaId}-help` : void 0)}>`);
+    $$renderer2.push(`<!--]--> <div class="relative svelte-1bsl3nr"><textarea${attr("id", textareaId)}${attr("placeholder", placeholder)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("readonly", readonly, true)}${attr("maxlength", maxLength)}${attr("minlength", minLength)}${attr("name", name)}${attr("rows", rows)}${attr_class(clsx(textareaClasses), "svelte-1bsl3nr")}${attr("aria-invalid", error ? "true" : "false")}${attr("aria-describedby", error || success || helpText2 || maxLength ? `${textareaId}-help` : void 0)}>`);
     const $$body = escape_html(value);
     if ($$body) {
       $$renderer2.push(`${$$body}`);
@@ -2174,7 +2245,7 @@ function Textarea($$renderer, $$props) {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--> `);
-    if (error || success || helpText) {
+    if (error || success || helpText2) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<div${attr("id", `${stringify(textareaId)}-help`)}${attr_class(clsx(helpTextClasses), "svelte-1bsl3nr")}>`);
       if (error) {
@@ -2191,9 +2262,9 @@ function Textarea($$renderer, $$props) {
           $$renderer2.push(`<!----> <span class="svelte-1bsl3nr">${escape_html(success)}</span></div>`);
         } else {
           $$renderer2.push("<!--[!-->");
-          if (helpText) {
+          if (helpText2) {
             $$renderer2.push("<!--[-->");
-            $$renderer2.push(`<span class="svelte-1bsl3nr">${escape_html(helpText)}</span>`);
+            $$renderer2.push(`<span class="svelte-1bsl3nr">${escape_html(helpText2)}</span>`);
           } else {
             $$renderer2.push("<!--[!-->");
           }
@@ -2215,9 +2286,9 @@ function Textarea($$renderer, $$props) {
       readonly,
       error,
       success,
-      helpText,
+      helpText: helpText2,
       size,
-      variant,
+      variant: variant2,
       rows,
       maxLength,
       minLength,
@@ -2322,81 +2393,79 @@ function PerformanceMonitor($$renderer, $$props) {
 }
 function Alert($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
-    let alertClasses, iconEmojis, isGameStyle;
-    let type = fallback($$props["type"], "info");
+    let alertClasses, alertRole, iconSvg;
+    let variant2 = fallback($$props["variant"], "info");
     let title = fallback($$props["title"], "");
     let message = fallback($$props["message"], "");
-    let dismissible = fallback($$props["dismissible"], true);
+    let dismissible = fallback($$props["dismissible"], false);
     let onDismiss = fallback($$props["onDismiss"], null);
+    let actions = fallback($$props["actions"], () => [], true);
     alertClasses = {
-      error: "bg-error-surface text-error-text border border-error/20",
-      warning: "bg-warning-surface text-warning-text border border-warning/20",
-      success: "bg-success-surface text-success-text border border-success/20",
-      info: "bg-info-surface text-info-text border border-info/20",
-      "game-error": "bg-gradient-to-br from-error-900 via-error-800 to-error-900 text-error-text transform shadow-2xl border border-error/30"
+      success: "bg-success-light text-success-dark border border-success",
+      warning: "bg-warning-light text-warning-dark border border-warning",
+      danger: "bg-error-light text-error-dark border border-error",
+      info: "bg-info-light text-info-dark border border-info"
     };
-    iconEmojis = {
-      error: "🚫",
-      warning: "⚠️",
-      success: "✅",
-      info: "ℹ️",
-      "game-error": "🚫"
+    alertRole = variant2 === "success" || variant2 === "info" ? "status" : "alert";
+    iconSvg = {
+      success: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>`,
+      warning: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>`,
+      danger: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>`,
+      info: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        </svg>`
     };
-    isGameStyle = type === "game-error";
-    $$renderer2.push(`<div${attr_class(`relative rounded-xl p-4 shadow-lg ${stringify(alertClasses[type])}`)} role="alert">`);
+    $$renderer2.push(`<div${attr_class(`relative rounded-md p-md border ${stringify(alertClasses[variant2])} transition-all duration-200 motion-reduce:transition-none`)}${attr("role", alertRole)}${attr("aria-live", variant2 === "success" || variant2 === "info" ? "polite" : "assertive")} aria-atomic="true">`);
     if (dismissible) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<button class="absolute top-3 right-3 z-10 w-6 h-6 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 transition-all duration-200 group" aria-label="Dismiss alert" type="button"><svg class="w-4 h-4 text-current group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`);
+      $$renderer2.push(`<button class="absolute top-sm right-sm z-10 w-6 h-6 flex items-center justify-center rounded-full text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2" aria-label="Dismiss alert" type="button"><svg class="w-4 h-4 text-current group-hover:scale-110 transition-transform duration-200 motion-reduce:transition-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div class="pr-8">`);
-    if (isGameStyle) {
+    $$renderer2.push(`<!--]--> <div${attr_class(`flex items-start gap-sm ${stringify(dismissible ? "pr-8" : "")}`)}><div class="flex-shrink-0 mt-0.5">${html(iconSvg[variant2])}</div> <div class="flex-1 min-w-0">`);
+    if (title) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="text-center"><div class="flex items-center justify-center gap-3 mb-4"><div class="text-4xl">${escape_html(iconEmojis[type])}</div> `);
-      if (title) {
-        $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<h3 class="text-xl font-bold">${escape_html(title)}</h3>`);
-      } else {
-        $$renderer2.push("<!--[!-->");
-      }
-      $$renderer2.push(`<!--]--></div> `);
-      if (type === "game-error") {
-        $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<div class="bg-black bg-opacity-50 rounded-lg p-3 mb-4"><p class="text-sm font-mono">> AUTHENTICATION FAILED</p></div>`);
-      } else {
-        $$renderer2.push("<!--[!-->");
-      }
-      $$renderer2.push(`<!--]--> `);
-      if (message) {
-        $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<p class="text-sm leading-relaxed">${escape_html(message)}</p>`);
-      } else {
-        $$renderer2.push("<!--[!-->");
+      $$renderer2.push(`<h4 class="font-semibold text-sm mb-1">${escape_html(title)}</h4>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (message) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<p class="text-sm leading-relaxed">${escape_html(message)}</p>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (actions.length > 0) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<div class="mt-3 flex flex-wrap gap-2"><!--[-->`);
+      const each_array = ensure_array_like(actions);
+      for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+        let action = each_array[$$index];
+        if (action.href) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`<a${attr("href", action.href)} class="text-sm font-medium underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 rounded-sm">${escape_html(action.label)}</a>`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+          $$renderer2.push(`<button class="text-sm font-medium underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 rounded-sm" type="button">${escape_html(action.label)}</button>`);
+        }
+        $$renderer2.push(`<!--]-->`);
       }
       $$renderer2.push(`<!--]--></div>`);
     } else {
       $$renderer2.push("<!--[!-->");
-      $$renderer2.push(`<div class="flex items-start gap-3"><div class="text-lg flex-shrink-0 mt-0.5">${escape_html(iconEmojis[type])}</div> <div class="flex-1 min-w-0">`);
-      if (title) {
-        $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<h4 class="font-semibold text-sm mb-1">${escape_html(title)}</h4>`);
-      } else {
-        $$renderer2.push("<!--[!-->");
-      }
-      $$renderer2.push(`<!--]--> `);
-      if (message) {
-        $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<p class="text-sm">${escape_html(message)}</p>`);
-      } else {
-        $$renderer2.push("<!--[!-->");
-      }
-      $$renderer2.push(`<!--]--></div></div>`);
     }
-    $$renderer2.push(`<!--]--></div> <!--[-->`);
+    $$renderer2.push(`<!--]--></div></div> <!--[-->`);
     slot($$renderer2, $$props, "default", {}, null);
     $$renderer2.push(`<!--]--></div>`);
-    bind_props($$props, { type, title, message, dismissible, onDismiss });
+    bind_props($$props, { variant: variant2, title, message, dismissible, onDismiss, actions });
   });
 }
 function Modal($$renderer, $$props) {
