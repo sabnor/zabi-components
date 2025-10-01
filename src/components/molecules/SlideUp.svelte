@@ -28,25 +28,33 @@
 
     // Prevent body scroll when slideup is open
     function toggleBodyScroll(open: boolean) {
-        if (open) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
+        if (typeof document !== "undefined") {
+            if (open) {
+                document.body.style.overflow = "hidden";
+            } else {
+                document.body.style.overflow = "";
+            }
         }
     }
 
     onMount(() => {
-        document.addEventListener("keydown", handleKeydown);
+        if (typeof document !== "undefined") {
+            document.addEventListener("keydown", handleKeydown);
+        }
 
         return () => {
-            document.removeEventListener("keydown", handleKeydown);
-            // Ensure body scroll is restored on unmount
-            document.body.style.overflow = "";
+            if (typeof document !== "undefined") {
+                document.removeEventListener("keydown", handleKeydown);
+                // Ensure body scroll is restored on unmount
+                document.body.style.overflow = "";
+            }
         };
     });
 
     // Toggle body scroll when isOpen changes
-    $: toggleBodyScroll(isOpen);
+    $: if (typeof document !== "undefined") {
+        toggleBodyScroll(isOpen);
+    }
 </script>
 
 <!-- Backdrop -->

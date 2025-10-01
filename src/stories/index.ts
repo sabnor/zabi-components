@@ -11,10 +11,12 @@ export { default as HeadingStories } from './Heading.stories';
 export { default as InputStories } from './Input.stories';
 export { default as OptimizedImageStories } from './OptimizedImage.stories';
 export { default as PerformanceMonitorStories } from './PerformanceMonitor.stories';
+export { default as ScaleDemoStories } from './ScaleDemo.stories';
 export { default as SelectStories } from './Select.stories';
 export { default as SkeletonStories } from './Skeleton.stories';
 export { default as TextAlignmentStories } from './TextAlignment.stories';
 export { default as TextareaStories } from './Textarea.stories';
+export { default as ThemeToggleStories } from './ThemeToggle.stories';
 export { default as ToggleStories } from './Toggle.stories';
 
 // Molecules
@@ -40,10 +42,12 @@ export const storyCategories = {
         'Input',
         'OptimizedImage',
         'PerformanceMonitor',
+        'ScaleDemo',
         'Select',
         'Skeleton',
         'TextAlignment',
         'Textarea',
+        'ThemeToggle',
         'Toggle'
     ],
     molecules: [
