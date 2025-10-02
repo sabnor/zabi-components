@@ -1,0 +1,286 @@
+/**
+ * Zabi Components Base Styles
+ * Provides CSS custom properties for easy theming across different Tailwind configurations
+ */
+
+:root {
+  /* Primary Colors - Default to blue */
+  --zabi-primary: theme('colors.blue.600');
+  --zabi-primary-hover: theme('colors.blue.700');
+  --zabi-primary-active: theme('colors.blue.800');
+  --zabi-primary-disabled: theme('colors.blue.300');
+  --zabi-primary-light: theme('colors.blue.100');
+  --zabi-primary-dark: theme('colors.blue.800');
+
+  /* Secondary Colors - Default to gray */
+  --zabi-secondary: theme('colors.gray.600');
+  --zabi-secondary-hover: theme('colors.gray.700');
+  --zabi-secondary-active: theme('colors.gray.800');
+  --zabi-secondary-disabled: theme('colors.gray.300');
+  --zabi-secondary-light: theme('colors.gray.100');
+  --zabi-secondary-dark: theme('colors.gray.800');
+
+  /* Success Colors - Default to green */
+  --zabi-success: theme('colors.green.600');
+  --zabi-success-hover: theme('colors.green.700');
+  --zabi-success-active: theme('colors.green.800');
+  --zabi-success-disabled: theme('colors.green.300');
+  --zabi-success-light: theme('colors.green.100');
+  --zabi-success-dark: theme('colors.green.800');
+
+  /* Warning Colors - Default to yellow */
+  --zabi-warning: theme('colors.yellow.600');
+  --zabi-warning-hover: theme('colors.yellow.700');
+  --zabi-warning-active: theme('colors.yellow.800');
+  --zabi-warning-disabled: theme('colors.yellow.300');
+  --zabi-warning-light: theme('colors.yellow.100');
+  --zabi-warning-dark: theme('colors.yellow.800');
+
+  /* Error Colors - Default to red */
+  --zabi-error: theme('colors.red.600');
+  --zabi-error-hover: theme('colors.red.700');
+  --zabi-error-active: theme('colors.red.800');
+  --zabi-error-disabled: theme('colors.red.300');
+  --zabi-error-light: theme('colors.red.100');
+  --zabi-error-dark: theme('colors.red.800');
+
+  /* Info Colors - Default to blue */
+  --zabi-info: theme('colors.blue.600');
+  --zabi-info-hover: theme('colors.blue.700');
+  --zabi-info-active: theme('colors.blue.800');
+  --zabi-info-disabled: theme('colors.blue.300');
+  --zabi-info-light: theme('colors.blue.100');
+  --zabi-info-dark: theme('colors.blue.800');
+
+  /* Surface Colors */
+  --zabi-surface: theme('colors.white');
+  --zabi-surface-hover: theme('colors.gray.50');
+  --zabi-surface-active: theme('colors.gray.100');
+  --zabi-surface-disabled: theme('colors.gray.100');
+
+  /* Border Colors */
+  --zabi-border: theme('colors.gray.300');
+  --zabi-border-hover: theme('colors.gray.400');
+  --zabi-border-focus: theme('colors.blue.500');
+  --zabi-border-disabled: theme('colors.gray.200');
+
+  /* Text Colors */
+  --zabi-text: theme('colors.gray.900');
+  --zabi-text-muted: theme('colors.gray.600');
+  --zabi-text-placeholder: theme('colors.gray.400');
+  --zabi-text-inverse: theme('colors.white');
+  --zabi-text-disabled: theme('colors.gray.400');
+
+  /* Focus Ring */
+  --zabi-focus-ring: theme('colors.blue.500');
+  --zabi-focus-ring-offset: theme('colors.white');
+
+  /* Shadows */
+  --zabi-shadow-sm: theme('boxShadow.sm');
+  --zabi-shadow-md: theme('boxShadow.md');
+  --zabi-shadow-lg: theme('boxShadow.lg');
+
+  /* Border Radius */
+  --zabi-radius-sm: theme('borderRadius.sm');
+  --zabi-radius-md: theme('borderRadius.md');
+  --zabi-radius-lg: theme('borderRadius.lg');
+
+  /* Spacing */
+  --zabi-spacing-xs: theme('spacing.1');
+  --zabi-spacing-sm: theme('spacing.2');
+  --zabi-spacing-md: theme('spacing.4');
+  --zabi-spacing-lg: theme('spacing.6');
+  --zabi-spacing-xl: theme('spacing.8');
+}
+
+/* Dark mode overrides */
+.dark {
+  --zabi-surface: theme('colors.gray.900');
+  --zabi-surface-hover: theme('colors.gray.800');
+  --zabi-surface-active: theme('colors.gray.700');
+  --zabi-surface-disabled: theme('colors.gray.800');
+
+  --zabi-border: theme('colors.gray.700');
+  --zabi-border-hover: theme('colors.gray.600');
+  --zabi-border-focus: theme('colors.blue.400');
+  --zabi-border-disabled: theme('colors.gray.700');
+
+  --zabi-text: theme('colors.gray.100');
+  --zabi-text-muted: theme('colors.gray.400');
+  --zabi-text-placeholder: theme('colors.gray.500');
+  --zabi-text-inverse: theme('colors.gray.900');
+  --zabi-text-disabled: theme('colors.gray.500');
+
+  --zabi-focus-ring-offset: theme('colors.gray.900');
+}
+
+/* Utility classes for easy theming */
+.zabi-primary {
+  background-color: var(--zabi-primary);
+  color: var(--zabi-text-inverse);
+}
+
+.zabi-primary:hover {
+  background-color: var(--zabi-primary-hover);
+}
+
+.zabi-primary:active {
+  background-color: var(--zabi-primary-active);
+}
+
+.zabi-primary:disabled {
+  background-color: var(--zabi-primary-disabled);
+  color: var(--zabi-text-disabled);
+}
+
+.zabi-secondary {
+  background-color: var(--zabi-secondary);
+  color: var(--zabi-text-inverse);
+}
+
+.zabi-secondary:hover {
+  background-color: var(--zabi-secondary-hover);
+}
+
+.zabi-secondary:active {
+  background-color: var(--zabi-secondary-active);
+}
+
+.zabi-secondary:disabled {
+  background-color: var(--zabi-secondary-disabled);
+  color: var(--zabi-text-disabled);
+}
+
+.zabi-success {
+  background-color: var(--zabi-success);
+  color: var(--zabi-text-inverse);
+}
+
+.zabi-success:hover {
+  background-color: var(--zabi-success-hover);
+}
+
+.zabi-success:active {
+  background-color: var(--zabi-success-active);
+}
+
+.zabi-success:disabled {
+  background-color: var(--zabi-success-disabled);
+  color: var(--zabi-text-disabled);
+}
+
+.zabi-warning {
+  background-color: var(--zabi-warning);
+  color: var(--zabi-text-inverse);
+}
+
+.zabi-warning:hover {
+  background-color: var(--zabi-warning-hover);
+}
+
+.zabi-warning:active {
+  background-color: var(--zabi-warning-active);
+}
+
+.zabi-warning:disabled {
+  background-color: var(--zabi-warning-disabled);
+  color: var(--zabi-text-disabled);
+}
+
+.zabi-error {
+  background-color: var(--zabi-error);
+  color: var(--zabi-text-inverse);
+}
+
+.zabi-error:hover {
+  background-color: var(--zabi-error-hover);
+}
+
+.zabi-error:active {
+  background-color: var(--zabi-error-active);
+}
+
+.zabi-error:disabled {
+  background-color: var(--zabi-error-disabled);
+  color: var(--zabi-text-disabled);
+}
+
+.zabi-info {
+  background-color: var(--zabi-info);
+  color: var(--zabi-text-inverse);
+}
+
+.zabi-info:hover {
+  background-color: var(--zabi-info-hover);
+}
+
+.zabi-info:active {
+  background-color: var(--zabi-info-active);
+}
+
+.zabi-info:disabled {
+  background-color: var(--zabi-info-disabled);
+  color: var(--zabi-text-disabled);
+}
+
+/* Surface utilities */
+.zabi-surface {
+  background-color: var(--zabi-surface);
+  color: var(--zabi-text);
+}
+
+.zabi-surface:hover {
+  background-color: var(--zabi-surface-hover);
+}
+
+.zabi-surface:active {
+  background-color: var(--zabi-surface-active);
+}
+
+/* Border utilities */
+.zabi-border {
+  border-color: var(--zabi-border);
+}
+
+.zabi-border:hover {
+  border-color: var(--zabi-border-hover);
+}
+
+.zabi-border:focus {
+  border-color: var(--zabi-border-focus);
+}
+
+.zabi-border:disabled {
+  border-color: var(--zabi-border-disabled);
+}
+
+/* Text utilities */
+.zabi-text {
+  color: var(--zabi-text);
+}
+
+.zabi-text-muted {
+  color: var(--zabi-text-muted);
+}
+
+.zabi-text-placeholder {
+  color: var(--zabi-text-placeholder);
+}
+
+.zabi-text-inverse {
+  color: var(--zabi-text-inverse);
+}
+
+.zabi-text-disabled {
+  color: var(--zabi-text-disabled);
+}
+
+/* Focus utilities */
+.zabi-focus {
+  outline: 2px solid var(--zabi-focus-ring);
+  outline-offset: 2px;
+}
+
+.zabi-focus-ring {
+  box-shadow: 0 0 0 2px var(--zabi-focus-ring-offset), 0 0 0 4px var(--zabi-focus-ring);
+}

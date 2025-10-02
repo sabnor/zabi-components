@@ -1,6 +1,9 @@
 // Main library entry point
 // Re-export all components from their respective categories
 
+// Import base styles for theming
+import '../styles/base.css';
+
 // Atomic Components
 export * from '../components/atoms/index.js';
 

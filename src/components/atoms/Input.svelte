@@ -1,26 +1,30 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import { Eye, EyeOff, AlertCircle, CheckCircle, X } from "@lucide/svelte";
+    import type {
+        InputEvents,
+        InputEventDetail,
+        ChangeEventDetail,
+    } from "../../types/events";
 
-    // Core props
+    // Standardized component props
     export let value: string = "";
-    export let type: "text" | "email" | "password" | "number" | "search" =
-        "text";
+    export let type: string = "text";
     export let label: string = "";
     export let placeholder: string = "";
-    export let helperText: string = "";
-    export let disabled: boolean = false;
     export let required: boolean = false;
+    export let disabled: boolean = false;
     export let readonly: boolean = false;
-    export let id: string | undefined = undefined;
-    export let name: string | undefined = undefined;
-
-    // State props
+    export let size: "sm" | "md" | "lg" = "md";
+    export let variant: "default" | "error" | "success" = "default";
     export let error: string = "";
     export let success: string = "";
     export let helpText: string = "";
+    export let className: string = "";
+    export let id: string = "";
 
     // Additional props
+    export let name: string | undefined = undefined;
     export let maxLength: number | undefined = undefined;
     export let minLength: number | undefined = undefined;
     export let pattern: string | undefined = undefined;
@@ -39,22 +43,11 @@
     // UI props
     export let showPasswordToggle: boolean = false;
     export let showClearButton: boolean = false;
-    export let size: "sm" | "md" | "lg" = "md";
-    export let variant: "outlined" | "filled" | "underlined" = "outlined";
-    export let className: string = "";
 
     // Accessibility props
     export let ariaLabel: string | undefined = undefined;
 
-    const dispatch = createEventDispatcher<{
-        input: { value: string };
-        change: { value: string };
-        focus: { event: FocusEvent };
-        blur: { event: FocusEvent };
-        keydown: { event: KeyboardEvent };
-        keyup: { event: KeyboardEvent };
-        clear: { event: Event };
-    }>();
+    const dispatch = createEventDispatcher<InputEvents>();
 
     let inputElement: HTMLInputElement;
     let showPassword = false;
@@ -68,22 +61,22 @@
     $: hasValue = value !== "" && value !== null && value !== undefined;
 
     // Error and success message handling
-    $: hasError = Boolean(error);
-    $: hasSuccess = Boolean(success);
+    $: hasError = Boolean(error) || variant === "error";
+    $: hasSuccess = Boolean(success) || variant === "success";
 
-    // Handle input events
+    // Handle input events with standardized structure
     function handleInput(event: Event) {
         const target = event.target as HTMLInputElement;
         value = target.value;
         hasValue = value !== "";
-        dispatch("input", { value });
+        dispatch("input", { value, event: event as InputEvent });
     }
 
     function handleChange(event: Event) {
         const target = event.target as HTMLInputElement;
         value = target.value;
         hasValue = value !== "";
-        dispatch("change", { value });
+        dispatch("change", { value, event });
     }
 
     function handleFocus(event: FocusEvent) {
@@ -131,53 +124,43 @@
         inputElement?.select();
     }
 
-    // Size classes using semantic tokens
+    // Size classes using standardized sizes
     $: sizeClasses = {
         sm: "px-3 py-1.5 text-sm",
         md: "px-4 py-2.5 text-sm",
         lg: "px-5 py-3 text-base",
     };
 
-    // Variant classes
-    $: variantClasses = {
-        outlined: "border border-primary bg-surface",
-        filled: "border-0 bg-surface-secondary",
-        underlined:
-            "border-0 border-b border-primary bg-transparent rounded-none",
-    };
-
-    // Base input classes using semantic tokens
+    // Base input classes using CSS custom properties
     $: baseInputClasses = [
         "w-full",
         "min-w-0",
-        variant === "underlined" ? "rounded-none" : "rounded-md",
+        "rounded-md",
         "transition-all",
         "duration-200",
         "ease-in-out",
         "focus:outline-none",
         "focus:ring-2",
-        "focus:ring-focus",
+        "focus:ring-[var(--zabi-focus-ring)]",
         "focus:ring-offset-2",
-        "focus:ring-offset-surface",
         "disabled:opacity-50",
         "disabled:cursor-not-allowed",
         "read-only:cursor-default",
         "read-only:opacity-75",
         sizeClasses[size],
-        variantClasses[variant],
         className,
     ].join(" ");
 
-    // State-specific classes using semantic tokens
+    // State-specific classes using CSS custom properties
     $: stateClasses = hasError
-        ? "border-error text-primary placeholder-placeholder focus:ring-error focus:border-error"
+        ? "border-[var(--zabi-error)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-error)] focus:border-[var(--zabi-error)]"
         : hasSuccess
-          ? "border-success text-primary placeholder-placeholder focus:ring-success focus:border-success"
-          : "text-primary placeholder-placeholder focus:ring-focus focus:border-focus";
+          ? "border-[var(--zabi-success)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-success)] focus:border-[var(--zabi-success)]"
+          : "border-[var(--zabi-border)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-focus-ring)] focus:border-[var(--zabi-border-focus)]";
 
     // Disabled state classes
     $: disabledClasses = disabled
-        ? "bg-surface-disabled text-disabled border-disabled cursor-not-allowed"
+        ? "bg-[var(--zabi-surface-disabled)] text-[var(--zabi-text-disabled)] border-[var(--zabi-border-disabled)] cursor-not-allowed"
         : "";
 
     // Input classes combining all states
@@ -194,7 +177,7 @@
         "ease-in-out",
     ].join(" ");
 
-    // Label classes using semantic tokens
+    // Label classes using CSS custom properties
     $: labelClasses = [
         "block",
         "text-sm",
@@ -202,18 +185,22 @@
         "mb-2",
         "transition-colors",
         "duration-200",
-        hasError ? "text-error" : hasSuccess ? "text-success" : "text-primary",
+        hasError
+            ? "text-[var(--zabi-error)]"
+            : hasSuccess
+              ? "text-[var(--zabi-success)]"
+              : "text-[var(--zabi-text)]",
     ].join(" ");
 
-    // Helper text classes using semantic tokens
+    // Helper text classes using CSS custom properties
     $: helperTextClasses = [
         "mt-2",
         "text-xs",
         hasError
-            ? "text-error"
+            ? "text-[var(--zabi-error)]"
             : hasSuccess
-              ? "text-success"
-              : "text-secondary",
+              ? "text-[var(--zabi-success)]"
+              : "text-[var(--zabi-text-muted)]",
     ].join(" ");
 
     // Button classes for password toggle and clear button
@@ -269,7 +256,7 @@
             on:keydown={handleKeydown}
             on:keyup={handleKeyup}
             aria-invalid={hasError ? "true" : "false"}
-            aria-describedby={hasError || hasSuccess || helperText
+            aria-describedby={hasError || hasSuccess || helpText
                 ? `${inputId}-help`
                 : undefined}
             aria-label={ariaLabel || (label ? undefined : "Input field")}
