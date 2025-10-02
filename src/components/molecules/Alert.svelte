@@ -1,31 +1,27 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import type { AlertEvents, CloseEventDetail } from "../../types/events";
 
-    export let variant:
-        | "info"
-        | "success"
-        | "warning"
-        | "error"
-        | "game-error" = "info";
+    // Standardized component props
+    export let variant: "info" | "success" | "warning" | "error" = "info";
     export let title: string = "";
     export let message: string = "";
     export let closable: boolean = false;
     export let className: string = "";
 
-    const dispatch = createEventDispatcher<{
-        close: void;
-    }>();
+    const dispatch = createEventDispatcher<AlertEvents>();
 
-    function handleDismiss() {
-        dispatch("close");
+    function handleDismiss(event: Event) {
+        dispatch("close", { value: true, event });
     }
 
     $: alertClasses = {
-        info: "bg-info-light text-info-dark border border-info",
-        success: "bg-success-light text-success-dark border border-success",
-        warning: "bg-warning-light text-warning-dark border border-warning",
-        error: "bg-error-light text-error-dark border border-error",
-        "game-error": "bg-error-light text-error-dark border border-error",
+        info: "bg-[var(--zabi-info-light)] text-[var(--zabi-info-dark)] border border-[var(--zabi-info)]",
+        success:
+            "bg-[var(--zabi-success-light)] text-[var(--zabi-success-dark)] border border-[var(--zabi-success)]",
+        warning:
+            "bg-[var(--zabi-warning-light)] text-[var(--zabi-warning-dark)] border border-[var(--zabi-warning)]",
+        error: "bg-[var(--zabi-error-light)] text-[var(--zabi-error-dark)] border border-[var(--zabi-error)]",
     };
 
     $: alertRole =
@@ -42,9 +38,6 @@
             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
         </svg>`,
         error: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-        </svg>`,
-        "game-error": `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
         </svg>`,
     };
@@ -99,9 +92,8 @@
             {#if message}
                 <p class="text-sm leading-relaxed">{message}</p>
             {/if}
+            <!-- Default slot for custom content -->
+            <slot />
         </div>
     </div>
-
-    <!-- Slot for custom content -->
-    <slot />
 </div>

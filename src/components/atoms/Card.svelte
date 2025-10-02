@@ -1,36 +1,32 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import type { CardEvents, ClickEventDetail } from "../../types/events";
 
-    export let variant: "default" | "outlined" | "elevated" | "filled" =
-        "default";
-    export let density: "compact" | "comfortable" | "spacious" = "comfortable";
+    // Standardized component props
+    export let variant: "default" | "elevated" | "outlined" = "default";
+    export let density: "comfortable" | "compact" = "comfortable";
     export let disabled: boolean = false;
     export let loading: boolean = false;
     export let className: string = "";
     export let ariaLabel: string = "";
     export let ariaDescribedBy: string = "";
 
-    const dispatch = createEventDispatcher<{
-        click: CustomEvent;
-        hover: MouseEvent;
-        leave: MouseEvent;
-        focus: FocusEvent;
-        blur: FocusEvent;
-    }>();
+    const dispatch = createEventDispatcher<CardEvents>();
 
-    // Density classes - responsive padding, shadow, and radius
+    // Density classes using standardized approach
     const densityClasses = {
-        compact: "p-3 sm:p-4 rounded-md shadow-sm",
-        comfortable: "p-4 sm:p-6 rounded-lg shadow-sm sm:shadow-md",
-        spacious: "p-6 sm:p-8 rounded-xl shadow-md sm:shadow-lg",
+        compact: "p-3 rounded-md",
+        comfortable: "p-4 rounded-lg",
     };
 
-    // Variant classes
+    // Variant classes using CSS custom properties
     const variantClasses = {
-        default: "bg-card border border-primary",
-        outlined: "bg-card border-2 border-primary",
-        elevated: "bg-card border border-primary shadow-lg",
-        filled: "bg-surface-secondary border border-primary",
+        default:
+            "bg-[var(--zabi-surface)] border border-[var(--zabi-border)] shadow-sm",
+        elevated:
+            "bg-[var(--zabi-surface)] border border-[var(--zabi-border)] shadow-md",
+        outlined:
+            "bg-[var(--zabi-surface)] border-2 border-[var(--zabi-border)] shadow-sm",
     };
 
     // Computed classes
@@ -57,7 +53,7 @@
             event.preventDefault();
             return;
         }
-        dispatch("click", event);
+        dispatch("click", { value: true, event: event.detail?.event || event });
     }
 
     function handleKeydown(event: KeyboardEvent) {
@@ -73,25 +69,25 @@
 
     function handleFocus(event: FocusEvent) {
         if (!disabled && !loading) {
-            dispatch("focus", event);
+            dispatch("focus", { event });
         }
     }
 
     function handleBlur(event: FocusEvent) {
         if (!disabled && !loading) {
-            dispatch("blur", event);
+            dispatch("blur", { event });
         }
     }
 
     function handleMouseEnter(event: MouseEvent) {
         if (!disabled && !loading) {
-            dispatch("hover", event);
+            dispatch("hover", { event });
         }
     }
 
     function handleMouseLeave(event: MouseEvent) {
         if (!disabled && !loading) {
-            dispatch("leave", event);
+            dispatch("leave", { event });
         }
     }
 </script>

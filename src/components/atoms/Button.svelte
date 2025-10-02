@@ -1,22 +1,18 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import type { ButtonEvents, ClickEventDetail } from "../../types/events";
 
-    // Component props with proper TypeScript types
+    // Standardized component props
     export let variant:
         | "primary"
         | "secondary"
-        | "success"
         | "danger"
+        | "success"
         | "warning"
-        | "info"
-        | "neutral"
-        | "ghost"
-        | "brand" = "primary";
-
-    export let size: "xs" | "sm" | "md" | "lg" | "xl" = "md";
+        | "info" = "primary";
+    export let size: "sm" | "md" | "lg" = "md";
     export let disabled: boolean = false;
     export let loading: boolean = false;
-    export let fullWidth: boolean = false;
     export let type: "button" | "submit" | "reset" = "button";
     export let className: string = "";
 
@@ -31,17 +27,15 @@
     export let ariaControls: string | undefined = undefined;
     export let ariaPressed: boolean | undefined = undefined;
 
-    const dispatch = createEventDispatcher<{
-        click: MouseEvent | KeyboardEvent;
-    }>();
+    const dispatch = createEventDispatcher<ButtonEvents>();
 
     function handleClick(event: CustomEvent) {
         if (disabled || loading) {
             event.preventDefault();
             return;
         }
-        // Pass the original event as the detail
-        dispatch("click", event.detail);
+        // Dispatch with standardized event structure
+        dispatch("click", { value: true, event: event.detail?.event || event });
     }
 
     function handleKeydown(event: KeyboardEvent) {
@@ -49,7 +43,7 @@
 
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            dispatch("click", event);
+            dispatch("click", { value: true, event });
         }
     }
 
@@ -57,103 +51,70 @@
     const baseClasses =
         "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 relative overflow-hidden";
 
-    // Size classes using semantic spacing tokens
+    // Size classes using standardized sizes
     const sizeClasses = {
-        xs: "px-2 py-1 text-xs rounded-sm",
         sm: "px-3 py-1.5 text-sm rounded-md",
-        md: "px-4 py-2 text-sm md:text-base rounded-md",
+        md: "px-4 py-2 text-sm rounded-md",
         lg: "px-5 py-3 text-base rounded-lg",
-        xl: "px-6 py-4 text-lg rounded-lg",
     };
 
-    // Variant classes using semantic tokens
+    // Variant classes using CSS custom properties for easy theming
     const variantClasses = {
         primary: [
-            "bg-primary text-inverse border border-primary",
-            "hover:bg-primary-hover hover:border-primary-hover",
-            "active:bg-primary-active active:border-primary-active",
-            "focus:ring-primary focus:ring-offset-primary",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
+            "bg-[var(--zabi-primary)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-primary)]",
+            "hover:bg-[var(--zabi-primary-hover)] hover:border-[var(--zabi-primary-hover)]",
+            "active:bg-[var(--zabi-primary-active)] active:border-[var(--zabi-primary-active)]",
+            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+            "shadow-sm hover:shadow-md",
         ].join(" "),
 
         secondary: [
-            "bg-surface-secondary text-primary border border-primary",
-            "hover:bg-surface-tertiary hover:border-primary-hover",
-            "active:bg-surface-active active:border-primary-active",
-            "focus:ring-primary focus:ring-offset-primary",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
+            "bg-[var(--zabi-surface)] text-[var(--zabi-text)] border border-[var(--zabi-border)]",
+            "hover:bg-[var(--zabi-surface-hover)] hover:border-[var(--zabi-border-hover)]",
+            "active:bg-[var(--zabi-surface-active)] active:border-[var(--zabi-border-hover)]",
+            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+            "shadow-sm hover:shadow-md",
         ].join(" "),
 
         success: [
-            "bg-success text-inverse border border-success",
-            "hover:bg-success-hover hover:border-success-hover",
-            "active:bg-success-active active:border-success-active",
-            "focus:ring-success focus:ring-offset-primary",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
+            "bg-[var(--zabi-success)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-success)]",
+            "hover:bg-[var(--zabi-success-hover)] hover:border-[var(--zabi-success-hover)]",
+            "active:bg-[var(--zabi-success-active)] active:border-[var(--zabi-success-active)]",
+            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+            "shadow-sm hover:shadow-md",
         ].join(" "),
 
         warning: [
-            "bg-warning text-inverse border border-warning",
-            "hover:bg-warning-hover hover:border-warning-hover",
-            "active:bg-warning-active active:border-warning-active",
-            "focus:ring-warning focus:ring-offset-primary",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
+            "bg-[var(--zabi-warning)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-warning)]",
+            "hover:bg-[var(--zabi-warning-hover)] hover:border-[var(--zabi-warning-hover)]",
+            "active:bg-[var(--zabi-warning-active)] active:border-[var(--zabi-warning-active)]",
+            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+            "shadow-sm hover:shadow-md",
         ].join(" "),
 
         danger: [
-            "bg-error text-inverse border border-error",
-            "hover:bg-error-hover hover:border-error-hover",
-            "active:bg-error-active active:border-error-active",
-            "focus:ring-error focus:ring-offset-primary",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        ghost: [
-            "bg-transparent text-primary border border-transparent",
-            "hover:bg-surface-secondary hover:border-primary",
-            "active:bg-surface-active active:border-primary-active",
-            "focus:ring-primary focus:ring-offset-primary",
+            "bg-[var(--zabi-error)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-error)]",
+            "hover:bg-[var(--zabi-error-hover)] hover:border-[var(--zabi-error-hover)]",
+            "active:bg-[var(--zabi-error-active)] active:border-[var(--zabi-error-active)]",
+            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+            "shadow-sm hover:shadow-md",
         ].join(" "),
 
         info: [
-            "bg-info text-inverse border border-info",
-            "hover:bg-info-hover hover:border-info-hover",
-            "active:bg-info-active active:border-info-active",
-            "focus:ring-info focus:ring-offset-primary",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        neutral: [
-            "bg-neutral text-inverse border border-neutral",
-            "hover:bg-neutral-hover hover:border-neutral-hover",
-            "active:bg-neutral-active active:border-neutral-active",
-            "focus:ring-neutral focus:ring-offset-primary",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        brand: [
-            "bg-brand text-inverse border border-brand",
-            "hover:bg-brand-hover hover:border-brand-hover",
-            "active:bg-brand-active active:border-brand-active",
-            "focus:ring-brand focus:ring-offset-primary",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        link: [
-            "bg-transparent text-primary border border-transparent p-0",
-            "hover:text-primary-hover hover:underline",
-            "active:text-primary-active",
-            "focus:ring-primary focus:ring-offset-primary",
-            "shadow-none",
+            "bg-[var(--zabi-info)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-info)]",
+            "hover:bg-[var(--zabi-info-hover)] hover:border-[var(--zabi-info-hover)]",
+            "active:bg-[var(--zabi-info-active)] active:border-[var(--zabi-info-active)]",
+            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+            "shadow-sm hover:shadow-md",
         ].join(" "),
     };
 
     // Disabled state classes
     const disabledClasses = disabled
         ? [
-              "bg-surface-disabled text-disabled border-border-disabled",
-              "hover:bg-surface-disabled hover:text-disabled hover:border-border-disabled",
-              "active:bg-surface-disabled active:text-disabled active:border-border-disabled",
+              "bg-[var(--zabi-surface-disabled)] text-[var(--zabi-text-disabled)] border-[var(--zabi-border-disabled)]",
+              "hover:bg-[var(--zabi-surface-disabled)] hover:text-[var(--zabi-text-disabled)] hover:border-[var(--zabi-border-disabled)]",
+              "active:bg-[var(--zabi-surface-disabled)] active:text-[var(--zabi-text-disabled)] active:border-[var(--zabi-border-disabled)]",
               "shadow-none",
           ].join(" ")
         : "";
@@ -166,7 +127,6 @@
         baseClasses,
         sizeClasses[size],
         disabled ? disabledClasses : variantClasses[variant],
-        fullWidth ? "w-full" : "",
         className,
     ]
         .filter(Boolean)

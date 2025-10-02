@@ -1,75 +1,120 @@
 /**
  * Event type definitions for zabi-components
  * These types ensure consistent event structures across all components
+ * All events follow the standardized format: { detail: { value, event? } }
  */
 
-// Base event types
-export interface ClickEvent {
-    click: MouseEvent | KeyboardEvent;
+// Base event detail types
+export interface BaseEventDetail<T = any> {
+    value: T;
+    event?: Event;
 }
 
-export interface InputEvent {
-    input: { value: string };
+// Standardized event types
+export interface ClickEventDetail extends BaseEventDetail<boolean> {
+    event?: MouseEvent | KeyboardEvent;
 }
 
-export interface ChangeEvent {
-    change: { value: string };
+export interface InputEventDetail extends BaseEventDetail<string> {
+    event?: InputEvent;
 }
 
-export interface CheckedChangeEvent {
-    change: { checked: boolean };
+export interface ChangeEventDetail extends BaseEventDetail<string> {
+    event?: Event;
 }
 
-export interface FileUploadEvent {
-    upload: { files: FileList };
+export interface CheckedChangeEventDetail extends BaseEventDetail<boolean> {
+    event?: Event;
 }
 
-export interface CloseEvent {
-    close: void;
+export interface SelectChangeEventDetail extends BaseEventDetail<string | string[]> {
+    event?: Event;
+}
+
+export interface FileUploadEventDetail extends BaseEventDetail<FileList> {
+    event?: Event;
+}
+
+export interface CloseEventDetail extends BaseEventDetail<boolean> {
+    event?: Event;
 }
 
 // Component-specific event types
-export interface ButtonEvents extends ClickEvent { }
-
-export interface InputEvents extends InputEvent, ChangeEvent {
-    focus: CustomEvent<{ event: FocusEvent }>;
-    blur: CustomEvent<{ event: FocusEvent }>;
-    keydown: CustomEvent<{ event: KeyboardEvent }>;
-    keyup: CustomEvent<{ event: KeyboardEvent }>;
-    clear: CustomEvent<{ event: Event }>;
+export interface ButtonEvents {
+    click: ClickEventDetail;
 }
 
-export interface TextareaEvents extends InputEvent, ChangeEvent {
-    focus: CustomEvent<{ event: FocusEvent }>;
-    blur: CustomEvent<{ event: FocusEvent }>;
-    keydown: CustomEvent<{ event: KeyboardEvent }>;
-    keyup: CustomEvent<{ event: KeyboardEvent }>;
+export interface InputEvents {
+    input: InputEventDetail;
+    change: ChangeEventDetail;
+    focus: { event: FocusEvent };
+    blur: { event: FocusEvent };
+    keydown: { event: KeyboardEvent };
+    keyup: { event: KeyboardEvent };
+    clear: { event: Event };
 }
 
-export interface SelectEvents extends InputEvent, ChangeEvent {
-    focus: CustomEvent<{ event: FocusEvent }>;
-    blur: CustomEvent<{ event: FocusEvent }>;
-    keydown: CustomEvent<{ event: KeyboardEvent }>;
-    keyup: CustomEvent<{ event: KeyboardEvent }>;
+export interface TextareaEvents {
+    input: InputEventDetail;
+    change: ChangeEventDetail;
+    focus: { event: FocusEvent };
+    blur: { event: FocusEvent };
+    keydown: { event: KeyboardEvent };
+    keyup: { event: KeyboardEvent };
 }
 
-export interface CheckboxEvents extends CheckedChangeEvent { }
+export interface SelectEvents {
+    input: InputEventDetail;
+    change: SelectChangeEventDetail;
+    focus: { event: FocusEvent };
+    blur: { event: FocusEvent };
+    keydown: { event: KeyboardEvent };
+    keyup: { event: KeyboardEvent };
+}
 
-export interface ToggleEvents extends CheckedChangeEvent { }
+export interface CheckboxEvents {
+    change: CheckedChangeEventDetail;
+}
 
-export interface AlertEvents extends CloseEvent { }
+export interface ToggleEvents {
+    change: CheckedChangeEventDetail;
+}
+
+export interface AlertEvents {
+    close: CloseEventDetail;
+}
+
+export interface CardEvents {
+    click: ClickEventDetail;
+    hover: { event: MouseEvent };
+    leave: { event: MouseEvent };
+    focus: { event: FocusEvent };
+    blur: { event: FocusEvent };
+}
 
 export interface KeyValueFormEvents {
     input: CustomEvent<Record<string, any>>;
     change: CustomEvent<Record<string, any>>;
 }
 
-export interface ImageUploadEvents extends FileUploadEvent { }
+export interface ImageUploadEvents {
+    upload: CustomEvent<FileUploadEventDetail>;
+}
 
-export interface NotificationManagerEvents extends CloseEvent { }
+export interface NotificationManagerEvents {
+    close: CustomEvent<CloseEventDetail>;
+}
 
 // Re-export all event types for easy importing
 export type {
+    BaseEventDetail,
+    ClickEventDetail,
+    InputEventDetail,
+    ChangeEventDetail,
+    CheckedChangeEventDetail,
+    SelectChangeEventDetail,
+    FileUploadEventDetail,
+    CloseEventDetail,
     ButtonEvents,
     InputEvents,
     TextareaEvents,
@@ -77,6 +122,7 @@ export type {
     CheckboxEvents,
     ToggleEvents,
     AlertEvents,
+    CardEvents,
     KeyValueFormEvents,
     ImageUploadEvents,
     NotificationManagerEvents,
