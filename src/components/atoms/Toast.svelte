@@ -31,7 +31,7 @@
     }>();
 
     let isVisible = true;
-    let autoDismissTimeout: number;
+    let autoDismissTimeout: ReturnType<typeof setTimeout>;
 
     // Icon mapping
     const icons = {

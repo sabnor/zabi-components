@@ -12,6 +12,7 @@ A comprehensive Svelte component library built with TypeScript and Tailwind CSS,
 - 🎭 **Dark Mode Support** - Built-in dark mode support with CSS custom properties
 - 🧩 **Slot Support** - Flexible slot system for custom content
 - 📦 **Tree Shakeable** - Import only what you need
+- ✅ **Production Ready** - Fully tested and optimized for production use
 
 ## Installation
 
@@ -19,17 +20,55 @@ A comprehensive Svelte component library built with TypeScript and Tailwind CSS,
 npm install zabi-components
 ```
 
+### Peer Dependencies
+
+Make sure you have the required peer dependencies installed:
+
+```bash
+npm install svelte@^4.0.0 || ^5.0.0
+npm install @sveltejs/kit@^2.0.0  # Optional, for SvelteKit projects
+```
+
+## Import Methods
+
+Zabi Components supports multiple import patterns:
+
+### Main Import (All Components)
+```typescript
+import { Button, Input, Card, Alert, Badge, Modal } from 'zabi-components';
+```
+
+### Subpath Imports (Recommended for Tree Shaking)
+```typescript
+// Import from specific categories
+import { Button, Input, Badge } from 'zabi-components/atoms';
+import { Alert, Modal, Dropdown } from 'zabi-components/molecules';
+import { Navbar, ToastManager } from 'zabi-components/organisms';
+
+// Import types separately
+import type { ButtonEvents, InputEvents } from 'zabi-components/types';
+```
+
 ## Quick Start
 
 ```svelte
-<script>
+<script lang="ts">
   import { Button, Input, Card, Alert } from 'zabi-components';
   
   let name = '';
   let showAlert = false;
   
-  function handleSubmit() {
+  function handleSubmit(event: CustomEvent) {
+    console.log('Form submitted!', event.detail.value);
     showAlert = true;
+  }
+  
+  function handleInput(event: CustomEvent) {
+    console.log('Input changed:', event.detail.value);
+  }
+  
+  function handleClose() {
+    showAlert = false;
   }
 </script>
 
@@ -42,7 +81,7 @@ npm install zabi-components
     bind:value={name} 
     label="Name" 
     placeholder="Enter your name"
-    on:input={(e) => console.log(e.detail.value)}
+    on:input={handleInput}
   />
   
   <Button on:click={handleSubmit}>
@@ -50,9 +89,11 @@ npm install zabi-components
   </Button>
   
   <div slot="footer">
-    <Alert variant="success" closable bind:show={showAlert}>
-      Form submitted successfully!
-    </Alert>
+    {#if showAlert}
+      <Alert variant="success" closable on:close={handleClose}>
+        Form submitted successfully!
+      </Alert>
+    {/if}
   </div>
 </Card>
 ```
@@ -267,7 +308,7 @@ interface BaseEventDetail<T = any> {
 
 ## TypeScript Support
 
-Full TypeScript definitions are included:
+Full TypeScript definitions are included with proper event typing:
 
 ```typescript
 import type { ButtonEvents, InputEvents, CardEvents, AlertEvents } from 'zabi-components';
@@ -275,6 +316,53 @@ import type { ButtonEvents, InputEvents, CardEvents, AlertEvents } from 'zabi-co
 // Event handlers with proper typing
 function handleButtonClick(event: CustomEvent<{ value: boolean; event?: MouseEvent }>) {
   console.log('Button clicked:', event.detail.value);
+}
+
+function handleInputChange(event: CustomEvent<{ value: string; event?: InputEvent }>) {
+  console.log('Input changed:', event.detail.value);
+}
+```
+
+### Event Types
+
+All components use standardized event types:
+
+```typescript
+// Base event structure
+interface BaseEventDetail<T = any> {
+  value: T;
+  event?: Event;
+}
+
+// Specific event types
+interface ClickEventDetail extends BaseEventDetail<boolean> {
+  event?: MouseEvent | KeyboardEvent;
+}
+
+interface InputEventDetail extends BaseEventDetail<string> {
+  event?: InputEvent;
+}
+
+interface ChangeEventDetail extends BaseEventDetail<string> {
+  event?: Event;
+}
+```
+
+### Component Event Interfaces
+
+```typescript
+interface ButtonEvents {
+  click: ClickEventDetail;
+}
+
+interface InputEvents {
+  input: InputEventDetail;
+  change: ChangeEventDetail;
+  focus: { event: FocusEvent };
+  blur: { event: FocusEvent };
+  keydown: { event: KeyboardEvent };
+  keyup: { event: KeyboardEvent };
+  clear: { event: Event };
 }
 ```
 
@@ -296,29 +384,42 @@ function handleButtonClick(event: CustomEvent<{ value: boolean; event?: MouseEve
 ### Form Integration
 
 ```svelte
-<script>
+<script lang="ts">
   import { Button, Input, Card, Alert } from 'zabi-components';
   
-  let formData = {
+  interface FormData {
+    name: string;
+    email: string;
+    message: string;
+  }
+  
+  interface FormErrors {
+    name?: string;
+    email?: string;
+    message?: string;
+  }
+  
+  let formData: FormData = {
     name: '',
     email: '',
     message: ''
   };
   
-  let errors = {};
+  let errors: FormErrors = {};
   let showSuccess = false;
   
-  function validateForm() {
+  function validateForm(): boolean {
     errors = {};
     if (!formData.name) errors.name = 'Name is required';
     if (!formData.email) errors.email = 'Email is required';
     return Object.keys(errors).length === 0;
   }
   
-  function handleSubmit() {
+  function handleSubmit(event: CustomEvent) {
     if (validateForm()) {
       showSuccess = true;
       // Submit form
+      console.log('Form submitted:', formData);
     }
   }
 </script>
@@ -377,6 +478,69 @@ function handleButtonClick(event: CustomEvent<{ value: boolean; event?: MouseEve
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Changelog
+
+### v1.0.5 (Latest)
+
+#### 🐛 Bug Fixes
+- **Fixed Package Exports**: Resolved "Package subpath './atoms' is not defined" errors
+- **Fixed Runtime Errors**: Eliminated null reference errors that caused application crashes
+- **Fixed TypeScript Types**: Properly typed event handlers and component props
+- **Fixed Slot Definitions**: Ensured slots work correctly with proper typing
+- **Fixed Main Export**: Ensured zabi-components main import works correctly
+
+#### ✨ Improvements
+- Enhanced TypeScript support with comprehensive event type definitions
+- Improved build configuration for better tree shaking
+- Added proper type generation for all component categories
+- Standardized event structure across all components
+
+#### 📦 Package Structure
+- Added support for subpath imports (`zabi-components/atoms`, `zabi-components/molecules`, etc.)
+- Improved type definitions with proper event interfaces
+- Enhanced build output with proper ES module exports
+
+## Troubleshooting
+
+### Common Issues
+
+#### Import Errors
+If you encounter import errors like "Package subpath './atoms' is not defined", make sure you're using the latest version:
+
+```bash
+npm install zabi-components@latest
+```
+
+#### TypeScript Event Handler Errors
+If you see TypeScript errors with event handlers, make sure to use proper typing:
+
+```typescript
+// ✅ Correct
+function handleClick(event: CustomEvent) {
+  console.log(event.detail.value);
+}
+
+// ❌ Incorrect - missing event parameter
+function handleClick() {
+  console.log('clicked');
+}
+```
+
+#### Runtime Errors
+If you encounter runtime errors, ensure you have the correct peer dependencies:
+
+```bash
+npm install svelte@^5.0.0 @sveltejs/kit@^2.0.0
+```
+
+### Migration from Previous Versions
+
+If you're upgrading from a previous version, note these changes:
+
+1. **Event Structure**: All events now follow the standardized `{ detail: { value, event? } }` structure
+2. **Import Paths**: Subpath imports are now fully supported (`zabi-components/atoms`, etc.)
+3. **TypeScript**: Enhanced type definitions with proper event typing
 
 ## Support
 

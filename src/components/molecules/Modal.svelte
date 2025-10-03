@@ -1,11 +1,12 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte";
+    import type { ModalEvents } from "../../types/events";
 
     export let isOpen = false;
     export let title = "";
     export let showCloseButton = true;
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<ModalEvents>();
 
     let modalElement: HTMLDivElement;
     let previousActiveElement: HTMLElement | null = null;
@@ -81,7 +82,7 @@
     <div
         class="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal-backdrop flex items-center justify-center p-4"
         on:click={handleBackdropClick}
-        on:keydown={handleKeydown}
+        on:keydown={(e: KeyboardEvent) => handleKeydown(e)}
         role="presentation"
         tabindex="-1"
     >
@@ -92,7 +93,7 @@
             role="dialog"
             aria-modal="true"
             aria-labelledby="dialog-title"
-            on:keydown={trapFocus}
+            on:keydown={(e: KeyboardEvent) => trapFocus(e)}
             tabindex="-1"
         >
             <!-- Header -->

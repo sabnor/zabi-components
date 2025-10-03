@@ -45,12 +45,12 @@
     };
 
     function handleBrandClick(event: MouseEvent) {
-        dispatch("brandClick", event);
+        dispatch("brandClick", { event });
     }
 
     function toggleMenu() {
         isMenuOpen = !isMenuOpen;
-        dispatch("menuToggle", isMenuOpen);
+        dispatch("menuToggle", { isOpen: isMenuOpen });
     }
 
     function handleLinkClick(href: string, event: MouseEvent) {
@@ -70,7 +70,7 @@
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape" && isMenuOpen) {
             isMenuOpen = false;
-            dispatch("menuToggle", false);
+            dispatch("menuToggle", { isOpen: false });
         }
     }
 
@@ -82,7 +82,7 @@
             !navbarElement.contains(event.target as Node)
         ) {
             isMenuOpen = false;
-            dispatch("menuToggle", false);
+            dispatch("menuToggle", { isOpen: false });
         }
     }
 
@@ -212,7 +212,8 @@
         role="button"
         tabindex="0"
         on:click={() => (isMenuOpen = false)}
-        on:keydown={(e) => e.key === "Escape" && (isMenuOpen = false)}
+        on:keydown={(e: KeyboardEvent) =>
+            e.key === "Escape" && (isMenuOpen = false)}
         aria-label="Close menu"
         transition:fade={{ duration: 200 }}
     ></div>

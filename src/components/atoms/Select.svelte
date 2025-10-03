@@ -259,7 +259,8 @@
                 type="button"
                 class={clearButtonClasses}
                 on:click={handleClear}
-                on:keydown={(e) => e.key === "Enter" && handleClear(e)}
+                on:keydown={(e: KeyboardEvent) =>
+                    e.key === "Enter" && handleClear(e)}
                 tabindex="-1"
                 aria-label="Clear selection"
             >

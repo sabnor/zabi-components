@@ -16,7 +16,8 @@ export default defineConfig({
                 index: resolve(__dirname, 'src/lib/index.ts'),
                 atoms: resolve(__dirname, 'src/components/atoms/index.ts'),
                 molecules: resolve(__dirname, 'src/components/molecules/index.ts'),
-                organisms: resolve(__dirname, 'src/components/organisms/index.ts')
+                organisms: resolve(__dirname, 'src/components/organisms/index.ts'),
+                types: resolve(__dirname, 'src/types/index.ts')
             },
             formats: ['es'],
             fileName: (format, entryName) => `${entryName}/index.js`

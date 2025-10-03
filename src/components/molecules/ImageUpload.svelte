@@ -2,6 +2,7 @@
     import { createEventDispatcher } from "svelte";
     import Modal from "./Modal.svelte";
     import Button from "../atoms/Button.svelte";
+    import type { ImageUploadEvents } from "../../types/events";
 
     export let value: string | null = null;
     export let disabled = false;
@@ -9,11 +10,7 @@
     export let maxSize = 5 * 1024 * 1024; // 5MB default
     export let placeholder = "No image selected";
 
-    const dispatch = createEventDispatcher<{
-        change: { value: string | null };
-        upload: { files: FileList };
-        error: { message: string };
-    }>();
+    const dispatch = createEventDispatcher<ImageUploadEvents>();
 
     // Component state
     let showUploadDialog = false;
@@ -79,6 +76,7 @@
             showUploadDialog = false;
             resetUploadState();
         } catch (error) {
+            // Note: error event not in ImageUploadEvents, keeping for backward compatibility
             dispatch("error", { message: `Upload failed: ${error}` });
         } finally {
             isUploading = false;

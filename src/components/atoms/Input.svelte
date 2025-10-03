@@ -272,7 +272,8 @@
                     type="button"
                     class={buttonClasses}
                     on:click={clearValue}
-                    on:keydown={(e) => e.key === "Enter" && clearValue(e)}
+                    on:keydown={(e: KeyboardEvent) =>
+                        e.key === "Enter" && clearValue(e)}
                     aria-label="Clear input"
                 >
                     <X size={16} />
@@ -284,7 +285,7 @@
                     type="button"
                     class={buttonClasses}
                     on:click={togglePasswordVisibility}
-                    on:keydown={(e) =>
+                    on:keydown={(e: KeyboardEvent) =>
                         e.key === "Enter" && togglePasswordVisibility()}
                     aria-label={showPassword
                         ? "Hide password"

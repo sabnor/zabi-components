@@ -22,6 +22,10 @@
     "./organisms": {
       "types": "./dist/organisms/index.d.ts",
       "import": "./dist/organisms/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
     }
   },
   "files": [

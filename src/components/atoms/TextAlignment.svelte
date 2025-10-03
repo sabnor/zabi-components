@@ -2,6 +2,7 @@
     import { createEventDispatcher } from "svelte";
     import Button from "./Button.svelte";
     import { AlignLeft, AlignCenter, AlignRight } from "@lucide/svelte";
+    import type { TextAlignmentEvents } from "../../types/events";
 
     export let value: string = "center";
     export let label: string = "Text Alignment";
@@ -9,7 +10,7 @@
     export let size: "sm" | "md" | "lg" = "sm";
     // export let variant: "outlined" | "filled" = "outlined"; // Not used in this component
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<TextAlignmentEvents>();
 
     // Generate a unique ID for this component instance
     const componentId = `text-alignment-${Math.random().toString(36).substr(2, 9)}`;
@@ -75,7 +76,7 @@
                     ? 'bg-blue-600 text-white shadow-sm'
                     : 'text-stone-400 hover:text-stone-200 hover:bg-stone-700'}"
                 on:click={() => selectAlignment(option.value)}
-                on:keydown={(e) =>
+                on:keydown={(e: KeyboardEvent) =>
                     e.key === "Enter" && selectAlignment(option.value)}
                 role="radio"
                 aria-checked={value === option.value}

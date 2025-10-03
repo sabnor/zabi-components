@@ -47,7 +47,7 @@
         aria-label={label || "Toggle"}
         {disabled}
         on:click={handleToggle}
-        on:keydown={(e) => {
+        on:keydown={(e: KeyboardEvent) => {
             if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 handleToggle();
@@ -75,7 +75,7 @@
             type="button"
             class="text-sm font-medium text-primary cursor-pointer select-none hover:text-secondary transition-colors"
             on:click={handleToggle}
-            on:keydown={(e) => {
+            on:keydown={(e: KeyboardEvent) => {
                 if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     handleToggle();
