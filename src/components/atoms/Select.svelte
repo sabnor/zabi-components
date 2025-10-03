@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import { onMount } from "svelte";
-    import { ChevronDown, AlertCircle, CheckCircle } from "@lucide/svelte";
+    import { ChevronDown, AlertCircle, CheckCircle, X } from "@lucide/svelte";
 
     export let value: string | number | undefined = undefined;
     export let options: Array<{
@@ -27,10 +27,10 @@
     const dispatch = createEventDispatcher<{
         input: { value: string };
         change: { value: string };
-        focus: { event: FocusEvent };
-        blur: { event: FocusEvent };
-        keydown: { event: KeyboardEvent };
-        keyup: { event: KeyboardEvent };
+        focus: { event: CustomEvent };
+        blur: { event: CustomEvent };
+        keydown: { event: CustomEvent };
+        keyup: { event: CustomEvent };
         clear: { event: Event };
     }>();
 
@@ -69,21 +69,21 @@
         dispatch("change", { value: String(value) });
     }
 
-    function handleFocus(event: FocusEvent) {
+    function handleFocus(event: CustomEvent) {
         isFocused = true;
         dispatch("focus", { event });
     }
 
-    function handleBlur(event: FocusEvent) {
+    function handleBlur(event: CustomEvent) {
         isFocused = false;
         dispatch("blur", { event });
     }
 
-    function handleKeydown(event: KeyboardEvent) {
+    function handleKeydown(event: CustomEvent) {
         dispatch("keydown", { event });
     }
 
-    function handleKeyup(event: KeyboardEvent) {
+    function handleKeyup(event: CustomEvent) {
         dispatch("keyup", { event });
     }
 
@@ -259,8 +259,9 @@
                 type="button"
                 class={clearButtonClasses}
                 on:click={handleClear}
-                on:keydown={(e: KeyboardEvent) =>
-                    e.key === "Enter" && handleClear(e)}
+                on:keydown={(e: CustomEvent) =>
+                    (e as unknown as KeyboardEvent).key === "Enter" &&
+                    handleClear(e)}
                 tabindex="-1"
                 aria-label="Clear selection"
             >

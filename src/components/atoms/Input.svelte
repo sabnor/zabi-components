@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { Eye, EyeOff, AlertCircle, CheckCircle } from "@lucide/svelte";
+    import { Eye, EyeOff, AlertCircle, CheckCircle, X } from "@lucide/svelte";
     import type {
         InputEvents,
         InputEventDetail,
@@ -79,21 +79,21 @@
         dispatch("change", { value, event });
     }
 
-    function handleFocus(event: FocusEvent) {
+    function handleFocus(event: CustomEvent) {
         isFocused = true;
         dispatch("focus", { event });
     }
 
-    function handleBlur(event: FocusEvent) {
+    function handleBlur(event: CustomEvent) {
         isFocused = false;
         dispatch("blur", { event });
     }
 
-    function handleKeydown(event: KeyboardEvent) {
+    function handleKeydown(event: CustomEvent) {
         dispatch("keydown", { event });
     }
 
-    function handleKeyup(event: KeyboardEvent) {
+    function handleKeyup(event: CustomEvent) {
         dispatch("keyup", { event });
     }
 
@@ -272,8 +272,9 @@
                     type="button"
                     class={buttonClasses}
                     on:click={clearValue}
-                    on:keydown={(e: KeyboardEvent) =>
-                        e.key === "Enter" && clearValue(e)}
+                    on:keydown={(e: CustomEvent) =>
+                        (e as unknown as KeyboardEvent).key === "Enter" &&
+                        clearValue(e)}
                     aria-label="Clear input"
                 >
                     <X size={16} />
@@ -285,8 +286,9 @@
                     type="button"
                     class={buttonClasses}
                     on:click={togglePasswordVisibility}
-                    on:keydown={(e: KeyboardEvent) =>
-                        e.key === "Enter" && togglePasswordVisibility()}
+                    on:keydown={(e: CustomEvent) =>
+                        (e as unknown as KeyboardEvent).key === "Enter" &&
+                        togglePasswordVisibility()}
                     aria-label={showPassword
                         ? "Hide password"
                         : "Show password"}
