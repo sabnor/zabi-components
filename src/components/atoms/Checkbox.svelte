@@ -158,8 +158,8 @@
             {value}
             class="sr-only"
             on:change={handleChange}
-            on:focus={handleFocus}
-            on:blur={handleBlur}
+            on:focus={(e) => handleFocus(e as unknown as FocusEvent)}
+            on:blur={(e) => handleBlur(e as unknown as FocusEvent)}
             aria-invalid={error ? "true" : "false"}
             aria-describedby={error || helpText
                 ? `${checkboxId}-help`

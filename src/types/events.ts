@@ -1,42 +1,34 @@
-/**
- * Event type definitions for zabi-components
- * These types ensure consistent event structures across all components
- * All events follow the standardized format: { detail: { value, event? } }
- */
-
-// Base event detail types
-export interface BaseEventDetail<T = any> {
-    value: T;
-    event?: Event;
+// Event types for components
+export interface BaseEventDetail {
+    event: Event;
 }
 
-// Standardized event types
-export interface ClickEventDetail extends BaseEventDetail<boolean> {
-    event?: MouseEvent | KeyboardEvent;
+export interface ClickEventDetail extends BaseEventDetail {
+    value: boolean;
 }
 
-export interface InputEventDetail extends BaseEventDetail<string> {
-    event?: InputEvent;
+export interface InputEventDetail extends BaseEventDetail {
+    value: string;
 }
 
-export interface ChangeEventDetail extends BaseEventDetail<string> {
-    event?: Event;
+export interface ChangeEventDetail extends BaseEventDetail {
+    value: string;
 }
 
-export interface CheckedChangeEventDetail extends BaseEventDetail<boolean> {
-    event?: Event;
+export interface FocusEventDetail extends BaseEventDetail {
+    event: FocusEvent;
 }
 
-export interface SelectChangeEventDetail extends BaseEventDetail<string | string[]> {
-    event?: Event;
+export interface BlurEventDetail extends BaseEventDetail {
+    event: FocusEvent;
 }
 
-export interface FileUploadEventDetail extends BaseEventDetail<FileList> {
-    event?: Event;
+export interface KeydownEventDetail extends BaseEventDetail {
+    event: KeyboardEvent;
 }
 
-export interface CloseEventDetail extends BaseEventDetail<boolean> {
-    event?: Event;
+export interface KeyupEventDetail extends BaseEventDetail {
+    event: KeyboardEvent;
 }
 
 // Component-specific event types
@@ -47,152 +39,94 @@ export interface ButtonEvents {
 export interface InputEvents {
     input: InputEventDetail;
     change: ChangeEventDetail;
-    focus: { event: any };
-    blur: { event: any };
-    keydown: { event: any };
-    keyup: { event: any };
-    clear: { event: Event };
+    focus: FocusEventDetail;
+    blur: BlurEventDetail;
+    keydown: KeydownEventDetail;
+    keyup: KeyupEventDetail;
+    clear: BaseEventDetail;
+}
+
+export interface CardEvents {
+    click: ClickEventDetail;
+    focus: FocusEventDetail;
+    blur: BlurEventDetail;
+    hover: BaseEventDetail;
+    leave: BaseEventDetail;
+}
+
+export interface CheckboxEvents {
+    change: ChangeEventDetail;
+    focus: FocusEventDetail;
+    blur: BlurEventDetail;
 }
 
 export interface TextareaEvents {
     input: InputEventDetail;
     change: ChangeEventDetail;
-    focus: { event: FocusEvent };
-    blur: { event: FocusEvent };
-    keydown: { event: KeyboardEvent };
-    keyup: { event: KeyboardEvent };
-}
-
-export interface SelectEvents {
-    input: InputEventDetail;
-    change: SelectChangeEventDetail;
-    focus: { event: FocusEvent };
-    blur: { event: FocusEvent };
-    keydown: { event: KeyboardEvent };
-    keyup: { event: KeyboardEvent };
-}
-
-export interface CheckboxEvents {
-    change: CheckedChangeEventDetail;
+    focus: FocusEventDetail;
+    blur: BlurEventDetail;
+    keydown: KeydownEventDetail;
+    keyup: KeyupEventDetail;
 }
 
 export interface ToggleEvents {
-    change: CheckedChangeEventDetail;
-}
-
-export interface AlertEvents {
-    close: CloseEventDetail;
-}
-
-export interface CardEvents {
-    click: ClickEventDetail;
-    hover: { event: MouseEvent };
-    leave: { event: MouseEvent };
-    focus: { event: FocusEvent };
-    blur: { event: FocusEvent };
-}
-
-
-export interface NotificationManagerEvents {
-    close: { value: void };
-}
-
-export interface TextAlignmentEvents {
-    change: { value: string };
-}
-
-export interface ModalEvents {
-    close: { value: boolean };
-    open: { value: boolean };
-}
-
-export interface SlideUpEvents {
-    close: { value: boolean };
-    open: { value: boolean };
-}
-
-export interface ColorPickerEvents {
-    change: { value: string };
-    select: { value: string };
-}
-
-export interface DropdownEvents {
-    change: { value: string };
-    select: { value: string };
-    open: { value: boolean };
-    close: { value: boolean };
-}
-
-export interface ProgressEvents {
-    complete: { value: number; max: number };
-}
-
-export interface BadgeEvents {
-    close: { event: MouseEvent };
-    click: { event: MouseEvent };
-}
-
-export interface ImageUploadEvents {
-    change: { value: string | null };
-    upload: { files: FileList };
-}
-
-export interface KeyValueFormEvents {
-    input: { value: Record<string, any> };
-    change: { value: Record<string, any> };
-}
-
-export interface TabsEvents {
-    change: { activeTab: string; tab: any };
-    tabClick: { tab: any; event: MouseEvent };
+    change: ChangeEventDetail;
+    focus: FocusEventDetail;
+    blur: BlurEventDetail;
 }
 
 export interface TooltipEvents {
-    show: { event: Event };
-    hide: { event: Event };
+    show: BaseEventDetail;
+    hide: BaseEventDetail;
+    focus: FocusEventDetail;
+    blur: BlurEventDetail;
+    mouseenter: BaseEventDetail;
+    mouseleave: BaseEventDetail;
 }
 
-export interface ToastEvents {
-    close: { id: string };
-    click: { id: string; event: MouseEvent };
+export interface TabsEvents {
+    change: { value: string; event: Event };
+    keydown: KeydownEventDetail;
+}
+
+export interface ModalEvents {
+    close: BaseEventDetail;
 }
 
 export interface NavbarEvents {
-    brandClick: { event: MouseEvent };
-    menuToggle: { isOpen: boolean };
-    linkClick: { href: string; event: MouseEvent };
+    click: ClickEventDetail;
+    keydown: KeydownEventDetail;
 }
 
-// Re-export all event types for easy importing
-export type {
-    BaseEventDetail,
-    ClickEventDetail,
-    InputEventDetail,
-    ChangeEventDetail,
-    CheckedChangeEventDetail,
-    SelectChangeEventDetail,
-    FileUploadEventDetail,
-    CloseEventDetail,
-    ButtonEvents,
-    InputEvents,
-    TextareaEvents,
-    SelectEvents,
-    CheckboxEvents,
-    ToggleEvents,
-    AlertEvents,
-    CardEvents,
-    KeyValueFormEvents,
-    ImageUploadEvents,
-    NotificationManagerEvents,
-    TextAlignmentEvents,
-    ModalEvents,
-    SlideUpEvents,
-    ColorPickerEvents,
-    DropdownEvents,
-    ProgressEvents,
-    BadgeEvents,
-    TabsEvents,
-    TooltipEvents,
-    ToastEvents,
-    NavbarEvents,
-};
+export interface NavigationEvents {
+    "item-click": { item: any; event: MouseEvent };
+    toggle: { open: boolean };
+    open: BaseEventDetail;
+    close: BaseEventDetail;
+    keydown: KeydownEventDetail;
+}
+
+export interface LayoutEvents {
+    "breakpoint-change": { breakpoint: string; width: number };
+    "sidebar-toggle": { open: boolean };
+}
+
+export interface FormEvents {
+    submit: {
+        data: Record<string, string>;
+        formData: FormData;
+        event: SubmitEvent;
+    };
+    reset: { event: Event };
+    input: { name: string; value: string; event: Event };
+    blur: { name: string; value: string; event: FocusEvent };
+    "validation-error": { errors: Record<string, string> };
+}
+
+export interface AlertEvents {
+    close: { event: MouseEvent };
+}
+
+export interface CloseEventDetail {
+    event: MouseEvent;
+}

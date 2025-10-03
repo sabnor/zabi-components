@@ -147,8 +147,8 @@
 <button
     {type}
     class={buttonClasses}
-    on:click={handleClick}
-    on:keydown={handleKeydown}
+    on:click={(e) => handleClick(e as unknown as MouseEvent)}
+    on:keydown={(e) => handleKeydown(e as unknown as KeyboardEvent)}
     disabled={disabled || loading}
     {...accessibilityProps}
 >

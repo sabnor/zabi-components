@@ -169,7 +169,7 @@
             {orientation === 'vertical' ? 'flex-col space-y-1 mr-4' : ''}
             {fullWidth ? 'grid grid-cols-' + tabs.length : 'flex'}
         "
-        on:keydown={handleKeydown}
+        on:keydown={(e) => handleKeydown(e as unknown as KeyboardEvent)}
         aria-orientation={orientation}
     >
         {#each tabs as tab, index}
@@ -193,7 +193,8 @@
                 aria-controls="tabpanel-{tab.id}"
                 aria-disabled={tab.disabled}
                 tabindex={tab.id === activeTab ? 0 : -1}
-                on:click={(e: MouseEvent) => handleTabClick(tab, e)}
+                on:click={(e) =>
+                    handleTabClick(tab, e as unknown as MouseEvent)}
             >
                 {#if tab.icon}
                     <svg
