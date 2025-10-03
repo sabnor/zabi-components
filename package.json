@@ -40,11 +40,11 @@
     "typescript",
     "tailwind"
   ],
-  "author": "Your Name",
+  "author": "Zabi Components Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/zabi-components.git"
+    "url": "https://github.com/zabi-components/zabi-components.git"
   },
   "scripts": {
     "dev": "vite dev",
@@ -88,8 +88,5 @@
     "@sveltejs/kit": {
       "optional": true
     }
-  },
-  "overrides": {
-    "cookie": ">=0.7.0"
   }
 }
