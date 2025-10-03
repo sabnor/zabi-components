@@ -105,8 +105,13 @@
         <button
             type="button"
             class={badgeClasses}
-            on:click={handleClick}
-            on:keydown={(e) => e.key === "Enter" && handleClick(e)}
+            on:click={(e) => handleClick(e as unknown as MouseEvent)}
+            on:keydown={(e) => {
+                const event = e as unknown as KeyboardEvent;
+                if (event.key === "Enter") {
+                    handleClick(event);
+                }
+            }}
         >
             {#if dot}
                 <div
@@ -140,8 +145,13 @@
         <button
             type="button"
             class={closeButtonClasses}
-            on:click={handleClose}
-            on:keydown={(e) => e.key === "Enter" && handleClose(e)}
+            on:click={(e) => handleClose(e as unknown as MouseEvent)}
+            on:keydown={(e) => {
+                const event = e as unknown as KeyboardEvent;
+                if (event.key === "Enter") {
+                    handleClose(event);
+                }
+            }}
             aria-label="Close badge"
         >
             <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20">

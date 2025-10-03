@@ -12,7 +12,7 @@
     const dispatch = createEventDispatcher<AlertEvents>();
 
     function handleDismiss(event: Event) {
-        dispatch("close", { value: true, event });
+        dispatch("close", { event: event as MouseEvent });
     }
 
     $: alertClasses = {

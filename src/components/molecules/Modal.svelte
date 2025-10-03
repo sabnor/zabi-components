@@ -82,7 +82,7 @@
     <div
         class="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal-backdrop flex items-center justify-center p-4"
         on:click={handleBackdropClick}
-        on:keydown={(e: KeyboardEvent) => handleKeydown(e)}
+        on:keydown={(e) => handleKeydown(e as unknown as KeyboardEvent)}
         role="presentation"
         tabindex="-1"
     >
@@ -93,7 +93,7 @@
             role="dialog"
             aria-modal="true"
             aria-labelledby="dialog-title"
-            on:keydown={(e: KeyboardEvent) => trapFocus(e)}
+            on:keydown={(e) => trapFocus(e as unknown as KeyboardEvent)}
             tabindex="-1"
         >
             <!-- Header -->

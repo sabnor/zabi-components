@@ -255,10 +255,10 @@
             class={textareaClasses}
             on:input={handleInput}
             on:change={handleChange}
-            on:focus={handleFocus}
-            on:blur={handleBlur}
-            on:keydown={handleKeydown}
-            on:keyup={handleKeyup}
+            on:focus={(e) => handleFocus(e as unknown as FocusEvent)}
+            on:blur={(e) => handleBlur(e as unknown as FocusEvent)}
+            on:keydown={(e) => handleKeydown(e as unknown as KeyboardEvent)}
+            on:keyup={(e) => handleKeyup(e as unknown as KeyboardEvent)}
             on:resize={handleResize}
             aria-invalid={hasError ? "true" : "false"}
             aria-describedby={hasError || hasSuccess || helperText || maxLength

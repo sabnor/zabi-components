@@ -117,7 +117,8 @@
                         <button
                             type="button"
                             class="text-xl font-bold text-primary hover:text-primary-hover transition-colors"
-                            on:click={handleBrandClick}
+                            on:click={(e) =>
+                                handleBrandClick(e as unknown as MouseEvent)}
                         >
                             {brand}
                         </button>
@@ -125,7 +126,8 @@
                         <a
                             href={brand.href || "#"}
                             class="flex items-center space-x-2 text-xl font-bold text-primary hover:text-primary-hover transition-colors"
-                            on:click={(e) => handleBrandClick(e)}
+                            on:click={(e) =>
+                                handleBrandClick(e as unknown as MouseEvent)}
                         >
                             {#if brand.logo}
                                 <img
@@ -212,8 +214,12 @@
         role="button"
         tabindex="0"
         on:click={() => (isMenuOpen = false)}
-        on:keydown={(e: KeyboardEvent) =>
-            e.key === "Escape" && (isMenuOpen = false)}
+        on:keydown={(e) => {
+            const event = e as unknown as KeyboardEvent;
+            if (event.key === "Escape") {
+                isMenuOpen = false;
+            }
+        }}
         aria-label="Close menu"
         transition:fade={{ duration: 200 }}
     ></div>

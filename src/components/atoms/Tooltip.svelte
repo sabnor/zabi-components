@@ -289,12 +289,14 @@
         bind:this={triggerElement}
         type="button"
         aria-describedby={isVisible ? "tooltip-{content}" : undefined}
-        on:click={handleTriggerClick}
-        on:keydown={handleTriggerKeydown}
-        on:focus={handleTriggerFocus}
-        on:blur={handleTriggerBlur}
-        on:mouseenter={handleTriggerMouseEnter}
-        on:mouseleave={handleTriggerMouseLeave}
+        on:click={(e) => handleTriggerClick(e as unknown as MouseEvent)}
+        on:keydown={(e) => handleTriggerKeydown(e as unknown as KeyboardEvent)}
+        on:focus={(e) => handleTriggerFocus(e as unknown as FocusEvent)}
+        on:blur={(e) => handleTriggerBlur(e as unknown as FocusEvent)}
+        on:mouseenter={(e) =>
+            handleTriggerMouseEnter(e as unknown as MouseEvent)}
+        on:mouseleave={(e) =>
+            handleTriggerMouseLeave(e as unknown as MouseEvent)}
         class="inline-block"
     >
         <slot />
@@ -305,12 +307,14 @@
         role="button"
         tabindex="0"
         aria-describedby={isVisible ? "tooltip-{content}" : undefined}
-        on:click={handleTriggerClick}
-        on:keydown={handleTriggerKeydown}
-        on:focus={handleTriggerFocus}
-        on:blur={handleTriggerBlur}
-        on:mouseenter={handleTriggerMouseEnter}
-        on:mouseleave={handleTriggerMouseLeave}
+        on:click={(e) => handleTriggerClick(e as unknown as MouseEvent)}
+        on:keydown={(e) => handleTriggerKeydown(e as unknown as KeyboardEvent)}
+        on:focus={(e) => handleTriggerFocus(e as unknown as FocusEvent)}
+        on:blur={(e) => handleTriggerBlur(e as unknown as FocusEvent)}
+        on:mouseenter={(e) =>
+            handleTriggerMouseEnter(e as unknown as MouseEvent)}
+        on:mouseleave={(e) =>
+            handleTriggerMouseLeave(e as unknown as MouseEvent)}
         class="inline-block"
     >
         <slot />

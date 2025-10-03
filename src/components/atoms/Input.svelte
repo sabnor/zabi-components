@@ -81,20 +81,20 @@
 
     function handleFocus(event: CustomEvent) {
         isFocused = true;
-        dispatch("focus", { event });
+        dispatch("focus", { event: event as unknown as FocusEvent });
     }
 
     function handleBlur(event: CustomEvent) {
         isFocused = false;
-        dispatch("blur", { event });
+        dispatch("blur", { event: event as unknown as FocusEvent });
     }
 
     function handleKeydown(event: CustomEvent) {
-        dispatch("keydown", { event });
+        dispatch("keydown", { event: event as unknown as KeyboardEvent });
     }
 
     function handleKeyup(event: CustomEvent) {
-        dispatch("keyup", { event });
+        dispatch("keyup", { event: event as unknown as KeyboardEvent });
     }
 
     function togglePasswordVisibility() {
