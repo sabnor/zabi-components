@@ -47,10 +47,10 @@ export interface ButtonEvents {
 export interface InputEvents {
     input: InputEventDetail;
     change: ChangeEventDetail;
-    focus: { event: FocusEvent };
-    blur: { event: FocusEvent };
-    keydown: { event: KeyboardEvent };
-    keyup: { event: KeyboardEvent };
+    focus: { event: any };
+    blur: { event: any };
+    keydown: { event: any };
+    keyup: { event: any };
     clear: { event: Event };
 }
 
