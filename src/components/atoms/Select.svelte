@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import { onMount } from "svelte";
-    import { ChevronDown, X, AlertCircle, CheckCircle } from "@lucide/svelte";
+    import { ChevronDown, AlertCircle, CheckCircle } from "@lucide/svelte";
 
     export let value: string | number | undefined = undefined;
     export let options: Array<{

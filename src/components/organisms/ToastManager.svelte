@@ -168,25 +168,4 @@
         gap: 0.5rem;
     }
 
-    /* Position-specific adjustments */
-    .toast-manager[data-position*="top"] {
-        align-items: flex-start;
-    }
-
-    .toast-manager[data-position*="bottom"] {
-        align-items: flex-start;
-        flex-direction: column-reverse;
-    }
-
-    .toast-manager[data-position*="center"] {
-        align-items: center;
-    }
-
-    .toast-manager[data-position*="right"] {
-        align-items: flex-end;
-    }
-
-    .toast-manager[data-position*="left"] {
-        align-items: flex-start;
-    }
 </style>
