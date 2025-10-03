@@ -92,17 +92,75 @@ export interface CardEvents {
     blur: { event: FocusEvent };
 }
 
-export interface KeyValueFormEvents {
-    input: CustomEvent<Record<string, any>>;
-    change: CustomEvent<Record<string, any>>;
+
+export interface NotificationManagerEvents {
+    close: { value: void };
+}
+
+export interface TextAlignmentEvents {
+    change: { value: string };
+}
+
+export interface ModalEvents {
+    close: { value: boolean };
+    open: { value: boolean };
+}
+
+export interface SlideUpEvents {
+    close: { value: boolean };
+    open: { value: boolean };
+}
+
+export interface ColorPickerEvents {
+    change: { value: string };
+    select: { value: string };
+}
+
+export interface DropdownEvents {
+    change: { value: string };
+    select: { value: string };
+    open: { value: boolean };
+    close: { value: boolean };
+}
+
+export interface ProgressEvents {
+    complete: { value: number; max: number };
+}
+
+export interface BadgeEvents {
+    close: { event: MouseEvent };
+    click: { event: MouseEvent };
 }
 
 export interface ImageUploadEvents {
-    upload: CustomEvent<FileUploadEventDetail>;
+    change: { value: string | null };
+    upload: { files: FileList };
 }
 
-export interface NotificationManagerEvents {
-    close: CustomEvent<CloseEventDetail>;
+export interface KeyValueFormEvents {
+    input: { value: Record<string, any> };
+    change: { value: Record<string, any> };
+}
+
+export interface TabsEvents {
+    change: { activeTab: string; tab: any };
+    tabClick: { tab: any; event: MouseEvent };
+}
+
+export interface TooltipEvents {
+    show: { event: Event };
+    hide: { event: Event };
+}
+
+export interface ToastEvents {
+    close: { id: string };
+    click: { id: string; event: MouseEvent };
+}
+
+export interface NavbarEvents {
+    brandClick: { event: MouseEvent };
+    menuToggle: { isOpen: boolean };
+    linkClick: { href: string; event: MouseEvent };
 }
 
 // Re-export all event types for easy importing
@@ -126,4 +184,15 @@ export type {
     KeyValueFormEvents,
     ImageUploadEvents,
     NotificationManagerEvents,
+    TextAlignmentEvents,
+    ModalEvents,
+    SlideUpEvents,
+    ColorPickerEvents,
+    DropdownEvents,
+    ProgressEvents,
+    BadgeEvents,
+    TabsEvents,
+    TooltipEvents,
+    ToastEvents,
+    NavbarEvents,
 };

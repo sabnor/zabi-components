@@ -193,7 +193,7 @@
                 aria-controls="tabpanel-{tab.id}"
                 aria-disabled={tab.disabled}
                 tabindex={tab.id === activeTab ? 0 : -1}
-                on:click={(e) => handleTabClick(tab, e)}
+                on:click={(e: MouseEvent) => handleTabClick(tab, e)}
             >
                 {#if tab.icon}
                     <svg

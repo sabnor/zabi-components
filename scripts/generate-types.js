@@ -20,6 +20,7 @@ export * from './organisms/index.js';
 
 // Re-export types
 export type { FieldConfig } from './molecules/KeyValueForm.types.js';
+export * from './types/index.js';
 `;
 
 writeFileSync('dist/index.d.ts', mainDeclaration);
@@ -35,11 +36,16 @@ export { default as Heading } from './Heading.svelte';
 export { default as Input } from './Input.svelte';
 export { default as OptimizedImage } from './OptimizedImage.svelte';
 export { default as DebugPanel } from './PerformanceMonitor.svelte';
+export { default as Progress } from './Progress.svelte';
+export { default as ScaleDemo } from './ScaleDemo.svelte';
 export { default as Select } from './Select.svelte';
 export { default as Skeleton } from './Skeleton.svelte';
 export { default as Textarea } from './Textarea.svelte';
 export { default as TextAlignment } from './TextAlignment.svelte';
+export { default as ThemeToggle } from './ThemeToggle.svelte';
+export { default as Toast } from './Toast.svelte';
 export { default as Toggle } from './Toggle.svelte';
+export { default as Tooltip } from './Tooltip.svelte';
 `;
 
 writeFileSync('dist/atoms/index.d.ts', atomsDeclaration);
@@ -47,11 +53,12 @@ writeFileSync('dist/atoms/index.d.ts', atomsDeclaration);
 // Generate molecules index.d.ts
 const moleculesDeclaration = `// Molecular Components - Simple combinations of atoms
 export { default as Alert } from './Alert.svelte';
-export { default as Modal } from './Modal.svelte';
+export { default as Dropdown } from './Dropdown.svelte';
 export { default as FileUpload } from './ImageUpload.svelte';
 export { default as DynamicForm } from './KeyValueForm.svelte';
-export { default as Dropdown } from './Dropdown.svelte';
+export { default as Modal } from './Modal.svelte';
 export { default as SlideUp } from './SlideUp.svelte';
+export { default as Tabs } from './Tabs.svelte';
 
 // Types
 export type { FieldConfig } from './KeyValueForm.types';
@@ -77,9 +84,20 @@ writeFileSync('dist/molecules/KeyValueForm.types.d.ts', keyValueFormTypes);
 
 // Generate organisms index.d.ts
 const organismsDeclaration = `// Organism Components - Complex components with state management
+export { default as Navbar } from './Navbar.svelte';
 export { default as ToastContainer } from './NotificationManager.svelte';
+export { default as ToastManager } from './ToastManager.svelte';
 `;
 
 writeFileSync('dist/organisms/index.d.ts', organismsDeclaration);
+
+// Generate types index.d.ts
+const typesDeclaration = `// Types index file for zabi-components
+// Re-export all types for easy importing
+
+export * from './events.js';
+`;
+
+writeFileSync('dist/types/index.d.ts', typesDeclaration);
 
 console.log('TypeScript declaration files generated successfully!');

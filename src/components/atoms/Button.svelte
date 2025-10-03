@@ -29,13 +29,13 @@
 
     const dispatch = createEventDispatcher<ButtonEvents>();
 
-    function handleClick(event: CustomEvent) {
+    function handleClick(event: MouseEvent) {
         if (disabled || loading) {
             event.preventDefault();
             return;
         }
         // Dispatch with standardized event structure
-        dispatch("click", { value: true, event: event.detail?.event || event });
+        dispatch("click", { value: true, event });
     }
 
     function handleKeydown(event: KeyboardEvent) {

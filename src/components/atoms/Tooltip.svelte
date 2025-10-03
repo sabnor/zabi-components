@@ -41,8 +41,8 @@
     let tooltipElement: HTMLDivElement;
     let triggerElement: HTMLElement;
     let isVisible = false;
-    let showTimeout: number;
-    let hideTimeout: number;
+    let showTimeout: ReturnType<typeof setTimeout>;
+    let hideTimeout: ReturnType<typeof setTimeout>;
     let triggerRect: DOMRect;
 
     // Size classes
@@ -161,7 +161,7 @@
         clearTimeout(hideTimeout);
         showTimeout = setTimeout(() => {
             isVisible = true;
-            dispatch("show", event);
+            dispatch("show", { event });
 
             // Calculate position after showing
             requestAnimationFrame(() => {
@@ -181,7 +181,7 @@
         hideTimeout = setTimeout(
             () => {
                 isVisible = false;
-                dispatch("hide", event);
+                dispatch("hide", { event });
             },
             interactive ? 300 : 0,
         );

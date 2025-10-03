@@ -48,12 +48,12 @@
         "aria-describedby": ariaDescribedBy || undefined,
     };
 
-    function handleClick(event: CustomEvent) {
+    function handleClick(event: MouseEvent) {
         if (disabled || loading) {
             event.preventDefault();
             return;
         }
-        dispatch("click", { value: true, event: event.detail?.event || event });
+        dispatch("click", { value: true, event });
     }
 
     function handleKeydown(event: KeyboardEvent) {

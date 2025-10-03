@@ -2,13 +2,14 @@
     import { createEventDispatcher, onMount } from "svelte";
     import { slide, fade } from "svelte/transition";
     import { X } from "@lucide/svelte";
+    import type { SlideUpEvents } from "../../types/events";
 
     export let isOpen: boolean = false;
     export let title: string = "";
     export let maxHeight: string = "80vh";
     export let zIndex: number = 50;
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<SlideUpEvents>();
     let slideUpElement: HTMLDivElement;
     let backdropElement: HTMLDivElement;
 
