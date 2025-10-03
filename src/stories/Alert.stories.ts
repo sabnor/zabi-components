@@ -112,7 +112,7 @@ export const WithActions: Story = {
         title: 'Action Required',
         message: 'Please review and confirm your changes before proceeding.',
         actions: [
-            { label: 'Review Changes', onClick: () => console.log('Review clicked') },
+            { label: 'Review Changes', onClick: () => {} },
             { label: 'Learn More', href: '#' }
         ]
     }

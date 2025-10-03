@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { Eye, EyeOff, AlertCircle, CheckCircle, X } from "@lucide/svelte";
+    import { Eye, EyeOff, AlertCircle, CheckCircle } from "@lucide/svelte";
     import type {
         InputEvents,
         InputEventDetail,

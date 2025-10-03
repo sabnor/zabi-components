@@ -61,7 +61,7 @@
 
     function showToast() {
         // This would trigger a toast notification
-        console.log("Toast notification triggered");
+        // Toast notification triggered
     }
 
     async function handleSave() {
@@ -537,17 +537,17 @@
                     <div slot="content" class="p-2">
                         <button
                             class="block w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary rounded"
-                            on:click={() => console.log("Option 1 clicked")}
+                            on:click={() => {}}
                             >Option 1</button
                         >
                         <button
                             class="block w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary rounded"
-                            on:click={() => console.log("Option 2 clicked")}
+                            on:click={() => {}}
                             >Option 2</button
                         >
                         <button
                             class="block w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary rounded"
-                            on:click={() => console.log("Option 3 clicked")}
+                            on:click={() => {}}
                             >Option 3</button
                         >
                     </div>
@@ -560,7 +560,7 @@
                 <ImageUpload
                     accept="image/*"
                     maxSize={5 * 1024 * 1024}
-                    onUpload={(files) => console.log("Uploaded files:", files)}
+                    onUpload={(files) => {}}
                 />
             </div>
 
@@ -570,7 +570,7 @@
                 <KeyValueForm
                     config={formConfig}
                     bind:data={formData}
-                    on:submit={(e) => console.log("Form submitted:", e.detail)}
+                    on:submit={(e) => {}}
                 />
             </div>
         </div>
