@@ -20,13 +20,27 @@
         click: { event: MouseEvent };
     }>();
 
-    function handleClose(event: MouseEvent | KeyboardEvent) {
-        event.stopPropagation();
-        dispatch("close", { event: event as MouseEvent });
+    function handleClose(event: CustomEvent) {
+        const mouseEvent = event as unknown as MouseEvent;
+        mouseEvent.stopPropagation();
+        dispatch("close", { event: mouseEvent });
     }
 
-    function handleClick(event: MouseEvent | KeyboardEvent) {
-        dispatch("click", { event: event as MouseEvent });
+    function handleClick(event: CustomEvent) {
+        const mouseEvent = event as unknown as MouseEvent;
+        dispatch("click", { event: mouseEvent });
+    }
+
+    function handleKeydown(event: CustomEvent) {
+        const keyboardEvent = event as unknown as KeyboardEvent;
+        if (keyboardEvent.key === "Enter" || keyboardEvent.key === " ") {
+            keyboardEvent.preventDefault();
+            if (keyboardEvent.target === keyboardEvent.currentTarget) {
+                handleClick(event);
+            } else {
+                handleClose(event);
+            }
+        }
     }
 
     // Size classes
@@ -105,13 +119,8 @@
         <button
             type="button"
             class={badgeClasses}
-            on:click={(e) => handleClick(e as unknown as MouseEvent)}
-            on:keydown={(e) => {
-                const event = e as unknown as KeyboardEvent;
-                if (event.key === "Enter") {
-                    handleClick(event);
-                }
-            }}
+            on:click={handleClick}
+            on:keydown={handleKeydown}
         >
             {#if dot}
                 <div
@@ -121,7 +130,7 @@
 
             {#if icon && iconPosition === "left"}
                 <svg
-                    class={iconClasses}
+                    class="{iconClasses} text-current"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                 >
@@ -133,7 +142,7 @@
 
             {#if icon && iconPosition === "right"}
                 <svg
-                    class={iconClasses}
+                    class="{iconClasses} text-current"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                 >
@@ -145,16 +154,15 @@
         <button
             type="button"
             class={closeButtonClasses}
-            on:click={(e) => handleClose(e as unknown as MouseEvent)}
-            on:keydown={(e) => {
-                const event = e as unknown as KeyboardEvent;
-                if (event.key === "Enter") {
-                    handleClose(event);
-                }
-            }}
+            on:click={handleClose}
+            on:keydown={handleKeydown}
             aria-label="Close badge"
         >
-            <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+            <svg
+                class="w-full h-full text-current"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+            >
                 <path
                     fill-rule="evenodd"
                     d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -172,7 +180,7 @@
 
             {#if icon && iconPosition === "left"}
                 <svg
-                    class={iconClasses}
+                    class="{iconClasses} text-current"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                 >
@@ -184,7 +192,7 @@
 
             {#if icon && iconPosition === "right"}
                 <svg
-                    class={iconClasses}
+                    class="{iconClasses} text-current"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                 >

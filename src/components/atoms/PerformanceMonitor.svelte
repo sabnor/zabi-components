@@ -15,51 +15,69 @@
     };
 
     onMount(() => {
-        // Performance Observer for Core Web Vitals
+        // Performance Observer for Core Web Vitals - optimized with proper cleanup
         if (typeof window !== "undefined" && "PerformanceObserver" in window) {
+            const observers: PerformanceObserver[] = [];
+
             // First Paint
-            new PerformanceObserver((list) => {
+            const paintObserver = new PerformanceObserver((list) => {
                 for (const entry of list.getEntries()) {
                     if (entry.name === "first-paint") {
                         metrics.firstPaint = entry.startTime;
                     }
                 }
-            }).observe({ entryTypes: ["paint"] });
+            });
+            paintObserver.observe({ entryTypes: ["paint"] });
+            observers.push(paintObserver);
 
             // First Contentful Paint
-            new PerformanceObserver((list) => {
+            const fcpObserver = new PerformanceObserver((list) => {
                 for (const entry of list.getEntries()) {
                     if (entry.name === "first-contentful-paint") {
                         metrics.firstContentfulPaint = entry.startTime;
                     }
                 }
-            }).observe({ entryTypes: ["paint"] });
+            });
+            fcpObserver.observe({ entryTypes: ["paint"] });
+            observers.push(fcpObserver);
 
             // Largest Contentful Paint
-            new PerformanceObserver((list) => {
+            const lcpObserver = new PerformanceObserver((list) => {
                 const entries = list.getEntries();
                 const lastEntry = entries[entries.length - 1];
                 metrics.largestContentfulPaint = lastEntry.startTime;
-            }).observe({ entryTypes: ["largest-contentful-paint"] });
+            });
+            lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
+            observers.push(lcpObserver);
 
             // Cumulative Layout Shift
-            new PerformanceObserver((list) => {
+            const clsObserver = new PerformanceObserver((list) => {
                 for (const entry of list.getEntries()) {
                     if (!(entry as any).hadRecentInput) {
                         metrics.cumulativeLayoutShift += (entry as any).value;
                     }
                 }
-            }).observe({ entryTypes: ["layout-shift"] });
+            });
+            clsObserver.observe({ entryTypes: ["layout-shift"] });
+            observers.push(clsObserver);
+
+            // Cleanup function
+            return () => {
+                observers.forEach((observer) => observer.disconnect());
+            };
         }
 
-        // Basic timing metrics
-        window.addEventListener("DOMContentLoaded", () => {
+        // Basic timing metrics with proper cleanup
+        const handleDOMContentLoaded = () => {
             metrics.domContentLoaded = performance.now();
-        });
+        };
 
-        window.addEventListener("load", () => {
+        const handleLoad = () => {
             metrics.loadComplete = performance.now();
-        });
+        };
+
+        window.addEventListener("DOMContentLoaded", handleDOMContentLoaded);
+        window.addEventListener("load", handleLoad);
 
         // Show metrics in development
         if (showInDev && import.meta.env.DEV) {
@@ -67,6 +85,15 @@
                 isVisible = true;
             }, 2000);
         }
+
+        // Cleanup function for event listeners
+        return () => {
+            window.removeEventListener(
+                "DOMContentLoaded",
+                handleDOMContentLoaded,
+            );
+            window.removeEventListener("load", handleLoad);
+        };
     });
 
     function formatTime(ms: number): string {

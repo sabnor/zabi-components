@@ -13,16 +13,17 @@
         click: { event: MouseEvent };
     }>();
 
-    function handleClick(event: MouseEvent) {
+    function handleClick(event: CustomEvent) {
         if (interactive) {
-            dispatch("click", { event });
+            const mouseEvent = event as unknown as MouseEvent;
+            dispatch("click", { event: mouseEvent });
         }
     }
 </script>
 
 <article
     class="card card-{variant} {interactive ? 'interactive' : ''} {className}"
-    on:click={(e) => handleClick(e as unknown as MouseEvent)}
+    on:click={handleClick}
     role={interactive ? "button" : undefined}
     {...interactive ? { tabindex: 0 } : {}}
 >

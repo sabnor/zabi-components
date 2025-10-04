@@ -166,7 +166,7 @@
         <div class={checkboxClasses}>
             {#if checked && !indeterminate}
                 <svg
-                    class={checkIconClasses}
+                    class="{checkIconClasses} text-text"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                 >
@@ -178,7 +178,7 @@
                 </svg>
             {:else if indeterminate}
                 <svg
-                    class={indeterminateIconClasses}
+                    class="{indeterminateIconClasses} text-text"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                 >
