@@ -75,11 +75,15 @@
 <div class="progress-container {className}">
     {#if label}
         <div class="flex justify-between items-center mb-2">
-            <label for={progressId} class="text-sm font-medium text-primary"
-                >{label}</label
+            <label
+                for={progressId}
+                class="text-sm font-medium"
+                style="color: rgb(var(--color-text));">{label}</label
             >
             {#if showValue}
-                <span class="text-sm text-secondary"
+                <span
+                    class="text-sm"
+                    style="color: rgb(var(--color-text-secondary));"
                     >{Math.round(percentage)}%</span
                 >
             {/if}
@@ -117,7 +121,10 @@
             <!-- Value display inside bar (for larger sizes) -->
             {#if showValue && size === "lg"}
                 <div class="absolute inset-0 flex items-center justify-center">
-                    <span class="text-xs font-medium text-white">
+                    <span
+                        class="text-xs font-medium"
+                        style="color: rgb(var(--color-text-inverse));"
+                    >
                         {Math.round(percentage)}%
                     </span>
                 </div>
@@ -144,7 +151,7 @@
                     stroke="currentColor"
                     stroke-width="4"
                     fill="none"
-                    class="text-neutral-200 dark:text-neutral-700"
+                    style="color: rgb(var(--color-border));"
                 />
                 <!-- Progress circle -->
                 <circle
@@ -169,10 +176,8 @@
             <div class="absolute inset-0 flex items-center justify-center">
                 {#if showValue}
                     <span
-                        class="
-                        font-medium text-primary
-                        {sizeClasses[size].text}
-                    "
+                        class="font-medium {sizeClasses[size].text}"
+                        style="color: rgb(var(--color-text));"
                     >
                         {Math.round(percentage)}%
                     </span>

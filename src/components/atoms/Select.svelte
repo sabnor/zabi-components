@@ -199,12 +199,12 @@
         "right-8",
         "top-1/2",
         "-translate-y-1/2",
-        "text-gray-400",
-        "hover:text-white",
+        "text-text-secondary",
+        "hover:text-text",
         "transition-colors",
         "duration-200",
         "focus:outline-none",
-        "focus:text-white",
+        "focus:text-text",
         size === "sm" ? "w-4 h-4" : size === "md" ? "w-5 h-5" : "w-6 h-6",
     ].join(" ");
 </script>
@@ -246,7 +246,7 @@
                 <option
                     value={option.value}
                     disabled={option.disabled}
-                    class="bg-dark-800 text-white"
+                    class="bg-surface text-text"
                 >
                     {option.label}
                 </option>

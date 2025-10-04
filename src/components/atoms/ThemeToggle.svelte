@@ -14,10 +14,9 @@
 
     const variantClasses = {
         default:
-            "bg-surface-primary hover:bg-surface-secondary border border-primary shadow-adaptive-sm",
-        minimal: "bg-transparent hover:bg-surface-secondary",
-        outline:
-            "bg-transparent border border-primary hover:bg-surface-secondary",
+            "bg-surface hover:bg-surface-hover border border-border shadow-adaptive-sm",
+        minimal: "bg-transparent hover:bg-surface-hover",
+        outline: "bg-transparent border border-border hover:bg-surface-hover",
     };
 
     onMount(() => {
@@ -57,13 +56,13 @@
 		flex
 		items-center
 		justify-center
-		text-primary
-		hover:text-primary-600
+		text-text
+		hover:text-text
 		focus:outline-none
 		focus:ring-2
-		focus:ring-primary-500
+		focus:ring-focus-ring
 		focus:ring-offset-2
-		focus:ring-offset-surface-primary
+		focus:ring-offset-focus-ring-offset
 	"
     aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     title={isDark ? "Switch to light mode" : "Switch to dark mode"}

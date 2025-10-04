@@ -5,7 +5,9 @@
     export let action = "";
     export let className = "";
 
-    const dispatch = createEventDispatcher<FormEvents>();
+    const dispatch = createEventDispatcher<{
+        submit: { data: any; formData: FormData; event: SubmitEvent };
+    }>();
 
     function handleSubmit(event: SubmitEvent) {
         const formData = new FormData(event.target as HTMLFormElement);
@@ -14,7 +16,12 @@
     }
 </script>
 
-<form {method} {action} class="form {className}" on:submit|preventDefault={handleSubmit}>
+<form
+    {method}
+    {action}
+    class="form {className}"
+    on:submit|preventDefault={handleSubmit}
+>
     <slot />
 </form>
 
@@ -28,11 +35,20 @@
     }
 
     :global(.form .form-label) {
-        @apply block text-sm font-medium text-gray-700;
+        @apply block text-sm font-medium;
+        color: rgb(var(--color-text));
     }
 
     :global(.form .form-input) {
-        @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+        @apply w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2;
+        border-color: rgb(var(--color-border));
+        color: rgb(var(--color-text));
+        background-color: rgb(var(--color-surface));
+    }
+
+    :global(.form .form-input:focus) {
+        border-color: rgb(var(--color-border-focus));
+        ring-color: rgb(var(--color-focus-ring));
     }
 
     :global(.form .form-actions) {

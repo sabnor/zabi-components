@@ -93,11 +93,17 @@
 
     .nav-link {
         @apply flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors;
-        @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100;
+        color: rgb(var(--color-text-secondary));
+    }
+
+    .nav-link:hover {
+        color: rgb(var(--color-text));
+        background-color: rgb(var(--color-surface-hover));
     }
 
     .nav-link.active {
-        @apply text-blue-600 bg-blue-50;
+        color: rgb(var(--color-primary));
+        background-color: rgb(var(--color-primary-light));
     }
 
     .nav-icon {

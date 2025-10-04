@@ -6,6 +6,6 @@
 </script>
 
 <div
-    class="animate-pulse bg-stone-800 {className}"
-    style="width: {width}; height: {height}; border-radius: {borderRadius};"
+    class="animate-pulse {className}"
+    style="width: {width}; height: {height}; border-radius: {borderRadius}; background-color: rgb(var(--color-surface-secondary));"
 ></div>

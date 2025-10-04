@@ -332,17 +332,20 @@
                         >
                         <div class="flex space-x-2">
                             <button
-                                class="px-3 py-1 text-sm bg-success-500 hover:bg-success-600 text-white rounded-md transition-colors"
+                                class="px-3 py-1 text-sm rounded-md transition-colors"
+                                style="background-color: rgb(var(--color-success)); color: rgb(var(--color-text-inverse));"
                             >
                                 Success
                             </button>
                             <button
-                                class="px-3 py-1 text-sm bg-warning-500 hover:bg-warning-600 text-white rounded-md transition-colors"
+                                class="px-3 py-1 text-sm rounded-md transition-colors"
+                                style="background-color: rgb(var(--color-warning)); color: rgb(var(--color-text-inverse));"
                             >
                                 Warning
                             </button>
                             <button
-                                class="px-3 py-1 text-sm bg-error-500 hover:bg-error-600 text-white rounded-md transition-colors"
+                                class="px-3 py-1 text-sm rounded-md transition-colors"
+                                style="background-color: rgb(var(--color-error)); color: rgb(var(--color-text-inverse));"
                             >
                                 Error
                             </button>

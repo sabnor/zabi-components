@@ -51,15 +51,15 @@
 
 <style>
     .card {
-        @apply bg-white border border-gray-200 rounded-lg overflow-hidden;
+        @apply bg-card border border-border rounded-lg overflow-hidden;
     }
 
     .card-elevated {
-        @apply shadow-lg;
+        @apply bg-card-elevated shadow-adaptive-lg;
     }
 
     .interactive {
-        @apply cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-1;
+        @apply cursor-pointer transition-all duration-200 hover:shadow-adaptive-md hover:-translate-y-1 hover:bg-card-hover;
     }
 
     .card-image {
@@ -75,14 +75,17 @@
     }
 
     .card-title {
-        @apply text-lg font-semibold text-gray-900;
+        @apply text-lg font-semibold;
+        color: rgb(var(--color-text));
     }
 
     .card-subtitle {
-        @apply text-sm font-medium text-gray-600;
+        @apply text-sm font-medium;
+        color: rgb(var(--color-text-secondary));
     }
 
     .card-description {
-        @apply text-sm text-gray-500;
+        @apply text-sm;
+        color: rgb(var(--color-text-tertiary));
     }
 </style>

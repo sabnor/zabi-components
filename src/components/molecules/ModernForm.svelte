@@ -469,7 +469,7 @@
         }
 
         .form-actions {
-            border-top: 1px solid #000;
+            border-top: 1px solid rgb(var(--color-border));
         }
     }
 </style>
