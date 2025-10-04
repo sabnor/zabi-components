@@ -271,7 +271,9 @@
                     type="button"
                     class={buttonClasses}
                     on:click|preventDefault={clearValue}
-                    on:keydown={(e) => (e as unknown as KeyboardEvent).key === "Enter" && clearValue()}
+                    on:keydown={(e) =>
+                        (e as unknown as KeyboardEvent).key === "Enter" &&
+                        clearValue()}
                     aria-label="Clear input"
                 >
                     <X size={16} />
@@ -283,7 +285,9 @@
                     type="button"
                     class={buttonClasses}
                     on:click|preventDefault={togglePasswordVisibility}
-                    on:keydown={(e) => (e as unknown as KeyboardEvent).key === "Enter" && togglePasswordVisibility()}
+                    on:keydown={(e) =>
+                        (e as unknown as KeyboardEvent).key === "Enter" &&
+                        togglePasswordVisibility()}
                     aria-label={showPassword
                         ? "Hide password"
                         : "Show password"}
