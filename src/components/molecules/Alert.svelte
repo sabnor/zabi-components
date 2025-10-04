@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import type { AlertEvents, CloseEventDetail } from "../../types/events";
+    import type { AlertEvents } from "../../types/events";
 
     // Standardized component props
     export let variant: "info" | "success" | "warning" | "error" = "info";
@@ -11,8 +11,8 @@
 
     const dispatch = createEventDispatcher<AlertEvents>();
 
-    function handleDismiss(event: Event) {
-        dispatch("close", { event: event as MouseEvent });
+    function handleDismiss(event: CustomEvent) {
+        dispatch("close", { event: event as unknown as MouseEvent });
     }
 
     $: alertClasses = {
@@ -56,7 +56,7 @@
     <!-- Dismiss button (X in top right) -->
     {#if closable}
         <button
-            on:click={handleDismiss}
+            on:click|preventDefault={handleDismiss}
             class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
             aria-label="Dismiss alert"
             type="button"

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte";
     import { fly, fade } from "svelte/transition";
+    import type { TabsEvents } from "../../types/events";
 
     export let tabs: Array<{
         id: string;

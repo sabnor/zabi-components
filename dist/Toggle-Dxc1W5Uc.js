@@ -2287,5 +2287,6 @@ export {
   cr as a,
   br as b,
   gr as c,
-  lt as d
+  lt as d,
+  pa as p
 };
