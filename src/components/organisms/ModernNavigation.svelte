@@ -1,6 +1,20 @@
 <script lang="ts">
     import { createEventDispatcher, onMount, onDestroy } from "svelte";
     import type { NavigationEvents } from "../../types/events";
+    import {
+        createNavigationState,
+        updateNavigationState,
+        getNavigationClasses,
+        createKeyboardNavigation,
+        createMenuState,
+        createItemClickHandler,
+        getAccessibilityProps,
+        getMenuButtonProps,
+        getMenuListProps,
+        getFocusableItems,
+        breakpoints,
+    } from "../../lib/navigation-utils";
+    import NavigationItem from "./NavigationItem.svelte";
 
     // Navigation configuration
     export let variant:
@@ -14,8 +28,6 @@
     export let responsive: boolean = true;
     export let collapsible: boolean = false;
     export let className: string = "";
-
-    // Navigation state
     export let currentPath: string = "";
     export let isOpen: boolean = false;
     export let activeItem: string = "";
@@ -33,8 +45,6 @@
         disabled?: boolean;
         external?: boolean;
     }> = [];
-
-    // Accessibility
     export let ariaLabel: string = "";
     export let ariaDescribedBy: string = "";
     export let role: string = "navigation";
@@ -44,220 +54,49 @@
     let navigationElement: HTMLElement;
     let menuButton: HTMLButtonElement;
     let menuList: HTMLElement;
-    let currentFocusIndex = -1;
-    let isKeyboardNavigation = false;
 
-    // Responsive breakpoints
-    const breakpoints = {
-        mobile: 768,
-        tablet: 1024,
-        desktop: 1280,
-    };
+    // Create navigation configuration and state
+    const config = { variant, orientation, density, responsive, collapsible };
+    $: navigationState = updateNavigationState(
+        createNavigationState(activeItem),
+        { isOpen, activeItem },
+    );
 
-    // Density classes
-    const densityClasses = {
-        compact: "density-compact",
-        comfortable: "density-comfortable",
-    };
+    // Event handlers
+    const handleItemClick = createItemClickHandler(
+        (updates) => {
+            activeItem = updates.activeItem || activeItem;
+            isOpen = updates.isOpen !== undefined ? updates.isOpen : isOpen;
+        },
+        config,
+        dispatch,
+    );
 
-    // Variant classes
-    const variantClasses = {
-        header: "nav-header",
-        sidebar: "nav-sidebar",
-        breadcrumb: "nav-breadcrumb",
-        tabs: "nav-tabs",
-        pagination: "nav-pagination",
-    };
+    const handleKeydown = createKeyboardNavigation(
+        navigationState,
+        (updates) => {
+            isOpen = updates.isOpen !== undefined ? updates.isOpen : isOpen;
+        },
+        () => getFocusableItems(menuList),
+        handleItemClick,
+    );
 
-    // Computed classes
-    $: computedClasses = [
-        "modern-navigation",
-        variantClasses[variant],
-        `nav-${orientation}`,
-        densityClasses[density],
-        responsive ? "responsive" : "",
-        collapsible ? "collapsible" : "",
-        isOpen ? "open" : "",
-        className,
-    ]
-        .filter(Boolean)
-        .join(" ");
-
-    // Keyboard navigation
-    function handleKeydown(event: KeyboardEvent) {
-        if (!isOpen && event.key !== "Enter" && event.key !== " ") return;
-
-        isKeyboardNavigation = true;
-
-        switch (event.key) {
-            case "Enter":
-            case " ":
-                event.preventDefault();
-                if (menuButton && document.activeElement === menuButton) {
-                    toggleMenu();
-                } else {
-                    const activeElement = document.activeElement as HTMLElement;
-                    if (
-                        activeElement &&
-                        activeElement.getAttribute("role") === "menuitem"
-                    ) {
-                        activeElement.click();
-                    }
-                }
-                break;
-
-            case "Escape":
-                if (isOpen) {
-                    closeMenu();
-                    menuButton?.focus();
-                }
-                break;
-
-            case "ArrowDown":
-                event.preventDefault();
-                if (orientation === "vertical") {
-                    focusNextItem();
-                } else {
-                    if (!isOpen) {
-                        openMenu();
-                    }
-                    focusNextItem();
-                }
-                break;
-
-            case "ArrowUp":
-                event.preventDefault();
-                if (orientation === "vertical") {
-                    focusPreviousItem();
-                } else {
-                    focusPreviousItem();
-                }
-                break;
-
-            case "ArrowRight":
-                event.preventDefault();
-                if (orientation === "horizontal") {
-                    focusNextItem();
-                }
-                break;
-
-            case "ArrowLeft":
-                event.preventDefault();
-                if (orientation === "horizontal") {
-                    focusPreviousItem();
-                }
-                break;
-
-            case "Home":
-                event.preventDefault();
-                focusFirstItem();
-                break;
-
-            case "End":
-                event.preventDefault();
-                focusLastItem();
-                break;
-        }
-    }
-
-    // Focus management
-    function focusNextItem() {
-        const focusableItems = getFocusableItems();
-        if (focusableItems.length === 0) return;
-
-        currentFocusIndex = (currentFocusIndex + 1) % focusableItems.length;
-        focusableItems[currentFocusIndex]?.focus();
-    }
-
-    function focusPreviousItem() {
-        const focusableItems = getFocusableItems();
-        if (focusableItems.length === 0) return;
-
-        currentFocusIndex =
-            currentFocusIndex <= 0
-                ? focusableItems.length - 1
-                : currentFocusIndex - 1;
-        focusableItems[currentFocusIndex]?.focus();
-    }
-
-    function focusFirstItem() {
-        const focusableItems = getFocusableItems();
-        if (focusableItems.length === 0) return;
-
-        currentFocusIndex = 0;
-        focusableItems[0]?.focus();
-    }
-
-    function focusLastItem() {
-        const focusableItems = getFocusableItems();
-        if (focusableItems.length === 0) return;
-
-        currentFocusIndex = focusableItems.length - 1;
-        focusableItems[currentFocusIndex]?.focus();
-    }
-
-    function getFocusableItems(): HTMLElement[] {
-        if (!menuList) return [];
-
-        return Array.from(
-            menuList.querySelectorAll(
-                'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
-            ),
-        ) as HTMLElement[];
-    }
-
-    // Menu state management
-    function toggleMenu() {
-        isOpen = !isOpen;
-        dispatch("toggle", { open: isOpen });
-
-        if (isOpen) {
-            setTimeout(() => {
-                focusFirstItem();
-            }, 100);
-        }
-    }
-
-    function openMenu() {
-        isOpen = true;
-        dispatch("open");
-
-        setTimeout(() => {
-            focusFirstItem();
-        }, 100);
-    }
-
-    function closeMenu() {
-        isOpen = false;
-        dispatch("close");
-    }
-
-    // Item click handler
-    function handleItemClick(item: any, event: MouseEvent) {
-        if (item.disabled) {
-            event.preventDefault();
-            return;
-        }
-
-        activeItem = item.id;
-        dispatch("item-click", {
-            item,
-            event: event as MouseEvent,
-        });
-
-        if (collapsible && variant !== "tabs") {
-            closeMenu();
-        }
-    }
+    const menuState = createMenuState(
+        navigationState,
+        (updates) => {
+            isOpen = updates.isOpen !== undefined ? updates.isOpen : isOpen;
+        },
+        () => getFocusableItems(menuList),
+    );
 
     // Mouse event handlers
     function handleMouseEnter() {
-        isKeyboardNavigation = false;
+        // Reset keyboard navigation flag
     }
 
     function handleMouseLeave() {
         if (variant === "header" && isOpen) {
-            closeMenu();
+            menuState.close();
         }
     }
 
@@ -267,14 +106,14 @@
             navigationElement &&
             !navigationElement.contains(event.target as Node)
         ) {
-            closeMenu();
+            menuState.close();
         }
     }
 
     // Resize handler for responsive behavior
     function handleResize() {
         if (window.innerWidth >= breakpoints.tablet && isOpen) {
-            closeMenu();
+            menuState.close();
         }
     }
 
@@ -288,28 +127,20 @@
         };
     });
 
-    // Accessibility attributes
-    $: accessibilityProps = {
-        "aria-label": ariaLabel || `${variant} navigation`,
-        "aria-describedby": ariaDescribedBy || undefined,
-        role: role,
-        "data-variant": variant,
-        "data-orientation": orientation,
-    };
-
-    $: menuButtonProps = {
-        "aria-expanded": isOpen,
-        "aria-controls": "navigation-menu",
-        "aria-haspopup": "menu" as const,
-        "aria-label": "Toggle navigation menu",
-    };
-
-    $: menuListProps = {
-        id: "navigation-menu",
-        role: orientation === "horizontal" ? "menubar" : "menu",
-        "aria-orientation": orientation,
-        "aria-label": `${variant} menu`,
-    };
+    // Computed classes and props
+    $: computedClasses = getNavigationClasses(
+        config,
+        navigationState,
+        className,
+    );
+    $: accessibilityProps = getAccessibilityProps(
+        variant,
+        ariaLabel,
+        ariaDescribedBy,
+        role,
+    );
+    $: menuButtonProps = getMenuButtonProps(isOpen);
+    $: menuListProps = getMenuListProps(orientation, variant);
 </script>
 
 <nav
@@ -325,12 +156,12 @@
         <button
             bind:this={menuButton}
             class="menu-button"
-            on:click={toggleMenu}
+            on:click={menuState.toggle}
             {...menuButtonProps}
         >
             <span class="menu-button-text">Menu</span>
             <svg
-                class="menu-button-icon"
+                class="menu-button-icon text-text"
                 class:rotated={isOpen}
                 viewBox="0 0 24 24"
                 fill="none"
@@ -351,92 +182,12 @@
         {...menuListProps}
     >
         {#each items as item (item.id)}
-            <li class="nav-item" class:active={activeItem === item.id}>
-                {#if item.href}
-                    <a
-                        href={item.href}
-                        class="nav-link"
-                        class:disabled={item.disabled}
-                        class:external={item.external}
-                        on:click={(e) =>
-                            handleItemClick(item, e as unknown as MouseEvent)}
-                        aria-current={currentPath === item.href
-                            ? "page"
-                            : undefined}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                    >
-                        {#if item.icon}
-                            <svelte:component
-                                this={item.icon}
-                                class="nav-icon"
-                            />
-                        {/if}
-                        <span class="nav-label">{item.label}</span>
-                        {#if item.external}
-                            <svg
-                                class="external-icon"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                aria-hidden="true"
-                            >
-                                <path
-                                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                                />
-                                <polyline points="15,3 21,3 21,9" />
-                                <line x1="10" y1="14" x2="21" y2="3" />
-                            </svg>
-                        {/if}
-                    </a>
-                {:else}
-                    <button
-                        class="nav-button"
-                        class:disabled={item.disabled}
-                        on:click={(e) =>
-                            handleItemClick(item, e as unknown as MouseEvent)}
-                        disabled={item.disabled}
-                    >
-                        {#if item.icon}
-                            <svelte:component
-                                this={item.icon}
-                                class="nav-icon"
-                            />
-                        {/if}
-                        <span class="nav-label">{item.label}</span>
-                    </button>
-                {/if}
-
-                {#if item.children && item.children.length > 0}
-                    <ul class="nav-submenu" role="menu">
-                        {#each item.children as child (child.id)}
-                            <li class="nav-subitem">
-                                <a
-                                    href={child.href}
-                                    class="nav-sublink"
-                                    on:click={(e) =>
-                                        handleItemClick(
-                                            child,
-                                            e as unknown as MouseEvent,
-                                        )}
-                                    aria-current={currentPath === child.href
-                                        ? "page"
-                                        : undefined}
-                                >
-                                    {#if child.icon}
-                                        <svelte:component
-                                            this={child.icon}
-                                            class="nav-icon"
-                                        />
-                                    {/if}
-                                    <span class="nav-label">{child.label}</span>
-                                </a>
-                            </li>
-                        {/each}
-                    </ul>
-                {/if}
-            </li>
+            <NavigationItem
+                {item}
+                isActive={activeItem === item.id}
+                {currentPath}
+                onItemClick={handleItemClick}
+            />
         {/each}
     </ul>
 

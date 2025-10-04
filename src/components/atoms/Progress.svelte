@@ -151,7 +151,7 @@
                     stroke="currentColor"
                     stroke-width="4"
                     fill="none"
-                    style="color: rgb(var(--color-border));"
+                    class="text-border"
                 />
                 <!-- Progress circle -->
                 <circle

@@ -167,7 +167,7 @@
                     aria-label="Toggle navigation menu"
                 >
                     <svg
-                        class="w-6 h-6"
+                        class="w-6 h-6 text-text"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

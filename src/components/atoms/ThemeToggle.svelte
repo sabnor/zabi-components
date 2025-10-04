@@ -70,7 +70,7 @@
     {#if isDark}
         <!-- Sun icon for light mode -->
         <svg
-            class="w-5 h-5"
+            class="w-5 h-5 text-text"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -86,7 +86,7 @@
     {:else}
         <!-- Moon icon for dark mode -->
         <svg
-            class="w-5 h-5"
+            class="w-5 h-5 text-text"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

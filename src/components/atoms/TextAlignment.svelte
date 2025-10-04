@@ -33,9 +33,12 @@
         },
     ];
 
-    function selectAlignment(alignmentValue: string) {
+    function selectAlignment(alignmentValue: string, event?: Event) {
         value = alignmentValue;
-        dispatch("change", { value: alignmentValue });
+        dispatch("change", {
+            value: alignmentValue,
+            event: event || new Event("change"),
+        });
     }
 
     // Size classes
@@ -86,11 +89,12 @@
                 option.value
                     ? 'rgb(var(--color-primary))'
                     : 'transparent'};"
-                on:click={() => selectAlignment(option.value)}
+                on:click={(e) =>
+                    selectAlignment(option.value, e as unknown as Event)}
                 on:keydown={(e) => {
-                    const event = e as unknown as KeyboardEvent;
-                    if (event.key === "Enter") {
-                        selectAlignment(option.value);
+                    const keyboardEvent = e as unknown as KeyboardEvent;
+                    if (keyboardEvent.key === "Enter") {
+                        selectAlignment(option.value, keyboardEvent);
                     }
                 }}
                 role="radio"

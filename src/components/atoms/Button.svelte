@@ -41,6 +41,7 @@
         if (disabled || loading) return;
         const keyboardEvent = event as unknown as KeyboardEvent;
         if (keyboardEvent.key === "Enter" || keyboardEvent.key === " ") {
+            keyboardEvent.preventDefault();
             dispatch("click", { value: true, event: keyboardEvent });
         }
     }
@@ -120,7 +121,7 @@
     // Simple loading indicator
     const showLoading = loading;
 
-    // Computed classes
+    // Computed classes - using reactive statement for better performance
     $: buttonClasses = [
         baseClasses,
         sizeClasses[size],
@@ -152,7 +153,7 @@
 >
     {#if loading}
         <svg
-            class="animate-spin h-4 w-4"
+            class="animate-spin h-4 w-4 text-current"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

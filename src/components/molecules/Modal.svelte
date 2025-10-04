@@ -59,7 +59,7 @@
         }
     }
 
-    // Focus management
+    // Focus management with proper cleanup
     onMount(() => {
         return () => {
             if (previousActiveElement) {
@@ -68,15 +68,16 @@
         };
     });
 
+    // Optimized reactive statement for modal opening
     $: if (isOpen) {
         previousActiveElement = document.activeElement as HTMLElement;
-        // Focus the modal after it's rendered
-        setTimeout(() => {
+        // Use requestAnimationFrame for better performance
+        requestAnimationFrame(() => {
             const firstFocusable = modalElement?.querySelector(
                 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
             ) as HTMLElement;
             firstFocusable?.focus();
-        }, 0);
+        });
     }
 </script>
 
@@ -117,7 +118,7 @@
                         aria-label="Close dialog"
                     >
                         <svg
-                            class="w-6 h-6"
+                            class="w-6 h-6 text-current"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"

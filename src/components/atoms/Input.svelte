@@ -1,13 +1,24 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { Eye, EyeOff, AlertCircle, CheckCircle, X } from "@lucide/svelte";
-    import type {
-        InputEvents,
-        InputEventDetail,
-        ChangeEventDetail,
-    } from "../../types/events";
+    import type { InputEvents } from "../../types/events";
+    import {
+        createInputState,
+        updateInputState,
+        updateFocusState,
+        updateValidationState,
+        generateInputId,
+        createInputEventDetail,
+        createChangeEventDetail,
+        formSizeClasses,
+        baseInputClasses,
+        getStateClasses,
+        getDisabledClasses,
+        getLabelClasses,
+    } from "../../lib/form-utils";
+    import InputActions from "./InputActions.svelte";
+    import InputValidation from "./InputValidation.svelte";
 
-    // Standardized component props
+    // Component props
     export let value: string = "";
     export let type: string = "text";
     export let label: string = "";
@@ -22,8 +33,6 @@
     export let helpText: string = "";
     export let className: string = "";
     export let id: string = "";
-
-    // Additional props
     export let name: string | undefined = undefined;
     export let maxLength: number | undefined = undefined;
     export let minLength: number | undefined = undefined;
@@ -39,62 +48,57 @@
         | "tel"
         | "url"
         | undefined = undefined;
-
-    // UI props
     export let showPasswordToggle: boolean = false;
     export let showClearButton: boolean = false;
-
-    // Accessibility props
     export let ariaLabel: string | undefined = undefined;
 
     const dispatch = createEventDispatcher<InputEvents>();
 
     let inputElement: HTMLInputElement;
     let showPassword = false;
-    let isFocused = false;
-    let hasValue = false;
 
-    // Generate unique ID if not provided
-    $: inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate unique ID
+    $: inputId = generateInputId(id);
 
-    // Check if input has value
-    $: hasValue = value !== "" && value !== null && value !== undefined;
+    // Create and manage input state
+    $: inputState = updateValidationState(
+        createInputState({ value, error, success, variant }),
+        error,
+        success,
+        variant,
+    );
 
-    // Error and success message handling
-    $: hasError = Boolean(error) || variant === "error";
-    $: hasSuccess = Boolean(success) || variant === "success";
-
-    // Handle input events with standardized structure
+    // Event handlers
     function handleInput(event: Event) {
         const target = event.target as HTMLInputElement;
         value = target.value;
-        hasValue = value !== "";
-        dispatch("input", { value, event: event as InputEvent, field: name });
+        dispatch("input", createInputEventDetail(value, event, name));
     }
 
     function handleChange(event: Event) {
         const target = event.target as HTMLInputElement;
         value = target.value;
-        hasValue = value !== "";
-        dispatch("change", { value, event, field: name });
+        dispatch("change", createChangeEventDetail(value, event, name));
     }
 
     function handleFocus(event: CustomEvent) {
-        isFocused = true;
-        dispatch("focus", { event: event as unknown as FocusEvent });
+        const focusEvent = event as unknown as FocusEvent;
+        dispatch("focus", { event: focusEvent });
     }
 
     function handleBlur(event: CustomEvent) {
-        isFocused = false;
-        dispatch("blur", { event: event as unknown as FocusEvent });
+        const focusEvent = event as unknown as FocusEvent;
+        dispatch("blur", { event: focusEvent });
     }
 
     function handleKeydown(event: CustomEvent) {
-        dispatch("keydown", { event: event as unknown as KeyboardEvent });
+        const keyboardEvent = event as unknown as KeyboardEvent;
+        dispatch("keydown", { event: keyboardEvent });
     }
 
     function handleKeyup(event: CustomEvent) {
-        dispatch("keyup", { event: event as unknown as KeyboardEvent });
+        const keyboardEvent = event as unknown as KeyboardEvent;
+        dispatch("keyup", { event: keyboardEvent });
     }
 
     function togglePasswordVisibility() {
@@ -103,122 +107,38 @@
 
     function clearValue() {
         value = "";
-        hasValue = false;
         dispatch("clear", { event: new Event("clear") });
         inputElement?.focus();
     }
 
-    // Focus method for external use
+    // Public methods
     export function focus() {
         inputElement?.focus();
     }
-
-    // Blur method for external use
     export function blur() {
         inputElement?.blur();
     }
-
-    // Select method for external use
     export function select() {
         inputElement?.select();
     }
 
-    // Size classes using standardized sizes
-    $: sizeClasses = {
-        sm: "px-3 py-1.5 text-sm",
-        md: "px-4 py-2.5 text-sm",
-        lg: "px-5 py-3 text-base",
-    };
-
-    // Base input classes using semantic colors
-    $: baseInputClasses = [
-        "w-full",
-        "min-w-0",
-        "rounded-md",
-        "transition-all",
-        "duration-200",
-        "ease-in-out",
-        "focus:outline-none",
-        "focus:ring-2",
-        "focus:ring-focus-ring",
-        "focus:ring-offset-2",
-        "disabled:opacity-50",
-        "disabled:cursor-not-allowed",
-        "read-only:cursor-default",
-        "read-only:opacity-75",
-        sizeClasses[size],
+    // Computed classes
+    $: inputClasses = [
+        baseInputClasses,
+        formSizeClasses[size].input,
+        getStateClasses(inputState.hasError, inputState.hasSuccess),
+        getDisabledClasses(disabled),
         className,
     ].join(" ");
 
-    // State-specific classes using semantic colors
-    $: stateClasses = hasError
-        ? "border-error text-text placeholder-text-placeholder focus:ring-error focus:border-error"
-        : hasSuccess
-          ? "border-success text-text placeholder-text-placeholder focus:ring-success focus:border-success"
-          : "border-border text-text placeholder-text-placeholder focus:ring-focus-ring focus:border-border-focus";
-
-    // Disabled state classes
-    $: disabledClasses = disabled
-        ? "bg-surface-disabled text-text-disabled border-border-disabled cursor-not-allowed"
-        : "";
-
-    // Input classes combining all states
-    $: inputClasses = [baseInputClasses, stateClasses, disabledClasses].join(
-        " ",
+    $: labelClasses = getLabelClasses(
+        inputState.hasError,
+        inputState.hasSuccess,
+        size,
     );
-
-    // Container classes
-    $: containerClasses = [
-        "relative",
-        "group",
-        "transition-all",
-        "duration-200",
-        "ease-in-out",
-    ].join(" ");
-
-    // Label classes using semantic colors
-    $: labelClasses = [
-        "block",
-        "text-sm",
-        "font-medium",
-        "mb-2",
-        "transition-colors",
-        "duration-200",
-        hasError ? "text-error" : hasSuccess ? "text-success" : "text-text",
-    ].join(" ");
-
-    // Helper text classes using semantic colors
-    $: helperTextClasses = [
-        "mt-2",
-        "text-xs",
-        hasError
-            ? "text-error"
-            : hasSuccess
-              ? "text-success"
-              : "text-text-secondary",
-    ].join(" ");
-
-    // Button classes for password toggle and clear button
-    $: buttonClasses = [
-        "absolute",
-        "right-3",
-        "top-1/2",
-        "-translate-y-1/2",
-        "text-text-tertiary",
-        "hover:text-primary",
-        "transition-colors",
-        "duration-200",
-        "focus:outline-none",
-        "focus:text-primary",
-        "focus:ring-2",
-        "focus:ring-focus-ring",
-        "focus:ring-offset-1",
-        "rounded-sm",
-        "p-1",
-    ].join(" ");
 </script>
 
-<div class={containerClasses}>
+<div class="relative group transition-all duration-200 ease-in-out">
     {#if label}
         <label for={inputId} class={labelClasses}>
             {label}
@@ -250,71 +170,36 @@
             on:blur={handleBlur}
             on:keydown={handleKeydown}
             on:keyup={handleKeyup}
-            aria-invalid={hasError ? "true" : "false"}
-            aria-describedby={hasError || hasSuccess || helpText
+            aria-invalid={inputState.hasError ? "true" : "false"}
+            aria-describedby={inputState.hasError ||
+            inputState.hasSuccess ||
+            helpText
                 ? `${inputId}-help`
                 : undefined}
             aria-label={ariaLabel || (label ? undefined : "Input field")}
             aria-required={required}
         />
 
-        <!-- Action buttons (password toggle and clear button) -->
-        <div
-            class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1"
-        >
-            {#if showClearButton && hasValue && !disabled && !readonly}
-                <button
-                    type="button"
-                    class={buttonClasses}
-                    on:click|preventDefault={clearValue}
-                    on:keydown={(e) =>
-                        (e as unknown as KeyboardEvent).key === "Enter" &&
-                        clearValue()}
-                    aria-label="Clear input"
-                >
-                    <X size={16} />
-                </button>
-            {/if}
-
-            {#if showPasswordToggle && type === "password"}
-                <button
-                    type="button"
-                    class={buttonClasses}
-                    on:click|preventDefault={togglePasswordVisibility}
-                    on:keydown={(e) =>
-                        (e as unknown as KeyboardEvent).key === "Enter" &&
-                        togglePasswordVisibility()}
-                    aria-label={showPassword
-                        ? "Hide password"
-                        : "Show password"}
-                >
-                    {#if showPassword}
-                        <EyeOff size={16} />
-                    {:else}
-                        <Eye size={16} />
-                    {/if}
-                </button>
-            {/if}
-        </div>
+        <InputActions
+            {showPasswordToggle}
+            {showClearButton}
+            hasValue={inputState.hasValue}
+            {disabled}
+            {readonly}
+            {showPassword}
+            onTogglePassword={togglePasswordVisibility}
+            onClear={clearValue}
+        />
     </div>
 
-    {#if hasError || hasSuccess || helpText}
-        <div id="{inputId}-help" class={helperTextClasses}>
-            {#if hasError}
-                <div class="flex items-center gap-1">
-                    <AlertCircle size={14} class="flex-shrink-0" />
-                    <span>{error}</span>
-                </div>
-            {:else if hasSuccess}
-                <div class="flex items-center gap-1">
-                    <CheckCircle size={14} class="flex-shrink-0" />
-                    <span>{success}</span>
-                </div>
-            {:else if helpText}
-                <span>{helpText}</span>
-            {/if}
-        </div>
-    {/if}
+    <InputValidation
+        hasError={inputState.hasError}
+        hasSuccess={inputState.hasSuccess}
+        {error}
+        {success}
+        {helpText}
+        {inputId}
+    />
 </div>
 
 <style>
@@ -355,34 +240,5 @@
     input[type="search"]::-webkit-search-cancel-button,
     input[type="search"]::-webkit-search-decoration {
         -webkit-appearance: none;
-    }
-
-    /* Action button hover effects */
-    button[aria-label] {
-        transition: all 0.2s ease;
-    }
-
-    button[aria-label]:hover {
-        transform: scale(1.05);
-    }
-
-    button[aria-label]:active {
-        transform: scale(0.95);
-    }
-
-    /* Focus ring animation */
-    .focus-ring {
-        animation: focus-ring-pulse 0.2s ease-out;
-    }
-
-    @keyframes focus-ring-pulse {
-        0% {
-            transform: scale(0.95);
-            opacity: 0;
-        }
-        100% {
-            transform: scale(1);
-            opacity: 1;
-        }
     }
 </style>
