@@ -41,27 +41,29 @@
 
     function updateField(key: string, value: any) {
         values = { ...values, [key]: value };
-        dispatch("input", { value: { [key]: value } });
-        dispatch("change", { value: values });
+        dispatch("change", { field: key, value });
     }
 
     function handleFieldChange(event: CustomEvent) {
         // Handle both e.detail.value and e.detail.checked patterns
         const detail = event.detail;
         if (detail && typeof detail === "object") {
-            // Forward the event with the proper structure
-            dispatch("input", { value: detail });
+            // Extract field key from the event target or use a default
+            const fieldKey = (event.target as any)?.name || "unknown";
+            dispatch("change", { field: fieldKey, value: detail });
         }
     }
 
     function handleInput(event: CustomEvent) {
         // Forward input events from child components
-        dispatch("input", { value: event.detail });
+        const fieldKey = (event.target as any)?.name || "unknown";
+        dispatch("change", { field: fieldKey, value: event.detail });
     }
 
     function handleChange(event: CustomEvent) {
         // Forward change events from child components
-        dispatch("change", { value: event.detail });
+        const fieldKey = (event.target as any)?.name || "unknown";
+        dispatch("change", { field: fieldKey, value: event.detail });
     }
 </script>
 
@@ -87,7 +89,7 @@
                     rows={field.rows || 3}
                     required={field.required}
                     size="sm"
-                    variant="default"
+                    variant="outlined"
                     on:input={handleFieldChange}
                     on:change={handleFieldChange}
                 />
@@ -99,7 +101,7 @@
                     placeholder={field.placeholder}
                     required={field.required}
                     size="sm"
-                    variant="default"
+                    variant="outlined"
                     on:input={handleFieldChange}
                     on:change={handleFieldChange}
                 />
@@ -109,7 +111,7 @@
                     label={field.label}
                     required={field.required}
                     size="sm"
-                    variant="default"
+                    variant="outlined"
                     on:input={handleFieldChange}
                     on:change={handleFieldChange}
                 />
@@ -126,7 +128,7 @@
                     label={field.label}
                     required={field.required}
                     size="sm"
-                    variant="default"
+                    variant="outlined"
                     on:input={handleFieldChange}
                     on:change={handleFieldChange}
                 />

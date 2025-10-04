@@ -9,7 +9,9 @@
     export let interactive = false;
     export let className = "";
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{
+        click: { event: MouseEvent };
+    }>();
 
     function handleClick(event: MouseEvent) {
         if (interactive) {

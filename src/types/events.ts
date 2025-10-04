@@ -130,3 +130,31 @@ export interface AlertEvents {
 export interface CloseEventDetail {
     event: MouseEvent;
 }
+
+export interface TextAlignmentEvents {
+    change: { value: string };
+}
+
+export interface ImageUploadEvents {
+    upload: { file: File };
+    remove: { file: File };
+    error: { error: string };
+}
+
+export interface KeyValueFormEvents {
+    submit: { data: Record<string, any> };
+    change: { field: string; value: any };
+    add: { field: FieldConfig };
+    remove: { field: string };
+}
+
+export interface FieldConfig {
+    key: string;
+    type: "text" | "email" | "password" | "number" | "textarea" | "select" | "checkbox" | "toggle" | "colorpicker" | "textalignment";
+    label: string;
+    placeholder?: string;
+    required?: boolean;
+    options?: Array<{ value: string | number; label: string; disabled?: boolean }>;
+    rows?: number;
+    flex?: "1" | "full";
+}
