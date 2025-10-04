@@ -16,21 +16,24 @@
         dispatch("close", { event: new Event("close") });
     }
 
-    function handleBackdropClick(event: MouseEvent) {
-        if (event.target === event.currentTarget) {
+    function handleBackdropClick(event: CustomEvent) {
+        const mouseEvent = event as unknown as MouseEvent;
+        if (mouseEvent.target === mouseEvent.currentTarget) {
             closeDialog();
         }
     }
 
-    function handleKeydown(event: KeyboardEvent) {
-        if (event.key === "Escape") {
+    function handleKeydown(event: CustomEvent) {
+        const keyboardEvent = event as unknown as KeyboardEvent;
+        if (keyboardEvent.key === "Escape") {
             closeDialog();
         }
     }
 
     // Focus trap implementation
-    function trapFocus(event: KeyboardEvent) {
+    function trapFocus(event: CustomEvent) {
         if (!isOpen) return;
+        const keyboardEvent = event as unknown as KeyboardEvent;
 
         const focusableElements = modalElement?.querySelectorAll(
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -41,15 +44,15 @@
         const firstElement = focusableElements[0];
         const lastElement = focusableElements[focusableElements.length - 1];
 
-        if (event.key === "Tab") {
-            if (event.shiftKey) {
+        if (keyboardEvent.key === "Tab") {
+            if (keyboardEvent.shiftKey) {
                 if (document.activeElement === firstElement) {
-                    event.preventDefault();
+                    keyboardEvent.preventDefault();
                     lastElement.focus();
                 }
             } else {
                 if (document.activeElement === lastElement) {
-                    event.preventDefault();
+                    keyboardEvent.preventDefault();
                     firstElement.focus();
                 }
             }

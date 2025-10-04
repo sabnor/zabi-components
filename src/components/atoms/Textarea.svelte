@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import { AlertCircle, CheckCircle } from "@lucide/svelte";
+    import type { TextareaEvents } from "../../types/events";
 
     // Core props
     export let value: string = "";
