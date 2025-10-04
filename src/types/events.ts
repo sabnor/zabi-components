@@ -1,4 +1,4 @@
-// Event types for components
+// Event types for components - Standardized structure
 export interface BaseEventDetail {
     event: Event;
 }
@@ -9,10 +9,13 @@ export interface ClickEventDetail extends BaseEventDetail {
 
 export interface InputEventDetail extends BaseEventDetail {
     value: string;
+    field?: string;
 }
 
 export interface ChangeEventDetail extends BaseEventDetail {
-    value: string;
+    value: any;
+    field?: string;
+    checked?: boolean;
 }
 
 export interface FocusEventDetail extends BaseEventDetail {
@@ -31,7 +34,33 @@ export interface KeyupEventDetail extends BaseEventDetail {
     event: KeyboardEvent;
 }
 
-// Component-specific event types
+export interface SubmitEventDetail extends BaseEventDetail {
+    data: Record<string, any>;
+    formData: FormData;
+}
+
+export interface ResizeEventDetail extends BaseEventDetail {
+    event: Event;
+}
+
+export interface TabChangeEventDetail extends BaseEventDetail {
+    activeTab: string;
+    tab: any;
+}
+
+export interface FileUploadEventDetail extends BaseEventDetail {
+    file: File;
+}
+
+export interface FileRemoveEventDetail extends BaseEventDetail {
+    file: File;
+}
+
+export interface ErrorEventDetail extends BaseEventDetail {
+    error: string;
+}
+
+// Component-specific event types - Using standardized structure
 export interface ButtonEvents {
     click: ClickEventDetail;
 }
@@ -50,8 +79,8 @@ export interface CardEvents {
     click: ClickEventDetail;
     focus: FocusEventDetail;
     blur: BlurEventDetail;
-    hover: BaseEventDetail;
-    leave: BaseEventDetail;
+    mouseenter: BaseEventDetail;
+    mouseleave: BaseEventDetail;
 }
 
 export interface CheckboxEvents {
@@ -67,6 +96,7 @@ export interface TextareaEvents {
     blur: BlurEventDetail;
     keydown: KeydownEventDetail;
     keyup: KeyupEventDetail;
+    resize: ResizeEventDetail;
 }
 
 export interface ToggleEvents {
@@ -85,7 +115,8 @@ export interface TooltipEvents {
 }
 
 export interface TabsEvents {
-    change: { value: string; event: Event };
+    change: TabChangeEventDetail;
+    tabClick: { tab: any; event: MouseEvent };
     keydown: KeydownEventDetail;
 }
 
@@ -112,40 +143,32 @@ export interface LayoutEvents {
 }
 
 export interface FormEvents {
-    submit: {
-        data: Record<string, string>;
-        formData: FormData;
-        event: SubmitEvent;
-    };
-    reset: { event: Event };
+    submit: SubmitEventDetail;
+    reset: BaseEventDetail;
     input: { name: string; value: string; event: Event };
     blur: { name: string; value: string; event: FocusEvent };
     "validation-error": { errors: Record<string, string> };
 }
 
 export interface AlertEvents {
-    close: { event: MouseEvent };
-}
-
-export interface CloseEventDetail {
-    event: MouseEvent;
+    close: BaseEventDetail;
 }
 
 export interface TextAlignmentEvents {
-    change: { value: string };
+    change: { value: string; event: Event };
 }
 
 export interface ImageUploadEvents {
-    upload: { file: File };
-    remove: { file: File };
-    error: { error: string };
+    upload: FileUploadEventDetail;
+    remove: FileRemoveEventDetail;
+    error: ErrorEventDetail;
 }
 
 export interface KeyValueFormEvents {
-    submit: { data: Record<string, any> };
-    change: { field: string; value: any };
-    add: { field: FieldConfig };
-    remove: { field: string };
+    submit: { data: Record<string, any>; event: Event };
+    change: { field: string; value: any; event: Event };
+    add: { field: FieldConfig; event: Event };
+    remove: { field: string; event: Event };
 }
 
 export interface FieldConfig {

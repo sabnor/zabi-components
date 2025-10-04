@@ -108,18 +108,13 @@
 
     // Event handlers
     function handleClick(event: MouseEvent) {
-        if (disabled || loading) {
-            event.preventDefault();
-            return;
-        }
+        if (disabled || loading) return;
         dispatch("click", { value: true, event });
     }
 
     function handleKeydown(event: KeyboardEvent) {
         if (disabled || loading || !interactive) return;
-
         if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
             dispatch("click", { value: true, event });
         }
     }
@@ -137,8 +132,8 @@
 
 <article
     class={computedClasses}
-    on:click={(e) => handleClick(e as unknown as MouseEvent)}
-    on:keydown={(e) => handleKeydown(e as unknown as KeyboardEvent)}
+    on:click={handleClick}
+    on:keydown={handleKeydown}
     {...accessibilityProps}
 >
     {#if image}

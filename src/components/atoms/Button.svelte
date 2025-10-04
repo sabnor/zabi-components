@@ -29,21 +29,16 @@
 
     const dispatch = createEventDispatcher<ButtonEvents>();
 
-    function handleClick(event: MouseEvent) {
-        if (disabled || loading) {
-            event.preventDefault();
-            return;
-        }
-        // Dispatch with standardized event structure
-        dispatch("click", { value: true, event });
+    function handleClick(event: CustomEvent) {
+        if (disabled || loading) return;
+        dispatch("click", { value: true, event: event as unknown as MouseEvent });
     }
 
-    function handleKeydown(event: KeyboardEvent) {
+    function handleKeydown(event: CustomEvent) {
         if (disabled || loading) return;
-
-        if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            dispatch("click", { value: true, event });
+        const keyboardEvent = event as unknown as KeyboardEvent;
+        if (keyboardEvent.key === "Enter" || keyboardEvent.key === " ") {
+            dispatch("click", { value: true, event: keyboardEvent });
         }
     }
 
@@ -147,8 +142,8 @@
 <button
     {type}
     class={buttonClasses}
-    on:click={(e) => handleClick(e as unknown as MouseEvent)}
-    on:keydown={(e) => handleKeydown(e as unknown as KeyboardEvent)}
+    on:click={handleClick}
+    on:keydown={handleKeydown}
     disabled={disabled || loading}
     {...accessibilityProps}
 >

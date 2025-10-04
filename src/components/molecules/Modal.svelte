@@ -13,10 +13,10 @@
 
     function closeDialog() {
         isOpen = false;
-        dispatch("close");
+        dispatch("close", { event: new Event("close") });
     }
 
-    function handleBackdropClick(event: CustomEvent) {
+    function handleBackdropClick(event: MouseEvent) {
         if (event.target === event.currentTarget) {
             closeDialog();
         }
@@ -82,7 +82,7 @@
     <div
         class="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal-backdrop flex items-center justify-center p-4"
         on:click={handleBackdropClick}
-        on:keydown={(e) => handleKeydown(e as unknown as KeyboardEvent)}
+        on:keydown={handleKeydown}
         role="presentation"
         tabindex="-1"
     >
@@ -93,7 +93,7 @@
             role="dialog"
             aria-modal="true"
             aria-labelledby="dialog-title"
-            on:keydown={(e) => trapFocus(e as unknown as KeyboardEvent)}
+            on:keydown={trapFocus}
             tabindex="-1"
         >
             <!-- Header -->
