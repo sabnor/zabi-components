@@ -53,16 +53,21 @@
 </script>
 
 <div class="space-y-2">
-    <label for={componentId} class="block text-sm font-medium text-stone-300">
+    <label
+        for={componentId}
+        class="block text-sm font-medium"
+        style="color: rgb(var(--color-text));"
+    >
         {label}
         {#if required}
-            <span class="text-red-400 ml-1">*</span>
+            <span class="ml-1" style="color: rgb(var(--color-error));">*</span>
         {/if}
     </label>
 
     <div
         id={componentId}
-        class="flex gap-1 p-1 bg-stone-800 rounded-lg border border-stone-700 min-w-48 sm:min-w-56 md:min-w-64 lg:min-w-72"
+        class="flex gap-1 p-1 rounded-lg min-w-48 sm:min-w-56 md:min-w-64 lg:min-w-72"
+        style="background-color: rgb(var(--color-surface-secondary)); border-color: rgb(var(--color-border));"
         role="radiogroup"
         aria-label={label}
     >
@@ -73,8 +78,14 @@
                     size
                 ]} rounded-md transition-all duration-200 {value ===
                 option.value
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-stone-400 hover:text-stone-200 hover:bg-stone-700'}"
+                    ? 'shadow-sm'
+                    : ''}"
+                style="color: {value === option.value
+                    ? 'rgb(var(--color-text-inverse))'
+                    : 'rgb(var(--color-text-secondary))'}; background-color: {value ===
+                option.value
+                    ? 'rgb(var(--color-primary))'
+                    : 'transparent'};"
                 on:click={() => selectAlignment(option.value)}
                 on:keydown={(e) => {
                     const event = e as unknown as KeyboardEvent;

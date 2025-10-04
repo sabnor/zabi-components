@@ -8,205 +8,141 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Base color scales (for reference and advanced usage)
+                // Semantic color system with built-in light/dark mode support
+
+                // Primary colors
                 primary: {
-                    50: 'var(--color-primary-50)',
-                    100: 'var(--color-primary-100)',
-                    200: 'var(--color-primary-200)',
-                    300: 'var(--color-primary-300)',
-                    400: 'var(--color-primary-400)',
-                    500: 'var(--color-primary-500)',
-                    600: 'var(--color-primary-600)',
-                    700: 'var(--color-primary-700)',
-                    800: 'var(--color-primary-800)',
-                    900: 'var(--color-primary-900)',
-                    950: 'var(--color-primary-950)',
+                    DEFAULT: 'rgb(var(--color-primary))',
+                    hover: 'rgb(var(--color-primary-hover))',
+                    active: 'rgb(var(--color-primary-active))',
+                    disabled: 'rgb(var(--color-primary-disabled))',
+                    light: 'rgb(var(--color-primary-light))',
+                    dark: 'rgb(var(--color-primary-dark))',
                 },
+
+                // Secondary colors
                 secondary: {
-                    50: 'var(--color-secondary-50)',
-                    100: 'var(--color-secondary-100)',
-                    200: 'var(--color-secondary-200)',
-                    300: 'var(--color-secondary-300)',
-                    400: 'var(--color-secondary-400)',
-                    500: 'var(--color-secondary-500)',
-                    600: 'var(--color-secondary-600)',
-                    700: 'var(--color-secondary-700)',
-                    800: 'var(--color-secondary-800)',
-                    900: 'var(--color-secondary-900)',
-                    950: 'var(--color-secondary-950)',
+                    DEFAULT: 'rgb(var(--color-secondary))',
+                    hover: 'rgb(var(--color-secondary-hover))',
+                    active: 'rgb(var(--color-secondary-active))',
+                    disabled: 'rgb(var(--color-secondary-disabled))',
+                    light: 'rgb(var(--color-secondary-light))',
+                    dark: 'rgb(var(--color-secondary-dark))',
                 },
-                neutral: {
-                    50: 'var(--color-neutral-50)',
-                    100: 'var(--color-neutral-100)',
-                    200: 'var(--color-neutral-200)',
-                    300: 'var(--color-neutral-300)',
-                    400: 'var(--color-neutral-400)',
-                    500: 'var(--color-neutral-500)',
-                    600: 'var(--color-neutral-600)',
-                    700: 'var(--color-neutral-700)',
-                    800: 'var(--color-neutral-800)',
-                    900: 'var(--color-neutral-900)',
-                    950: 'var(--color-neutral-950)',
-                },
+
+                // Success colors
                 success: {
-                    50: 'var(--color-success-50)',
-                    100: 'var(--color-success-100)',
-                    200: 'var(--color-success-200)',
-                    300: 'var(--color-success-300)',
-                    400: 'var(--color-success-400)',
-                    500: 'var(--color-success-500)',
-                    600: 'var(--color-success-600)',
-                    700: 'var(--color-success-700)',
-                    800: 'var(--color-success-800)',
-                    900: 'var(--color-success-900)',
-                    950: 'var(--color-success-950)',
+                    DEFAULT: 'rgb(var(--color-success))',
+                    hover: 'rgb(var(--color-success-hover))',
+                    active: 'rgb(var(--color-success-active))',
+                    disabled: 'rgb(var(--color-success-disabled))',
+                    light: 'rgb(var(--color-success-light))',
+                    dark: 'rgb(var(--color-success-dark))',
+                    surface: 'rgb(var(--color-success-surface))',
+                    text: 'rgb(var(--color-success-text))',
                 },
+
+                // Warning colors
                 warning: {
-                    50: 'var(--color-warning-50)',
-                    100: 'var(--color-warning-100)',
-                    200: 'var(--color-warning-200)',
-                    300: 'var(--color-warning-300)',
-                    400: 'var(--color-warning-400)',
-                    500: 'var(--color-warning-500)',
-                    600: 'var(--color-warning-600)',
-                    700: 'var(--color-warning-700)',
-                    800: 'var(--color-warning-800)',
-                    900: 'var(--color-warning-900)',
-                    950: 'var(--color-warning-950)',
+                    DEFAULT: 'rgb(var(--color-warning))',
+                    hover: 'rgb(var(--color-warning-hover))',
+                    active: 'rgb(var(--color-warning-active))',
+                    disabled: 'rgb(var(--color-warning-disabled))',
+                    light: 'rgb(var(--color-warning-light))',
+                    dark: 'rgb(var(--color-warning-dark))',
+                    surface: 'rgb(var(--color-warning-surface))',
+                    text: 'rgb(var(--color-warning-text))',
                 },
+
+                // Error colors
                 error: {
-                    50: 'var(--color-error-50)',
-                    100: 'var(--color-error-100)',
-                    200: 'var(--color-error-200)',
-                    300: 'var(--color-error-300)',
-                    400: 'var(--color-error-400)',
-                    500: 'var(--color-error-500)',
-                    600: 'var(--color-error-600)',
-                    700: 'var(--color-error-700)',
-                    800: 'var(--color-error-800)',
-                    900: 'var(--color-error-900)',
-                    950: 'var(--color-error-950)',
+                    DEFAULT: 'rgb(var(--color-error))',
+                    hover: 'rgb(var(--color-error-hover))',
+                    active: 'rgb(var(--color-error-active))',
+                    disabled: 'rgb(var(--color-error-disabled))',
+                    light: 'rgb(var(--color-error-light))',
+                    dark: 'rgb(var(--color-error-dark))',
+                    surface: 'rgb(var(--color-error-surface))',
+                    text: 'rgb(var(--color-error-text))',
                 },
+
+                // Info colors
                 info: {
-                    50: 'var(--color-info-50)',
-                    100: 'var(--color-info-100)',
-                    200: 'var(--color-info-200)',
-                    300: 'var(--color-info-300)',
-                    400: 'var(--color-info-400)',
-                    500: 'var(--color-info-500)',
-                    600: 'var(--color-info-600)',
-                    700: 'var(--color-info-700)',
-                    800: 'var(--color-info-800)',
-                    900: 'var(--color-info-900)',
-                    950: 'var(--color-info-950)',
+                    DEFAULT: 'rgb(var(--color-info))',
+                    hover: 'rgb(var(--color-info-hover))',
+                    active: 'rgb(var(--color-info-active))',
+                    disabled: 'rgb(var(--color-info-disabled))',
+                    light: 'rgb(var(--color-info-light))',
+                    dark: 'rgb(var(--color-info-dark))',
+                    surface: 'rgb(var(--color-info-surface))',
+                    text: 'rgb(var(--color-info-text))',
                 },
 
-                // Semantic color tokens (primary usage)
-                primary: 'rgb(var(--color-primary))',
-                'primary-hover': 'rgb(var(--color-primary-hover))',
-                'primary-active': 'rgb(var(--color-primary-active))',
-                'primary-disabled': 'rgb(var(--color-primary-disabled))',
-                'primary-light': 'rgb(var(--color-primary-light))',
-                'primary-dark': 'rgb(var(--color-primary-dark))',
+                // Focus colors
+                focus: {
+                    DEFAULT: 'rgb(var(--color-focus))',
+                    hover: 'rgb(var(--color-focus-hover))',
+                    active: 'rgb(var(--color-focus-active))',
+                    disabled: 'rgb(var(--color-focus-disabled))',
+                    light: 'rgb(var(--color-focus-light))',
+                    dark: 'rgb(var(--color-focus-dark))',
+                    surface: 'rgb(var(--color-focus-surface))',
+                    text: 'rgb(var(--color-focus-text))',
+                    ring: 'rgb(var(--color-focus-ring))',
+                    'ring-offset': 'rgb(var(--color-focus-ring-offset))',
+                },
 
-                secondary: 'rgb(var(--color-secondary))',
-                'secondary-hover': 'rgb(var(--color-secondary-hover))',
-                'secondary-active': 'rgb(var(--color-secondary-active))',
-                'secondary-disabled': 'rgb(var(--color-secondary-disabled))',
-                'secondary-light': 'rgb(var(--color-secondary-light))',
-                'secondary-dark': 'rgb(var(--color-secondary-dark))',
+                // Background colors (automatically switch with dark mode)
+                background: {
+                    DEFAULT: 'rgb(var(--color-background))',
+                    secondary: 'rgb(var(--color-background-secondary))',
+                    tertiary: 'rgb(var(--color-background-tertiary))',
+                },
 
-                success: 'rgb(var(--color-success))',
-                'success-hover': 'rgb(var(--color-success-hover))',
-                'success-active': 'rgb(var(--color-success-active))',
-                'success-disabled': 'rgb(var(--color-success-disabled))',
-                'success-light': 'rgb(var(--color-success-light))',
-                'success-dark': 'rgb(var(--color-success-dark))',
-                'success-surface': 'rgb(var(--color-success-surface))',
-                'success-text': 'rgb(var(--color-success-text))',
+                // Page colors
+                page: {
+                    DEFAULT: 'rgb(var(--color-page))',
+                    secondary: 'rgb(var(--color-page-secondary))',
+                },
 
-                warning: 'rgb(var(--color-warning))',
-                'warning-hover': 'rgb(var(--color-warning-hover))',
-                'warning-active': 'rgb(var(--color-warning-active))',
-                'warning-disabled': 'rgb(var(--color-warning-disabled))',
-                'warning-light': 'rgb(var(--color-warning-light))',
-                'warning-dark': 'rgb(var(--color-warning-dark))',
-                'warning-surface': 'rgb(var(--color-warning-surface))',
-                'warning-text': 'rgb(var(--color-warning-text))',
+                // Card colors
+                card: {
+                    DEFAULT: 'rgb(var(--color-card))',
+                    hover: 'rgb(var(--color-card-hover))',
+                    active: 'rgb(var(--color-card-active))',
+                    elevated: 'rgb(var(--color-card-elevated))',
+                },
 
-                error: 'rgb(var(--color-error))',
-                'error-hover': 'rgb(var(--color-error-hover))',
-                'error-active': 'rgb(var(--color-error-active))',
-                'error-disabled': 'rgb(var(--color-error-disabled))',
-                'error-light': 'rgb(var(--color-error-light))',
-                'error-dark': 'rgb(var(--color-error-dark))',
-                'error-surface': 'rgb(var(--color-error-surface))',
-                'error-text': 'rgb(var(--color-error-text))',
+                // Surface colors (automatically switch with dark mode)
+                surface: {
+                    DEFAULT: 'rgb(var(--color-surface))',
+                    secondary: 'rgb(var(--color-surface-secondary))',
+                    tertiary: 'rgb(var(--color-surface-tertiary))',
+                    elevated: 'rgb(var(--color-surface-elevated))',
+                    hover: 'rgb(var(--color-surface-hover))',
+                    active: 'rgb(var(--color-surface-active))',
+                    inverse: 'rgb(var(--color-surface-inverse))',
+                    disabled: 'rgb(var(--color-surface-disabled))',
+                },
 
-                info: 'rgb(var(--color-info))',
-                'info-hover': 'rgb(var(--color-info-hover))',
-                'info-active': 'rgb(var(--color-info-active))',
-                'info-disabled': 'rgb(var(--color-info-disabled))',
-                'info-light': 'rgb(var(--color-info-light))',
-                'info-dark': 'rgb(var(--color-info-dark))',
-                'info-surface': 'rgb(var(--color-info-surface))',
-                'info-text': 'rgb(var(--color-info-text))',
+                // Text colors (automatically switch with dark mode)
+                text: {
+                    DEFAULT: 'rgb(var(--color-text))',
+                    secondary: 'rgb(var(--color-text-secondary))',
+                    tertiary: 'rgb(var(--color-text-tertiary))',
+                    inverse: 'rgb(var(--color-text-inverse))',
+                    disabled: 'rgb(var(--color-text-disabled))',
+                    placeholder: 'rgb(var(--color-text-placeholder))',
+                },
 
-                focus: 'rgb(var(--color-focus))',
-                'focus-hover': 'rgb(var(--color-focus-hover))',
-                'focus-active': 'rgb(var(--color-focus-active))',
-                'focus-disabled': 'rgb(var(--color-focus-disabled))',
-                'focus-light': 'rgb(var(--color-focus-light))',
-                'focus-dark': 'rgb(var(--color-focus-dark))',
-                'focus-surface': 'rgb(var(--color-focus-surface))',
-                'focus-text': 'rgb(var(--color-focus-text))',
-
-                // Background semantic tokens
-                background: 'rgb(var(--color-background))',
-                'background-secondary': 'rgb(var(--color-background-secondary))',
-                'background-tertiary': 'rgb(var(--color-background-tertiary))',
-
-                // Page semantic tokens
-                page: 'rgb(var(--color-page))',
-                'page-secondary': 'rgb(var(--color-page-secondary))',
-
-                // Card semantic tokens
-                card: 'rgb(var(--color-card))',
-                'card-hover': 'rgb(var(--color-card-hover))',
-                'card-active': 'rgb(var(--color-card-active))',
-                'card-elevated': 'rgb(var(--color-card-elevated))',
-
-                // Surface semantic tokens
-                surface: 'rgb(var(--color-surface))',
-                'surface-secondary': 'rgb(var(--color-surface-secondary))',
-                'surface-tertiary': 'rgb(var(--color-surface-tertiary))',
-                'surface-elevated': 'rgb(var(--color-surface-elevated))',
-                'surface-hover': 'rgb(var(--color-surface-hover))',
-                'surface-active': 'rgb(var(--color-surface-active))',
-                'surface-inverse': 'rgb(var(--color-surface-inverse))',
-                'surface-disabled': 'rgb(var(--color-surface-disabled))',
-
-                // Text semantic tokens
-                primary: 'rgb(var(--color-text))',
-                secondary: 'rgb(var(--color-text-secondary))',
-                tertiary: 'rgb(var(--color-text-tertiary))',
-                inverse: 'rgb(var(--color-text-inverse))',
-                disabled: 'rgb(var(--color-text-disabled))',
-                placeholder: 'rgb(var(--color-text-placeholder))',
-
-                // Border semantic tokens
-                border: 'rgb(var(--color-border))',
-                'border-secondary': 'rgb(var(--color-border-secondary))',
-                'border-hover': 'rgb(var(--color-border-hover))',
-                'border-focus': 'rgb(var(--color-border-focus))',
-                'border-disabled': 'rgb(var(--color-border-disabled))',
-
-                // Focus ring semantic tokens
-                'focus-ring': 'rgb(var(--color-focus-ring))',
-                'focus-ring-offset': 'rgb(var(--color-focus-ring-offset))',
-
-                // Focus color (for ring colors)
-                focus: 'rgb(var(--color-focus))',
+                // Border colors (automatically switch with dark mode)
+                border: {
+                    DEFAULT: 'rgb(var(--color-border))',
+                    secondary: 'rgb(var(--color-border-secondary))',
+                    hover: 'rgb(var(--color-border-hover))',
+                    focus: 'rgb(var(--color-border-focus))',
+                    disabled: 'rgb(var(--color-border-disabled))',
+                },
             },
             ringColor: {
                 // Semantic ring colors

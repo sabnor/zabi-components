@@ -130,7 +130,7 @@
         lg: "px-5 py-3 text-base",
     };
 
-    // Base input classes using CSS custom properties
+    // Base input classes using semantic colors
     $: baseInputClasses = [
         "w-full",
         "min-w-0",
@@ -140,7 +140,7 @@
         "ease-in-out",
         "focus:outline-none",
         "focus:ring-2",
-        "focus:ring-[var(--zabi-focus-ring)]",
+        "focus:ring-focus-ring",
         "focus:ring-offset-2",
         "disabled:opacity-50",
         "disabled:cursor-not-allowed",
@@ -150,16 +150,16 @@
         className,
     ].join(" ");
 
-    // State-specific classes using CSS custom properties
+    // State-specific classes using semantic colors
     $: stateClasses = hasError
-        ? "border-[var(--zabi-error)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-error)] focus:border-[var(--zabi-error)]"
+        ? "border-error text-text placeholder-text-placeholder focus:ring-error focus:border-error"
         : hasSuccess
-          ? "border-[var(--zabi-success)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-success)] focus:border-[var(--zabi-success)]"
-          : "border-[var(--zabi-border)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-focus-ring)] focus:border-[var(--zabi-border-focus)]";
+          ? "border-success text-text placeholder-text-placeholder focus:ring-success focus:border-success"
+          : "border-border text-text placeholder-text-placeholder focus:ring-focus-ring focus:border-border-focus";
 
     // Disabled state classes
     $: disabledClasses = disabled
-        ? "bg-[var(--zabi-surface-disabled)] text-[var(--zabi-text-disabled)] border-[var(--zabi-border-disabled)] cursor-not-allowed"
+        ? "bg-surface-disabled text-text-disabled border-border-disabled cursor-not-allowed"
         : "";
 
     // Input classes combining all states
@@ -176,7 +176,7 @@
         "ease-in-out",
     ].join(" ");
 
-    // Label classes using CSS custom properties
+    // Label classes using semantic colors
     $: labelClasses = [
         "block",
         "text-sm",
@@ -184,22 +184,18 @@
         "mb-2",
         "transition-colors",
         "duration-200",
-        hasError
-            ? "text-[var(--zabi-error)]"
-            : hasSuccess
-              ? "text-[var(--zabi-success)]"
-              : "text-[var(--zabi-text)]",
+        hasError ? "text-error" : hasSuccess ? "text-success" : "text-text",
     ].join(" ");
 
-    // Helper text classes using CSS custom properties
+    // Helper text classes using semantic colors
     $: helperTextClasses = [
         "mt-2",
         "text-xs",
         hasError
-            ? "text-[var(--zabi-error)]"
+            ? "text-error"
             : hasSuccess
-              ? "text-[var(--zabi-success)]"
-              : "text-[var(--zabi-text-muted)]",
+              ? "text-success"
+              : "text-text-secondary",
     ].join(" ");
 
     // Button classes for password toggle and clear button
@@ -208,14 +204,14 @@
         "right-3",
         "top-1/2",
         "-translate-y-1/2",
-        "text-tertiary",
+        "text-text-tertiary",
         "hover:text-primary",
         "transition-colors",
         "duration-200",
         "focus:outline-none",
         "focus:text-primary",
         "focus:ring-2",
-        "focus:ring-focus",
+        "focus:ring-focus-ring",
         "focus:ring-offset-1",
         "rounded-sm",
         "p-1",

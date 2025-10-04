@@ -56,63 +56,63 @@
         lg: "px-5 py-3 text-base rounded-lg",
     };
 
-    // Variant classes using CSS custom properties for easy theming
+    // Variant classes using semantic colors
     const variantClasses = {
         primary: [
-            "bg-[var(--zabi-primary)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-primary)]",
-            "hover:bg-[var(--zabi-primary-hover)] hover:border-[var(--zabi-primary-hover)]",
-            "active:bg-[var(--zabi-primary-active)] active:border-[var(--zabi-primary-active)]",
-            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-            "shadow-sm hover:shadow-md",
+            "bg-primary text-text-inverse border border-primary",
+            "hover:bg-primary-hover hover:border-primary-hover",
+            "active:bg-primary-active active:border-primary-active",
+            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
         ].join(" "),
 
         secondary: [
-            "bg-[var(--zabi-surface)] text-[var(--zabi-text)] border border-[var(--zabi-border)]",
-            "hover:bg-[var(--zabi-surface-hover)] hover:border-[var(--zabi-border-hover)]",
-            "active:bg-[var(--zabi-surface-active)] active:border-[var(--zabi-border-hover)]",
-            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-            "shadow-sm hover:shadow-md",
+            "bg-surface text-text border border-border",
+            "hover:bg-surface-hover hover:border-border-hover",
+            "active:bg-surface-active active:border-border-hover",
+            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
         ].join(" "),
 
         success: [
-            "bg-[var(--zabi-success)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-success)]",
-            "hover:bg-[var(--zabi-success-hover)] hover:border-[var(--zabi-success-hover)]",
-            "active:bg-[var(--zabi-success-active)] active:border-[var(--zabi-success-active)]",
-            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-            "shadow-sm hover:shadow-md",
+            "bg-success text-text-inverse border border-success",
+            "hover:bg-success-hover hover:border-success-hover",
+            "active:bg-success-active active:border-success-active",
+            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
         ].join(" "),
 
         warning: [
-            "bg-[var(--zabi-warning)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-warning)]",
-            "hover:bg-[var(--zabi-warning-hover)] hover:border-[var(--zabi-warning-hover)]",
-            "active:bg-[var(--zabi-warning-active)] active:border-[var(--zabi-warning-active)]",
-            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-            "shadow-sm hover:shadow-md",
+            "bg-warning text-text-inverse border border-warning",
+            "hover:bg-warning-hover hover:border-warning-hover",
+            "active:bg-warning-active active:border-warning-active",
+            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
         ].join(" "),
 
         danger: [
-            "bg-[var(--zabi-error)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-error)]",
-            "hover:bg-[var(--zabi-error-hover)] hover:border-[var(--zabi-error-hover)]",
-            "active:bg-[var(--zabi-error-active)] active:border-[var(--zabi-error-active)]",
-            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-            "shadow-sm hover:shadow-md",
+            "bg-error text-text-inverse border border-error",
+            "hover:bg-error-hover hover:border-error-hover",
+            "active:bg-error-active active:border-error-active",
+            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
         ].join(" "),
 
         info: [
-            "bg-[var(--zabi-info)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-info)]",
-            "hover:bg-[var(--zabi-info-hover)] hover:border-[var(--zabi-info-hover)]",
-            "active:bg-[var(--zabi-info-active)] active:border-[var(--zabi-info-active)]",
-            "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-            "shadow-sm hover:shadow-md",
+            "bg-info text-text-inverse border border-info",
+            "hover:bg-info-hover hover:border-info-hover",
+            "active:bg-info-active active:border-info-active",
+            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
         ].join(" "),
     };
 
     // Disabled state classes
     const disabledClasses = disabled
         ? [
-              "bg-[var(--zabi-surface-disabled)] text-[var(--zabi-text-disabled)] border-[var(--zabi-border-disabled)]",
-              "hover:bg-[var(--zabi-surface-disabled)] hover:text-[var(--zabi-text-disabled)] hover:border-[var(--zabi-border-disabled)]",
-              "active:bg-[var(--zabi-surface-disabled)] active:text-[var(--zabi-text-disabled)] active:border-[var(--zabi-border-disabled)]",
+              "bg-surface-disabled text-text-disabled border-border-disabled",
+              "hover:bg-surface-disabled hover:text-text-disabled hover:border-border-disabled",
+              "active:bg-surface-disabled active:text-text-disabled active:border-border-disabled",
               "shadow-none",
           ].join(" ")
         : "";

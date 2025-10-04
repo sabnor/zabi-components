@@ -1,7 +1,7 @@
 <script lang="ts">
     export let level: 1 | 2 | 3 | 4 | 5 | 6 = 1;
     export let text: string = "";
-    export let color: string = "text-white";
+    export let color: string = "text-text";
     export let spacing: "tight" | "normal" | "loose" = "normal";
 
     // More explicit and distinct sizing for each level with !important to override any conflicting CSS

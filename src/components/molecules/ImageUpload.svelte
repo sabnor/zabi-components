@@ -150,17 +150,20 @@
     {:else}
         <!-- Empty State -->
         <div
-            class="border-2 border-dashed border-stone-600 rounded-lg p-6 text-center hover:border-stone-500 transition-colors"
+            class="border-2 border-dashed rounded-lg p-6 text-center transition-colors"
+            style="border-color: rgb(var(--color-border));"
         >
             <div class="space-y-3">
                 <div
-                    class="w-12 h-12 mx-auto bg-stone-700 rounded-lg flex items-center justify-center"
+                    class="w-12 h-12 mx-auto rounded-lg flex items-center justify-center"
+                    style="background-color: rgb(var(--color-surface-secondary));"
                 >
                     <svg
-                        class="w-6 h-6 text-stone-400"
+                        class="w-6 h-6"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        style="color: rgb(var(--color-text-secondary));"
                     >
                         <path
                             stroke-linecap="round"
@@ -171,8 +174,16 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="text-stone-300 font-medium">{placeholder}</p>
-                    <p class="text-stone-500 text-sm">
+                    <p
+                        class="font-medium"
+                        style="color: rgb(var(--color-text));"
+                    >
+                        {placeholder}
+                    </p>
+                    <p
+                        class="text-sm"
+                        style="color: rgb(var(--color-text-secondary));"
+                    >
                         Choose a file to upload
                     </p>
                 </div>
@@ -224,18 +235,21 @@
                             <img
                                 src={previewUrl}
                                 alt="Preview"
-                                class="w-full h-48 object-cover rounded-lg border border-stone-600"
+                                class="w-full h-48 object-cover rounded-lg border"
+                                style="border-color: rgb(var(--color-border));"
                             />
                         {:else}
                             <div
-                                class="w-full h-48 bg-stone-700 rounded-lg border border-stone-600 flex items-center justify-center"
+                                class="w-full h-48 rounded-lg flex items-center justify-center"
+                                style="background-color: rgb(var(--color-surface-secondary)); border-color: rgb(var(--color-border));"
                             >
                                 <div class="text-center">
                                     <svg
-                                        class="w-12 h-12 text-stone-400 mx-auto mb-2"
+                                        class="w-12 h-12 mx-auto mb-2"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
+                                        style="color: rgb(var(--color-text-secondary));"
                                     >
                                         <path
                                             stroke-linecap="round"
@@ -244,7 +258,10 @@
                                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                                         />
                                     </svg>
-                                    <p class="text-stone-300 text-sm">
+                                    <p
+                                        class="text-sm"
+                                        style="color: rgb(var(--color-text));"
+                                    >
                                         {selectedFile.name}
                                     </p>
                                 </div>

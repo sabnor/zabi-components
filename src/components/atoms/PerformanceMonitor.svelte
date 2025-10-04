@@ -94,13 +94,15 @@
 
 {#if isVisible}
     <div
-        class="fixed bottom-4 left-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50 max-w-xs"
+        class="fixed bottom-4 left-4 p-4 rounded-lg text-xs font-mono z-50 max-w-xs"
+        style="background-color: rgb(var(--color-surface-elevated)); color: rgb(var(--color-text));"
     >
         <div class="flex items-center justify-between mb-2">
             <h3 class="font-bold">{title}</h3>
             <button
                 on:click={() => (isVisible = false)}
-                class="text-gray-400 hover:text-white"
+                class="hover:opacity-80"
+                style="color: rgb(var(--color-text-secondary));"
             >
                 ×
             </button>
@@ -111,7 +113,10 @@
             <div>LCP: {formatTime(metrics.largestContentfulPaint)}</div>
             <div>CLS: {metrics.cumulativeLayoutShift.toFixed(3)}</div>
             <div>Load: {formatTime(metrics.loadComplete)}</div>
-            <div class="pt-1 border-t border-gray-600">
+            <div
+                class="pt-1"
+                style="border-top-color: rgb(var(--color-border));"
+            >
                 <div class="font-semibold">{getPerformanceScore()}</div>
             </div>
         </div>

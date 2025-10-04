@@ -86,11 +86,11 @@
     // Variant classes (matching Input component)
     $: variantClasses = {
         default:
-            "bg-dark-700 border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
+            "bg-surface border border-border text-text placeholder-text-placeholder focus:ring-focus-ring",
         outlined:
-            "bg-dark-600 border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
-        filled: "bg-dark-600 border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
-        ghost: "bg-transparent border-0 text-white placeholder-gray-400 focus:ring-plasma-red-500/20",
+            "bg-surface border border-border text-text placeholder-text-placeholder focus:ring-focus-ring",
+        filled: "bg-surface-secondary border-0 text-text placeholder-text-placeholder focus:ring-focus-ring",
+        ghost: "bg-transparent border-0 text-text placeholder-text-placeholder focus:ring-focus-ring",
     };
 
     // Label classes (matching Input component)
@@ -101,7 +101,6 @@
         "mb-2",
         "transition-colors",
         "duration-200",
-        "text-gray-300",
     ].join(" ");
 
     // Button classes (matching Input styling)
@@ -145,7 +144,9 @@
         <label for={componentId} class={labelClasses}>
             {label}
             {#if required}
-                <span class="text-blood-red-500 ml-1">*</span>
+                <span class="ml-1" style="color: rgb(var(--color-error));"
+                    >*</span
+                >
             {/if}
         </label>
     {/if}
@@ -172,14 +173,17 @@
                         <div class="flex items-center space-x-3">
                             {#if selectedColor}
                                 <div
-                                    class="w-8 h-8 rounded border border-stone-600 flex-shrink-0"
-                                    style="background-color: {selectedColor.value}"
+                                    class="w-8 h-8 rounded border flex-shrink-0"
+                                    style="background-color: {selectedColor.value}; border-color: rgb(var(--color-border));"
                                 ></div>
                             {:else}
                                 <div
-                                    class="w-8 h-8 rounded border border-stone-600 flex-shrink-0 bg-stone-700"
+                                    class="w-8 h-8 rounded border flex-shrink-0"
+                                    style="background-color: rgb(var(--color-surface-secondary)); border-color: rgb(var(--color-border));"
                                 ></div>
-                                <span class="text-gray-400">Select a color</span
+                                <span
+                                    style="color: rgb(var(--color-text-secondary));"
+                                    >Select a color</span
                                 >
                             {/if}
                         </div>
@@ -267,9 +271,12 @@
                         ></div>
                     {:else}
                         <div
-                            class="w-8 h-8 rounded border border-stone-600 flex-shrink-0 bg-stone-700"
+                            class="w-8 h-8 rounded border flex-shrink-0"
+                            style="border-color: rgb(var(--color-border)); background-color: rgb(var(--color-surface-secondary));"
                         ></div>
-                        <span class="text-gray-400">Select a color</span>
+                        <span style="color: rgb(var(--color-text-secondary));"
+                            >Select a color</span
+                        >
                     {/if}
                 </div>
             </button>
@@ -277,7 +284,7 @@
             <!-- Focus indicator (matching Input component) -->
             <div
                 class="absolute inset-0 rounded-lg pointer-events-none transition-all duration-200 {isFocused
-                    ? 'ring-2 ring-plasma-red-500/20'
+                    ? 'ring-2 ring-focus-ring'
                     : ''}"
             ></div>
         </div>

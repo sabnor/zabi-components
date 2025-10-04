@@ -41,7 +41,7 @@
     }
 
     .layout-sidebar {
-        @apply w-64 bg-gray-50 border-r border-gray-200;
+        @apply w-64 bg-surface-secondary border-r border-border;
     }
 
     .layout-grid {
@@ -49,10 +49,10 @@
     }
 
     .layout-header {
-        @apply bg-white border-b border-gray-200 p-4;
+        @apply bg-surface border-b border-border p-4;
     }
 
     .layout-footer {
-        @apply bg-gray-50 border-t border-gray-200 p-4 mt-auto;
+        @apply bg-surface-secondary border-t border-border p-4 mt-auto;
     }
 </style>

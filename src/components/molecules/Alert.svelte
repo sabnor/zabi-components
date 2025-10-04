@@ -16,12 +16,10 @@
     }
 
     $: alertClasses = {
-        info: "bg-[var(--zabi-info-light)] text-[var(--zabi-info-dark)] border border-[var(--zabi-info)]",
-        success:
-            "bg-[var(--zabi-success-light)] text-[var(--zabi-success-dark)] border border-[var(--zabi-success)]",
-        warning:
-            "bg-[var(--zabi-warning-light)] text-[var(--zabi-warning-dark)] border border-[var(--zabi-warning)]",
-        error: "bg-[var(--zabi-error-light)] text-[var(--zabi-error-dark)] border border-[var(--zabi-error)]",
+        info: "bg-info-surface text-info-text border border-info",
+        success: "bg-success-surface text-success-text border border-success",
+        warning: "bg-warning-surface text-warning-text border border-warning",
+        error: "bg-error-surface text-error-text border border-error",
     };
 
     $: alertRole =
@@ -57,7 +55,7 @@
     {#if closable}
         <button
             on:click|preventDefault={handleDismiss}
-            class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+            class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
             aria-label="Dismiss alert"
             type="button"
         >
@@ -87,10 +85,14 @@
         <!-- Text content -->
         <div class="flex-1 min-w-0">
             {#if title}
-                <h4 class="font-semibold text-sm mb-1">{title}</h4>
+                <h4 class="font-semibold text-sm mb-1" style="color: inherit;">
+                    {title}
+                </h4>
             {/if}
             {#if message}
-                <p class="text-sm leading-relaxed">{message}</p>
+                <p class="text-sm leading-relaxed" style="color: inherit;">
+                    {message}
+                </p>
             {/if}
             <!-- Default slot for custom content -->
             <slot />
