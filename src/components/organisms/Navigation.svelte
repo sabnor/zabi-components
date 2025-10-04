@@ -2,13 +2,21 @@
     import { createEventDispatcher } from "svelte";
 
     export let variant: "header" | "sidebar" = "header";
-    export let items: Array<{ label: string; href: string; icon?: any }> = [];
+    type NavigationItem = {
+        label: string;
+        href: string;
+        icon?: any;
+    };
+
+    export let items: NavigationItem[] = [];
     export let currentPath = "";
     export let className = "";
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{
+        navigate: { item: NavigationItem; href: string };
+    }>();
 
-    function handleClick(item: any, event: MouseEvent) {
+    function handleClick(item: NavigationItem, event: MouseEvent) {
         event.preventDefault();
         dispatch("navigate", { item, href: item.href });
     }
@@ -23,7 +31,8 @@
                         href={item.href}
                         class="nav-link"
                         class:active={currentPath === item.href}
-                        on:click={(e) => handleClick(item, e as MouseEvent)}
+                        on:click={(e) =>
+                            handleClick(item, e as unknown as MouseEvent)}
                     >
                         {#if item.icon}
                             <svelte:component
@@ -44,7 +53,8 @@
                         href={item.href}
                         class="nav-link"
                         class:active={currentPath === item.href}
-                        on:click={(e) => handleClick(item, e as MouseEvent)}
+                        on:click={(e) =>
+                            handleClick(item, e as unknown as MouseEvent)}
                     >
                         {#if item.icon}
                             <svelte:component

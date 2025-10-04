@@ -5,7 +5,12 @@
     export let action = "";
     export let className = "";
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{
+        submit: {
+            data: Record<string, FormDataEntryValue>;
+            formData: FormData;
+        };
+    }>();
 
     function handleSubmit(event: SubmitEvent) {
         event.preventDefault();
@@ -24,19 +29,19 @@
         @apply space-y-4;
     }
 
-    .form :global(.form-field) {
+    :global(.form .form-field) {
         @apply space-y-2;
     }
 
-    .form :global(.form-label) {
+    :global(.form .form-label) {
         @apply block text-sm font-medium text-gray-700;
     }
 
-    .form :global(.form-input) {
+    :global(.form .form-input) {
         @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
     }
 
-    .form :global(.form-actions) {
+    :global(.form .form-actions) {
         @apply flex gap-3 pt-4;
     }
 </style>

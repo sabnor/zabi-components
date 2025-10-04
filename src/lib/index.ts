@@ -5,14 +5,14 @@
 import '../styles/base.css';
 
 // Atomic Components
-export * from '../components/atoms/index.js';
+export * from '../components/atoms/index';
 
 // Molecular Components  
-export * from '../components/molecules/index.js';
+export * from '../components/molecules/index';
 
 // Organism Components
-export * from '../components/organisms/index.js';
+export * from '../components/organisms/index';
 
 // Re-export types
-export type { FieldConfig } from '../components/molecules/KeyValueForm.types.js';
-export * from '../types/events.js';
+export type { FieldConfig } from '../components/molecules/KeyValueForm.types';
+export * from '../types/events';

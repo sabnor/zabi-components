@@ -11,17 +11,16 @@ function onDestroy(fn) {
 }
 const $$css$6 = {
   hash: "svelte-v0x5nl",
-  code: "\n    /* Ensure proper focus styles for reduced motion users */\n    @media (prefers-reduced-motion: reduce) {button.svelte-v0x5nl {transition:none;}\n    }\n    \n    /* Ensure proper contrast for disabled state */button.svelte-v0x5nl:disabled {opacity:0.6;}\n    \n    /* Loading state animation */\n    @keyframes svelte-v0x5nl-spin {\n        from {\n            transform: rotate(0deg);\n        }\n        to {\n            transform: rotate(360deg);\n        }\n    }.animate-spin.svelte-v0x5nl {\n        animation: svelte-v0x5nl-spin 1s linear infinite;}"
+  code: "\n    /* Ensure proper focus styles for reduced motion users */\n    @media (prefers-reduced-motion: reduce) {button.svelte-v0x5nl {transition:none;}\n    }\n\n    /* Ensure proper contrast for disabled state */button.svelte-v0x5nl:disabled {opacity:0.6;}\n\n    /* Loading state animation */\n    @keyframes svelte-v0x5nl-spin {\n        from {\n            transform: rotate(0deg);\n        }\n        to {\n            transform: rotate(360deg);\n        }\n    }.animate-spin.svelte-v0x5nl {\n        animation: svelte-v0x5nl-spin 1s linear infinite;}"
 };
 function Button($$renderer, $$props) {
   $$renderer.global.css.add($$css$6);
   $$renderer.component(($$renderer2) => {
     let buttonClasses, accessibilityProps;
-    let variant2 = fallback($$props["variant"], "primary");
+    let variant = fallback($$props["variant"], "primary");
     let size = fallback($$props["size"], "md");
     let disabled = fallback($$props["disabled"], false);
     let loading = fallback($$props["loading"], false);
-    let fullWidth = fallback($$props["fullWidth"], false);
     let type = fallback($$props["type"], "button");
     let className = fallback($$props["className"], "");
     let iconLeft = fallback($$props["iconLeft"], null);
@@ -34,80 +33,73 @@ function Button($$renderer, $$props) {
     const baseClasses = "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 relative overflow-hidden";
     const sizeClasses = {
       sm: "px-3 py-1.5 text-sm rounded-md",
-      md: "px-4 py-2 text-sm md:text-base rounded-md",
+      md: "px-4 py-2 text-sm rounded-md",
       lg: "px-5 py-3 text-base rounded-lg"
     };
     const variantClasses = {
       primary: [
-        "bg-primary text-inverse border border-primary",
-        "hover:bg-primary-hover hover:border-primary-hover",
-        "active:bg-primary-active active:border-primary-active",
-        "focus:ring-primary focus:ring-offset-primary",
-        "shadow-adaptive-sm hover:shadow-adaptive-md"
+        "bg-[var(--zabi-primary)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-primary)]",
+        "hover:bg-[var(--zabi-primary-hover)] hover:border-[var(--zabi-primary-hover)]",
+        "active:bg-[var(--zabi-primary-active)] active:border-[var(--zabi-primary-active)]",
+        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+        "shadow-sm hover:shadow-md"
       ].join(" "),
       secondary: [
-        "bg-surface-secondary text-primary border border-primary",
-        "hover:bg-surface-tertiary hover:border-primary-hover",
-        "active:bg-surface-active active:border-primary-active",
-        "focus:ring-primary focus:ring-offset-primary",
-        "shadow-adaptive-sm hover:shadow-adaptive-md"
+        "bg-[var(--zabi-surface)] text-[var(--zabi-text)] border border-[var(--zabi-border)]",
+        "hover:bg-[var(--zabi-surface-hover)] hover:border-[var(--zabi-border-hover)]",
+        "active:bg-[var(--zabi-surface-active)] active:border-[var(--zabi-border-hover)]",
+        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+        "shadow-sm hover:shadow-md"
       ].join(" "),
       success: [
-        "bg-success text-inverse border border-success",
-        "hover:bg-success-hover hover:border-success-hover",
-        "active:bg-success-active active:border-success-active",
-        "focus:ring-success focus:ring-offset-primary",
-        "shadow-adaptive-sm hover:shadow-adaptive-md"
+        "bg-[var(--zabi-success)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-success)]",
+        "hover:bg-[var(--zabi-success-hover)] hover:border-[var(--zabi-success-hover)]",
+        "active:bg-[var(--zabi-success-active)] active:border-[var(--zabi-success-active)]",
+        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+        "shadow-sm hover:shadow-md"
       ].join(" "),
       warning: [
-        "bg-warning text-inverse border border-warning",
-        "hover:bg-warning-hover hover:border-warning-hover",
-        "active:bg-warning-active active:border-warning-active",
-        "focus:ring-warning focus:ring-offset-primary",
-        "shadow-adaptive-sm hover:shadow-adaptive-md"
+        "bg-[var(--zabi-warning)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-warning)]",
+        "hover:bg-[var(--zabi-warning-hover)] hover:border-[var(--zabi-warning-hover)]",
+        "active:bg-[var(--zabi-warning-active)] active:border-[var(--zabi-warning-active)]",
+        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+        "shadow-sm hover:shadow-md"
       ].join(" "),
       danger: [
-        "bg-error text-inverse border border-error",
-        "hover:bg-error-hover hover:border-error-hover",
-        "active:bg-error-active active:border-error-active",
-        "focus:ring-error focus:ring-offset-primary",
-        "shadow-adaptive-sm hover:shadow-adaptive-md"
+        "bg-[var(--zabi-error)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-error)]",
+        "hover:bg-[var(--zabi-error-hover)] hover:border-[var(--zabi-error-hover)]",
+        "active:bg-[var(--zabi-error-active)] active:border-[var(--zabi-error-active)]",
+        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+        "shadow-sm hover:shadow-md"
       ].join(" "),
-      ghost: [
-        "bg-transparent text-primary border border-transparent",
-        "hover:bg-surface-secondary hover:border-primary",
-        "active:bg-surface-active active:border-primary-active",
-        "focus:ring-primary focus:ring-offset-primary"
-      ].join(" "),
-      link: [
-        "bg-transparent text-primary border border-transparent p-0",
-        "hover:text-primary-hover hover:underline",
-        "active:text-primary-active",
-        "focus:ring-primary focus:ring-offset-primary",
-        "shadow-none"
+      info: [
+        "bg-[var(--zabi-info)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-info)]",
+        "hover:bg-[var(--zabi-info-hover)] hover:border-[var(--zabi-info-hover)]",
+        "active:bg-[var(--zabi-info-active)] active:border-[var(--zabi-info-active)]",
+        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
+        "shadow-sm hover:shadow-md"
       ].join(" ")
     };
     const disabledClasses = disabled ? [
-      "bg-surface-disabled text-disabled border-border-disabled",
-      "hover:bg-surface-disabled hover:text-disabled hover:border-border-disabled",
-      "active:bg-surface-disabled active:text-disabled active:border-border-disabled",
+      "bg-[var(--zabi-surface-disabled)] text-[var(--zabi-text-disabled)] border-[var(--zabi-border-disabled)]",
+      "hover:bg-[var(--zabi-surface-disabled)] hover:text-[var(--zabi-text-disabled)] hover:border-[var(--zabi-border-disabled)]",
+      "active:bg-[var(--zabi-surface-disabled)] active:text-[var(--zabi-text-disabled)] active:border-[var(--zabi-border-disabled)]",
       "shadow-none"
     ].join(" ") : "";
     buttonClasses = [
       baseClasses,
       sizeClasses[size],
-      disabled ? disabledClasses : variantClasses[variant2],
-      fullWidth ? "w-full" : "",
+      disabled ? disabledClasses : variantClasses[variant],
       className
     ].filter(Boolean).join(" ");
     accessibilityProps = {
-      "aria-busy": loading ? "true" : "false",
+      "aria-busy": loading,
       "aria-label": ariaLabel || (loading ? "Loading..." : void 0),
       "aria-describedby": ariaDescribedBy || void 0,
       "aria-expanded": ariaExpanded,
       "aria-controls": ariaControls,
       "aria-pressed": ariaPressed,
-      "aria-disabled": disabled ? "true" : "false"
+      "aria-disabled": disabled
     };
     $$renderer2.push(`<button${attributes(
       {
@@ -127,9 +119,16 @@ function Button($$renderer, $$props) {
     $$renderer2.push(`<!--]--> `);
     if (iconLeft && !loading) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<!---->`);
-      iconLeft?.($$renderer2, { class: "h-4 w-4" });
-      $$renderer2.push(`<!---->`);
+      if (typeof iconLeft === "string") {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<span class="h-4 w-4 flex items-center justify-center">${escape_html(iconLeft)}</span>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+        $$renderer2.push(`<!---->`);
+        iconLeft?.($$renderer2, { class: "h-4 w-4" });
+        $$renderer2.push(`<!---->`);
+      }
+      $$renderer2.push(`<!--]-->`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -138,19 +137,25 @@ function Button($$renderer, $$props) {
     $$renderer2.push(`<!--]--> `);
     if (iconRight && !loading) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<!---->`);
-      iconRight?.($$renderer2, { class: "h-4 w-4" });
-      $$renderer2.push(`<!---->`);
+      if (typeof iconRight === "string") {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<span class="h-4 w-4 flex items-center justify-center">${escape_html(iconRight)}</span>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+        $$renderer2.push(`<!---->`);
+        iconRight?.($$renderer2, { class: "h-4 w-4" });
+        $$renderer2.push(`<!---->`);
+      }
+      $$renderer2.push(`<!--]-->`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--></button>`);
     bind_props($$props, {
-      variant: variant2,
+      variant,
       size,
       disabled,
       loading,
-      fullWidth,
       type,
       className,
       iconLeft,
@@ -171,7 +176,7 @@ function Badge($$renderer, $$props) {
   $$renderer.global.css.add($$css$5);
   $$renderer.component(($$renderer2) => {
     let sizeClasses, variantClasses, shapeClasses, dotClasses, badgeClasses, iconClasses, closeButtonClasses;
-    let variant2 = fallback($$props["variant"], "default");
+    let variant = fallback($$props["variant"], "default");
     let size = fallback($$props["size"], "md");
     let shape = fallback($$props["shape"], "rounded");
     let dot = fallback($$props["dot"], false);
@@ -209,7 +214,7 @@ function Badge($$renderer, $$props) {
       "select-none",
       "cursor-default",
       sizeClasses[size],
-      variantClasses[variant2],
+      variantClasses[variant],
       shapeClasses[shape],
       closable ? "cursor-pointer hover:opacity-80" : ""
     ].join(" ");
@@ -283,71 +288,69 @@ function Badge($$renderer, $$props) {
       $$renderer2.push(`<!--]--></span>`);
     }
     $$renderer2.push(`<!--]--></div>`);
-    bind_props($$props, { variant: variant2, size, shape, dot, closable, icon, iconPosition });
+    bind_props($$props, { variant, size, shape, dot, closable, icon, iconPosition });
   });
 }
 const $$css$4 = {
   hash: "svelte-1qx5g6b",
-  code: ".card-header.svelte-1qx5g6b:empty {display:none;}.card-content.svelte-1qx5g6b:empty {display:none;}.card-footer.svelte-1qx5g6b:empty {display:none;}"
+  code: ".card.svelte-1qx5g6b {overflow:hidden;border-radius:var(--radius-lg);border-width:1px;--tw-border-opacity: 1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1));--tw-bg-opacity: 1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.card-elevated.svelte-1qx5g6b {--tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.interactive.svelte-1qx5g6b {cursor:pointer;transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:200ms}.interactive.svelte-1qx5g6b:hover {--tw-translate-y: -0.25rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));--tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.card-image.svelte-1qx5g6b {aspect-ratio:16 / 9;overflow:hidden}.card-image.svelte-1qx5g6b img:where(.svelte-1qx5g6b) {height:100%;width:100%;-o-object-fit:cover;object-fit:cover}.card-content.svelte-1qx5g6b > :where(.svelte-1qx5g6b):not([hidden]) ~ :where(.svelte-1qx5g6b):not([hidden]) {--tw-space-y-reverse: 0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.card-content.svelte-1qx5g6b {padding:1rem}.card-title.svelte-1qx5g6b {font-size:1.125rem;line-height:1.75rem;font-weight:600;--tw-text-opacity: 1;color:rgb(17 24 39 / var(--tw-text-opacity, 1))}.card-subtitle.svelte-1qx5g6b {font-size:0.875rem;line-height:1.25rem;font-weight:500;--tw-text-opacity: 1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.card-description.svelte-1qx5g6b {font-size:0.875rem;line-height:1.25rem;--tw-text-opacity: 1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}"
 };
 function Card($$renderer, $$props) {
   $$renderer.global.css.add($$css$4);
   $$renderer.component(($$renderer2) => {
-    let baseClasses, accessibilityProps;
-    let variant2 = fallback($$props["variant"], "default");
-    let density = fallback($$props["density"], "comfortable");
-    let disabled = fallback($$props["disabled"], false);
-    let loading = fallback($$props["loading"], false);
+    let title = fallback($$props["title"], "");
+    let subtitle = fallback($$props["subtitle"], "");
+    let description = fallback($$props["description"], "");
+    let image = fallback($$props["image"], "");
+    let variant = fallback($$props["variant"], "default");
+    let interactive = fallback($$props["interactive"], false);
     let className = fallback($$props["className"], "");
-    let ariaLabel = fallback($$props["ariaLabel"], "");
-    let ariaDescribedBy = fallback($$props["ariaDescribedBy"], "");
-    const densityClasses = {
-      compact: "p-3 sm:p-4 rounded-md shadow-sm",
-      comfortable: "p-4 sm:p-6 rounded-lg shadow-sm sm:shadow-md",
-      spacious: "p-6 sm:p-8 rounded-xl shadow-md sm:shadow-lg"
-    };
-    const variantClasses = {
-      default: "bg-card border border-primary",
-      interactive: "bg-card border border-primary hover:bg-card-hover hover:border-primary-hover focus:bg-card-active focus:border-primary-hover focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 cursor-pointer"
-    };
-    baseClasses = [
-      "transition-all duration-200",
-      variantClasses[variant2],
-      densityClasses[density],
-      disabled ? "opacity-50 cursor-not-allowed" : "",
-      loading ? "animate-pulse" : "",
-      className
-    ].filter(Boolean).join(" ");
-    accessibilityProps = {
-      role: variant2 === "interactive" ? "button" : "presentation",
-      tabindex: variant2 === "interactive" ? disabled ? -1 : 0 : void 0,
-      "aria-disabled": variant2 === "interactive" ? disabled : void 0,
-      "aria-busy": loading,
-      "aria-label": ariaLabel || void 0,
-      "aria-describedby": ariaDescribedBy || void 0
-    };
-    $$renderer2.push(`<div${attributes({ class: clsx(baseClasses), ...accessibilityProps }, "svelte-1qx5g6b")}><div class="card-header svelte-1qx5g6b"><!--[-->`);
-    slot($$renderer2, $$props, "header", {}, null);
-    $$renderer2.push(`<!--]--></div> <div class="card-content svelte-1qx5g6b"><!--[-->`);
-    slot($$renderer2, $$props, "default", {}, null);
-    $$renderer2.push(`<!--]--></div> <div class="card-footer svelte-1qx5g6b"><!--[-->`);
-    slot($$renderer2, $$props, "footer", {}, null);
-    $$renderer2.push(`<!--]--></div> `);
-    if (loading) {
+    $$renderer2.push(`<article${attributes(
+      {
+        class: `card card-${stringify(variant)} ${stringify(interactive ? "interactive" : "")} ${stringify(className)}`,
+        role: interactive ? "button" : void 0,
+        ...interactive ? { tabindex: 0 } : {}
+      },
+      "svelte-1qx5g6b"
+    )}>`);
+    if (image) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="absolute inset-0 bg-surface/50 rounded-lg flex items-center justify-center" aria-hidden="true"><div class="animate-spin rounded-full h-6 w-6 border-2 border-tertiary border-t-transparent"></div></div>`);
+      $$renderer2.push(`<div class="card-image svelte-1qx5g6b"><img${attr("src", image)}${attr("alt", title)} class="svelte-1qx5g6b"/></div>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--></div>`);
+    $$renderer2.push(`<!--]--> <div class="card-content svelte-1qx5g6b">`);
+    if (title) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<h3 class="card-title svelte-1qx5g6b">${escape_html(title)}</h3>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (subtitle) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<p class="card-subtitle svelte-1qx5g6b">${escape_html(subtitle)}</p>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (description) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<p class="card-description svelte-1qx5g6b">${escape_html(description)}</p>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> <!--[-->`);
+    slot($$renderer2, $$props, "default", {}, null);
+    $$renderer2.push(`<!--]--></div></article>`);
     bind_props($$props, {
-      variant: variant2,
-      density,
-      disabled,
-      loading,
-      className,
-      ariaLabel,
-      ariaDescribedBy
+      title,
+      subtitle,
+      description,
+      image,
+      variant,
+      interactive,
+      className
     });
   });
 }
@@ -363,14 +366,15 @@ function Checkbox($$renderer, $$props) {
     let disabled = fallback($$props["disabled"], false);
     let required = fallback($$props["required"], false);
     let label = fallback($$props["label"], "");
-    let helpText2 = fallback($$props["helpText"], "");
+    let helpText = fallback($$props["helpText"], "");
     let error = fallback($$props["error"], "");
     let size = fallback($$props["size"], "md");
-    let variant2 = fallback($$props["variant"], "default");
+    let variant = fallback($$props["variant"], "default");
     let indeterminate = fallback($$props["indeterminate"], false);
     let name = fallback($$props["name"], void 0);
     let id = fallback($$props["id"], void 0);
     let value = fallback($$props["value"], void 0);
+    let className = fallback($$props["className"], "");
     function focus() {
     }
     function blur() {
@@ -391,7 +395,8 @@ function Checkbox($$renderer, $$props) {
       "group",
       "transition-all",
       "duration-200",
-      "ease-in-out"
+      "ease-in-out",
+      className
     ].join(" ");
     checkboxClasses = [
       "flex-shrink-0",
@@ -407,7 +412,7 @@ function Checkbox($$renderer, $$props) {
       "disabled:cursor-not-allowed",
       "cursor-pointer",
       sizeClasses[size],
-      variantClasses[variant2],
+      variantClasses[variant],
       stateClasses,
       error ? "grainy-red" : "grainy-texture"
     ].join(" ");
@@ -438,7 +443,7 @@ function Checkbox($$renderer, $$props) {
       "duration-200",
       "ease-in-out"
     ].join(" ");
-    $$renderer2.push(`<div${attr_class(clsx(containerClasses), "svelte-1wpeqgu")}><div class="relative svelte-1wpeqgu"><input type="checkbox"${attr("id", checkboxId)}${attr("checked", checked, true)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("name", name)}${attr("value", value)} class="sr-only svelte-1wpeqgu"${attr("aria-invalid", error ? "true" : "false")}${attr("aria-describedby", error || helpText2 ? `${checkboxId}-help` : void 0)}/> <div${attr_class(clsx(checkboxClasses), "svelte-1wpeqgu")}>`);
+    $$renderer2.push(`<div${attr_class(clsx(containerClasses), "svelte-1wpeqgu")}><div class="relative svelte-1wpeqgu"><input type="checkbox"${attr("id", checkboxId)}${attr("checked", checked, true)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("name", name)}${attr("value", value)} class="sr-only svelte-1wpeqgu"${attr("aria-invalid", error ? "true" : "false")}${attr("aria-describedby", error || helpText ? `${checkboxId}-help` : void 0)}/> <div${attr_class(clsx(checkboxClasses), "svelte-1wpeqgu")}>`);
     if (checked && !indeterminate) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<svg${attr_class(clsx(checkIconClasses), "svelte-1wpeqgu")} fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" class="svelte-1wpeqgu"></path></svg>`);
@@ -467,7 +472,7 @@ function Checkbox($$renderer, $$props) {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--> `);
-    if (error || helpText2) {
+    if (error || helpText) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<div${attr("id", `${stringify(checkboxId)}-help`)}${attr_class(clsx(helpTextClasses), "svelte-1wpeqgu")}>`);
       if (error) {
@@ -475,9 +480,9 @@ function Checkbox($$renderer, $$props) {
         $$renderer2.push(`<div class="flex items-center gap-1 svelte-1wpeqgu"><svg class="w-3 h-3 flex-shrink-0 svelte-1wpeqgu" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" class="svelte-1wpeqgu"></path></svg> <span class="svelte-1wpeqgu">${escape_html(error)}</span></div>`);
       } else {
         $$renderer2.push("<!--[!-->");
-        if (helpText2) {
+        if (helpText) {
           $$renderer2.push("<!--[-->");
-          $$renderer2.push(`<span class="svelte-1wpeqgu">${escape_html(helpText2)}</span>`);
+          $$renderer2.push(`<span class="svelte-1wpeqgu">${escape_html(helpText)}</span>`);
         } else {
           $$renderer2.push("<!--[!-->");
         }
@@ -493,14 +498,15 @@ function Checkbox($$renderer, $$props) {
       disabled,
       required,
       label,
-      helpText: helpText2,
+      helpText,
       error,
       size,
-      variant: variant2,
+      variant,
       indeterminate,
       name,
       id,
       value,
+      className,
       focus,
       blur
     });
@@ -1369,7 +1375,7 @@ function ColorPicker($$renderer, $$props) {
     let required = fallback($$props["required"], false);
     let disabled = fallback($$props["disabled"], false);
     let size = fallback($$props["size"], "md");
-    let variant2 = fallback($$props["variant"], "outlined");
+    let variant = fallback($$props["variant"], "outlined");
     let colors = fallback(
       $$props["colors"],
       () => [
@@ -1423,7 +1429,7 @@ function ColorPicker($$renderer, $$props) {
       "disabled:opacity-50",
       "disabled:cursor-not-allowed",
       sizeClasses[size],
-      variantClasses[variant2],
+      variantClasses[variant],
       "grainy-texture"
     ].join(" ");
     selectedColor = colors.find((c) => c.value === value);
@@ -1530,7 +1536,7 @@ function ColorPicker($$renderer, $$props) {
       $$render_inner($$inner_renderer);
     } while (!$$settled);
     $$renderer2.subsume($$inner_renderer);
-    bind_props($$props, { value, label, required, disabled, size, variant: variant2, colors });
+    bind_props($$props, { value, label, required, disabled, size, variant, colors });
   });
 }
 function Heading($$renderer, $$props) {
@@ -1644,32 +1650,35 @@ function Heading($$renderer, $$props) {
 }
 const $$css$2 = {
   hash: "svelte-7hu4vd",
-  code: '\n    /* Custom focus styles for better accessibility */.input-focus-visible {outline:2px solid var(--color-plasma-red-500);outline-offset:2px;}\n\n    /* Smooth transitions for all interactive elements */input.svelte-7hu4vd {transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);}\n\n    /* Custom scrollbar for textarea-like inputs */input.svelte-7hu4vd::-webkit-scrollbar {width:4px;}input.svelte-7hu4vd::-webkit-scrollbar-track {background:transparent;}input.svelte-7hu4vd::-webkit-scrollbar-thumb {background:var(--color-dark-600);border-radius:2px;}input.svelte-7hu4vd::-webkit-scrollbar-thumb:hover {background:var(--color-dark-500);}\n\n    /* Placeholder styling */input.svelte-7hu4vd::-moz-placeholder {-moz-transition:color 0.2s ease;transition:color 0.2s ease;}input.svelte-7hu4vd::placeholder {transition:color 0.2s ease;}input.svelte-7hu4vd:focus::-moz-placeholder {color:var(--color-gray-300);}input.svelte-7hu4vd:focus::placeholder {color:var(--color-gray-300);}\n\n    /* Number input spinner styling */input[type="number"].svelte-7hu4vd::-webkit-outer-spin-button,\n    input[type="number"].svelte-7hu4vd::-webkit-inner-spin-button {-webkit-appearance:none;margin:0;}input[type="number"].svelte-7hu4vd {-moz-appearance:textfield;-webkit-appearance:textfield;appearance:textfield;}\n\n    /* Search input styling */input[type="search"].svelte-7hu4vd::-webkit-search-cancel-button,\n    input[type="search"].svelte-7hu4vd::-webkit-search-decoration {-webkit-appearance:none;}\n\n    /* Password toggle button hover effects */button[aria-label].svelte-7hu4vd {transition:all 0.2s ease;}button[aria-label].svelte-7hu4vd:hover {transform:scale(1.1);}button[aria-label].svelte-7hu4vd:active {transform:scale(0.95);}'
+  code: '\n    /* Enhanced focus styles using semantic tokens */.input-focus-visible {outline:2px solid rgb(var(--color-focus-ring));outline-offset:2px;}\n\n    /* Smooth transitions for all interactive elements */input.svelte-7hu4vd {transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);}\n\n    /* Placeholder styling using semantic tokens */input.svelte-7hu4vd::-moz-placeholder {-moz-transition:color 0.2s ease;transition:color 0.2s ease;color:rgb(var(--color-text-placeholder));}input.svelte-7hu4vd::placeholder {transition:color 0.2s ease;color:rgb(var(--color-text-placeholder));}input.svelte-7hu4vd:focus::-moz-placeholder {color:rgb(var(--color-text-tertiary));}input.svelte-7hu4vd:focus::placeholder {color:rgb(var(--color-text-tertiary));}\n\n    /* Number input spinner styling */input[type="number"].svelte-7hu4vd::-webkit-outer-spin-button,\n    input[type="number"].svelte-7hu4vd::-webkit-inner-spin-button {-webkit-appearance:none;margin:0;}input[type="number"].svelte-7hu4vd {-moz-appearance:textfield;-webkit-appearance:textfield;appearance:textfield;}\n\n    /* Search input styling */input[type="search"].svelte-7hu4vd::-webkit-search-cancel-button,\n    input[type="search"].svelte-7hu4vd::-webkit-search-decoration {-webkit-appearance:none;}\n\n    /* Action button hover effects */button[aria-label].svelte-7hu4vd {transition:all 0.2s ease;}button[aria-label].svelte-7hu4vd:hover {transform:scale(1.05);}button[aria-label].svelte-7hu4vd:active {transform:scale(0.95);}\n\n    /* Focus ring animation */.focus-ring.svelte-7hu4vd {\n        animation: svelte-7hu4vd-focus-ring-pulse 0.2s ease-out;}\n\n    @keyframes svelte-7hu4vd-focus-ring-pulse {\n        0% {\n            transform: scale(0.95);\n            opacity: 0;\n        }\n        100% {\n            transform: scale(1);\n            opacity: 1;\n        }\n    }'
 };
 function Input($$renderer, $$props) {
   $$renderer.global.css.add($$css$2);
   $$renderer.component(($$renderer2) => {
-    let inputId, sizeClasses, variantClasses, stateClasses, containerClasses, inputClasses, labelClasses, helpTextClasses;
+    let inputId, hasError, hasSuccess, sizeClasses, baseInputClasses, stateClasses, disabledClasses, inputClasses, containerClasses, labelClasses, helperTextClasses, buttonClasses;
     let value = fallback($$props["value"], "");
     let type = fallback($$props["type"], "text");
     let label = fallback($$props["label"], "");
     let placeholder = fallback($$props["placeholder"], "");
-    let helperText = fallback($$props["helperText"], "");
-    let disabled = fallback($$props["disabled"], false);
     let required = fallback($$props["required"], false);
+    let disabled = fallback($$props["disabled"], false);
     let readonly = fallback($$props["readonly"], false);
-    let id = fallback($$props["id"], void 0);
+    let size = fallback($$props["size"], "md");
+    let variant = fallback($$props["variant"], "default");
+    let error = fallback($$props["error"], "");
+    let success = fallback($$props["success"], "");
+    let helpText = fallback($$props["helpText"], "");
+    let className = fallback($$props["className"], "");
+    let id = fallback($$props["id"], "");
     let name = fallback($$props["name"], void 0);
-    let error = fallback($$props["error"], false);
-    let success = fallback($$props["success"], false);
     let maxLength = fallback($$props["maxLength"], void 0);
     let minLength = fallback($$props["minLength"], void 0);
     let pattern = fallback($$props["pattern"], void 0);
     let autocomplete = fallback($$props["autocomplete"], void 0);
     let showPasswordToggle = fallback($$props["showPasswordToggle"], false);
     let showClearButton = fallback($$props["showClearButton"], false);
-    let size = fallback($$props["size"], "md");
     let ariaLabel = fallback($$props["ariaLabel"], void 0);
+    let hasValue = false;
     function focus() {
     }
     function blur() {
@@ -1677,45 +1686,41 @@ function Input($$renderer, $$props) {
     function select() {
     }
     inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    hasValue = value !== "" && value !== null && value !== void 0;
+    hasError = Boolean(error) || variant === "error";
+    hasSuccess = Boolean(success) || variant === "success";
     sizeClasses = {
       sm: "px-3 py-1.5 text-sm",
-      md: "px-4 py-2.5 text-base",
-      lg: "px-5 py-3 text-lg"
+      md: "px-4 py-2.5 text-sm",
+      lg: "px-5 py-3 text-base"
     };
-    variantClasses = {
-      default: "bg-surface border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-      outlined: "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-      filled: "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-      ghost: "bg-transparent border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent"
-    };
-    stateClasses = error ? "focus:ring-error border-error" : success ? "focus:ring-success border-success" : "";
+    baseInputClasses = [
+      "w-full",
+      "min-w-0",
+      "rounded-md",
+      "transition-all",
+      "duration-200",
+      "ease-in-out",
+      "focus:outline-none",
+      "focus:ring-2",
+      "focus:ring-[var(--zabi-focus-ring)]",
+      "focus:ring-offset-2",
+      "disabled:opacity-50",
+      "disabled:cursor-not-allowed",
+      "read-only:cursor-default",
+      "read-only:opacity-75",
+      sizeClasses[size],
+      className
+    ].join(" ");
+    stateClasses = hasError ? "border-[var(--zabi-error)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-error)] focus:border-[var(--zabi-error)]" : hasSuccess ? "border-[var(--zabi-success)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-success)] focus:border-[var(--zabi-success)]" : "border-[var(--zabi-border)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-focus-ring)] focus:border-[var(--zabi-border-focus)]";
+    disabledClasses = disabled ? "bg-[var(--zabi-surface-disabled)] text-[var(--zabi-text-disabled)] border-[var(--zabi-border-disabled)] cursor-not-allowed" : "";
+    inputClasses = [baseInputClasses, stateClasses, disabledClasses].join(" ");
     containerClasses = [
       "relative",
       "group",
       "transition-all",
       "duration-200",
       "ease-in-out"
-    ].join(" ");
-    inputClasses = [
-      "w-full",
-      "min-w-0",
-      // Allow input to shrink below minimum width
-      "rounded-lg",
-      "transition-all",
-      "duration-200",
-      "ease-in-out",
-      "focus:outline-none",
-      "focus:ring-2",
-      "focus:ring-offset-2",
-      "focus:ring-offset-dark-900",
-      "disabled:opacity-50",
-      "disabled:cursor-not-allowed",
-      "read-only:cursor-default",
-      "read-only:opacity-75",
-      sizeClasses[size],
-      variantClasses[variant],
-      stateClasses,
-      error ? "grainy-red" : success ? "grainy-green" : "grainy-texture"
     ].join(" ");
     labelClasses = [
       "block",
@@ -1724,20 +1729,37 @@ function Input($$renderer, $$props) {
       "mb-2",
       "transition-colors",
       "duration-200",
-      error ? "text-error" : success ? "text-success" : "text-primary"
+      hasError ? "text-[var(--zabi-error)]" : hasSuccess ? "text-[var(--zabi-success)]" : "text-[var(--zabi-text)]"
     ].join(" ");
-    helpTextClasses = [
+    helperTextClasses = [
       "mt-2",
       "text-xs",
-      error ? "text-error" : success ? "text-success" : "text-tertiary"
+      hasError ? "text-[var(--zabi-error)]" : hasSuccess ? "text-[var(--zabi-success)]" : "text-[var(--zabi-text-muted)]"
     ].join(" ");
-    $$renderer2.push(`<div${attr_class(clsx(containerClasses))}>`);
+    buttonClasses = [
+      "absolute",
+      "right-3",
+      "top-1/2",
+      "-translate-y-1/2",
+      "text-tertiary",
+      "hover:text-primary",
+      "transition-colors",
+      "duration-200",
+      "focus:outline-none",
+      "focus:text-primary",
+      "focus:ring-2",
+      "focus:ring-focus",
+      "focus:ring-offset-1",
+      "rounded-sm",
+      "p-1"
+    ].join(" ");
+    $$renderer2.push(`<div${attr_class(clsx(containerClasses), "svelte-7hu4vd")}>`);
     if (label) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<label${attr("for", inputId)}${attr_class(clsx(labelClasses))}>${escape_html(label)} `);
+      $$renderer2.push(`<label${attr("for", inputId)}${attr_class(clsx(labelClasses), "svelte-7hu4vd")}>${escape_html(label)} `);
       if (required) {
         $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<span class="text-error ml-1">*</span>`);
+        $$renderer2.push(`<span class="text-error ml-1 svelte-7hu4vd" aria-label="required">*</span>`);
       } else {
         $$renderer2.push("<!--[!-->");
       }
@@ -1745,39 +1767,48 @@ function Input($$renderer, $$props) {
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div class="relative"><input${attr("id", inputId)}${attr("type", type)}${attr("value", value)}${attr("placeholder", placeholder)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("readonly", readonly, true)}${attr("maxlength", maxLength)}${attr("minlength", minLength)}${attr("pattern", pattern)}${attr("autocomplete", autocomplete || void 0)}${attr("name", name)}${attr_class(clsx(inputClasses), "svelte-7hu4vd")}${attr("aria-invalid", error ? "true" : "false")}${attr("aria-describedby", error || success || helpText ? `${inputId}-help` : void 0)}/> `);
+    $$renderer2.push(`<!--]--> <div class="relative svelte-7hu4vd"><input${attr("id", inputId)}${attr("type", type)}${attr("value", value)}${attr("placeholder", placeholder)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("readonly", readonly, true)}${attr("maxlength", maxLength)}${attr("minlength", minLength)}${attr("pattern", pattern)}${attr("autocomplete", autocomplete || void 0)}${attr("name", name)}${attr_class(clsx(inputClasses), "svelte-7hu4vd")}${attr("aria-invalid", hasError ? "true" : "false")}${attr("aria-describedby", hasError || hasSuccess || helpText ? `${inputId}-help` : void 0)}${attr("aria-label", ariaLabel || (label ? void 0 : "Input field"))}${attr("aria-required", required)}/> <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 svelte-7hu4vd">`);
+    if (showClearButton && hasValue && !disabled && !readonly) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<button type="button"${attr_class(clsx(buttonClasses), "svelte-7hu4vd")} aria-label="Clear input">`);
+      X($$renderer2, { size: 16 });
+      $$renderer2.push(`<!----></button>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
     if (showPasswordToggle && type === "password") {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none focus:text-white svelte-7hu4vd" tabindex="-1"${attr("aria-label", "Show password")}>`);
+      $$renderer2.push(`<button type="button"${attr_class(clsx(buttonClasses), "svelte-7hu4vd")}${attr("aria-label", "Show password")}>`);
       {
         $$renderer2.push("<!--[!-->");
-        Eye($$renderer2, { size: 20 });
+        Eye($$renderer2, { size: 16 });
       }
       $$renderer2.push(`<!--]--></button>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div${attr_class(`absolute inset-0 rounded-lg pointer-events-none transition-all duration-200 ${stringify("")}`)}></div></div> `);
-    if (error || success || helpText) {
+    $$renderer2.push(`<!--]--></div></div> `);
+    if (hasError || hasSuccess || helpText) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div${attr("id", `${stringify(inputId)}-help`)}${attr_class(clsx(helpTextClasses))}>`);
-      if (error) {
+      $$renderer2.push(`<div${attr("id", `${stringify(inputId)}-help`)}${attr_class(clsx(helperTextClasses), "svelte-7hu4vd")}>`);
+      if (hasError) {
         $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<div class="flex items-center gap-1">`);
-        Circle_alert($$renderer2, { size: 16, class: "flex-shrink-0" });
-        $$renderer2.push(`<!----> <span>${escape_html(error)}</span></div>`);
+        $$renderer2.push(`<div class="flex items-center gap-1 svelte-7hu4vd">`);
+        Circle_alert($$renderer2, { size: 14, class: "flex-shrink-0" });
+        $$renderer2.push(`<!----> <span class="svelte-7hu4vd">${escape_html(error)}</span></div>`);
       } else {
         $$renderer2.push("<!--[!-->");
-        if (success) {
+        if (hasSuccess) {
           $$renderer2.push("<!--[-->");
-          $$renderer2.push(`<div class="flex items-center gap-1">`);
-          Circle_check_big($$renderer2, { size: 16, class: "flex-shrink-0" });
-          $$renderer2.push(`<!----> <span>${escape_html(success)}</span></div>`);
+          $$renderer2.push(`<div class="flex items-center gap-1 svelte-7hu4vd">`);
+          Circle_check_big($$renderer2, { size: 14, class: "flex-shrink-0" });
+          $$renderer2.push(`<!----> <span class="svelte-7hu4vd">${escape_html(success)}</span></div>`);
         } else {
           $$renderer2.push("<!--[!-->");
           if (helpText) {
             $$renderer2.push("<!--[-->");
-            $$renderer2.push(`<span>${escape_html(helpText)}</span>`);
+            $$renderer2.push(`<span class="svelte-7hu4vd">${escape_html(helpText)}</span>`);
           } else {
             $$renderer2.push("<!--[!-->");
           }
@@ -1795,21 +1826,23 @@ function Input($$renderer, $$props) {
       type,
       label,
       placeholder,
-      helperText,
-      disabled,
       required,
+      disabled,
       readonly,
-      id,
-      name,
+      size,
+      variant,
       error,
       success,
+      helpText,
+      className,
+      id,
+      name,
       maxLength,
       minLength,
       pattern,
       autocomplete,
       showPasswordToggle,
       showClearButton,
-      size,
       ariaLabel,
       focus,
       blur,
@@ -1846,7 +1879,7 @@ function OptimizedImage($$renderer, $$props) {
 function ThemeToggle($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let size = fallback($$props["size"], "md");
-    let variant2 = fallback($$props["variant"], "default");
+    let variant = fallback($$props["variant"], "default");
     const sizeClasses = {
       sm: "w-8 h-8 text-sm",
       md: "w-10 h-10 text-base",
@@ -1857,13 +1890,13 @@ function ThemeToggle($$renderer, $$props) {
       minimal: "bg-transparent hover:bg-surface-secondary",
       outline: "bg-transparent border border-primary hover:bg-surface-secondary"
     };
-    $$renderer2.push(`<button${attr_class(` ${stringify(sizeClasses[size])} ${stringify(variantClasses[variant2])} rounded-lg transition-all duration-200 flex items-center justify-center text-primary hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-surface-primary `)}${attr("aria-label", "Switch to dark mode")}${attr("title", "Switch to dark mode")}>`);
+    $$renderer2.push(`<button${attr_class(` ${stringify(sizeClasses[size])} ${stringify(variantClasses[variant])} rounded-lg transition-all duration-200 flex items-center justify-center text-primary hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-surface-primary `)}${attr("aria-label", "Switch to dark mode")}${attr("title", "Switch to dark mode")}>`);
     {
       $$renderer2.push("<!--[!-->");
       $$renderer2.push(`<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`);
     }
     $$renderer2.push(`<!--]--></button>`);
-    bind_props($$props, { size, variant: variant2 });
+    bind_props($$props, { size, variant });
   });
 }
 const $$css$1 = {
@@ -1882,13 +1915,14 @@ function Select($$renderer, $$props) {
     let required = fallback($$props["required"], false);
     let error = fallback($$props["error"], "");
     let success = fallback($$props["success"], "");
-    let helpText2 = fallback($$props["helpText"], "");
+    let helpText = fallback($$props["helpText"], "");
     let size = fallback($$props["size"], "md");
-    let variant2 = fallback($$props["variant"], "default");
+    let variant = fallback($$props["variant"], "outlined");
     let searchable = fallback($$props["searchable"], false);
     let clearable = fallback($$props["clearable"], false);
     let name = fallback($$props["name"], void 0);
     let id = fallback($$props["id"], void 0);
+    let className = fallback($$props["className"], "");
     let selectElement;
     let filteredOptions = [];
     function focus() {
@@ -1908,10 +1942,9 @@ function Select($$renderer, $$props) {
       lg: "px-5 py-3 text-lg"
     };
     variantClasses = {
-      default: "bg-surface border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-      outlined: "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-      filled: "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-      ghost: "bg-transparent border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent"
+      outlined: "border border-primary bg-surface",
+      filled: "border-0 bg-surface-secondary",
+      underlined: "border-0 border-b border-primary bg-transparent rounded-none"
     };
     stateClasses = error ? "focus:ring-error border-error" : success ? "focus:ring-success border-success" : "";
     containerClasses = [
@@ -1925,7 +1958,7 @@ function Select($$renderer, $$props) {
       "w-full",
       "min-w-40 sm:min-w-48 md:min-w-56 lg:min-w-64",
       // Responsive minimum width for selects
-      "rounded-lg",
+      variant === "underlined" ? "rounded-none" : "rounded-lg",
       "transition-all",
       "duration-200",
       "ease-in-out",
@@ -1939,9 +1972,9 @@ function Select($$renderer, $$props) {
       "appearance-none",
       "pr-10",
       sizeClasses[size],
-      variantClasses[variant2],
+      variantClasses[variant],
       stateClasses,
-      error ? "grainy-red" : success ? "grainy-green" : "grainy-texture"
+      className
     ].join(" ");
     labelClasses = [
       "block",
@@ -2006,7 +2039,7 @@ function Select($$renderer, $$props) {
         name,
         class: selectClasses,
         "aria-invalid": error ? "true" : "false",
-        "aria-describedby": error || success || helpText2 ? `${selectId}-help` : void 0
+        "aria-describedby": error || success || helpText ? `${selectId}-help` : void 0
       },
       ($$renderer3) => {
         if (placeholder && !value) {
@@ -2053,7 +2086,7 @@ function Select($$renderer, $$props) {
     $$renderer2.push(`<!--]--> <div${attr_class(clsx(iconClasses), "svelte-1qdann5")}>`);
     Chevron_down($$renderer2, { size: size === "sm" ? 16 : size === "md" ? 20 : 24 });
     $$renderer2.push(`<!----></div> <div${attr_class(`absolute inset-0 rounded-lg pointer-events-none transition-all duration-200 ${stringify("")}`, "svelte-1qdann5")}></div></div> `);
-    if (error || success || helpText2) {
+    if (error || success || helpText) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<div${attr("id", `${stringify(selectId)}-help`)}${attr_class(clsx(helpTextClasses), "svelte-1qdann5")}>`);
       if (error) {
@@ -2070,9 +2103,9 @@ function Select($$renderer, $$props) {
           $$renderer2.push(`<!----> <span class="svelte-1qdann5">${escape_html(success)}</span></div>`);
         } else {
           $$renderer2.push("<!--[!-->");
-          if (helpText2) {
+          if (helpText) {
             $$renderer2.push("<!--[-->");
-            $$renderer2.push(`<span class="svelte-1qdann5">${escape_html(helpText2)}</span>`);
+            $$renderer2.push(`<span class="svelte-1qdann5">${escape_html(helpText)}</span>`);
           } else {
             $$renderer2.push("<!--[!-->");
           }
@@ -2094,13 +2127,14 @@ function Select($$renderer, $$props) {
       required,
       error,
       success,
-      helpText: helpText2,
+      helpText,
       size,
-      variant: variant2,
+      variant,
       searchable,
       clearable,
       name,
       id,
+      className,
       focus,
       blur
     });
@@ -2116,31 +2150,33 @@ function Skeleton($$renderer, $$props) {
 }
 const $$css = {
   hash: "svelte-1bsl3nr",
-  code: "\n    /* Custom focus styles for better accessibility */.textarea-focus-visible {outline:2px solid var(--color-plasma-red-500);outline-offset:2px;}\n\n    /* Smooth transitions for all interactive elements */textarea.svelte-1bsl3nr {transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);}\n\n    /* Custom scrollbar for textarea */textarea.svelte-1bsl3nr::-webkit-scrollbar {width:6px;}textarea.svelte-1bsl3nr::-webkit-scrollbar-track {background:transparent;}textarea.svelte-1bsl3nr::-webkit-scrollbar-thumb {background:var(--color-dark-600);border-radius:3px;}textarea.svelte-1bsl3nr::-webkit-scrollbar-thumb:hover {background:var(--color-dark-500);}\n\n    /* Placeholder styling */textarea.svelte-1bsl3nr::-moz-placeholder {-moz-transition:color 0.2s ease;transition:color 0.2s ease;}textarea.svelte-1bsl3nr::placeholder {transition:color 0.2s ease;}textarea.svelte-1bsl3nr:focus::-moz-placeholder {color:var(--color-gray-300);}textarea.svelte-1bsl3nr:focus::placeholder {color:var(--color-gray-300);}\n\n    /* Character count styling */.char-count-warning.svelte-1bsl3nr {color:var(--color-cyber-amber-400);}.char-count-error.svelte-1bsl3nr {color:var(--color-blood-red-400);}\n\n    /* Resize handle styling */textarea.svelte-1bsl3nr:not(.resize-none) {resize:both;}textarea.resize-x.svelte-1bsl3nr {resize:horizontal;}textarea.resize-y.svelte-1bsl3nr {resize:vertical;}\n\n    /* Focus ring animation */.focus-ring.svelte-1bsl3nr {\n        animation: svelte-1bsl3nr-focus-ring-pulse 0.2s ease-out;}\n\n    @keyframes svelte-1bsl3nr-focus-ring-pulse {\n        0% {\n            transform: scale(0.95);\n            opacity: 0;\n        }\n        100% {\n            transform: scale(1);\n            opacity: 1;\n        }\n    }"
+  code: "\n    /* Enhanced focus styles using semantic tokens */.textarea-focus-visible {outline:2px solid rgb(var(--color-focus-ring));outline-offset:2px;}\n\n    /* Smooth transitions for all interactive elements */textarea.svelte-1bsl3nr {transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);}\n\n    /* Custom scrollbar for textarea using semantic tokens */textarea.svelte-1bsl3nr::-webkit-scrollbar {width:6px;}textarea.svelte-1bsl3nr::-webkit-scrollbar-track {background:transparent;}textarea.svelte-1bsl3nr::-webkit-scrollbar-thumb {background:rgb(var(--color-border-secondary));border-radius:3px;}textarea.svelte-1bsl3nr::-webkit-scrollbar-thumb:hover {background:rgb(var(--color-border-hover));}\n\n    /* Placeholder styling using semantic tokens */textarea.svelte-1bsl3nr::-moz-placeholder {-moz-transition:color 0.2s ease;transition:color 0.2s ease;color:rgb(var(--color-text-placeholder));}textarea.svelte-1bsl3nr::placeholder {transition:color 0.2s ease;color:rgb(var(--color-text-placeholder));}textarea.svelte-1bsl3nr:focus::-moz-placeholder {color:rgb(var(--color-text-tertiary));}textarea.svelte-1bsl3nr:focus::placeholder {color:rgb(var(--color-text-tertiary));}\n\n    /* Character count styling using semantic tokens */.char-count-warning.svelte-1bsl3nr {color:rgb(var(--color-warning));}.char-count-error.svelte-1bsl3nr {color:rgb(var(--color-error));}\n\n    /* Resize handle styling */textarea.svelte-1bsl3nr:not(.resize-none) {resize:both;}textarea.resize-x.svelte-1bsl3nr {resize:horizontal;}textarea.resize-y.svelte-1bsl3nr {resize:vertical;}\n\n    /* Focus ring animation */.focus-ring.svelte-1bsl3nr {\n        animation: svelte-1bsl3nr-focus-ring-pulse 0.2s ease-out;}\n\n    @keyframes svelte-1bsl3nr-focus-ring-pulse {\n        0% {\n            transform: scale(0.95);\n            opacity: 0;\n        }\n        100% {\n            transform: scale(1);\n            opacity: 1;\n        }\n    }"
 };
 function Textarea($$renderer, $$props) {
   $$renderer.global.css.add($$css);
   $$renderer.component(($$renderer2) => {
-    let textareaId, sizeClasses, variantClasses, stateClasses, resizeClasses, containerClasses, textareaClasses, labelClasses, helpTextClasses, charCountClasses;
+    let textareaId, hasError, hasSuccess, sizeClasses, variantClasses, resizeClasses, baseTextareaClasses, stateClasses, disabledClasses, textareaClasses, containerClasses, labelClasses, helperTextClasses, charCountClasses;
     let value = fallback($$props["value"], "");
-    let placeholder = fallback($$props["placeholder"], "");
     let label = fallback($$props["label"], "");
+    let placeholder = fallback($$props["placeholder"], "");
+    let helperText = fallback($$props["helperText"], "");
     let disabled = fallback($$props["disabled"], false);
     let required = fallback($$props["required"], false);
     let readonly = fallback($$props["readonly"], false);
+    let id = fallback($$props["id"], void 0);
+    let name = fallback($$props["name"], void 0);
     let error = fallback($$props["error"], "");
     let success = fallback($$props["success"], "");
-    let helpText2 = fallback($$props["helpText"], "");
-    let size = fallback($$props["size"], "md");
-    let variant2 = fallback($$props["variant"], "default");
-    let rows = fallback($$props["rows"], 4);
+    let helpText = fallback($$props["helpText"], "");
     let maxLength = fallback($$props["maxLength"], void 0);
     let minLength = fallback($$props["minLength"], void 0);
-    const pattern = void 0;
-    let name = fallback($$props["name"], void 0);
-    let id = fallback($$props["id"], void 0);
+    let rows = fallback($$props["rows"], 4);
     let resize = fallback($$props["resize"], "vertical");
     let autoResize = fallback($$props["autoResize"], false);
+    let size = fallback($$props["size"], "md");
+    let variant = fallback($$props["variant"], "outlined");
+    let className = fallback($$props["className"], "");
+    let ariaLabel = fallback($$props["ariaLabel"], void 0);
     function focus() {
     }
     function blur() {
@@ -2148,53 +2184,55 @@ function Textarea($$renderer, $$props) {
     function select() {
     }
     textareaId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+    hasError = Boolean(error);
+    hasSuccess = Boolean(success);
     sizeClasses = {
       sm: "px-3 py-1.5 text-sm",
-      md: "px-4 py-2.5 text-base",
-      lg: "px-5 py-3 text-lg"
+      md: "px-4 py-2.5 text-sm",
+      lg: "px-5 py-3 text-base"
     };
     variantClasses = {
-      default: "bg-surface border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-      outlined: "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-      filled: "bg-surface-secondary border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent",
-      ghost: "bg-transparent border border-primary text-primary placeholder-text-placeholder focus:ring-primary focus:border-transparent"
+      outlined: "border border-primary bg-surface",
+      filled: "border-0 bg-surface-secondary",
+      underlined: "border-0 border-b border-primary bg-transparent rounded-none"
     };
-    stateClasses = error ? "focus:ring-error border-error" : success ? "focus:ring-success border-success" : "";
     resizeClasses = {
       none: "resize-none",
       both: "resize",
       horizontal: "resize-x",
       vertical: "resize-y"
     };
-    containerClasses = [
-      "relative",
-      "group",
-      "transition-all",
-      "duration-200",
-      "ease-in-out"
-    ].join(" ");
-    textareaClasses = [
+    baseTextareaClasses = [
       "w-full",
       "min-w-0",
-      // Allow textarea to shrink below minimum width
-      "rounded-lg",
+      variant === "underlined" ? "rounded-none" : "rounded-md",
       "transition-all",
       "duration-200",
       "ease-in-out",
       "focus:outline-none",
       "focus:ring-2",
+      "focus:ring-focus",
       "focus:ring-offset-2",
-      "focus:ring-offset-dark-900",
+      "focus:ring-offset-surface",
       "disabled:opacity-50",
       "disabled:cursor-not-allowed",
       "read-only:cursor-default",
       "read-only:opacity-75",
       "overflow-hidden",
       sizeClasses[size],
-      variantClasses[variant2],
-      stateClasses,
+      variantClasses[variant],
       resizeClasses[resize],
-      error ? "grainy-red" : success ? "grainy-green" : "grainy-texture"
+      className
+    ].join(" ");
+    stateClasses = hasError ? "border-error text-primary placeholder-placeholder focus:ring-error focus:border-error" : hasSuccess ? "border-success text-primary placeholder-placeholder focus:ring-success focus:border-success" : "text-primary placeholder-placeholder focus:ring-focus focus:border-focus";
+    disabledClasses = disabled ? "bg-surface-disabled text-disabled border-disabled cursor-not-allowed" : "";
+    textareaClasses = [baseTextareaClasses, stateClasses, disabledClasses].join(" ");
+    containerClasses = [
+      "relative",
+      "group",
+      "transition-all",
+      "duration-200",
+      "ease-in-out"
     ].join(" ");
     labelClasses = [
       "block",
@@ -2203,16 +2241,16 @@ function Textarea($$renderer, $$props) {
       "mb-2",
       "transition-colors",
       "duration-200",
-      error ? "text-error" : success ? "text-success" : "text-primary"
+      hasError ? "text-error" : hasSuccess ? "text-success" : "text-primary"
     ].join(" ");
-    helpTextClasses = [
+    helperTextClasses = [
       "mt-2",
       "text-xs",
-      error ? "text-error" : success ? "text-success" : "text-tertiary"
+      hasError ? "text-error" : hasSuccess ? "text-success" : "text-secondary"
     ].join(" ");
     charCountClasses = [
       "text-xs",
-      "text-tertiary",
+      "text-secondary",
       "mt-1",
       "text-right",
       maxLength && value.length > maxLength * 0.9 ? "text-warning" : "",
@@ -2224,7 +2262,7 @@ function Textarea($$renderer, $$props) {
       $$renderer2.push(`<label${attr("for", textareaId)}${attr_class(clsx(labelClasses), "svelte-1bsl3nr")}>${escape_html(label)} `);
       if (required) {
         $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<span class="text-error ml-1 svelte-1bsl3nr">*</span>`);
+        $$renderer2.push(`<span class="text-error ml-1 svelte-1bsl3nr" aria-label="required">*</span>`);
       } else {
         $$renderer2.push("<!--[!-->");
       }
@@ -2232,12 +2270,12 @@ function Textarea($$renderer, $$props) {
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div class="relative svelte-1bsl3nr"><textarea${attr("id", textareaId)}${attr("placeholder", placeholder)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("readonly", readonly, true)}${attr("maxlength", maxLength)}${attr("minlength", minLength)}${attr("name", name)}${attr("rows", rows)}${attr_class(clsx(textareaClasses), "svelte-1bsl3nr")}${attr("aria-invalid", error ? "true" : "false")}${attr("aria-describedby", error || success || helpText2 || maxLength ? `${textareaId}-help` : void 0)}>`);
+    $$renderer2.push(`<!--]--> <div class="relative svelte-1bsl3nr"><textarea${attr("id", textareaId)}${attr("placeholder", placeholder)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("readonly", readonly, true)}${attr("maxlength", maxLength)}${attr("minlength", minLength)}${attr("name", name)}${attr("rows", rows)}${attr_class(clsx(textareaClasses), "svelte-1bsl3nr")}${attr("aria-invalid", hasError ? "true" : "false")}${attr("aria-describedby", hasError || hasSuccess || helperText || maxLength ? `${textareaId}-help` : void 0)}${attr("aria-label", ariaLabel || (label ? void 0 : "Textarea field"))}${attr("aria-required", required)}>`);
     const $$body = escape_html(value);
     if ($$body) {
       $$renderer2.push(`${$$body}`);
     }
-    $$renderer2.push(`</textarea> <div${attr_class(`absolute inset-0 rounded-lg pointer-events-none transition-all duration-200 ${stringify("")}`, "svelte-1bsl3nr")}></div></div> `);
+    $$renderer2.push(`</textarea></div> `);
     if (maxLength) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<div${attr_class(clsx(charCountClasses), "svelte-1bsl3nr")}>${escape_html(value.length)}/${escape_html(maxLength)}</div>`);
@@ -2245,26 +2283,26 @@ function Textarea($$renderer, $$props) {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--> `);
-    if (error || success || helpText2) {
+    if (hasError || hasSuccess || helpText) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div${attr("id", `${stringify(textareaId)}-help`)}${attr_class(clsx(helpTextClasses), "svelte-1bsl3nr")}>`);
-      if (error) {
+      $$renderer2.push(`<div${attr("id", `${stringify(textareaId)}-help`)}${attr_class(clsx(helperTextClasses), "svelte-1bsl3nr")}>`);
+      if (hasError) {
         $$renderer2.push("<!--[-->");
         $$renderer2.push(`<div class="flex items-center gap-1 svelte-1bsl3nr">`);
-        Circle_alert($$renderer2, { size: 16, class: "flex-shrink-0" });
+        Circle_alert($$renderer2, { size: 14, class: "flex-shrink-0" });
         $$renderer2.push(`<!----> <span class="svelte-1bsl3nr">${escape_html(error)}</span></div>`);
       } else {
         $$renderer2.push("<!--[!-->");
-        if (success) {
+        if (hasSuccess) {
           $$renderer2.push("<!--[-->");
           $$renderer2.push(`<div class="flex items-center gap-1 svelte-1bsl3nr">`);
-          Circle_check_big($$renderer2, { size: 16, class: "flex-shrink-0" });
+          Circle_check_big($$renderer2, { size: 14, class: "flex-shrink-0" });
           $$renderer2.push(`<!----> <span class="svelte-1bsl3nr">${escape_html(success)}</span></div>`);
         } else {
           $$renderer2.push("<!--[!-->");
-          if (helpText2) {
+          if (helpText) {
             $$renderer2.push("<!--[-->");
-            $$renderer2.push(`<span class="svelte-1bsl3nr">${escape_html(helpText2)}</span>`);
+            $$renderer2.push(`<span class="svelte-1bsl3nr">${escape_html(helpText)}</span>`);
           } else {
             $$renderer2.push("<!--[!-->");
           }
@@ -2279,24 +2317,26 @@ function Textarea($$renderer, $$props) {
     $$renderer2.push(`<!--]--></div>`);
     bind_props($$props, {
       value,
-      placeholder,
       label,
+      placeholder,
+      helperText,
       disabled,
       required,
       readonly,
+      id,
+      name,
       error,
       success,
-      helpText: helpText2,
-      size,
-      variant: variant2,
-      rows,
+      helpText,
       maxLength,
       minLength,
-      name,
-      id,
+      rows,
       resize,
       autoResize,
-      pattern,
+      size,
+      variant,
+      className,
+      ariaLabel,
       focus,
       blur,
       select
@@ -2346,6 +2386,7 @@ function Toggle($$renderer, $$props) {
     let disabled = fallback($$props["disabled"], false);
     let label = fallback($$props["label"], "");
     let size = fallback($$props["size"], "md");
+    let className = fallback($$props["className"], "");
     const sizeClasses = { sm: "w-8 h-4", md: "w-11 h-6", lg: "w-14 h-7" };
     const thumbSizeClasses = { sm: "w-3 h-3", md: "w-5 h-5", lg: "w-6 h-6" };
     translateClasses = {
@@ -2353,7 +2394,7 @@ function Toggle($$renderer, $$props) {
       md: checked ? "translate-x-5" : "translate-x-0",
       lg: checked ? "translate-x-7" : "translate-x-0"
     };
-    $$renderer2.push(`<div class="flex items-center space-x-3 min-w-32 sm:min-w-36 md:min-w-40 lg:min-w-44"><button type="button" role="switch"${attr("aria-checked", checked)}${attr("aria-label", label || "Toggle")}${attr("disabled", disabled, true)}${attr_class(`relative inline-flex ${stringify(sizeClasses[size])} flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${stringify(checked ? "bg-primary" : "bg-surface-tertiary")} ${stringify(disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-opacity-80")}`)}><span${attr_class(`pointer-events-none inline-block ${stringify(thumbSizeClasses[size])} transform rounded-full bg-surface shadow-lg ring-0 transition duration-200 ease-in-out ${stringify(translateClasses[size])}`)}></span></button> `);
+    $$renderer2.push(`<div${attr_class(`flex items-center space-x-3 min-w-32 sm:min-w-36 md:min-w-40 lg:min-w-44 ${stringify(className)}`)}><button type="button" role="switch"${attr("aria-checked", checked)}${attr("aria-label", label || "Toggle")}${attr("disabled", disabled, true)}${attr_class(`relative inline-flex ${stringify(sizeClasses[size])} flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${stringify(checked ? "bg-primary" : "bg-surface-tertiary")} ${stringify(disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-opacity-80")}`)}><span${attr_class(`pointer-events-none inline-block ${stringify(thumbSizeClasses[size])} transform rounded-full bg-surface shadow-lg ring-0 transition duration-200 ease-in-out ${stringify(translateClasses[size])}`)}></span></button> `);
     if (label) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<button type="button" class="text-sm font-medium text-primary cursor-pointer select-none hover:text-secondary transition-colors">${escape_html(label)}</button>`);
@@ -2361,7 +2402,7 @@ function Toggle($$renderer, $$props) {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--></div>`);
-    bind_props($$props, { checked, disabled, label, size });
+    bind_props($$props, { checked, disabled, label, size, className });
   });
 }
 function PerformanceMonitor($$renderer, $$props) {
@@ -2394,41 +2435,40 @@ function PerformanceMonitor($$renderer, $$props) {
 function Alert($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let alertClasses, alertRole, iconSvg;
-    let variant2 = fallback($$props["variant"], "info");
+    let variant = fallback($$props["variant"], "info");
     let title = fallback($$props["title"], "");
     let message = fallback($$props["message"], "");
-    let dismissible = fallback($$props["dismissible"], false);
-    let onDismiss = fallback($$props["onDismiss"], null);
-    let actions = fallback($$props["actions"], () => [], true);
+    let closable = fallback($$props["closable"], false);
+    let className = fallback($$props["className"], "");
     alertClasses = {
-      success: "bg-success-light text-success-dark border border-success",
-      warning: "bg-warning-light text-warning-dark border border-warning",
-      danger: "bg-error-light text-error-dark border border-error",
-      info: "bg-info-light text-info-dark border border-info"
+      info: "bg-[var(--zabi-info-light)] text-[var(--zabi-info-dark)] border border-[var(--zabi-info)]",
+      success: "bg-[var(--zabi-success-light)] text-[var(--zabi-success-dark)] border border-[var(--zabi-success)]",
+      warning: "bg-[var(--zabi-warning-light)] text-[var(--zabi-warning-dark)] border border-[var(--zabi-warning)]",
+      error: "bg-[var(--zabi-error-light)] text-[var(--zabi-error-dark)] border border-[var(--zabi-error)]"
     };
-    alertRole = variant2 === "success" || variant2 === "info" ? "status" : "alert";
+    alertRole = variant === "success" || variant === "info" ? "status" : "alert";
     iconSvg = {
+      info: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        </svg>`,
       success: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
         </svg>`,
       warning: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
         </svg>`,
-      danger: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+      error: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-        </svg>`,
-      info: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
         </svg>`
     };
-    $$renderer2.push(`<div${attr_class(`relative rounded-md p-md border ${stringify(alertClasses[variant2])} transition-all duration-200 motion-reduce:transition-none`)}${attr("role", alertRole)}${attr("aria-live", variant2 === "success" || variant2 === "info" ? "polite" : "assertive")} aria-atomic="true">`);
-    if (dismissible) {
+    $$renderer2.push(`<div${attr_class(`relative rounded-md p-4 border ${stringify(alertClasses[variant])} transition-all duration-200 motion-reduce:transition-none ${stringify(className)}`)}${attr("role", alertRole)}${attr("aria-live", variant === "success" || variant === "info" ? "polite" : "assertive")} aria-atomic="true">`);
+    if (closable) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<button class="absolute top-sm right-sm z-10 w-6 h-6 flex items-center justify-center rounded-full text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2" aria-label="Dismiss alert" type="button"><svg class="w-4 h-4 text-current group-hover:scale-110 transition-transform duration-200 motion-reduce:transition-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`);
+      $$renderer2.push(`<button class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2" aria-label="Dismiss alert" type="button"><svg class="w-4 h-4 text-current group-hover:scale-110 transition-transform duration-200 motion-reduce:transition-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div${attr_class(`flex items-start gap-sm ${stringify(dismissible ? "pr-8" : "")}`)}><div class="flex-shrink-0 mt-0.5">${html(iconSvg[variant2])}</div> <div class="flex-1 min-w-0">`);
+    $$renderer2.push(`<!--]--> <div${attr_class(`flex items-start gap-3 ${stringify(closable ? "pr-8" : "")}`)}><div class="flex-shrink-0 mt-0.5">${html(iconSvg[variant])}</div> <div class="flex-1 min-w-0">`);
     if (title) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<h4 class="font-semibold text-sm mb-1">${escape_html(title)}</h4>`);
@@ -2442,30 +2482,10 @@ function Alert($$renderer, $$props) {
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> `);
-    if (actions.length > 0) {
-      $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="mt-3 flex flex-wrap gap-2"><!--[-->`);
-      const each_array = ensure_array_like(actions);
-      for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-        let action = each_array[$$index];
-        if (action.href) {
-          $$renderer2.push("<!--[-->");
-          $$renderer2.push(`<a${attr("href", action.href)} class="text-sm font-medium underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 rounded-sm">${escape_html(action.label)}</a>`);
-        } else {
-          $$renderer2.push("<!--[!-->");
-          $$renderer2.push(`<button class="text-sm font-medium underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 rounded-sm" type="button">${escape_html(action.label)}</button>`);
-        }
-        $$renderer2.push(`<!--]-->`);
-      }
-      $$renderer2.push(`<!--]--></div>`);
-    } else {
-      $$renderer2.push("<!--[!-->");
-    }
-    $$renderer2.push(`<!--]--></div></div> <!--[-->`);
+    $$renderer2.push(`<!--]--> <!--[-->`);
     slot($$renderer2, $$props, "default", {}, null);
-    $$renderer2.push(`<!--]--></div>`);
-    bind_props($$props, { variant: variant2, title, message, dismissible, onDismiss, actions });
+    $$renderer2.push(`<!--]--></div></div></div>`);
+    bind_props($$props, { variant, title, message, closable, className });
   });
 }
 function Modal($$renderer, $$props) {
@@ -2633,7 +2653,7 @@ function KeyValueForm($$renderer, $$props) {
             rows: field.rows || 3,
             required: field.required,
             size: "sm",
-            variant: "outlined",
+            variant: "default",
             get value() {
               return values[field.key];
             },
@@ -2652,7 +2672,7 @@ function KeyValueForm($$renderer, $$props) {
               placeholder: field.placeholder,
               required: field.required,
               size: "sm",
-              variant: "outlined",
+              variant: "default",
               get value() {
                 return values[field.key];
               },
@@ -2669,7 +2689,7 @@ function KeyValueForm($$renderer, $$props) {
                 label: field.label,
                 required: field.required,
                 size: "sm",
-                variant: "outlined",
+                variant: "default",
                 get checked() {
                   return values[field.key];
                 },
@@ -2700,7 +2720,7 @@ function KeyValueForm($$renderer, $$props) {
                     label: field.label,
                     required: field.required,
                     size: "sm",
-                    variant: "outlined",
+                    variant: "default",
                     get value() {
                       return values[field.key];
                     },
@@ -2733,7 +2753,7 @@ function KeyValueForm($$renderer, $$props) {
                       placeholder: field.placeholder,
                       required: field.required,
                       size: "sm",
-                      variant: "outlined",
+                      variant: "default",
                       get value() {
                         return values[field.key];
                       },
@@ -2834,448 +2854,637 @@ function NotificationManager($$renderer, $$props) {
     bind_props($$props, { notifications, position, maxNotifications });
   });
 }
-function _page($$renderer) {
-  let showModal = false;
-  let showSlideUp = false;
-  let checkboxValue = false;
-  let toggleValue = false;
-  let inputValue = "";
-  let textareaValue = "";
-  let selectValue = "";
-  let colorValue = "#3B82F6";
-  let textAlignValue = "left";
-  let formData = {};
-  const selectOptions = [
-    { value: "option1", label: "Option 1" },
-    { value: "option2", label: "Option 2" },
-    { value: "option3", label: "Option 3" }
-  ];
-  const formConfig = [
-    { key: "name", type: "text", label: "Name", required: true },
-    { key: "email", type: "email", label: "Email", required: true },
-    { key: "message", type: "textarea", label: "Message", rows: 4 }
-  ];
-  let $$settled = true;
-  let $$inner_renderer;
-  function $$render_inner($$renderer2) {
-    head($$renderer2, ($$renderer3) => {
-      $$renderer3.title(($$renderer4) => {
-        $$renderer4.push(`<title>Zabi Components</title>`);
+function _page($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let showModal = false;
+    let showSlideUp = false;
+    let checkboxValue = false;
+    let toggleValue = false;
+    let inputValue = "";
+    let textareaValue = "";
+    let selectValue = "";
+    let colorValue = "#3B82F6";
+    let textAlignValue = "left";
+    let formData = {};
+    let isSaving = false;
+    let isDeleting = false;
+    let isPressed = false;
+    const selectOptions = [
+      { value: "option1", label: "Option 1" },
+      { value: "option2", label: "Option 2" },
+      { value: "option3", label: "Option 3" }
+    ];
+    const formConfig = [
+      { key: "name", type: "text", label: "Name", required: true },
+      { key: "email", type: "email", label: "Email", required: true },
+      { key: "message", type: "textarea", label: "Message", rows: 4 }
+    ];
+    let $$settled = true;
+    let $$inner_renderer;
+    function $$render_inner($$renderer3) {
+      head($$renderer3, ($$renderer4) => {
+        $$renderer4.title(($$renderer5) => {
+          $$renderer5.push(`<title>Zabi Components</title>`);
+        });
+        $$renderer4.push(`<meta name="description" content="A collection of reusable Svelte components"/>`);
       });
-      $$renderer3.push(`<meta name="description" content="A collection of reusable Svelte components"/>`);
-    });
-    $$renderer2.push(`<div class="min-h-screen bg-page"><section class="container mx-auto px-4 py-8"><div class="flex justify-between items-center mb-8"><div><h1 class="text-4xl font-bold text-primary mb-2">Zabi Components</h1> <p class="text-lg text-secondary">A collection of reusable Svelte components built with
+      $$renderer3.push(`<div class="min-h-screen bg-page"><section class="container mx-auto px-4 py-8"><div class="flex justify-between items-center mb-8"><div><h1 class="text-4xl font-bold text-primary mb-2">Zabi Components</h1> <p class="text-lg text-secondary">A collection of reusable Svelte components built with
                     Tailwind CSS and TypeScript, featuring comprehensive scales
-                    with light and dark mode support.</p></div> `);
-    ThemeToggle($$renderer2, { size: "lg", variant: "outline" });
-    $$renderer2.push(`<!----></div> <div class="space-y-8 mb-12"><div class="flex justify-between items-center">`);
-    Heading($$renderer2, {
-      level: "2",
-      class: "text-2xl font-semibold text-primary",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Design System Scales`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Button($$renderer2, {
-      variant: "outline",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->View Scale Demo`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----></div> <p class="text-secondary">Comprehensive Tailwind scales supporting both light and dark
+                    with light and dark mode support. Now with enhanced Button
+                    component featuring 7 variants, full accessibility, and
+                    semantic tokens.</p></div> `);
+      ThemeToggle($$renderer3, { size: "lg" });
+      $$renderer3.push(`<!----></div> <div class="space-y-8 mb-12"><div class="flex justify-between items-center">`);
+      Heading($$renderer3, {
+        level: "2",
+        class: "text-2xl font-semibold text-primary",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Design System Scales`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "secondary",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->View Scale Demo`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div> <p class="text-secondary">Comprehensive Tailwind scales supporting both light and dark
                 modes. Includes color palettes, typography, spacing, shadows,
                 animations, and more.</p> <div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="card p-4"><h3 class="text-lg font-semibold text-primary mb-2">Color Scales</h3> <p class="text-secondary text-sm mb-3">Primary, secondary, neutral, and semantic color palettes
                         with 11 shades each.</p> <div class="flex space-x-1"><div class="w-4 h-4 bg-primary rounded"></div> <div class="w-4 h-4 bg-secondary rounded"></div> <div class="w-4 h-4 bg-success rounded"></div> <div class="w-4 h-4 bg-warning rounded"></div> <div class="w-4 h-4 bg-error rounded"></div></div></div> <div class="card p-4"><h3 class="text-lg font-semibold text-primary mb-2">Typography</h3> <p class="text-secondary text-sm mb-3">Extended typography scale from 2xs to 9xl with proper
                         line heights.</p> <div class="space-y-1"><p class="text-sm text-primary">Small text</p> <p class="text-base text-primary">Base text</p> <p class="text-lg text-primary">Large text</p></div></div> <div class="card p-4"><h3 class="text-lg font-semibold text-primary mb-2">Adaptive Design</h3> <p class="text-secondary text-sm mb-3">Automatic light/dark mode support with CSS custom
                         properties.</p> <div class="flex items-center space-x-2"><div class="w-3 h-3 bg-primary rounded-full"></div> <span class="text-sm text-secondary">Theme-aware colors</span></div></div></div></div> <div class="space-y-8 mb-12">`);
-    Heading($$renderer2, {
-      level: "2",
-      class: "text-2xl font-semibold text-primary",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Atomic Components`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> <div class="space-y-4"><h3 class="text-lg font-medium text-primary">Buttons</h3> <div class="flex flex-wrap gap-4">`);
-    Button($$renderer2, {
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Primary Button`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Button($$renderer2, {
-      variant: "secondary",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Secondary Button`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Button($$renderer2, {
-      variant: "outline",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Outline Button`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Button($$renderer2, {
-      variant: "ghost",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Ghost Button`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Button($$renderer2, {
-      size: "sm",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Small Button`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Button($$renderer2, {
-      size: "lg",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Large Button`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-primary">Badges</h3> <div class="flex flex-wrap gap-4">`);
-    Badge($$renderer2, {
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Default`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Badge($$renderer2, {
-      variant: "success",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Success`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Badge($$renderer2, {
-      variant: "warning",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Warning`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Badge($$renderer2, {
-      variant: "error",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Error`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Badge($$renderer2, {
-      variant: "info",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Info`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-primary">Cards</h3> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`);
-    Card($$renderer2, {
-      children: ($$renderer3) => {
-        $$renderer3.push(`<h4 class="font-semibold mb-2">Basic Card</h4> <p class="text-gray-600">This is a basic card component.</p>`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Card($$renderer2, {
-      variant: "elevated",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<h4 class="font-semibold mb-2">Elevated Card</h4> <p class="text-gray-600">This card has elevation.</p>`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Card($$renderer2, {
-      variant: "outlined",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<h4 class="font-semibold mb-2">Outlined Card</h4> <p class="text-gray-600">This card has a border.</p>`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Form Controls</h3> <div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="space-y-4">`);
-    Input($$renderer2, {
-      placeholder: "Enter text...",
-      label: "Text Input",
-      get value() {
-        return inputValue;
-      },
-      set value($$value) {
-        inputValue = $$value;
-        $$settled = false;
-      }
-    });
-    $$renderer2.push(`<!----> `);
-    Textarea($$renderer2, {
-      placeholder: "Enter message...",
-      label: "Textarea",
-      rows: "3",
-      get value() {
-        return textareaValue;
-      },
-      set value($$value) {
-        textareaValue = $$value;
-        $$settled = false;
-      }
-    });
-    $$renderer2.push(`<!----> `);
-    Select($$renderer2, {
-      options: selectOptions,
-      label: "Select Option",
-      get value() {
-        return selectValue;
-      },
-      set value($$value) {
-        selectValue = $$value;
-        $$settled = false;
-      }
-    });
-    $$renderer2.push(`<!----> `);
-    ColorPicker($$renderer2, {
-      label: "Color Picker",
-      get value() {
-        return colorValue;
-      },
-      set value($$value) {
-        colorValue = $$value;
-        $$settled = false;
-      }
-    });
-    $$renderer2.push(`<!----> `);
-    TextAlignment($$renderer2, {
-      label: "Text Alignment",
-      get value() {
-        return textAlignValue;
-      },
-      set value($$value) {
-        textAlignValue = $$value;
-        $$settled = false;
-      }
-    });
-    $$renderer2.push(`<!----></div> <div class="space-y-4">`);
-    Checkbox($$renderer2, {
-      label: "Checkbox Option",
-      get checked() {
-        return checkboxValue;
-      },
-      set checked($$value) {
-        checkboxValue = $$value;
-        $$settled = false;
-      }
-    });
-    $$renderer2.push(`<!----> `);
-    Toggle($$renderer2, {
-      label: "Toggle Switch",
-      get checked() {
-        return toggleValue;
-      },
-      set checked($$value) {
-        toggleValue = $$value;
-        $$settled = false;
-      }
-    });
-    $$renderer2.push(`<!----> <div class="p-4 border rounded-lg"><h4 class="font-medium mb-2">Selected Values:</h4> <p class="text-sm text-gray-600">Input: ${escape_html(inputValue)}</p> <p class="text-sm text-gray-600">Textarea: ${escape_html(textareaValue)}</p> <p class="text-sm text-gray-600">Select: ${escape_html(selectValue)}</p> <p class="text-sm text-gray-600">Color: ${escape_html(colorValue)}</p> <p class="text-sm text-gray-600">Alignment: ${escape_html(textAlignValue)}</p> <p class="text-sm text-gray-600">Checkbox: ${escape_html(checkboxValue)}</p> <p class="text-sm text-gray-600">Toggle: ${escape_html(toggleValue)}</p></div></div></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Skeleton Loading</h3> <div class="space-y-2">`);
-    Skeleton($$renderer2, { height: "h-4", width: "w-3/4" });
-    $$renderer2.push(`<!----> `);
-    Skeleton($$renderer2, { height: "h-4", width: "w-1/2" });
-    $$renderer2.push(`<!----> `);
-    Skeleton($$renderer2, { height: "h-20", width: "w-full" });
-    $$renderer2.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Optimized Image</h3> `);
-    OptimizedImage($$renderer2, {
-      src: "/vite.svg",
-      alt: "Vite Logo",
-      width: "100",
-      height: "100",
-      class: "rounded-lg"
-    });
-    $$renderer2.push(`<!----></div></div> <div class="space-y-8 mb-12">`);
-    Heading($$renderer2, {
-      level: "2",
-      class: "text-2xl font-semibold text-gray-800",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Molecular Components`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Alerts</h3> <div class="space-y-2">`);
-    Alert($$renderer2, {
-      variant: "info",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->This is an info alert`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Alert($$renderer2, {
-      variant: "success",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->This is a success alert`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Alert($$renderer2, {
-      variant: "warning",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->This is a warning alert`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Alert($$renderer2, {
-      variant: "error",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->This is an error alert`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Modal</h3> `);
-    Button($$renderer2, {
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Open Modal`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    Modal($$renderer2, {
-      title: "Example Modal",
-      get isOpen() {
-        return showModal;
-      },
-      set isOpen($$value) {
-        showModal = $$value;
-        $$settled = false;
-      },
-      children: ($$renderer3) => {
-        $$renderer3.push(`<p class="mb-4">This is a modal dialog example.</p> <div class="flex gap-2">`);
-        Button($$renderer3, {
-          children: ($$renderer4) => {
-            $$renderer4.push(`<!---->Close`);
-          },
-          $$slots: { default: true }
-        });
-        $$renderer3.push(`<!----> `);
-        Button($$renderer3, {
-          variant: "secondary",
-          children: ($$renderer4) => {
-            $$renderer4.push(`<!---->Cancel`);
-          },
-          $$slots: { default: true }
-        });
-        $$renderer3.push(`<!----></div>`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Slide Up</h3> `);
-    Button($$renderer2, {
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Open Slide Up`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    SlideUp($$renderer2, {
-      title: "Slide Up Panel",
-      get isOpen() {
-        return showSlideUp;
-      },
-      set isOpen($$value) {
-        showSlideUp = $$value;
-        $$settled = false;
-      },
-      children: ($$renderer3) => {
-        $$renderer3.push(`<p class="mb-4">This is a slide-up panel example.</p> `);
-        Button($$renderer3, {
-          children: ($$renderer4) => {
-            $$renderer4.push(`<!---->Close`);
-          },
-          $$slots: { default: true }
-        });
-        $$renderer3.push(`<!---->`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Dropdown</h3> `);
-    Dropdown($$renderer2, {
-      $$slots: {
-        trigger: ($$renderer3) => {
-          Button($$renderer3, {
-            slot: "trigger",
-            children: ($$renderer4) => {
-              $$renderer4.push(`<!---->Dropdown Menu`);
+      Heading($$renderer3, {
+        level: "2",
+        class: "text-2xl font-semibold text-primary",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Atomic Components`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> <div class="space-y-8"><div class="flex justify-between items-center"><h3 class="text-lg font-medium text-primary">Button Component</h3> `);
+      Badge($$renderer3, {
+        variant: "success",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->New &amp; Improved`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div> <div class="space-y-4"><h4 class="text-md font-medium text-secondary">All Variants</h4> <div class="grid grid-cols-2 md:grid-cols-4 gap-4">`);
+      Button($$renderer3, {
+        variant: "primary",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Primary`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "secondary",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Secondary`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "success",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Success`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "warning",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Warning`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "danger",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Danger`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "ghost",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Ghost`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "link",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Link`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "primary",
+        loading: true,
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Loading`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h4 class="text-md font-medium text-secondary">Sizes</h4> <div class="flex items-center gap-4">`);
+      Button($$renderer3, {
+        size: "sm",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Small`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        size: "md",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Medium`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        size: "lg",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Large`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h4 class="text-md font-medium text-secondary">States</h4> <div class="flex flex-wrap gap-4">`);
+      Button($$renderer3, {
+        variant: "primary",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Normal`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "primary",
+        loading: true,
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Loading`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "primary",
+        disabled: true,
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Disabled`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "primary",
+        fullWidth: true,
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Full Width`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h4 class="text-md font-medium text-secondary">Interactive Examples</h4> <div class="flex flex-wrap gap-4">`);
+      Button($$renderer3, {
+        variant: "primary",
+        loading: isSaving,
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->${escape_html("Save Changes")}`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "danger",
+        loading: isDeleting,
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->${escape_html("Delete Item")}`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "secondary",
+        ariaPressed: isPressed,
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->${escape_html("Toggle")}`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "ghost",
+        ariaLabel: "Settings",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->⚙️`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h4 class="text-md font-medium text-secondary">With Icons</h4> <div class="flex flex-wrap gap-4">`);
+      Button($$renderer3, {
+        variant: "primary",
+        iconLeft: "🔍",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Search`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "success",
+        iconRight: "✓",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Confirm`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "warning",
+        iconLeft: "⚠️",
+        iconRight: "→",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Proceed`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        variant: "ghost",
+        iconLeft: "📁",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Open`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h4 class="text-md font-medium text-secondary">Accessibility Features</h4> <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="card p-4"><h5 class="font-medium text-primary mb-2">ARIA Support</h5> <div class="space-y-2">`);
+      Button($$renderer3, {
+        ariaLabel: "Close dialog",
+        variant: "ghost",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->×`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Button($$renderer3, {
+        ariaPressed: isPressed,
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Toggle Button`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="card p-4"><h5 class="font-medium text-primary mb-2">Keyboard Navigation</h5> <p class="text-sm text-secondary">All buttons support Tab navigation, Enter/Space
+                                activation, and proper focus indicators.</p></div></div></div> <div class="space-y-4"><h4 class="text-md font-medium text-secondary">Semantic Token Usage</h4> <div class="card p-4"><p class="text-sm text-secondary mb-3">All button variants use semantic design tokens for
+                            consistent theming and automatic light/dark mode
+                            support.</p> <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs"><div class="flex items-center gap-2"><div class="w-3 h-3 bg-primary rounded"></div> <span>Primary</span></div> <div class="flex items-center gap-2"><div class="w-3 h-3 bg-success rounded"></div> <span>Success</span></div> <div class="flex items-center gap-2"><div class="w-3 h-3 bg-warning rounded"></div> <span>Warning</span></div> <div class="flex items-center gap-2"><div class="w-3 h-3 bg-error rounded"></div> <span>Danger</span></div></div></div></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-primary">Badges</h3> <div class="flex flex-wrap gap-4">`);
+      Badge($$renderer3, {
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Default`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Badge($$renderer3, {
+        variant: "success",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Success`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Badge($$renderer3, {
+        variant: "warning",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Warning`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Badge($$renderer3, {
+        variant: "error",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Error`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Badge($$renderer3, {
+        variant: "info",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Info`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-primary">Cards</h3> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`);
+      Card($$renderer3, {
+        children: ($$renderer4) => {
+          $$renderer4.push(`<h4 class="font-semibold mb-2">Basic Card</h4> <p class="text-gray-600">This is a basic card component.</p>`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Card($$renderer3, {
+        variant: "elevated",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<h4 class="font-semibold mb-2">Elevated Card</h4> <p class="text-gray-600">This card has elevation.</p>`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Card($$renderer3, {
+        variant: "outlined",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<h4 class="font-semibold mb-2">Outlined Card</h4> <p class="text-gray-600">This card has a border.</p>`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Form Controls</h3> <div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="space-y-4">`);
+      Input($$renderer3, {
+        placeholder: "Enter text...",
+        label: "Text Input",
+        get value() {
+          return inputValue;
+        },
+        set value($$value) {
+          inputValue = $$value;
+          $$settled = false;
+        }
+      });
+      $$renderer3.push(`<!----> `);
+      Textarea($$renderer3, {
+        placeholder: "Enter message...",
+        label: "Textarea",
+        rows: "3",
+        get value() {
+          return textareaValue;
+        },
+        set value($$value) {
+          textareaValue = $$value;
+          $$settled = false;
+        }
+      });
+      $$renderer3.push(`<!----> `);
+      Select($$renderer3, {
+        options: selectOptions,
+        label: "Select Option",
+        get value() {
+          return selectValue;
+        },
+        set value($$value) {
+          selectValue = $$value;
+          $$settled = false;
+        }
+      });
+      $$renderer3.push(`<!----> `);
+      ColorPicker($$renderer3, {
+        label: "Color Picker",
+        get value() {
+          return colorValue;
+        },
+        set value($$value) {
+          colorValue = $$value;
+          $$settled = false;
+        }
+      });
+      $$renderer3.push(`<!----> `);
+      TextAlignment($$renderer3, {
+        label: "Text Alignment",
+        get value() {
+          return textAlignValue;
+        },
+        set value($$value) {
+          textAlignValue = $$value;
+          $$settled = false;
+        }
+      });
+      $$renderer3.push(`<!----></div> <div class="space-y-4">`);
+      Checkbox($$renderer3, {
+        label: "Checkbox Option",
+        get checked() {
+          return checkboxValue;
+        },
+        set checked($$value) {
+          checkboxValue = $$value;
+          $$settled = false;
+        }
+      });
+      $$renderer3.push(`<!----> `);
+      Toggle($$renderer3, {
+        label: "Toggle Switch",
+        get checked() {
+          return toggleValue;
+        },
+        set checked($$value) {
+          toggleValue = $$value;
+          $$settled = false;
+        }
+      });
+      $$renderer3.push(`<!----> <div class="p-4 border rounded-lg"><h4 class="font-medium mb-2">Selected Values:</h4> <p class="text-sm text-gray-600">Input: ${escape_html(inputValue)}</p> <p class="text-sm text-gray-600">Textarea: ${escape_html(textareaValue)}</p> <p class="text-sm text-gray-600">Select: ${escape_html(selectValue)}</p> <p class="text-sm text-gray-600">Color: ${escape_html(colorValue)}</p> <p class="text-sm text-gray-600">Alignment: ${escape_html(textAlignValue)}</p> <p class="text-sm text-gray-600">Checkbox: ${escape_html(checkboxValue)}</p> <p class="text-sm text-gray-600">Toggle: ${escape_html(toggleValue)}</p></div></div></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Skeleton Loading</h3> <div class="space-y-2">`);
+      Skeleton($$renderer3, { height: "h-4", width: "w-3/4" });
+      $$renderer3.push(`<!----> `);
+      Skeleton($$renderer3, { height: "h-4", width: "w-1/2" });
+      $$renderer3.push(`<!----> `);
+      Skeleton($$renderer3, { height: "h-20", width: "w-full" });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Optimized Image</h3> `);
+      OptimizedImage($$renderer3, {
+        src: "/vite.svg",
+        alt: "Vite Logo",
+        width: "100",
+        height: "100",
+        class: "rounded-lg"
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-8 mb-12">`);
+      Heading($$renderer3, {
+        level: "2",
+        class: "text-2xl font-semibold text-gray-800",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Molecular Components`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Alerts</h3> <div class="space-y-2">`);
+      Alert($$renderer3, {
+        variant: "info",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->This is an info alert`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Alert($$renderer3, {
+        variant: "success",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->This is a success alert`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Alert($$renderer3, {
+        variant: "warning",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->This is a warning alert`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Alert($$renderer3, {
+        variant: "error",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->This is an error alert`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Modal</h3> `);
+      Button($$renderer3, {
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Open Modal`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      Modal($$renderer3, {
+        title: "Example Modal",
+        get isOpen() {
+          return showModal;
+        },
+        set isOpen($$value) {
+          showModal = $$value;
+          $$settled = false;
+        },
+        children: ($$renderer4) => {
+          $$renderer4.push(`<p class="mb-4">This is a modal dialog example.</p> <div class="flex gap-2">`);
+          Button($$renderer4, {
+            variant: "primary",
+            children: ($$renderer5) => {
+              $$renderer5.push(`<!---->Close`);
             },
             $$slots: { default: true }
           });
+          $$renderer4.push(`<!----> `);
+          Button($$renderer4, {
+            variant: "secondary",
+            children: ($$renderer5) => {
+              $$renderer5.push(`<!---->Cancel`);
+            },
+            $$slots: { default: true }
+          });
+          $$renderer4.push(`<!----></div>`);
         },
-        content: ($$renderer3) => {
-          $$renderer3.push(`<div slot="content" class="p-2"><button class="block w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary rounded">Option 1</button> <button class="block w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary rounded">Option 2</button> <button class="block w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary rounded">Option 3</button></div>`);
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Slide Up</h3> `);
+      Button($$renderer3, {
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Open Slide Up`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      SlideUp($$renderer3, {
+        title: "Slide Up Panel",
+        get isOpen() {
+          return showSlideUp;
+        },
+        set isOpen($$value) {
+          showSlideUp = $$value;
+          $$settled = false;
+        },
+        children: ($$renderer4) => {
+          $$renderer4.push(`<p class="mb-4">This is a slide-up panel example.</p> `);
+          Button($$renderer4, {
+            variant: "primary",
+            children: ($$renderer5) => {
+              $$renderer5.push(`<!---->Close`);
+            },
+            $$slots: { default: true }
+          });
+          $$renderer4.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Dropdown</h3> `);
+      Dropdown($$renderer3, {
+        $$slots: {
+          trigger: ($$renderer4) => {
+            Button($$renderer4, {
+              slot: "trigger",
+              children: ($$renderer5) => {
+                $$renderer5.push(`<!---->Dropdown Menu`);
+              },
+              $$slots: { default: true }
+            });
+          },
+          content: ($$renderer4) => {
+            $$renderer4.push(`<div slot="content" class="p-2"><button class="block w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary rounded">Option 1</button> <button class="block w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary rounded">Option 2</button> <button class="block w-full text-left px-4 py-2 text-sm hover:bg-surface-secondary rounded">Option 3</button></div>`);
+          }
         }
+      });
+      $$renderer3.push(`<!----></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Image Upload</h3> `);
+      ImageUpload($$renderer3, {
+        accept: "image/*",
+        maxSize: 5 * 1024 * 1024,
+        onUpload: (files) => {
+        }
+      });
+      $$renderer3.push(`<!----></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Dynamic Form</h3> `);
+      KeyValueForm($$renderer3, {
+        config: formConfig,
+        get data() {
+          return formData;
+        },
+        set data($$value) {
+          formData = $$value;
+          $$settled = false;
+        }
+      });
+      $$renderer3.push(`<!----></div></div> <div class="space-y-8 mb-12">`);
+      Heading($$renderer3, {
+        level: "2",
+        class: "text-2xl font-semibold text-gray-800",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Organism Components`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Notification Manager</h3> `);
+      Button($$renderer3, {
+        variant: "primary",
+        children: ($$renderer4) => {
+          $$renderer4.push(`<!---->Show Toast Notification`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----> `);
+      NotificationManager($$renderer3, {});
+      $$renderer3.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-primary">Performance Monitor</h3> `);
+      PerformanceMonitor($$renderer3, {});
+      $$renderer3.push(`<!----></div> `);
+      {
+        $$renderer3.push("<!--[!-->");
       }
-    });
-    $$renderer2.push(`<!----></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Image Upload</h3> `);
-    ImageUpload($$renderer2, {
-      accept: "image/*",
-      maxSize: 5 * 1024 * 1024,
-      onUpload: (files) => console.log("Uploaded files:", files)
-    });
-    $$renderer2.push(`<!----></div> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Dynamic Form</h3> `);
-    KeyValueForm($$renderer2, {
-      config: formConfig,
-      get data() {
-        return formData;
-      },
-      set data($$value) {
-        formData = $$value;
-        $$settled = false;
-      }
-    });
-    $$renderer2.push(`<!----></div></div> <div class="space-y-8 mb-12">`);
-    Heading($$renderer2, {
-      level: "2",
-      class: "text-2xl font-semibold text-gray-800",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Organism Components`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> <div class="space-y-4"><h3 class="text-lg font-medium text-gray-700">Notification Manager</h3> `);
-    Button($$renderer2, {
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Show Toast Notification`);
-      },
-      $$slots: { default: true }
-    });
-    $$renderer2.push(`<!----> `);
-    NotificationManager($$renderer2, {});
-    $$renderer2.push(`<!----></div></div> <div class="space-y-4"><h3 class="text-lg font-medium text-primary">Performance Monitor</h3> `);
-    PerformanceMonitor($$renderer2, {});
-    $$renderer2.push(`<!----></div> `);
-    {
-      $$renderer2.push("<!--[!-->");
+      $$renderer3.push(`<!--]--></section></div>`);
     }
-    $$renderer2.push(`<!--]--></section></div>`);
-  }
-  do {
-    $$settled = true;
-    $$inner_renderer = $$renderer.copy();
-    $$render_inner($$inner_renderer);
-  } while (!$$settled);
-  $$renderer.subsume($$inner_renderer);
+    do {
+      $$settled = true;
+      $$inner_renderer = $$renderer2.copy();
+      $$render_inner($$inner_renderer);
+    } while (!$$settled);
+    $$renderer2.subsume($$inner_renderer);
+  });
 }
 export {
   _page as default

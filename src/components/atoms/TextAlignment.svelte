@@ -76,8 +76,12 @@
                     ? 'bg-blue-600 text-white shadow-sm'
                     : 'text-stone-400 hover:text-stone-200 hover:bg-stone-700'}"
                 on:click={() => selectAlignment(option.value)}
-                on:keydown={(e: KeyboardEvent) =>
-                    e.key === "Enter" && selectAlignment(option.value)}
+                on:keydown={(e) => {
+                    const event = e as unknown as KeyboardEvent;
+                    if (event.key === "Enter") {
+                        selectAlignment(option.value);
+                    }
+                }}
                 role="radio"
                 aria-checked={value === option.value}
                 aria-label={option.label}

@@ -212,9 +212,13 @@
                                             ? 'opacity-50 cursor-not-allowed'
                                             : 'cursor-pointer'}"
                                         on:click={() => selectColor(color)}
-                                        on:keydown={(e) =>
-                                            e.key === "Enter" &&
-                                            selectColor(color)}
+                                        on:keydown={(e) => {
+                                            const event =
+                                                e as unknown as KeyboardEvent;
+                                            if (event.key === "Enter") {
+                                                selectColor(color);
+                                            }
+                                        }}
                                         {disabled}
                                     >
                                         <div
@@ -301,9 +305,13 @@
                                             ? 'opacity-50 cursor-not-allowed'
                                             : 'cursor-pointer'}"
                                         on:click={() => selectColor(color)}
-                                        on:keydown={(e) =>
-                                            e.key === "Enter" &&
-                                            selectColor(color)}
+                                        on:keydown={(e) => {
+                                            const event =
+                                                e as unknown as KeyboardEvent;
+                                            if (event.key === "Enter") {
+                                                selectColor(color);
+                                            }
+                                        }}
                                         {disabled}
                                     >
                                         <div
