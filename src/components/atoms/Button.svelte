@@ -31,7 +31,10 @@
 
     function handleClick(event: CustomEvent) {
         if (disabled || loading) return;
-        dispatch("click", { value: true, event: event as unknown as MouseEvent });
+        dispatch("click", {
+            value: true,
+            event: event as unknown as MouseEvent,
+        });
     }
 
     function handleKeydown(event: CustomEvent) {
