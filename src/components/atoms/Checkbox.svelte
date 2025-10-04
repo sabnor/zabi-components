@@ -1,5 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import type { CheckboxEvents } from "../../types/events";
 
     export let checked: boolean = false;
     export let disabled: boolean = false;
@@ -15,11 +16,7 @@
     export let value: string | undefined = undefined;
     export let className: string = "";
 
-    const dispatch = createEventDispatcher<{
-        change: { checked: boolean };
-        focus: { event: FocusEvent };
-        blur: { event: FocusEvent };
-    }>();
+    const dispatch = createEventDispatcher<CheckboxEvents>();
 
     let checkboxElement: HTMLInputElement;
     let isFocused = false;
@@ -30,17 +27,17 @@
     function handleChange(event: Event) {
         const target = event.target as HTMLInputElement;
         checked = target.checked;
-        dispatch("change", { checked });
+        dispatch("change", { value: checked, checked, event, field: name });
     }
 
-    function handleFocus(event: FocusEvent) {
+    function handleFocus(event: CustomEvent) {
         isFocused = true;
-        dispatch("focus", { event });
+        dispatch("focus", { event: event as unknown as FocusEvent });
     }
 
-    function handleBlur(event: FocusEvent) {
+    function handleBlur(event: CustomEvent) {
         isFocused = false;
-        dispatch("blur", { event });
+        dispatch("blur", { event: event as unknown as FocusEvent });
     }
 
     // Focus method for external use
@@ -158,8 +155,8 @@
             {value}
             class="sr-only"
             on:change={handleChange}
-            on:focus={(e) => handleFocus(e as unknown as FocusEvent)}
-            on:blur={(e) => handleBlur(e as unknown as FocusEvent)}
+            on:focus={handleFocus}
+            on:blur={handleBlur}
             aria-invalid={error ? "true" : "false"}
             aria-describedby={error || helpText
                 ? `${checkboxId}-help`

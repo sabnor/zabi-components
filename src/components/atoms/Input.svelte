@@ -69,14 +69,14 @@
         const target = event.target as HTMLInputElement;
         value = target.value;
         hasValue = value !== "";
-        dispatch("input", { value, event: event as InputEvent });
+        dispatch("input", { value, event: event as InputEvent, field: name });
     }
 
     function handleChange(event: Event) {
         const target = event.target as HTMLInputElement;
         value = target.value;
         hasValue = value !== "";
-        dispatch("change", { value, event });
+        dispatch("change", { value, event, field: name });
     }
 
     function handleFocus(event: CustomEvent) {
@@ -101,11 +101,10 @@
         showPassword = !showPassword;
     }
 
-    function clearValue(event: Event) {
-        event.preventDefault();
+    function clearValue() {
         value = "";
         hasValue = false;
-        dispatch("clear", { event });
+        dispatch("clear", { event: new Event("clear") });
         inputElement?.focus();
     }
 
@@ -271,10 +270,8 @@
                 <button
                     type="button"
                     class={buttonClasses}
-                    on:click={clearValue}
-                    on:keydown={(e: CustomEvent) =>
-                        (e as unknown as KeyboardEvent).key === "Enter" &&
-                        clearValue(e)}
+                    on:click|preventDefault={clearValue}
+                    on:keydown={(e) => (e as unknown as KeyboardEvent).key === "Enter" && clearValue()}
                     aria-label="Clear input"
                 >
                     <X size={16} />
@@ -285,10 +282,8 @@
                 <button
                     type="button"
                     class={buttonClasses}
-                    on:click={togglePasswordVisibility}
-                    on:keydown={(e: CustomEvent) =>
-                        (e as unknown as KeyboardEvent).key === "Enter" &&
-                        togglePasswordVisibility()}
+                    on:click|preventDefault={togglePasswordVisibility}
+                    on:keydown={(e) => (e as unknown as KeyboardEvent).key === "Enter" && togglePasswordVisibility()}
                     aria-label={showPassword
                         ? "Hide password"
                         : "Show password"}

@@ -16,10 +16,7 @@
     export let fullWidth: boolean = false;
     export let className: string = "";
 
-    const dispatch = createEventDispatcher<{
-        change: { activeTab: string; tab: (typeof tabs)[0] };
-        tabClick: { tab: (typeof tabs)[0]; event: MouseEvent };
-    }>();
+    const dispatch = createEventDispatcher<TabsEvents>();
 
     let tabListElement: HTMLDivElement;
     let tabPanelsElement: HTMLDivElement;
@@ -82,13 +79,10 @@
     };
 
     function handleTabClick(tab: (typeof tabs)[0], event: MouseEvent) {
-        if (tab.disabled) {
-            event.preventDefault();
-            return;
-        }
+        if (tab.disabled) return;
 
         activeTab = tab.id;
-        dispatch("change", { activeTab, tab });
+        dispatch("change", { activeTab, tab, event });
         dispatch("tabClick", { tab, event });
     }
 

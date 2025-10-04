@@ -1,4 +1,4 @@
-import { k as escape_html, p as set_ssr_context, l as ssr_context, q as push, t as pop, n as noop } from "./context.js";
+import { k as escape_html, m as set_ssr_context, p as ssr_context, q as push, t as pop, n as noop } from "./context.js";
 import { clsx as clsx$1 } from "clsx";
 const DERIVED = 1 << 1;
 const EFFECT = 1 << 2;
@@ -845,10 +845,6 @@ function attr_class(value, hash, directives) {
   var result = to_class(value, hash, directives);
   return result ? ` class="${escape_html(result, true)}"` : "";
 }
-function attr_style(value, directives) {
-  var result = to_style(value, directives);
-  return result ? ` style="${escape_html(result, true)}"` : "";
-}
 function slot(renderer, $$props, name, slot_props, fallback_fn) {
   var slot_fn = $$props.$$slots?.[name];
   if (slot_fn === true) {
@@ -856,17 +852,7 @@ function slot(renderer, $$props, name, slot_props, fallback_fn) {
   }
   if (slot_fn !== void 0) {
     slot_fn(renderer, slot_props);
-  } else {
-    fallback_fn?.();
   }
-}
-function sanitize_slots(props) {
-  const sanitized = {};
-  if (props.children) sanitized.default = true;
-  for (const key in props.$$slots) {
-    sanitized[key] = true;
-  }
-  return sanitized;
 }
 function bind_props(props_parent, props_now) {
   for (const key in props_now) {
@@ -890,22 +876,20 @@ export {
   DIRTY as D,
   ERROR_VALUE as E,
   bind_props as F,
-  attr_class as G,
+  stringify as G,
   HYDRATION_ERROR as H,
   INERT as I,
-  stringify as J,
-  attr as K,
+  attr_class as J,
+  ensure_array_like as K,
   LEGACY_PROPS as L,
   MAYBE_DIRTY as M,
-  attr_style as N,
-  ensure_array_like as O,
-  element as P,
-  spread_props as Q,
+  clsx as N,
+  element as O,
+  spread_props as P,
+  head as Q,
   ROOT_EFFECT as R,
   STATE_SYMBOL as S,
-  sanitize_slots as T,
   UNOWNED as U,
-  head as V,
   HYDRATION_END as a,
   HYDRATION_START as b,
   HYDRATION_START_ELSE as c,
@@ -931,5 +915,5 @@ export {
   experimental_async_ssr as w,
   slot as x,
   attributes as y,
-  clsx as z
+  attr as z
 };

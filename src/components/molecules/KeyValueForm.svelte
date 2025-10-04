@@ -41,7 +41,7 @@
 
     function updateField(key: string, value: any) {
         values = { ...values, [key]: value };
-        dispatch("change", { field: key, value });
+        dispatch("change", { field: key, value, event: new Event("change") });
     }
 
     function handleFieldChange(event: CustomEvent) {
@@ -50,20 +50,20 @@
         if (detail && typeof detail === "object") {
             // Extract field key from the event target or use a default
             const fieldKey = (event.target as any)?.name || "unknown";
-            dispatch("change", { field: fieldKey, value: detail });
+            dispatch("change", { field: fieldKey, value: detail, event: event.detail.event || new Event("change") });
         }
     }
 
     function handleInput(event: CustomEvent) {
         // Forward input events from child components
         const fieldKey = (event.target as any)?.name || "unknown";
-        dispatch("change", { field: fieldKey, value: event.detail });
+        dispatch("change", { field: fieldKey, value: event.detail, event: event.detail.event || new Event("input") });
     }
 
     function handleChange(event: CustomEvent) {
         // Forward change events from child components
         const fieldKey = (event.target as any)?.name || "unknown";
-        dispatch("change", { field: fieldKey, value: event.detail });
+        dispatch("change", { field: fieldKey, value: event.detail, event: event.detail.event || new Event("change") });
     }
 </script>
 

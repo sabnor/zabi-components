@@ -5,22 +5,16 @@
     export let action = "";
     export let className = "";
 
-    const dispatch = createEventDispatcher<{
-        submit: {
-            data: Record<string, FormDataEntryValue>;
-            formData: FormData;
-        };
-    }>();
+    const dispatch = createEventDispatcher<FormEvents>();
 
     function handleSubmit(event: SubmitEvent) {
-        event.preventDefault();
         const formData = new FormData(event.target as HTMLFormElement);
         const data = Object.fromEntries(formData.entries());
-        dispatch("submit", { data, formData });
+        dispatch("submit", { data, formData, event });
     }
 </script>
 
-<form {method} {action} class="form {className}" on:submit={handleSubmit}>
+<form {method} {action} class="form {className}" on:submit|preventDefault={handleSubmit}>
     <slot />
 </form>
 

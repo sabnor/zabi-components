@@ -33,15 +33,7 @@
     // Accessibility props
     export let ariaLabel: string | undefined = undefined;
 
-    const dispatch = createEventDispatcher<{
-        input: { value: string };
-        change: { value: string };
-        focus: { event: FocusEvent };
-        blur: { event: FocusEvent };
-        keydown: { event: KeyboardEvent };
-        keyup: { event: KeyboardEvent };
-        resize: { event: Event };
-    }>();
+    const dispatch = createEventDispatcher<TextareaEvents>();
 
     let textareaElement: HTMLTextAreaElement;
     let isFocused = false;
@@ -67,14 +59,14 @@
             autoResizeTextarea();
         }
 
-        dispatch("input", { value });
+        dispatch("input", { value, event, field: name });
     }
 
     function handleChange(event: Event) {
         const target = event.target as HTMLTextAreaElement;
         value = target.value;
         hasValue = value !== "";
-        dispatch("change", { value });
+        dispatch("change", { value, event, field: name });
     }
 
     function handleFocus(event: FocusEvent) {

@@ -1,0 +1,863 @@
+import { t as I, Q as $e, R as Ce, S as je, T as Me, U as ue, p as j, C as se, D as ye, i as ie, f as k, c as M, s as fe, g as d, h as oe, j as ve, r as _, o as w, n as o, u as r, l as e, m as H, q as ee, v as K, k as x, e as te, B as Z, V as Te, w as re, b as J, d as he, W as ne, P as Ue, E as xe, Y as me, a as qe, G as Be, Z as _e, x as Ee, F as Le, y as De, A as Pe } from "./x-DpVwziig.js";
+import { createEventDispatcher as ce, onMount as Ie, onDestroy as Se } from "svelte";
+import { B as le, T as Ae, S as Fe, C as Re, c as Oe, a as Ve, b as Ke, I as He } from "./Toggle-bODjSdcC.js";
+function Ne(N, v, n = !1, c = !1, z = !1) {
+  var i = N, L = "";
+  I(() => {
+    var u = (
+      /** @type {Effect} */
+      $e
+    );
+    if (L !== (L = v() ?? "") && (u.nodes_start !== null && (Ce(
+      u.nodes_start,
+      /** @type {TemplateNode} */
+      u.nodes_end
+    ), u.nodes_start = u.nodes_end = null), L !== "")) {
+      var t = L + "";
+      n ? t = `<svg>${t}</svg>` : c && (t = `<math>${t}</math>`);
+      var f = je(t);
+      if ((n || c) && (f = /** @type {Element} */
+      ue(f)), Me(
+        /** @type {TemplateNode} */
+        ue(f),
+        /** @type {TemplateNode} */
+        f.lastChild
+      ), n || c)
+        for (; ue(f); )
+          i.before(
+            /** @type {Node} */
+            ue(f)
+          );
+      else
+        i.before(f);
+    }
+  });
+}
+var We = k('<button class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2" aria-label="Dismiss alert" type="button"><svg class="w-4 h-4 text-current group-hover:scale-110 transition-transform duration-200 motion-reduce:transition-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>'), Ge = k('<h4 class="font-semibold text-sm mb-1"> </h4>'), Qe = k('<p class="text-sm leading-relaxed"> </p>'), Ye = k('<div aria-atomic="true"><!> <div><div class="flex-shrink-0 mt-0.5"><!></div> <div class="flex-1 min-w-0"><!> <!> <!></div></div></div>');
+function zt(N, v) {
+  ve(v, !1);
+  const n = H(), c = H(), z = H();
+  let i = j(v, "variant", 8, "info"), L = j(v, "title", 8, ""), u = j(v, "message", 8, ""), t = j(v, "closable", 8, !1), f = j(v, "className", 8, "");
+  const y = ce();
+  function F(s) {
+    y("close", { event: s });
+  }
+  se(() => {
+  }, () => {
+    x(n, {
+      info: "bg-[var(--zabi-info-light)] text-[var(--zabi-info-dark)] border border-[var(--zabi-info)]",
+      success: "bg-[var(--zabi-success-light)] text-[var(--zabi-success-dark)] border border-[var(--zabi-success)]",
+      warning: "bg-[var(--zabi-warning-light)] text-[var(--zabi-warning-dark)] border border-[var(--zabi-warning)]",
+      error: "bg-[var(--zabi-error-light)] text-[var(--zabi-error-dark)] border border-[var(--zabi-error)]"
+    });
+  }), se(() => _(i()), () => {
+    x(c, i() === "success" || i() === "info" ? "status" : "alert");
+  }), se(() => {
+  }, () => {
+    x(z, {
+      info: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        </svg>`,
+      success: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>`,
+      warning: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>`,
+      error: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>`
+    });
+  }), ye(), ie();
+  var $ = Ye(), D = o($);
+  {
+    var O = (s) => {
+      var l = We();
+      te("click", l, F), d(s, l);
+    };
+    M(D, (s) => {
+      t() && s(O);
+    });
+  }
+  var W = w(D, 2), h = o(W), T = o(h);
+  Ne(T, () => (e(z), _(i()), r(() => e(z)[i()])));
+  var U = w(h, 2), q = o(U);
+  {
+    var B = (s) => {
+      var l = Ge(), g = o(l);
+      I(() => Z(g, L())), d(s, l);
+    };
+    M(q, (s) => {
+      L() && s(B);
+    });
+  }
+  var Y = w(q, 2);
+  {
+    var p = (s) => {
+      var l = Qe(), g = o(l);
+      I(() => Z(g, u())), d(s, l);
+    };
+    M(Y, (s) => {
+      u() && s(p);
+    });
+  }
+  var a = w(Y, 2);
+  fe(a, v, "default", {}, null), I(() => {
+    ee($, 1, `relative rounded-md p-4 border ${e(n), _(i()), r(() => e(n)[i()]) ?? ""} transition-all duration-200 motion-reduce:transition-none ${f() ?? ""}`), K($, "role", e(c)), K($, "aria-live", i() === "success" || i() === "info" ? "polite" : "assertive"), ee(W, 1, `flex items-start gap-3 ${t() ? "pr-8" : ""}`);
+  }), d(N, $), oe();
+}
+var Ze = k('<button type="button" class="text-tertiary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary rounded-lg p-1 transition-colors" aria-label="Close dialog"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>'), Je = k('<div class="flex items-center justify-end gap-3 p-6 border-t border-primary bg-surface-secondary"><!></div>'), Xe = k('<div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal-backdrop flex items-center justify-center p-4" role="presentation" tabindex="-1"><div class="bg-surface-elevated rounded-xl shadow-adaptive-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-primary focus:outline-none" role="dialog" aria-modal="true" aria-labelledby="dialog-title" tabindex="-1"><div class="flex items-center justify-between p-6 border-b border-primary"><h2 id="dialog-title" class="text-xl font-semibold text-primary"> </h2> <!></div> <div class="p-6 text-primary"><!></div> <!></div></div>');
+function et(N, v) {
+  const n = Te(v);
+  ve(v, !1);
+  let c = j(v, "isOpen", 12, !1), z = j(v, "title", 8, ""), i = j(v, "showCloseButton", 8, !0);
+  const L = ce();
+  let u = H(), t = H(null);
+  function f() {
+    c(!1), L("close", { event: new Event("close") });
+  }
+  function y(h) {
+    h.target === h.currentTarget && f();
+  }
+  function F(h) {
+    h.key === "Escape" && f();
+  }
+  function $(h) {
+    var B;
+    if (!c()) return;
+    const T = (B = e(u)) == null ? void 0 : B.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!T.length) return;
+    const U = T[0], q = T[T.length - 1];
+    h.key === "Tab" && (h.shiftKey ? document.activeElement === U && (h.preventDefault(), q.focus()) : document.activeElement === q && (h.preventDefault(), U.focus()));
+  }
+  Ie(() => () => {
+    e(t) && e(t).focus();
+  }), se(() => (_(c()), e(u)), () => {
+    c() && (x(t, document.activeElement), setTimeout(
+      () => {
+        var T;
+        const h = (T = e(u)) == null ? void 0 : T.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        h == null || h.focus();
+      },
+      0
+    ));
+  }), ye(), ie();
+  var D = re(), O = J(D);
+  {
+    var W = (h) => {
+      var T = Xe(), U = o(T), q = o(U), B = o(q), Y = o(B), p = w(B, 2);
+      {
+        var a = (b) => {
+          var m = Ze();
+          te("click", m, f), d(b, m);
+        };
+        M(p, (b) => {
+          i() && b(a);
+        });
+      }
+      var s = w(q, 2), l = o(s);
+      fe(l, v, "default", {}, null);
+      var g = w(s, 2);
+      {
+        var S = (b) => {
+          var m = Je(), E = o(m);
+          fe(E, v, "footer", {}, null), d(b, m);
+        };
+        M(g, (b) => {
+          r(() => n.footer) && b(S);
+        });
+      }
+      he(U, (b) => x(u, b), () => e(u)), I(() => Z(Y, z())), te("keydown", U, $), te("click", T, y), te("keydown", T, F), d(h, T);
+    };
+    M(O, (h) => {
+      c() && h(W);
+    });
+  }
+  d(N, D), oe();
+}
+var tt = k('<div class="relative group"><img alt="" class="w-full h-32 object-cover rounded-lg border border-stone-600"/> <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"><div class="flex gap-2"><!> <!></div></div></div>'), at = k('<div class="border-2 border-dashed border-stone-600 rounded-lg p-6 text-center hover:border-stone-500 transition-colors"><div class="space-y-3"><div class="w-12 h-12 mx-auto bg-stone-700 rounded-lg flex items-center justify-center"><svg class="w-6 h-6 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div> <div><p class="text-stone-300 font-medium"> </p> <p class="text-stone-500 text-sm">Choose a file to upload</p></div> <div class="flex gap-2 justify-center"><!></div></div></div>'), rt = k('<div class="space-y-3"><div class="text-sm font-medium text-stone-300">Choose File</div> <input type="file" class="block w-full text-sm text-stone-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-900/30 file:text-blue-300 hover:file:bg-blue-900/50"/> <p class="text-xs text-stone-500"> </p></div>'), st = k('<img alt="Preview" class="w-full h-48 object-cover rounded-lg border border-stone-600"/>'), nt = k('<div class="w-full h-48 bg-stone-700 rounded-lg border border-stone-600 flex items-center justify-center"><div class="text-center"><svg class="w-12 h-12 text-stone-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> <p class="text-stone-300 text-sm"> </p></div></div>'), lt = k('<div class="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg"><div class="text-center"><div class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div> <p class="text-white text-sm">Uploading...</p></div></div>'), it = k('<div class="space-y-2"><div class="flex justify-between text-sm text-stone-400"><span>Uploading...</span> <span> </span></div> <div class="w-full bg-stone-700 rounded-full h-2"><div class="bg-blue-500 h-2 rounded-full transition-all duration-300"></div></div></div>'), ot = k('<div class="space-y-4"><div class="relative"><!> <!></div> <!></div>'), vt = k('<div class="space-y-4"><!></div>'), ct = k("<!> <!>", 1), dt = k('<div class="space-y-3"><!> <!></div>');
+function $t(N, v) {
+  ve(v, !1);
+  let n = j(v, "value", 12, null), c = j(v, "disabled", 8, !1), z = j(v, "accept", 8, "image/*"), i = j(
+    v,
+    "maxSize",
+    8,
+    5 * 1024 * 1024
+    // 5MB default
+  ), L = j(v, "placeholder", 8, "No image selected");
+  const u = ce();
+  let t = H(!1), f = H(null), y = H(null), F = H(!1), $ = H(0);
+  function D(a) {
+    const s = a.target;
+    if (!s.files || s.files.length === 0) return;
+    const l = s.files, g = l[0];
+    if (g.size > i()) {
+      u("error", {
+        message: `File size must be less than ${Math.round(i() / 1024 / 1024)}MB`
+      });
+      return;
+    }
+    if (z() !== "*" && !g.type.match(z().replace("*", ".*"))) {
+      u("error", { message: "Please select a valid file type" });
+      return;
+    }
+    x(f, g), x(y, URL.createObjectURL(g)), u("upload", { files: l });
+  }
+  async function O() {
+    if (!(!e(f) || !e(y))) {
+      x(F, !0), x($, 0);
+      try {
+        const a = setInterval(
+          () => {
+            e($) < 90 && x($, e($) + Math.random() * 10);
+          },
+          200
+        );
+        await new Promise((s) => setTimeout(s, 1e3)), clearInterval(a), x($, 100), n(e(y)), u("change", { value: e(y) }), x(t, !1), h();
+      } catch (a) {
+        u("error", { message: `Upload failed: ${a}` });
+      } finally {
+        x(F, !1), x($, 0);
+      }
+    }
+  }
+  function W() {
+    n(null), u("change", { value: null });
+  }
+  function h() {
+    x(f, null), e(y) && (URL.revokeObjectURL(e(y)), x(y, null)), x($, 0);
+  }
+  function T() {
+    e(y) && (URL.revokeObjectURL(e(y)), x(y, null));
+  }
+  Se(() => {
+    T();
+  }), ie();
+  var U = dt(), q = o(U);
+  {
+    var B = (a) => {
+      var s = tt(), l = o(s), g = w(l, 2), S = o(g), b = o(S);
+      le(b, {
+        variant: "secondary",
+        size: "sm",
+        get disabled() {
+          return c();
+        },
+        $$events: { click: () => x(t, !0) },
+        children: (E, A) => {
+          var R = ne("Change");
+          d(E, R);
+        },
+        $$slots: { default: !0 }
+      });
+      var m = w(b, 2);
+      le(m, {
+        variant: "danger",
+        size: "sm",
+        get disabled() {
+          return c();
+        },
+        $$events: { click: W },
+        children: (E, A) => {
+          var R = ne("Remove");
+          d(E, R);
+        },
+        $$slots: { default: !0 }
+      }), I(() => K(l, "src", n())), d(a, s);
+    }, Y = (a) => {
+      var s = at(), l = o(s), g = w(o(l), 2), S = o(g), b = o(S), m = w(g, 2), E = o(m);
+      le(E, {
+        variant: "primary",
+        size: "sm",
+        get disabled() {
+          return c();
+        },
+        $$events: { click: () => x(t, !0) },
+        children: (A, R) => {
+          var V = ne("Upload File");
+          d(A, V);
+        },
+        $$slots: { default: !0 }
+      }), I(() => Z(b, L())), d(a, s);
+    };
+    M(q, (a) => {
+      n() ? a(B) : a(Y, !1);
+    });
+  }
+  var p = w(q, 2);
+  et(p, {
+    title: "Upload File",
+    get isOpen() {
+      return e(t);
+    },
+    set isOpen(a) {
+      x(t, a);
+    },
+    $$events: {
+      close: () => {
+        x(t, !1), h();
+      }
+    },
+    children: (a, s) => {
+      var l = vt(), g = o(l);
+      {
+        var S = (m) => {
+          var E = rt(), A = w(o(E), 2), R = w(A, 2), V = o(R);
+          I(
+            (C) => {
+              K(A, "accept", z()), Z(V, `Max size: ${C ?? ""}MB`);
+            },
+            [
+              () => (_(i()), r(() => Math.round(i() / 1024 / 1024)))
+            ]
+          ), te("change", A, D), d(m, E);
+        }, b = (m) => {
+          var E = ot(), A = o(E), R = o(A);
+          {
+            var V = (P) => {
+              var Q = st();
+              I(() => K(Q, "src", e(y))), d(P, Q);
+            }, C = (P) => {
+              var Q = nt(), de = o(Q), ge = w(o(de), 2), be = o(ge);
+              I(() => Z(be, (e(f), r(() => e(f).name)))), d(P, Q);
+            };
+            M(R, (P) => {
+              e(f), r(() => e(f).type.startsWith("image/")) ? P(V) : P(C, !1);
+            });
+          }
+          var G = w(R, 2);
+          {
+            var ae = (P) => {
+              var Q = lt();
+              d(P, Q);
+            };
+            M(G, (P) => {
+              e(F) && P(ae);
+            });
+          }
+          var pe = w(A, 2);
+          {
+            var X = (P) => {
+              var Q = it(), de = o(Q), ge = w(o(de), 2), be = o(ge), ke = w(de, 2), we = o(ke);
+              I(
+                (ze) => {
+                  Z(be, `${ze ?? ""}%`), Ue(we, `width: ${e($) ?? ""}%`);
+                },
+                [
+                  () => (e($), r(() => Math.round(e($))))
+                ]
+              ), d(P, Q);
+            };
+            M(pe, (P) => {
+              e(F) && P(X);
+            });
+          }
+          d(m, E);
+        };
+        M(g, (m) => {
+          e(f) ? m(b, !1) : m(S);
+        });
+      }
+      d(a, l);
+    },
+    $$slots: {
+      default: !0,
+      footer: (a, s) => {
+        var l = ct(), g = J(l);
+        le(g, {
+          variant: "secondary",
+          $$events: {
+            click: () => {
+              x(t, !1), h();
+            }
+          },
+          children: (m, E) => {
+            var A = ne("Cancel");
+            d(m, A);
+          },
+          $$slots: { default: !0 }
+        });
+        var S = w(g, 2);
+        {
+          var b = (m) => {
+            le(m, {
+              variant: "primary",
+              get disabled() {
+                return e(F);
+              },
+              get loading() {
+                return e(F);
+              },
+              $$events: { click: O },
+              children: (E, A) => {
+                var R = ne();
+                I(() => Z(R, e(F) ? "Uploading..." : "Upload File")), d(E, R);
+              },
+              $$slots: { default: !0 }
+            });
+          };
+          M(S, (m) => {
+            e(f) && m(b);
+          });
+        }
+        d(a, l);
+      }
+    },
+    $$legacy: !0
+  }), d(N, U), oe();
+}
+var ut = k("<div><!></div>"), ft = k('<div class="flex flex-wrap gap-4"></div>');
+function Ct(N, v) {
+  ve(v, !1);
+  let n = j(v, "values", 28, () => ({})), c = j(v, "fields", 24, () => []);
+  const z = ce();
+  function i(u) {
+    var f;
+    const t = u.detail;
+    if (t && typeof t == "object") {
+      const y = ((f = u.target) == null ? void 0 : f.name) || "unknown";
+      z("change", {
+        field: y,
+        value: t,
+        event: u.detail.event || new Event("change")
+      });
+    }
+  }
+  ie();
+  var L = ft();
+  xe(L, 5, c, (u) => u.key, (u, t) => {
+    var f = ut(), y = o(f);
+    {
+      var F = (D) => {
+        {
+          let O = me(() => (e(t), r(() => e(t).rows || 3)));
+          Ae(D, {
+            get label() {
+              return e(t), r(() => e(t).label);
+            },
+            get placeholder() {
+              return e(t), r(() => e(t).placeholder);
+            },
+            get rows() {
+              return e(O);
+            },
+            get required() {
+              return e(t), r(() => e(t).required);
+            },
+            size: "sm",
+            variant: "outlined",
+            get value() {
+              return n()[e(t).key];
+            },
+            set value(W) {
+              n(n()[e(t).key] = W, !0);
+            },
+            $$events: { input: i, change: i },
+            $$legacy: !0
+          });
+        }
+      }, $ = (D) => {
+        var O = re(), W = J(O);
+        {
+          var h = (U) => {
+            {
+              let q = me(() => (e(t), r(() => e(t).options || [])));
+              Fe(U, {
+                get options() {
+                  return e(q);
+                },
+                get label() {
+                  return e(t), r(() => e(t).label);
+                },
+                get placeholder() {
+                  return e(t), r(() => e(t).placeholder);
+                },
+                get required() {
+                  return e(t), r(() => e(t).required);
+                },
+                size: "sm",
+                variant: "outlined",
+                get value() {
+                  return n()[e(t).key];
+                },
+                set value(B) {
+                  n(n()[e(t).key] = B, !0);
+                },
+                $$events: { input: i, change: i },
+                $$legacy: !0
+              });
+            }
+          }, T = (U) => {
+            var q = re(), B = J(q);
+            {
+              var Y = (a) => {
+                Re(a, {
+                  get label() {
+                    return e(t), r(() => e(t).label);
+                  },
+                  get required() {
+                    return e(t), r(() => e(t).required);
+                  },
+                  size: "sm",
+                  variant: "outlined",
+                  get checked() {
+                    return n()[e(t).key];
+                  },
+                  set checked(s) {
+                    n(n()[e(t).key] = s, !0);
+                  },
+                  $$events: { input: i, change: i },
+                  $$legacy: !0
+                });
+              }, p = (a) => {
+                var s = re(), l = J(s);
+                {
+                  var g = (b) => {
+                    Oe(b, {
+                      get label() {
+                        return e(t), r(() => e(t).label);
+                      },
+                      get checked() {
+                        return n()[e(t).key];
+                      },
+                      set checked(m) {
+                        n(n()[e(t).key] = m, !0);
+                      },
+                      $$events: { input: i, change: i },
+                      $$legacy: !0
+                    });
+                  }, S = (b) => {
+                    var m = re(), E = J(m);
+                    {
+                      var A = (V) => {
+                        Ve(V, {
+                          get label() {
+                            return e(t), r(() => e(t).label);
+                          },
+                          get required() {
+                            return e(t), r(() => e(t).required);
+                          },
+                          size: "sm",
+                          variant: "outlined",
+                          get value() {
+                            return n()[e(t).key];
+                          },
+                          set value(C) {
+                            n(n()[e(t).key] = C, !0);
+                          },
+                          $$events: { input: i, change: i },
+                          $$legacy: !0
+                        });
+                      }, R = (V) => {
+                        var C = re(), G = J(C);
+                        {
+                          var ae = (X) => {
+                            Ke(X, {
+                              get label() {
+                                return e(t), r(() => e(t).label);
+                              },
+                              get required() {
+                                return e(t), r(() => e(t).required);
+                              },
+                              size: "sm",
+                              get value() {
+                                return n()[e(t).key];
+                              },
+                              set value(P) {
+                                n(n()[e(t).key] = P, !0);
+                              },
+                              $$events: { input: i, change: i },
+                              $$legacy: !0
+                            });
+                          }, pe = (X) => {
+                            {
+                              let P = me(() => (e(t), r(() => e(t).type || "text")));
+                              He(X, {
+                                get type() {
+                                  return e(P);
+                                },
+                                get label() {
+                                  return e(t), r(() => e(t).label);
+                                },
+                                get placeholder() {
+                                  return e(t), r(() => e(t).placeholder);
+                                },
+                                get required() {
+                                  return e(t), r(() => e(t).required);
+                                },
+                                size: "sm",
+                                variant: "default",
+                                get value() {
+                                  return n()[e(t).key];
+                                },
+                                set value(Q) {
+                                  n(n()[e(t).key] = Q, !0);
+                                },
+                                $$events: { input: i, change: i },
+                                $$legacy: !0
+                              });
+                            }
+                          };
+                          M(
+                            G,
+                            (X) => {
+                              e(t), r(() => e(t).type === "textalignment") ? X(ae) : X(pe, !1);
+                            },
+                            !0
+                          );
+                        }
+                        d(V, C);
+                      };
+                      M(
+                        E,
+                        (V) => {
+                          e(t), r(() => e(t).type === "colorpicker") ? V(A) : V(R, !1);
+                        },
+                        !0
+                      );
+                    }
+                    d(b, m);
+                  };
+                  M(
+                    l,
+                    (b) => {
+                      e(t), r(() => e(t).type === "toggle") ? b(g) : b(S, !1);
+                    },
+                    !0
+                  );
+                }
+                d(a, s);
+              };
+              M(
+                B,
+                (a) => {
+                  e(t), r(() => e(t).type === "checkbox") ? a(Y) : a(p, !1);
+                },
+                !0
+              );
+            }
+            d(U, q);
+          };
+          M(
+            W,
+            (U) => {
+              e(t), r(() => e(t).type === "select") ? U(h) : U(T, !1);
+            },
+            !0
+          );
+        }
+        d(D, O);
+      };
+      M(y, (D) => {
+        e(t), r(() => e(t).type === "textarea") ? D(F) : D($, !1);
+      });
+    }
+    I(() => ee(f, 1, `flex-${e(t), r(() => e(t).flex === "full" ? "none" : e(t).flex || "1") ?? ""} ${e(t), r(() => e(t).type === "textarea" || e(t).key === "title" || e(t).key === "subtitle" || e(t).flex === "full" ? "w-full" : "w-full sm:w-auto sm:flex-1") ?? ""} min-w-0 ${e(t), r(() => e(t).type === "toggle" ? "flex items-center justify-center" : "") ?? ""}`)), d(u, f);
+  }), d(N, L), oe();
+}
+var pt = Ee('<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" class="svelte-fn6h9a"></path></svg>'), gt = k(`<span class="
+                        ml-1 px-1.5 py-0.5 text-xs font-medium
+                        bg-primary-100 text-primary-800 rounded-full
+                        dark:bg-primary-900 dark:text-primary-200
+                     svelte-fn6h9a"> </span>`), bt = k('<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500 rounded-full svelte-fn6h9a"></div>'), mt = k('<button type="button" role="tab"><!> <span class="svelte-fn6h9a"> </span> <!></button> <!>', 1), ht = k('<div role="tabpanel"><!></div>'), xt = k('<div><div role="tablist" tabindex="0"></div> <div class="tab-panels svelte-fn6h9a"></div></div>');
+const yt = {
+  hash: "svelte-fn6h9a",
+  code: `
+    /* Focus styles for better accessibility */[role="tab"].svelte-fn6h9a:focus {outline:2px solid var(--color-primary-500);outline-offset:2px;}
+
+    /* Smooth transitions */[role="tab"].svelte-fn6h9a {transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);}
+
+    /* Underline animation */.underline-indicator.svelte-fn6h9a {transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);}
+
+    /* Badge animation */.tab-badge.svelte-fn6h9a {
+        animation: svelte-fn6h9a-badge-pulse 2s infinite;}
+
+    @keyframes svelte-fn6h9a-badge-pulse {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
+    }
+
+    /* Vertical tabs specific styles */.tabs-container.vertical.svelte-fn6h9a {align-items:flex-start;}.tabs-container.vertical.svelte-fn6h9a [role="tablist"]:where(.svelte-fn6h9a) {min-width:200px;}.tabs-container.vertical.svelte-fn6h9a [role="tab"]:where(.svelte-fn6h9a) {justify-content:flex-start;text-align:left;}`
+};
+function jt(N, v) {
+  ve(v, !1), qe(N, yt);
+  let n = j(v, "tabs", 24, () => []), c = j(v, "activeTab", 12, ""), z = j(v, "variant", 8, "default"), i = j(v, "size", 8, "md"), L = j(v, "orientation", 8, "horizontal"), u = j(v, "fullWidth", 8, !1), t = j(v, "className", 8, "");
+  const f = ce();
+  let y = H(), F = H(), $ = H(0);
+  const D = {
+    sm: { tab: "px-3 py-1.5 text-sm", panel: "p-3", icon: "w-4 h-4" },
+    md: { tab: "px-4 py-2 text-base", panel: "p-4", icon: "w-5 h-5" },
+    lg: { tab: "px-6 py-3 text-lg", panel: "p-6", icon: "w-6 h-6" }
+  }, O = {
+    default: {
+      container: "border-b border-primary",
+      tab: "border-b-2 border-transparent text-secondary hover:text-primary hover:border-primary-hover transition-colors",
+      activeTab: "border-primary text-primary",
+      panel: "mt-4"
+    },
+    pills: {
+      container: "bg-surface-secondary p-1 rounded-lg",
+      tab: "rounded-md text-secondary hover:text-primary hover:bg-surface-tertiary transition-colors",
+      activeTab: "bg-surface text-primary shadow-adaptive-sm",
+      panel: "mt-4"
+    },
+    underline: {
+      container: "border-b border-primary",
+      tab: "relative text-secondary hover:text-primary transition-colors",
+      activeTab: "text-primary",
+      panel: "mt-4"
+    },
+    cards: {
+      container: "space-y-2",
+      tab: "border border-primary rounded-lg text-secondary hover:text-primary hover:bg-surface-secondary transition-colors",
+      activeTab: "bg-surface text-primary shadow-adaptive-sm border-primary",
+      panel: "mt-4"
+    }
+  };
+  function W(p, a) {
+    p.disabled || (c(p.id), f("change", { activeTab: c(), tab: p, event: a }), f("tabClick", { tab: p, event: a }));
+  }
+  function h(p) {
+    if (!e(y)) return;
+    const a = Array.from(e(y).querySelectorAll('[role="tab"]')), s = a.findIndex((g) => g === document.activeElement);
+    let l = s;
+    switch (p.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        p.preventDefault(), l = (s + 1) % a.length;
+        break;
+      case "ArrowLeft":
+      case "ArrowUp":
+        p.preventDefault(), l = s === 0 ? a.length - 1 : s - 1;
+        break;
+      case "Home":
+        p.preventDefault(), l = 0;
+        break;
+      case "End":
+        p.preventDefault(), l = a.length - 1;
+        break;
+      case "Enter":
+      case " ":
+        p.preventDefault();
+        const g = a[s];
+        g && g.click();
+        return;
+    }
+    l !== s && a[l] && a[l].focus();
+  }
+  function T(p) {
+    var s;
+    const a = (s = e(y)) == null ? void 0 : s.querySelector(`[data-tab-id="${p}"]`);
+    a == null || a.focus();
+  }
+  se(() => (_(n()), _(c())), () => {
+    n().length > 0 && !c() && c(n()[0].id);
+  }), se(() => (_(n()), _(c())), () => {
+    x($, n().findIndex((p) => p.id === c()));
+  }), ye();
+  var U = { focusTab: T };
+  ie();
+  var q = xt(), B = o(q);
+  xe(B, 5, n, _e, (p, a) => {
+    var s = mt(), l = J(s), g = o(l);
+    {
+      var S = (C) => {
+        var G = pt(), ae = o(G);
+        I(() => {
+          ee(
+            G,
+            0,
+            Le((_(i()), r(() => D[i()].icon))),
+            "svelte-fn6h9a"
+          ), K(ae, "d", (e(a), r(() => e(a).icon)));
+        }), d(C, G);
+      };
+      M(g, (C) => {
+        e(a), r(() => e(a).icon) && C(S);
+      });
+    }
+    var b = w(g, 2), m = o(b), E = w(b, 2);
+    {
+      var A = (C) => {
+        var G = gt(), ae = o(G);
+        I(() => Z(ae, (e(a), r(() => e(a).badge)))), d(C, G);
+      };
+      M(E, (C) => {
+        e(a), r(() => e(a).badge) && C(A);
+      });
+    }
+    var R = w(l, 2);
+    {
+      var V = (C) => {
+        var G = bt();
+        d(C, G);
+      };
+      M(R, (C) => {
+        _(z()), e(a), _(c()), r(() => z() === "underline" && e(a).id === c()) && C(V);
+      });
+    }
+    I(() => {
+      K(l, "data-tab-id", (e(a), r(() => e(a).id))), ee(
+        l,
+        1,
+        `
+                    ${_(i()), r(() => D[i()].tab) ?? ""}
+                    ${_(z()), r(() => O[z()].tab) ?? ""}
+                    ${e(a), _(c()), _(z()), r(() => e(a).id === c() ? O[z()].activeTab : "") ?? ""}
+                    ${e(a), r(() => e(a).disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer") ?? ""}
+                    ${u() ? "flex-1" : ""}
+                    flex items-center justify-center gap-2
+                `,
+        "svelte-fn6h9a"
+      ), K(l, "aria-selected", (e(a), _(c()), r(() => e(a).id === c()))), K(l, "aria-controls", `tabpanel-${e(a), r(() => e(a).id) ?? ""}`), K(l, "aria-disabled", (e(a), r(() => e(a).disabled))), K(l, "tabindex", (e(a), _(c()), r(() => e(a).id === c() ? 0 : -1))), Z(m, (e(a), r(() => e(a).label)));
+    }), te("click", l, (C) => W(e(a), C)), d(p, s);
+  }), he(B, (p) => x(y, p), () => e(y));
+  var Y = w(B, 2);
+  return xe(Y, 5, n, _e, (p, a) => {
+    var s = ht(), l = o(s);
+    {
+      var g = (S) => {
+        var b = re(), m = J(b);
+        fe(m, v, "content", {}, null), d(S, b);
+      };
+      M(l, (S) => {
+        e(a), _(c()), r(() => e(a).id === c()) && S(g);
+      });
+    }
+    I(() => {
+      K(s, "id", `tabpanel-${e(a), r(() => e(a).id) ?? ""}`), K(s, "aria-labelledby", `tab-${e(a), r(() => e(a).id) ?? ""}`), ee(
+        s,
+        1,
+        `
+                    ${_(i()), r(() => D[i()].panel) ?? ""}
+                    ${_(z()), r(() => O[z()].panel) ?? ""}
+                    ${e(a), _(c()), r(() => e(a).id === c() ? "block" : "hidden") ?? ""}
+                `,
+        "svelte-fn6h9a"
+      );
+    }), De(3, s, () => Pe, () => ({ duration: 200 })), d(p, s);
+  }), he(Y, (p) => x(F, p), () => e(F)), I(() => {
+    ee(q, 1, `tabs-container ${L() === "vertical" ? "flex" : ""} ${t() ?? ""}`, "svelte-fn6h9a"), ee(
+      B,
+      1,
+      `
+            ${_(z()), r(() => O[z()].container) ?? ""}
+            ${L() === "vertical" ? "flex-col space-y-1 mr-4" : ""}
+            ${_(u()), _(n()), r(() => u() ? "grid grid-cols-" + n().length : "flex") ?? ""}
+        `,
+      "svelte-fn6h9a"
+    ), K(B, "aria-orientation", L());
+  }), te("keydown", B, (p) => h(p)), d(N, q), Be(v, "focusTab", T), oe(U);
+}
+export {
+  zt as A,
+  $t as I,
+  Ct as K,
+  et as M,
+  jt as T
+};
