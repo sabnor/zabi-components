@@ -32,20 +32,19 @@
 
     const dispatch = createEventDispatcher<ButtonEvents>();
 
-    function handleClick(event: CustomEvent) {
+    function handleClick(event: MouseEvent) {
         if (disabled || loading) return;
         dispatch("click", {
             value: true,
-            event: event as unknown as MouseEvent,
+            event: event,
         });
     }
 
-    function handleKeydown(event: CustomEvent) {
+    function handleKeydown(event: KeyboardEvent) {
         if (disabled || loading) return;
-        const keyboardEvent = event as unknown as KeyboardEvent;
-        if (keyboardEvent.key === "Enter" || keyboardEvent.key === " ") {
-            keyboardEvent.preventDefault();
-            dispatch("click", { value: true, event: keyboardEvent });
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            dispatch("click", { value: true, event: event });
         }
     }
 

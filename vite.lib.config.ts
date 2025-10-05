@@ -6,8 +6,10 @@ export default defineConfig({
     plugins: [
         svelte({
             compilerOptions: {
-                css: 'injected'
-            }
+                css: 'injected',
+                generate: 'ssr'
+            },
+            emitCss: false
         })
     ],
     build: {
@@ -23,16 +25,29 @@ export default defineConfig({
             fileName: (format, entryName) => `${entryName}/index.js`
         },
         rollupOptions: {
-            external: ['svelte', 'svelte/store', '@sveltejs/kit'],
+            external: ['svelte', 'svelte/store', '@sveltejs/kit', '@sveltejs/adapter-auto', '$app/environment'],
             output: {
                 globals: {
                     svelte: 'Svelte',
                     'svelte/store': 'SvelteStore',
-                    '@sveltejs/kit': 'SvelteKit'
-                }
+                    '@sveltejs/kit': 'SvelteKit',
+                    '@sveltejs/adapter-auto': 'SvelteKitAdapter',
+                    '$app/environment': 'SvelteKitApp'
+                },
+                // Ensure proper module format for SvelteKit
+                format: 'es',
+                preserveModules: false
             }
         },
         outDir: 'dist',
-        emptyOutDir: true
+        emptyOutDir: true,
+        // Ensure proper CSS handling
+        cssCodeSplit: false
+    },
+    // Ensure proper module resolution
+    resolve: {
+        alias: {
+            '$lib': resolve(__dirname, 'src/lib')
+        }
     }
 });

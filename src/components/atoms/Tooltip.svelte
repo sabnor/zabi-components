@@ -5,6 +5,8 @@
         isBrowser,
         safeWindow,
         safeRequestAnimationFrame,
+        safeSetTimeout,
+        safeClearTimeout,
     } from "../../lib/ssr-safe";
 
     export let content: string = "";
@@ -46,8 +48,8 @@
     let tooltipElement: HTMLDivElement;
     let triggerElement: HTMLElement;
     let isVisible = false;
-    let showTimeout: ReturnType<typeof setTimeout>;
-    let hideTimeout: ReturnType<typeof setTimeout>;
+    let showTimeout: ReturnType<typeof setTimeout> | undefined;
+    let hideTimeout: ReturnType<typeof setTimeout> | undefined;
     let triggerRect: DOMRect;
 
     // Size classes
@@ -167,8 +169,8 @@
     function showTooltip(event: Event) {
         if (disabled || isVisible) return;
 
-        clearTimeout(hideTimeout);
-        showTimeout = setTimeout(() => {
+        safeClearTimeout(hideTimeout);
+        showTimeout = safeSetTimeout(() => {
             isVisible = true;
             dispatch("show", { event });
 
@@ -194,8 +196,8 @@
     function hideTooltip(event: Event) {
         if (!isVisible) return;
 
-        clearTimeout(showTimeout);
-        hideTimeout = setTimeout(
+        safeClearTimeout(showTimeout);
+        hideTimeout = safeSetTimeout(
             () => {
                 isVisible = false;
                 dispatch("hide", { event });
@@ -285,23 +287,27 @@
 
     onMount(() => {
         return () => {
-            clearTimeout(showTimeout);
-            clearTimeout(hideTimeout);
+            safeClearTimeout(showTimeout);
+            safeClearTimeout(hideTimeout);
         };
     });
 
     // Update position when tooltip becomes visible
-    $: if (isVisible && tooltipElement) {
+    $: if (isVisible && tooltipElement && isBrowser()) {
         const raf = safeRequestAnimationFrame(() => {
             const position = calculatePosition();
-            tooltipElement.style.top = `${position.top}px`;
-            tooltipElement.style.left = `${position.left}px`;
+            if (tooltipElement) {
+                tooltipElement.style.top = `${position.top}px`;
+                tooltipElement.style.left = `${position.left}px`;
+            }
         });
         if (!raf) {
             // Fallback if requestAnimationFrame is not available
             const position = calculatePosition();
-            tooltipElement.style.top = `${position.top}px`;
-            tooltipElement.style.left = `${position.left}px`;
+            if (tooltipElement) {
+                tooltipElement.style.top = `${position.top}px`;
+                tooltipElement.style.left = `${position.left}px`;
+            }
         }
     }
 </script>
