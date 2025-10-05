@@ -9,25 +9,30 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index/index.js"
+      "import": "./dist/index/index.js",
+      "svelte": "./dist/index/index.js"
     },
     "./atoms": {
       "types": "./dist/atoms/index.d.ts",
-      "import": "./dist/atoms/index.js"
+      "import": "./dist/atoms/index.js",
+      "svelte": "./dist/atoms/index.js"
     },
     "./molecules": {
       "types": "./dist/molecules/index.d.ts",
-      "import": "./dist/molecules/index.js"
+      "import": "./dist/molecules/index.js",
+      "svelte": "./dist/molecules/index.js"
     },
     "./organisms": {
       "types": "./dist/organisms/index.d.ts",
-      "import": "./dist/organisms/index.js"
+      "import": "./dist/organisms/index.js",
+      "svelte": "./dist/organisms/index.js"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.js"
     },
-    "./dist/zabi-components.css": "./dist/zabi-components.css"
+    "./dist/zabi-components.css": "./dist/zabi-components.css",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -80,7 +85,7 @@
   },
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
-    "svelte": "^4.0.0 || ^5.0.0"
+    "svelte": "^5.0.0"
   },
   "peerDependenciesMeta": {
     "svelte": {
@@ -89,5 +94,6 @@
     "@sveltejs/kit": {
       "optional": true
     }
-  }
+  },
+  "svelte": "./dist/index/index.js"
 }
