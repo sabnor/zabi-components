@@ -55,7 +55,8 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepublishOnly": "npm run build:lib"
+    "prepublishOnly": "npm run build:lib",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@storybook/addon-svelte-csf": "^5.0.8",
@@ -66,6 +67,7 @@
     "@tsconfig/svelte": "^5.0.2",
     "@types/node": "^24.5.2",
     "autoprefixer": "^10.4.17",
+    "patch-package": "^8.0.1",
     "postcss": "^8.4.35",
     "storybook": "^9.1.7",
     "svelte": "^5.0.0",
@@ -78,8 +80,8 @@
     "@lucide/svelte": "^0.544.0"
   },
   "peerDependencies": {
-    "svelte": "^4.0.0 || ^5.0.0",
-    "@sveltejs/kit": "^2.0.0"
+    "@sveltejs/kit": "^2.0.0",
+    "svelte": "^4.0.0 || ^5.0.0"
   },
   "peerDependenciesMeta": {
     "svelte": {
