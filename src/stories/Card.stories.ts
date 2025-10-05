@@ -8,32 +8,8 @@ const meta = {
         layout: 'centered'
     },
     tags: ['autodocs'],
-    argTypes: {
-        variant: {
-            control: { type: 'select' },
-            options: ['default', 'interactive']
-        },
-        density: {
-            control: { type: 'select' },
-            options: ['compact', 'comfortable', 'spacious']
-        },
-        disabled: {
-            control: { type: 'boolean' }
-        },
-        loading: {
-            control: { type: 'boolean' }
-        },
-        className: {
-            control: { type: 'text' }
-        },
-        ariaLabel: {
-            control: { type: 'text' }
-        },
-        ariaDescribedBy: {
-            control: { type: 'text' }
-        }
-    }
-} satisfies Meta<Card>;
+    argTypes: {}
+} satisfies Meta<typeof Card>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -49,9 +25,20 @@ export const Default: Story = {
     })
 };
 
+export const Elevated: Story = {
+    args: {
+        variant: 'elevated'
+    },
+    render: (args) => ({
+        Component: Card,
+        props: args,
+        slot: 'Elevated card'
+    })
+};
+
 export const Interactive: Story = {
     args: {
-        variant: 'interactive'
+        interactive: true
     },
     render: (args) => ({
         Component: Card,
@@ -166,26 +153,8 @@ export const Complete: Story = {
 
 export const AllDensities: Story = {
     render: () => ({
-        Component: 'div',
-        props: {
-            class: 'flex flex-col gap-4'
-        },
-        children: [
-            {
-                Component: Card,
-                props: { density: 'compact' },
-                slot: 'Compact density card'
-            },
-            {
-                Component: Card,
-                props: { density: 'comfortable' },
-                slot: 'Comfortable density card'
-            },
-            {
-                Component: Card,
-                props: { density: 'spacious' },
-                slot: 'Spacious density card'
-            }
-        ]
+        Component: Card,
+        props: { density: 'comfortable' },
+        slot: 'All Densities Showcase'
     })
 };
