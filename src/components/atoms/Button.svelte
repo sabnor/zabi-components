@@ -9,7 +9,10 @@
         | "danger"
         | "success"
         | "warning"
-        | "info" = "primary";
+        | "info"
+        | "ghost"
+        | "link"
+        | "neutral" = "primary";
     export let size: "sm" | "md" | "lg" = "md";
     export let disabled: boolean = false;
     export let loading: boolean = false;
@@ -106,6 +109,30 @@
             "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
             "shadow-adaptive-sm hover:shadow-adaptive-md",
         ].join(" "),
+
+        ghost: [
+            "bg-transparent text-text border border-transparent",
+            "hover:bg-surface-hover hover:border-border-hover",
+            "active:bg-surface-active active:border-border-hover",
+            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+            "shadow-none hover:shadow-adaptive-sm",
+        ].join(" "),
+
+        link: [
+            "bg-transparent text-primary border border-transparent underline-offset-4",
+            "hover:bg-transparent hover:text-primary-hover hover:underline",
+            "active:bg-transparent active:text-primary-active active:underline",
+            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+            "shadow-none",
+        ].join(" "),
+
+        neutral: [
+            "bg-surface text-text border border-border",
+            "hover:bg-surface-hover hover:border-border-hover",
+            "active:bg-surface-active active:border-border-hover",
+            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+            "shadow-adaptive-sm hover:shadow-adaptive-md",
+        ].join(" "),
     };
 
     // Disabled state classes
@@ -125,7 +152,9 @@
     $: buttonClasses = [
         baseClasses,
         sizeClasses[size],
-        disabled ? disabledClasses : variantClasses[variant],
+        disabled
+            ? disabledClasses
+            : variantClasses[variant] || variantClasses.primary,
         className,
     ]
         .filter(Boolean)

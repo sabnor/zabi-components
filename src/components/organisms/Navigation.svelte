@@ -22,7 +22,7 @@
     }
 </script>
 
-<nav class="nav nav-{variant} {className}" role="navigation">
+<nav class="nav nav-{variant} {className}">
     {#if variant === "header"}
         <ul class="nav-list">
             {#each items as item}
@@ -80,7 +80,7 @@
     }
 
     .nav-sidebar {
-        @apply flex-col space-y-2;
+        @apply flex flex-col gap-2;
     }
 
     .nav-list {

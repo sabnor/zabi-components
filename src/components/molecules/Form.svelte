@@ -27,11 +27,11 @@
 
 <style>
     .form {
-        @apply space-y-4;
+        @apply flex flex-col gap-4;
     }
 
     :global(.form .form-field) {
-        @apply space-y-2;
+        @apply flex flex-col gap-2;
     }
 
     :global(.form .form-label) {

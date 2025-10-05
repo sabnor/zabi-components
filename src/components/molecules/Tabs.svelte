@@ -69,7 +69,7 @@
     }
 
     // Computed classes
-    $: containerClasses = getContainerClasses(config);
+    $: containerClasses = getContainerClasses(config, tabs);
 </script>
 
 <div

@@ -121,13 +121,13 @@ export function getTabClasses(
 /**
  * Gets container classes based on config
  */
-export function getContainerClasses(config: TabsConfig): string {
+export function getContainerClasses(config: TabsConfig, tabs: TabItem[] = []): string {
     const variantClasses = tabsVariantClasses[config.variant];
 
     return [
         variantClasses.container,
         config.orientation === 'vertical' ? 'flex-col space-y-1 mr-4' : '',
-        config.fullWidth ? `grid grid-cols-${config.tabs?.length || 1}` : 'flex',
+        config.fullWidth ? `grid grid-cols-${tabs.length || 1}` : 'flex',
     ].filter(Boolean).join(' ');
 }
 
