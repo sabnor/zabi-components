@@ -13,67 +13,7 @@ const meta = {
         }
     },
     tags: ['autodocs'],
-    argTypes: {
-        variant: {
-            control: { type: 'select' },
-            options: ['primary', 'secondary', 'success', 'warning', 'danger', 'ghost', 'link'],
-            description: 'The visual style variant of the button'
-        },
-        size: {
-            control: { type: 'select' },
-            options: ['sm', 'md', 'lg'],
-            description: 'The size of the button'
-        },
-        disabled: {
-            control: { type: 'boolean' },
-            description: 'Whether the button is disabled'
-        },
-        loading: {
-            control: { type: 'boolean' },
-            description: 'Whether the button is in a loading state'
-        },
-        fullWidth: {
-            control: { type: 'boolean' },
-            description: 'Whether the button should take full width of its container'
-        },
-        type: {
-            control: { type: 'select' },
-            options: ['button', 'submit', 'reset'],
-            description: 'The HTML button type'
-        },
-        className: {
-            control: { type: 'text' },
-            description: 'Additional CSS classes to apply'
-        },
-        iconLeft: {
-            control: false,
-            description: 'Icon component to display on the left side'
-        },
-        iconRight: {
-            control: false,
-            description: 'Icon component to display on the right side'
-        },
-        ariaLabel: {
-            control: { type: 'text' },
-            description: 'Accessible label for screen readers'
-        },
-        ariaDescribedBy: {
-            control: { type: 'text' },
-            description: 'ID of element that describes the button'
-        },
-        ariaExpanded: {
-            control: { type: 'boolean' },
-            description: 'Whether the button controls an expanded element'
-        },
-        ariaControls: {
-            control: { type: 'text' },
-            description: 'ID of element controlled by the button'
-        },
-        ariaPressed: {
-            control: { type: 'boolean' },
-            description: 'Whether the button is pressed (for toggle buttons)'
-        }
-    }
+    argTypes: {}
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -115,6 +55,13 @@ export const Danger: Story = {
     }
 };
 
+export const Info: Story = {
+    args: {
+        children: 'Info Button',
+        variant: 'info'
+    }
+};
+
 export const Ghost: Story = {
     args: {
         children: 'Ghost Button',
@@ -126,6 +73,13 @@ export const Link: Story = {
     args: {
         children: 'Link Button',
         variant: 'link'
+    }
+};
+
+export const Neutral: Story = {
+    args: {
+        children: 'Neutral Button',
+        variant: 'neutral'
     }
 };
 
@@ -211,50 +165,23 @@ export const ToggleButton: Story = {
 // All variants showcase
 export const AllVariants: Story = {
     render: () => ({
-        Component: 'div',
-        props: {
-            class: 'grid grid-cols-2 md:grid-cols-4 gap-4 p-4'
-        },
-        children: [
-            { Component: Button, props: { children: 'Primary', variant: 'primary' } },
-            { Component: Button, props: { children: 'Secondary', variant: 'secondary' } },
-            { Component: Button, props: { children: 'Success', variant: 'success' } },
-            { Component: Button, props: { children: 'Warning', variant: 'warning' } },
-            { Component: Button, props: { children: 'Danger', variant: 'danger' } },
-            { Component: Button, props: { children: 'Ghost', variant: 'ghost' } },
-            { Component: Button, props: { children: 'Link', variant: 'link' } },
-            { Component: Button, props: { children: 'Loading', variant: 'primary', loading: true } }
-        ]
+        Component: Button,
+        props: { children: 'All Variants Showcase' }
     })
 };
 
 // Size comparison
 export const SizeComparison: Story = {
     render: () => ({
-        Component: 'div',
-        props: {
-            class: 'flex items-center gap-4 p-4'
-        },
-        children: [
-            { Component: Button, props: { children: 'Small', size: 'sm' } },
-            { Component: Button, props: { children: 'Medium', size: 'md' } },
-            { Component: Button, props: { children: 'Large', size: 'lg' } }
-        ]
+        Component: Button,
+        props: { children: 'Size Comparison' }
     })
 };
 
 // State comparison
 export const StateComparison: Story = {
     render: () => ({
-        Component: 'div',
-        props: {
-            class: 'flex items-center gap-4 p-4'
-        },
-        children: [
-            { Component: Button, props: { children: 'Normal', variant: 'primary' } },
-            { Component: Button, props: { children: 'Hover', variant: 'primary' } },
-            { Component: Button, props: { children: 'Loading', variant: 'primary', loading: true } },
-            { Component: Button, props: { children: 'Disabled', variant: 'primary', disabled: true } }
-        ]
+        Component: Button,
+        props: { children: 'State Comparison' }
     })
 };

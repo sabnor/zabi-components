@@ -875,12 +875,12 @@ export {
   COMMENT_NODE as C,
   DIRTY as D,
   ERROR_VALUE as E,
-  bind_props as F,
-  stringify as G,
+  stringify as F,
+  ensure_array_like as G,
   HYDRATION_ERROR as H,
   INERT as I,
-  attr_class as J,
-  ensure_array_like as K,
+  attr as J,
+  attributes as K,
   LEGACY_PROPS as L,
   MAYBE_DIRTY as M,
   clsx as N,
@@ -914,6 +914,6 @@ export {
   render as v,
   experimental_async_ssr as w,
   slot as x,
-  attributes as y,
-  attr as z
+  attr_class as y,
+  bind_props as z
 };

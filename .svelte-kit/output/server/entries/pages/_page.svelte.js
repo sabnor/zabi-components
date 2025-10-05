@@ -1,11 +1,150 @@
-import { y as attributes, z as attr, x as slot, F as bind_props, G as stringify, J as attr_class, K as ensure_array_like, N as clsx, O as element, P as spread_props, Q as head } from "../../chunks/index.js";
-import { l as fallback, k as escape_html } from "../../chunks/context.js";
-const $$css$6 = {
+import { y as attr_class, x as slot, z as bind_props, F as stringify, G as ensure_array_like, J as attr, K as attributes, N as clsx, O as element, P as spread_props, Q as head } from "../../chunks/index.js";
+import { n as noop, l as fallback, k as escape_html } from "../../chunks/context.js";
+import "clsx";
+function createEventDispatcher() {
+  return noop;
+}
+const $$css$a = {
+  hash: "svelte-wzmt5k",
+  code: ".layout.svelte-wzmt5k {min-height:100vh}.layout-main.svelte-wzmt5k {display:flex;flex-direction:column}.layout-sidebar.svelte-wzmt5k {width:16rem;border-right-width:1px;border-color:rgb(var(--color-border));background-color:rgb(var(--color-surface-secondary))}.layout-grid.svelte-wzmt5k {display:grid;grid-template-columns:repeat(1, minmax(0, 1fr))}\n\n    @media (min-width: 768px) {.layout-grid.svelte-wzmt5k {grid-template-columns:repeat(2, minmax(0, 1fr))}\n}\n\n    @media (min-width: 1024px) {.layout-grid.svelte-wzmt5k {grid-template-columns:repeat(3, minmax(0, 1fr))}\n}.layout-header.svelte-wzmt5k {border-bottom-width:1px;border-color:rgb(var(--color-border));padding:1rem;background-color:rgb(var(--color-surface))}.layout-footer.svelte-wzmt5k {margin-top:auto;border-top-width:1px;border-color:rgb(var(--color-border));padding:1rem;background-color:rgb(var(--color-surface-secondary))}"
+};
+function Layout($$renderer, $$props) {
+  $$renderer.global.css.add($$css$a);
+  let gapClass;
+  let variant = fallback($$props["variant"], "main");
+  let gap = fallback($$props["gap"], "md");
+  let className = fallback($$props["className"], "");
+  gapClass = `gap-${gap}`;
+  $$renderer.push(`<div${attr_class(`layout layout-${stringify(variant)} ${stringify(gapClass)} ${stringify(className)}`, "svelte-wzmt5k")}>`);
+  if (variant === "main") {
+    $$renderer.push("<!--[-->");
+    $$renderer.push(`<header class="layout-header svelte-wzmt5k"><!--[-->`);
+    slot($$renderer, $$props, "header", {});
+    $$renderer.push(`<!--]--></header> <main class="layout-main svelte-wzmt5k"><!--[-->`);
+    slot($$renderer, $$props, "main", {});
+    $$renderer.push(`<!--]--></main> <footer class="layout-footer svelte-wzmt5k"><!--[-->`);
+    slot($$renderer, $$props, "footer", {});
+    $$renderer.push(`<!--]--></footer>`);
+  } else {
+    $$renderer.push("<!--[!-->");
+    if (variant === "sidebar") {
+      $$renderer.push("<!--[-->");
+      $$renderer.push(`<aside class="layout-sidebar svelte-wzmt5k"><!--[-->`);
+      slot($$renderer, $$props, "sidebar", {});
+      $$renderer.push(`<!--]--></aside> <main class="layout-main svelte-wzmt5k"><!--[-->`);
+      slot($$renderer, $$props, "main", {});
+      $$renderer.push(`<!--]--></main>`);
+    } else {
+      $$renderer.push("<!--[!-->");
+      if (variant === "grid") {
+        $$renderer.push("<!--[-->");
+        $$renderer.push(`<div class="layout-grid svelte-wzmt5k"><!--[-->`);
+        slot($$renderer, $$props, "default", {});
+        $$renderer.push(`<!--]--></div>`);
+      } else {
+        $$renderer.push("<!--[!-->");
+      }
+      $$renderer.push(`<!--]-->`);
+    }
+    $$renderer.push(`<!--]-->`);
+  }
+  $$renderer.push(`<!--]--></div>`);
+  bind_props($$props, { variant, gap, className });
+}
+const $$css$9 = {
+  hash: "svelte-1kthbow",
+  code: ".nav.svelte-1kthbow {display:flex;align-items:center;}.nav-header.svelte-1kthbow {justify-content:space-between;}.nav-sidebar.svelte-1kthbow {display:flex;flex-direction:column;gap:0.5rem;}.nav-list.svelte-1kthbow {display:flex;}.nav-list.svelte-1kthbow > :where(.svelte-1kthbow):not([hidden]) ~ :where(.svelte-1kthbow):not([hidden]) {--tw-space-x-reverse: 0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)));}.nav-vertical.svelte-1kthbow {flex-direction:column;}.nav-vertical.svelte-1kthbow > :where(.svelte-1kthbow):not([hidden]) ~ :where(.svelte-1kthbow):not([hidden]) {--tw-space-x-reverse: 0;margin-right:calc(0px * var(--tw-space-x-reverse));margin-left:calc(0px * calc(1 - var(--tw-space-x-reverse)));--tw-space-y-reverse: 0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse));}.nav-link.svelte-1kthbow {display:flex;align-items:center;gap:0.5rem;border-radius:var(--radius-md);padding-left:0.75rem;padding-right:0.75rem;padding-top:0.5rem;padding-bottom:0.5rem;font-size:0.875rem;line-height:1.25rem;font-weight:500;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms;color:rgb(var(--color-text-secondary));}.nav-link.svelte-1kthbow:hover {color:rgb(var(--color-text));background-color:rgb(var(--color-surface-hover));}.nav-link.active.svelte-1kthbow {color:rgb(var(--color-primary));background-color:rgb(var(--color-primary-light));}.nav-icon.svelte-1kthbow {height:1rem;width:1rem;}"
+};
+function Navigation($$renderer, $$props) {
+  $$renderer.global.css.add($$css$9);
+  $$renderer.component(($$renderer2) => {
+    let variant = fallback($$props["variant"], "header");
+    let items = fallback($$props["items"], () => [], true);
+    let currentPath = fallback($$props["currentPath"], "");
+    let className = fallback($$props["className"], "");
+    $$renderer2.push(`<nav${attr_class(`nav nav-${stringify(variant)} ${stringify(className)}`, "svelte-1kthbow")}>`);
+    if (variant === "header") {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<ul class="nav-list svelte-1kthbow"><!--[-->`);
+      const each_array = ensure_array_like(items);
+      for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+        let item = each_array[$$index];
+        $$renderer2.push(`<li class="nav-item svelte-1kthbow"><a${attr("href", item.href)}${attr_class("nav-link svelte-1kthbow", void 0, { "active": currentPath === item.href })}>`);
+        if (item.icon) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`<!---->`);
+          item.icon?.($$renderer2, { class: "nav-icon" });
+          $$renderer2.push(`<!---->`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+        }
+        $$renderer2.push(`<!--]--> ${escape_html(item.label)}</a></li>`);
+      }
+      $$renderer2.push(`<!--]--></ul>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+      $$renderer2.push(`<ul class="nav-list nav-vertical svelte-1kthbow"><!--[-->`);
+      const each_array_1 = ensure_array_like(items);
+      for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
+        let item = each_array_1[$$index_1];
+        $$renderer2.push(`<li class="nav-item svelte-1kthbow"><a${attr("href", item.href)}${attr_class("nav-link svelte-1kthbow", void 0, { "active": currentPath === item.href })}>`);
+        if (item.icon) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`<!---->`);
+          item.icon?.($$renderer2, { class: "nav-icon" });
+          $$renderer2.push(`<!---->`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+        }
+        $$renderer2.push(`<!--]--> ${escape_html(item.label)}</a></li>`);
+      }
+      $$renderer2.push(`<!--]--></ul>`);
+    }
+    $$renderer2.push(`<!--]--></nav>`);
+    bind_props($$props, { variant, items, currentPath, className });
+  });
+}
+function ThemeToggle($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let size = fallback($$props["size"], "md");
+    let variant = fallback($$props["variant"], "default");
+    const sizeClasses = {
+      sm: "w-8 h-8 text-sm",
+      md: "w-10 h-10 text-base",
+      lg: "w-12 h-12 text-lg"
+    };
+    const variantClasses = {
+      default: "bg-surface hover:bg-surface-hover border border-border shadow-adaptive-sm",
+      minimal: "bg-transparent hover:bg-surface-hover",
+      outline: "bg-transparent border border-border hover:bg-surface-hover"
+    };
+    $$renderer2.push(`<button${attr_class(` ${stringify(sizeClasses[size])} ${stringify(variantClasses[variant])} rounded-lg transition-all duration-200 flex items-center justify-center text-text hover:text-text focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-focus-ring-offset `)}${attr("aria-label", "Switch to dark mode")}${attr("title", "Switch to dark mode")}>`);
+    {
+      $$renderer2.push("<!--[!-->");
+      $$renderer2.push(`<svg class="w-5 h-5 text-text" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`);
+    }
+    $$renderer2.push(`<!--]--></button>`);
+    bind_props($$props, { size, variant });
+  });
+}
+const $$css$8 = {
+  hash: "svelte-1k5lr7e",
+  code: ".hero.svelte-1k5lr7e {padding-top:2rem;padding-bottom:2rem}"
+};
+function Hero($$renderer, $$props) {
+  $$renderer.global.css.add($$css$8);
+  let title = $$props["title"];
+  let subtitle = $$props["subtitle"];
+  let className = fallback($$props["className"], "");
+  $$renderer.push(`<section${attr_class(`hero text-center space-y-4 ${stringify(className)}`, "svelte-1k5lr7e")}><h2 class="text-3xl font-bold text-text">${escape_html(title)}</h2> <p class="text-lg text-text-secondary max-w-2xl mx-auto">${escape_html(subtitle)}</p></section>`);
+  bind_props($$props, { title, subtitle, className });
+}
+const $$css$7 = {
   hash: "svelte-1qx5g6b",
-  code: ".card.svelte-1qx5g6b {overflow:hidden;border-radius:var(--radius-lg);border-width:1px;--tw-border-opacity: 1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1));--tw-bg-opacity: 1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.card-elevated.svelte-1qx5g6b {--tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.interactive.svelte-1qx5g6b {cursor:pointer;transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:200ms}.interactive.svelte-1qx5g6b:hover {--tw-translate-y: -0.25rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));--tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.card-image.svelte-1qx5g6b {aspect-ratio:16 / 9;overflow:hidden}.card-image.svelte-1qx5g6b img:where(.svelte-1qx5g6b) {height:100%;width:100%;-o-object-fit:cover;object-fit:cover}.card-content.svelte-1qx5g6b > :where(.svelte-1qx5g6b):not([hidden]) ~ :where(.svelte-1qx5g6b):not([hidden]) {--tw-space-y-reverse: 0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.card-content.svelte-1qx5g6b {padding:1rem}.card-title.svelte-1qx5g6b {font-size:1.125rem;line-height:1.75rem;font-weight:600;--tw-text-opacity: 1;color:rgb(17 24 39 / var(--tw-text-opacity, 1))}.card-subtitle.svelte-1qx5g6b {font-size:0.875rem;line-height:1.25rem;font-weight:500;--tw-text-opacity: 1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.card-description.svelte-1qx5g6b {font-size:0.875rem;line-height:1.25rem;--tw-text-opacity: 1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}"
+  code: ".card.svelte-1qx5g6b {overflow:hidden;border-radius:var(--radius-lg);border-width:1px;border-color:rgb(var(--color-border));background-color:rgb(var(--color-card))}.card-elevated.svelte-1qx5g6b {--tw-shadow: var(--shadow-lg);--tw-shadow-colored: var(--shadow-lg);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);background-color:rgb(var(--color-card-elevated));box-shadow:var(--shadow-lg)}.interactive.svelte-1qx5g6b {cursor:pointer;transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:200ms}.interactive.svelte-1qx5g6b:hover {--tw-translate-y: -0.25rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));--tw-shadow: var(--shadow-md);--tw-shadow-colored: var(--shadow-md);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);background-color:rgb(var(--color-card-hover));box-shadow:var(--shadow-md)}.card-image.svelte-1qx5g6b {aspect-ratio:16 / 9;overflow:hidden}.card-image.svelte-1qx5g6b img:where(.svelte-1qx5g6b) {height:100%;width:100%;-o-object-fit:cover;object-fit:cover}.card-content.svelte-1qx5g6b > :where(.svelte-1qx5g6b):not([hidden]) ~ :where(.svelte-1qx5g6b):not([hidden]) {--tw-space-y-reverse: 0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.card-content.svelte-1qx5g6b {padding:1rem}.card-title.svelte-1qx5g6b {font-size:1.125rem;line-height:1.75rem;font-weight:600;color:rgb(var(--color-text))}.card-subtitle.svelte-1qx5g6b {font-size:0.875rem;line-height:1.25rem;font-weight:500;color:rgb(var(--color-text-secondary))}.card-description.svelte-1qx5g6b {font-size:0.875rem;line-height:1.25rem;color:rgb(var(--color-text-tertiary))}"
 };
 function Card($$renderer, $$props) {
-  $$renderer.global.css.add($$css$6);
+  $$renderer.global.css.add($$css$7);
   $$renderer.component(($$renderer2) => {
     let title = fallback($$props["title"], "");
     let subtitle = fallback($$props["subtitle"], "");
@@ -63,9 +202,35 @@ function Card($$renderer, $$props) {
     });
   });
 }
+const $$css$6 = {
+  hash: "svelte-1ko6p3l",
+  code: ".cards-grid.svelte-1ko6p3l {padding-top:1.5rem;padding-bottom:1.5rem}"
+};
+function CardsGrid($$renderer, $$props) {
+  $$renderer.global.css.add($$css$6);
+  $$renderer.component(($$renderer2) => {
+    let title = $$props["title"];
+    let cards = $$props["cards"];
+    let className = fallback($$props["className"], "");
+    $$renderer2.push(`<section${attr_class(`cards-grid space-y-6 ${stringify(className)}`, "svelte-1ko6p3l")}><h3 class="text-xl font-semibold text-text">${escape_html(title)}</h3> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!--[-->`);
+    const each_array = ensure_array_like(cards);
+    for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+      let card = each_array[$$index];
+      Card($$renderer2, {
+        title: card.title,
+        description: card.description,
+        image: card.image,
+        variant: "elevated",
+        interactive: true
+      });
+    }
+    $$renderer2.push(`<!--]--></div></section>`);
+    bind_props($$props, { title, cards, className });
+  });
+}
 const $$css$5 = {
   hash: "svelte-8wahy8",
-  code: ".form .form-label {display:block;font-size:0.875rem;line-height:1.25rem;font-weight:500;--tw-text-opacity: 1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.form .form-input {width:100%;border-radius:var(--radius-md);border-width:1px;--tw-border-opacity: 1;border-color:rgb(209 213 219 / var(--tw-border-opacity, 1));padding-left:0.75rem;padding-right:0.75rem;padding-top:0.5rem;padding-bottom:0.5rem}.form .form-input:focus {outline:2px solid transparent;outline-offset:2px;--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);--tw-ring-opacity: 1;--tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity, 1))}.form .form-actions {display:flex;gap:0.75rem;padding-top:1rem}"
+  code: ".form.svelte-8wahy8 {display:flex;flex-direction:column;gap:1rem;}.form .form-field {display:flex;flex-direction:column;gap:0.5rem;}.form .form-label {display:block;font-size:0.875rem;line-height:1.25rem;font-weight:500;color:rgb(var(--color-text));}.form .form-input {width:100%;border-radius:var(--radius-md);padding-left:0.75rem;padding-right:0.75rem;padding-top:0.5rem;padding-bottom:0.5rem;}.form .form-input:focus {outline:2px solid transparent;outline-offset:2px;--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);}.form .form-input {border-color:rgb(var(--color-border));color:rgb(var(--color-text));background-color:rgb(var(--color-surface));}.form .form-input:focus {border-color:rgb(var(--color-border-focus));ring-color:rgb(var(--color-focus-ring));}.form .form-actions {display:flex;gap:0.75rem;padding-top:1rem;}"
 };
 function Form($$renderer, $$props) {
   $$renderer.global.css.add($$css$5);
@@ -73,270 +238,86 @@ function Form($$renderer, $$props) {
     let method = fallback($$props["method"], "post");
     let action = fallback($$props["action"], "");
     let className = fallback($$props["className"], "");
-    $$renderer2.push(`<form${attr("method", method)}${attr("action", action)}${attr_class(`form ${stringify(className)}`)}><!--[-->`);
+    $$renderer2.push(`<form${attr("method", method)}${attr("action", action)}${attr_class(`form ${stringify(className)}`, "svelte-8wahy8")}><!--[-->`);
     slot($$renderer2, $$props, "default", {});
     $$renderer2.push(`<!--]--></form>`);
     bind_props($$props, { method, action, className });
   });
 }
-const $$css$4 = {
-  hash: "svelte-wzmt5k",
-  code: ".layout.svelte-wzmt5k {min-height:100vh}.layout-main.svelte-wzmt5k {display:flex;flex-direction:column}.layout-sidebar.svelte-wzmt5k {width:16rem;border-right-width:1px;--tw-border-opacity: 1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1));--tw-bg-opacity: 1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.layout-grid.svelte-wzmt5k {display:grid;grid-template-columns:repeat(1, minmax(0, 1fr))}\n\n    @media (min-width: 768px) {.layout-grid.svelte-wzmt5k {grid-template-columns:repeat(2, minmax(0, 1fr))}\n}\n\n    @media (min-width: 1024px) {.layout-grid.svelte-wzmt5k {grid-template-columns:repeat(3, minmax(0, 1fr))}\n}.layout-header.svelte-wzmt5k {border-bottom-width:1px;--tw-border-opacity: 1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1));--tw-bg-opacity: 1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1));padding:1rem}.layout-footer.svelte-wzmt5k {margin-top:auto;border-top-width:1px;--tw-border-opacity: 1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1));--tw-bg-opacity: 1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1));padding:1rem}"
-};
-function Layout($$renderer, $$props) {
-  $$renderer.global.css.add($$css$4);
-  let gapClass;
-  let variant = fallback($$props["variant"], "main");
-  let gap = fallback($$props["gap"], "md");
-  let className = fallback($$props["className"], "");
-  gapClass = `gap-${gap}`;
-  $$renderer.push(`<div${attr_class(`layout layout-${stringify(variant)} ${stringify(gapClass)} ${stringify(className)}`, "svelte-wzmt5k")}>`);
-  if (variant === "main") {
-    $$renderer.push("<!--[-->");
-    $$renderer.push(`<header class="layout-header svelte-wzmt5k"><!--[-->`);
-    slot($$renderer, $$props, "header", {});
-    $$renderer.push(`<!--]--></header> <main class="layout-main svelte-wzmt5k"><!--[-->`);
-    slot($$renderer, $$props, "main", {});
-    $$renderer.push(`<!--]--></main> <footer class="layout-footer svelte-wzmt5k"><!--[-->`);
-    slot($$renderer, $$props, "footer", {});
-    $$renderer.push(`<!--]--></footer>`);
-  } else {
-    $$renderer.push("<!--[!-->");
-    if (variant === "sidebar") {
-      $$renderer.push("<!--[-->");
-      $$renderer.push(`<aside class="layout-sidebar svelte-wzmt5k"><!--[-->`);
-      slot($$renderer, $$props, "sidebar", {});
-      $$renderer.push(`<!--]--></aside> <main class="layout-main svelte-wzmt5k"><!--[-->`);
-      slot($$renderer, $$props, "main", {});
-      $$renderer.push(`<!--]--></main>`);
-    } else {
-      $$renderer.push("<!--[!-->");
-      if (variant === "grid") {
-        $$renderer.push("<!--[-->");
-        $$renderer.push(`<div class="layout-grid svelte-wzmt5k"><!--[-->`);
-        slot($$renderer, $$props, "default", {});
-        $$renderer.push(`<!--]--></div>`);
-      } else {
-        $$renderer.push("<!--[!-->");
-      }
-      $$renderer.push(`<!--]-->`);
-    }
-    $$renderer.push(`<!--]-->`);
+function createInputState(config) {
+  return {
+    value: config.value,
+    hasValue: Boolean(config.value && config.value.trim()),
+    isFocused: false,
+    hasError: Boolean(config.error) || config.variant === "error",
+    hasSuccess: Boolean(config.success) || config.variant === "success"
+  };
+}
+function updateValidationState(state, error, success, variant) {
+  return {
+    ...state,
+    hasError: Boolean(error) || variant === "error",
+    hasSuccess: Boolean(success) || variant === "success"
+  };
+}
+function generateInputId(providedId) {
+  return providedId || `input-${Math.random().toString(36).substr(2, 9)}`;
+}
+const formSizeClasses = {
+  sm: {
+    input: "px-3 py-1.5 text-sm",
+    label: "text-xs",
+    helper: "text-xs"
+  },
+  md: {
+    input: "px-4 py-2.5 text-sm",
+    label: "text-sm",
+    helper: "text-xs"
+  },
+  lg: {
+    input: "px-5 py-3 text-base",
+    label: "text-base",
+    helper: "text-sm"
   }
-  $$renderer.push(`<!--]--></div>`);
-  bind_props($$props, { variant, gap, className });
-}
-const $$css$3 = {
-  hash: "svelte-1kthbow",
-  code: ".nav.svelte-1kthbow {display:flex;align-items:center}.nav-header.svelte-1kthbow {justify-content:space-between}.nav-sidebar.svelte-1kthbow {flex-direction:column}.nav-list.svelte-1kthbow {display:flex}.nav-list.svelte-1kthbow > :where(.svelte-1kthbow):not([hidden]) ~ :where(.svelte-1kthbow):not([hidden]) {--tw-space-x-reverse: 0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.nav-vertical.svelte-1kthbow {flex-direction:column}.nav-vertical.svelte-1kthbow > :where(.svelte-1kthbow):not([hidden]) ~ :where(.svelte-1kthbow):not([hidden]) {--tw-space-x-reverse: 0;margin-right:calc(0px * var(--tw-space-x-reverse));margin-left:calc(0px * calc(1 - var(--tw-space-x-reverse)));--tw-space-y-reverse: 0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.nav-link.svelte-1kthbow {display:flex;align-items:center;gap:0.5rem;border-radius:var(--radius-md);padding-left:0.75rem;padding-right:0.75rem;padding-top:0.5rem;padding-bottom:0.5rem;font-size:0.875rem;line-height:1.25rem;font-weight:500;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms;--tw-text-opacity: 1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.nav-link.svelte-1kthbow:hover {--tw-bg-opacity: 1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1));--tw-text-opacity: 1;color:rgb(17 24 39 / var(--tw-text-opacity, 1))}.nav-link.active.svelte-1kthbow {--tw-bg-opacity: 1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1));--tw-text-opacity: 1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.nav-icon.svelte-1kthbow {height:1rem;width:1rem}"
 };
-function Navigation($$renderer, $$props) {
-  $$renderer.global.css.add($$css$3);
-  $$renderer.component(($$renderer2) => {
-    let variant = fallback($$props["variant"], "header");
-    let items = fallback($$props["items"], () => [], true);
-    let currentPath = fallback($$props["currentPath"], "");
-    let className = fallback($$props["className"], "");
-    $$renderer2.push(`<nav${attr_class(`nav nav-${stringify(variant)} ${stringify(className)}`, "svelte-1kthbow")} role="navigation">`);
-    if (variant === "header") {
-      $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<ul class="nav-list svelte-1kthbow"><!--[-->`);
-      const each_array = ensure_array_like(items);
-      for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-        let item = each_array[$$index];
-        $$renderer2.push(`<li class="nav-item svelte-1kthbow"><a${attr("href", item.href)}${attr_class("nav-link svelte-1kthbow", void 0, { "active": currentPath === item.href })}>`);
-        if (item.icon) {
-          $$renderer2.push("<!--[-->");
-          $$renderer2.push(`<!---->`);
-          item.icon?.($$renderer2, { class: "nav-icon" });
-          $$renderer2.push(`<!---->`);
-        } else {
-          $$renderer2.push("<!--[!-->");
-        }
-        $$renderer2.push(`<!--]--> ${escape_html(item.label)}</a></li>`);
-      }
-      $$renderer2.push(`<!--]--></ul>`);
-    } else {
-      $$renderer2.push("<!--[!-->");
-      $$renderer2.push(`<ul class="nav-list nav-vertical svelte-1kthbow"><!--[-->`);
-      const each_array_1 = ensure_array_like(items);
-      for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
-        let item = each_array_1[$$index_1];
-        $$renderer2.push(`<li class="nav-item svelte-1kthbow"><a${attr("href", item.href)}${attr_class("nav-link svelte-1kthbow", void 0, { "active": currentPath === item.href })}>`);
-        if (item.icon) {
-          $$renderer2.push("<!--[-->");
-          $$renderer2.push(`<!---->`);
-          item.icon?.($$renderer2, { class: "nav-icon" });
-          $$renderer2.push(`<!---->`);
-        } else {
-          $$renderer2.push("<!--[!-->");
-        }
-        $$renderer2.push(`<!--]--> ${escape_html(item.label)}</a></li>`);
-      }
-      $$renderer2.push(`<!--]--></ul>`);
-    }
-    $$renderer2.push(`<!--]--></nav>`);
-    bind_props($$props, { variant, items, currentPath, className });
-  });
+const baseInputClasses = [
+  "w-full",
+  "min-w-0",
+  "rounded-md",
+  "transition-all",
+  "duration-200",
+  "ease-in-out",
+  "focus:outline-none",
+  "focus:ring-2",
+  "focus:ring-focus-ring",
+  "focus:ring-offset-2",
+  "disabled:opacity-50",
+  "disabled:cursor-not-allowed",
+  "read-only:cursor-default",
+  "read-only:opacity-75"
+].join(" ");
+function getStateClasses(hasError, hasSuccess) {
+  if (hasError) {
+    return "border-error text-text placeholder-text-placeholder focus:ring-error focus:border-error";
+  }
+  if (hasSuccess) {
+    return "border-success text-text placeholder-text-placeholder focus:ring-success focus:border-success";
+  }
+  return "border-border text-text placeholder-text-placeholder focus:ring-focus-ring focus:border-border-focus";
 }
-const $$css$2 = {
-  hash: "svelte-v0x5nl",
-  code: "\n    /* Ensure proper focus styles for reduced motion users */\n    @media (prefers-reduced-motion: reduce) {button.svelte-v0x5nl {transition:none;}\n    }\n\n    /* Ensure proper contrast for disabled state */button.svelte-v0x5nl:disabled {opacity:0.6;}\n\n    /* Loading state animation */\n    @keyframes svelte-v0x5nl-spin {\n        from {\n            transform: rotate(0deg);\n        }\n        to {\n            transform: rotate(360deg);\n        }\n    }.animate-spin.svelte-v0x5nl {\n        animation: svelte-v0x5nl-spin 1s linear infinite;}"
-};
-function Button($$renderer, $$props) {
-  $$renderer.global.css.add($$css$2);
-  $$renderer.component(($$renderer2) => {
-    let buttonClasses, accessibilityProps;
-    let variant = fallback($$props["variant"], "primary");
-    let size = fallback($$props["size"], "md");
-    let disabled = fallback($$props["disabled"], false);
-    let loading = fallback($$props["loading"], false);
-    let type = fallback($$props["type"], "button");
-    let className = fallback($$props["className"], "");
-    let iconLeft = fallback($$props["iconLeft"], null);
-    let iconRight = fallback($$props["iconRight"], null);
-    let ariaLabel = fallback($$props["ariaLabel"], "");
-    let ariaDescribedBy = fallback($$props["ariaDescribedBy"], "");
-    let ariaExpanded = fallback($$props["ariaExpanded"], void 0);
-    let ariaControls = fallback($$props["ariaControls"], void 0);
-    let ariaPressed = fallback($$props["ariaPressed"], void 0);
-    const baseClasses = "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 relative overflow-hidden";
-    const sizeClasses = {
-      sm: "px-3 py-1.5 text-sm rounded-md",
-      md: "px-4 py-2 text-sm rounded-md",
-      lg: "px-5 py-3 text-base rounded-lg"
-    };
-    const variantClasses = {
-      primary: [
-        "bg-[var(--zabi-primary)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-primary)]",
-        "hover:bg-[var(--zabi-primary-hover)] hover:border-[var(--zabi-primary-hover)]",
-        "active:bg-[var(--zabi-primary-active)] active:border-[var(--zabi-primary-active)]",
-        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-        "shadow-sm hover:shadow-md"
-      ].join(" "),
-      secondary: [
-        "bg-[var(--zabi-surface)] text-[var(--zabi-text)] border border-[var(--zabi-border)]",
-        "hover:bg-[var(--zabi-surface-hover)] hover:border-[var(--zabi-border-hover)]",
-        "active:bg-[var(--zabi-surface-active)] active:border-[var(--zabi-border-hover)]",
-        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-        "shadow-sm hover:shadow-md"
-      ].join(" "),
-      success: [
-        "bg-[var(--zabi-success)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-success)]",
-        "hover:bg-[var(--zabi-success-hover)] hover:border-[var(--zabi-success-hover)]",
-        "active:bg-[var(--zabi-success-active)] active:border-[var(--zabi-success-active)]",
-        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-        "shadow-sm hover:shadow-md"
-      ].join(" "),
-      warning: [
-        "bg-[var(--zabi-warning)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-warning)]",
-        "hover:bg-[var(--zabi-warning-hover)] hover:border-[var(--zabi-warning-hover)]",
-        "active:bg-[var(--zabi-warning-active)] active:border-[var(--zabi-warning-active)]",
-        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-        "shadow-sm hover:shadow-md"
-      ].join(" "),
-      danger: [
-        "bg-[var(--zabi-error)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-error)]",
-        "hover:bg-[var(--zabi-error-hover)] hover:border-[var(--zabi-error-hover)]",
-        "active:bg-[var(--zabi-error-active)] active:border-[var(--zabi-error-active)]",
-        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-        "shadow-sm hover:shadow-md"
-      ].join(" "),
-      info: [
-        "bg-[var(--zabi-info)] text-[var(--zabi-text-inverse)] border border-[var(--zabi-info)]",
-        "hover:bg-[var(--zabi-info-hover)] hover:border-[var(--zabi-info-hover)]",
-        "active:bg-[var(--zabi-info-active)] active:border-[var(--zabi-info-active)]",
-        "focus:ring-2 focus:ring-[var(--zabi-focus-ring)] focus:ring-offset-2",
-        "shadow-sm hover:shadow-md"
-      ].join(" ")
-    };
-    const disabledClasses = disabled ? [
-      "bg-[var(--zabi-surface-disabled)] text-[var(--zabi-text-disabled)] border-[var(--zabi-border-disabled)]",
-      "hover:bg-[var(--zabi-surface-disabled)] hover:text-[var(--zabi-text-disabled)] hover:border-[var(--zabi-border-disabled)]",
-      "active:bg-[var(--zabi-surface-disabled)] active:text-[var(--zabi-text-disabled)] active:border-[var(--zabi-border-disabled)]",
-      "shadow-none"
-    ].join(" ") : "";
-    buttonClasses = [
-      baseClasses,
-      sizeClasses[size],
-      disabled ? disabledClasses : variantClasses[variant],
-      className
-    ].filter(Boolean).join(" ");
-    accessibilityProps = {
-      "aria-busy": loading,
-      "aria-label": ariaLabel || (loading ? "Loading..." : void 0),
-      "aria-describedby": ariaDescribedBy || void 0,
-      "aria-expanded": ariaExpanded,
-      "aria-controls": ariaControls,
-      "aria-pressed": ariaPressed,
-      "aria-disabled": disabled
-    };
-    $$renderer2.push(`<button${attributes(
-      {
-        type,
-        class: clsx(buttonClasses),
-        disabled: disabled || loading,
-        ...accessibilityProps
-      },
-      "svelte-v0x5nl"
-    )}>`);
-    if (loading) {
-      $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<svg class="animate-spin h-4 w-4 svelte-v0x5nl" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>`);
-    } else {
-      $$renderer2.push("<!--[!-->");
-    }
-    $$renderer2.push(`<!--]--> `);
-    if (iconLeft && !loading) {
-      $$renderer2.push("<!--[-->");
-      if (typeof iconLeft === "string") {
-        $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<span class="h-4 w-4 flex items-center justify-center">${escape_html(iconLeft)}</span>`);
-      } else {
-        $$renderer2.push("<!--[!-->");
-        $$renderer2.push(`<!---->`);
-        iconLeft?.($$renderer2, { class: "h-4 w-4" });
-        $$renderer2.push(`<!---->`);
-      }
-      $$renderer2.push(`<!--]-->`);
-    } else {
-      $$renderer2.push("<!--[!-->");
-    }
-    $$renderer2.push(`<!--]--> <!--[-->`);
-    slot($$renderer2, $$props, "default", {});
-    $$renderer2.push(`<!--]--> `);
-    if (iconRight && !loading) {
-      $$renderer2.push("<!--[-->");
-      if (typeof iconRight === "string") {
-        $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<span class="h-4 w-4 flex items-center justify-center">${escape_html(iconRight)}</span>`);
-      } else {
-        $$renderer2.push("<!--[!-->");
-        $$renderer2.push(`<!---->`);
-        iconRight?.($$renderer2, { class: "h-4 w-4" });
-        $$renderer2.push(`<!---->`);
-      }
-      $$renderer2.push(`<!--]-->`);
-    } else {
-      $$renderer2.push("<!--[!-->");
-    }
-    $$renderer2.push(`<!--]--></button>`);
-    bind_props($$props, {
-      variant,
-      size,
-      disabled,
-      loading,
-      type,
-      className,
-      iconLeft,
-      iconRight,
-      ariaLabel,
-      ariaDescribedBy,
-      ariaExpanded,
-      ariaControls,
-      ariaPressed
-    });
-  });
+function getDisabledClasses(disabled) {
+  return disabled ? "bg-surface-disabled text-text-disabled border-border-disabled cursor-not-allowed" : "";
+}
+function getLabelClasses(hasError, hasSuccess, size) {
+  return [
+    "block",
+    formSizeClasses[size].label,
+    "font-medium",
+    "mb-2",
+    "transition-colors",
+    "duration-200",
+    hasError ? "text-error" : hasSuccess ? "text-success" : "text-text"
+  ].join(" ");
 }
 /**
  * @license @lucide/svelte v0.544.0 - ISC
@@ -590,6 +571,94 @@ function Circle_check_big($$renderer, $$props) {
     ]));
   });
 }
+function Eye_off($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      [
+        "path",
+        {
+          "d": "M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+        }
+      ],
+      ["path", { "d": "M14.084 14.158a3 3 0 0 1-4.242-4.242" }],
+      [
+        "path",
+        {
+          "d": "M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+        }
+      ],
+      ["path", { "d": "m2 2 20 20" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "eye-off" },
+      /**
+       * @component @name EyeOff
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAuNzMzIDUuMDc2YTEwLjc0NCAxMC43NDQgMCAwIDEgMTEuMjA1IDYuNTc1IDEgMSAwIDAgMSAwIC42OTYgMTAuNzQ3IDEwLjc0NyAwIDAgMS0xLjQ0NCAyLjQ5IiAvPgogIDxwYXRoIGQ9Ik0xNC4wODQgMTQuMTU4YTMgMyAwIDAgMS00LjI0Mi00LjI0MiIgLz4KICA8cGF0aCBkPSJNMTcuNDc5IDE3LjQ5OWExMC43NSAxMC43NSAwIDAgMS0xNS40MTctNS4xNTEgMSAxIDAgMCAxIDAtLjY5NiAxMC43NSAxMC43NSAwIDAgMSA0LjQ0Ni01LjE0MyIgLz4KICA8cGF0aCBkPSJtMiAyIDIwIDIwIiAvPgo8L3N2Zz4K) - https://lucide.dev/icons/eye-off
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
 function Eye($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     /**
@@ -747,14 +816,129 @@ function X($$renderer, $$props) {
     ]));
   });
 }
-const $$css$1 = {
+function InputActions($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let showPasswordToggle = fallback($$props["showPasswordToggle"], false);
+    let showClearButton = fallback($$props["showClearButton"], false);
+    let hasValue = fallback($$props["hasValue"], false);
+    let disabled = fallback($$props["disabled"], false);
+    let readonly = fallback($$props["readonly"], false);
+    let showPassword = fallback($$props["showPassword"], false);
+    let onTogglePassword = fallback($$props["onTogglePassword"], () => {
+    });
+    let onClear = fallback($$props["onClear"], () => {
+    });
+    const buttonClasses = [
+      "absolute",
+      "right-3",
+      "top-1/2",
+      "-translate-y-1/2",
+      "text-text-tertiary",
+      "hover:text-primary",
+      "transition-colors",
+      "duration-200",
+      "focus:outline-none",
+      "focus:text-primary",
+      "focus:ring-2",
+      "focus:ring-focus-ring",
+      "focus:ring-offset-1",
+      "rounded-sm",
+      "p-1"
+    ].join(" ");
+    $$renderer2.push(`<div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">`);
+    if (showClearButton && hasValue && !disabled && !readonly) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<button type="button"${attr_class(clsx(buttonClasses))} aria-label="Clear input">`);
+      X($$renderer2, { size: 16 });
+      $$renderer2.push(`<!----></button>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (showPasswordToggle) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<button type="button"${attr_class(clsx(buttonClasses))}${attr("aria-label", showPassword ? "Hide password" : "Show password")}>`);
+      if (showPassword) {
+        $$renderer2.push("<!--[-->");
+        Eye_off($$renderer2, { size: 16 });
+      } else {
+        $$renderer2.push("<!--[!-->");
+        Eye($$renderer2, { size: 16 });
+      }
+      $$renderer2.push(`<!--]--></button>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></div>`);
+    bind_props($$props, {
+      showPasswordToggle,
+      showClearButton,
+      hasValue,
+      disabled,
+      readonly,
+      showPassword,
+      onTogglePassword,
+      onClear
+    });
+  });
+}
+function InputValidation($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let helperTextClasses;
+    let hasError = fallback($$props["hasError"], false);
+    let hasSuccess = fallback($$props["hasSuccess"], false);
+    let error = fallback($$props["error"], "");
+    let success = fallback($$props["success"], "");
+    let helpText = fallback($$props["helpText"], "");
+    let inputId = fallback($$props["inputId"], "");
+    helperTextClasses = [
+      "mt-2",
+      "text-xs",
+      hasError ? "text-error" : hasSuccess ? "text-success" : "text-text-secondary"
+    ].join(" ");
+    if (hasError || hasSuccess || helpText) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<div${attr("id", `${stringify(inputId)}-help`)}${attr_class(clsx(helperTextClasses))}>`);
+      if (hasError) {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<div class="flex items-center gap-1">`);
+        Circle_alert($$renderer2, { size: 14, class: "flex-shrink-0" });
+        $$renderer2.push(`<!----> <span>${escape_html(error)}</span></div>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+        if (hasSuccess) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`<div class="flex items-center gap-1">`);
+          Circle_check_big($$renderer2, { size: 14, class: "flex-shrink-0" });
+          $$renderer2.push(`<!----> <span>${escape_html(success)}</span></div>`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+          if (helpText) {
+            $$renderer2.push("<!--[-->");
+            $$renderer2.push(`<span>${escape_html(helpText)}</span>`);
+          } else {
+            $$renderer2.push("<!--[!-->");
+          }
+          $$renderer2.push(`<!--]-->`);
+        }
+        $$renderer2.push(`<!--]-->`);
+      }
+      $$renderer2.push(`<!--]--></div>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]-->`);
+    bind_props($$props, { hasError, hasSuccess, error, success, helpText, inputId });
+  });
+}
+const $$css$4 = {
   hash: "svelte-7hu4vd",
-  code: '\n    /* Enhanced focus styles using semantic tokens */.input-focus-visible {outline:2px solid rgb(var(--color-focus-ring));outline-offset:2px;}\n\n    /* Smooth transitions for all interactive elements */input.svelte-7hu4vd {transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);}\n\n    /* Placeholder styling using semantic tokens */input.svelte-7hu4vd::-moz-placeholder {-moz-transition:color 0.2s ease;transition:color 0.2s ease;color:rgb(var(--color-text-placeholder));}input.svelte-7hu4vd::placeholder {transition:color 0.2s ease;color:rgb(var(--color-text-placeholder));}input.svelte-7hu4vd:focus::-moz-placeholder {color:rgb(var(--color-text-tertiary));}input.svelte-7hu4vd:focus::placeholder {color:rgb(var(--color-text-tertiary));}\n\n    /* Number input spinner styling */input[type="number"].svelte-7hu4vd::-webkit-outer-spin-button,\n    input[type="number"].svelte-7hu4vd::-webkit-inner-spin-button {-webkit-appearance:none;margin:0;}input[type="number"].svelte-7hu4vd {-moz-appearance:textfield;-webkit-appearance:textfield;appearance:textfield;}\n\n    /* Search input styling */input[type="search"].svelte-7hu4vd::-webkit-search-cancel-button,\n    input[type="search"].svelte-7hu4vd::-webkit-search-decoration {-webkit-appearance:none;}\n\n    /* Action button hover effects */button[aria-label].svelte-7hu4vd {transition:all 0.2s ease;}button[aria-label].svelte-7hu4vd:hover {transform:scale(1.05);}button[aria-label].svelte-7hu4vd:active {transform:scale(0.95);}\n\n    /* Focus ring animation */.focus-ring.svelte-7hu4vd {\n        animation: svelte-7hu4vd-focus-ring-pulse 0.2s ease-out;}\n\n    @keyframes svelte-7hu4vd-focus-ring-pulse {\n        0% {\n            transform: scale(0.95);\n            opacity: 0;\n        }\n        100% {\n            transform: scale(1);\n            opacity: 1;\n        }\n    }'
+  code: '\n    /* Enhanced focus styles using semantic tokens */.input-focus-visible {outline:2px solid rgb(var(--color-focus-ring));outline-offset:2px;}\n\n    /* Smooth transitions for all interactive elements */input.svelte-7hu4vd {transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);}\n\n    /* Placeholder styling using semantic tokens */input.svelte-7hu4vd::-moz-placeholder {-moz-transition:color 0.2s ease;transition:color 0.2s ease;color:rgb(var(--color-text-placeholder));}input.svelte-7hu4vd::placeholder {transition:color 0.2s ease;color:rgb(var(--color-text-placeholder));}input.svelte-7hu4vd:focus::-moz-placeholder {color:rgb(var(--color-text-tertiary));}input.svelte-7hu4vd:focus::placeholder {color:rgb(var(--color-text-tertiary));}\n\n    /* Number input spinner styling */input[type="number"].svelte-7hu4vd::-webkit-outer-spin-button,\n    input[type="number"].svelte-7hu4vd::-webkit-inner-spin-button {-webkit-appearance:none;margin:0;}input[type="number"].svelte-7hu4vd {-moz-appearance:textfield;-webkit-appearance:textfield;appearance:textfield;}\n\n    /* Search input styling */input[type="search"].svelte-7hu4vd::-webkit-search-cancel-button,\n    input[type="search"].svelte-7hu4vd::-webkit-search-decoration {-webkit-appearance:none;}'
 };
 function Input($$renderer, $$props) {
-  $$renderer.global.css.add($$css$1);
+  $$renderer.global.css.add($$css$4);
   $$renderer.component(($$renderer2) => {
-    let inputId, hasError, hasSuccess, sizeClasses, baseInputClasses, stateClasses, disabledClasses, inputClasses, containerClasses, labelClasses, helperTextClasses, buttonClasses;
+    let inputId, inputState, inputClasses, labelClasses;
     let value = fallback($$props["value"], "");
     let type = fallback($$props["type"], "text");
     let label = fallback($$props["label"], "");
@@ -777,88 +961,38 @@ function Input($$renderer, $$props) {
     let showPasswordToggle = fallback($$props["showPasswordToggle"], false);
     let showClearButton = fallback($$props["showClearButton"], false);
     let ariaLabel = fallback($$props["ariaLabel"], void 0);
-    let hasValue = false;
+    const dispatch = createEventDispatcher();
+    let showPassword = false;
+    function togglePasswordVisibility() {
+      showPassword = !showPassword;
+    }
+    function clearValue() {
+      value = "";
+      dispatch("clear", { event: new Event("clear") });
+    }
     function focus() {
     }
     function blur() {
     }
     function select() {
     }
-    inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
-    hasValue = value !== "" && value !== null && value !== void 0;
-    hasError = Boolean(error) || variant === "error";
-    hasSuccess = Boolean(success) || variant === "success";
-    sizeClasses = {
-      sm: "px-3 py-1.5 text-sm",
-      md: "px-4 py-2.5 text-sm",
-      lg: "px-5 py-3 text-base"
-    };
-    baseInputClasses = [
-      "w-full",
-      "min-w-0",
-      "rounded-md",
-      "transition-all",
-      "duration-200",
-      "ease-in-out",
-      "focus:outline-none",
-      "focus:ring-2",
-      "focus:ring-[var(--zabi-focus-ring)]",
-      "focus:ring-offset-2",
-      "disabled:opacity-50",
-      "disabled:cursor-not-allowed",
-      "read-only:cursor-default",
-      "read-only:opacity-75",
-      sizeClasses[size],
+    inputId = generateInputId(id);
+    inputState = updateValidationState(createInputState({ value, error, success, variant }), error, success, variant);
+    inputClasses = [
+      baseInputClasses,
+      formSizeClasses[size].input,
+      getStateClasses(inputState.hasError, inputState.hasSuccess),
+      getDisabledClasses(disabled),
       className
     ].join(" ");
-    stateClasses = hasError ? "border-[var(--zabi-error)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-error)] focus:border-[var(--zabi-error)]" : hasSuccess ? "border-[var(--zabi-success)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-success)] focus:border-[var(--zabi-success)]" : "border-[var(--zabi-border)] text-[var(--zabi-text)] placeholder-[var(--zabi-text-placeholder)] focus:ring-[var(--zabi-focus-ring)] focus:border-[var(--zabi-border-focus)]";
-    disabledClasses = disabled ? "bg-[var(--zabi-surface-disabled)] text-[var(--zabi-text-disabled)] border-[var(--zabi-border-disabled)] cursor-not-allowed" : "";
-    inputClasses = [baseInputClasses, stateClasses, disabledClasses].join(" ");
-    containerClasses = [
-      "relative",
-      "group",
-      "transition-all",
-      "duration-200",
-      "ease-in-out"
-    ].join(" ");
-    labelClasses = [
-      "block",
-      "text-sm",
-      "font-medium",
-      "mb-2",
-      "transition-colors",
-      "duration-200",
-      hasError ? "text-[var(--zabi-error)]" : hasSuccess ? "text-[var(--zabi-success)]" : "text-[var(--zabi-text)]"
-    ].join(" ");
-    helperTextClasses = [
-      "mt-2",
-      "text-xs",
-      hasError ? "text-[var(--zabi-error)]" : hasSuccess ? "text-[var(--zabi-success)]" : "text-[var(--zabi-text-muted)]"
-    ].join(" ");
-    buttonClasses = [
-      "absolute",
-      "right-3",
-      "top-1/2",
-      "-translate-y-1/2",
-      "text-tertiary",
-      "hover:text-primary",
-      "transition-colors",
-      "duration-200",
-      "focus:outline-none",
-      "focus:text-primary",
-      "focus:ring-2",
-      "focus:ring-focus",
-      "focus:ring-offset-1",
-      "rounded-sm",
-      "p-1"
-    ].join(" ");
-    $$renderer2.push(`<div${attr_class(clsx(containerClasses), "svelte-7hu4vd")}>`);
+    labelClasses = getLabelClasses(inputState.hasError, inputState.hasSuccess, size);
+    $$renderer2.push(`<div class="relative group transition-all duration-200 ease-in-out">`);
     if (label) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<label${attr("for", inputId)}${attr_class(clsx(labelClasses), "svelte-7hu4vd")}>${escape_html(label)} `);
+      $$renderer2.push(`<label${attr("for", inputId)}${attr_class(clsx(labelClasses))}>${escape_html(label)} `);
       if (required) {
         $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<span class="text-error ml-1 svelte-7hu4vd" aria-label="required">*</span>`);
+        $$renderer2.push(`<span class="text-error ml-1" aria-label="required">*</span>`);
       } else {
         $$renderer2.push("<!--[!-->");
       }
@@ -866,60 +1000,27 @@ function Input($$renderer, $$props) {
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div class="relative svelte-7hu4vd"><input${attr("id", inputId)}${attr("type", type)}${attr("value", value)}${attr("placeholder", placeholder)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("readonly", readonly, true)}${attr("maxlength", maxLength)}${attr("minlength", minLength)}${attr("pattern", pattern)}${attr("autocomplete", autocomplete || void 0)}${attr("name", name)}${attr_class(clsx(inputClasses), "svelte-7hu4vd")}${attr("aria-invalid", hasError ? "true" : "false")}${attr("aria-describedby", hasError || hasSuccess || helpText ? `${inputId}-help` : void 0)}${attr("aria-label", ariaLabel || (label ? void 0 : "Input field"))}${attr("aria-required", required)}/> <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 svelte-7hu4vd">`);
-    if (showClearButton && hasValue && !disabled && !readonly) {
-      $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<button type="button"${attr_class(clsx(buttonClasses), "svelte-7hu4vd")} aria-label="Clear input">`);
-      X($$renderer2, { size: 16 });
-      $$renderer2.push(`<!----></button>`);
-    } else {
-      $$renderer2.push("<!--[!-->");
-    }
-    $$renderer2.push(`<!--]--> `);
-    if (showPasswordToggle && type === "password") {
-      $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<button type="button"${attr_class(clsx(buttonClasses), "svelte-7hu4vd")}${attr("aria-label", "Show password")}>`);
-      {
-        $$renderer2.push("<!--[!-->");
-        Eye($$renderer2, { size: 16 });
-      }
-      $$renderer2.push(`<!--]--></button>`);
-    } else {
-      $$renderer2.push("<!--[!-->");
-    }
-    $$renderer2.push(`<!--]--></div></div> `);
-    if (hasError || hasSuccess || helpText) {
-      $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div${attr("id", `${stringify(inputId)}-help`)}${attr_class(clsx(helperTextClasses), "svelte-7hu4vd")}>`);
-      if (hasError) {
-        $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<div class="flex items-center gap-1 svelte-7hu4vd">`);
-        Circle_alert($$renderer2, { size: 14, class: "flex-shrink-0" });
-        $$renderer2.push(`<!----> <span class="svelte-7hu4vd">${escape_html(error)}</span></div>`);
-      } else {
-        $$renderer2.push("<!--[!-->");
-        if (hasSuccess) {
-          $$renderer2.push("<!--[-->");
-          $$renderer2.push(`<div class="flex items-center gap-1 svelte-7hu4vd">`);
-          Circle_check_big($$renderer2, { size: 14, class: "flex-shrink-0" });
-          $$renderer2.push(`<!----> <span class="svelte-7hu4vd">${escape_html(success)}</span></div>`);
-        } else {
-          $$renderer2.push("<!--[!-->");
-          if (helpText) {
-            $$renderer2.push("<!--[-->");
-            $$renderer2.push(`<span class="svelte-7hu4vd">${escape_html(helpText)}</span>`);
-          } else {
-            $$renderer2.push("<!--[!-->");
-          }
-          $$renderer2.push(`<!--]-->`);
-        }
-        $$renderer2.push(`<!--]-->`);
-      }
-      $$renderer2.push(`<!--]--></div>`);
-    } else {
-      $$renderer2.push("<!--[!-->");
-    }
-    $$renderer2.push(`<!--]--></div>`);
+    $$renderer2.push(`<!--]--> <div class="relative"><input${attr("id", inputId)}${attr("type", showPasswordToggle && showPassword ? "text" : type)}${attr("value", value)}${attr("placeholder", placeholder)}${attr("disabled", disabled, true)}${attr("required", required, true)}${attr("readonly", readonly, true)}${attr("maxlength", maxLength)}${attr("minlength", minLength)}${attr("pattern", pattern)}${attr("autocomplete", autocomplete || void 0)}${attr("name", name)}${attr_class(clsx(inputClasses), "svelte-7hu4vd")}${attr("aria-invalid", inputState.hasError ? "true" : "false")}${attr("aria-describedby", inputState.hasError || inputState.hasSuccess || helpText ? `${inputId}-help` : void 0)}${attr("aria-label", ariaLabel || (label ? void 0 : "Input field"))}${attr("aria-required", required)}/> `);
+    InputActions($$renderer2, {
+      showPasswordToggle,
+      showClearButton,
+      hasValue: inputState.hasValue,
+      disabled,
+      readonly,
+      showPassword,
+      onTogglePassword: togglePasswordVisibility,
+      onClear: clearValue
+    });
+    $$renderer2.push(`<!----></div> `);
+    InputValidation($$renderer2, {
+      hasError: inputState.hasError,
+      hasSuccess: inputState.hasSuccess,
+      error,
+      success,
+      helpText,
+      inputId
+    });
+    $$renderer2.push(`<!----></div>`);
     bind_props($$props, {
       value,
       type,
@@ -949,36 +1050,285 @@ function Input($$renderer, $$props) {
     });
   });
 }
-function ThemeToggle($$renderer, $$props) {
+const $$css$3 = {
+  hash: "svelte-v0x5nl",
+  code: "\n    /* Ensure proper focus styles for reduced motion users */\n    @media (prefers-reduced-motion: reduce) {button.svelte-v0x5nl {transition:none;}\n    }\n\n    /* Ensure proper contrast for disabled state */button.svelte-v0x5nl:disabled {opacity:0.6;}\n\n    /* Loading state animation */\n    @keyframes svelte-v0x5nl-spin {\n        from {\n            transform: rotate(0deg);\n        }\n        to {\n            transform: rotate(360deg);\n        }\n    }.animate-spin.svelte-v0x5nl {\n        animation: svelte-v0x5nl-spin 1s linear infinite;}"
+};
+function Button($$renderer, $$props) {
+  $$renderer.global.css.add($$css$3);
   $$renderer.component(($$renderer2) => {
+    let buttonClasses, accessibilityProps;
+    let variant = fallback($$props["variant"], "primary");
     let size = fallback($$props["size"], "md");
-    let variant = fallback($$props["variant"], "default");
+    let disabled = fallback($$props["disabled"], false);
+    let loading = fallback($$props["loading"], false);
+    let type = fallback($$props["type"], "button");
+    let className = fallback($$props["className"], "");
+    let iconLeft = fallback($$props["iconLeft"], null);
+    let iconRight = fallback($$props["iconRight"], null);
+    let ariaLabel = fallback($$props["ariaLabel"], "");
+    let ariaDescribedBy = fallback($$props["ariaDescribedBy"], "");
+    let ariaExpanded = fallback($$props["ariaExpanded"], void 0);
+    let ariaControls = fallback($$props["ariaControls"], void 0);
+    let ariaPressed = fallback($$props["ariaPressed"], void 0);
+    const baseClasses = "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 relative overflow-hidden";
     const sizeClasses = {
-      sm: "w-8 h-8 text-sm",
-      md: "w-10 h-10 text-base",
-      lg: "w-12 h-12 text-lg"
+      sm: "px-3 py-1.5 text-sm rounded-md",
+      md: "px-4 py-2 text-sm rounded-md",
+      lg: "px-5 py-3 text-base rounded-lg"
     };
     const variantClasses = {
-      default: "bg-surface-primary hover:bg-surface-secondary border border-primary shadow-adaptive-sm",
-      minimal: "bg-transparent hover:bg-surface-secondary",
-      outline: "bg-transparent border border-primary hover:bg-surface-secondary"
+      primary: [
+        "bg-primary text-text-inverse border border-primary",
+        "hover:bg-primary-hover hover:border-primary-hover",
+        "active:bg-primary-active active:border-primary-active",
+        "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      secondary: [
+        "bg-surface text-text border border-border",
+        "hover:bg-surface-hover hover:border-border-hover",
+        "active:bg-surface-active active:border-border-hover",
+        "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      success: [
+        "bg-success text-text-inverse border border-success",
+        "hover:bg-success-hover hover:border-success-hover",
+        "active:bg-success-active active:border-success-active",
+        "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      warning: [
+        "bg-warning text-text-inverse border border-warning",
+        "hover:bg-warning-hover hover:border-warning-hover",
+        "active:bg-warning-active active:border-warning-active",
+        "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      danger: [
+        "bg-error text-text-inverse border border-error",
+        "hover:bg-error-hover hover:border-error-hover",
+        "active:bg-error-active active:border-error-active",
+        "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      info: [
+        "bg-info text-text-inverse border border-info",
+        "hover:bg-info-hover hover:border-info-hover",
+        "active:bg-info-active active:border-info-active",
+        "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" "),
+      ghost: [
+        "bg-transparent text-text border border-transparent",
+        "hover:bg-surface-hover hover:border-border-hover",
+        "active:bg-surface-active active:border-border-hover",
+        "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+        "shadow-none hover:shadow-adaptive-sm"
+      ].join(" "),
+      link: [
+        "bg-transparent text-primary border border-transparent underline-offset-4",
+        "hover:bg-transparent hover:text-primary-hover hover:underline",
+        "active:bg-transparent active:text-primary-active active:underline",
+        "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+        "shadow-none"
+      ].join(" "),
+      neutral: [
+        "bg-surface text-text border border-border",
+        "hover:bg-surface-hover hover:border-border-hover",
+        "active:bg-surface-active active:border-border-hover",
+        "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
+        "shadow-adaptive-sm hover:shadow-adaptive-md"
+      ].join(" ")
     };
-    $$renderer2.push(`<button${attr_class(` ${stringify(sizeClasses[size])} ${stringify(variantClasses[variant])} rounded-lg transition-all duration-200 flex items-center justify-center text-primary hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-surface-primary `)}${attr("aria-label", "Switch to dark mode")}${attr("title", "Switch to dark mode")}>`);
-    {
+    const disabledClasses = disabled ? [
+      "bg-surface-disabled text-text-disabled border-border-disabled",
+      "hover:bg-surface-disabled hover:text-text-disabled hover:border-border-disabled",
+      "active:bg-surface-disabled active:text-text-disabled active:border-border-disabled",
+      "shadow-none"
+    ].join(" ") : "";
+    buttonClasses = [
+      baseClasses,
+      sizeClasses[size],
+      disabled ? disabledClasses : variantClasses[variant] || variantClasses.primary,
+      className
+    ].filter(Boolean).join(" ");
+    accessibilityProps = {
+      "aria-busy": loading,
+      "aria-label": ariaLabel || (loading ? "Loading..." : void 0),
+      "aria-describedby": ariaDescribedBy || void 0,
+      "aria-expanded": ariaExpanded,
+      "aria-controls": ariaControls,
+      "aria-pressed": ariaPressed,
+      "aria-disabled": disabled
+    };
+    $$renderer2.push(`<button${attributes(
+      {
+        type,
+        class: clsx(buttonClasses),
+        disabled: disabled || loading,
+        ...accessibilityProps
+      },
+      "svelte-v0x5nl"
+    )}>`);
+    if (loading) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<svg class="animate-spin h-4 w-4 text-current svelte-v0x5nl" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>`);
+    } else {
       $$renderer2.push("<!--[!-->");
-      $$renderer2.push(`<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`);
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (iconLeft && !loading) {
+      $$renderer2.push("<!--[-->");
+      if (typeof iconLeft === "string") {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<span class="h-4 w-4 flex items-center justify-center">${escape_html(iconLeft)}</span>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+        $$renderer2.push(`<!---->`);
+        iconLeft?.($$renderer2, { class: "h-4 w-4" });
+        $$renderer2.push(`<!---->`);
+      }
+      $$renderer2.push(`<!--]-->`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> <!--[-->`);
+    slot($$renderer2, $$props, "default", {});
+    $$renderer2.push(`<!--]--> `);
+    if (iconRight && !loading) {
+      $$renderer2.push("<!--[-->");
+      if (typeof iconRight === "string") {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<span class="h-4 w-4 flex items-center justify-center">${escape_html(iconRight)}</span>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+        $$renderer2.push(`<!---->`);
+        iconRight?.($$renderer2, { class: "h-4 w-4" });
+        $$renderer2.push(`<!---->`);
+      }
+      $$renderer2.push(`<!--]-->`);
+    } else {
+      $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--></button>`);
-    bind_props($$props, { size, variant });
+    bind_props($$props, {
+      variant,
+      size,
+      disabled,
+      loading,
+      type,
+      className,
+      iconLeft,
+      iconRight,
+      ariaLabel,
+      ariaDescribedBy,
+      ariaExpanded,
+      ariaControls,
+      ariaPressed
+    });
+  });
+}
+const $$css$2 = {
+  hash: "svelte-1pnsu7s",
+  code: ".contact-form.svelte-1pnsu7s {padding-top:1.5rem;padding-bottom:1.5rem}"
+};
+function ContactForm($$renderer, $$props) {
+  $$renderer.global.css.add($$css$2);
+  $$renderer.component(($$renderer2) => {
+    let initialData = fallback($$props["initialData"], () => ({ name: "", email: "" }), true);
+    let className = fallback($$props["className"], "");
+    let formData = { ...initialData };
+    let $$settled = true;
+    let $$inner_renderer;
+    function $$render_inner($$renderer3) {
+      $$renderer3.push(`<section${attr_class(`contact-form max-w-md mx-auto space-y-6 ${stringify(className)}`, "svelte-1pnsu7s")}><h3 class="text-xl font-semibold text-text text-center">Contact Form</h3> `);
+      Form($$renderer3, {
+        children: ($$renderer4) => {
+          $$renderer4.push(`<div class="form-field"><label for="name" class="form-label">Name</label> `);
+          Input($$renderer4, {
+            id: "name",
+            name: "name",
+            placeholder: "Enter your name",
+            required: true,
+            get value() {
+              return formData.name;
+            },
+            set value($$value) {
+              formData.name = $$value;
+              $$settled = false;
+            }
+          });
+          $$renderer4.push(`<!----></div> <div class="form-field"><label for="email" class="form-label">Email</label> `);
+          Input($$renderer4, {
+            id: "email",
+            name: "email",
+            type: "email",
+            placeholder: "Enter your email",
+            required: true,
+            get value() {
+              return formData.email;
+            },
+            set value($$value) {
+              formData.email = $$value;
+              $$settled = false;
+            }
+          });
+          $$renderer4.push(`<!----></div> <div class="form-actions">`);
+          Button($$renderer4, {
+            type: "submit",
+            variant: "primary",
+            className: "flex-1",
+            children: ($$renderer5) => {
+              $$renderer5.push(`<!---->Submit`);
+            },
+            $$slots: { default: true }
+          });
+          $$renderer4.push(`<!----></div>`);
+        },
+        $$slots: { default: true }
+      });
+      $$renderer3.push(`<!----></section>`);
+    }
+    do {
+      $$settled = true;
+      $$inner_renderer = $$renderer2.copy();
+      $$render_inner($$inner_renderer);
+    } while (!$$settled);
+    $$renderer2.subsume($$inner_renderer);
+    bind_props($$props, { initialData, className });
+  });
+}
+const $$css$1 = {
+  hash: "svelte-17n10vn",
+  code: ".selected-card-info.svelte-17n10vn {padding-top:1rem;padding-bottom:1rem}"
+};
+function SelectedCardInfo($$renderer, $$props) {
+  $$renderer.global.css.add($$css$1);
+  $$renderer.component(($$renderer2) => {
+    let selectedCard = $$props["selectedCard"];
+    let className = fallback($$props["className"], "");
+    if (selectedCard) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<section${attr_class(`selected-card-info text-center p-4 bg-info-surface rounded-lg ${stringify(className)}`, "svelte-17n10vn")}><p class="text-info-text">You clicked: <strong>${escape_html(selectedCard.title)}</strong></p></section>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]-->`);
+    bind_props($$props, { selectedCard, className });
   });
 }
 const $$css = {
-  hash: "svelte-1uha8ag",
-  code: "/* Simple, minimal CSS - Less is More */:root {\n  /* Colors */--primary: #3b82f6;--primary-hover: #2563eb;--secondary: #6b7280;--success: #10b981;--warning: #f59e0b;--error: #ef4444;\n  \n  /* Spacing */--space-xs: 0.25rem;--space-sm: 0.5rem;--space-md: 1rem;--space-lg: 1.5rem;--space-xl: 2rem;\n  \n  /* Border radius */--radius-sm: 0.25rem;--radius-md: 0.375rem;--radius-lg: 0.5rem;\n  \n  /* Shadows */--shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);}\n\n/* Dark mode */\n\n@media (prefers-color-scheme: dark) {:root {--primary: #60a5fa;--secondary: #9ca3af;}\n}\n\n/* Base styles */.svelte-1uha8ag {box-sizing:border-box;}\n\n/* Utilities */.container.svelte-1uha8ag {max-width:1200px;margin:0 auto;padding:0 var(--space-md);}.flex.svelte-1uha8ag {display:flex;}.items-center.svelte-1uha8ag {align-items:center;}.justify-between.svelte-1uha8ag {justify-content:space-between;}.space-y-4.svelte-1uha8ag > :where(.svelte-1uha8ag) + :where(.svelte-1uha8ag) {margin-top:var(--space-md);}.gap-4.svelte-1uha8ag {gap:var(--space-md);}.gap-6.svelte-1uha8ag {gap:var(--space-lg);}\n\n/* Text */.text-lg.svelte-1uha8ag {font-size:1.125rem;}.text-xl.svelte-1uha8ag {font-size:1.25rem;}.font-semibold.svelte-1uha8ag {font-weight:600;}.font-bold.svelte-1uha8ag {font-weight:700;}\n\n/* Colors */.text-primary.svelte-1uha8ag {color:var(--primary);}.text-gray-600.svelte-1uha8ag {color:#4b5563;}.text-gray-900.svelte-1uha8ag {color:#111827;}.bg-white.svelte-1uha8ag {background-color:#ffffff;}\n\n/* Borders */.rounded-lg.svelte-1uha8ag {border-radius:var(--radius-lg);}\n\n/* Shadows */\n\n/* Spacing */.p-4.svelte-1uha8ag {padding:var(--space-md);}.p-6.svelte-1uha8ag {padding:var(--space-lg);}\n\n/* Transitions */\n\n/* Hover states */\n\n/* Focus states */\n\n/* Responsive */\n\n@media (min-width: 768px) {.md\\:grid-cols-2.svelte-1uha8ag {grid-template-columns:repeat(2, minmax(0, 1fr));}\n}\n\n@media (min-width: 1024px) {.lg\\:grid-cols-3.svelte-1uha8ag {grid-template-columns:repeat(3, minmax(0, 1fr));}\n}"
+  hash: "svelte-1rwa5aa",
+  code: ".color-demo.svelte-1rwa5aa {background-color:rgb(var(--color-background))}"
 };
-function _page($$renderer) {
+function ColorDemo($$renderer) {
   $$renderer.global.css.add($$css);
-  let formData = { name: "", email: "" };
+  $$renderer.push(`<section class="color-demo p-6 space-y-6 svelte-1rwa5aa"><h2 class="text-2xl font-bold text-text mb-6">Semantic Color System Demo</h2> <div class="space-y-2"><h3 class="text-lg font-semibold text-text">Primary Colors</h3> <div class="flex gap-2 flex-wrap"><div class="bg-primary text-text-inverse px-3 py-2 rounded">Primary</div> <div class="bg-primary-hover text-text-inverse px-3 py-2 rounded">Primary Hover</div> <div class="bg-primary-light text-primary px-3 py-2 rounded">Primary Light</div> <div class="bg-primary-dark text-text-inverse px-3 py-2 rounded">Primary Dark</div></div></div> <div class="space-y-2"><h3 class="text-lg font-semibold text-text">Success Colors</h3> <div class="flex gap-2 flex-wrap"><div class="bg-success text-text-inverse px-3 py-2 rounded">Success</div> <div class="bg-success-surface text-success-text px-3 py-2 rounded">Success Surface</div></div></div> <div class="space-y-2"><h3 class="text-lg font-semibold text-text">Error Colors</h3> <div class="flex gap-2 flex-wrap"><div class="bg-error text-text-inverse px-3 py-2 rounded">Error</div> <div class="bg-error-surface text-error-text px-3 py-2 rounded">Error Surface</div></div></div> <div class="space-y-2"><h3 class="text-lg font-semibold text-text">Surface Colors</h3> <div class="flex gap-2 flex-wrap"><div class="bg-surface border border-border px-3 py-2 rounded">Surface</div> <div class="bg-surface-secondary border border-border px-3 py-2 rounded">Surface Secondary</div> <div class="bg-surface-elevated border border-border px-3 py-2 rounded">Surface Elevated</div></div></div> <div class="space-y-2"><h3 class="text-lg font-semibold text-text">Text Colors</h3> <div class="space-y-1"><p class="text-text">Primary Text</p> <p class="text-text-secondary">Secondary Text</p> <p class="text-text-tertiary">Tertiary Text</p> <p class="text-text-disabled">Disabled Text</p></div></div> <div class="space-y-2"><h3 class="text-lg font-semibold text-text">Border Colors</h3> <div class="space-y-1"><div class="border border-border px-3 py-2 rounded">Border</div> <div class="border border-border-secondary px-3 py-2 rounded">Border Secondary</div> <div class="border border-border-focus px-3 py-2 rounded">Border Focus</div></div></div></section>`);
+}
+function _page($$renderer) {
+  let selectedCard = null;
   const navItems = [
     { label: "Home", href: "/" },
     { label: "Components", href: "/components" },
@@ -1002,103 +1352,44 @@ function _page($$renderer) {
       image: "/vite.svg"
     }
   ];
-  let $$settled = true;
-  let $$inner_renderer;
-  function $$render_inner($$renderer2) {
-    head($$renderer2, ($$renderer3) => {
-      $$renderer3.title(($$renderer4) => {
-        $$renderer4.push(`<title>Zabi Components - Clean &amp; Simple</title>`);
-      });
-      $$renderer3.push(`<meta name="description" content="Clean, minimal Svelte components that just work" class="svelte-1uha8ag"/>`);
+  head($$renderer, ($$renderer2) => {
+    $$renderer2.title(($$renderer3) => {
+      $$renderer3.push(`<title>Zabi Components - Clean &amp; Simple</title>`);
     });
-    Layout($$renderer2, {
-      variant: "main",
-      className: "min-h-screen bg-gray-50",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<main class="container mx-auto p-6 space-y-8 svelte-1uha8ag"><section class="text-center space-y-4 svelte-1uha8ag"><h2 class="text-3xl font-bold text-gray-900 svelte-1uha8ag">Less is More</h2> <p class="text-lg text-gray-600 max-w-2xl mx-auto svelte-1uha8ag">Clean, minimal components that focus on what matters most. No
-                unnecessary complexity, just simple solutions that work.</p></section> <section class="space-y-6 svelte-1uha8ag"><h3 class="text-xl font-semibold text-gray-900 svelte-1uha8ag">Components</h3> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 svelte-1uha8ag"><!--[-->`);
-        const each_array = ensure_array_like(cards);
-        for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-          let card = each_array[$$index];
-          Card($$renderer3, {
-            title: card.title,
-            description: card.description,
-            image: card.image,
-            variant: "elevated",
-            interactive: true
-          });
-        }
-        $$renderer3.push(`<!--]--></div></section> <section class="max-w-md mx-auto space-y-6 svelte-1uha8ag"><h3 class="text-xl font-semibold text-gray-900 text-center svelte-1uha8ag">Contact Form</h3> `);
-        Form($$renderer3, {
-          children: ($$renderer4) => {
-            $$renderer4.push(`<div class="form-field svelte-1uha8ag"><label for="name" class="form-label svelte-1uha8ag">Name</label> `);
-            Input($$renderer4, {
-              id: "name",
-              name: "name",
-              placeholder: "Enter your name",
-              get value() {
-                return formData.name;
-              },
-              set value($$value) {
-                formData.name = $$value;
-                $$settled = false;
-              }
-            });
-            $$renderer4.push(`<!----></div> <div class="form-field svelte-1uha8ag"><label for="email" class="form-label svelte-1uha8ag">Email</label> `);
-            Input($$renderer4, {
-              id: "email",
-              name: "email",
-              type: "email",
-              placeholder: "Enter your email",
-              get value() {
-                return formData.email;
-              },
-              set value($$value) {
-                formData.email = $$value;
-                $$settled = false;
-              }
-            });
-            $$renderer4.push(`<!----></div> <div class="form-actions svelte-1uha8ag">`);
-            Button($$renderer4, {
-              type: "submit",
-              variant: "primary",
-              className: "flex-1",
-              children: ($$renderer5) => {
-                $$renderer5.push(`<!---->Submit`);
-              },
-              $$slots: { default: true }
-            });
-            $$renderer4.push(`<!----></div>`);
-          },
-          $$slots: { default: true }
-        });
-        $$renderer3.push(`<!----></section> `);
-        {
-          $$renderer3.push("<!--[!-->");
-        }
-        $$renderer3.push(`<!--]--></main>`);
+    $$renderer2.push(`<meta name="description" content="Clean, minimal Svelte components that just work"/>`);
+  });
+  Layout($$renderer, {
+    variant: "main",
+    className: "min-h-screen bg-background",
+    $$slots: {
+      header: ($$renderer2) => {
+        $$renderer2.push(`<div slot="header" class="flex items-center justify-between p-4 bg-surface border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
+        Navigation($$renderer2, { variant: "header", items: navItems });
+        $$renderer2.push(`<!----> `);
+        ThemeToggle($$renderer2, { size: "md" });
+        $$renderer2.push(`<!----></div></div>`);
       },
-      $$slots: {
-        default: true,
-        header: ($$renderer3) => {
-          $$renderer3.push(`<div slot="header" class="flex items-center justify-between p-4 bg-white border-b svelte-1uha8ag"><h1 class="text-xl font-bold text-primary svelte-1uha8ag">Zabi Components</h1> <div class="flex items-center gap-4 svelte-1uha8ag">`);
-          Navigation($$renderer3, { variant: "header", items: navItems });
-          $$renderer3.push(`<!----> `);
-          ThemeToggle($$renderer3, { size: "md" });
-          $$renderer3.push(`<!----></div></div>`);
-        },
-        footer: ($$renderer3) => {
-          $$renderer3.push(`<div slot="footer" class="text-center p-4 text-gray-600 svelte-1uha8ag"><p class="svelte-1uha8ag">Clean components that just work. Less is more.</p></div>`);
-        }
+      main: ($$renderer2) => {
+        $$renderer2.push(`<div slot="main" class="container mx-auto p-6 space-y-8">`);
+        Hero($$renderer2, {
+          title: "Less is More",
+          subtitle: "Clean, minimal components that focus on what matters most. No unnecessary complexity, just simple solutions that work."
+        });
+        $$renderer2.push(`<!----> `);
+        CardsGrid($$renderer2, { title: "Components", cards });
+        $$renderer2.push(`<!----> `);
+        ContactForm($$renderer2, {});
+        $$renderer2.push(`<!----> `);
+        SelectedCardInfo($$renderer2, { selectedCard });
+        $$renderer2.push(`<!----> `);
+        ColorDemo($$renderer2);
+        $$renderer2.push(`<!----></div>`);
+      },
+      footer: ($$renderer2) => {
+        $$renderer2.push(`<div slot="footer" class="text-center p-4 text-text-secondary"><p>Clean components that just work. Less is more.</p></div>`);
       }
-    });
-  }
-  do {
-    $$settled = true;
-    $$inner_renderer = $$renderer.copy();
-    $$render_inner($$inner_renderer);
-  } while (!$$settled);
-  $$renderer.subsume($$inner_renderer);
+    }
+  });
 }
 export {
   _page as default
