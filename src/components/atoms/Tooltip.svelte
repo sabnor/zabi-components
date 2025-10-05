@@ -1,6 +1,11 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte";
     import { fly, fade } from "svelte/transition";
+    import {
+        isBrowser,
+        safeWindow,
+        safeRequestAnimationFrame,
+    } from "../../lib/ssr-safe";
 
     export let content: string = "";
     export let placement:
@@ -66,14 +71,18 @@
 
     // Calculate tooltip position
     function calculatePosition() {
-        if (!triggerElement || !tooltipElement) return { top: 0, left: 0 };
+        if (!triggerElement || !tooltipElement || !isBrowser())
+            return { top: 0, left: 0 };
+
+        const win = safeWindow();
+        if (!win) return { top: 0, left: 0 };
 
         triggerRect = triggerElement.getBoundingClientRect();
         const tooltipRect = tooltipElement.getBoundingClientRect();
-        const scrollY = window.scrollY;
-        const scrollX = window.scrollX;
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
+        const scrollY = win.scrollY;
+        const scrollX = win.scrollX;
+        const viewportWidth = win.innerWidth;
+        const viewportHeight = win.innerHeight;
 
         let top = 0;
         let left = 0;
@@ -164,13 +173,21 @@
             dispatch("show", { event });
 
             // Calculate position after showing
-            requestAnimationFrame(() => {
+            const raf = safeRequestAnimationFrame(() => {
                 const position = calculatePosition();
                 if (tooltipElement) {
                     tooltipElement.style.top = `${position.top}px`;
                     tooltipElement.style.left = `${position.left}px`;
                 }
             });
+            if (!raf) {
+                // Fallback if requestAnimationFrame is not available
+                const position = calculatePosition();
+                if (tooltipElement) {
+                    tooltipElement.style.top = `${position.top}px`;
+                    tooltipElement.style.left = `${position.left}px`;
+                }
+            }
         }, delay);
     }
 
@@ -275,11 +292,17 @@
 
     // Update position when tooltip becomes visible
     $: if (isVisible && tooltipElement) {
-        requestAnimationFrame(() => {
+        const raf = safeRequestAnimationFrame(() => {
             const position = calculatePosition();
             tooltipElement.style.top = `${position.top}px`;
             tooltipElement.style.left = `${position.left}px`;
         });
+        if (!raf) {
+            // Fallback if requestAnimationFrame is not available
+            const position = calculatePosition();
+            tooltipElement.style.top = `${position.top}px`;
+            tooltipElement.style.left = `${position.left}px`;
+        }
     }
 </script>
 

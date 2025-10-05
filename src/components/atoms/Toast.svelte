@@ -2,6 +2,12 @@
     import { createEventDispatcher, onMount } from "svelte";
     import { fly, fade } from "svelte/transition";
     import {
+        isBrowser,
+        safeDocument,
+        safeSetTimeout,
+        safeClearTimeout,
+    } from "../../lib/ssr-safe";
+    import {
         CheckCircle,
         AlertCircle,
         AlertTriangle,
@@ -91,34 +97,40 @@
     }
 
     onMount(() => {
+        // Only run on client side
+        if (!isBrowser()) return;
+
+        const doc = safeDocument();
+        if (!doc) return;
+
         // Auto-dismiss if duration is set
         if (duration > 0) {
-            autoDismissTimeout = setTimeout(() => {
+            autoDismissTimeout = safeSetTimeout(() => {
                 closeToast();
             }, duration);
         }
 
         // Add keyboard listener
-        document.addEventListener("keydown", handleKeydown);
+        doc.addEventListener("keydown", handleKeydown);
 
         return () => {
             if (autoDismissTimeout) {
-                clearTimeout(autoDismissTimeout);
+                safeClearTimeout(autoDismissTimeout);
             }
-            document.removeEventListener("keydown", handleKeydown);
+            doc.removeEventListener("keydown", handleKeydown);
         };
     });
 
     // Pause auto-dismiss on hover
     function handleMouseEnter() {
         if (autoDismissTimeout) {
-            clearTimeout(autoDismissTimeout);
+            safeClearTimeout(autoDismissTimeout);
         }
     }
 
     function handleMouseLeave() {
         if (duration > 0) {
-            autoDismissTimeout = setTimeout(() => {
+            autoDismissTimeout = safeSetTimeout(() => {
                 closeToast();
             }, duration);
         }

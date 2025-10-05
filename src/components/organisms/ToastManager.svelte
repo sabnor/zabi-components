@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { isBrowser, safeWindow } from "../../lib/ssr-safe";
     import Toast from "../atoms/Toast.svelte";
 
     export let position:
@@ -108,24 +109,26 @@
 
     // Make methods available globally for easy access
     onMount(() => {
+        // Only run on client side
+        if (!isBrowser()) return;
+
+        const win = safeWindow();
+        if (!win) return;
+
         // Add to window for global access (optional)
-        if (typeof window !== "undefined") {
-            (window as any).toast = {
-                show,
-                success,
-                error,
-                warning,
-                info,
-                close,
-                closeAll,
-                update,
-            };
-        }
+        (win as any).toast = {
+            show,
+            success,
+            error,
+            warning,
+            info,
+            close,
+            closeAll,
+            update,
+        };
 
         return () => {
-            if (typeof window !== "undefined") {
-                delete (window as any).toast;
-            }
+            delete (win as any).toast;
         };
     });
 </script>
@@ -167,5 +170,4 @@
         flex-direction: column;
         gap: 0.5rem;
     }
-
 </style>

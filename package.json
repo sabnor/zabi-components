@@ -1,6 +1,6 @@
 {
   "name": "zabi-components",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A modern SvelteKit component library with TypeScript and Tailwind CSS",
   "type": "module",
   "main": "dist/index/index.js",
@@ -26,7 +26,8 @@
     "./types": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.js"
-    }
+    },
+    "./dist/zabi-components.css": "./dist/zabi-components.css"
   },
   "files": [
     "dist",
