@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.0] - 2024-01-XX
+## [1.1.1] - 2025-10-06
+
+### Fixed
+- Updated generated TypeScript definitions for better type safety
+- Enhanced package structure with improved type exports
+- Fixed build consistency and versioning
+
+### Changed
+- Updated internal build files and generated assets
+- Improved TypeScript declaration file generation
+- Enhanced package.json structure and exports
+
+## [1.1.0] - 2025-10-05
 
 ### Added
 - Comprehensive TypeScript definitions built into the library

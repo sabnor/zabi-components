@@ -718,7 +718,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
-### v1.0.7 (Latest) - "Less is More" Edition
+### v1.1.1 (Latest) - "Enhanced Type Safety" Edition
+
+#### 🔧 TypeScript Improvements
+- **Enhanced Type Definitions**: Updated generated TypeScript definitions for better type safety
+- **Improved Package Structure**: Enhanced package structure with improved type exports
+- **Build Consistency**: Fixed build consistency and versioning across all generated files
+- **Better Type Exports**: Improved TypeScript declaration file generation
 
 #### 🎯 Philosophy Change
 - **Clean & Simple**: Adopted "less is more" philosophy - removed unnecessary complexity
