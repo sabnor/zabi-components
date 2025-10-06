@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AlertCircle, CheckCircle } from "@lucide/svelte";
+    import { AlertCircle } from "@lucide/svelte";
 
     export let hasError: boolean = false;
     export let hasSuccess: boolean = false;
@@ -13,10 +13,10 @@
         "mt-2",
         "text-xs",
         hasError
-            ? "text-error"
+            ? "text-red-600"
             : hasSuccess
-              ? "text-success"
-              : "text-text-secondary",
+              ? "text-green-600"
+              : "text-gray-500",
     ].join(" ");
 </script>
 
@@ -29,7 +29,7 @@
             </div>
         {:else if hasSuccess}
             <div class="flex items-center gap-1">
-                <CheckCircle size={14} class="flex-shrink-0" />
+                <span class="text-green-600">✓</span>
                 <span>{success}</span>
             </div>
         {:else if helpText}
@@ -37,4 +37,3 @@
         {/if}
     </div>
 {/if}
-
