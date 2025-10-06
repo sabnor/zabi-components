@@ -1,183 +1,74 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import type { ButtonEvents, ClickEventDetail } from "../../types/events";
+    let {
+        variant = "primary",
+        size = "md",
+        disabled = false,
+        loading = false,
+        type = "button",
+        className = "",
+        children,
+        ...restProps
+    }: {
+        variant?:
+            | "primary"
+            | "secondary"
+            | "danger"
+            | "success"
+            | "warning"
+            | "info"
+            | "ghost"
+            | "link"
+            | "neutral";
+        size?: "sm" | "md" | "lg";
+        disabled?: boolean;
+        loading?: boolean;
+        type?: "button" | "submit" | "reset";
+        className?: string;
+        children?: any;
+        [key: string]: any;
+    } = $props();
 
-    // Standardized component props
-    export let variant:
-        | "primary"
-        | "secondary"
-        | "danger"
-        | "success"
-        | "warning"
-        | "info"
-        | "ghost"
-        | "link"
-        | "neutral" = "primary";
-    export let size: "sm" | "md" | "lg" = "md";
-    export let disabled: boolean = false;
-    export let loading: boolean = false;
-    export let type: "button" | "submit" | "reset" = "button";
-    export let className: string = "";
-
-    // Icon props - can be string (emoji/text) or Svelte component
-    export let iconLeft: string | any = null;
-    export let iconRight: string | any = null;
-
-    // Accessibility props
-    export let ariaLabel: string = "";
-    export let ariaDescribedBy: string = "";
-    export let ariaExpanded: boolean | undefined = undefined;
-    export let ariaControls: string | undefined = undefined;
-    export let ariaPressed: boolean | undefined = undefined;
-
-    const dispatch = createEventDispatcher<ButtonEvents>();
-
-    function handleClick(event: MouseEvent) {
-        if (disabled || loading) return;
-        dispatch("click", {
-            value: true,
-            event: event,
-        });
-    }
-
-    function handleKeydown(event: KeyboardEvent) {
-        if (disabled || loading) return;
-        if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            dispatch("click", { value: true, event: event });
-        }
-    }
-
-    // Base classes using semantic tokens
+    // Base classes
     const baseClasses =
         "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 relative overflow-hidden";
 
-    // Size classes using standardized sizes
+    // Size classes
     const sizeClasses = {
         sm: "px-3 py-1.5 text-sm rounded-md",
         md: "px-4 py-2 text-sm rounded-md",
         lg: "px-5 py-3 text-base rounded-lg",
     };
 
-    // Variant classes using semantic colors
+    // Variant classes
     const variantClasses = {
-        primary: [
-            "bg-primary text-text-inverse border border-primary",
-            "hover:bg-primary-hover hover:border-primary-hover",
-            "active:bg-primary-active active:border-primary-active",
-            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        secondary: [
-            "bg-surface text-text border border-border",
-            "hover:bg-surface-hover hover:border-border-hover",
-            "active:bg-surface-active active:border-border-hover",
-            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        success: [
-            "bg-success text-text-inverse border border-success",
-            "hover:bg-success-hover hover:border-success-hover",
-            "active:bg-success-active active:border-success-active",
-            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        warning: [
-            "bg-warning text-text-inverse border border-warning",
-            "hover:bg-warning-hover hover:border-warning-hover",
-            "active:bg-warning-active active:border-warning-active",
-            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        danger: [
-            "bg-error text-text-inverse border border-error",
-            "hover:bg-error-hover hover:border-error-hover",
-            "active:bg-error-active active:border-error-active",
-            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        info: [
-            "bg-info text-text-inverse border border-info",
-            "hover:bg-info-hover hover:border-info-hover",
-            "active:bg-info-active active:border-info-active",
-            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
-
-        ghost: [
-            "bg-transparent text-text border border-transparent",
-            "hover:bg-surface-hover hover:border-border-hover",
-            "active:bg-surface-active active:border-border-hover",
-            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
-            "shadow-none hover:shadow-adaptive-sm",
-        ].join(" "),
-
-        link: [
-            "bg-transparent text-primary border border-transparent underline-offset-4",
-            "hover:bg-transparent hover:text-primary-hover hover:underline",
-            "active:bg-transparent active:text-primary-active active:underline",
-            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
-            "shadow-none",
-        ].join(" "),
-
-        neutral: [
-            "bg-surface text-text border border-border",
-            "hover:bg-surface-hover hover:border-border-hover",
-            "active:bg-surface-active active:border-border-hover",
-            "focus:ring-2 focus:ring-focus-ring focus:ring-offset-2",
-            "shadow-adaptive-sm hover:shadow-adaptive-md",
-        ].join(" "),
+        primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
+        secondary:
+            "bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500",
+        danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+        success:
+            "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500",
+        warning:
+            "bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500",
+        info: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
+        ghost: "bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
+        link: "bg-transparent text-blue-600 hover:text-blue-700 underline focus:ring-blue-500",
+        neutral:
+            "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500",
     };
 
-    // Disabled state classes
-    const disabledClasses = disabled
-        ? [
-              "bg-surface-disabled text-text-disabled border-border-disabled",
-              "hover:bg-surface-disabled hover:text-text-disabled hover:border-border-disabled",
-              "active:bg-surface-disabled active:text-text-disabled active:border-border-disabled",
-              "shadow-none",
-          ].join(" ")
-        : "";
-
-    // Simple loading indicator
-    const showLoading = loading;
-
-    // Computed classes - using reactive statement for better performance
-    $: buttonClasses = [
-        baseClasses,
-        sizeClasses[size],
-        disabled
-            ? disabledClasses
-            : variantClasses[variant] || variantClasses.primary,
-        className,
-    ]
-        .filter(Boolean)
-        .join(" ");
-
-    // Accessibility attributes
-    $: accessibilityProps = {
-        "aria-busy": loading,
-        "aria-label": ariaLabel || (loading ? "Loading..." : undefined),
-        "aria-describedby": ariaDescribedBy || undefined,
-        "aria-expanded": ariaExpanded,
-        "aria-controls": ariaControls,
-        "aria-pressed": ariaPressed,
-        "aria-disabled": disabled,
-    };
+    // Computed classes
+    const buttonClasses = $derived(
+        [baseClasses, sizeClasses[size], variantClasses[variant], className]
+            .filter(Boolean)
+            .join(" "),
+    );
 </script>
 
 <button
     {type}
     class={buttonClasses}
-    on:click={handleClick}
-    on:keydown={handleKeydown}
     disabled={disabled || loading}
-    {...accessibilityProps}
+    {...restProps}
 >
     {#if loading}
         <svg
@@ -203,43 +94,12 @@
         </svg>
     {/if}
 
-    {#if iconLeft && !loading}
-        {#if typeof iconLeft === "string"}
-            <span class="h-4 w-4 flex items-center justify-center"
-                >{iconLeft}</span
-            >
-        {:else}
-            <svelte:component this={iconLeft} class="h-4 w-4" />
-        {/if}
-    {/if}
-
-    <slot />
-
-    {#if iconRight && !loading}
-        {#if typeof iconRight === "string"}
-            <span class="h-4 w-4 flex items-center justify-center"
-                >{iconRight}</span
-            >
-        {:else}
-            <svelte:component this={iconRight} class="h-4 w-4" />
-        {/if}
+    {#if children}
+        {@render children()}
     {/if}
 </button>
 
 <style>
-    /* Ensure proper focus styles for reduced motion users */
-    @media (prefers-reduced-motion: reduce) {
-        button {
-            transition: none;
-        }
-    }
-
-    /* Ensure proper contrast for disabled state */
-    button:disabled {
-        opacity: 0.6;
-    }
-
-    /* Loading state animation */
     @keyframes spin {
         from {
             transform: rotate(0deg);

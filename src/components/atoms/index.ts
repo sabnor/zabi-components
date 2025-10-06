@@ -1,20 +1,3 @@
-// Atomic Components - Basic building blocks
-export { default as Badge } from './Badge.svelte';
+// Export only the working Svelte 5 components
 export { default as Button } from './Button.svelte';
-export { default as Card } from './Card.svelte';
-export { default as Checkbox } from './Checkbox.svelte';
-export { default as ColorPicker } from './ColorPicker.svelte';
 export { default as Heading } from './Heading.svelte';
-export { default as Input } from './Input.svelte';
-export { default as OptimizedImage } from './OptimizedImage.svelte';
-export { default as DebugPanel } from './PerformanceMonitor.svelte';
-export { default as Progress } from './Progress.svelte';
-export { default as ScaleDemo } from './ScaleDemo.svelte';
-export { default as Select } from './Select.svelte';
-export { default as Skeleton } from './Skeleton.svelte';
-export { default as Textarea } from './Textarea.svelte';
-export { default as TextAlignment } from './TextAlignment.svelte';
-export { default as ThemeToggle } from './ThemeToggle.svelte';
-export { default as Toast } from './Toast.svelte';
-export { default as Toggle } from './Toggle.svelte';
-export { default as Tooltip } from './Tooltip.svelte';
