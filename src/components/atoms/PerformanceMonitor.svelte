@@ -1,151 +1,16 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-
     export let isVisible = false;
-    export let showInDev = true;
-    export let title = "Debug Panel";
-
-    let metrics = {
-        domContentLoaded: 0,
-        loadComplete: 0,
-        firstPaint: 0,
-        firstContentfulPaint: 0,
-        largestContentfulPaint: 0,
-        cumulativeLayoutShift: 0,
-    };
-
-    onMount(() => {
-        // Performance Observer for Core Web Vitals - optimized with proper cleanup
-        if (typeof window !== "undefined" && "PerformanceObserver" in window) {
-            const observers: PerformanceObserver[] = [];
-
-            // First Paint
-            const paintObserver = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (entry.name === "first-paint") {
-                        metrics.firstPaint = entry.startTime;
-                    }
-                }
-            });
-            paintObserver.observe({ entryTypes: ["paint"] });
-            observers.push(paintObserver);
-
-            // First Contentful Paint
-            const fcpObserver = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (entry.name === "first-contentful-paint") {
-                        metrics.firstContentfulPaint = entry.startTime;
-                    }
-                }
-            });
-            fcpObserver.observe({ entryTypes: ["paint"] });
-            observers.push(fcpObserver);
-
-            // Largest Contentful Paint
-            const lcpObserver = new PerformanceObserver((list) => {
-                const entries = list.getEntries();
-                const lastEntry = entries[entries.length - 1];
-                metrics.largestContentfulPaint = lastEntry.startTime;
-            });
-            lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
-            observers.push(lcpObserver);
-
-            // Cumulative Layout Shift
-            const clsObserver = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (!(entry as any).hadRecentInput) {
-                        metrics.cumulativeLayoutShift += (entry as any).value;
-                    }
-                }
-            });
-            clsObserver.observe({ entryTypes: ["layout-shift"] });
-            observers.push(clsObserver);
-
-            // Cleanup function
-            return () => {
-                observers.forEach((observer) => observer.disconnect());
-            };
-        }
-
-        // Basic timing metrics with proper cleanup
-        const handleDOMContentLoaded = () => {
-            metrics.domContentLoaded = performance.now();
-        };
-
-        const handleLoad = () => {
-            metrics.loadComplete = performance.now();
-        };
-
-        window.addEventListener("DOMContentLoaded", handleDOMContentLoaded);
-        window.addEventListener("load", handleLoad);
-
-        // Show metrics in development
-        if (showInDev && import.meta.env.DEV) {
-            setTimeout(() => {
-                isVisible = true;
-            }, 2000);
-        }
-
-        // Cleanup function for event listeners
-        return () => {
-            window.removeEventListener(
-                "DOMContentLoaded",
-                handleDOMContentLoaded,
-            );
-            window.removeEventListener("load", handleLoad);
-        };
-    });
-
-    function formatTime(ms: number): string {
-        return `${Math.round(ms)}ms`;
-    }
-
-    function getPerformanceScore(): string {
-        const fcp = metrics.firstContentfulPaint;
-        const lcp = metrics.largestContentfulPaint;
-        const cls = metrics.cumulativeLayoutShift;
-
-        let score = 100;
-
-        if (fcp > 1800) score -= 20;
-        if (lcp > 2500) score -= 30;
-        if (cls > 0.1) score -= 25;
-        if (metrics.loadComplete > 3000) score -= 25;
-
-        if (score >= 90) return "🟢 Excellent";
-        if (score >= 70) return "🟡 Good";
-        if (score >= 50) return "🟠 Needs Improvement";
-        return "🔴 Poor";
-    }
+    export let title = "Performance Monitor";
 </script>
 
 {#if isVisible}
     <div
-        class="fixed bottom-4 left-4 p-4 rounded-lg text-xs font-mono z-50 max-w-xs"
-        style="background-color: rgb(var(--color-surface-elevated)); color: rgb(var(--color-text));"
+        class="fixed bottom-4 right-4 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 max-w-sm"
     >
-        <div class="flex items-center justify-between mb-2">
-            <h3 class="font-bold">{title}</h3>
-            <button
-                on:click={() => (isVisible = false)}
-                class="hover:opacity-80"
-                style="color: rgb(var(--color-text-secondary));"
-            >
-                ×
-            </button>
-        </div>
-
-        <div class="space-y-1">
-            <div>FCP: {formatTime(metrics.firstContentfulPaint)}</div>
-            <div>LCP: {formatTime(metrics.largestContentfulPaint)}</div>
-            <div>CLS: {metrics.cumulativeLayoutShift.toFixed(3)}</div>
-            <div>Load: {formatTime(metrics.loadComplete)}</div>
-            <div
-                class="pt-1"
-                style="border-top-color: rgb(var(--color-border));"
-            >
-                <div class="font-semibold">{getPerformanceScore()}</div>
-            </div>
+        <h3 class="text-sm font-semibold text-gray-900 mb-2">{title}</h3>
+        <div class="space-y-1 text-xs text-gray-600">
+            <div>Performance monitoring is active</div>
+            <div>Check browser dev tools for detailed metrics</div>
         </div>
     </div>
 {/if}

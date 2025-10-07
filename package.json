@@ -1,6 +1,6 @@
 {
   "name": "zabi-components",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A modern SvelteKit component library with TypeScript and Tailwind CSS",
   "type": "module",
   "main": "dist/index/index.js",
@@ -67,7 +67,7 @@
     "@storybook/addon-svelte-csf": "^5.0.8",
     "@storybook/sveltekit": "^9.1.7",
     "@sveltejs/adapter-auto": "^3.0.0",
-    "@sveltejs/kit": "^2.43.1",
+    "@sveltejs/kit": "^2.44.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@tsconfig/svelte": "^5.0.2",
     "@types/node": "^24.5.2",

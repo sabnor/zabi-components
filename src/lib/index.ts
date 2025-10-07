@@ -1,196 +1,274 @@
-// Main library entry point
-// Re-export all components from their respective categories
+// Zabi Components - Clean & Simple Svelte Component Library
+// Main library entry point - All components in one place
 
-// Import base styles for theming
+// Import base styles
 import '../styles/base.css';
 
-// Atomic Components
-export * from '../components/atoms/index';
+// ============================================================================
+// ATOM COMPONENTS - Basic UI building blocks
+// ============================================================================
 
-// Molecular Components  
-export * from '../components/molecules/index';
+// Form Controls
+export { default as Button } from '../components/atoms/Button.svelte';
+export { default as Input } from '../components/atoms/Input.svelte';
+export { default as Textarea } from '../components/atoms/Textarea.svelte';
+export { default as Select } from '../components/atoms/Select.svelte';
+export { default as Checkbox } from '../components/atoms/Checkbox.svelte';
+export { default as Toggle } from '../components/atoms/Toggle.svelte';
+export { default as ColorPicker } from '../components/atoms/ColorPicker.svelte';
+export { default as TextAlignment } from '../components/atoms/TextAlignment.svelte';
 
-// Organism Components
-export * from '../components/organisms/index';
+// Display Components
+export { default as Card } from '../components/atoms/Card.svelte';
+export { default as Badge } from '../components/atoms/Badge.svelte';
+export { default as Heading } from '../components/atoms/Heading.svelte';
+export { default as Progress } from '../components/atoms/Progress.svelte';
+export { default as Skeleton } from '../components/atoms/Skeleton.svelte';
+export { default as Toast } from '../components/atoms/Toast.svelte';
+export { default as Tooltip } from '../components/atoms/Tooltip.svelte';
 
-// Re-export types
-export type { FieldConfig } from '../components/molecules/KeyValueForm.types';
-export * from '../types/events';
+// Utility Components
+export { default as ThemeToggle } from '../components/atoms/ThemeToggle.svelte';
+export { default as OptimizedImage } from '../components/atoms/OptimizedImage.svelte';
+export { default as InputActions } from '../components/atoms/InputActions.svelte';
+export { default as InputValidation } from '../components/atoms/InputValidation.svelte';
 
-// Component type definitions
-// Enhanced component type with proper event handling
-export type ZabiComponent<T = any, E = any> = new (...args: any[]) => {
-    $set(props: Partial<T>): void;
-    $destroy(): void;
-    $on<K extends keyof E>(event: K, handler: (event: CustomEvent<E[K]>) => void): () => void;
-};
+// Demo Components
+export { default as ScaleDemo } from '../components/atoms/ScaleDemo.svelte';
+export { default as PerformanceMonitor } from '../components/atoms/PerformanceMonitor.svelte';
 
-// Button component props and events
-export interface ButtonProps {
-    variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'info' | 'ghost' | 'link' | 'neutral';
+// ============================================================================
+// MOLECULE COMPONENTS - Composite UI elements
+// ============================================================================
+
+// Layout & Structure
+export { default as Form } from '../components/molecules/Form.svelte';
+export { default as Layout } from '../components/molecules/Layout.svelte';
+export { default as Modal } from '../components/molecules/Modal.svelte';
+export { default as SlideUp } from '../components/molecules/SlideUp.svelte';
+export { default as Dropdown } from '../components/molecules/Dropdown.svelte';
+
+// Navigation & Interaction
+export { default as Tabs } from '../components/molecules/Tabs.svelte';
+export { default as Alert } from '../components/molecules/Alert.svelte';
+export { default as ImageUpload } from '../components/molecules/ImageUpload.svelte';
+
+// Content & Display
+export { default as Hero } from '../components/molecules/Hero.svelte';
+export { default as CardsGrid } from '../components/molecules/CardsGrid.svelte';
+export { default as ColorDemo } from '../components/molecules/ColorDemo.svelte';
+export { default as SelectedCardInfo } from '../components/molecules/SelectedCardInfo.svelte';
+
+// ============================================================================
+// ORGANISM COMPONENTS - Complex UI sections
+// ============================================================================
+
+export { default as Navbar } from '../components/organisms/Navbar.svelte';
+export { default as Navigation } from '../components/organisms/Navigation.svelte';
+
+// ============================================================================
+// TYPES - TypeScript definitions
+// ============================================================================
+
+// Basic component types
+export interface BaseComponentProps {
+    className?: string;
+    disabled?: boolean;
+}
+
+// Button types
+export interface ButtonProps extends BaseComponentProps {
+    variant?: 'primary' | 'secondary' | 'danger';
     size?: 'sm' | 'md' | 'lg';
-    disabled?: boolean;
-    loading?: boolean;
     type?: 'button' | 'submit' | 'reset';
-    className?: string;
-    iconLeft?: string | any;
-    iconRight?: string | any;
-    ariaLabel?: string;
-    ariaDescribedBy?: string;
-    ariaExpanded?: boolean;
-    ariaControls?: string;
-    ariaPressed?: boolean;
 }
 
-export interface ButtonEvents {
-    click: { value: boolean; event: MouseEvent };
-}
-
-// Heading component props
-export interface HeadingProps {
-    level?: 1 | 2 | 3 | 4 | 5 | 6;
-    className?: string;
-}
-
-// Card component props
-export interface CardProps {
-    variant?: 'default' | 'elevated' | 'outlined';
-    className?: string;
-}
-
-// Input component props and events
-export interface InputProps {
-    type?: string;
+// Input types
+export interface InputProps extends BaseComponentProps {
     value?: string;
+    type?: string;
+    label?: string;
     placeholder?: string;
-    disabled?: boolean;
-    className?: string;
+    size?: 'sm' | 'md' | 'lg';
+}
+
+// Card types
+export interface CardProps extends BaseComponentProps {
+    title?: string;
+    image?: string;
+    interactive?: boolean;
+}
+
+// Form types
+export interface FormProps extends BaseComponentProps {
+    method?: 'get' | 'post';
+    action?: string;
+}
+
+// Navigation types
+export interface NavigationProps extends BaseComponentProps {
+    variant?: 'header' | 'sidebar';
+    items?: Array<{
+        label: string;
+        href: string;
+    }>;
+    currentPath?: string;
+}
+
+// Navbar types
+export interface NavbarProps extends BaseComponentProps {
+    brand?: string;
+    showThemeToggle?: boolean;
+}
+
+// Modal types
+export interface ModalProps extends BaseComponentProps {
+    isOpen?: boolean;
+    title?: string;
+}
+
+// Tabs types
+export interface TabsProps extends BaseComponentProps {
+    tabs?: Array<{
+        id: string;
+        label: string;
+        disabled?: boolean;
+    }>;
+    activeTab?: string;
+    variant?: 'default' | 'pills';
+}
+
+// Event types
+export interface BaseEventDetail<T = any> {
+    value: T;
+    event?: Event;
+}
+
+export interface ClickEventDetail extends BaseEventDetail<boolean> {
+    event?: MouseEvent;
+}
+
+export interface ChangeEventDetail extends BaseEventDetail<any> {
+    event?: Event;
+}
+
+export interface InputEventDetail extends BaseEventDetail<string> {
+    event?: InputEvent;
+}
+
+// Component event interfaces
+export interface ButtonEvents {
+    click: ClickEventDetail;
 }
 
 export interface InputEvents {
-    input: { value: string; event: Event };
-    change: { value: string; event: Event };
-    focus: { event: FocusEvent };
-    blur: { event: FocusEvent };
+    input: InputEventDetail;
+    change: ChangeEventDetail;
 }
 
-// Checkbox component props and events
-export interface CheckboxProps {
-    checked?: boolean;
-    disabled?: boolean;
-    className?: string;
+export interface FormEvents {
+    submit: { data: Record<string, any>; formData: FormData; event: SubmitEvent };
 }
 
-export interface CheckboxEvents {
-    change: { checked: boolean; event: Event };
+export interface NavigationEvents {
+    navigate: { item: any; href: string };
 }
 
-// Select component props and events
-export interface SelectProps {
-    options: Array<{ value: string; label: string }>;
-    value?: string;
-    disabled?: boolean;
-    className?: string;
-}
-
-export interface SelectEvents {
-    change: { value: string; event: Event };
-}
-
-// Textarea component props and events
-export interface TextareaProps {
-    value?: string;
-    placeholder?: string;
-    rows?: number;
-    disabled?: boolean;
-    className?: string;
-}
-
-export interface TextareaEvents {
-    input: { value: string; event: Event };
-    change: { value: string; event: Event };
-}
-
-// Modal component props and events
-export interface ModalProps {
-    open?: boolean;
-    title?: string;
-    className?: string;
+export interface NavbarEvents {
+    brandClick: { event: MouseEvent };
 }
 
 export interface ModalEvents {
     close: { event: Event };
 }
 
-// Alert component props
-export interface AlertProps {
-    type?: 'success' | 'error' | 'warning' | 'info';
-    message: string;
-    className?: string;
+export interface TabsEvents {
+    change: { activeTab: string };
 }
 
-// Badge component props
-export interface BadgeProps {
-    variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
-    size?: 'sm' | 'md' | 'lg';
-    className?: string;
-}
+// ============================================================================
+// UTILITIES - Helper functions and utilities
+// ============================================================================
 
-// Progress component props
-export interface ProgressProps {
-    value?: number;
-    max?: number;
-    className?: string;
-}
+// Simple utility functions
+export const createId = (prefix: string = 'id'): string =>
+    `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
 
-// Skeleton component props
-export interface SkeletonProps {
-    width?: string;
-    height?: string;
-    className?: string;
-}
+export const cn = (...classes: (string | undefined | null | false)[]): string =>
+    classes.filter(Boolean).join(' ');
 
-// Toggle component props and events
-export interface ToggleProps {
-    checked?: boolean;
-    disabled?: boolean;
-    className?: string;
-}
+// Form utilities
+export const getFormData = (form: HTMLFormElement): Record<string, any> => {
+    const formData = new FormData(form);
+    return Object.fromEntries(formData.entries());
+};
 
-export interface ToggleEvents {
-    change: { checked: boolean; event: Event };
-}
+// Validation utilities
+export const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
 
-// Tooltip component props
-export interface TooltipProps {
-    content: string;
-    position?: 'top' | 'bottom' | 'left' | 'right';
-    className?: string;
-}
+export const validateRequired = (value: any): boolean => {
+    return value !== null && value !== undefined && value !== '';
+};
 
-// Component type definitions
-export type Button = ZabiComponent<ButtonProps, ButtonEvents>;
-export type Heading = ZabiComponent<HeadingProps>;
-export type Card = ZabiComponent<CardProps>;
-export type Input = ZabiComponent<InputProps, InputEvents>;
-export type Checkbox = ZabiComponent<CheckboxProps, CheckboxEvents>;
-export type Select = ZabiComponent<SelectProps, SelectEvents>;
-export type Textarea = ZabiComponent<TextareaProps, TextareaEvents>;
-export type Modal = ZabiComponent<ModalProps, ModalEvents>;
-export type Alert = ZabiComponent<AlertProps>;
-export type Badge = ZabiComponent<BadgeProps>;
-export type Progress = ZabiComponent<ProgressProps>;
-export type Skeleton = ZabiComponent<SkeletonProps>;
-export type Toggle = ZabiComponent<ToggleProps, ToggleEvents>;
-export type Tooltip = ZabiComponent<TooltipProps>;
+// ============================================================================
+// EXPORTS - Re-export everything for easy importing
+// ============================================================================
 
-// Re-export actions
-export * from './actions';
+// Re-export all from sub-categories for backward compatibility
+export * from '../components/atoms/index';
+export * from '../components/molecules/index';
+export * from '../components/organisms/index';
 
-// Re-export utilities
-export * from './form-utils';
-export * from './navigation-utils';
-export * from './tabs-utils';
+// Default export for convenience
+export default {
+    // Atoms
+    Button,
+    Input,
+    Textarea,
+    Select,
+    Checkbox,
+    Toggle,
+    ColorPicker,
+    TextAlignment,
+    Card,
+    Badge,
+    Heading,
+    Progress,
+    Skeleton,
+    Toast,
+    Tooltip,
+    ThemeToggle,
+    OptimizedImage,
+    InputActions,
+    InputValidation,
+    ScaleDemo,
+    PerformanceMonitor,
 
-// Re-export SSR utilities
-export * from './ssr-safe';
+    // Molecules
+    Form,
+    Layout,
+    Modal,
+    SlideUp,
+    Dropdown,
+    Tabs,
+    Alert,
+    ImageUpload,
+    Hero,
+    CardsGrid,
+    ColorDemo,
+    SelectedCardInfo,
+
+    // Organisms
+    Navbar,
+    Navigation,
+
+    // Utilities
+    createId,
+    cn,
+    getFormData,
+    validateEmail,
+    validateRequired
+};

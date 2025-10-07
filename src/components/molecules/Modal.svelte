@@ -1,148 +1,66 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
-    import type { ModalEvents } from "../../types/events";
+    import { createEventDispatcher } from "svelte";
 
     export let isOpen = false;
     export let title = "";
-    export let showCloseButton = true;
 
-    const dispatch = createEventDispatcher<ModalEvents>();
+    const dispatch = createEventDispatcher();
 
-    let modalElement: HTMLDivElement;
-    let previousActiveElement: HTMLElement | null = null;
-
-    function closeDialog() {
+    function closeModal() {
         isOpen = false;
-        dispatch("close", { event: new Event("close") });
+        dispatch("close");
     }
 
-    function handleBackdropClick(event: CustomEvent) {
-        const mouseEvent = event as unknown as MouseEvent;
-        if (mouseEvent.target === mouseEvent.currentTarget) {
-            closeDialog();
+    function handleBackdropClick(event: Event) {
+        if (event.target === event.currentTarget) {
+            closeModal();
         }
     }
 
-    function handleKeydown(event: CustomEvent) {
-        const keyboardEvent = event as unknown as KeyboardEvent;
+    function handleKeydown(event: Event) {
+        const keyboardEvent = event as KeyboardEvent;
         if (keyboardEvent.key === "Escape") {
-            closeDialog();
+            closeModal();
         }
-    }
-
-    // Focus trap implementation
-    function trapFocus(event: CustomEvent) {
-        if (!isOpen) return;
-        const keyboardEvent = event as unknown as KeyboardEvent;
-
-        const focusableElements = modalElement?.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        ) as NodeListOf<HTMLElement>;
-
-        if (!focusableElements.length) return;
-
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-
-        if (keyboardEvent.key === "Tab") {
-            if (keyboardEvent.shiftKey) {
-                if (document.activeElement === firstElement) {
-                    keyboardEvent.preventDefault();
-                    lastElement.focus();
-                }
-            } else {
-                if (document.activeElement === lastElement) {
-                    keyboardEvent.preventDefault();
-                    firstElement.focus();
-                }
-            }
-        }
-    }
-
-    // Focus management with proper cleanup
-    onMount(() => {
-        return () => {
-            if (previousActiveElement) {
-                previousActiveElement.focus();
-            }
-        };
-    });
-
-    // Optimized reactive statement for modal opening
-    $: if (isOpen) {
-        previousActiveElement = document.activeElement as HTMLElement;
-        // Use requestAnimationFrame for better performance
-        requestAnimationFrame(() => {
-            const firstFocusable = modalElement?.querySelector(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-            ) as HTMLElement;
-            firstFocusable?.focus();
-        });
     }
 </script>
 
 {#if isOpen}
-    <!-- Backdrop -->
     <div
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal-backdrop flex items-center justify-center p-4"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
         on:click={handleBackdropClick}
         on:keydown={handleKeydown}
-        role="presentation"
+        role="dialog"
+        aria-modal="true"
         tabindex="-1"
     >
-        <!-- Dialog -->
         <div
-            bind:this={modalElement}
-            class="bg-surface-elevated rounded-xl shadow-adaptive-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-primary focus:outline-none"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="dialog-title"
-            on:keydown={trapFocus}
-            tabindex="-1"
+            class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
         >
             <!-- Header -->
             <div
-                class="flex items-center justify-between p-6 border-b border-primary"
+                class="flex items-center justify-between p-6 border-b border-gray-200"
             >
-                <h2
-                    id="dialog-title"
-                    class="text-xl font-semibold text-primary"
+                <h2 class="text-xl font-semibold text-gray-900">{title}</h2>
+                <button
+                    type="button"
+                    on:click={closeModal}
+                    class="text-gray-400 hover:text-gray-600 text-2xl"
+                    aria-label="Close"
                 >
-                    {title}
-                </h2>
-                {#if showCloseButton}
-                    <button
-                        type="button"
-                        on:click={closeDialog}
-                        class="text-tertiary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary rounded-lg p-1 transition-colors"
-                        aria-label="Close dialog"
-                    >
-                        <svg
-                            class="w-6 h-6 text-current"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
-                {/if}
+                    ×
+                </button>
             </div>
 
             <!-- Content -->
-            <div class="p-6 text-primary">
+            <div class="p-6">
                 <slot />
             </div>
 
-            <!-- Footer (optional) -->
+            <!-- Footer -->
             {#if $$slots.footer}
                 <div
-                    class="flex items-center justify-end gap-3 p-6 border-t border-primary bg-surface-secondary"
+                    class="flex justify-end gap-3 p-6 border-t border-gray-200"
                 >
                     <slot name="footer" />
                 </div>
