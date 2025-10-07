@@ -154,9 +154,6 @@ export interface AlertEvents {
     close: BaseEventDetail;
 }
 
-export interface TextAlignmentEvents {
-    change: { value: string; event: Event };
-}
 
 export interface ImageUploadEvents {
     upload: FileUploadEventDetail;

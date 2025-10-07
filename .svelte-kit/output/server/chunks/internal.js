@@ -1,8 +1,9 @@
 import { H as HYDRATION_ERROR, C as COMMENT_NODE, a as HYDRATION_END, b as HYDRATION_START, c as HYDRATION_START_ELSE, B as BOUNDARY_EFFECT, E as ERROR_VALUE, d as EFFECT_RAN, e as CLEAN, I as INERT, f as EFFECT, A as ASYNC, g as BLOCK_EFFECT, D as DIRTY, h as BRANCH_EFFECT, R as ROOT_EFFECT, M as MAYBE_DIRTY, i as DESTROYED, j as DERIVED, k as EFFECT_TRANSPARENT, l as EFFECT_PRESERVED, U as UNOWNED, m as INSPECT_EFFECT, S as STATE_SYMBOL, n as UNINITIALIZED, o as HEAD_EFFECT, p as STALE_REACTION, q as RENDER_EFFECT, r as USER_EFFECT, s as DISCONNECTED, t as REACTION_IS_UPDATING, u as is_passive_event, L as LEGACY_PROPS, v as render, w as experimental_async_ssr } from "./index.js";
 import { B as BROWSER } from "./environment.js";
-import { r as run_all, d as define_property, a as deferred, n as noop, o as object_prototype, b as array_prototype, g as get_descriptor, c as get_prototype_of, i as is_array, e as is_extensible, f as index_of, h as array_from, s as setContext } from "./context.js";
+import { r as run_all, d as define_property, a as deferred, n as noop, o as object_prototype, b as array_prototype, g as get_descriptor, c as get_prototype_of, i as is_array, e as is_extensible, f as index_of, h as array_from } from "./utils2.js";
 import { s as safe_equals, e as equals } from "./equality.js";
 import "clsx";
+import { s as setContext } from "./context.js";
 let public_env = {};
 function set_private_env(environment) {
 }
@@ -2505,7 +2506,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "e8skc0"
+  version_hash: "1i3mk7r"
 };
 async function get_hooks() {
   let handle;

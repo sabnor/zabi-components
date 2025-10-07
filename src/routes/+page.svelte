@@ -2,15 +2,8 @@
     import Layout from "../components/molecules/Layout.svelte";
     import Navigation from "../components/organisms/Navigation.svelte";
     import ThemeToggle from "../components/atoms/ThemeToggle.svelte";
-    import Hero from "../components/molecules/Hero.svelte";
-    import CardsGrid from "../components/molecules/CardsGrid.svelte";
     import ContactForm from "../components/molecules/ContactForm.svelte";
-    import SelectedCardInfo from "../components/molecules/SelectedCardInfo.svelte";
-    import ColorDemo from "../components/molecules/ColorDemo.svelte";
-    import type { CardData, FormData, NavItem } from "../types/page.types";
-
-    // State
-    let selectedCard: CardData | null = null;
+    import type { ContactFormData, NavItem } from "../types/page.types";
 
     // Navigation data
     const navItems: NavItem[] = [
@@ -20,34 +13,10 @@
         { label: "GitHub", href: "https://github.com" },
     ];
 
-    // Cards data
-    const cards: CardData[] = [
-        {
-            title: "Clean Design",
-            description: "Minimal, focused components that just work",
-            image: "/vite.svg",
-        },
-        {
-            title: "TypeScript First",
-            description: "Full type safety and excellent developer experience",
-            image: "/vite.svg",
-        },
-        {
-            title: "Accessible",
-            description: "Built with accessibility and usability in mind",
-            image: "/vite.svg",
-        },
-    ];
-
     // Event handlers
-    function handleFormSubmit(event: CustomEvent<{ data: FormData }>) {
+    function handleFormSubmit(event: CustomEvent<{ data: ContactFormData }>) {
         console.log("Form submitted:", event.detail.data);
         // Handle form submission
-    }
-
-    function handleCardClick(event: CustomEvent<CardData>) {
-        selectedCard = event.detail;
-        console.log("Card clicked:", selectedCard);
     }
 </script>
 
@@ -67,28 +36,29 @@
         <h1 class="text-xl font-bold text-text">Zabi Components</h1>
         <div class="flex items-center gap-4">
             <Navigation variant="header" items={navItems} />
-            <ThemeToggle size="md" />
+            <ThemeToggle />
         </div>
     </div>
 
     <div slot="main" class="container mx-auto p-6 space-y-8">
         <!-- Hero Section -->
-        <Hero
-            title="Less is More"
-            subtitle="Clean, minimal components that focus on what matters most. No unnecessary complexity, just simple solutions that work."
-        />
-
-        <!-- Components Grid -->
-        <CardsGrid title="Components" {cards} on:cardClick={handleCardClick} />
+        <section class="py-20 px-4 text-center">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-6xl font-bold text-text mb-6">
+                    Zabi Components
+                </h1>
+                <p class="text-xl md:text-2xl text-text-secondary mb-8">
+                    Clean, minimal Svelte components that just work
+                </p>
+                <p class="text-lg text-text-secondary/80 max-w-2xl mx-auto">
+                    Build beautiful, accessible user interfaces with our
+                    carefully crafted component library.
+                </p>
+            </div>
+        </section>
 
         <!-- Contact Form -->
         <ContactForm on:submit={handleFormSubmit} />
-
-        <!-- Selected Card Info -->
-        <SelectedCardInfo {selectedCard} />
-
-        <!-- Color Demo -->
-        <ColorDemo />
     </div>
 
     <div slot="footer" class="text-center p-4 text-text-secondary">

@@ -9,10 +9,12 @@ A clean, minimal Svelte component library built with TypeScript and Tailwind CSS
 ## Features
 
 - 🎯 **TypeScript First** - Full TypeScript support with comprehensive type definitions
-- 🎨 **Tailwind CSS Integration** - Built with Tailwind CSS for consistent styling
+- 🎨 **Semantic Color System** - Built-in semantic colors with automatic dark mode support
+- 🌙 **Dark Mode Ready** - Automatic dark mode switching with CSS custom properties
 - ♿ **Accessibility First** - ARIA compliant components with keyboard navigation support
 - 📱 **Responsive Design** - Mobile-first approach with responsive utilities
 - 🧩 **Clean API** - Simple, intuitive component APIs with minimal props
+- 🔧 **Utility Functions** - Reusable variant utilities for consistent styling
 - 📦 **Tree Shakeable** - Import only what you need
 - ✅ **Production Ready** - Fully tested and optimized for production use
 - 🚀 **Modern CSS** - CSS-only positioning, animations, and interactions
@@ -59,11 +61,12 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
 ```svelte
 <script lang="ts">
   // Clean Components - Less is More
-  import { Card, Form, Layout, Navigation, Button, Input } from 'zabi-components';
+  import { Card, Form, Layout, Navigation, Button, Input, Textarea } from 'zabi-components';
   
   let formData = {
     name: '',
     email: '',
+    message: '',
   };
   
   function handleFormSubmit(event: CustomEvent) {
@@ -88,17 +91,58 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
   </div>
 
   <main class="container mx-auto p-6">
-    <Card title="Welcome" description="Clean components that just work" interactive on:click={handleCardClick} />
+    <!-- Semantic Color Variants -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <Card title="Default Card" variant="default">
+        This is a default card with semantic colors.
+      </Card>
+      <Card title="Success Card" variant="success">
+        This card indicates a successful action.
+      </Card>
+      <Card title="Warning Card" variant="warning">
+        This card shows a warning state.
+      </Card>
+      <Card title="Error Card" variant="error">
+        This card indicates an error state.
+      </Card>
+      <Card title="Info Card" variant="info">
+        This card provides informational content.
+      </Card>
+    </div>
     
     <Form on:submit={handleFormSubmit}>
       <div class="form-field">
-        <label for="name" class="form-label">Name</label>
-        <Input id="name" name="name" bind:value={formData.name} placeholder="Enter your name" />
+        <Input 
+          id="name" 
+          name="name" 
+          bind:value={formData.name} 
+          label="Name"
+          placeholder="Enter your name" 
+          variant="default"
+        />
       </div>
       
       <div class="form-field">
-        <label for="email" class="form-label">Email</label>
-        <Input id="email" name="email" type="email" bind:value={formData.email} placeholder="Enter your email" />
+        <Input 
+          id="email" 
+          name="email" 
+          type="email" 
+          bind:value={formData.email} 
+          label="Email"
+          placeholder="Enter your email" 
+          variant="success"
+        />
+      </div>
+
+      <div class="form-field">
+        <Textarea 
+          id="message" 
+          name="message" 
+          bind:value={formData.message} 
+          label="Message"
+          placeholder="Enter your message" 
+          variant="default"
+        />
       </div>
       
       <div class="form-actions">
@@ -145,6 +189,75 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
 | **ColorPicker** | Atom | Color selection | Simple color grid |
 | **SlideUp** | Molecule | Slide-up panel | CSS-only animations |
 
+## Semantic Color System
+
+Zabi Components includes a comprehensive semantic color system that automatically supports dark mode and provides consistent styling across all components.
+
+### Available Variants
+
+All components support these semantic color variants:
+
+- **`default`** - Standard appearance with primary colors
+- **`success`** - Green colors for positive states
+- **`warning`** - Yellow/amber colors for caution states  
+- **`error`** - Red colors for error states
+- **`info`** - Blue colors for informational states
+
+### Usage Examples
+
+```svelte
+<!-- Input variants -->
+<Input variant="default" label="Default Input" />
+<Input variant="success" label="Success Input" />
+<Input variant="warning" label="Warning Input" />
+<Input variant="error" label="Error Input" />
+
+<!-- Textarea variants -->
+<Textarea variant="default" label="Default Textarea" />
+<Textarea variant="success" label="Success Textarea" />
+
+<!-- Card variants -->
+<Card variant="default" title="Default Card" />
+<Card variant="success" title="Success Card" />
+<Card variant="warning" title="Warning Card" />
+<Card variant="error" title="Error Card" />
+<Card variant="info" title="Info Card" />
+```
+
+### Utility Functions
+
+For custom components or advanced usage, you can use the built-in utility functions:
+
+```typescript
+import { 
+  getInputVariantClasses, 
+  getCardVariantClasses, 
+  getVariantClasses 
+} from 'zabi-components';
+
+// For input components (Input, Textarea)
+const inputClass = getInputVariantClasses('success'); // Returns "input-variant-success"
+
+// For card components
+const cardClass = getCardVariantClasses('error'); // Returns "card-variant-error"
+
+// For custom components
+const borderClass = getVariantClasses('warning', 'border'); // Returns "variant-border-warning"
+const textClass = getVariantClasses('success', 'text'); // Returns "variant-text-success"
+const bgClass = getVariantClasses('info', 'bg'); // Returns "variant-bg-info"
+```
+
+### Dark Mode Support
+
+The semantic color system automatically adapts to dark mode through CSS custom properties. Simply add the `.dark` class to your document:
+
+```javascript
+// Toggle dark mode
+document.documentElement.classList.toggle('dark');
+```
+
+All components will automatically switch to their dark mode variants without any additional configuration.
+
 ## Component API
 
 ### Card Component
@@ -152,11 +265,10 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
 ```svelte
 <Card
   title={string}
-  subtitle={string}
-  description={string}
   image={string}
-  variant="default" | "elevated"
   interactive={boolean}
+  variant="default" | "success" | "warning" | "error" | "info"
+  size="sm" | "md" | "lg"
   className={string}
   on:click={(e) => console.log(e.detail.event)}
 >
@@ -166,11 +278,10 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
 
 **Props:**
 - `title`: Card title
-- `subtitle`: Card subtitle  
-- `description`: Card description
 - `image`: Card image URL
-- `variant`: Card style variant (default: "default")
 - `interactive`: Make card clickable (default: false)
+- `variant`: Card variant with semantic colors (default: "default")
+- `size`: Card size (default: "md")
 - `className`: Additional CSS classes
 
 **Events:**
@@ -287,15 +398,10 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
   type={string}
   label={string}
   placeholder={string}
-  required={boolean}
   disabled={boolean}
   size="sm" | "md" | "lg"
-  variant="default" | "error" | "success"
-  error={string}
-  success={string}
-  helpText={string}
+  variant="default" | "success" | "warning" | "error"
   className={string}
-  id={string}
   on:input={(e) => console.log(e.detail.value, e.detail.event)}
   on:change={(e) => console.log(e.detail.value, e.detail.event)}
 />
@@ -306,15 +412,41 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
 - `type`: Input type (default: "text")
 - `label`: Input label
 - `placeholder`: Input placeholder
-- `required`: Mark as required (default: false)
 - `disabled`: Disable the input (default: false)
 - `size`: Input size (default: "md")
-- `variant`: Input variant (default: "default")
-- `error`: Error message
-- `success`: Success message
-- `helpText`: Helper text
+- `variant`: Input variant with semantic colors (default: "default")
 - `className`: Additional CSS classes
-- `id`: Input ID
+
+**Events:**
+- `input`: Fired on input - `{ detail: { value: string, event: InputEvent } }`
+- `change`: Fired on change - `{ detail: { value: string, event: Event } }`
+
+### Textarea Component
+
+```svelte
+<Textarea
+  bind:value={string}
+  label={string}
+  placeholder={string}
+  disabled={boolean}
+  rows={number}
+  size="sm" | "md" | "lg"
+  variant="default" | "success" | "warning" | "error"
+  className={string}
+  on:input={(e) => console.log(e.detail.value, e.detail.event)}
+  on:change={(e) => console.log(e.detail.value, e.detail.event)}
+/>
+```
+
+**Props:**
+- `value`: Textarea value (bindable)
+- `label`: Textarea label
+- `placeholder`: Textarea placeholder
+- `disabled`: Disable the textarea (default: false)
+- `rows`: Number of visible text lines (default: 4)
+- `size`: Textarea size (default: "md")
+- `variant`: Textarea variant with semantic colors (default: "default")
+- `className`: Additional CSS classes
 
 **Events:**
 - `input`: Fired on input - `{ detail: { value: string, event: InputEvent } }`
