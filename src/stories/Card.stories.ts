@@ -16,145 +16,57 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
+        title: 'Card Title',
         variant: 'default'
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        slot: 'Card content goes here'
-    })
+    }
 };
 
-export const Elevated: Story = {
+export const WithImage: Story = {
     args: {
-        variant: 'elevated'
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        slot: 'Elevated card'
-    })
+        title: 'Card with Image',
+        image: 'https://via.placeholder.com/300x200',
+        variant: 'default'
+    }
+};
+
+export const Success: Story = {
+    args: {
+        title: 'Success Card',
+        variant: 'success'
+    }
+};
+
+export const Warning: Story = {
+    args: {
+        title: 'Warning Card',
+        variant: 'warning'
+    }
+};
+
+export const Error: Story = {
+    args: {
+        title: 'Error Card',
+        variant: 'error'
+    }
 };
 
 export const Interactive: Story = {
     args: {
+        title: 'Interactive Card',
         interactive: true
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        slot: 'Clickable card'
-    })
+    }
 };
 
-export const Compact: Story = {
+export const Small: Story = {
     args: {
-        density: 'compact'
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        slot: 'Compact card'
-    })
+        title: 'Small Card',
+        size: 'sm'
+    }
 };
 
-export const Spacious: Story = {
+export const Large: Story = {
     args: {
-        density: 'spacious'
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        slot: 'Spacious card'
-    })
-};
-
-export const Disabled: Story = {
-    args: {
-        disabled: true
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        slot: 'Disabled card'
-    })
-};
-
-export const Loading: Story = {
-    args: {
-        loading: true
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        slot: 'Loading card'
-    })
-};
-
-export const WithHeader: Story = {
-    args: {
-        variant: 'default'
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        children: [
-            {
-                Component: 'div',
-                props: { slot: 'header', class: 'text-lg font-semibold mb-2' },
-                slot: 'Card Header'
-            },
-            'Card content goes here'
-        ]
-    })
-};
-
-export const WithFooter: Story = {
-    args: {
-        variant: 'default'
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        children: [
-            'Card content goes here',
-            {
-                Component: 'div',
-                props: { slot: 'footer', class: 'mt-4 pt-2 border-t border-stone-600' },
-                slot: 'Card Footer'
-            }
-        ]
-    })
-};
-
-export const Complete: Story = {
-    args: {
-        variant: 'default',
-        density: 'comfortable'
-    },
-    render: (args) => ({
-        Component: Card,
-        props: args,
-        children: [
-            {
-                Component: 'div',
-                props: { slot: 'header', class: 'text-lg font-semibold mb-2' },
-                slot: 'Card Title'
-            },
-            'This is the main content of the card. It can contain any text or elements you need.',
-            {
-                Component: 'div',
-                props: { slot: 'footer', class: 'mt-4 pt-2 border-t border-stone-600 text-sm text-stone-400' },
-                slot: 'Last updated 2 hours ago'
-            }
-        ]
-    })
-};
-
-export const AllDensities: Story = {
-    render: () => ({
-        Component: Card,
-        props: { density: 'comfortable' },
-        slot: 'All Densities Showcase'
-    })
+        title: 'Large Card',
+        size: 'lg'
+    }
 };

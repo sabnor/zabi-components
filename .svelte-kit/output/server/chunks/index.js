@@ -1,4 +1,4 @@
-import { k as escape_html, m as set_ssr_context, p as ssr_context, q as push, t as pop, n as noop } from "./context.js";
+import { e as escape_html, a as set_ssr_context, b as ssr_context, p as push, c as pop } from "./context.js";
 import { clsx as clsx$1 } from "clsx";
 const DERIVED = 1 << 1;
 const EFFECT = 1 << 2;
@@ -38,27 +38,6 @@ const ELEMENT_IS_NAMESPACED = 1;
 const ELEMENT_PRESERVE_ATTRIBUTE_CASE = 1 << 1;
 const ELEMENT_IS_INPUT = 1 << 2;
 const UNINITIALIZED = Symbol();
-const VOID_ELEMENT_NAMES = [
-  "area",
-  "base",
-  "br",
-  "col",
-  "command",
-  "embed",
-  "hr",
-  "img",
-  "input",
-  "keygen",
-  "link",
-  "meta",
-  "param",
-  "source",
-  "track",
-  "wbr"
-];
-function is_void(name) {
-  return VOID_ELEMENT_NAMES.includes(name) || name.toLowerCase() === "!doctype";
-}
 const DOM_BOOLEAN_ATTRIBUTES = [
   "allowfullscreen",
   "async",
@@ -95,16 +74,6 @@ function is_boolean_attribute(name) {
 const PASSIVE_EVENTS = ["touchstart", "touchmove"];
 function is_passive_event(name) {
   return PASSIVE_EVENTS.includes(name);
-}
-const RAW_TEXT_ELEMENTS = (
-  /** @type {const} */
-  ["textarea", "script", "style", "title"]
-);
-function is_raw_text_element(name) {
-  return RAW_TEXT_ELEMENTS.includes(
-    /** @type {typeof RAW_TEXT_ELEMENTS[number]} */
-    name
-  );
 }
 const replacements = {
   translate: /* @__PURE__ */ new Map([
@@ -249,7 +218,6 @@ function to_style(value, styles) {
 }
 const BLOCK_OPEN = `<!--${HYDRATION_START}-->`;
 const BLOCK_CLOSE = `<!--${HYDRATION_END}-->`;
-const EMPTY_COMMENT = `<!---->`;
 let controller = null;
 function abort() {
   controller?.abort(STALE_REACTION);
@@ -759,22 +727,6 @@ class SSRState {
   }
 }
 const INVALID_ATTR_NAME_CHAR_REGEX = /[\s'">/=\u{FDD0}-\u{FDEF}\u{FFFE}\u{FFFF}\u{1FFFE}\u{1FFFF}\u{2FFFE}\u{2FFFF}\u{3FFFE}\u{3FFFF}\u{4FFFE}\u{4FFFF}\u{5FFFE}\u{5FFFF}\u{6FFFE}\u{6FFFF}\u{7FFFE}\u{7FFFF}\u{8FFFE}\u{8FFFF}\u{9FFFE}\u{9FFFF}\u{AFFFE}\u{AFFFF}\u{BFFFE}\u{BFFFF}\u{CFFFE}\u{CFFFF}\u{DFFFE}\u{DFFFF}\u{EFFFE}\u{EFFFF}\u{FFFFE}\u{FFFFF}\u{10FFFE}\u{10FFFF}]/u;
-function element(renderer, tag, attributes_fn = noop, children_fn = noop) {
-  renderer.push("<!---->");
-  if (tag) {
-    renderer.push(`<${tag}`);
-    attributes_fn();
-    renderer.push(`>`);
-    if (!is_void(tag)) {
-      children_fn();
-      if (!is_raw_text_element(tag)) {
-        renderer.push(EMPTY_COMMENT);
-      }
-      renderer.push(`</${tag}>`);
-    }
-  }
-  renderer.push("<!---->");
-}
 function render(component, options = {}) {
   return Renderer.render(
     /** @type {Component<Props>} */
@@ -822,22 +774,6 @@ function attributes(attrs, css_hash, classes, styles, flags = 0) {
   }
   return attr_str;
 }
-function spread_props(props) {
-  const merged_props = {};
-  let key;
-  for (let i = 0; i < props.length; i++) {
-    const obj = props[i];
-    for (key in obj) {
-      const desc = Object.getOwnPropertyDescriptor(obj, key);
-      if (desc) {
-        Object.defineProperty(merged_props, key, desc);
-      } else {
-        merged_props[key] = obj[key];
-      }
-    }
-  }
-  return merged_props;
-}
 function stringify(value) {
   return typeof value === "string" ? value : value == null ? "" : value + "";
 }
@@ -880,13 +816,10 @@ export {
   HYDRATION_ERROR as H,
   INERT as I,
   attr as J,
-  attributes as K,
+  clsx as K,
   LEGACY_PROPS as L,
   MAYBE_DIRTY as M,
-  clsx as N,
-  element as O,
-  spread_props as P,
-  head as Q,
+  head as N,
   ROOT_EFFECT as R,
   STATE_SYMBOL as S,
   UNOWNED as U,

@@ -16,7 +16,6 @@ export { default as Select } from '../components/atoms/Select.svelte';
 export { default as Checkbox } from '../components/atoms/Checkbox.svelte';
 export { default as Toggle } from '../components/atoms/Toggle.svelte';
 export { default as ColorPicker } from '../components/atoms/ColorPicker.svelte';
-export { default as TextAlignment } from '../components/atoms/TextAlignment.svelte';
 
 // Display Components
 export { default as Card } from '../components/atoms/Card.svelte';
@@ -30,12 +29,6 @@ export { default as Tooltip } from '../components/atoms/Tooltip.svelte';
 // Utility Components
 export { default as ThemeToggle } from '../components/atoms/ThemeToggle.svelte';
 export { default as OptimizedImage } from '../components/atoms/OptimizedImage.svelte';
-export { default as InputActions } from '../components/atoms/InputActions.svelte';
-export { default as InputValidation } from '../components/atoms/InputValidation.svelte';
-
-// Demo Components
-export { default as ScaleDemo } from '../components/atoms/ScaleDemo.svelte';
-export { default as PerformanceMonitor } from '../components/atoms/PerformanceMonitor.svelte';
 
 // ============================================================================
 // MOLECULE COMPONENTS - Composite UI elements
@@ -54,10 +47,6 @@ export { default as Alert } from '../components/molecules/Alert.svelte';
 export { default as ImageUpload } from '../components/molecules/ImageUpload.svelte';
 
 // Content & Display
-export { default as Hero } from '../components/molecules/Hero.svelte';
-export { default as CardsGrid } from '../components/molecules/CardsGrid.svelte';
-export { default as ColorDemo } from '../components/molecules/ColorDemo.svelte';
-export { default as SelectedCardInfo } from '../components/molecules/SelectedCardInfo.svelte';
 
 // ============================================================================
 // ORGANISM COMPONENTS - Complex UI sections
@@ -190,6 +179,9 @@ export interface TabsEvents {
 // UTILITIES - Helper functions and utilities
 // ============================================================================
 
+// Variant utilities for semantic colors
+export * from './variant-utils';
+
 // Simple utility functions
 export const createId = (prefix: string = 'id'): string =>
     `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
@@ -221,54 +213,3 @@ export const validateRequired = (value: any): boolean => {
 export * from '../components/atoms/index';
 export * from '../components/molecules/index';
 export * from '../components/organisms/index';
-
-// Default export for convenience
-export default {
-    // Atoms
-    Button,
-    Input,
-    Textarea,
-    Select,
-    Checkbox,
-    Toggle,
-    ColorPicker,
-    TextAlignment,
-    Card,
-    Badge,
-    Heading,
-    Progress,
-    Skeleton,
-    Toast,
-    Tooltip,
-    ThemeToggle,
-    OptimizedImage,
-    InputActions,
-    InputValidation,
-    ScaleDemo,
-    PerformanceMonitor,
-
-    // Molecules
-    Form,
-    Layout,
-    Modal,
-    SlideUp,
-    Dropdown,
-    Tabs,
-    Alert,
-    ImageUpload,
-    Hero,
-    CardsGrid,
-    ColorDemo,
-    SelectedCardInfo,
-
-    // Organisms
-    Navbar,
-    Navigation,
-
-    // Utilities
-    createId,
-    cn,
-    getFormData,
-    validateEmail,
-    validateRequired
-};

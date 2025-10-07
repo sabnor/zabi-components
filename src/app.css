@@ -606,6 +606,88 @@
     @apply bg-surface border border-success text-primary placeholder-placeholder rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-primary focus:border-transparent transition-colors duration-200;
   }
 
+  /* Variant utility classes for reusable semantic styling */
+  .variant-default {
+    @apply bg-surface border border-primary text-primary;
+  }
+
+  .variant-success {
+    @apply bg-surface border border-success text-primary;
+  }
+
+  .variant-warning {
+    @apply bg-surface border border-warning text-primary;
+  }
+
+  .variant-error {
+    @apply bg-surface border border-error text-primary;
+  }
+
+  .variant-info {
+    @apply bg-surface border border-info text-primary;
+  }
+
+  /* Input-specific variant utilities */
+  .input-variant-default {
+    @apply bg-surface border border-primary text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
+  }
+
+  .input-variant-success {
+    @apply bg-surface border border-success text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
+  }
+
+  .input-variant-warning {
+    @apply bg-surface border border-warning text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
+  }
+
+  .input-variant-error {
+    @apply bg-surface border border-error text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
+  }
+
+  .input-variant-info {
+    @apply bg-surface border border-info text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
+  }
+
+  /* Card-specific variant utilities */
+  .card-variant-default {
+    @apply bg-surface border border-primary text-primary;
+  }
+
+  .card-variant-success {
+    @apply bg-surface border border-success text-primary;
+  }
+
+  .card-variant-warning {
+    @apply bg-surface border border-warning text-primary;
+  }
+
+  .card-variant-error {
+    @apply bg-surface border border-error text-primary;
+  }
+
+  .card-variant-info {
+    @apply bg-surface border border-info text-primary;
+  }
+
+  /* Generic variant utilities for any component */
+  .variant-border-default { @apply border-primary; }
+  .variant-border-success { @apply border-success; }
+  .variant-border-warning { @apply border-warning; }
+  .variant-border-error { @apply border-error; }
+  .variant-border-info { @apply border-info; }
+
+  .variant-text-default { @apply text-primary; }
+  .variant-text-success { @apply text-success; }
+  .variant-text-warning { @apply text-warning; }
+  .variant-text-error { @apply text-error; }
+  .variant-text-info { @apply text-info; }
+
+  .variant-bg-default { @apply bg-surface; }
+  .variant-bg-success { @apply bg-success-surface; }
+  .variant-bg-warning { @apply bg-warning-surface; }
+  .variant-bg-error { @apply bg-error-surface; }
+  .variant-bg-info { @apply bg-info-surface; }
+
   /* Modern Layout Components */
   .grid-auto-fit {
     display: grid;
