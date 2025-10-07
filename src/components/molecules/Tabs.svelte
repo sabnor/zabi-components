@@ -1,182 +1,61 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { fade } from "svelte/transition";
-    import type { TabsEvents } from "../../types/events";
-    import {
-        createTabsState,
-        updateTabsState,
-        getContainerClasses,
-        getTabClasses,
-        getPanelClasses,
-        createTabsKeyboardNavigation,
-        createTabClickHandler,
-        getTabAccessibilityProps,
-        getPanelAccessibilityProps,
-        isTabActive,
-    } from "../../lib/tabs-utils";
 
     export let tabs: Array<{
         id: string;
         label: string;
         disabled?: boolean;
-        icon?: string;
-        badge?: string | number;
     }> = [];
     export let activeTab: string = "";
-    export let variant: "default" | "pills" | "underline" | "cards" = "default";
-    export let size: "sm" | "md" | "lg" = "md";
-    export let orientation: "horizontal" | "vertical" = "horizontal";
-    export let fullWidth: boolean = false;
-    export let className: string = "";
+    export let variant: "default" | "pills" = "default";
 
-    const dispatch = createEventDispatcher<TabsEvents>();
+    const dispatch = createEventDispatcher();
 
-    let tabListElement: HTMLDivElement;
-    let tabPanelsElement: HTMLDivElement;
-
-    // Create tabs configuration and state
-    const config = { variant, size, orientation, fullWidth };
-    $: tabsState = updateTabsState(
-        createTabsState(tabs, activeTab),
-        tabs,
-        activeTab,
-    );
-
-    // Event handlers
-    const handleTabClick = createTabClickHandler(
-        tabs,
-        (updates) => {
-            activeTab = updates.activeTab || activeTab;
-        },
-        dispatch,
-    );
-
-    const handleKeydown = createTabsKeyboardNavigation(
-        tabs,
-        tabsState,
-        (updates) => {
-            activeTab = updates.activeTab || activeTab;
-        },
-        handleTabClick,
-    );
-
-    // Public methods
-    export function focusTab(tabId: string) {
-        const tabElement = tabListElement?.querySelector(
-            `[data-tab-id="${tabId}"]`,
-        ) as HTMLElement;
-        tabElement?.focus();
+    function selectTab(tabId: string) {
+        activeTab = tabId;
+        dispatch("change", { activeTab: tabId });
     }
 
-    // Computed classes
-    $: containerClasses = getContainerClasses(config, tabs);
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
+            const direction = event.key === "ArrowLeft" ? -1 : 1;
+            const nextIndex =
+                (currentIndex + direction + tabs.length) % tabs.length;
+            selectTab(tabs[nextIndex].id);
+        }
+    }
 </script>
 
-<div
-    class="tabs-container {orientation === 'vertical'
-        ? 'flex'
-        : ''} {className}"
->
+<div class="tabs-container">
     <!-- Tab List -->
     <div
-        bind:this={tabListElement}
+        class="flex border-b border-gray-200"
         role="tablist"
         tabindex="0"
-        class={containerClasses}
-        on:keydown={(e) => handleKeydown(e as unknown as KeyboardEvent)}
-        aria-orientation={orientation}
+        on:keydown={handleKeydown}
     >
-        {#each tabs as tab, index}
+        {#each tabs as tab}
             <button
                 type="button"
                 role="tab"
-                data-tab-id={tab.id}
-                class={getTabClasses(config, tab, isTabActive(tab, activeTab))}
-                {...getTabAccessibilityProps(
-                    tab,
-                    isTabActive(tab, activeTab),
-                    index,
-                )}
-                on:click={(e) =>
-                    handleTabClick(tab, e as unknown as MouseEvent)}
+                class="px-4 py-2 text-sm font-medium border-b-2 transition-colors {activeTab ===
+                tab.id
+                    ? variant === 'pills'
+                        ? 'bg-blue-100 text-blue-700 border-blue-500'
+                        : 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+                on:click={() => selectTab(tab.id)}
+                disabled={tab.disabled}
+                aria-selected={activeTab === tab.id}
             >
-                {#if tab.icon}
-                    <svg
-                        class="w-4 h-4 text-current"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d={tab.icon}
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                {/if}
-
-                <span>{tab.label}</span>
-
-                {#if tab.badge}
-                    <span
-                        class="
-                        ml-1 px-1.5 py-0.5 text-xs font-medium
-                        bg-primary-100 text-primary-800 rounded-full
-                        dark:bg-primary-900 dark:text-primary-200
-                    "
-                    >
-                        {tab.badge}
-                    </span>
-                {/if}
+                {tab.label}
             </button>
-
-            <!-- Underline variant active indicator -->
-            {#if variant === "underline" && isTabActive(tab, activeTab)}
-                <div
-                    class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500 rounded-full"
-                ></div>
-            {/if}
         {/each}
     </div>
 
-    <!-- Tab Panels -->
-    <div bind:this={tabPanelsElement} class="tab-panels">
-        {#each tabs as tab}
-            <div
-                class={getPanelClasses(config, isTabActive(tab, activeTab))}
-                transition:fade={{ duration: 200 }}
-                {...getPanelAccessibilityProps(tab)}
-            >
-                {#if isTabActive(tab, activeTab)}
-                    <slot name="content" />
-                {/if}
-            </div>
-        {/each}
+    <!-- Tab Content -->
+    <div class="mt-4">
+        <slot {activeTab} />
     </div>
 </div>
-
-<style>
-    /* Focus styles for better accessibility */
-    [role="tab"]:focus {
-        outline: 2px solid var(--color-primary-500);
-        outline-offset: 2px;
-    }
-
-    /* Smooth transitions */
-    [role="tab"] {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Vertical tabs specific styles */
-    .tabs-container.vertical {
-        align-items: flex-start;
-    }
-
-    .tabs-container.vertical [role="tablist"] {
-        min-width: 200px;
-    }
-
-    .tabs-container.vertical [role="tab"] {
-        justify-content: flex-start;
-        text-align: left;
-    }
-</style>

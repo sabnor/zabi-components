@@ -17,7 +17,8 @@
     },
     "include": [
         "src/lib/**/*",
-        "src/components/**/*"
+        "src/components/**/*",
+        "src/svelte.d.ts"
     ],
     "exclude": [
         "src/routes/**/*",

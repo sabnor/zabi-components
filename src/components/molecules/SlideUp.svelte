@@ -1,111 +1,66 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
-    import { slide, fade } from "svelte/transition";
-    import { X } from "@lucide/svelte";
-    import type { SlideUpEvents } from "../../types/events";
+    import { createEventDispatcher } from "svelte";
 
     export let isOpen: boolean = false;
     export let title: string = "";
-    export let maxHeight: string = "80vh";
-    export let zIndex: number = 50;
 
-    const dispatch = createEventDispatcher<SlideUpEvents>();
-    let slideUpElement: HTMLDivElement;
-    let backdropElement: HTMLDivElement;
+    const dispatch = createEventDispatcher();
 
-    // Handle clicks outside slideup
-    function handleBackdropClick(event: MouseEvent) {
-        if (isOpen && backdropElement && event.target === backdropElement) {
-            dispatch("close");
+    function closeSlideUp() {
+        isOpen = false;
+        dispatch("close");
+    }
+
+    function handleBackdropClick(event: Event) {
+        if (event.target === event.currentTarget) {
+            closeSlideUp();
         }
     }
 
-    // Handle escape key
-    function handleKeydown(event: KeyboardEvent) {
-        if (event.key === "Escape" && isOpen) {
-            dispatch("close");
+    function handleKeydown(event: Event) {
+        const keyboardEvent = event as KeyboardEvent;
+        if (keyboardEvent.key === "Escape") {
+            closeSlideUp();
         }
-    }
-
-    // Prevent body scroll when slideup is open
-    function toggleBodyScroll(open: boolean) {
-        if (typeof document !== "undefined") {
-            if (open) {
-                document.body.style.overflow = "hidden";
-            } else {
-                document.body.style.overflow = "";
-            }
-        }
-    }
-
-    onMount(() => {
-        if (typeof document !== "undefined") {
-            document.addEventListener("keydown", handleKeydown);
-        }
-
-        return () => {
-            if (typeof document !== "undefined") {
-                document.removeEventListener("keydown", handleKeydown);
-                // Ensure body scroll is restored on unmount
-                document.body.style.overflow = "";
-            }
-        };
-    });
-
-    // Toggle body scroll when isOpen changes
-    $: if (typeof document !== "undefined") {
-        toggleBodyScroll(isOpen);
     }
 </script>
 
-<!-- Backdrop -->
 {#if isOpen}
+    <!-- Backdrop -->
     <div
-        bind:this={backdropElement}
-        class="fixed inset-0 z-{zIndex} bg-black/50"
+        class="fixed inset-0 bg-black/50 z-50"
         on:click={handleBackdropClick}
-        on:keydown={(e) => e.key === "Escape" && handleBackdropClick(e as any)}
-        transition:fade={{ duration: 200 }}
+        on:keydown={handleKeydown}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="slideup-title"
         tabindex="-1"
     ></div>
-{/if}
 
-<!-- SlideUp Content -->
-{#if isOpen}
+    <!-- SlideUp Content -->
     <div
-        bind:this={slideUpElement}
-        class="fixed bottom-0 left-0 right-0 z-{zIndex +
-            1} bg-stone-800 border-t border-stone-700 rounded-t-xl shadow-2xl"
-        style="max-height: {maxHeight};"
-        transition:slide={{ axis: "y", duration: 300 }}
+        class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 rounded-t-xl shadow-xl z-50 max-h-[80vh] overflow-y-auto"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="slideup-title"
     >
         <!-- Header -->
         {#if title}
             <div
-                class="flex items-center justify-between p-4 border-b border-stone-700"
+                class="flex items-center justify-between p-4 border-b border-gray-200"
             >
-                <h3 id="slideup-title" class="text-lg font-semibold text-white">
-                    {title}
-                </h3>
+                <h3 class="text-lg font-semibold text-gray-900">{title}</h3>
                 <button
                     type="button"
-                    class="p-2 text-gray-400 hover:text-white transition-colors duration-200"
-                    on:click={() => dispatch("close")}
+                    class="text-gray-400 hover:text-gray-600 text-2xl"
+                    on:click={closeSlideUp}
                     aria-label="Close"
                 >
-                    <X size={20} />
+                    ×
                 </button>
             </div>
         {/if}
 
         <!-- Content -->
-        <div class="max-h-full overflow-y-auto">
+        <div class="p-4">
             <slot />
         </div>
     </div>

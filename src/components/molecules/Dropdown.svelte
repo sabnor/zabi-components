@@ -1,148 +1,122 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
-    import { fly, fade } from "svelte/transition";
-
     export let isOpen: boolean = false;
-    // The trigger element - used internally
-    let trigger: any = null;
     export let placement:
         | "bottom-start"
         | "bottom-end"
         | "top-start"
         | "top-end" = "bottom-start";
-    export let offset: number = 8;
-    export let maxHeight: string = "20rem";
-    export let width: string = "auto";
-    export let zIndex: number = 50;
-
-    const dispatch = createEventDispatcher();
-    let dropdownElement: HTMLDivElement;
-    let triggerElement: HTMLElement;
-    let triggerRect: DOMRect;
-
-    // Calculate dropdown position based on trigger element
-    function calculatePosition() {
-        if (!triggerElement) return { top: 0, left: 0 };
-
-        triggerRect = triggerElement.getBoundingClientRect();
-        const scrollY = window.scrollY;
-        const scrollX = window.scrollX;
-
-        let top = triggerRect.bottom + scrollY + offset;
-        let left = triggerRect.left + scrollX;
-
-        // Adjust based on placement
-        switch (placement) {
-            case "bottom-end":
-                left =
-                    triggerRect.right +
-                    scrollX -
-                    (dropdownElement?.offsetWidth || 0);
-                break;
-            case "top-start":
-                top =
-                    triggerRect.top +
-                    scrollY -
-                    (dropdownElement?.offsetHeight || 0) -
-                    offset;
-                break;
-            case "top-end":
-                top =
-                    triggerRect.top +
-                    scrollY -
-                    (dropdownElement?.offsetHeight || 0) -
-                    offset;
-                left =
-                    triggerRect.right +
-                    scrollX -
-                    (dropdownElement?.offsetWidth || 0);
-                break;
-        }
-
-        // Keep dropdown within viewport
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        if (left < 0) left = 8;
-        if (left + (dropdownElement?.offsetWidth || 0) > viewportWidth) {
-            left = viewportWidth - (dropdownElement?.offsetWidth || 0) - 8;
-        }
-
-        if (top < 0) top = 8;
-        if (
-            top + (dropdownElement?.offsetHeight || 0) >
-            viewportHeight + scrollY
-        ) {
-            top =
-                viewportHeight +
-                scrollY -
-                (dropdownElement?.offsetHeight || 0) -
-                8;
-        }
-
-        return { top, left };
-    }
-
-    // Handle clicks outside dropdown
-    function handleClickOutside(event: MouseEvent) {
-        if (
-            isOpen &&
-            dropdownElement &&
-            !dropdownElement.contains(event.target as Node) &&
-            triggerElement &&
-            !triggerElement.contains(event.target as Node)
-        ) {
-            dispatch("close");
-        }
-    }
-
-    // Handle escape key
-    function handleKeydown(event: KeyboardEvent) {
-        if (event.key === "Escape" && isOpen) {
-            dispatch("close");
-        }
-    }
-
-    onMount(() => {
-        document.addEventListener("click", handleClickOutside);
-        document.addEventListener("keydown", handleKeydown);
-
-        return () => {
-            document.removeEventListener("click", handleClickOutside);
-            document.removeEventListener("keydown", handleKeydown);
-        };
-    });
-
-    // Update position when dropdown opens
-    $: if (isOpen && triggerElement) {
-        // Use requestAnimationFrame to ensure DOM is updated
-        requestAnimationFrame(() => {
-            const position = calculatePosition();
-            if (dropdownElement) {
-                dropdownElement.style.top = `${position.top}px`;
-                dropdownElement.style.left = `${position.left}px`;
-            }
-        });
-    }
 </script>
 
-<!-- Bind trigger element -->
-<div bind:this={triggerElement}>
+<div
+    class="dropdown-container group relative inline-block"
+    data-placement={placement}
+>
     <slot name="trigger" />
-</div>
 
-<!-- Dropdown content -->
-{#if isOpen}
-    <div
-        bind:this={dropdownElement}
-        class="fixed z-{zIndex} bg-stone-800 border border-stone-700 rounded-lg shadow-xl"
-        style="max-height: {maxHeight}; width: {width};"
-        role="menu"
-        aria-orientation="vertical"
-        transition:fly={{ y: -10, duration: 200 }}
-    >
-        <div class="max-h-full overflow-y-auto">
+    {#if isOpen}
+        <div
+            class="dropdown-content group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible"
+        >
             <slot />
         </div>
-    </div>
-{/if}
+    {/if}
+</div>
+
+<style>
+    .dropdown-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        position: absolute;
+        z-index: 50;
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        box-shadow:
+            0 10px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        min-width: 12rem;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+            opacity 0.2s ease-in-out,
+            visibility 0.2s ease-in-out,
+            transform 0.2s ease-in-out;
+    }
+
+    /* Positioning based on data-placement */
+    .dropdown-container[data-placement="bottom-start"] .dropdown-content {
+        top: calc(100% + 8px);
+        left: 0;
+        transform: translateY(4px);
+    }
+
+    .dropdown-container[data-placement="bottom-end"] .dropdown-content {
+        top: calc(100% + 8px);
+        right: 0;
+        transform: translateY(4px);
+    }
+
+    .dropdown-container[data-placement="top-start"] .dropdown-content {
+        bottom: calc(100% + 8px);
+        left: 0;
+        transform: translateY(-4px);
+    }
+
+    .dropdown-container[data-placement="top-end"] .dropdown-content {
+        bottom: calc(100% + 8px);
+        right: 0;
+        transform: translateY(-4px);
+    }
+
+    /* Show on hover/focus */
+    .dropdown-container:hover .dropdown-content,
+    .dropdown-container:focus-within .dropdown-content {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* Arrow styling */
+    .dropdown-content::before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 6px;
+        border-color: transparent;
+    }
+
+    .dropdown-container[data-placement="bottom-start"]
+        .dropdown-content::before,
+    .dropdown-container[data-placement="bottom-end"] .dropdown-content::before {
+        top: -6px;
+        border-bottom-color: white;
+    }
+
+    .dropdown-container[data-placement="top-start"] .dropdown-content::before,
+    .dropdown-container[data-placement="top-end"] .dropdown-content::before {
+        bottom: -6px;
+        border-top-color: white;
+    }
+
+    .dropdown-container[data-placement="bottom-start"]
+        .dropdown-content::before {
+        left: 1rem;
+    }
+
+    .dropdown-container[data-placement="bottom-end"] .dropdown-content::before {
+        right: 1rem;
+    }
+
+    .dropdown-container[data-placement="top-start"] .dropdown-content::before {
+        left: 1rem;
+    }
+
+    .dropdown-container[data-placement="top-end"] .dropdown-content::before {
+        right: 1rem;
+    }
+</style>
