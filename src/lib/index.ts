@@ -13,7 +13,7 @@ export { default as Button } from '../components/atoms/Button.svelte';
 export { default as Input } from '../components/atoms/Input.svelte';
 export { default as Textarea } from '../components/atoms/Textarea.svelte';
 export { default as Select } from '../components/atoms/Select.svelte';
-export { default as Checkbox } from '../components/atoms/Checkbox.svelte';
+// export { default as Checkbox } from '../components/atoms/Checkbox.svelte'; // Temporarily disabled for SSR
 export { default as Toggle } from '../components/atoms/Toggle.svelte';
 export { default as ColorPicker } from '../components/atoms/ColorPicker.svelte';
 
@@ -183,8 +183,13 @@ export interface TabsEvents {
 export * from './variant-utils';
 
 // Simple utility functions
-export const createId = (prefix: string = 'id'): string =>
-    `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+export const createId = (prefix: string = 'id'): string => {
+    if (typeof window !== 'undefined') {
+        return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+        return `${prefix}-ssr-${Date.now()}`;
+    }
+};
 
 export const cn = (...classes: (string | undefined | null | false)[]): string =>
     classes.filter(Boolean).join(' ');

@@ -1,6 +1,5 @@
-import { y as sanitize_props, z as rest_props, F as attributes, x as slot, G as bind_props, J as stringify, K as attr_class, N as ensure_array_like, O as attr, P as clsx, Q as head } from "../../chunks/index.js";
-import { j as fallback } from "../../chunks/utils2.js";
-import { e as escape_html } from "../../chunks/context.js";
+import { W as sanitize_props, X as rest_props, Y as attributes, V as slot, Z as bind_props, _ as stringify, $ as attr_class, a0 as ensure_array_like, a1 as attr, a2 as clsx, a3 as store_get, a4 as unsubscribe_stores, a5 as head } from "../../chunks/index.js";
+import { f as fallback, e as escape_html } from "../../chunks/context.js";
 const $$css = {
   hash: "svelte-wzmt5k",
   code: ".layout.svelte-wzmt5k {min-height:100vh}.layout-main.svelte-wzmt5k {display:flex;flex-direction:column}.layout-sidebar.svelte-wzmt5k {width:16rem;border-right-width:1px;border-color:rgb(var(--color-border));background-color:rgb(var(--color-surface-secondary))}.layout-grid.svelte-wzmt5k {display:grid;grid-template-columns:repeat(1, minmax(0, 1fr))}\n\n    @media (min-width: 768px) {.layout-grid.svelte-wzmt5k {grid-template-columns:repeat(2, minmax(0, 1fr))}\n}\n\n    @media (min-width: 1024px) {.layout-grid.svelte-wzmt5k {grid-template-columns:repeat(3, minmax(0, 1fr))}\n}.layout-header.svelte-wzmt5k {border-bottom-width:1px;border-color:rgb(var(--color-border));padding:1rem;background-color:rgb(var(--color-surface))}.layout-footer.svelte-wzmt5k {margin-top:auto;border-top-width:1px;border-color:rgb(var(--color-border));padding:1rem;background-color:rgb(var(--color-surface-secondary))}"
@@ -143,7 +142,12 @@ function Input($$renderer, $$props) {
     let disabled = fallback($$props["disabled"], false);
     let size = fallback($$props["size"], "md");
     let variant = fallback($$props["variant"], "default");
-    const inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
+    let inputId;
+    if (typeof window !== "undefined") {
+      inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+      inputId = `input-ssr-${Date.now()}`;
+    }
     sizeClasses = {
       sm: "px-3 py-1.5 text-sm",
       md: "px-4 py-2 text-sm",
@@ -184,33 +188,30 @@ function Input($$renderer, $$props) {
   });
 }
 function Textarea($$renderer, $$props) {
-  const $$sanitized_props = sanitize_props($$props);
-  const $$restProps = rest_props($$sanitized_props, [
-    "value",
-    "label",
-    "placeholder",
-    "disabled",
-    "rows",
-    "size",
-    "variant"
-  ]);
   $$renderer.component(($$renderer2) => {
-    let sizeClasses, variantClass, textareaClasses, labelClasses;
-    let value = fallback($$props["value"], "");
-    let label = fallback($$props["label"], "");
-    let placeholder = fallback($$props["placeholder"], "");
-    let disabled = fallback($$props["disabled"], false);
-    let rows = fallback($$props["rows"], 4);
-    let size = fallback($$props["size"], "md");
-    let variant = fallback($$props["variant"], "default");
-    const textareaId = `textarea-${Math.random().toString(36).substr(2, 9)}`;
-    sizeClasses = {
+    var $$store_subs;
+    let tmp = store_get($$store_subs ??= {}, "$props", props)(), value = fallback(tmp.value, ""), label = fallback(tmp.label, ""), placeholder = fallback(tmp.placeholder, ""), disabled = fallback(tmp.disabled, false), rows = fallback(tmp.rows, 4), size = fallback(tmp.size, "md"), variant = fallback(tmp.variant, "default"), restProps = (void 0)(tmp, [
+      "value",
+      "label",
+      "placeholder",
+      "disabled",
+      "rows",
+      "size",
+      "variant"
+    ]);
+    let textareaId;
+    if (typeof window !== "undefined") {
+      textareaId = `textarea-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+      textareaId = `textarea-ssr-${Date.now()}`;
+    }
+    const sizeClasses = {
       sm: "px-3 py-1.5 text-sm",
       md: "px-4 py-2 text-sm",
       lg: "px-5 py-3 text-base"
     };
-    variantClass = getInputVariantClasses(variant);
-    textareaClasses = [
+    const variantClass = getInputVariantClasses(variant);
+    const textareaClasses = [
       "w-full rounded-md transition-colors duration-200",
       "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
       "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
@@ -218,7 +219,7 @@ function Textarea($$renderer, $$props) {
       sizeClasses[size],
       variantClass
     ].join(" ");
-    labelClasses = "block text-sm font-medium text-primary mb-1";
+    const labelClasses = "block text-sm font-medium text-primary mb-1";
     $$renderer2.push(`<div>`);
     if (label) {
       $$renderer2.push("<!--[-->");
@@ -232,14 +233,14 @@ function Textarea($$renderer, $$props) {
       disabled,
       rows,
       class: clsx(textareaClasses),
-      ...$$restProps
+      ...restProps
     })}>`);
     const $$body = escape_html(value);
     if ($$body) {
       $$renderer2.push(`${$$body}`);
     }
     $$renderer2.push(`</textarea></div>`);
-    bind_props($$props, { value, label, placeholder, disabled, rows, size, variant });
+    if ($$store_subs) unsubscribe_stores($$store_subs);
   });
 }
 function Checkbox($$renderer, $$props) {
@@ -250,7 +251,12 @@ function Checkbox($$renderer, $$props) {
     let checked = fallback($$props["checked"], false);
     let disabled = fallback($$props["disabled"], false);
     let label = fallback($$props["label"], "");
-    const checkboxId = `checkbox-${Math.random().toString(36).substr(2, 9)}`;
+    let checkboxId;
+    if (typeof window !== "undefined") {
+      checkboxId = `checkbox-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+      checkboxId = `checkbox-ssr-${Date.now()}`;
+    }
     checkboxClasses = [
       "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded",
       "focus:ring-blue-500 focus:ring-2",
@@ -282,38 +288,46 @@ function Checkbox($$renderer, $$props) {
 }
 function Button($$renderer, $$props) {
   const $$sanitized_props = sanitize_props($$props);
-  const $$restProps = rest_props($$sanitized_props, ["variant", "size", "disabled", "type"]);
+  const $$restProps = rest_props($$sanitized_props, ["variant", "size", "disabled", "type", "className"]);
   $$renderer.component(($$renderer2) => {
     let sizeClasses, variantClasses, buttonClasses;
     let variant = fallback($$props["variant"], "primary");
     let size = fallback($$props["size"], "md");
     let disabled = fallback($$props["disabled"], false);
     let type = fallback($$props["type"], "button");
+    let className = fallback($$props["className"], "");
     sizeClasses = {
-      sm: "px-3 py-1.5 text-sm",
-      md: "px-4 py-2 text-sm",
-      lg: "px-5 py-3 text-base"
+      sm: "px-3 py-1.5 text-sm font-medium",
+      md: "px-4 py-2 text-sm font-medium",
+      lg: "px-6 py-3 text-base font-semibold"
     };
     variantClasses = {
-      primary: "bg-blue-600 text-white hover:bg-blue-700",
-      secondary: "bg-gray-600 text-white hover:bg-gray-700",
-      danger: "bg-red-600 text-white hover:bg-red-700"
+      primary: "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400",
+      secondary: "bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-800 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400",
+      danger: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:bg-red-400",
+      success: "bg-green-600 text-white hover:bg-green-700 active:bg-green-800 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-green-400",
+      ghost: "bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:text-gray-400",
+      brand: "bg-purple-600 text-white hover:bg-purple-700 active:bg-purple-800 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-purple-400"
     };
     buttonClasses = [
-      "inline-flex items-center justify-center font-medium rounded-md",
-      "disabled:opacity-50 disabled:cursor-not-allowed",
+      "inline-flex items-center justify-center rounded-md transition-all duration-200",
+      "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
+      "focus:outline-none focus:ring-2 focus:ring-offset-2",
+      "active:scale-95 transform-gpu",
+      "shadow-sm hover:shadow-md",
       sizeClasses[size],
-      variantClasses[variant]
-    ].join(" ");
+      variantClasses[variant],
+      className
+    ].filter(Boolean).join(" ");
     $$renderer2.push(`<button${attributes({ type, class: clsx(buttonClasses), disabled, ...$$restProps })}><!--[-->`);
     slot($$renderer2, $$props, "default", {});
     $$renderer2.push(`<!--]--></button>`);
-    bind_props($$props, { variant, size, disabled, type });
+    bind_props($$props, { variant, size, disabled, type, className });
   });
 }
 function ContactForm($$renderer, $$props) {
   let className = fallback($$props["className"], "");
-  let formData = { name: "", email: "", message: "", subscribe: false };
+  let formData = { name: "", email: "", subscribe: false };
   $$renderer.push(`<div${attr_class(`max-w-md mx-auto ${stringify(className)}`)}><div class="mb-6"><h2 class="text-2xl font-bold text-text mb-2">Get in Touch</h2> <p class="text-text-secondary">We'd love to hear from you. Send us a message and we'll respond as
             soon as possible.</p></div> `);
   Form($$renderer, {
@@ -334,12 +348,7 @@ function ContactForm($$renderer, $$props) {
         value: formData.email
       });
       $$renderer2.push(`<!----> `);
-      Textarea($$renderer2, {
-        label: "Message",
-        placeholder: "Enter your message",
-        rows: 4,
-        value: formData.message
-      });
+      Textarea($$renderer2);
       $$renderer2.push(`<!----> `);
       Checkbox($$renderer2, { label: "Subscribe to updates", checked: formData.subscribe });
       $$renderer2.push(`<!----></div> <div class="pt-4">`);

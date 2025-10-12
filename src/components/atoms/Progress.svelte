@@ -5,7 +5,13 @@
     export let label: string = "";
 
     // Generate unique ID
-    const progressId = `progress-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate unique ID - SSR safe
+    let progressId: string;
+    if (typeof window !== "undefined") {
+        progressId = `progress-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+        progressId = `progress-ssr-${Date.now()}`;
+    }
 
     // Calculate percentage
     $: percentage = Math.min(Math.max((value / max) * 100, 0), 100);

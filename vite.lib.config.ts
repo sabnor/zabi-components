@@ -7,9 +7,13 @@ export default defineConfig({
         svelte({
             compilerOptions: {
                 css: 'injected',
-                runes: false
+                runes: true,
+                generate: 'ssr'
             },
-            emitCss: false
+            emitCss: false,
+            experimental: {
+                inspector: false
+            }
         })
     ],
     build: {

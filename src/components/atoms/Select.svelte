@@ -11,7 +11,13 @@
     export let size: "sm" | "md" | "lg" = "md";
 
     // Generate unique ID
-    const selectId = `select-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate unique ID - SSR safe
+    let selectId: string;
+    if (typeof window !== "undefined") {
+        selectId = `select-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+        selectId = `select-ssr-${Date.now()}`;
+    }
 
     // Simple size classes
     $: sizeClasses = {
