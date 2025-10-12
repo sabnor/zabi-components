@@ -1,14 +1,9 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-
     export let isOpen: boolean = false;
     export let title: string = "";
 
-    const dispatch = createEventDispatcher();
-
     function closeSlideUp() {
         isOpen = false;
-        dispatch("close");
     }
 
     function handleBackdropClick(event: Event) {

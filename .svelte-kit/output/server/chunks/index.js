@@ -790,6 +790,20 @@ function slot(renderer, $$props, name, slot_props, fallback_fn) {
     slot_fn(renderer, slot_props);
   }
 }
+function rest_props(props, rest) {
+  const rest_props2 = {};
+  let key;
+  for (key in props) {
+    if (!rest.includes(key)) {
+      rest_props2[key] = props[key];
+    }
+  }
+  return rest_props2;
+}
+function sanitize_props(props) {
+  const { children, $$slots, ...sanitized } = props;
+  return sanitized;
+}
 function bind_props(props_parent, props_now) {
   for (const key in props_now) {
     const initial_value = props_parent[key];
@@ -811,15 +825,18 @@ export {
   COMMENT_NODE as C,
   DIRTY as D,
   ERROR_VALUE as E,
-  stringify as F,
-  ensure_array_like as G,
+  attributes as F,
+  bind_props as G,
   HYDRATION_ERROR as H,
   INERT as I,
-  attr as J,
-  clsx as K,
+  stringify as J,
+  attr_class as K,
   LEGACY_PROPS as L,
   MAYBE_DIRTY as M,
-  head as N,
+  ensure_array_like as N,
+  attr as O,
+  clsx as P,
+  head as Q,
   ROOT_EFFECT as R,
   STATE_SYMBOL as S,
   UNOWNED as U,
@@ -847,6 +864,6 @@ export {
   render as v,
   experimental_async_ssr as w,
   slot as x,
-  attr_class as y,
-  bind_props as z
+  sanitize_props as y,
+  rest_props as z
 };

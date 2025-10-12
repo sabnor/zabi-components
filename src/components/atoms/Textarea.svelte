@@ -34,6 +34,11 @@
 
     // Label classes using semantic text colors
     $: labelClasses = "block text-sm font-medium text-primary mb-1";
+
+    function handleInput(event: Event) {
+        const target = event.target as HTMLTextAreaElement;
+        value = target.value;
+    }
 </script>
 
 <div>
@@ -43,10 +48,12 @@
 
     <textarea
         id={textareaId}
-        bind:value
+        {value}
         {placeholder}
         {disabled}
         {rows}
         class={textareaClasses}
+        on:input={handleInput}
+        {...$$restProps}
     ></textarea>
 </div>

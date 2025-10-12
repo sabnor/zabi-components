@@ -17,6 +17,12 @@
         "transition duration-200 ease-in-out",
         checked ? "translate-x-5" : "translate-x-0",
     ].join(" ");
+
+    function handleClick(event: Event) {
+        if (!disabled) {
+            checked = !checked;
+        }
+    }
 </script>
 
 <div class="flex items-center gap-3">
@@ -26,8 +32,9 @@
         aria-checked={checked}
         aria-label={label || "Toggle"}
         {disabled}
-        on:click={() => (checked = !checked)}
+        on:click={handleClick}
         class={toggleClasses}
+        {...$$restProps}
     >
         <span class={thumbClasses}></span>
     </button>

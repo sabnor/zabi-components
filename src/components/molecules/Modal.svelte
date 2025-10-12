@@ -1,14 +1,9 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-
     export let isOpen = false;
     export let title = "";
 
-    const dispatch = createEventDispatcher();
-
     function closeModal() {
         isOpen = false;
-        dispatch("close");
     }
 
     function handleBackdropClick(event: Event) {

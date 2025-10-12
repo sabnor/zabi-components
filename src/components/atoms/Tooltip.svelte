@@ -6,6 +6,7 @@
 <div
     class="tooltip-container group relative inline-block"
     data-placement={placement}
+    {...$$restProps}
 >
     <slot />
 

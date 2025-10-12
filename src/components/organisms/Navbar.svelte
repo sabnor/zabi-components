@@ -1,12 +1,9 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import ThemeToggle from "../atoms/ThemeToggle.svelte";
 
     export let brand: string = "";
     export let showThemeToggle: boolean = true;
     export let className: string = "";
-
-    const dispatch = createEventDispatcher();
 
     let isMenuOpen = false;
 
@@ -15,11 +12,15 @@
     }
 
     function handleBrandClick() {
-        dispatch("brandClick");
+        // Brand click is now handled by the parent component
+        // through event forwarding
     }
 </script>
 
-<nav class="bg-white border-b border-gray-200 sticky top-0 z-50 {className}">
+<nav
+    class="bg-white border-b border-gray-200 sticky top-0 z-50 {className}"
+    {...$$restProps}
+>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             <!-- Brand -->

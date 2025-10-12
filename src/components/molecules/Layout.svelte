@@ -6,7 +6,7 @@
     $: gapClass = `gap-${gap}`;
 </script>
 
-<div class="layout layout-{variant} {gapClass} {className}">
+<div class="layout layout-{variant} {gapClass} {className}" {...$$restProps}>
     {#if variant === "main"}
         <header class="layout-header">
             <slot name="header" />

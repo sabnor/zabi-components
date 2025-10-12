@@ -16,15 +16,15 @@
 </script>
 
 {#if level === 1}
-    <h1 class={headingClasses}>{text}<slot /></h1>
+    <h1 class={headingClasses} {...$$restProps}>{text}<slot /></h1>
 {:else if level === 2}
-    <h2 class={headingClasses}>{text}<slot /></h2>
+    <h2 class={headingClasses} {...$$restProps}>{text}<slot /></h2>
 {:else if level === 3}
-    <h3 class={headingClasses}>{text}<slot /></h3>
+    <h3 class={headingClasses} {...$$restProps}>{text}<slot /></h3>
 {:else if level === 4}
-    <h4 class={headingClasses}>{text}<slot /></h4>
+    <h4 class={headingClasses} {...$$restProps}>{text}<slot /></h4>
 {:else if level === 5}
-    <h5 class={headingClasses}>{text}<slot /></h5>
+    <h5 class={headingClasses} {...$$restProps}>{text}<slot /></h5>
 {:else if level === 6}
-    <h6 class={headingClasses}>{text}<slot /></h6>
+    <h6 class={headingClasses} {...$$restProps}>{text}<slot /></h6>
 {/if}

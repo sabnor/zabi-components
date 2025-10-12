@@ -37,6 +37,7 @@
         aria-valuenow={value}
         aria-valuemin="0"
         aria-valuemax={max}
+        {...$$restProps}
     >
         <div
             class="h-full bg-blue-600 rounded-full"

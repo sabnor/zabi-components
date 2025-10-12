@@ -1,13 +1,9 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
+    import { onMount } from "svelte";
 
     export let message: string = "";
     export let type: "success" | "error" | "warning" | "info" = "info";
     export let closable: boolean = true;
-
-    const dispatch = createEventDispatcher<{
-        close: void;
-    }>();
 
     let isVisible = true;
 
@@ -21,7 +17,6 @@
 
     function closeToast() {
         isVisible = false;
-        dispatch("close");
     }
 </script>
 
@@ -29,6 +24,7 @@
     <div
         class="fixed top-4 right-4 max-w-sm w-full bg-white border rounded-lg shadow-lg p-4 z-50"
         role="alert"
+        {...$$restProps}
     >
         <div class="flex items-start">
             <div class="flex-1">

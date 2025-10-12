@@ -1,13 +1,10 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import Button from "../atoms/Button.svelte";
 
     export let value: string | null = null;
     export let disabled: boolean = false;
     export let accept: string = "image/*";
     export let placeholder: string = "No image selected";
-
-    const dispatch = createEventDispatcher();
 
     let fileInput: HTMLInputElement;
 
@@ -19,7 +16,6 @@
         const url = URL.createObjectURL(file);
 
         value = url;
-        dispatch("change", { value: url });
     }
 
     function removeImage() {
@@ -27,7 +23,6 @@
             URL.revokeObjectURL(value);
         }
         value = null;
-        dispatch("change", { value: null });
     }
 
     function triggerFileSelect() {

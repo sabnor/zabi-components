@@ -27,6 +27,11 @@
         "disabled:opacity-50 disabled:cursor-not-allowed",
         sizeClasses[size],
     ].join(" ");
+
+    function handleChange(event: Event) {
+        const target = event.target as HTMLSelectElement;
+        value = target.value;
+    }
 </script>
 
 <div>
@@ -37,7 +42,14 @@
         >
     {/if}
 
-    <select id={selectId} bind:value {disabled} class={selectClasses}>
+    <select
+        id={selectId}
+        {value}
+        {disabled}
+        class={selectClasses}
+        on:change={handleChange}
+        {...$$restProps}
+    >
         {#if placeholder && !value}
             <option value="" disabled>{placeholder}</option>
         {/if}
