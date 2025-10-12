@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import Form from "./Form.svelte";
     import Input from "../atoms/Input.svelte";
     import Textarea from "../atoms/Textarea.svelte";
@@ -8,10 +7,6 @@
     import type { ContactFormData } from "../../types/page.types";
 
     export let className: string = "";
-
-    const dispatch = createEventDispatcher<{
-        submit: { data: ContactFormData };
-    }>();
 
     let formData: ContactFormData = {
         name: "",
@@ -29,7 +24,8 @@
             message: event.detail.data.message || "",
             subscribe: event.detail.data.subscribe || false,
         };
-        dispatch("submit", { data });
+        // Form submission is now handled by the parent component
+        // through event forwarding
     }
 </script>
 
@@ -48,23 +44,35 @@
                 type="text"
                 label="Name"
                 placeholder="Enter your name"
-                bind:value={formData.name}
+                value={formData.name}
+                on:input={(e) =>
+                    (formData.name = (e.target as HTMLInputElement).value)}
             />
             <Input
                 type="email"
                 label="Email"
                 placeholder="Enter your email"
-                bind:value={formData.email}
+                value={formData.email}
+                on:input={(e) =>
+                    (formData.email = (e.target as HTMLInputElement).value)}
             />
             <Textarea
                 label="Message"
                 placeholder="Enter your message"
                 rows={4}
-                bind:value={formData.message}
+                value={formData.message}
+                on:input={(e) =>
+                    (formData.message = (
+                        e.target as HTMLTextAreaElement
+                    ).value)}
             />
             <Checkbox
                 label="Subscribe to updates"
-                bind:checked={formData.subscribe}
+                checked={formData.subscribe}
+                on:change={(e) =>
+                    (formData.subscribe = (
+                        e.target as HTMLInputElement
+                    ).checked)}
             />
         </div>
         <div class="pt-4">

@@ -31,7 +31,7 @@
     $: titleClasses = "text-lg font-semibold mb-2 text-primary";
 </script>
 
-<div class={cardClasses}>
+<div class={cardClasses} {...$$restProps}>
     {#if image}
         <img
             src={image}

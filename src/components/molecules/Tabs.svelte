@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-
     export let tabs: Array<{
         id: string;
         label: string;
@@ -9,11 +7,8 @@
     export let activeTab: string = "";
     export let variant: "default" | "pills" = "default";
 
-    const dispatch = createEventDispatcher();
-
     function selectTab(tabId: string) {
         activeTab = tabId;
-        dispatch("change", { activeTab: tabId });
     }
 
     function handleKeydown(event: KeyboardEvent) {

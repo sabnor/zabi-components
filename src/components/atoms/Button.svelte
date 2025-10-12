@@ -27,6 +27,6 @@
     ].join(" ");
 </script>
 
-<button {type} class={buttonClasses} {disabled}>
+<button {type} class={buttonClasses} {disabled} {...$$restProps}>
     <slot />
 </button>

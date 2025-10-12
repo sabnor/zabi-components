@@ -16,4 +16,5 @@
         ? height + 'px'
         : height};"
     loading="lazy"
+    {...$$restProps}
 />

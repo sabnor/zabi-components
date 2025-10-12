@@ -12,15 +12,22 @@
         "focus:ring-blue-500 focus:ring-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
     ].join(" ");
+
+    function handleChange(event: Event) {
+        const target = event.target as HTMLInputElement;
+        checked = target.checked;
+    }
 </script>
 
 <div class="flex items-center gap-2">
     <input
         type="checkbox"
         id={checkboxId}
-        bind:checked
+        {checked}
         {disabled}
         class={checkboxClasses}
+        on:change={handleChange}
+        {...$$restProps}
     />
     {#if label}
         <label for={checkboxId} class="text-sm font-medium cursor-pointer"

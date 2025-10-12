@@ -24,7 +24,12 @@
         >
     {/if}
 
-    <div id={groupId} class="grid grid-cols-4 gap-2" role="radiogroup">
+    <div
+        id={groupId}
+        class="grid grid-cols-4 gap-2"
+        role="radiogroup"
+        {...$$restProps}
+    >
         {#each colors as color}
             <button
                 type="button"
@@ -38,6 +43,7 @@
                 role="radio"
                 aria-checked={value === color.value}
                 aria-label={color.label}
+                {...$$restProps}
             >
                 {#if value === color.value}
                     <span class="text-white text-lg">✓</span>

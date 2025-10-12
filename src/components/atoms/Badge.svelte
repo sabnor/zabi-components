@@ -1,18 +1,13 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-
     export let variant: "default" | "success" | "warning" | "error" | "info" =
         "default";
     export let size: "sm" | "md" | "lg" = "md";
     export let closable: boolean = false;
 
-    const dispatch = createEventDispatcher<{
-        close: { event: MouseEvent };
-    }>();
-
     function handleClose(event: MouseEvent) {
         event.stopPropagation();
-        dispatch("close", { event });
+        // Close is now handled by the parent component
+        // through event forwarding
     }
 
     // Simple size classes
@@ -41,12 +36,17 @@
 </script>
 
 {#if closable}
-    <button type="button" class={badgeClasses} on:click={handleClose}>
+    <button
+        type="button"
+        class={badgeClasses}
+        on:click={handleClose}
+        {...$$restProps}
+    >
         <slot />
         <span class="ml-1 text-xs">×</span>
     </button>
 {:else}
-    <span class={badgeClasses}>
+    <span class={badgeClasses} {...$$restProps}>
         <slot />
     </span>
 {/if}

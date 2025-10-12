@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-
     export let variant: "header" | "sidebar" = "header";
     export let items: Array<{
         label: string;
@@ -8,15 +6,14 @@
     }> = [];
     export let currentPath: string = "";
 
-    const dispatch = createEventDispatcher();
-
     function handleClick(item: any, event: MouseEvent) {
         event.preventDefault();
-        dispatch("navigate", { item, href: item.href });
+        // Navigation is now handled by the parent component
+        // through event forwarding
     }
 </script>
 
-<nav class="navigation navigation-{variant}">
+<nav class="navigation navigation-{variant}" {...$$restProps}>
     <ul
         class="flex {variant === 'sidebar'
             ? 'flex-col space-y-2'

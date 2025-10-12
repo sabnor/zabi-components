@@ -33,6 +33,11 @@
 
     // Label classes using semantic text colors
     $: labelClasses = "block text-sm font-medium text-primary mb-1";
+
+    function handleInput(event: Event) {
+        const target = event.target as HTMLInputElement;
+        value = target.value;
+    }
 </script>
 
 <div>
@@ -42,9 +47,11 @@
     <input
         id={inputId}
         {type}
-        bind:value
+        {value}
         {placeholder}
         {disabled}
         class={inputClasses}
+        on:input={handleInput}
+        {...$$restProps}
     />
 </div>

@@ -14,8 +14,10 @@
     ];
 
     // Event handlers
-    function handleFormSubmit(event: CustomEvent<{ data: ContactFormData }>) {
-        console.log("Form submitted:", event.detail.data);
+    function handleFormSubmit(event: SubmitEvent) {
+        const formData = new FormData(event.target as HTMLFormElement);
+        const data = Object.fromEntries(formData.entries());
+        console.log("Form submitted:", data);
         // Handle form submission
     }
 </script>
