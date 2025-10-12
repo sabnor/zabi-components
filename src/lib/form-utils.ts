@@ -70,7 +70,12 @@ export function updateValidationState(
  * Generates unique ID for form elements
  */
 export function generateInputId(providedId?: string): string {
-    return providedId || `input-${Math.random().toString(36).substr(2, 9)}`;
+    if (providedId) return providedId;
+    if (typeof window !== 'undefined') {
+        return `input-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+        return `input-ssr-${Date.now()}`;
+    }
 }
 
 /**

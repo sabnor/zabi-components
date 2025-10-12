@@ -10,7 +10,13 @@
     export let variant: "default" | "success" | "warning" | "error" = "default";
 
     // Generate unique ID
-    const inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate unique ID - SSR safe
+    let inputId: string;
+    if (typeof window !== "undefined") {
+        inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+        inputId = `input-ssr-${Date.now()}`;
+    }
 
     // Simple size classes
     $: sizeClasses = {

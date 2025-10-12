@@ -3,8 +3,13 @@
     export let disabled: boolean = false;
     export let label: string = "";
 
-    // Generate unique ID
-    const checkboxId = `checkbox-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate unique ID - SSR safe
+    let checkboxId: string;
+    if (typeof window !== "undefined") {
+        checkboxId = `checkbox-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+        checkboxId = `checkbox-ssr-${Date.now()}`;
+    }
 
     // Simple checkbox classes
     $: checkboxClasses = [

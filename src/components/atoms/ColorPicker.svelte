@@ -14,7 +14,13 @@
         { label: "Black", value: "#000000" },
     ];
 
-    const groupId = `color-picker-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate unique ID - SSR safe
+    let groupId: string;
+    if (typeof window !== "undefined") {
+        groupId = `color-picker-${Math.random().toString(36).substr(2, 9)}`;
+    } else {
+        groupId = `color-picker-ssr-${Date.now()}`;
+    }
 </script>
 
 <div class="space-y-2">

@@ -1,7 +1,7 @@
 {
   "name": "zabi-components",
-  "version": "2.1.1",
-  "description": "A modern SvelteKit component library with TypeScript and Tailwind CSS",
+  "version": "3.0.0",
+  "description": "A modern Svelte 5 component library with TypeScript, Tailwind CSS, and SSR support",
   "type": "module",
   "main": "dist/index/index.js",
   "module": "dist/index/index.js",
@@ -40,11 +40,14 @@
   ],
   "keywords": [
     "svelte",
+    "svelte5",
     "sveltekit",
     "components",
     "ui",
     "typescript",
-    "tailwind"
+    "tailwind",
+    "runes",
+    "ssr"
   ],
   "author": "Zabi Components Team",
   "license": "MIT",
@@ -81,7 +84,8 @@
     "vite": "^6.0.0"
   },
   "dependencies": {
-    "@lucide/svelte": "^0.544.0"
+    "@lucide/svelte": "^0.544.0",
+    "zabi-components": "^3.0.0"
   },
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
@@ -95,5 +99,6 @@
       "optional": true
     }
   },
-  "svelte": "./dist/index/index.js"
+  "svelte": "./dist/index/index.js",
+  "ssr": true
 }
