@@ -84,8 +84,7 @@
     "vite": "^6.0.0"
   },
   "dependencies": {
-    "@lucide/svelte": "^0.544.0",
-    "zabi-components": "^3.0.0"
+    "@lucide/svelte": "^0.544.0"
   },
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
