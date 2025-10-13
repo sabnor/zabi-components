@@ -1,4 +1,4 @@
-import { l as c, p as h, i as v, f as n, a as b, b as k, e as _, c as r, d as y, g as T, h as w } from "./props-B4BdFk2B.js";
+import { l as c, p as h, i as v, f as n, a as b, b as k, e as _, c as r, d as y, g as T, h as w } from "./props-DyILkQVH.js";
 import { onMount as x } from "svelte";
 var D = n('<span class="text-lg">☀️</span>'), S = n('<span class="text-lg">🌙</span>'), $ = n("<button><!></button>");
 function L(i, o) {
