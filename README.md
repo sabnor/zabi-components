@@ -1,6 +1,8 @@
 # Zabi Components
 
-A clean, minimal Svelte component library built with TypeScript and Tailwind CSS. **Less is more** - focused on essential components that just work.
+A clean, minimal Svelte 5 component library built with TypeScript and Tailwind CSS. **Less is more** - focused on essential components that just work.
+
+> **⚠️ Svelte 5 Required**: This library uses Svelte 5 runes syntax (`$props`, `$derived`, `$state`). Make sure you're using Svelte 5.38.10 or later.
 
 ## Philosophy
 
@@ -32,7 +34,7 @@ npm install zabi-components
 Make sure you have the required peer dependencies installed:
 
 ```bash
-npm install svelte@^4.0.0 || ^5.0.0
+npm install svelte@^5.38.10
 npm install @sveltejs/kit@^2.0.0  # Optional, for SvelteKit projects
 ```
 
@@ -63,11 +65,11 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
   // Clean Components - Less is More
   import { Card, Form, Layout, Navigation, Button, Input, Textarea } from 'zabi-components';
   
-  let formData = {
+  let formData = $state({
     name: '',
     email: '',
     message: '',
-  };
+  });
   
   function handleFormSubmit(event: SubmitEvent) {
     const formData = new FormData(event.target as HTMLFormElement);
@@ -118,7 +120,7 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
           id="name" 
           name="name" 
           value={formData.name}
-          on:input={(e) => formData.name = e.target.value}
+          oninput={(e) => formData.name = e.target.value}
           label="Name"
           placeholder="Enter your name" 
           variant="default"
@@ -131,7 +133,7 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
           name="email" 
           type="email" 
           value={formData.email}
-          on:input={(e) => formData.email = e.target.value}
+          oninput={(e) => formData.email = e.target.value}
           label="Email"
           placeholder="Enter your email" 
           variant="success"
@@ -143,7 +145,7 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
           id="message" 
           name="message" 
           value={formData.message}
-          on:input={(e) => formData.message = e.target.value}
+          oninput={(e) => formData.message = e.target.value}
           label="Message"
           placeholder="Enter your message" 
           variant="default"
@@ -372,13 +374,12 @@ All components will automatically switch to their dark mode variants without any
 
 ```svelte
 <Button
-  variant="primary" | "secondary" | "danger" | "success" | "warning" | "info"
+  variant="primary" | "secondary" | "danger" | "success" | "ghost" | "brand"
   size="sm" | "md" | "lg"
   disabled={boolean}
-  loading={boolean}
   type="button" | "submit" | "reset"
   className={string}
-  on:click={(e) => console.log('Button clicked')}
+  onclick={(e) => console.log('Button clicked')}
 >
   Button Content
 </Button>
@@ -388,12 +389,11 @@ All components will automatically switch to their dark mode variants without any
 - `variant`: Button style variant (default: "primary")
 - `size`: Button size (default: "md")
 - `disabled`: Disable the button (default: false)
-- `loading`: Show loading state (default: false)
 - `type`: HTML button type (default: "button")
 - `className`: Additional CSS classes
 
 **Events:**
-- `click`: Native click event - `MouseEvent`
+- `onclick`: Native click event - `MouseEvent`
 
 ### Input Component
 
@@ -576,8 +576,8 @@ Zabi Components uses CSS custom properties and Tailwind CSS for easy theming. Yo
   --zabi-primary-active: theme('colors.blue.800');
   
   /* Secondary Colors */
-  --zabi-secondary: theme('colors.gray.600');
-  --zabi-secondary-hover: theme('colors.gray.700');
+  --zabi-secondary: theme('colors.stone.600');
+  --zabi-secondary-hover: theme('colors.stone.700');
   
   /* Success Colors */
   --zabi-success: theme('colors.green.600');
@@ -597,17 +597,17 @@ Zabi Components uses CSS custom properties and Tailwind CSS for easy theming. Yo
   
   /* Surface Colors */
   --zabi-surface: theme('colors.white');
-  --zabi-surface-hover: theme('colors.gray.50');
+  --zabi-surface-hover: theme('colors.stone.50');
   
   /* Border Colors */
-  --zabi-border: theme('colors.gray.300');
-  --zabi-border-hover: theme('colors.gray.400');
+  --zabi-border: theme('colors.stone.300');
+  --zabi-border-hover: theme('colors.stone.400');
   --zabi-border-focus: theme('colors.blue.500');
   
   /* Text Colors */
-  --zabi-text: theme('colors.gray.900');
-  --zabi-text-muted: theme('colors.gray.600');
-  --zabi-text-placeholder: theme('colors.gray.400');
+  --zabi-text: theme('colors.stone.900');
+  --zabi-text-muted: theme('colors.stone.600');
+  --zabi-text-placeholder: theme('colors.stone.400');
   --zabi-text-inverse: theme('colors.white');
 }
 ```
@@ -618,11 +618,11 @@ Dark mode is automatically supported through CSS custom properties:
 
 ```css
 .dark {
-  --zabi-surface: theme('colors.gray.900');
-  --zabi-surface-hover: theme('colors.gray.800');
-  --zabi-text: theme('colors.gray.100');
-  --zabi-text-muted: theme('colors.gray.400');
-  --zabi-border: theme('colors.gray.700');
+  --zabi-surface: theme('colors.stone.800');
+  --zabi-surface-hover: theme('colors.stone.700');
+  --zabi-text: theme('colors.stone.200');
+  --zabi-text-muted: theme('colors.stone.500');
+  --zabi-border: theme('colors.stone.600');
 }
 ```
 
@@ -865,7 +865,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
-### v2.1.0 (Latest) - "Cross-Framework Compatible" Edition
+### v4.0.0 (Latest) - "Svelte 5 Runes" Edition
+
+#### 🚀 **MAJOR UPDATE** - Svelte 5 Migration
+
+This version migrates to Svelte 5 with runes syntax for better performance and developer experience.
+
+#### ✅ **What's New**
+- **Svelte 5 Runes**: All components now use `$props`, `$derived`, and `$state`
+- **Better Performance**: Improved reactivity and reduced bundle size
+- **Enhanced TypeScript**: Better type inference and safety
+- **Modern Syntax**: Cleaner, more intuitive component APIs
+
+#### 🔄 **Migration Required**
+- **Svelte Version**: Requires Svelte 5.38.10 or later
+- **Syntax Updates**: Components now use runes syntax
+- **Event Handling**: Updated to use `oninput`, `onclick` instead of `on:input`, `on:click`
+
+#### 📋 **Breaking Changes**
+1. **Svelte Version**: Must upgrade to Svelte 5.38.10+
+2. **Event Syntax**: Use `oninput`, `onclick` instead of `on:input`, `on:click`
+3. **Component Props**: All components use Svelte 5 runes syntax
+
+### v2.1.0 - "Cross-Framework Compatible" Edition
 
 #### 🚀 **MAJOR BREAKING CHANGES** - Event Handling Overhaul
 
@@ -897,7 +919,7 @@ See the [Migration Guide](#migration-from-previous-versions) above for detailed 
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
-- Svelte 4+ or SvelteKit 2+
+- Svelte 5.38.10+ or SvelteKit 2+
 
 ### Local Development
 ```bash
@@ -984,7 +1006,7 @@ npm install zabi-components@latest
 If you encounter runtime errors, ensure you have the correct peer dependencies:
 
 ```bash
-npm install svelte@^4.0.0 || ^5.0.0 @sveltejs/kit@^2.0.0
+npm install svelte@^5.38.10 @sveltejs/kit@^2.0.0
 ```
 
 ### Migration from Previous Versions

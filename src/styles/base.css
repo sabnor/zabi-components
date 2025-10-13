@@ -12,13 +12,13 @@
   --zabi-primary-light: theme('colors.blue.100');
   --zabi-primary-dark: theme('colors.blue.800');
 
-  /* Secondary Colors - Default to gray */
-  --zabi-secondary: theme('colors.gray.600');
-  --zabi-secondary-hover: theme('colors.gray.700');
-  --zabi-secondary-active: theme('colors.gray.800');
-  --zabi-secondary-disabled: theme('colors.gray.300');
-  --zabi-secondary-light: theme('colors.gray.100');
-  --zabi-secondary-dark: theme('colors.gray.800');
+  /* Secondary Colors - Default to stone */
+  --zabi-secondary: theme('colors.stone.600');
+  --zabi-secondary-hover: theme('colors.stone.700');
+  --zabi-secondary-active: theme('colors.stone.800');
+  --zabi-secondary-disabled: theme('colors.stone.300');
+  --zabi-secondary-light: theme('colors.stone.100');
+  --zabi-secondary-dark: theme('colors.stone.800');
 
   /* Success Colors - Default to green */
   --zabi-success: theme('colors.green.600');
@@ -54,22 +54,22 @@
 
   /* Surface Colors */
   --zabi-surface: theme('colors.white');
-  --zabi-surface-hover: theme('colors.gray.50');
-  --zabi-surface-active: theme('colors.gray.100');
-  --zabi-surface-disabled: theme('colors.gray.100');
+  --zabi-surface-hover: theme('colors.stone.50');
+  --zabi-surface-active: theme('colors.stone.100');
+  --zabi-surface-disabled: theme('colors.stone.100');
 
   /* Border Colors */
-  --zabi-border: theme('colors.gray.300');
-  --zabi-border-hover: theme('colors.gray.400');
+  --zabi-border: theme('colors.stone.300');
+  --zabi-border-hover: theme('colors.stone.400');
   --zabi-border-focus: theme('colors.blue.500');
-  --zabi-border-disabled: theme('colors.gray.200');
+  --zabi-border-disabled: theme('colors.stone.200');
 
   /* Text Colors */
-  --zabi-text: theme('colors.gray.900');
-  --zabi-text-muted: theme('colors.gray.600');
-  --zabi-text-placeholder: theme('colors.gray.400');
+  --zabi-text: theme('colors.stone.900');
+  --zabi-text-muted: theme('colors.stone.600');
+  --zabi-text-placeholder: theme('colors.stone.400');
   --zabi-text-inverse: theme('colors.white');
-  --zabi-text-disabled: theme('colors.gray.400');
+  --zabi-text-disabled: theme('colors.stone.400');
 
   /* Focus Ring */
   --zabi-focus-ring: theme('colors.blue.500');
@@ -95,23 +95,23 @@
 
 /* Dark mode overrides */
 .dark {
-  --zabi-surface: theme('colors.gray.900');
-  --zabi-surface-hover: theme('colors.gray.800');
-  --zabi-surface-active: theme('colors.gray.700');
-  --zabi-surface-disabled: theme('colors.gray.800');
+  --zabi-surface: theme('colors.stone.800');
+  --zabi-surface-hover: theme('colors.stone.700');
+  --zabi-surface-active: theme('colors.stone.600');
+  --zabi-surface-disabled: theme('colors.stone.700');
 
-  --zabi-border: theme('colors.gray.700');
-  --zabi-border-hover: theme('colors.gray.600');
+  --zabi-border: theme('colors.stone.600');
+  --zabi-border-hover: theme('colors.stone.500');
   --zabi-border-focus: theme('colors.blue.400');
-  --zabi-border-disabled: theme('colors.gray.700');
+  --zabi-border-disabled: theme('colors.stone.600');
 
-  --zabi-text: theme('colors.gray.100');
-  --zabi-text-muted: theme('colors.gray.400');
-  --zabi-text-placeholder: theme('colors.gray.500');
-  --zabi-text-inverse: theme('colors.gray.900');
-  --zabi-text-disabled: theme('colors.gray.500');
+  --zabi-text: theme('colors.stone.200');
+  --zabi-text-muted: theme('colors.stone.500');
+  --zabi-text-placeholder: theme('colors.stone.600');
+  --zabi-text-inverse: theme('colors.stone.800');
+  --zabi-text-disabled: theme('colors.stone.600');
 
-  --zabi-focus-ring-offset: theme('colors.gray.900');
+  --zabi-focus-ring-offset: theme('colors.stone.800');
 }
 
 /* Utility classes for easy theming */
