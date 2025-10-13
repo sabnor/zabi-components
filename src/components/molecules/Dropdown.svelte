@@ -1,23 +1,29 @@
 <script lang="ts">
-    export let isOpen: boolean = false;
-    export let placement:
-        | "bottom-start"
-        | "bottom-end"
-        | "top-start"
-        | "top-end" = "bottom-start";
+    interface Props {
+        isOpen?: boolean;
+        placement?: "bottom-start" | "bottom-end" | "top-start" | "top-end";
+    }
+
+    let {
+        isOpen = false,
+        placement = "bottom-start",
+        children,
+        trigger,
+        ...restProps
+    } = $props<Props & { children?: any; trigger?: any }>();
 </script>
 
 <div
     class="dropdown-container group relative inline-block"
     data-placement={placement}
 >
-    <slot name="trigger" />
+    {@render trigger?.()}
 
     {#if isOpen}
         <div
             class="dropdown-content group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible"
         >
-            <slot />
+            {@render children?.()}
         </div>
     {/if}
 </div>

@@ -1,6 +1,17 @@
 <script lang="ts">
-    export let isOpen: boolean = false;
-    export let title: string = "";
+    interface Props {
+        isOpen?: boolean;
+        title?: string;
+        onclick?: (event: Event) => void;
+        onkeydown?: (event: Event) => void;
+    }
+
+    let {
+        isOpen = false,
+        title = "",
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
 
     function closeSlideUp() {
         isOpen = false;
@@ -24,8 +35,8 @@
     <!-- Backdrop -->
     <div
         class="fixed inset-0 bg-black/50 z-50"
-        on:click={handleBackdropClick}
-        on:keydown={handleKeydown}
+        onclick={handleBackdropClick}
+        onkeydown={handleKeydown}
         role="dialog"
         aria-modal="true"
         tabindex="-1"
@@ -46,7 +57,7 @@
                 <button
                     type="button"
                     class="text-gray-400 hover:text-gray-600 text-2xl"
-                    on:click={closeSlideUp}
+                    onclick={closeSlideUp}
                     aria-label="Close"
                 >
                     ×
@@ -56,7 +67,7 @@
 
         <!-- Content -->
         <div class="p-4">
-            <slot />
+            {@render children?.()}
         </div>
     </div>
 {/if}

@@ -1,6 +1,18 @@
 <script lang="ts">
-    export let isOpen = false;
-    export let title = "";
+    interface Props {
+        isOpen?: boolean;
+        title?: string;
+        onclick?: (event: Event) => void;
+        onkeydown?: (event: Event) => void;
+    }
+
+    let {
+        isOpen = false,
+        title = "",
+        children,
+        footer,
+        ...restProps
+    } = $props<Props & { children?: any; footer?: any }>();
 
     function closeModal() {
         isOpen = false;
@@ -23,8 +35,8 @@
 {#if isOpen}
     <div
         class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-        on:click={handleBackdropClick}
-        on:keydown={handleKeydown}
+        onclick={handleBackdropClick}
+        onkeydown={handleKeydown}
         role="dialog"
         aria-modal="true"
         tabindex="-1"
@@ -39,7 +51,7 @@
                 <h2 class="text-xl font-semibold text-gray-900">{title}</h2>
                 <button
                     type="button"
-                    on:click={closeModal}
+                    onclick={closeModal}
                     class="text-gray-400 hover:text-gray-600 text-2xl"
                     aria-label="Close"
                 >
@@ -49,15 +61,15 @@
 
             <!-- Content -->
             <div class="p-6">
-                <slot />
+                {@render children?.()}
             </div>
 
             <!-- Footer -->
-            {#if $$slots.footer}
+            {#if footer}
                 <div
                     class="flex justify-end gap-3 p-6 border-t border-gray-200"
                 >
-                    <slot name="footer" />
+                    {@render footer?.()}
                 </div>
             {/if}
         </div>

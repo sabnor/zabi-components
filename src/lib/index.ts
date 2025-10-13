@@ -13,7 +13,7 @@ export { default as Button } from '../components/atoms/Button.svelte';
 export { default as Input } from '../components/atoms/Input.svelte';
 export { default as Textarea } from '../components/atoms/Textarea.svelte';
 export { default as Select } from '../components/atoms/Select.svelte';
-// export { default as Checkbox } from '../components/atoms/Checkbox.svelte'; // Temporarily disabled for SSR
+export { default as Checkbox } from '../components/atoms/Checkbox.svelte';
 export { default as Toggle } from '../components/atoms/Toggle.svelte';
 export { default as ColorPicker } from '../components/atoms/ColorPicker.svelte';
 
@@ -59,11 +59,12 @@ export { default as Navigation } from '../components/organisms/Navigation.svelte
 // TYPES - TypeScript definitions
 // ============================================================================
 
-// Basic component types
-export interface BaseComponentProps {
-    className?: string;
-    disabled?: boolean;
-}
+// Remove old Svelte 4 component types
+// export type ZabiComponent<T = any, E = any> = new (...args: any[]) => {
+//     $set(props: Partial<T>): void;
+//     $destroy(): void;
+//     $on<K extends keyof E>(event: K, handler: (event: CustomEvent<E[K]>) => void): () => void;
+// };
 
 // Button types
 export interface ButtonProps extends BaseComponentProps {

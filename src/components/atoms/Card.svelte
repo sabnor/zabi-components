@@ -1,37 +1,50 @@
 <script lang="ts">
     import { getCardVariantClasses } from "../../lib/variant-utils";
 
-    export let title: string = "";
-    export let image: string = "";
-    export let interactive: boolean = false;
-    export let variant: "default" | "success" | "warning" | "error" | "info" =
-        "default";
-    export let size: "sm" | "md" | "lg" = "md";
+    interface Props {
+        title?: string;
+        image?: string;
+        interactive?: boolean;
+        variant?: "default" | "success" | "warning" | "error" | "info";
+        size?: "sm" | "md" | "lg";
+    }
+
+    let {
+        title = "",
+        image = "",
+        interactive = false,
+        variant = "default",
+        size = "md",
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
 
     // Size classes
-    $: sizeClasses = {
+    let sizeClasses = $derived({
         sm: "p-3",
         md: "p-4",
         lg: "p-6",
-    };
+    });
 
     // Get variant class using utility function
-    $: variantClass = getCardVariantClasses(variant);
+    let variantClass = $derived(getCardVariantClasses(variant));
 
     // Card classes
-    $: cardClasses = [
-        "rounded-lg transition-all duration-200",
-        "hover:shadow-adaptive-md",
-        interactive ? "cursor-pointer hover:scale-[1.02]" : "",
-        sizeClasses[size],
-        variantClass,
-    ].join(" ");
+    let cardClasses = $derived(
+        [
+            "rounded-lg transition-all duration-200",
+            "hover:shadow-adaptive-md",
+            interactive ? "cursor-pointer hover:scale-[1.02]" : "",
+            sizeClasses[size],
+            variantClass,
+        ].join(" "),
+    );
 
     // Title classes using semantic text colors
-    $: titleClasses = "text-lg font-semibold mb-2 text-primary";
+    let titleClasses = $derived("text-lg font-semibold mb-2 text-primary");
 </script>
 
-<div class={cardClasses} {...$$restProps}>
+<div class={cardClasses} {...restProps}>
     {#if image}
         <img
             src={image}
@@ -44,5 +57,5 @@
         <h3 class={titleClasses}>{title}</h3>
     {/if}
 
-    <slot />
+    {@render children?.()}
 </div>

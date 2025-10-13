@@ -1,44 +1,59 @@
 <script lang="ts">
     import { getInputVariantClasses } from "../../lib/variant-utils";
 
-    export let value: string = "";
-    export let label: string = "";
-    export let placeholder: string = "";
-    export let disabled: boolean = false;
-    export let rows: number = 4;
-    export let size: "sm" | "md" | "lg" = "md";
-    export let variant: "default" | "success" | "warning" | "error" = "default";
-
-    // Generate unique ID - SSR safe
-    let textareaId: string;
-    if (typeof window !== "undefined") {
-        textareaId = `textarea-${Math.random().toString(36).substr(2, 9)}`;
-    } else {
-        textareaId = `textarea-ssr-${Date.now()}`;
+    interface Props {
+        value?: string;
+        label?: string;
+        placeholder?: string;
+        disabled?: boolean;
+        rows?: number;
+        size?: "sm" | "md" | "lg";
+        variant?: "default" | "success" | "warning" | "error";
+        oninput?: (event: Event) => void;
     }
 
+    let {
+        value = "",
+        label = "",
+        placeholder = "",
+        disabled = false,
+        rows = 4,
+        size = "md",
+        variant = "default",
+        ...restProps
+    }: Props = $props();
+
+    // Generate unique ID - SSR safe
+    let textareaId = $state(
+        typeof window !== "undefined"
+            ? `textarea-${Math.random().toString(36).substr(2, 9)}`
+            : `textarea-ssr-${Date.now()}`,
+    );
+
     // Simple size classes
-    $: sizeClasses = {
+    let sizeClasses = $derived({
         sm: "px-3 py-1.5 text-sm",
         md: "px-4 py-2 text-sm",
         lg: "px-5 py-3 text-base",
-    };
+    });
 
     // Get variant class using utility function
-    $: variantClass = getInputVariantClasses(variant);
+    let variantClass = $derived(getInputVariantClasses(variant));
 
     // Textarea classes
-    $: textareaClasses = [
-        "w-full rounded-md transition-colors duration-200",
-        "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
-        "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
-        "resize-y",
-        sizeClasses[size],
-        variantClass,
-    ].join(" ");
+    let textareaClasses = $derived(
+        [
+            "w-full rounded-md transition-colors duration-200",
+            "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
+            "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
+            "resize-y",
+            sizeClasses[size],
+            variantClass,
+        ].join(" "),
+    );
 
     // Label classes using semantic text colors
-    $: labelClasses = "block text-sm font-medium text-primary mb-1";
+    let labelClasses = $derived("block text-sm font-medium text-primary mb-1");
 
     function handleInput(event: Event) {
         const target = event.target as HTMLTextAreaElement;
@@ -58,7 +73,7 @@
         {disabled}
         {rows}
         class={textareaClasses}
-        on:input={handleInput}
-        {...$$restProps}
+        oninput={handleInput}
+        {...restProps}
     ></textarea>
 </div>

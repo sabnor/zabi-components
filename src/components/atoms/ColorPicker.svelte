@@ -1,7 +1,17 @@
 <script lang="ts">
-    export let value: string = "";
-    export let label: string = "";
-    export let disabled: boolean = false;
+    interface Props {
+        value?: string;
+        label?: string;
+        disabled?: boolean;
+        onclick?: (event: Event) => void;
+    }
+
+    let {
+        value = "",
+        label = "",
+        disabled = false,
+        ...restProps
+    }: Props = $props();
 
     const colors = [
         { label: "Red", value: "#ef4444" },
@@ -15,12 +25,11 @@
     ];
 
     // Generate unique ID - SSR safe
-    let groupId: string;
-    if (typeof window !== "undefined") {
-        groupId = `color-picker-${Math.random().toString(36).substr(2, 9)}`;
-    } else {
-        groupId = `color-picker-ssr-${Date.now()}`;
-    }
+    let groupId = $state(
+        typeof window !== "undefined"
+            ? `color-picker-${Math.random().toString(36).substr(2, 9)}`
+            : `color-picker-ssr-${Date.now()}`,
+    );
 </script>
 
 <div class="space-y-2">
@@ -34,7 +43,7 @@
         id={groupId}
         class="grid grid-cols-4 gap-2"
         role="radiogroup"
-        {...$$restProps}
+        {...restProps}
     >
         {#each colors as color}
             <button
@@ -44,12 +53,12 @@
                     ? 'border-blue-500 ring-2 ring-blue-200'
                     : 'border-gray-300 hover:border-gray-400'}"
                 style="background-color: {color.value};"
-                on:click={() => (value = color.value)}
+                onclick={() => (value = color.value)}
                 {disabled}
                 role="radio"
                 aria-checked={value === color.value}
                 aria-label={color.label}
-                {...$$restProps}
+                {...restProps}
             >
                 {#if value === color.value}
                     <span class="text-white text-lg">✓</span>

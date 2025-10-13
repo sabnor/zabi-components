@@ -1,27 +1,40 @@
 <script lang="ts">
-    // Standardized component props
-    export let variant: "info" | "success" | "warning" | "error" = "info";
-    export let title: string = "";
-    export let message: string = "";
-    export let closable: boolean = false;
-    export let className: string = "";
+    interface Props {
+        variant?: "info" | "success" | "warning" | "error";
+        title?: string;
+        message?: string;
+        closable?: boolean;
+        className?: string;
+        onclick?: (event: Event) => void;
+    }
+
+    let {
+        variant = "info",
+        title = "",
+        message = "",
+        closable = false,
+        className = "",
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
 
     function handleDismiss(event: MouseEvent) {
         // Dismiss is now handled by the parent component
         // through event forwarding
     }
 
-    $: alertClasses = {
+    let alertClasses = $derived({
         info: "bg-info-surface text-info-text border border-info",
         success: "bg-success-surface text-success-text border border-success",
         warning: "bg-warning-surface text-warning-text border border-warning",
         error: "bg-error-surface text-error-text border border-error",
-    };
+    });
 
-    $: alertRole =
-        variant === "success" || variant === "info" ? "status" : "alert";
+    let alertRole = $derived(
+        variant === "success" || variant === "info" ? "status" : "alert",
+    );
 
-    $: iconSvg = {
+    let iconSvg = $derived({
         info: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
         </svg>`,
@@ -34,7 +47,7 @@
         error: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
         </svg>`,
-    };
+    });
 </script>
 
 <div
@@ -46,12 +59,12 @@
         ? "polite"
         : "assertive"}
     aria-atomic="true"
-    {...$$restProps}
+    {...restProps}
 >
     <!-- Dismiss button (X in top right) -->
     {#if closable}
         <button
-            on:click={handleDismiss}
+            onclick={handleDismiss}
             class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
             aria-label="Dismiss alert"
             type="button"
@@ -92,7 +105,7 @@
                 </p>
             {/if}
             <!-- Default slot for custom content -->
-            <slot />
+            {@render children?.()}
         </div>
     </div>
 </div>

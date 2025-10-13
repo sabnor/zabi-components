@@ -1,32 +1,54 @@
 <script lang="ts">
-    export let variant: "main" | "sidebar" | "grid" = "main";
-    export let gap = "md";
-    export let className = "";
+    interface Props {
+        variant?: "main" | "sidebar" | "grid";
+        gap?: string;
+        className?: string;
+    }
 
-    $: gapClass = `gap-${gap}`;
+    let {
+        variant = "main",
+        gap = "md",
+        className = "",
+        children,
+        header,
+        main,
+        footer,
+        sidebar,
+        ...restProps
+    } = $props<
+        Props & {
+            children?: any;
+            header?: any;
+            main?: any;
+            footer?: any;
+            sidebar?: any;
+        }
+    >();
+
+    let gapClass = $derived(`gap-${gap}`);
 </script>
 
-<div class="layout layout-{variant} {gapClass} {className}" {...$$restProps}>
+<div class="layout layout-{variant} {gapClass} {className}" {...restProps}>
     {#if variant === "main"}
         <header class="layout-header">
-            <slot name="header" />
+            {@render header?.()}
         </header>
         <main class="layout-main">
-            <slot name="main" />
+            {@render main?.()}
         </main>
         <footer class="layout-footer">
-            <slot name="footer" />
+            {@render footer?.()}
         </footer>
     {:else if variant === "sidebar"}
         <aside class="layout-sidebar">
-            <slot name="sidebar" />
+            {@render sidebar?.()}
         </aside>
         <main class="layout-main">
-            <slot name="main" />
+            {@render main?.()}
         </main>
     {:else if variant === "grid"}
         <div class="layout-grid">
-            <slot />
+            {@render children?.()}
         </div>
     {/if}
 </div>

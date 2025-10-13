@@ -1,27 +1,35 @@
 <script lang="ts">
-    export let value: number = 0;
-    export let max: number = 100;
-    export let size: "sm" | "md" | "lg" = "md";
-    export let label: string = "";
-
-    // Generate unique ID
-    // Generate unique ID - SSR safe
-    let progressId: string;
-    if (typeof window !== "undefined") {
-        progressId = `progress-${Math.random().toString(36).substr(2, 9)}`;
-    } else {
-        progressId = `progress-ssr-${Date.now()}`;
+    interface Props {
+        value?: number;
+        max?: number;
+        size?: "sm" | "md" | "lg";
+        label?: string;
     }
 
+    let {
+        value = 0,
+        max = 100,
+        size = "md",
+        label = "",
+        ...restProps
+    }: Props = $props();
+
+    // Generate unique ID - SSR safe
+    let progressId = $state(
+        typeof window !== "undefined"
+            ? `progress-${Math.random().toString(36).substr(2, 9)}`
+            : `progress-ssr-${Date.now()}`,
+    );
+
     // Calculate percentage
-    $: percentage = Math.min(Math.max((value / max) * 100, 0), 100);
+    let percentage = $derived(Math.min(Math.max((value / max) * 100, 0), 100));
 
     // Simple size classes
-    $: sizeClasses = {
+    let sizeClasses = $derived({
         sm: "h-1",
         md: "h-2",
         lg: "h-3",
-    };
+    });
 </script>
 
 <div>
@@ -43,7 +51,7 @@
         aria-valuenow={value}
         aria-valuemin="0"
         aria-valuemax={max}
-        {...$$restProps}
+        {...restProps}
     >
         <div
             class="h-full bg-blue-600 rounded-full"
