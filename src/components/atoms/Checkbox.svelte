@@ -1,6 +1,7 @@
 <script lang="ts">
     interface Props {
         checked?: boolean;
+        name?: string;
         disabled?: boolean;
         label?: string;
         onchange?: (event: Event) => void;
@@ -8,6 +9,7 @@
 
     let {
         checked = false,
+        name = "",
         disabled = false,
         label = "",
         ...restProps
@@ -39,6 +41,7 @@
     <input
         type="checkbox"
         id={checkboxId}
+        {name}
         {checked}
         {disabled}
         class={checkboxClasses}

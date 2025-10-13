@@ -3,6 +3,7 @@
 
     interface Props {
         value?: string;
+        name?: string;
         label?: string;
         placeholder?: string;
         disabled?: boolean;
@@ -14,12 +15,14 @@
 
     let {
         value = "",
+        name = "",
         label = "",
         placeholder = "",
         disabled = false,
         rows = 4,
         size = "md",
         variant = "default",
+        oninput,
         ...restProps
     }: Props = $props();
 
@@ -58,6 +61,11 @@
     function handleInput(event: Event) {
         const target = event.target as HTMLTextAreaElement;
         value = target.value;
+
+        // Call the parent's oninput handler if provided
+        if (oninput) {
+            oninput(event);
+        }
     }
 </script>
 
@@ -68,6 +76,7 @@
 
     <textarea
         id={textareaId}
+        {name}
         {value}
         {placeholder}
         {disabled}

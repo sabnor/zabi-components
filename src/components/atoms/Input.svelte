@@ -4,6 +4,7 @@
     interface Props {
         value?: string;
         type?: string;
+        name?: string;
         label?: string;
         placeholder?: string;
         disabled?: boolean;
@@ -15,11 +16,13 @@
     let {
         value = "",
         type = "text",
+        name = "",
         label = "",
         placeholder = "",
         disabled = false,
         size = "md",
         variant = "default",
+        oninput,
         ...restProps
     }: Props = $props();
 
@@ -57,6 +60,11 @@
     function handleInput(event: Event) {
         const target = event.target as HTMLInputElement;
         value = target.value;
+
+        // Call the parent's oninput handler if provided
+        if (oninput) {
+            oninput(event);
+        }
     }
 </script>
 
@@ -67,6 +75,7 @@
     <input
         id={inputId}
         {type}
+        {name}
         {value}
         {placeholder}
         {disabled}
