@@ -23,17 +23,18 @@
         subscribe: false,
     });
 
-    function handleFormSubmit(
-        event: CustomEvent<{ data: Record<string, any> }>,
-    ) {
+    function handleFormSubmit(event: SubmitEvent) {
+        const formData = new FormData(event.target as HTMLFormElement);
         const data: ContactFormData = {
-            name: event.detail.data.name || "",
-            email: event.detail.data.email || "",
-            message: event.detail.data.message || "",
-            subscribe: event.detail.data.subscribe || false,
+            name: (formData.get("name") as string) || "",
+            email: (formData.get("email") as string) || "",
+            message: (formData.get("message") as string) || "",
+            subscribe: formData.get("subscribe") === "on" || false,
         };
+
         // Form submission is now handled by the parent component
-        // through event forwarding
+        // through event forwarding. The data is available for processing.
+        console.log("Form submitted with data:", data);
     }
 </script>
 
@@ -50,6 +51,7 @@
         <div class="space-y-4">
             <Input
                 type="text"
+                name="name"
                 label="Name"
                 placeholder="Enter your name"
                 value={formData.name}
@@ -58,6 +60,7 @@
             />
             <Input
                 type="email"
+                name="email"
                 label="Email"
                 placeholder="Enter your email"
                 value={formData.email}
@@ -65,6 +68,7 @@
                     (formData.email = (e.target as HTMLInputElement).value)}
             />
             <Textarea
+                name="message"
                 label="Message"
                 placeholder="Enter your message"
                 rows={4}
@@ -75,6 +79,7 @@
                     ).value)}
             />
             <Checkbox
+                name="subscribe"
                 label="Subscribe to updates"
                 checked={formData.subscribe}
                 onchange={(e) =>

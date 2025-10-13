@@ -9,11 +9,11 @@ export type Variant = 'default' | 'success' | 'warning' | 'error' | 'info';
  */
 export function getInputVariantClasses(variant: Variant): string {
     const variantMap: Record<Variant, string> = {
-        default: 'input-variant-default',
-        success: 'input-variant-success',
-        warning: 'input-variant-warning',
-        error: 'input-variant-error',
-        info: 'input-variant-info',
+        default: 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
+        success: 'border-green-300 focus:border-green-500 focus:ring-green-500',
+        warning: 'border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500',
+        error: 'border-red-300 focus:border-red-500 focus:ring-red-500',
+        info: 'border-blue-300 focus:border-blue-500 focus:ring-blue-500',
     };
 
     return variantMap[variant] || variantMap.default;
@@ -24,11 +24,11 @@ export function getInputVariantClasses(variant: Variant): string {
  */
 export function getCardVariantClasses(variant: Variant): string {
     const variantMap: Record<Variant, string> = {
-        default: 'card-variant-default',
-        success: 'card-variant-success',
-        warning: 'card-variant-warning',
-        error: 'card-variant-error',
-        info: 'card-variant-info',
+        default: 'border-gray-200 bg-white',
+        success: 'border-green-200 bg-green-50',
+        warning: 'border-yellow-200 bg-yellow-50',
+        error: 'border-red-200 bg-red-50',
+        info: 'border-blue-200 bg-blue-50',
     };
 
     return variantMap[variant] || variantMap.default;
@@ -38,15 +38,35 @@ export function getCardVariantClasses(variant: Variant): string {
  * Get generic variant classes for any component
  */
 export function getVariantClasses(variant: Variant, type: 'border' | 'text' | 'bg'): string {
-    const variantMap: Record<Variant, string> = {
-        default: `variant-${type}-default`,
-        success: `variant-${type}-success`,
-        warning: `variant-${type}-warning`,
-        error: `variant-${type}-error`,
-        info: `variant-${type}-info`,
+    const variantMap: Record<Variant, Record<'border' | 'text' | 'bg', string>> = {
+        default: {
+            border: 'border-gray-300',
+            text: 'text-gray-900',
+            bg: 'bg-white'
+        },
+        success: {
+            border: 'border-green-300',
+            text: 'text-green-900',
+            bg: 'bg-green-50'
+        },
+        warning: {
+            border: 'border-yellow-300',
+            text: 'text-yellow-900',
+            bg: 'bg-yellow-50'
+        },
+        error: {
+            border: 'border-red-300',
+            text: 'text-red-900',
+            bg: 'bg-red-50'
+        },
+        info: {
+            border: 'border-blue-300',
+            text: 'text-blue-900',
+            bg: 'bg-blue-50'
+        },
     };
 
-    return variantMap[variant] || variantMap.default;
+    return variantMap[variant]?.[type] || variantMap.default[type];
 }
 
 /**
