@@ -1,25 +1,41 @@
 <script lang="ts">
     import Button from "../atoms/Button.svelte";
 
-    export let value: string | null = null;
-    export let disabled: boolean = false;
-    export let accept: string = "image/*";
-    export let placeholder: string = "No image selected";
+    interface Props {
+        value?: string | null;
+        disabled?: boolean;
+        accept?: string;
+        placeholder?: string;
+        onchange?: (event: Event) => void;
+        onclick?: (event: Event) => void;
+    }
 
-    let fileInput: HTMLInputElement;
+    let {
+        value = null,
+        disabled = false,
+        accept = "image/*",
+        placeholder = "No image selected",
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
+
+    let fileInput = $state<HTMLInputElement>();
 
     function handleFileSelect(event: Event) {
         const input = event.target as HTMLInputElement;
         if (!input.files || input.files.length === 0) return;
 
         const file = input.files[0];
-        const url = URL.createObjectURL(file);
 
-        value = url;
+        // SSR-safe URL creation
+        if (typeof URL !== "undefined" && URL.createObjectURL) {
+            const url = URL.createObjectURL(file);
+            value = url;
+        }
     }
 
     function removeImage() {
-        if (value) {
+        if (value && typeof URL !== "undefined" && URL.revokeObjectURL) {
             URL.revokeObjectURL(value);
         }
         value = null;
@@ -46,7 +62,7 @@
                     <Button
                         variant="secondary"
                         size="sm"
-                        on:click={triggerFileSelect}
+                        onclick={triggerFileSelect}
                         {disabled}
                     >
                         Change
@@ -54,7 +70,7 @@
                     <Button
                         variant="danger"
                         size="sm"
-                        on:click={removeImage}
+                        onclick={removeImage}
                         {disabled}
                     >
                         Remove
@@ -66,10 +82,10 @@
         <!-- Empty State -->
         <div
             class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer"
-            on:click={triggerFileSelect}
+            onclick={triggerFileSelect}
             role="button"
             tabindex="0"
-            on:keydown={(e) => e.key === "Enter" && triggerFileSelect()}
+            onkeydown={(e) => e.key === "Enter" && triggerFileSelect()}
         >
             <div class="space-y-3">
                 <div
@@ -90,7 +106,7 @@
         bind:this={fileInput}
         type="file"
         {accept}
-        on:change={handleFileSelect}
+        onchange={handleFileSelect}
         class="hidden"
     />
 </div>

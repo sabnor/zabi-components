@@ -1,9 +1,21 @@
 <script lang="ts">
-    export let src: string;
-    export let alt: string = "";
-    export let width: number | string = "100%";
-    export let height: number | string = "auto";
-    export let className: string = "";
+    interface Props {
+        src: string;
+        alt?: string;
+        width?: number | string;
+        height?: number | string;
+        className?: string;
+    }
+
+    let {
+        src,
+        alt = "",
+        width = "100%",
+        height = "auto",
+        className = "",
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
 </script>
 
 <img
@@ -16,5 +28,5 @@
         ? height + 'px'
         : height};"
     loading="lazy"
-    {...$$restProps}
+    {...restProps}
 />

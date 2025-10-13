@@ -1,11 +1,21 @@
 <script lang="ts">
-    export let width: string = "100%";
-    export let height: string = "1rem";
-    export let className: string = "";
+    interface Props {
+        width?: string;
+        height?: string;
+        className?: string;
+    }
+
+    let {
+        width = "100%",
+        height = "1rem",
+        className = "",
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
 </script>
 
 <div
     class="animate-pulse bg-gray-200 rounded {className}"
     style="width: {width}; height: {height};"
-    {...$$restProps}
+    {...restProps}
 ></div>

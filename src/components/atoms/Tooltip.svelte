@@ -1,18 +1,35 @@
 <script lang="ts">
-    export let content: string = "";
-    export let placement: "top" | "bottom" | "left" | "right" = "top";
+    interface Props {
+        content?: string;
+        placement?: "top" | "bottom" | "left" | "right";
+        delay?: number;
+        disabled?: boolean;
+    }
+
+    let {
+        content = "",
+        placement = "top",
+        delay = 0,
+        disabled = false,
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
 </script>
 
 <div
     class="tooltip-container group relative inline-block"
     data-placement={placement}
-    {...$$restProps}
+    data-delay={delay}
+    data-disabled={disabled}
+    {...restProps}
 >
-    <slot />
+    {@render children?.()}
 
-    {#if content}
+    {#if content && !disabled}
         <div
             class="tooltip group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible"
+            role="tooltip"
+            aria-hidden="true"
         >
             {content}
         </div>
@@ -20,6 +37,20 @@
 </div>
 
 <style>
+    :root {
+        --tooltip-bg: #1f2937;
+        --tooltip-color: white;
+        --tooltip-padding: 0.5rem 0.75rem;
+        --tooltip-radius: 0.375rem;
+        --tooltip-font-size: 0.875rem;
+        --tooltip-line-height: 1.25rem;
+        --tooltip-max-width: 200px;
+        --tooltip-gap: 0.5rem;
+        --tooltip-arrow-size: 4px;
+        --tooltip-transition: opacity 0.2s ease-in-out,
+            visibility 0.2s ease-in-out;
+    }
+
     .tooltip-container {
         position: relative;
         display: inline-block;
@@ -28,109 +59,130 @@
     .tooltip {
         position: absolute;
         z-index: 50;
-        padding: 0.5rem 0.75rem;
-        background-color: #1f2937;
-        color: white;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-        white-space: nowrap;
+        padding: var(--tooltip-padding);
+        background-color: var(--tooltip-bg);
+        color: var(--tooltip-color);
+        border-radius: var(--tooltip-radius);
+        font-size: var(--tooltip-font-size);
+        line-height: var(--tooltip-line-height);
+        max-width: var(--tooltip-max-width);
+        white-space: normal;
+        word-wrap: break-word;
         opacity: 0;
         visibility: hidden;
-        transition:
-            opacity 0.2s ease-in-out,
-            visibility 0.2s ease-in-out;
+        transition: var(--tooltip-transition);
         pointer-events: none;
-        max-width: 200px;
-        word-wrap: break-word;
-        white-space: normal;
+        /* Use logical properties for better internationalization */
+        inset-inline-start: 50%;
+        inset-block-start: 50%;
+        transform: translate(-50%, -50%);
     }
 
-    /* Top placement */
+    /* Simplified positioning using CSS custom properties and logical properties */
     .tooltip-container[data-placement="top"] .tooltip {
-        bottom: 100%;
-        left: 50%;
+        inset-block-end: 100%;
+        inset-inline-start: 50%;
         transform: translateX(-50%);
-        margin-bottom: 0.5rem;
+        margin-block-end: var(--tooltip-gap);
     }
 
-    /* Bottom placement */
     .tooltip-container[data-placement="bottom"] .tooltip {
-        top: 100%;
-        left: 50%;
+        inset-block-start: 100%;
+        inset-inline-start: 50%;
         transform: translateX(-50%);
-        margin-top: 0.5rem;
+        margin-block-start: var(--tooltip-gap);
     }
 
-    /* Left placement */
     .tooltip-container[data-placement="left"] .tooltip {
-        right: 100%;
-        top: 50%;
+        inset-inline-end: 100%;
+        inset-block-start: 50%;
         transform: translateY(-50%);
-        margin-right: 0.5rem;
+        margin-inline-end: var(--tooltip-gap);
     }
 
-    /* Right placement */
     .tooltip-container[data-placement="right"] .tooltip {
-        left: 100%;
-        top: 50%;
+        inset-inline-start: 100%;
+        inset-block-start: 50%;
         transform: translateY(-50%);
-        margin-left: 0.5rem;
+        margin-inline-start: var(--tooltip-gap);
     }
 
-    /* Arrow styles using CSS pseudo-elements */
+    /* Modern arrow implementation using CSS clip-path for better performance */
     .tooltip::before {
         content: "";
         position: absolute;
-        width: 0;
-        height: 0;
-        border: 4px solid transparent;
+        width: calc(var(--tooltip-arrow-size) * 2);
+        height: calc(var(--tooltip-arrow-size) * 2);
+        background-color: var(--tooltip-bg);
     }
 
-    /* Top arrow */
     .tooltip-container[data-placement="top"] .tooltip::before {
-        top: 100%;
-        left: 50%;
+        inset-block-start: 100%;
+        inset-inline-start: 50%;
         transform: translateX(-50%);
-        border-top-color: #1f2937;
+        clip-path: polygon(50% 100%, 0 0, 100% 0);
     }
 
-    /* Bottom arrow */
     .tooltip-container[data-placement="bottom"] .tooltip::before {
-        bottom: 100%;
-        left: 50%;
+        inset-block-end: 100%;
+        inset-inline-start: 50%;
         transform: translateX(-50%);
-        border-bottom-color: #1f2937;
+        clip-path: polygon(0 100%, 50% 0, 100% 100%);
     }
 
-    /* Left arrow */
     .tooltip-container[data-placement="left"] .tooltip::before {
-        left: 100%;
-        top: 50%;
+        inset-inline-start: 100%;
+        inset-block-start: 50%;
         transform: translateY(-50%);
-        border-left-color: #1f2937;
+        clip-path: polygon(0 50%, 100% 0, 100% 100%);
     }
 
-    /* Right arrow */
     .tooltip-container[data-placement="right"] .tooltip::before {
-        right: 100%;
-        top: 50%;
+        inset-inline-end: 100%;
+        inset-block-start: 50%;
         transform: translateY(-50%);
-        border-right-color: #1f2937;
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
     }
 
-    /* Responsive adjustments */
+    /* Delay support using CSS custom properties */
+    .tooltip-container[data-delay] .tooltip {
+        transition-delay: calc(var(--tooltip-delay, 0) * 1ms);
+    }
+
+    /* Responsive design with modern CSS */
     @media (max-width: 640px) {
         .tooltip {
-            max-width: calc(100vw - 2rem);
-            left: 50% !important;
-            right: auto !important;
+            --tooltip-max-width: calc(100vw - 2rem);
+            inset-inline-start: 50% !important;
+            inset-inline-end: auto !important;
             transform: translateX(-50%) !important;
-            margin: 0.5rem 0 !important;
+            margin: var(--tooltip-gap) 0 !important;
         }
 
         .tooltip::before {
             display: none;
+        }
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --tooltip-bg: #374151;
+        }
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        :root {
+            --tooltip-bg: #000000;
+            --tooltip-color: #ffffff;
+        }
+    }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+        .tooltip {
+            transition: none;
         }
     }
 </style>

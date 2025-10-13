@@ -6,14 +6,22 @@
     import Button from "../atoms/Button.svelte";
     import type { ContactFormData } from "../../types/page.types";
 
-    export let className: string = "";
+    interface Props {
+        className?: string;
+    }
 
-    let formData: ContactFormData = {
+    let {
+        className = "",
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
+
+    let formData = $state<ContactFormData>({
         name: "",
         email: "",
         message: "",
         subscribe: false,
-    };
+    });
 
     function handleFormSubmit(
         event: CustomEvent<{ data: Record<string, any> }>,
@@ -38,14 +46,14 @@
         </p>
     </div>
 
-    <Form on:submit={handleFormSubmit} className="space-y-4">
+    <Form onsubmit={handleFormSubmit} className="space-y-4">
         <div class="space-y-4">
             <Input
                 type="text"
                 label="Name"
                 placeholder="Enter your name"
                 value={formData.name}
-                on:input={(e) =>
+                oninput={(e) =>
                     (formData.name = (e.target as HTMLInputElement).value)}
             />
             <Input
@@ -53,7 +61,7 @@
                 label="Email"
                 placeholder="Enter your email"
                 value={formData.email}
-                on:input={(e) =>
+                oninput={(e) =>
                     (formData.email = (e.target as HTMLInputElement).value)}
             />
             <Textarea
@@ -61,7 +69,7 @@
                 placeholder="Enter your message"
                 rows={4}
                 value={formData.message}
-                on:input={(e) =>
+                oninput={(e) =>
                     (formData.message = (
                         e.target as HTMLTextAreaElement
                     ).value)}
@@ -69,7 +77,7 @@
             <Checkbox
                 label="Subscribe to updates"
                 checked={formData.subscribe}
-                on:change={(e) =>
+                onchange={(e) =>
                     (formData.subscribe = (
                         e.target as HTMLInputElement
                     ).checked)}

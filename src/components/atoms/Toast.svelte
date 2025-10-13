@@ -1,11 +1,20 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    interface Props {
+        message?: string;
+        type?: "success" | "error" | "warning" | "info";
+        closable?: boolean;
+        onclick?: (event: Event) => void;
+    }
 
-    export let message: string = "";
-    export let type: "success" | "error" | "warning" | "info" = "info";
-    export let closable: boolean = true;
+    let {
+        message = "",
+        type = "info",
+        closable = true,
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
 
-    let isVisible = true;
+    let isVisible = $state(true);
 
     // Simple type classes
     const typeClasses = {
@@ -24,7 +33,7 @@
     <div
         class="fixed top-4 right-4 max-w-sm w-full bg-white border rounded-lg shadow-lg p-4 z-50"
         role="alert"
-        {...$$restProps}
+        {...restProps}
     >
         <div class="flex items-start">
             <div class="flex-1">
@@ -35,7 +44,7 @@
                 <button
                     type="button"
                     class="ml-3 text-gray-400 hover:text-gray-600"
-                    on:click={closeToast}
+                    onclick={closeToast}
                     aria-label="Close notification"
                 >
                     ×

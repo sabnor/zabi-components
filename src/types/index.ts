@@ -4,12 +4,10 @@
 export * from './events.js';
 
 // Component type definitions
-// Enhanced component type with proper event handling
-export type ZabiComponent<T = any, E = any> = new (...args: any[]) => {
-    $set(props: Partial<T>): void;
-    $destroy(): void;
-    $on<K extends keyof E>(event: K, handler: (event: CustomEvent<E[K]>) => void): () => void;
-};
+// Enhanced component type with proper event handling for Svelte 5
+import type { Component } from 'svelte';
+
+export type ZabiComponent<T = any> = Component<T>;
 
 // Button component props and events
 export interface ButtonProps {

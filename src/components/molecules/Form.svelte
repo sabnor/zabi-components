@@ -1,7 +1,18 @@
 <script lang="ts">
-    export let method: "get" | "post" = "post";
-    export let action: string = "";
-    export let className: string = "";
+    interface Props {
+        method?: "get" | "post";
+        action?: string;
+        className?: string;
+        onsubmit?: (event: Event) => void;
+    }
+
+    let {
+        method = "post",
+        action = "",
+        className = "",
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
 
     function handleSubmit(event: SubmitEvent) {
         const formData = new FormData(event.target as HTMLFormElement);
@@ -15,8 +26,8 @@
     {method}
     {action}
     class="space-y-4 {className}"
-    on:submit|preventDefault={handleSubmit}
-    {...$$restProps}
+    onsubmit={handleSubmit}
+    {...restProps}
 >
-    <slot />
+    {@render children?.()}
 </form>

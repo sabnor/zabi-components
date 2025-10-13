@@ -1,10 +1,21 @@
 <script lang="ts">
-    export let variant: "header" | "sidebar" = "header";
-    export let items: Array<{
-        label: string;
-        href: string;
-    }> = [];
-    export let currentPath: string = "";
+    interface Props {
+        variant?: "header" | "sidebar";
+        items?: Array<{
+            label: string;
+            href: string;
+        }>;
+        currentPath?: string;
+        onclick?: (event: Event) => void;
+    }
+
+    let {
+        variant = "header",
+        items = [],
+        currentPath = "",
+        children,
+        ...restProps
+    } = $props<Props & { children?: any }>();
 
     function handleClick(item: any, event: MouseEvent) {
         event.preventDefault();
@@ -13,7 +24,7 @@
     }
 </script>
 
-<nav class="navigation navigation-{variant}" {...$$restProps}>
+<nav class="navigation navigation-{variant}" {...restProps}>
     <ul
         class="flex {variant === 'sidebar'
             ? 'flex-col space-y-2'
@@ -27,7 +38,7 @@
                     item.href
                         ? 'bg-blue-100 text-blue-700'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}"
-                    on:click={(e) => handleClick(item, e)}
+                    onclick={(e) => handleClick(item, e)}
                 >
                     {item.label}
                 </a>
