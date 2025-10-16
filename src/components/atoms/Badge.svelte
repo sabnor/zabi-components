@@ -3,12 +3,14 @@
         variant?: "default" | "success" | "warning" | "error" | "info";
         size?: "sm" | "md" | "lg";
         closable?: boolean;
+        className?: string;
     }
 
     let {
         variant = "default",
         size = "md",
         closable = false,
+        className = "",
         children,
         ...restProps
     } = $props<Props & { children?: any }>();

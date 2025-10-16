@@ -1,16 +1,6 @@
 // Svelte 5 compatibility types for zabi-components
 // This ensures proper TypeScript support for Svelte 5 features
 
-declare module 'svelte' {
-    export interface ComponentEvents<T> {
-        [key: string]: any;
-    }
-
-    export interface ComponentProps<T> {
-        [key: string]: any;
-    }
-}
-
 // Enhanced event types for Svelte 5
 export interface Svelte5EventDetail {
     event: Event;

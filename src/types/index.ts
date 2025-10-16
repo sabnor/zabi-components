@@ -2,12 +2,13 @@
 // Re-export all types for easy importing
 
 export * from './events.js';
+export * from './page.types.js';
 
 // Component type definitions
 // Enhanced component type with proper event handling for Svelte 5
 import type { Component } from 'svelte';
 
-export type ZabiComponent<T = any> = Component<T>;
+export type ZabiComponent<T = any, E = any> = Component<T, E>;
 
 // Button component props and events
 export interface ButtonProps {

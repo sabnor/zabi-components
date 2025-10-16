@@ -21,7 +21,7 @@
 
     {#if isOpen}
         <div
-            class="dropdown-content group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible"
+            class="dropdown-content opacity-100 visible transform-none group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible"
         >
             {@render children?.()}
         </div>

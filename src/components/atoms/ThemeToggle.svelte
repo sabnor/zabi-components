@@ -11,7 +11,11 @@
     $effect(() => {
         mounted = true;
         // Check for saved theme preference or default to light mode
-        if (typeof localStorage !== "undefined") {
+        if (
+            mounted &&
+            typeof window !== "undefined" &&
+            typeof localStorage !== "undefined"
+        ) {
             const savedTheme = localStorage.getItem("theme");
             const prefersDark = window.matchMedia(
                 "(prefers-color-scheme: dark)",

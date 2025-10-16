@@ -20,7 +20,6 @@ export { default as ToggleStories } from './Toggle.stories';
 export { default as AlertStories } from './Alert.stories';
 export { default as DropdownStories } from './Dropdown.stories';
 export { default as ImageUploadStories } from './ImageUpload.stories';
-export { default as KeyValueFormStories } from './KeyValueForm.stories';
 export { default as ModalStories } from './Modal.stories';
 export { default as SlideUpStories } from './SlideUp.stories';
 

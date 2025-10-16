@@ -2,33 +2,45 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    export let fallback: any = null;
-    export let component: any;
-    export let props: Record<string, any> = {};
+    interface Props {
+        fallback?: any;
+        component?: any;
+        props?: Record<string, any>;
+    }
 
-    let mounted = false;
+    let {
+        fallback = null,
+        component,
+        props = {},
+        children,
+    } = $props<Props & { children?: any }>();
+
+    let mounted = $state(false);
 
     onMount(() => {
         mounted = true;
     });
 
     // Check if we're in browser environment
-    $: isBrowser =
-        typeof window !== "undefined" && typeof document !== "undefined";
+    let isBrowser = $derived(
+        typeof window !== "undefined" && typeof document !== "undefined",
+    );
 </script>
 
-{#if isBrowser && mounted}
-    <svelte:component this={component} {...props}>
-        <slot />
-    </svelte:component>
+{#if isBrowser && mounted && component}
+    {@const Component = component}
+    <Component {...props}>
+        {@render children?.()}
+    </Component>
 {:else if fallback}
-    <svelte:component this={fallback} {...props}>
-        <slot />
-    </svelte:component>
+    {@const FallbackComponent = fallback}
+    <FallbackComponent {...props}>
+        {@render children?.()}
+    </FallbackComponent>
 {:else}
     <!-- Fallback content for SSR -->
     <div class="zabi-ssr-fallback">
-        <slot />
+        {@render children?.()}
     </div>
 {/if}
 

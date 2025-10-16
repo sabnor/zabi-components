@@ -73,51 +73,27 @@ export const TopEnd: Story = {
     })
 };
 
-export const WithOffset: Story = {
+export const WithTopPlacement: Story = {
     args: {
         isOpen: true,
-        offset: 10
+        placement: 'top-start'
     },
     render: (args) => ({
         Component: Dropdown,
         props: args,
-        children: ['Dropdown with Offset']
+        children: ['Dropdown with Top Placement']
     })
 };
 
-export const WithMaxHeight: Story = {
+export const WithBottomEndPlacement: Story = {
     args: {
         isOpen: true,
-        maxHeight: '200px'
+        placement: 'bottom-end'
     },
     render: (args) => ({
         Component: Dropdown,
         props: args,
-        children: ['Dropdown with Max Height']
-    })
-};
-
-export const WithWidth: Story = {
-    args: {
-        isOpen: true,
-        width: '300px'
-    },
-    render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Dropdown with Custom Width']
-    })
-};
-
-export const WithZIndex: Story = {
-    args: {
-        isOpen: true,
-        zIndex: 1000
-    },
-    render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Dropdown with Custom Z-Index']
+        children: ['Dropdown with Bottom End Placement']
     })
 };
 
