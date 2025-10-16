@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { getCardVariantClasses } from "../../lib/variant-utils";
-
     interface Props {
         title?: string;
         image?: string;
@@ -27,7 +25,16 @@
     });
 
     // Get variant class using utility function
-    let variantClass = $derived(getCardVariantClasses(variant));
+    let variantClass = $derived(() => {
+        const variantMap = {
+            default: "border-gray-200 bg-white",
+            success: "border-green-200 bg-green-50",
+            warning: "border-yellow-200 bg-yellow-50",
+            error: "border-red-200 bg-red-50",
+            info: "border-blue-200 bg-blue-50",
+        };
+        return variantMap[variant] || variantMap.default;
+    });
 
     // Card classes
     let cardClasses = $derived(
