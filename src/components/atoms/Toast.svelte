@@ -10,6 +10,7 @@
         message = "",
         type = "info",
         closable = true,
+        onclick,
         children,
         ...restProps
     } = $props<Props & { children?: any }>();
@@ -24,8 +25,11 @@
         info: "bg-blue-100 border-blue-300 text-blue-800",
     };
 
-    function closeToast() {
+    function closeToast(event: Event) {
         isVisible = false;
+        if (onclick) {
+            onclick(event);
+        }
     }
 </script>
 

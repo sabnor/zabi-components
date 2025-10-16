@@ -1,18 +1,18 @@
 import { z as P, H as W, I as X, J as Y, K as Z, L as A, M as $, p as t, f as k, c as V, y as ee, d as x, e as F, h as H, r as T, g as n, N as y, B as ae, k as h, s as D, l as K, i as I, j as q, A as N, F as E, O, G, C as J, P as te, x as re, Q } from "./ssr-safe-bsWGK4V4.js";
 import { onMount as R } from "svelte";
 function oe(r, e, a = !1, o = !1, d = !1) {
-  var g = r, u = "";
+  var g = r, c = "";
   P(() => {
     var s = (
       /** @type {Effect} */
       W
     );
-    if (u !== (u = e() ?? "") && (s.nodes_start !== null && (X(
+    if (c !== (c = e() ?? "") && (s.nodes_start !== null && (X(
       s.nodes_start,
       /** @type {TemplateNode} */
       s.nodes_end
-    ), s.nodes_start = s.nodes_end = null), u !== "")) {
-      var i = u + "";
+    ), s.nodes_start = s.nodes_end = null), c !== "")) {
+      var i = c + "";
       a ? i = `<svg>${i}</svg>` : o && (i = `<math>${i}</math>`);
       var l = Y(i);
       if ((a || o) && (l = /** @type {Element} */
@@ -54,7 +54,7 @@ function se(r, e) {
 var le = k("<button><!></button>");
 function we(r, e) {
   H(e, !0);
-  let a = t(e, "variant", 3, "primary"), o = t(e, "size", 3, "md"), d = t(e, "disabled", 3, !1), g = t(e, "type", 3, "button"), u = t(e, "className", 3, ""), s = T(e, [
+  let a = t(e, "variant", 3, "primary"), o = t(e, "size", 3, "md"), d = t(e, "disabled", 3, !1), g = t(e, "type", 3, "button"), c = t(e, "className", 3, ""), s = T(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -63,6 +63,7 @@ function we(r, e) {
     "disabled",
     "type",
     "className",
+    "onclick",
     "children"
   ]), i = y(() => ({
     sm: "px-3 py-1.5 text-sm font-medium",
@@ -83,17 +84,17 @@ function we(r, e) {
     "shadow-sm hover:shadow-md",
     n(i)[o()],
     n(l)[a()],
-    u()
+    c()
   ].filter(Boolean).join(" "));
-  var c = le();
-  V(c, () => ({
+  var u = le();
+  V(u, () => ({
     type: g(),
     class: n(p),
     disabled: d(),
     ...s
   }));
-  var w = h(c);
-  ee(w, () => e.children ?? ae), x(r, c), F();
+  var w = h(u);
+  ee(w, () => e.children ?? ae), x(r, u), F();
 }
 function U(r) {
   const e = {
@@ -159,7 +160,7 @@ function Ce(r, e) {
 var ne = k("<label> </label>"), ie = k("<div><!> <input/></div>");
 function ze(r, e) {
   H(e, !0);
-  let a = t(e, "value", 7, ""), o = t(e, "type", 3, "text"), d = t(e, "name", 3, ""), g = t(e, "label", 3, ""), u = t(e, "placeholder", 3, ""), s = t(e, "disabled", 3, !1), i = t(e, "size", 3, "md"), l = t(e, "variant", 3, "default"), p = T(e, [
+  let a = t(e, "value", 7, ""), o = t(e, "type", 3, "text"), d = t(e, "name", 3, ""), g = t(e, "label", 3, ""), c = t(e, "placeholder", 3, ""), s = t(e, "disabled", 3, !1), i = t(e, "size", 3, "md"), l = t(e, "variant", 3, "default"), p = T(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -172,9 +173,9 @@ function ze(r, e) {
     "size",
     "variant",
     "oninput"
-  ]), c = q("");
+  ]), u = q("");
   R(() => {
-    D(c, K("input"), !0);
+    D(u, K("input"), !0);
   });
   let w = y(() => ({
     sm: "px-3 py-1.5 text-sm",
@@ -198,7 +199,7 @@ function ze(r, e) {
       E(m, 1, O(n(f)));
       var L = h(m);
       P(() => {
-        G(m, "for", n(c)), J(L, g());
+        G(m, "for", n(u)), J(L, g());
       }), x(v, m);
     };
     I(j, (v) => {
@@ -209,11 +210,11 @@ function ze(r, e) {
   V(
     B,
     () => ({
-      id: n(c),
+      id: n(u),
       type: o(),
       name: d(),
       value: a(),
-      placeholder: u(),
+      placeholder: c(),
       disabled: s(),
       class: n(b),
       oninput: z,
@@ -225,10 +226,10 @@ function ze(r, e) {
     !0
   ), x(r, M), F();
 }
-var de = k("<label> </label>"), ue = k("<div><!> <textarea></textarea></div>");
+var de = k("<label> </label>"), ce = k("<div><!> <textarea></textarea></div>");
 function Me(r, e) {
   H(e, !0);
-  let a = t(e, "value", 7, ""), o = t(e, "name", 3, ""), d = t(e, "label", 3, ""), g = t(e, "placeholder", 3, ""), u = t(e, "disabled", 3, !1), s = t(e, "rows", 3, 4), i = t(e, "size", 3, "md"), l = t(e, "variant", 3, "default"), p = T(e, [
+  let a = t(e, "value", 7, ""), o = t(e, "name", 3, ""), d = t(e, "label", 3, ""), g = t(e, "placeholder", 3, ""), c = t(e, "disabled", 3, !1), s = t(e, "rows", 3, 4), i = t(e, "size", 3, "md"), l = t(e, "variant", 3, "default"), p = T(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -241,7 +242,7 @@ function Me(r, e) {
     "size",
     "variant",
     "oninput"
-  ]), c = te(typeof window < "u" ? `textarea-${Math.random().toString(36).substr(2, 9)}` : `textarea-ssr-${Date.now()}`), w = y(() => ({
+  ]), u = te(typeof window < "u" ? `textarea-${Math.random().toString(36).substr(2, 9)}` : `textarea-ssr-${Date.now()}`), w = y(() => ({
     sm: "px-3 py-1.5 text-sm",
     md: "px-4 py-2 text-sm",
     lg: "px-5 py-3 text-base"
@@ -257,14 +258,14 @@ function Me(r, e) {
     const m = v.target;
     a(m.value), e.oninput && e.oninput(v);
   }
-  var M = ue(), j = h(M);
+  var M = ce(), j = h(M);
   {
     var _ = (v) => {
       var m = de();
       E(m, 1, O(n(f)));
       var L = h(m);
       P(() => {
-        G(m, "for", c), J(L, d());
+        G(m, "for", u), J(L, d());
       }), x(v, m);
     };
     I(j, (v) => {
@@ -273,21 +274,21 @@ function Me(r, e) {
   }
   var B = N(j, 2);
   V(B, () => ({
-    id: c,
+    id: u,
     name: o(),
     value: a(),
     placeholder: g(),
-    disabled: u(),
+    disabled: c(),
     rows: s(),
     class: n(b),
     oninput: z,
     ...p
   })), x(r, M), F();
 }
-var ce = k('<label class="text-sm font-medium cursor-pointer"> </label>'), ge = k('<div class="flex items-center gap-2"><input/> <!></div>');
+var ue = k('<label class="text-sm font-medium cursor-pointer"> </label>'), ge = k('<div class="flex items-center gap-2"><input/> <!></div>');
 function je(r, e) {
   H(e, !0);
-  let a = t(e, "checked", 7, !1), o = t(e, "name", 3, ""), d = t(e, "disabled", 3, !1), g = t(e, "label", 3, ""), u = T(e, [
+  let a = t(e, "checked", 7, !1), o = t(e, "name", 3, ""), d = t(e, "disabled", 3, !1), g = t(e, "label", 3, ""), c = T(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -308,9 +309,9 @@ function je(r, e) {
     const f = b.target;
     a(f.checked);
   }
-  var p = ge(), c = h(p);
+  var p = ge(), u = h(p);
   V(
-    c,
+    u,
     () => ({
       type: "checkbox",
       id: n(s),
@@ -319,17 +320,17 @@ function je(r, e) {
       disabled: d(),
       class: n(i),
       onchange: l,
-      ...u
+      ...c
     }),
     void 0,
     void 0,
     void 0,
     !0
   );
-  var w = N(c, 2);
+  var w = N(u, 2);
   {
     var C = (b) => {
-      var f = ce(), z = h(f);
+      var f = ue(), z = h(f);
       P(() => {
         G(f, "for", n(s)), J(z, g());
       }), x(b, f);
@@ -375,7 +376,7 @@ function Be(r, e) {
     "language",
     "className",
     "showCopyButton"
-  ]), u = q(!1);
+  ]), c = q(!1);
   var s = he();
   V(
     s,
@@ -391,7 +392,7 @@ function Be(r, e) {
   {
     var p = (b) => {
       var f = me();
-      f.__click = [be, e, u];
+      f.__click = [be, e, c];
       var z = h(f);
       {
         var M = (_) => {
@@ -402,7 +403,7 @@ function Be(r, e) {
           x(_, B);
         };
         I(z, (_) => {
-          n(u) ? _(M) : _(j, !1);
+          n(c) ? _(M) : _(j, !1);
         });
       }
       x(b, f);
@@ -411,7 +412,7 @@ function Be(r, e) {
       d() && b(p);
     });
   }
-  var c = N(i, 2), w = h(c), C = h(w);
+  var u = N(i, 2), w = h(u), C = h(w);
   oe(C, () => e.code), P(() => E(w, 1, `language-${a() ?? ""}`, "svelte-1dmazsz")), x(r, s);
 }
 re(["click"]);

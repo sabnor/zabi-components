@@ -1,5 +1,5 @@
-import { M as te, R as ae, S as re, T as oe, U as ne, p as b, f as _, c as A, y as j, d as s, e as H, h as V, r as Y, B as M, k as r, i as S, g as N, N as F, V as R, A as x, W as I, x as D, z as E, C as T, G as P, D as ie, E as se, F as W, X as K, j as Z, s as $, Q as ee, P as le } from "./ssr-safe-bsWGK4V4.js";
-import { f as Q, h as de, B as G, a as ce, I as X, T as ve, C as ue } from "./CodeBlock-pT5-FgZd.js";
+import { M as te, R as ae, S as re, T as oe, U as ne, p as b, f as _, c as K, y as j, d as l, e as F, h as I, r as G, B as M, k as r, i as S, g as N, N as A, V as R, A as x, W as Y, x as D, z as E, C as T, G as P, D as ie, E as se, F as W, X as H, j as Z, s as $, Q as ee, P as le } from "./ssr-safe-bsWGK4V4.js";
+import { f as Q, h as de, B as V, a as ce, I as X, T as ve, C as ue } from "./CodeBlock-BbB7jhcz.js";
 function J(t, e) {
   return t === e || (t == null ? void 0 : t[ne]) === e;
 }
@@ -19,8 +19,8 @@ function me(t = {}, e, a, o) {
 }
 var fe = _("<form><!></form>");
 function be(t, e) {
-  V(e, !0);
-  let a = b(e, "method", 3, "post"), o = b(e, "action", 3, ""), i = b(e, "className", 3, ""), n = Y(e, [
+  I(e, !0);
+  let a = b(e, "method", 3, "post"), o = b(e, "action", 3, ""), i = b(e, "className", 3, ""), n = G(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -35,15 +35,15 @@ function be(t, e) {
     Object.fromEntries(h.entries()), e.onsubmit && e.onsubmit(u);
   }
   var c = fe();
-  A(c, () => ({
+  K(c, () => ({
     method: a(),
     action: o(),
     class: `space-y-4 ${i() ?? ""}`,
     onsubmit: g,
     ...n
   }));
-  var d = r(c);
-  j(d, () => e.children ?? M), s(t, c), H();
+  var s = r(c);
+  j(s, () => e.children ?? M), l(t, c), F();
 }
 var ge = _('<header class="layout-header svelte-wzmt5k"><!></header> <main class="layout-main svelte-wzmt5k"><!></main> <footer class="layout-footer svelte-wzmt5k"><!></footer>', 1), xe = _('<aside class="layout-sidebar svelte-wzmt5k"><!></aside> <main class="layout-main svelte-wzmt5k"><!></main>', 1), he = _('<div class="layout-grid svelte-wzmt5k"><!></div>'), pe = _("<div><!></div>");
 const we = {
@@ -58,7 +58,7 @@ const we = {
 };
 function rt(t, e) {
   Q(t, we);
-  let a = b(e, "variant", 3, "main"), o = b(e, "gap", 3, "md"), i = b(e, "className", 3, ""), n = Y(e, [
+  let a = b(e, "variant", 3, "main"), o = b(e, "gap", 3, "md"), i = b(e, "className", 3, ""), n = G(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -70,9 +70,9 @@ function rt(t, e) {
     "main",
     "footer",
     "sidebar"
-  ]), g = F(() => `gap-${o()}`);
+  ]), g = A(() => `gap-${o()}`);
   var c = pe();
-  A(
+  K(
     c,
     () => ({
       class: `layout layout-${a() ?? ""} ${N(g) ?? ""} ${i() ?? ""}`,
@@ -82,7 +82,7 @@ function rt(t, e) {
     void 0,
     "svelte-wzmt5k"
   );
-  var d = r(c);
+  var s = r(c);
   {
     var u = (m) => {
       var f = ge(), k = R(f), p = r(k);
@@ -90,21 +90,21 @@ function rt(t, e) {
       var w = x(k, 2), y = r(w);
       j(y, () => e.main ?? M);
       var v = x(w, 2), q = r(v);
-      j(q, () => e.footer ?? M), s(m, f);
+      j(q, () => e.footer ?? M), l(m, f);
     }, h = (m) => {
-      var f = I(), k = R(f);
+      var f = Y(), k = R(f);
       {
         var p = (y) => {
           var v = xe(), q = R(v), z = r(q);
           j(z, () => e.sidebar ?? M);
           var L = x(q, 2), B = r(L);
-          j(B, () => e.main ?? M), s(y, v);
+          j(B, () => e.main ?? M), l(y, v);
         }, w = (y) => {
-          var v = I(), q = R(v);
+          var v = Y(), q = R(v);
           {
             var z = (L) => {
               var B = he(), U = r(B);
-              j(U, () => e.children ?? M), s(L, B);
+              j(U, () => e.children ?? M), l(L, B);
             };
             S(
               q,
@@ -114,7 +114,7 @@ function rt(t, e) {
               !0
             );
           }
-          s(y, v);
+          l(y, v);
         };
         S(
           k,
@@ -124,31 +124,32 @@ function rt(t, e) {
           !0
         );
       }
-      s(m, f);
+      l(m, f);
     };
-    S(d, (m) => {
+    S(s, (m) => {
       a() === "main" ? m(u) : m(h, !1);
     });
   }
-  s(t, c);
+  l(t, c);
 }
 function ye(t, e) {
-  t.target === t.currentTarget && e();
+  t.target === t.currentTarget && e(t);
 }
-function _e(t, e) {
-  t.key === "Escape" && e();
+function _e(t, e, a) {
+  t.key === "Escape" && e(t), a.onkeydown && a.onkeydown(t);
 }
 var ke = _('<div class="flex justify-end gap-3 p-6 border-t border-gray-200"><!></div>'), qe = _('<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" tabindex="-1"><div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"><div class="flex items-center justify-between p-6 border-b border-gray-200"><h2 class="text-xl font-semibold text-gray-900"> </h2> <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl" aria-label="Close">×</button></div> <div class="p-6"><!></div> <!></div></div>');
 function ot(t, e) {
+  I(e, !0);
   let a = b(e, "isOpen", 7, !1), o = b(e, "title", 3, "");
-  function i() {
-    a(!1);
+  function i(s) {
+    a(!1), e.onclick && s && e.onclick(s);
   }
-  var n = I(), g = R(n);
+  var n = Y(), g = R(n);
   {
-    var c = (d) => {
+    var c = (s) => {
       var u = qe();
-      u.__click = [ye, i], u.__keydown = [_e, i];
+      u.__click = [ye, i], u.__keydown = [_e, i, e];
       var h = r(u), m = r(h), f = r(m), k = r(f), p = x(f, 2);
       p.__click = i;
       var w = x(m, 2), y = r(w);
@@ -157,19 +158,19 @@ function ot(t, e) {
       {
         var q = (z) => {
           var L = ke(), B = r(L);
-          j(B, () => e.footer ?? M), s(z, L);
+          j(B, () => e.footer ?? M), l(z, L);
         };
         S(v, (z) => {
           e.footer && z(q);
         });
       }
-      E(() => T(k, o())), s(d, u);
+      E(() => T(k, o())), l(s, u);
     };
-    S(g, (d) => {
-      a() && d(c);
+    S(g, (s) => {
+      a() && s(c);
     });
   }
-  s(t, n);
+  l(t, n), F();
 }
 D(["click", "keydown"]);
 function ze(t, e) {
@@ -184,29 +185,29 @@ function nt(t, e) {
   function i() {
     a(!1);
   }
-  var n = I(), g = R(n);
+  var n = Y(), g = R(n);
   {
-    var c = (d) => {
+    var c = (s) => {
       var u = je(), h = R(u);
       h.__click = [ze, i], h.__keydown = [Ce, i];
       var m = x(h, 2), f = r(m);
       {
         var k = (y) => {
           var v = Le(), q = r(v), z = r(q), L = x(q, 2);
-          L.__click = i, E(() => T(z, o())), s(y, v);
+          L.__click = i, E(() => T(z, o())), l(y, v);
         };
         S(f, (y) => {
           o() && y(k);
         });
       }
       var p = x(f, 2), w = r(p);
-      j(w, () => e.children ?? M), s(d, u);
+      j(w, () => e.children ?? M), l(s, u);
     };
-    S(g, (d) => {
-      a() && d(c);
+    S(g, (s) => {
+      a() && s(c);
     });
   }
-  s(t, n);
+  l(t, n);
 }
 D(["click", "keydown"]);
 var Me = _('<div class="dropdown-content opacity-100 visible transform-none group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible svelte-1o1q13x"><!></div>'), Ne = _('<div class="dropdown-container group relative inline-block svelte-1o1q13x"><!> <!></div>');
@@ -235,15 +236,15 @@ function it(t, e) {
   j(n, () => e.trigger ?? M);
   var g = x(n, 2);
   {
-    var c = (d) => {
+    var c = (s) => {
       var u = Me(), h = r(u);
-      j(h, () => e.children ?? M), s(d, u);
+      j(h, () => e.children ?? M), l(s, u);
     };
-    S(g, (d) => {
-      a() && d(c);
+    S(g, (s) => {
+      a() && s(c);
     });
   }
-  E(() => P(i, "data-placement", o())), s(t, i);
+  E(() => P(i, "data-placement", o())), l(t, i);
 }
 function Be(t, e, a, o) {
   if (t.key === "ArrowLeft" || t.key === "ArrowRight") {
@@ -253,7 +254,7 @@ function Be(t, e, a, o) {
 }
 var Ee = (t, e, a) => e(N(a).id), Re = _('<button type="button" role="tab"> </button>'), Te = _('<div class="tabs-container"><div class="flex border-b border-gray-200" role="tablist" tabindex="0"></div> <div class="mt-4"><!></div></div>');
 function st(t, e) {
-  V(e, !0);
+  I(e, !0);
   let a = b(e, "tabs", 19, () => []), o = b(e, "activeTab", 7, ""), i = b(e, "variant", 3, "default");
   function n(h) {
     o(h);
@@ -265,17 +266,19 @@ function st(t, e) {
     var k = r(f);
     E(() => {
       W(f, 1, `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${o() === N(m).id ? i() === "pills" ? "bg-blue-100 text-blue-700 border-blue-500" : "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"}`), f.disabled = N(m).disabled, P(f, "aria-selected", o() === N(m).id), T(k, N(m).label);
-    }), s(h, f);
+    }), l(h, f);
   });
-  var d = x(c, 2), u = r(d);
-  j(u, () => e.children ?? M, () => ({ activeTab: o() })), s(t, g), H();
+  var s = x(c, 2), u = r(s);
+  j(u, () => e.children ?? M, () => ({ activeTab: o() })), l(t, g), F();
 }
 D(["keydown", "click"]);
-function Ue(t) {
+function Ue(t, e) {
+  e.onclick && e.onclick(t);
 }
 var Oe = _('<button class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2" aria-label="Dismiss alert" type="button"><svg class="w-4 h-4 text-current group-hover:scale-110 transition-transform duration-200 motion-reduce:transition-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>'), De = _('<h4 class="font-semibold text-sm mb-1 text-inherit"> </h4>'), Pe = _('<p class="text-sm leading-relaxed text-inherit"> </p>'), Fe = _('<div><!> <div><div class="flex-shrink-0 mt-0.5"><!></div> <div class="flex-1 min-w-0"><!> <!> <!></div></div></div>');
 function lt(t, e) {
-  let a = b(e, "variant", 3, "info"), o = b(e, "title", 3, ""), i = b(e, "message", 3, ""), n = b(e, "closable", 3, !1), g = b(e, "className", 3, ""), c = Y(e, [
+  I(e, !0);
+  let a = b(e, "variant", 3, "info"), o = b(e, "title", 3, ""), i = b(e, "message", 3, ""), n = b(e, "closable", 3, !1), g = b(e, "className", 3, ""), c = G(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -284,13 +287,14 @@ function lt(t, e) {
     "message",
     "closable",
     "className",
+    "onclick",
     "children"
-  ]), d = F(() => ({
+  ]), s = A(() => ({
     info: "bg-info-surface text-info-text border border-info",
     success: "bg-success-surface text-success-text border border-success",
     warning: "bg-warning-surface text-warning-text border border-warning",
     error: "bg-error-surface text-error-text border border-error"
-  })), u = F(() => a() === "success" || a() === "info" ? "status" : "alert"), h = F(() => ({
+  })), u = A(() => a() === "success" || a() === "info" ? "status" : "alert"), h = A(() => ({
     info: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
         </svg>`,
@@ -305,8 +309,8 @@ function lt(t, e) {
         </svg>`
   }));
   var m = Fe();
-  A(m, () => ({
-    class: `relative rounded-md p-4 border ${N(d)[a()] ?? ""} transition-all duration-200 motion-reduce:transition-none ${g() ?? ""}`,
+  K(m, () => ({
+    class: `relative rounded-md p-4 border ${N(s)[a()] ?? ""} transition-all duration-200 motion-reduce:transition-none ${g() ?? ""}`,
     role: N(u),
     "aria-live": a() === "success" || a() === "info" ? "polite" : "assertive",
     "aria-atomic": "true",
@@ -314,38 +318,38 @@ function lt(t, e) {
   }));
   var f = r(m);
   {
-    var k = (l) => {
+    var k = (d) => {
       var C = Oe();
-      C.__click = [Ue], s(l, C);
+      C.__click = [Ue, e], l(d, C);
     };
-    S(f, (l) => {
-      n() && l(k);
+    S(f, (d) => {
+      n() && d(k);
     });
   }
   var p = x(f, 2), w = r(p), y = r(w);
   de(y, () => N(h)[a()]);
   var v = x(w, 2), q = r(v);
   {
-    var z = (l) => {
+    var z = (d) => {
       var C = De(), O = r(C);
-      E(() => T(O, o())), s(l, C);
+      E(() => T(O, o())), l(d, C);
     };
-    S(q, (l) => {
-      o() && l(z);
+    S(q, (d) => {
+      o() && d(z);
     });
   }
   var L = x(q, 2);
   {
-    var B = (l) => {
+    var B = (d) => {
       var C = Pe(), O = r(C);
-      E(() => T(O, i())), s(l, C);
+      E(() => T(O, i())), l(d, C);
     };
-    S(L, (l) => {
-      i() && l(B);
+    S(L, (d) => {
+      i() && d(B);
     });
   }
   var U = x(L, 2);
-  j(U, () => e.children ?? M), E(() => W(p, 1, `flex items-start gap-3 ${n() ? "pr-8" : ""}`)), s(t, m);
+  j(U, () => e.children ?? M), E(() => W(p, 1, `flex items-start gap-3 ${n() ? "pr-8" : ""}`)), l(t, m), F();
 }
 D(["click"]);
 function Ie(t, e) {
@@ -363,7 +367,7 @@ function dt(t, e) {
   function c() {
     a() && typeof URL < "u" && URL.revokeObjectURL && URL.revokeObjectURL(a()), a(null);
   }
-  function d() {
+  function s() {
     var p;
     (p = N(g)) == null || p.click();
   }
@@ -371,21 +375,21 @@ function dt(t, e) {
   {
     var m = (p) => {
       var w = Ae(), y = r(w), v = x(y, 2), q = r(v), z = r(q);
-      G(z, {
+      V(z, {
         variant: "secondary",
         size: "sm",
-        onclick: d,
+        onclick: s,
         get disabled() {
           return o();
         },
         children: (B, U) => {
-          var l = K("Change");
-          s(B, l);
+          var d = H("Change");
+          l(B, d);
         },
         $$slots: { default: !0 }
       });
       var L = x(z, 2);
-      G(L, {
+      V(L, {
         variant: "danger",
         size: "sm",
         onclick: c,
@@ -393,23 +397,23 @@ function dt(t, e) {
           return o();
         },
         children: (B, U) => {
-          var l = K("Remove");
-          s(B, l);
+          var d = H("Remove");
+          l(B, d);
         },
         $$slots: { default: !0 }
-      }), E(() => P(y, "src", a())), s(p, w);
+      }), E(() => P(y, "src", a())), l(p, w);
     }, f = (p) => {
       var w = Ke();
-      w.__click = d, w.__keydown = [Ye, d];
+      w.__click = s, w.__keydown = [Ye, s];
       var y = r(w), v = x(r(y), 2), q = r(v), z = r(q);
-      E(() => T(z, n())), s(p, w);
+      E(() => T(z, n())), l(p, w);
     };
     S(h, (p) => {
       a() ? p(m) : p(f, !1);
     });
   }
   var k = x(h, 2);
-  k.__change = [Ie, a], me(k, (p) => $(g, p), () => N(g)), E(() => P(k, "accept", i())), s(t, u);
+  k.__change = [Ie, a], me(k, (p) => $(g, p), () => N(g)), E(() => P(k, "accept", i())), l(t, u);
 }
 D(["click", "keydown", "change"]);
 var He = _('<p class="text-sm text-text-secondary mt-1"> </p>'), Ve = (t, e) => $(e, !N(e)), We = ee('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> Preview', 1), Qe = ee('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg> Code', 1), Xe = _('<div class="component-preview svelte-1uavm9q"><!></div>'), Je = _('<div><div class="px-6 py-4 border-b border-border bg-surface-secondary"><div class="flex items-center justify-between"><div><h3 class="text-lg font-semibold text-text"> </h3> <!></div> <button class="flex items-center gap-2 px-3 py-1.5 text-sm text-text-secondary hover:text-text hover:bg-surface rounded-md transition-colors duration-200"><!></button></div></div> <div class="p-6"><!></div></div>');
@@ -419,7 +423,7 @@ const Ze = {
 };
 function ct(t, e) {
   Q(t, Ze);
-  let a = b(e, "description", 3, ""), o = b(e, "language", 3, "svelte"), i = b(e, "className", 3, ""), n = Y(e, [
+  let a = b(e, "description", 3, ""), o = b(e, "language", 3, "svelte"), i = b(e, "className", 3, ""), n = G(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -431,7 +435,7 @@ function ct(t, e) {
     "children"
   ]), g = Z(!1);
   var c = Je();
-  A(
+  K(
     c,
     () => ({
       class: `component-demo bg-surface border border-border rounded-lg overflow-hidden ${i() ?? ""}`,
@@ -441,35 +445,35 @@ function ct(t, e) {
     void 0,
     "svelte-1uavm9q"
   );
-  var d = r(c), u = r(d), h = r(u), m = r(h), f = r(m), k = x(m, 2);
+  var s = r(c), u = r(s), h = r(u), m = r(h), f = r(m), k = x(m, 2);
   {
-    var p = (l) => {
+    var p = (d) => {
       var C = He(), O = r(C);
-      E(() => T(O, a())), s(l, C);
+      E(() => T(O, a())), l(d, C);
     };
-    S(k, (l) => {
-      a() && l(p);
+    S(k, (d) => {
+      a() && d(p);
     });
   }
   var w = x(h, 2);
   w.__click = [Ve, g];
   var y = r(w);
   {
-    var v = (l) => {
+    var v = (d) => {
       var C = We();
-      s(l, C);
-    }, q = (l) => {
+      l(d, C);
+    }, q = (d) => {
       var C = Qe();
-      s(l, C);
+      l(d, C);
     };
-    S(y, (l) => {
-      N(g) ? l(v) : l(q, !1);
+    S(y, (d) => {
+      N(g) ? d(v) : d(q, !1);
     });
   }
-  var z = x(d, 2), L = r(z);
+  var z = x(s, 2), L = r(z);
   {
-    var B = (l) => {
-      ce(l, {
+    var B = (d) => {
+      ce(d, {
         get code() {
           return e.code;
         },
@@ -477,30 +481,30 @@ function ct(t, e) {
           return o();
         }
       });
-    }, U = (l) => {
+    }, U = (d) => {
       var C = Xe(), O = r(C);
-      j(O, () => e.children ?? M), s(l, C);
+      j(O, () => e.children ?? M), l(d, C);
     };
-    S(L, (l) => {
-      N(g) ? l(B) : l(U, !1);
+    S(L, (d) => {
+      N(g) ? d(B) : d(U, !1);
     });
   }
   E(() => {
     T(f, e.title), P(w, "aria-label", N(g) ? "Show preview" : "Show code");
-  }), s(t, c);
+  }), l(t, c);
 }
 D(["click"]);
 var $e = _('<div class="space-y-4"><!> <!> <!> <!></div> <div class="pt-4"><!></div>', 1), et = _(`<div><div class="mb-6"><h2 class="text-2xl font-bold text-text mb-2">Get in Touch</h2> <p class="text-text-secondary">We'd love to hear from you. Send us a message and we'll respond as
             soon as possible.</p></div> <!></div>`);
 function vt(t, e) {
-  V(e, !0);
+  I(e, !0);
   let a = b(e, "className", 3, ""), o = le({ name: "", email: "", message: "", subscribe: !1 });
   function i(c) {
-    const d = new FormData(c.target), u = {
-      name: d.get("name") || "",
-      email: d.get("email") || "",
-      message: d.get("message") || "",
-      subscribe: d.get("subscribe") === "on" || !1
+    const s = new FormData(c.target), u = {
+      name: s.get("name") || "",
+      email: s.get("email") || "",
+      message: s.get("message") || "",
+      subscribe: s.get("subscribe") === "on" || !1
     };
     console.log("Form submitted with data:", u);
   }
@@ -508,7 +512,7 @@ function vt(t, e) {
   be(g, {
     onsubmit: i,
     className: "space-y-4",
-    children: (c, d) => {
+    children: (c, s) => {
       var u = $e(), h = R(u), m = r(h);
       X(m, {
         type: "text",
@@ -552,19 +556,19 @@ function vt(t, e) {
         onchange: (v) => o.subscribe = v.target.checked
       });
       var w = x(h, 2), y = r(w);
-      G(y, {
+      V(y, {
         type: "submit",
         variant: "primary",
         size: "md",
         children: (v, q) => {
-          var z = K("Send Message");
-          s(v, z);
+          var z = H("Send Message");
+          l(v, z);
         },
         $$slots: { default: !0 }
-      }), s(c, u);
+      }), l(c, u);
     },
     $$slots: { default: !0 }
-  }), E(() => W(n, 1, `max-w-md mx-auto ${a() ?? ""}`)), s(t, n), H();
+  }), E(() => W(n, 1, `max-w-md mx-auto ${a() ?? ""}`)), l(t, n), F();
 }
 export {
   lt as A,

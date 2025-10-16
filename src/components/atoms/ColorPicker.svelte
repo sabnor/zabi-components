@@ -10,6 +10,7 @@
         value = "",
         label = "",
         disabled = false,
+        onclick,
         ...restProps
     }: Props = $props();
 
@@ -53,7 +54,10 @@
                     ? 'border-blue-500 ring-2 ring-blue-200'
                     : 'border-gray-300 hover:border-gray-400'}"
                 style="background-color: {color.value};"
-                onclick={() => (value = color.value)}
+                onclick={(e) => {
+                    value = color.value;
+                    if (onclick) onclick(e);
+                }}
                 {disabled}
                 role="radio"
                 aria-checked={value === color.value}
