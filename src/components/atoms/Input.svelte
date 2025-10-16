@@ -1,6 +1,5 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { getInputVariantClasses } from "../../lib/variant-utils";
     import { generateId } from "../../lib/ssr-safe";
 
     interface Props {
@@ -43,7 +42,18 @@
     });
 
     // Get variant class using utility function
-    let variantClass = $derived(getInputVariantClasses(variant));
+    let variantClass = $derived(() => {
+        const variantMap = {
+            default:
+                "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
+            success:
+                "border-green-300 focus:border-green-500 focus:ring-green-500",
+            warning:
+                "border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500",
+            error: "border-red-300 focus:border-red-500 focus:ring-red-500",
+        };
+        return variantMap[variant] || variantMap.default;
+    });
 
     // Input classes
     let inputClasses = $derived(
