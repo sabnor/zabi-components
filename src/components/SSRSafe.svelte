@@ -20,14 +20,9 @@
     onMount(() => {
         mounted = true;
     });
-
-    // Check if we're in browser environment
-    let isBrowser = $derived(
-        typeof window !== "undefined" && typeof document !== "undefined",
-    );
 </script>
 
-{#if isBrowser && mounted && component}
+{#if mounted && component}
     {@const Component = component}
     <Component {...props}>
         {@render children?.()}

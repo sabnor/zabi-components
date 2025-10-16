@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
     import Navigation from "../../components/organisms/Navigation.svelte";
     import ThemeToggle from "../../components/atoms/ThemeToggle.svelte";
     import CodeBlock from "../../components/atoms/CodeBlock.svelte";
@@ -155,7 +156,7 @@ let name = $state("");
                         Browse our interactive component showcase
                     </p>
                     <Button
-                        onclick={() => (window.location.href = "/components")}
+                        onclick={() => goto("/components")}
                         variant="primary"
                     >
                         View Components
@@ -167,8 +168,7 @@ let name = $state("");
                         Check out our GitHub repository for help
                     </p>
                     <Button
-                        onclick={() =>
-                            (window.location.href = "https://github.com")}
+                        onclick={() => goto("https://github.com")}
                         variant="secondary"
                     >
                         Visit GitHub

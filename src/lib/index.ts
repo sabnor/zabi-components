@@ -185,6 +185,9 @@ export interface TabsEvents {
 // Variant utilities for semantic colors
 export * from './variant-utils';
 
+// SSR-safe utilities for SvelteKit compatibility
+export * from './ssr-safe';
+
 // Simple utility functions
 export const createId = (prefix: string = 'id'): string => {
     if (typeof window !== 'undefined') {
@@ -193,6 +196,9 @@ export const createId = (prefix: string = 'id'): string => {
         return `${prefix}-ssr-${Date.now()}`;
     }
 };
+
+// Re-export SSR-safe utilities for convenience
+export { generateId, isBrowser, safeLocalStorage, safeDocument, safeWindow } from './ssr-safe';
 
 export const cn = (...classes: (string | undefined | null | false)[]): string =>
     classes.filter(Boolean).join(' ');

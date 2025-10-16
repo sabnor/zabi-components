@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
     import Layout from "../components/molecules/Layout.svelte";
     import Navigation from "../components/organisms/Navigation.svelte";
     import ThemeToggle from "../components/atoms/ThemeToggle.svelte";
@@ -125,7 +126,7 @@
                     <Button
                         variant="primary"
                         size="lg"
-                        onclick={() => (window.location.href = "/docs")}
+                        onclick={() => goto("/docs")}
                         className="px-8 py-3"
                     >
                         Get Started
@@ -133,7 +134,7 @@
                     <Button
                         variant="secondary"
                         size="lg"
-                        onclick={() => (window.location.href = "/components")}
+                        onclick={() => goto("/components")}
                         className="px-8 py-3"
                     >
                         View Components
@@ -334,7 +335,7 @@
                 <Button
                     variant="primary"
                     size="lg"
-                    onclick={() => (window.location.href = "/components")}
+                    onclick={() => goto("/components")}
                     className="px-8 py-3"
                 >
                     View All Components

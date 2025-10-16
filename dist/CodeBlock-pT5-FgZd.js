@@ -1,38 +1,39 @@
-import { t as V, j as O, k as Q, l as W, m as X, n as T, o as Y, p as t, f as k, a as D, q as Z, b as x, c as S, d as q, r as P, g as m, v as y, w as $, h, x as F, i as I, y as N, z as H, A as G, B as L, C as R, D as ee, e as ae, s as U, E as J } from "./props-BKbHJRuR.js";
-function te(r, e, a = !1, o = !1, i = !1) {
-  var u = r, d = "";
-  V(() => {
+import { z as P, H as W, I as X, J as Y, K as Z, L as A, M as $, p as t, f as k, c as V, y as ee, d as x, e as F, h as H, r as T, g as n, N as y, B as ae, k as h, s as D, l as K, i as I, j as q, A as N, F as E, O, G, C as J, P as te, x as re, Q } from "./ssr-safe-bsWGK4V4.js";
+import { onMount as R } from "svelte";
+function oe(r, e, a = !1, o = !1, d = !1) {
+  var g = r, u = "";
+  P(() => {
     var s = (
       /** @type {Effect} */
-      O
+      W
     );
-    if (d !== (d = e() ?? "") && (s.nodes_start !== null && (Q(
+    if (u !== (u = e() ?? "") && (s.nodes_start !== null && (X(
       s.nodes_start,
       /** @type {TemplateNode} */
       s.nodes_end
-    ), s.nodes_start = s.nodes_end = null), d !== "")) {
-      var n = d + "";
-      a ? n = `<svg>${n}</svg>` : o && (n = `<math>${n}</math>`);
-      var l = W(n);
+    ), s.nodes_start = s.nodes_end = null), u !== "")) {
+      var i = u + "";
+      a ? i = `<svg>${i}</svg>` : o && (i = `<math>${i}</math>`);
+      var l = Y(i);
       if ((a || o) && (l = /** @type {Element} */
-      T(l)), X(
+      A(l)), Z(
         /** @type {TemplateNode} */
-        T(l),
+        A(l),
         /** @type {TemplateNode} */
         l.lastChild
       ), a || o)
-        for (; T(l); )
-          u.before(
+        for (; A(l); )
+          g.before(
             /** @type {Node} */
-            T(l)
+            A(l)
           );
       else
-        u.before(l);
+        g.before(l);
     }
   });
 }
-function re(r, e) {
-  Y(() => {
+function se(r, e) {
+  $(() => {
     var a = r.getRootNode(), o = (
       /** @type {ShadowRoot} */
       a.host ? (
@@ -45,15 +46,15 @@ function re(r, e) {
       )
     );
     if (!o.querySelector("#" + e.hash)) {
-      const i = document.createElement("style");
-      i.id = e.hash, i.textContent = e.code, o.appendChild(i);
+      const d = document.createElement("style");
+      d.id = e.hash, d.textContent = e.code, o.appendChild(d);
     }
   });
 }
-var oe = k("<button><!></button>");
-function ye(r, e) {
-  q(e, !0);
-  let a = t(e, "variant", 3, "primary"), o = t(e, "size", 3, "md"), i = t(e, "disabled", 3, !1), u = t(e, "type", 3, "button"), d = t(e, "className", 3, ""), s = P(e, [
+var le = k("<button><!></button>");
+function we(r, e) {
+  H(e, !0);
+  let a = t(e, "variant", 3, "primary"), o = t(e, "size", 3, "md"), d = t(e, "disabled", 3, !1), g = t(e, "type", 3, "button"), u = t(e, "className", 3, ""), s = T(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -63,7 +64,7 @@ function ye(r, e) {
     "type",
     "className",
     "children"
-  ]), n = y(() => ({
+  ]), i = y(() => ({
     sm: "px-3 py-1.5 text-sm font-medium",
     md: "px-4 py-2 text-sm font-medium",
     lg: "px-6 py-3 text-base font-semibold"
@@ -80,21 +81,21 @@ function ye(r, e) {
     "focus:outline-none focus:ring-2 focus:ring-offset-2",
     "active:scale-95 transform-gpu",
     "shadow-sm hover:shadow-md",
-    m(n)[o()],
-    m(l)[a()],
-    d()
+    n(i)[o()],
+    n(l)[a()],
+    u()
   ].filter(Boolean).join(" "));
-  var c = oe();
-  D(c, () => ({
-    type: u(),
-    class: m(p),
-    disabled: i(),
+  var c = le();
+  V(c, () => ({
+    type: g(),
+    class: n(p),
+    disabled: d(),
     ...s
   }));
   var w = h(c);
-  Z(w, () => e.children ?? $), x(r, c), S();
+  ee(w, () => e.children ?? ae), x(r, c), F();
 }
-function K(r) {
+function U(r) {
   const e = {
     default: "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
     success: "border-green-300 focus:border-green-500 focus:ring-green-500",
@@ -104,7 +105,7 @@ function K(r) {
   };
   return e[r] || e.default;
 }
-function xe(r) {
+function _e(r) {
   const e = {
     default: "border-gray-200 bg-white",
     success: "border-green-200 bg-green-50",
@@ -114,7 +115,7 @@ function xe(r) {
   };
   return e[r] || e.default;
 }
-function E(r, e) {
+function S(r, e) {
   var o;
   const a = {
     default: {
@@ -145,20 +146,20 @@ function E(r, e) {
   };
   return ((o = a[r]) == null ? void 0 : o[e]) || a.default[e];
 }
-function pe(r) {
+function ke(r) {
   return {
-    border: E(r, "border"),
-    text: E(r, "text"),
-    bg: E(r, "bg")
+    border: S(r, "border"),
+    text: S(r, "text"),
+    bg: S(r, "bg")
   };
 }
-function we(r, e) {
+function Ce(r, e) {
   return r.reduce((a, o) => (a[o] = `${e}-${o}`, a), {});
 }
-var se = k("<label> </label>"), le = k("<div><!> <input/></div>");
-function _e(r, e) {
-  q(e, !0);
-  let a = t(e, "value", 7, ""), o = t(e, "type", 3, "text"), i = t(e, "name", 3, ""), u = t(e, "label", 3, ""), d = t(e, "placeholder", 3, ""), s = t(e, "disabled", 3, !1), n = t(e, "size", 3, "md"), l = t(e, "variant", 3, "default"), p = P(e, [
+var ne = k("<label> </label>"), ie = k("<div><!> <input/></div>");
+function ze(r, e) {
+  H(e, !0);
+  let a = t(e, "value", 7, ""), o = t(e, "type", 3, "text"), d = t(e, "name", 3, ""), g = t(e, "label", 3, ""), u = t(e, "placeholder", 3, ""), s = t(e, "disabled", 3, !1), i = t(e, "size", 3, "md"), l = t(e, "variant", 3, "default"), p = T(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -171,46 +172,50 @@ function _e(r, e) {
     "size",
     "variant",
     "oninput"
-  ]), c = F(typeof window < "u" ? `input-${Math.random().toString(36).substr(2, 9)}` : `input-ssr-${Date.now()}`), w = y(() => ({
+  ]), c = q("");
+  R(() => {
+    D(c, K("input"), !0);
+  });
+  let w = y(() => ({
     sm: "px-3 py-1.5 text-sm",
     md: "px-4 py-2 text-sm",
     lg: "px-5 py-3 text-base"
-  })), C = y(() => K(l())), g = y(() => [
+  })), C = y(() => U(l())), b = y(() => [
     "w-full rounded-md transition-colors duration-200",
     "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
     "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
-    m(w)[n()],
-    m(C)
-  ].join(" ")), b = y(() => "block text-sm font-medium text-primary mb-1");
-  function z(f) {
-    const v = f.target;
-    a(v.value), e.oninput && e.oninput(f);
+    n(w)[i()],
+    n(C)
+  ].join(" ")), f = y(() => "block text-sm font-medium text-primary mb-1");
+  function z(v) {
+    const m = v.target;
+    a(m.value), e.oninput && e.oninput(v);
   }
-  var M = le(), j = h(M);
+  var M = ie(), j = h(M);
   {
-    var _ = (f) => {
-      var v = se();
-      H(v, 1, G(m(b)));
-      var A = h(v);
-      V(() => {
-        L(v, "for", c), R(A, u());
-      }), x(f, v);
+    var _ = (v) => {
+      var m = ne();
+      E(m, 1, O(n(f)));
+      var L = h(m);
+      P(() => {
+        G(m, "for", n(c)), J(L, g());
+      }), x(v, m);
     };
-    I(j, (f) => {
-      u() && f(_);
+    I(j, (v) => {
+      g() && v(_);
     });
   }
   var B = N(j, 2);
-  D(
+  V(
     B,
     () => ({
-      id: c,
+      id: n(c),
       type: o(),
-      name: i(),
+      name: d(),
       value: a(),
-      placeholder: d(),
+      placeholder: u(),
       disabled: s(),
-      class: m(g),
+      class: n(b),
       oninput: z,
       ...p
     }),
@@ -218,12 +223,12 @@ function _e(r, e) {
     void 0,
     void 0,
     !0
-  ), x(r, M), S();
+  ), x(r, M), F();
 }
-var ne = k("<label> </label>"), ie = k("<div><!> <textarea></textarea></div>");
-function ke(r, e) {
-  q(e, !0);
-  let a = t(e, "value", 7, ""), o = t(e, "name", 3, ""), i = t(e, "label", 3, ""), u = t(e, "placeholder", 3, ""), d = t(e, "disabled", 3, !1), s = t(e, "rows", 3, 4), n = t(e, "size", 3, "md"), l = t(e, "variant", 3, "default"), p = P(e, [
+var de = k("<label> </label>"), ue = k("<div><!> <textarea></textarea></div>");
+function Me(r, e) {
+  H(e, !0);
+  let a = t(e, "value", 7, ""), o = t(e, "name", 3, ""), d = t(e, "label", 3, ""), g = t(e, "placeholder", 3, ""), u = t(e, "disabled", 3, !1), s = t(e, "rows", 3, 4), i = t(e, "size", 3, "md"), l = t(e, "variant", 3, "default"), p = T(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -236,53 +241,53 @@ function ke(r, e) {
     "size",
     "variant",
     "oninput"
-  ]), c = F(typeof window < "u" ? `textarea-${Math.random().toString(36).substr(2, 9)}` : `textarea-ssr-${Date.now()}`), w = y(() => ({
+  ]), c = te(typeof window < "u" ? `textarea-${Math.random().toString(36).substr(2, 9)}` : `textarea-ssr-${Date.now()}`), w = y(() => ({
     sm: "px-3 py-1.5 text-sm",
     md: "px-4 py-2 text-sm",
     lg: "px-5 py-3 text-base"
-  })), C = y(() => K(l())), g = y(() => [
+  })), C = y(() => U(l())), b = y(() => [
     "w-full rounded-md transition-colors duration-200",
     "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
     "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
     "resize-y",
-    m(w)[n()],
-    m(C)
-  ].join(" ")), b = y(() => "block text-sm font-medium text-primary mb-1");
-  function z(f) {
-    const v = f.target;
-    a(v.value), e.oninput && e.oninput(f);
+    n(w)[i()],
+    n(C)
+  ].join(" ")), f = y(() => "block text-sm font-medium text-primary mb-1");
+  function z(v) {
+    const m = v.target;
+    a(m.value), e.oninput && e.oninput(v);
   }
-  var M = ie(), j = h(M);
+  var M = ue(), j = h(M);
   {
-    var _ = (f) => {
-      var v = ne();
-      H(v, 1, G(m(b)));
-      var A = h(v);
-      V(() => {
-        L(v, "for", c), R(A, i());
-      }), x(f, v);
+    var _ = (v) => {
+      var m = de();
+      E(m, 1, O(n(f)));
+      var L = h(m);
+      P(() => {
+        G(m, "for", c), J(L, d());
+      }), x(v, m);
     };
-    I(j, (f) => {
-      i() && f(_);
+    I(j, (v) => {
+      d() && v(_);
     });
   }
   var B = N(j, 2);
-  D(B, () => ({
+  V(B, () => ({
     id: c,
     name: o(),
     value: a(),
-    placeholder: u(),
-    disabled: d(),
+    placeholder: g(),
+    disabled: u(),
     rows: s(),
-    class: m(g),
+    class: n(b),
     oninput: z,
     ...p
-  })), x(r, M), S();
+  })), x(r, M), F();
 }
-var de = k('<label class="text-sm font-medium cursor-pointer"> </label>'), ue = k('<div class="flex items-center gap-2"><input/> <!></div>');
-function Ce(r, e) {
-  q(e, !0);
-  let a = t(e, "checked", 7, !1), o = t(e, "name", 3, ""), i = t(e, "disabled", 3, !1), u = t(e, "label", 3, ""), d = P(e, [
+var ce = k('<label class="text-sm font-medium cursor-pointer"> </label>'), ge = k('<div class="flex items-center gap-2"><input/> <!></div>');
+function je(r, e) {
+  H(e, !0);
+  let a = t(e, "checked", 7, !1), o = t(e, "name", 3, ""), d = t(e, "disabled", 3, !1), g = t(e, "label", 3, ""), u = T(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -290,27 +295,31 @@ function Ce(r, e) {
     "name",
     "disabled",
     "label"
-  ]), s = F(typeof window < "u" ? `checkbox-${Math.random().toString(36).substr(2, 9)}` : `checkbox-ssr-${Date.now()}`), n = y(() => [
+  ]), s = q("");
+  R(() => {
+    D(s, K("checkbox"), !0);
+  });
+  let i = y(() => [
     "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded",
     "focus:ring-blue-500 focus:ring-2",
     "disabled:opacity-50 disabled:cursor-not-allowed"
   ].join(" "));
-  function l(g) {
-    const b = g.target;
-    a(b.checked);
+  function l(b) {
+    const f = b.target;
+    a(f.checked);
   }
-  var p = ue(), c = h(p);
-  D(
+  var p = ge(), c = h(p);
+  V(
     c,
     () => ({
       type: "checkbox",
-      id: s,
+      id: n(s),
       name: o(),
       checked: a(),
-      disabled: i(),
-      class: m(n),
+      disabled: d(),
+      class: n(i),
       onchange: l,
-      ...d
+      ...u
     }),
     void 0,
     void 0,
@@ -319,23 +328,23 @@ function Ce(r, e) {
   );
   var w = N(c, 2);
   {
-    var C = (g) => {
-      var b = de(), z = h(b);
-      V(() => {
-        L(b, "for", s), R(z, u());
-      }), x(g, b);
+    var C = (b) => {
+      var f = ce(), z = h(f);
+      P(() => {
+        G(f, "for", n(s)), J(z, g());
+      }), x(b, f);
     };
-    I(w, (g) => {
-      u() && g(C);
+    I(w, (b) => {
+      g() && b(C);
     });
   }
-  x(r, p), S();
+  x(r, p), F();
 }
-async function ce(r, e, a) {
+async function be(r, e, a) {
   try {
-    await navigator.clipboard.writeText(e.code), U(a, !0), setTimeout(
+    await navigator.clipboard.writeText(e.code), D(a, !0), setTimeout(
       () => {
-        U(a, !1);
+        D(a, !1);
       },
       2e3
     );
@@ -343,8 +352,8 @@ async function ce(r, e, a) {
     console.error("Failed to copy code:", o);
   }
 }
-var ge = J('<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Copied!', 1), be = J('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> Copy', 1), fe = k('<button class="flex items-center gap-2 px-3 py-1 text-xs text-gray-300 hover:text-white hover:bg-gray-700 rounded transition-colors duration-200" aria-label="Copy code to clipboard"><!></button>'), ve = k('<div><div class="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700"><div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-500"></div> <div class="w-3 h-3 rounded-full bg-yellow-500"></div> <div class="w-3 h-3 rounded-full bg-green-500"></div></div> <!></div> <pre class="p-4 overflow-x-auto text-sm text-gray-100 leading-relaxed"><code><!></code></pre></div>');
-const me = {
+var fe = Q('<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Copied!', 1), ve = Q('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> Copy', 1), me = k('<button class="flex items-center gap-2 px-3 py-1 text-xs text-gray-300 hover:text-white hover:bg-gray-700 rounded transition-colors duration-200" aria-label="Copy code to clipboard"><!></button>'), he = k('<div><div class="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700"><div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-500"></div> <div class="w-3 h-3 rounded-full bg-yellow-500"></div> <div class="w-3 h-3 rounded-full bg-green-500"></div></div> <!></div> <pre class="p-4 overflow-x-auto text-sm text-gray-100 leading-relaxed"><code><!></code></pre></div>');
+const ye = {
   hash: "svelte-1dmazsz",
   code: `.code-block.svelte-1dmazsz {font-family:"Monaco", "Menlo", "Ubuntu Mono", monospace;}
 
@@ -356,9 +365,9 @@ const me = {
     .language-typescript .token.string {color:#e6db74;}.language-javascript .token.function,
     .language-typescript .token.function {color:#a6e22e;}`
 };
-function ze(r, e) {
-  re(r, me);
-  let a = t(e, "language", 3, "svelte"), o = t(e, "className", 3, ""), i = t(e, "showCopyButton", 3, !0), u = P(e, [
+function Be(r, e) {
+  se(r, ye);
+  let a = t(e, "language", 3, "svelte"), o = t(e, "className", 3, ""), d = t(e, "showCopyButton", 3, !0), g = T(e, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -366,57 +375,57 @@ function ze(r, e) {
     "language",
     "className",
     "showCopyButton"
-  ]), d = ae(!1);
-  var s = ve();
-  D(
+  ]), u = q(!1);
+  var s = he();
+  V(
     s,
     () => ({
       class: `code-block relative bg-gray-900 rounded-lg overflow-hidden ${o() ?? ""}`,
-      ...u
+      ...g
     }),
     void 0,
     void 0,
     "svelte-1dmazsz"
   );
-  var n = h(s), l = N(h(n), 2);
+  var i = h(s), l = N(h(i), 2);
   {
-    var p = (g) => {
-      var b = fe();
-      b.__click = [ce, e, d];
-      var z = h(b);
+    var p = (b) => {
+      var f = me();
+      f.__click = [be, e, u];
+      var z = h(f);
       {
         var M = (_) => {
-          var B = ge();
+          var B = fe();
           x(_, B);
         }, j = (_) => {
-          var B = be();
+          var B = ve();
           x(_, B);
         };
         I(z, (_) => {
-          m(d) ? _(M) : _(j, !1);
+          n(u) ? _(M) : _(j, !1);
         });
       }
-      x(g, b);
+      x(b, f);
     };
-    I(l, (g) => {
-      i() && g(p);
+    I(l, (b) => {
+      d() && b(p);
     });
   }
-  var c = N(n, 2), w = h(c), C = h(w);
-  te(C, () => e.code), V(() => H(w, 1, `language-${a() ?? ""}`, "svelte-1dmazsz")), x(r, s);
+  var c = N(i, 2), w = h(c), C = h(w);
+  oe(C, () => e.code), P(() => E(w, 1, `language-${a() ?? ""}`, "svelte-1dmazsz")), x(r, s);
 }
-ee(["click"]);
+re(["click"]);
 export {
-  ye as B,
-  Ce as C,
-  _e as I,
-  ke as T,
-  xe as a,
-  E as b,
-  pe as c,
-  we as d,
-  ze as e,
-  re as f,
-  K as g,
-  te as h
+  we as B,
+  je as C,
+  ze as I,
+  Me as T,
+  Be as a,
+  _e as b,
+  S as c,
+  ke as d,
+  Ce as e,
+  se as f,
+  U as g,
+  oe as h
 };
