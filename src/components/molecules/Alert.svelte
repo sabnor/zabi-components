@@ -95,12 +95,12 @@
         <!-- Text content -->
         <div class="flex-1 min-w-0">
             {#if title}
-                <h4 class="font-semibold text-sm mb-1" style="color: inherit;">
+                <h4 class="font-semibold text-sm mb-1 text-inherit">
                     {title}
                 </h4>
             {/if}
             {#if message}
-                <p class="text-sm leading-relaxed" style="color: inherit;">
+                <p class="text-sm leading-relaxed text-inherit">
                     {message}
                 </p>
             {/if}

@@ -8,6 +8,7 @@
 
     interface Props {
         className?: string;
+        onsubmit?: (event: SubmitEvent) => void;
     }
 
     let {

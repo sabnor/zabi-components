@@ -1,15 +1,10 @@
 // Comprehensive component type definitions for zabi-components
 // This file provides proper TypeScript support for all components
 
-import type { SvelteComponent } from 'svelte';
-import type { ComponentEvents } from 'svelte';
+// Enhanced component type with proper event handling for Svelte 5
+import type { Component } from 'svelte';
 
-// Enhanced component type with proper event handling
-export type ZabiComponent<T = any, E = ComponentEvents<T>> = new (...args: any[]) => {
-    $set(props: Partial<T>): void;
-    $destroy(): void;
-    $on<K extends keyof E>(event: K, handler: (event: CustomEvent<E[K]>) => void): () => void;
-};
+export type ZabiComponent<T = any, E = any> = Component<T, E>;
 
 // Button component props and events
 export interface ButtonProps {

@@ -1,5 +1,6 @@
 // Export molecular components
 export { default as Alert } from './Alert.svelte';
+export { default as ComponentDemo } from './ComponentDemo.svelte';
 export { default as ContactForm } from './ContactForm.svelte';
 export { default as Dropdown } from './Dropdown.svelte';
 export { default as Form } from './Form.svelte';

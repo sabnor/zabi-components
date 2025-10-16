@@ -11,6 +11,7 @@
         disabled?: boolean;
         type?: "button" | "submit" | "reset";
         className?: string;
+        onclick?: (event: MouseEvent) => void;
     }
 
     let {
@@ -33,7 +34,7 @@
     // Enhanced variant classes with better focus states and transitions
     let variantClasses = $derived({
         primary:
-            "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400",
+            "bg-gray-100 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400",
         secondary:
             "bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-800 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400",
         danger: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:bg-red-400",

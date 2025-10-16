@@ -59,12 +59,14 @@ export { default as Navigation } from '../components/organisms/Navigation.svelte
 // TYPES - TypeScript definitions
 // ============================================================================
 
-// Remove old Svelte 4 component types
-// export type ZabiComponent<T = any, E = any> = new (...args: any[]) => {
-//     $set(props: Partial<T>): void;
-//     $destroy(): void;
-//     $on<K extends keyof E>(event: K, handler: (event: CustomEvent<E[K]>) => void): () => void;
-// };
+// Base component props interface
+export interface BaseComponentProps {
+    class?: string;
+    className?: string;
+    style?: string;
+    id?: string;
+    [key: string]: any;
+}
 
 // Button types
 export interface ButtonProps extends BaseComponentProps {
