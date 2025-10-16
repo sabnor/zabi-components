@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    import { generateId } from "../../lib/ssr-safe";
+
     interface Props {
         checked?: boolean;
         name?: string;
@@ -16,11 +19,11 @@
     }: Props = $props();
 
     // Generate unique ID - SSR safe
-    let checkboxId = $state(
-        typeof window !== "undefined"
-            ? `checkbox-${Math.random().toString(36).substr(2, 9)}`
-            : `checkbox-ssr-${Date.now()}`,
-    );
+    let checkboxId = $state("");
+
+    onMount(() => {
+        checkboxId = generateId("checkbox");
+    });
 
     // Simple checkbox classes
     let checkboxClasses = $derived(

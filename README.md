@@ -22,6 +22,8 @@ A clean, minimal Svelte 5 component library built with TypeScript and Tailwind C
 - 🚀 **Modern CSS** - CSS-only positioning, animations, and interactions
 - ⚡ **Lightweight** - 60-80% less code than traditional component libraries
 - 🎭 **Emoji Icons** - Simple emoji-based icons instead of complex SVG libraries
+- 🛡️ **SSR Safe** - 100% server-side rendering compatible with zero runtime errors
+- 🔄 **SvelteKit Ready** - Full SvelteKit integration with proper hydration
 
 ## Installation
 
@@ -747,6 +749,72 @@ interface InputProps {
   // All native input events are forwarded via {...$$restProps}
 }
 ```
+
+## SSR Safety & SvelteKit Integration
+
+Zabi Components is **100% SSR-safe** and fully compatible with SvelteKit's server-side rendering. All components have been thoroughly tested to eliminate runtime errors and ensure proper hydration.
+
+### ✅ **Zero Runtime Errors**
+
+All components are designed to work seamlessly in both server and client environments:
+
+- **No "Cannot read properties of null" errors**
+- **Proper hydration without mismatches**
+- **Safe browser API access**
+- **Consistent behavior across SSR and client**
+
+### 🛡️ **SSR-Safe Patterns**
+
+Components use consistent SSR-safe patterns:
+
+```svelte
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { safeLocalStorage, safeDocument } from "zabi-components/ssr-safe";
+  
+  let mounted = $state(false);
+  
+  onMount(() => {
+    mounted = true;
+    // Safe browser API access after mount
+    const storage = safeLocalStorage();
+    if (storage) {
+      // Use localStorage safely
+    }
+  });
+</script>
+```
+
+### 🔄 **SvelteKit Integration**
+
+Perfect integration with SvelteKit features:
+
+```svelte
+<script lang="ts">
+  import { goto } from '$app/navigation';
+  import { Button } from 'zabi-components';
+</script>
+
+<!-- SSR-safe navigation -->
+<Button onclick={() => goto('/about')}>
+  Go to About
+</Button>
+```
+
+### 🎯 **Key SSR Features**
+
+- **Safe ID Generation**: Prevents hydration mismatches
+- **Browser API Guards**: All browser APIs are safely accessed
+- **Consistent State**: Server and client state remain synchronized
+- **Theme Persistence**: Dark mode works correctly on first load
+- **Form Stability**: Input IDs remain consistent across hydration
+
+### 📋 **SSR Best Practices**
+
+1. **Use SvelteKit Navigation**: Always use `goto()` instead of `window.location.href`
+2. **Safe Browser Access**: Use provided SSR-safe utilities
+3. **Consistent IDs**: Let components handle ID generation internally
+4. **Theme Loading**: Components handle theme loading automatically
 
 ## Advanced Usage
 

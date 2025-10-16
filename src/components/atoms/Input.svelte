@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import { getInputVariantClasses } from "../../lib/variant-utils";
+    import { generateId } from "../../lib/ssr-safe";
 
     interface Props {
         value?: string;
@@ -27,11 +29,11 @@
     }: Props = $props();
 
     // Generate unique ID - SSR safe
-    let inputId = $state(
-        typeof window !== "undefined"
-            ? `input-${Math.random().toString(36).substr(2, 9)}`
-            : `input-ssr-${Date.now()}`,
-    );
+    let inputId = $state("");
+
+    onMount(() => {
+        inputId = generateId("input");
+    });
 
     // Simple size classes
     let sizeClasses = $derived({

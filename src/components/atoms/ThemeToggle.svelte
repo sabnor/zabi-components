@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    import { safeLocalStorage, safeDocument } from "../../lib/ssr-safe";
+
     interface Props {
         isDark?: boolean;
         onclick?: (event: Event) => void;
@@ -8,15 +11,12 @@
 
     let mounted = $state(false);
 
-    $effect(() => {
+    onMount(() => {
         mounted = true;
         // Check for saved theme preference or default to light mode
-        if (
-            mounted &&
-            typeof window !== "undefined" &&
-            typeof localStorage !== "undefined"
-        ) {
-            const savedTheme = localStorage.getItem("theme");
+        const storage = safeLocalStorage();
+        if (storage) {
+            const savedTheme = storage.getItem("theme");
             const prefersDark = window.matchMedia(
                 "(prefers-color-scheme: dark)",
             ).matches;
@@ -29,17 +29,19 @@
     function toggleTheme(event: Event) {
         isDark = !isDark;
         updateTheme();
-        if (mounted && typeof localStorage !== "undefined") {
-            localStorage.setItem("theme", isDark ? "dark" : "light");
+        const storage = safeLocalStorage();
+        if (mounted && storage) {
+            storage.setItem("theme", isDark ? "dark" : "light");
         }
     }
 
     function updateTheme() {
-        if (mounted && typeof document !== "undefined") {
+        const doc = safeDocument();
+        if (mounted && doc) {
             if (isDark) {
-                document.documentElement.classList.add("dark");
+                doc.documentElement.classList.add("dark");
             } else {
-                document.documentElement.classList.remove("dark");
+                doc.documentElement.classList.remove("dark");
             }
         }
     }
