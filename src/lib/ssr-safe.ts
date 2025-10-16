@@ -1,48 +1,47 @@
 // SSR-safe utilities for zabi-components
 // This ensures components work properly during server-side rendering
 
-import { browser } from '$app/environment';
-
+// Check if we're in a browser environment
 export function isBrowser(): boolean {
-    return browser;
+    return typeof window !== 'undefined';
 }
 
 export function safeWindow(): Window | undefined {
-    return browser ? window : undefined;
+    return isBrowser() ? window : undefined;
 }
 
 export function safeDocument(): Document | undefined {
-    return browser ? document : undefined;
+    return isBrowser() ? document : undefined;
 }
 
 export function safeLocalStorage(): Storage | undefined {
-    return browser ? localStorage : undefined;
+    return isBrowser() ? localStorage : undefined;
 }
 
 export function safeSessionStorage(): Storage | undefined {
-    return browser ? sessionStorage : undefined;
+    return isBrowser() ? sessionStorage : undefined;
 }
 
 export function safeRequestAnimationFrame(callback: FrameRequestCallback): number | undefined {
-    return browser ? requestAnimationFrame(callback) : undefined;
+    return isBrowser() ? requestAnimationFrame(callback) : undefined;
 }
 
 export function safeSetTimeout(callback: () => void, delay: number): NodeJS.Timeout | undefined {
-    return browser ? setTimeout(callback, delay) : undefined;
+    return isBrowser() ? setTimeout(callback, delay) : undefined;
 }
 
 export function safeClearTimeout(id: NodeJS.Timeout | undefined): void {
-    if (browser && id) {
+    if (isBrowser() && id) {
         clearTimeout(id);
     }
 }
 
 export function safeSetInterval(callback: () => void, delay: number): NodeJS.Timeout | undefined {
-    return browser ? setInterval(callback, delay) : undefined;
+    return isBrowser() ? setInterval(callback, delay) : undefined;
 }
 
 export function safeClearInterval(id: NodeJS.Timeout | undefined): void {
-    if (browser && id) {
+    if (isBrowser() && id) {
         clearInterval(id);
     }
 }
@@ -50,7 +49,7 @@ export function safeClearInterval(id: NodeJS.Timeout | undefined): void {
 // Generate SSR-safe unique IDs
 let idCounter = 0;
 export function generateId(prefix: string = 'id'): string {
-    if (browser) {
+    if (isBrowser()) {
         return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
     } else {
         return `${prefix}-ssr-${++idCounter}`;
