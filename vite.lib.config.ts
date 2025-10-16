@@ -6,8 +6,7 @@ export default defineConfig({
     plugins: [
         svelte({
             compilerOptions: {
-                css: 'injected',
-                runes: true
+                css: 'injected'
             },
             emitCss: false,
             experimental: {

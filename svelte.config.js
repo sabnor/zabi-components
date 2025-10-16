@@ -9,8 +9,7 @@ const config = {
     },
     compilerOptions: {
         // Enable CSS extraction for library builds
-        css: 'injected',
-        runes: true
+        css: 'injected'
     }
 };
 

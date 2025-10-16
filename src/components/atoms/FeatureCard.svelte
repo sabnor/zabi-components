@@ -1,23 +1,22 @@
 <script lang="ts">
-    interface Props {
-        icon?: string;
-        title: string;
-        description: string;
-        className?: string;
-    }
+    /**
+     * FeatureCard component - SSR-safe implementation
+     * @component
+     */
 
-    let {
-        icon = "✨",
-        title,
-        description,
-        className = "",
-        ...restProps
-    } = $props();
+    // Props
+    /** Icon to display */
+    export let icon: string = "✨";
+    /** Title of the feature */
+    export let title: string;
+    /** Description of the feature */
+    export let description: string;
+    /** Additional CSS classes */
+    export let className: string = "";
 </script>
 
 <div
     class="feature-card p-6 rounded-lg bg-surface border border-border hover:border-primary/20 transition-colors duration-200 {className}"
-    {...restProps}
 >
     <div class="flex items-start gap-4">
         <div class="flex-shrink-0 text-2xl" aria-hidden="true">
