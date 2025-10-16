@@ -20,6 +20,7 @@
         disabled = false,
         type = "button",
         className = "",
+        onclick,
         children,
         ...restProps
     } = $props<Props & { children?: any }>();

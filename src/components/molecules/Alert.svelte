@@ -14,13 +14,16 @@
         message = "",
         closable = false,
         className = "",
+        onclick,
         children,
         ...restProps
     } = $props<Props & { children?: any }>();
 
     function handleDismiss(event: MouseEvent) {
-        // Dismiss is now handled by the parent component
-        // through event forwarding
+        // Call the parent's onclick handler if provided
+        if (onclick) {
+            onclick(event);
+        }
     }
 
     let alertClasses = $derived({

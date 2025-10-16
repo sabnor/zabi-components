@@ -10,6 +10,7 @@
         checked = false,
         disabled = false,
         label = "",
+        onclick,
         ...restProps
     }: Props = $props();
 
@@ -35,6 +36,10 @@
     function handleClick(event: Event) {
         if (!disabled) {
             checked = !checked;
+            // Call the parent's onclick handler if provided
+            if (onclick) {
+                onclick(event);
+            }
         }
     }
 </script>

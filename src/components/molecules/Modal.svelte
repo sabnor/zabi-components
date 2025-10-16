@@ -9,25 +9,33 @@
     let {
         isOpen = false,
         title = "",
+        onclick,
+        onkeydown,
         children,
         footer,
         ...restProps
     } = $props<Props & { children?: any; footer?: any }>();
 
-    function closeModal() {
+    function closeModal(event?: Event) {
         isOpen = false;
+        if (onclick && event) {
+            onclick(event);
+        }
     }
 
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) {
-            closeModal();
+            closeModal(event);
         }
     }
 
     function handleKeydown(event: Event) {
         const keyboardEvent = event as KeyboardEvent;
         if (keyboardEvent.key === "Escape") {
-            closeModal();
+            closeModal(event);
+        }
+        if (onkeydown) {
+            onkeydown(event);
         }
     }
 </script>
