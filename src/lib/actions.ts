@@ -140,8 +140,8 @@ export const lazyLoad: Action<HTMLElement, {
             if (entry.isIntersecting) {
                 if (node instanceof HTMLImageElement) {
                     node.src = src;
-                    node.onload = onLoad;
-                    node.onerror = onError;
+                    node.onload = onLoad || null;
+                    node.onerror = onError || null;
                 }
                 observer.unobserve(node);
             }
