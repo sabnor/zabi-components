@@ -31,6 +31,10 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.js"
     },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
+    },
     "./dist/zabi-components.css": "./dist/zabi-components.css",
     "./package.json": "./package.json"
   },
@@ -89,13 +93,17 @@
   },
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
-    "svelte": "^5.38.10"
+    "svelte": "^5.38.10",
+    "react": "^18.0.0"
   },
   "peerDependenciesMeta": {
     "svelte": {
       "optional": false
     },
     "@sveltejs/kit": {
+      "optional": true
+    },
+    "react": {
       "optional": true
     }
   },
