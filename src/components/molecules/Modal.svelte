@@ -14,7 +14,7 @@
         children,
         footer,
         ...restProps
-    } = $props<Props & { children?: any; footer?: any }>();
+    }: Props & { children?: any; footer?: any } = $props();
 
     function closeModal(event?: Event) {
         isOpen = false;

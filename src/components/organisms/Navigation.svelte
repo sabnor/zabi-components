@@ -15,7 +15,7 @@
         currentPath = "",
         children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props & { children?: any } = $props();
 
     function handleClick(item: any, event: MouseEvent) {
         event.preventDefault();

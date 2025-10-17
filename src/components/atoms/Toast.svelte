@@ -11,9 +11,8 @@
         type = "info",
         closable = true,
         onclick,
-        children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props = $props();
 
     let isVisible = $state(true);
 

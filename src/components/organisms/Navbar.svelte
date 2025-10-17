@@ -16,7 +16,7 @@
         nav,
         actions,
         ...restProps
-    } = $props<Props & { children?: any; nav?: any; actions?: any }>();
+    }: Props & { children?: any; nav?: any; actions?: any } = $props();
 
     let isMenuOpen = $state(false);
 

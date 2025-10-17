@@ -17,7 +17,7 @@
         onclick,
         children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props & { children?: any } = $props();
 
     function handleDismiss(event: MouseEvent) {
         // Call the parent's onclick handler if provided

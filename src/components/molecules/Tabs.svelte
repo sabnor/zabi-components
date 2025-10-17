@@ -17,7 +17,7 @@
         variant = "default",
         children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props & { children?: any } = $props();
 
     function selectTab(tabId: string) {
         activeTab = tabId;

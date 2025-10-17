@@ -23,7 +23,7 @@
         onclick,
         children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props & { children?: any } = $props();
 
     // Enhanced size classes with better spacing and typography
     let sizeClasses = $derived({
