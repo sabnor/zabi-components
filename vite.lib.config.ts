@@ -6,7 +6,9 @@ export default defineConfig({
     plugins: [
         svelte({
             compilerOptions: {
-                css: 'injected'
+                css: 'injected',
+                runes: true,  // Enable runes for Svelte 5 compatibility
+                hydratable: true  // Enable hydration support
             },
             emitCss: false,
             experimental: {
@@ -21,20 +23,22 @@ export default defineConfig({
                 atoms: resolve(__dirname, 'src/components/atoms/index.ts'),
                 molecules: resolve(__dirname, 'src/components/molecules/index.ts'),
                 organisms: resolve(__dirname, 'src/components/organisms/index.ts'),
-                types: resolve(__dirname, 'src/types/index.ts')
+                types: resolve(__dirname, 'src/types/index.ts'),
+                react: resolve(__dirname, 'src/react/index.ts')
             },
             formats: ['es'],
             fileName: (format, entryName) => `${entryName}/index.js`
         },
         rollupOptions: {
-            external: ['svelte', 'svelte/store', '@sveltejs/kit', '@sveltejs/adapter-auto', '$app/environment'],
+            external: ['svelte', 'svelte/store', '@sveltejs/kit', '@sveltejs/adapter-auto', '$app/environment', 'react'],
             output: {
                 globals: {
                     svelte: 'Svelte',
                     'svelte/store': 'SvelteStore',
                     '@sveltejs/kit': 'SvelteKit',
                     '@sveltejs/adapter-auto': 'SvelteKitAdapter',
-                    '$app/environment': 'SvelteKitApp'
+                    '$app/environment': 'SvelteKitApp',
+                    'react': 'React'
                 },
                 // Ensure proper module format for SvelteKit
                 format: 'es',

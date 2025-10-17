@@ -8,8 +8,16 @@ import '../styles/base.css';
 // ATOM COMPONENTS - Basic UI building blocks
 // ============================================================================
 
-// Form Controls - Only Toggle for now to avoid SSR issues
+// Form Controls - All SSR-safe components
 export { default as Toggle } from '../components/atoms/Toggle.svelte';
+export { default as Badge } from '../components/atoms/Badge.svelte';
+export { default as Button } from '../components/atoms/Button.svelte';
+export { default as Card } from '../components/atoms/Card.svelte';
+export { default as Input } from '../components/atoms/Input.svelte';
+export { default as Textarea } from '../components/atoms/Textarea.svelte';
+export { default as Select } from '../components/atoms/Select.svelte';
+export { default as ColorPicker } from '../components/atoms/ColorPicker.svelte';
+export { default as Heading } from '../components/atoms/Heading.svelte';
 
 // ============================================================================
 // MOLECULE COMPONENTS - Composite UI elements

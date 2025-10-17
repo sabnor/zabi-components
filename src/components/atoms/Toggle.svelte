@@ -1,11 +1,22 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import { generateId } from "../../lib/ssr-safe";
 
-    // Props
-    export let checked: boolean = false;
-    export let disabled: boolean = false;
-    export let label: string = "";
-    export let className: string = "";
+    // Props using Svelte 5 runes
+    interface Props {
+        checked?: boolean;
+        disabled?: boolean;
+        label?: string;
+        className?: string;
+    }
+
+    let {
+        checked = false,
+        disabled = false,
+        label = "",
+        className = "",
+        ...restProps
+    }: Props = $props();
 
     // Event dispatcher
     const dispatch = createEventDispatcher<{
@@ -13,8 +24,8 @@
         change: { checked: boolean };
     }>();
 
-    // Simple ID generation
-    let toggleId = "toggle-" + Math.floor(Math.random() * 1000000);
+    // SSR-safe ID generation
+    let toggleId = generateId("toggle");
 
     // Handle click
     function handleClick(event: MouseEvent) {
