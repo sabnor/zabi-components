@@ -7,8 +7,7 @@ export default defineConfig({
         svelte({
             compilerOptions: {
                 css: 'injected',
-                runes: true,  // Enable runes for Svelte 5 compatibility
-                hydratable: true  // Enable hydration support
+                runes: true  // Enable runes for Svelte 5 compatibility
             },
             emitCss: false,
             experimental: {
@@ -30,19 +29,18 @@ export default defineConfig({
             fileName: (format, entryName) => `${entryName}/index.js`
         },
         rollupOptions: {
-            external: ['svelte', 'svelte/store', '@sveltejs/kit', '@sveltejs/adapter-auto', '$app/environment', 'react'],
+            external: [
+                /^svelte($|\/)/,
+                '@sveltejs/kit',
+                '@sveltejs/adapter-auto',
+                '$app/environment',
+                'react'
+            ],
             output: {
-                globals: {
-                    svelte: 'Svelte',
-                    'svelte/store': 'SvelteStore',
-                    '@sveltejs/kit': 'SvelteKit',
-                    '@sveltejs/adapter-auto': 'SvelteKitAdapter',
-                    '$app/environment': 'SvelteKitApp',
-                    'react': 'React'
-                },
                 // Ensure proper module format for SvelteKit
                 format: 'es',
-                preserveModules: false
+                preserveModules: true,
+                preserveModulesRoot: 'src'
             }
         },
         outDir: 'dist',
