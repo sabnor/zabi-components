@@ -9,9 +9,8 @@
         width = "100%",
         height = "1rem",
         className = "",
-        children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props = $props();
 </script>
 
 <div

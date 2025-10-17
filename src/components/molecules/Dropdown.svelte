@@ -10,7 +10,7 @@
         children,
         trigger,
         ...restProps
-    } = $props<Props & { children?: any; trigger?: any }>();
+    }: Props & { children?: any; trigger?: any } = $props();
 </script>
 
 <div

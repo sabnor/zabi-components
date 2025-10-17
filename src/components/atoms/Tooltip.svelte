@@ -13,7 +13,7 @@
         disabled = false,
         children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props & { children?: any } = $props();
 </script>
 
 <div

@@ -15,7 +15,7 @@
         size = "md",
         children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props & { children?: any } = $props();
 
     // Size classes
     let sizeClasses = $derived({
