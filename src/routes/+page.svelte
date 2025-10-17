@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import Layout from "../components/molecules/Layout.svelte";
     import Navigation from "../components/organisms/Navigation.svelte";
     import ThemeToggle from "../components/atoms/ThemeToggle.svelte";
     import ContactForm from "../components/molecules/ContactForm.svelte";
@@ -90,9 +89,8 @@
     />
 </svelte:head>
 
-<Layout variant="main" className="min-h-screen bg-background">
-    <div
-        slot="header"
+<div class="min-h-screen bg-background">
+    <header
         class="flex items-center justify-between p-4 bg-surface border-b border-border"
     >
         <h1 class="text-xl font-bold text-text">Zabi Components</h1>
@@ -100,9 +98,9 @@
             <Navigation variant="header" items={navItems} />
             <ThemeToggle />
         </div>
-    </div>
+    </header>
 
-    <div slot="main" class="container mx-auto p-6 space-y-16">
+    <main class="container mx-auto p-6 space-y-16">
         <!-- Hero Section -->
         <section class="py-20 px-4 text-center">
             <div class="max-w-4xl mx-auto">
@@ -355,9 +353,9 @@
             </div>
             <ContactForm onsubmit={handleFormSubmit} />
         </section>
-    </div>
+    </main>
 
-    <div slot="footer" class="bg-surface-secondary border-t border-border py-8">
+    <footer class="bg-surface-secondary border-t border-border py-8">
         <div class="container mx-auto px-6">
             <div
                 class="flex flex-col md:flex-row justify-between items-center gap-4"
@@ -389,5 +387,5 @@
                 </div>
             </div>
         </div>
-    </div>
-</Layout>
+    </footer>
+</div>

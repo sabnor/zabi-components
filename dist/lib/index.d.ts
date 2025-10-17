@@ -100,9 +100,6 @@ export interface NavbarEvents {
     };
 }
 export interface ModalEvents {
-    close: {
-        event: Event;
-    };
 }
 export interface TabsEvents {
     change: {

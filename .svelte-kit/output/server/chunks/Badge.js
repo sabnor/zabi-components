@@ -1,67 +1,6 @@
-import { y as attributes, z as stringify, F as attr, G as attr_class, J as clsx } from "./index.js";
+import { F as attr, G as attr_class, J as clsx, y as attributes, z as stringify } from "./index.js";
 import { e as escape_html } from "./context.js";
 import { h as html } from "./Card.js";
-const $$css$1 = {
-  hash: "svelte-wzmt5k",
-  code: ".layout.svelte-wzmt5k {min-height:100vh}.layout-main.svelte-wzmt5k {display:flex;flex-direction:column}.layout-sidebar.svelte-wzmt5k {width:16rem;border-right-width:1px;border-color:rgb(var(--color-border));background-color:rgb(var(--color-surface-secondary))}.layout-grid.svelte-wzmt5k {display:grid;grid-template-columns:repeat(1, minmax(0, 1fr))}\n\n    @media (min-width: 768px) {.layout-grid.svelte-wzmt5k {grid-template-columns:repeat(2, minmax(0, 1fr))}\n}\n\n    @media (min-width: 1024px) {.layout-grid.svelte-wzmt5k {grid-template-columns:repeat(3, minmax(0, 1fr))}\n}.layout-header.svelte-wzmt5k {border-bottom-width:1px;border-color:rgb(var(--color-border));padding:1rem;background-color:rgb(var(--color-surface))}.layout-footer.svelte-wzmt5k {margin-top:auto;border-top-width:1px;border-color:rgb(var(--color-border));padding:1rem;background-color:rgb(var(--color-surface-secondary))}"
-};
-function Layout($$renderer, $$props) {
-  $$renderer.global.css.add($$css$1);
-  let {
-    variant = "main",
-    gap = "md",
-    className = "",
-    children,
-    header,
-    main,
-    footer,
-    sidebar,
-    $$slots,
-    $$events,
-    ...restProps
-  } = $$props;
-  let gapClass = `gap-${gap}`;
-  $$renderer.push(`<div${attributes(
-    {
-      class: `layout layout-${stringify(variant)} ${stringify(gapClass)} ${stringify(className)}`,
-      ...restProps
-    },
-    "svelte-wzmt5k"
-  )}>`);
-  if (variant === "main") {
-    $$renderer.push("<!--[-->");
-    $$renderer.push(`<header class="layout-header svelte-wzmt5k">`);
-    header?.($$renderer);
-    $$renderer.push(`<!----></header> <main class="layout-main svelte-wzmt5k">`);
-    main?.($$renderer);
-    $$renderer.push(`<!----></main> <footer class="layout-footer svelte-wzmt5k">`);
-    footer?.($$renderer);
-    $$renderer.push(`<!----></footer>`);
-  } else {
-    $$renderer.push("<!--[!-->");
-    if (variant === "sidebar") {
-      $$renderer.push("<!--[-->");
-      $$renderer.push(`<aside class="layout-sidebar svelte-wzmt5k">`);
-      sidebar?.($$renderer);
-      $$renderer.push(`<!----></aside> <main class="layout-main svelte-wzmt5k">`);
-      main?.($$renderer);
-      $$renderer.push(`<!----></main>`);
-    } else {
-      $$renderer.push("<!--[!-->");
-      if (variant === "grid") {
-        $$renderer.push("<!--[-->");
-        $$renderer.push(`<div class="layout-grid svelte-wzmt5k">`);
-        children?.($$renderer);
-        $$renderer.push(`<!----></div>`);
-      } else {
-        $$renderer.push("<!--[!-->");
-      }
-      $$renderer.push(`<!--]-->`);
-    }
-    $$renderer.push(`<!--]-->`);
-  }
-  $$renderer.push(`<!--]--></div>`);
-}
 function Input($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let {
@@ -126,12 +65,7 @@ function Input($$renderer, $$props) {
     )}/></div>`);
   });
 }
-const $$css = {
-  hash: "svelte-1uavm9q",
-  code: ".component-preview.svelte-1uavm9q {display:flex;min-height:100px;align-items:center;justify-content:center}"
-};
 function ComponentDemo($$renderer, $$props) {
-  $$renderer.global.css.add($$css);
   let {
     title,
     description = "",
@@ -143,13 +77,10 @@ function ComponentDemo($$renderer, $$props) {
     $$events,
     ...restProps
   } = $$props;
-  $$renderer.push(`<div${attributes(
-    {
-      class: `component-demo bg-surface border border-border rounded-lg overflow-hidden ${stringify(className)}`,
-      ...restProps
-    },
-    "svelte-1uavm9q"
-  )}><div class="px-6 py-4 border-b border-border bg-surface-secondary"><div class="flex items-center justify-between"><div><h3 class="text-lg font-semibold text-text">${escape_html(title)}</h3> `);
+  $$renderer.push(`<div${attributes({
+    class: `component-demo bg-surface border border-border rounded-lg overflow-hidden ${stringify(className)}`,
+    ...restProps
+  })}><div class="px-6 py-4 border-b border-border bg-surface-secondary"><div class="flex items-center justify-between"><div><h3 class="text-lg font-semibold text-text">${escape_html(title)}</h3> `);
   if (description) {
     $$renderer.push("<!--[-->");
     $$renderer.push(`<p class="text-sm text-text-secondary mt-1">${escape_html(description)}</p>`);
@@ -164,7 +95,7 @@ function ComponentDemo($$renderer, $$props) {
   $$renderer.push(`<!--]--></button></div></div> <div class="p-6">`);
   {
     $$renderer.push("<!--[!-->");
-    $$renderer.push(`<div class="component-preview svelte-1uavm9q">`);
+    $$renderer.push(`<div class="min-h-[100px] flex items-center justify-center">`);
     children?.($$renderer);
     $$renderer.push(`<!----></div>`);
   }
@@ -239,7 +170,7 @@ function Alert($$renderer, $$props) {
 }
 function Badge($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
-    let { variant = "default", className = "", children } = $$props;
+    let { variant = "default", className = "", text = "", children } = $$props;
     const classes = [
       "inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md",
       variant === "success" ? "bg-green-100 text-green-800 border-green-300" : variant === "warning" ? "bg-yellow-100 text-yellow-800 border-yellow-300" : variant === "error" ? "bg-red-100 text-red-800 border-red-300" : variant === "info" ? "bg-blue-100 text-blue-800 border-blue-300" : "bg-gray-100 text-gray-800 border-gray-300",
@@ -254,6 +185,5 @@ export {
   Alert as A,
   Badge as B,
   ComponentDemo as C,
-  Input as I,
-  Layout as L
+  Input as I
 };

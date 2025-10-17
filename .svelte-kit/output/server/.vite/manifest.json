@@ -124,7 +124,7 @@
       "_index.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.C-dSQdMw.css"
+      "_app/immutable/assets/_layout.DACEerdU.css"
     ]
   },
   "src/routes/+page.svelte": {
@@ -135,8 +135,8 @@
     "imports": [
       "_index.js",
       "_client.js",
-      "_Badge.js",
       "_Card.js",
+      "_Badge.js",
       "_context.js"
     ]
   },
@@ -147,8 +147,8 @@
     "isEntry": true,
     "imports": [
       "_index.js",
-      "_Badge.js",
       "_Card.js",
+      "_Badge.js",
       "_context.js"
     ]
   },

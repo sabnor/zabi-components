@@ -1,5 +1,4 @@
 <script lang="ts">
-    import Layout from "../../components/molecules/Layout.svelte";
     import Navigation from "../../components/organisms/Navigation.svelte";
     import ThemeToggle from "../../components/atoms/ThemeToggle.svelte";
     import ComponentDemo from "../../components/molecules/ComponentDemo.svelte";
@@ -261,9 +260,8 @@
     />
 </svelte:head>
 
-<Layout variant="main" className="min-h-screen bg-background">
-    <div
-        slot="header"
+<div class="min-h-screen bg-background">
+    <header
         class="flex items-center justify-between p-4 bg-surface border-b border-border"
     >
         <h1 class="text-xl font-bold text-text">Zabi Components</h1>
@@ -271,9 +269,9 @@
             <Navigation variant="header" items={navItems} />
             <ThemeToggle />
         </div>
-    </div>
+    </header>
 
-    <div slot="main" class="flex min-h-screen">
+    <main class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="w-64 bg-surface-secondary border-r border-border p-6">
             <h2 class="text-lg font-semibold text-text mb-4">Components</h2>
@@ -314,7 +312,7 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-8">
+        <div class="flex-1 p-8">
             {#each currentComponents as component}
                 {#if selectedComponent === component.name.toLowerCase()}
                     <div class="max-w-4xl">
@@ -530,10 +528,10 @@
                     </div>
                 {/if}
             {/each}
-        </main>
-    </div>
+        </div>
+    </main>
 
-    <div slot="footer" class="bg-surface-secondary border-t border-border py-8">
+    <footer class="bg-surface-secondary border-t border-border py-8">
         <div class="container mx-auto px-6">
             <div
                 class="flex flex-col md:flex-row justify-between items-center gap-4"
@@ -565,5 +563,5 @@
                 </div>
             </div>
         </div>
-    </div>
-</Layout>
+    </footer>
+</div>

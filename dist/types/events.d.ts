@@ -114,7 +114,6 @@ export interface TabsEvents {
     keydown: KeydownEventDetail;
 }
 export interface ModalEvents {
-    close: BaseEventDetail;
 }
 export interface NavbarEvents {
     click: ClickEventDetail;
@@ -159,7 +158,6 @@ export interface FormEvents {
     };
 }
 export interface AlertEvents {
-    close: BaseEventDetail;
 }
 export interface ImageUploadEvents {
     upload: FileUploadEventDetail;
