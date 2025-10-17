@@ -4,7 +4,7 @@
 // Enhanced component type with proper event handling for Svelte 5
 import type { Component } from 'svelte';
 
-export type ZabiComponent<T = any, E = any> = Component<T, E>;
+export type ZabiComponent<T extends Record<string, any> = Record<string, any>, E extends Record<string, any> = Record<string, any>> = Component<T, E>;
 
 // Button component props and events
 export interface ButtonProps {
@@ -14,6 +14,7 @@ export interface ButtonProps {
     loading?: boolean;
     type?: 'button' | 'submit' | 'reset';
     className?: string;
+    text?: string;
     iconLeft?: string | any;
     iconRight?: string | any;
     ariaLabel?: string;
@@ -112,8 +113,8 @@ export interface AlertProps {
 
 // Badge component props
 export interface BadgeProps {
-    variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
-    size?: 'sm' | 'md' | 'lg';
+    variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
+    text?: string;
     className?: string;
 }
 

@@ -3,7 +3,7 @@
         method?: "get" | "post";
         action?: string;
         className?: string;
-        onsubmit?: (event: Event) => void;
+        onsubmit?: (event: SubmitEvent) => void;
     }
 
     let {
