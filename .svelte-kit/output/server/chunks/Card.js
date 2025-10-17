@@ -52,6 +52,7 @@ function Button($$renderer, $$props) {
       disabled = false,
       type = "button",
       className = "",
+      text = "",
       onclick,
       children,
       $$slots,
@@ -82,7 +83,7 @@ function Button($$renderer, $$props) {
       className
     ].filter(Boolean).join(" ");
     $$renderer2.push(`<button${attributes({ type, class: clsx(buttonClasses), disabled, ...restProps })}>`);
-    children?.($$renderer2);
+    children($$renderer2);
     $$renderer2.push(`<!----></button>`);
   });
 }
