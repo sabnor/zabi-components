@@ -191,7 +191,7 @@ The main breaking change is the **elimination of `createEventDispatcher`** and t
   }
 </script>
 
-<Modal bind:isOpen on:close={handleClose}>
+<Modal bind:isOpen onclick={handleClose}>
   Modal content
 </Modal>
 ```

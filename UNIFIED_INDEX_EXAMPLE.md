@@ -154,7 +154,7 @@ const isRequired = validateRequired(value);
   </Form>
 </Card>
 
-<Modal bind:isOpen={showModal} title="Success" on:close={closeModal}>
+<Modal bind:isOpen={showModal} title="Success" onclick={closeModal}>
   <p>Thank you for your submission!</p>
   <p>Name: {name}</p>
   <p>Email: {email}</p>
