@@ -1,6 +1,20 @@
 export interface BaseEventDetail {
     event: Event;
 }
+export interface Tab {
+    id: string;
+    label: string;
+    disabled?: boolean;
+    icon?: string;
+}
+export interface NavigationItem {
+    id: string;
+    label: string;
+    href?: string;
+    disabled?: boolean;
+    icon?: string;
+    children?: NavigationItem[];
+}
 export interface ClickEventDetail extends BaseEventDetail {
     value: boolean;
 }
@@ -9,7 +23,7 @@ export interface InputEventDetail extends BaseEventDetail {
     field?: string;
 }
 export interface ChangeEventDetail extends BaseEventDetail {
-    value: any;
+    value: string | number | boolean | File | null;
     field?: string;
     checked?: boolean;
 }
@@ -26,7 +40,7 @@ export interface KeyupEventDetail extends BaseEventDetail {
     event: KeyboardEvent;
 }
 export interface SubmitEventDetail extends BaseEventDetail {
-    data: Record<string, any>;
+    data: Record<string, string | number | boolean | File | null>;
     formData: FormData;
 }
 export interface ResizeEventDetail extends BaseEventDetail {
@@ -34,7 +48,7 @@ export interface ResizeEventDetail extends BaseEventDetail {
 }
 export interface TabChangeEventDetail extends BaseEventDetail {
     activeTab: string;
-    tab: any;
+    tab: Tab;
 }
 export interface FileUploadEventDetail extends BaseEventDetail {
     file: File;
@@ -94,7 +108,7 @@ export interface TooltipEvents {
 export interface TabsEvents {
     change: TabChangeEventDetail;
     tabClick: {
-        tab: any;
+        tab: Tab;
         event: MouseEvent;
     };
     keydown: KeydownEventDetail;
@@ -108,7 +122,7 @@ export interface NavbarEvents {
 }
 export interface NavigationEvents {
     "item-click": {
-        item: any;
+        item: NavigationItem;
         event: MouseEvent;
     };
     toggle: {
@@ -154,12 +168,12 @@ export interface ImageUploadEvents {
 }
 export interface KeyValueFormEvents {
     submit: {
-        data: Record<string, any>;
+        data: Record<string, string | number | boolean | File | null>;
         event: Event;
     };
     change: {
         field: string;
-        value: any;
+        value: string | number | boolean | File | null;
         event: Event;
     };
     add: {
