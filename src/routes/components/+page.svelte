@@ -327,13 +327,16 @@
                                 {component.description}
                             </p>
                             <div class="flex gap-2">
-                                <Badge variant="info"
-                                    >{component.category}</Badge
-                                >
+                                <Badge
+                                    variant="info"
+                                    text={component.category}
+                                />
                                 {#if component.variants}
-                                    <Badge variant="info"
-                                        >{component.variants.length} variants</Badge
-                                    >
+                                    <Badge
+                                        variant="info"
+                                        text="{component.variants
+                                            .length} variants"
+                                    />
                                 {/if}
                             </div>
                         </div>

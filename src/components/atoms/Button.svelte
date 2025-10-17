@@ -11,7 +11,9 @@
         disabled?: boolean;
         type?: "button" | "submit" | "reset";
         className?: string;
+        text?: string;
         onclick?: (event: MouseEvent) => void;
+        children?: any;
     }
 
     let {
@@ -20,10 +22,11 @@
         disabled = false,
         type = "button",
         className = "",
+        text = "",
         onclick,
         children,
         ...restProps
-    }: Props & { children?: any } = $props();
+    }: Props = $props();
 
     // Enhanced size classes with better spacing and typography
     let sizeClasses = $derived({
@@ -63,5 +66,5 @@
 </script>
 
 <button {type} class={buttonClasses} {disabled} {...restProps}>
-    {@render children?.()}
+    {@render children()}
 </button>

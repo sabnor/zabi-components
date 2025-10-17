@@ -3,11 +3,13 @@
     let {
         variant = "default",
         className = "",
+        text = "",
         children,
     }: {
         variant?: "default" | "success" | "warning" | "error" | "info";
         className?: string;
-        children: any;
+        text?: string;
+        children?: any;
     } = $props();
 
     // Simple class computation

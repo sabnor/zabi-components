@@ -143,9 +143,11 @@
 
                 <!-- Version Badge -->
                 <div class="mt-8 flex justify-center">
-                    <Badge variant="info" className="text-sm">
-                        v4.0.0 - Svelte 5 Ready
-                    </Badge>
+                    <Badge
+                        variant="info"
+                        className="text-sm"
+                        text="v4.0.0 - Svelte 5 Ready"
+                    />
                 </div>
             </div>
         </section>

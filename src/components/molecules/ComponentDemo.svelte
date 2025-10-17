@@ -88,15 +88,9 @@
         {#if showCode}
             <CodeBlock {code} {language} />
         {:else}
-            <div class="component-preview">
+            <div class="min-h-[100px] flex items-center justify-center">
                 {@render children?.()}
             </div>
         {/if}
     </div>
 </div>
-
-<style>
-    .component-preview {
-        @apply min-h-[100px] flex items-center justify-center;
-    }
-</style>
