@@ -500,7 +500,7 @@ All components will automatically switch to their dark mode variants without any
   message={string}
   closable={boolean}
   className={string}
-  on:close={(e) => console.log(e.detail.value, e.detail.event)}
+  onclick={(e) => console.log('Alert closed', e)}
 >
   Custom Alert Content
 </Alert>
@@ -679,7 +679,7 @@ Form components use **controlled components** pattern instead of two-way binding
 ```svelte
 <Input bind:value={inputValue} />
 <Button on:click={handleClick}>Click</Button>
-<Modal bind:isOpen on:close={handleClose} />
+<Modal bind:isOpen onclick={handleClose} />
 ```
 
 **After (v2.1.x):**

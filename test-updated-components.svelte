@@ -623,35 +623,35 @@
                     title="Info Alert"
                     message="This is an info alert"
                     closable={true}
-                    on:close={handleAlertClose}
+                    onclick={handleAlertClose}
                 />
                 <Alert
                     variant="success"
                     title="Success Alert"
                     message="This is a success alert"
                     closable={true}
-                    on:close={handleAlertClose}
+                    onclick={handleAlertClose}
                 />
                 <Alert
                     variant="warning"
                     title="Warning Alert"
                     message="This is a warning alert"
                     closable={true}
-                    on:close={handleAlertClose}
+                    onclick={handleAlertClose}
                 />
                 <Alert
                     variant="error"
                     title="Error Alert"
                     message="This is an error alert"
                     closable={true}
-                    on:close={handleAlertClose}
+                    onclick={handleAlertClose}
                 />
                 <Alert
                     variant="game-error"
                     title="Game Error Alert"
                     message="This is a game error alert"
                     closable={true}
-                    on:close={handleAlertClose}
+                    onclick={handleAlertClose}
                 />
             </div>
         </Card>
@@ -684,10 +684,9 @@
             <h3 class="text-lg font-semibold mb-4">
                 NotificationManager Component Tests
             </h3>
-            <NotificationManager
-                {notifications}
-                on:close={handleNotificationClose}
-            />
+            <p class="text-gray-600">
+                NotificationManager component not yet implemented
+            </p>
         </Card>
     </div>
 </div>

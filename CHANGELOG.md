@@ -166,7 +166,7 @@ This is a **major breaking change** that affects how all components handle event
 <!-- This would cause SSR errors -->
 <Button on:click={handleClick}>Click me</Button>
 <Input bind:value={inputValue} />
-<Modal bind:isOpen on:close={handleClose} />
+<Modal bind:isOpen onclick={handleClose} />
 ```
 
 **After (New Pattern):**

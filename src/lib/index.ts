@@ -147,7 +147,7 @@ export interface NavbarEvents {
 }
 
 export interface ModalEvents {
-    close: { event: Event };
+    // Modal now uses onclick prop instead of dispatching close events
 }
 
 export interface TabsEvents {
