@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { generateId } from "../../routes/lib/ssr-safe";
+
     interface Props {
         value?: string | number | undefined;
         options?: Array<{
@@ -24,11 +26,7 @@
     }: Props = $props();
 
     // Generate unique ID - SSR safe
-    let selectId = $state(
-        typeof window !== "undefined"
-            ? `select-${Math.random().toString(36).substr(2, 9)}`
-            : `select-ssr-${Date.now()}`,
-    );
+    let selectId = $state(generateId("select"));
 
     // Simple size classes
     let sizeClasses = $derived({

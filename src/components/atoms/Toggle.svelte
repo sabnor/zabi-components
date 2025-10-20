@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { generateId } from "../../lib/ssr-safe";
+    import { generateId } from "../../routes/lib/ssr-safe";
 
     // Props using Svelte 5 runes
     interface Props {

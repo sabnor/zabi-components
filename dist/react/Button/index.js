@@ -1,14 +1,15 @@
-import c from "react";
-const b = ({
+import { j as c } from "../../_virtual/jsx-runtime/index.js";
+import "react";
+const d = ({
   variant: e = "primary",
   size: r = "md",
   disabled: t = !1,
   type: s = "button",
   className: n = "",
-  onClick: g,
-  children: o
+  onClick: o,
+  children: g
 }) => {
-  const a = () => {
+  const i = () => {
     switch (r) {
       case "sm":
         return "px-3 py-1.5 text-sm font-medium";
@@ -17,7 +18,7 @@ const b = ({
       default:
         return "px-4 py-2 text-sm font-medium";
     }
-  }, i = () => {
+  }, a = () => {
     switch (e) {
       case "primary":
         return "bg-gray-100 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400";
@@ -40,22 +41,22 @@ const b = ({
     "focus:outline-none focus:ring-2 focus:ring-offset-2",
     "active:scale-95 transform-gpu",
     "shadow-sm hover:shadow-md",
-    a(),
     i(),
+    a(),
     n
   ].filter(Boolean).join(" ");
-  return /* @__PURE__ */ c.createElement(
+  return /* @__PURE__ */ c.jsx(
     "button",
     {
       type: s,
       className: u,
       disabled: t,
-      onClick: g
-    },
-    o
+      onClick: o,
+      children: g
+    }
   );
 };
 export {
-  b as Button,
-  b as default
+  d as Button,
+  d as default
 };

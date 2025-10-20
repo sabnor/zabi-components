@@ -1,10 +1,13 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
+
     interface Props {
         title?: string;
         image?: string;
         interactive?: boolean;
         variant?: "default" | "success" | "warning" | "error" | "info";
         size?: "sm" | "md" | "lg";
+        children?: Snippet;
     }
 
     let {
@@ -15,7 +18,7 @@
         size = "md",
         children,
         ...restProps
-    }: Props & { children?: any } = $props();
+    }: Props = $props();
 
     // Size classes
     let sizeClasses = $derived({
@@ -64,5 +67,7 @@
         <h3 class={titleClasses}>{title}</h3>
     {/if}
 
-    {@render children?.()}
+    {#if children}
+        {@render children()}
+    {/if}
 </div>

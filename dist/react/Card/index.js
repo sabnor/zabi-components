@@ -1,14 +1,15 @@
-import r from "react";
-const b = ({
+import { j as r } from "../../_virtual/jsx-runtime/index.js";
+import "react";
+const m = ({
   title: e = "",
   image: s = "",
   interactive: t = !1,
   variant: a = "default",
-  size: l = "md",
-  children: n
+  size: o = "md",
+  children: l
 }) => {
-  const o = () => {
-    switch (l) {
+  const n = () => {
+    switch (o) {
       case "sm":
         return "p-3";
       case "lg":
@@ -16,7 +17,7 @@ const b = ({
       default:
         return "p-4";
     }
-  }, c = () => {
+  }, d = () => {
     switch (a) {
       case "success":
         return "border-green-200 bg-green-50";
@@ -29,23 +30,27 @@ const b = ({
       default:
         return "border-gray-200 bg-white";
     }
-  }, d = [
+  }, c = [
     "rounded-lg transition-all duration-200",
     "hover:shadow-adaptive-md",
     t ? "cursor-pointer hover:scale-[1.02]" : "",
-    o(),
-    c()
+    n(),
+    d()
   ].join(" ");
-  return /* @__PURE__ */ r.createElement("div", { className: d }, s && /* @__PURE__ */ r.createElement(
-    "img",
-    {
-      src: s,
-      alt: e,
-      className: "w-full h-48 object-cover rounded-md mb-4"
-    }
-  ), e && /* @__PURE__ */ r.createElement("h3", { className: "text-lg font-semibold mb-2 text-primary" }, e), n);
+  return /* @__PURE__ */ r.jsxs("div", { className: c, children: [
+    s && /* @__PURE__ */ r.jsx(
+      "img",
+      {
+        src: s,
+        alt: e,
+        className: "w-full h-48 object-cover rounded-md mb-4"
+      }
+    ),
+    e && /* @__PURE__ */ r.jsx("h3", { className: "text-lg font-semibold mb-2 text-primary", children: e }),
+    l
+  ] });
 };
 export {
-  b as Card,
-  b as default
+  m as Card,
+  m as default
 };

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
+
     // Props using Svelte 5 runes
     let {
         variant = "default",
@@ -9,7 +11,7 @@
         variant?: "default" | "success" | "warning" | "error" | "info";
         className?: string;
         text?: string;
-        children?: any;
+        children?: Snippet;
     } = $props();
 
     // Simple class computation
@@ -33,5 +35,9 @@
 </script>
 
 <span class={classes}>
-    {@render children()}
+    {#if children}
+        {@render children()}
+    {:else if text}
+        {text}
+    {/if}
 </span>

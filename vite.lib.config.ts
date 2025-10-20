@@ -6,10 +6,12 @@ export default defineConfig({
     plugins: [
         svelte({
             compilerOptions: {
-                css: 'injected',
+                // Avoid runtime CSS injection (uses document) for SSR safety
+                css: 'external',
                 runes: true  // Enable runes for Svelte 5 compatibility
             },
-            emitCss: false,
+            // Extract CSS so SSR doesn't try to touch document at runtime
+            emitCss: true,
             experimental: {
                 inspector: false
             }
@@ -18,7 +20,7 @@ export default defineConfig({
     build: {
         lib: {
             entry: {
-                index: resolve(__dirname, 'src/lib/index.ts'),
+                index: resolve(__dirname, 'src/routes/lib/index.ts'),
                 atoms: resolve(__dirname, 'src/components/atoms/index.ts'),
                 molecules: resolve(__dirname, 'src/components/molecules/index.ts'),
                 organisms: resolve(__dirname, 'src/components/organisms/index.ts'),
@@ -45,13 +47,13 @@ export default defineConfig({
         },
         outDir: 'dist',
         emptyOutDir: true,
-        // Ensure proper CSS handling
+        // Extract CSS to a single file that the consumer can import
         cssCodeSplit: false
     },
     // Ensure proper module resolution
     resolve: {
         alias: {
-            '$lib': resolve(__dirname, 'src/lib')
+            '$lib': resolve(__dirname, 'src/routes/lib')
         }
     }
 });

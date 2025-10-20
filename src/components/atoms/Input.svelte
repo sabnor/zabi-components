@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { generateId } from "../../lib/ssr-safe";
+    import { generateId } from "../../routes/lib/ssr-safe";
 
     interface Props {
         value?: string;
@@ -28,11 +27,7 @@
     }: Props = $props();
 
     // Generate unique ID - SSR safe
-    let inputId = $state("");
-
-    onMount(() => {
-        inputId = generateId("input");
-    });
+    let inputId = $state(generateId("input"));
 
     // Simple size classes
     let sizeClasses = $derived({

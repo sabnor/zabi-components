@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { getInputVariantClasses } from "../../lib/variant-utils";
+    import { getInputVariantClasses } from "../../routes/lib/variant-utils";
+    import { generateId } from "../../routes/lib/ssr-safe";
 
     interface Props {
         value?: string;
@@ -27,11 +28,7 @@
     }: Props = $props();
 
     // Generate unique ID - SSR safe
-    let textareaId = $state(
-        typeof window !== "undefined"
-            ? `textarea-${Math.random().toString(36).substr(2, 9)}`
-            : `textarea-ssr-${Date.now()}`,
-    );
+    let textareaId = $state(generateId("textarea"));
 
     // Simple size classes
     let sizeClasses = $derived({

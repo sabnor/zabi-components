@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { generateId } from "../../lib/ssr-safe";
+    import { generateId } from "../../routes/lib/ssr-safe";
 
     interface Props {
         checked?: boolean;

@@ -1,6 +1,17 @@
 import { F as attr, G as attr_class, J as clsx, y as attributes, z as stringify } from "./index.js";
 import { e as escape_html } from "./context.js";
 import { h as html } from "./Card.js";
+function isBrowser() {
+  return typeof window !== "undefined";
+}
+let idCounter = 0;
+function generateId(prefix = "id") {
+  if (isBrowser()) {
+    return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+  } else {
+    return `${prefix}-ssr-${++idCounter}`;
+  }
+}
 function Input($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let {
@@ -17,7 +28,7 @@ function Input($$renderer, $$props) {
       $$events,
       ...restProps
     } = $$props;
-    let inputId = "";
+    let inputId = generateId("input");
     let sizeClasses = {
       sm: "px-3 py-1.5 text-sm",
       md: "px-4 py-2 text-sm",
@@ -177,13 +188,27 @@ function Badge($$renderer, $$props) {
       className
     ].filter(Boolean).join(" ");
     $$renderer2.push(`<span${attr_class(clsx(classes))}>`);
-    children($$renderer2);
-    $$renderer2.push(`<!----></span>`);
+    if (children) {
+      $$renderer2.push("<!--[-->");
+      children($$renderer2);
+      $$renderer2.push(`<!---->`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+      if (text) {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`${escape_html(text)}`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]-->`);
+    }
+    $$renderer2.push(`<!--]--></span>`);
   });
 }
 export {
   Alert as A,
   Badge as B,
   ComponentDemo as C,
-  Input as I
+  Input as I,
+  generateId as g
 };

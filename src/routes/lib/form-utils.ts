@@ -1,5 +1,5 @@
 // Form utilities for common input patterns
-import type { InputEventDetail, ChangeEventDetail } from '../types/events';
+import type { InputEventDetail, ChangeEventDetail } from '../../types/events';
 
 export interface InputState {
     value: string;

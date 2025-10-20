@@ -1,7 +1,7 @@
 import { y as attributes, z as stringify, F as attr, G as attr_class, J as clsx, x as head, K as ensure_array_like } from "../../chunks/index.js";
 import { g as goto } from "../../chunks/client.js";
 import { B as Button, N as Navigation, T as ThemeToggle, C as Card } from "../../chunks/Card.js";
-import { I as Input, B as Badge, C as ComponentDemo, A as Alert } from "../../chunks/Badge.js";
+import { g as generateId, I as Input, B as Badge, C as ComponentDemo, A as Alert } from "../../chunks/Badge.js";
 import { e as escape_html } from "../../chunks/context.js";
 function Form($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
@@ -51,7 +51,7 @@ function Textarea($$renderer, $$props) {
       $$events,
       ...restProps
     } = $$props;
-    let textareaId = typeof window !== "undefined" ? `textarea-${Math.random().toString(36).substr(2, 9)}` : `textarea-ssr-${Date.now()}`;
+    let textareaId = generateId("textarea");
     let sizeClasses = {
       sm: "px-3 py-1.5 text-sm",
       md: "px-4 py-2 text-sm",

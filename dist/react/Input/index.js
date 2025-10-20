@@ -1,21 +1,22 @@
-import e, { useState as y, useEffect as w } from "react";
+import { j as e } from "../../_virtual/jsx-runtime/index.js";
+import { useState as y, useEffect as w } from "react";
 const I = ({
   value: o = "",
   type: n = "text",
   name: u = "",
-  label: r = "",
+  label: s = "",
   placeholder: a = "",
   disabled: c = !1,
-  size: l = "md",
-  variant: d = "default",
-  onInput: t
+  size: d = "md",
+  variant: i = "default",
+  onInput: r
 }) => {
-  const [s, i] = y("");
+  const [t, l] = y("");
   w(() => {
-    i(`input-${Math.random().toString(36).substr(2, 9)}`);
+    l(`input-${Math.random().toString(36).substr(2, 9)}`);
   }, []);
   const f = () => {
-    switch (l) {
+    switch (d) {
       case "sm":
         return "px-3 py-1.5 text-sm";
       case "lg":
@@ -24,7 +25,7 @@ const I = ({
         return "px-4 py-2 text-sm";
     }
   }, b = () => {
-    switch (d) {
+    switch (i) {
       case "success":
         return "border-green-300 focus:border-green-500 focus:ring-green-500";
       case "warning":
@@ -40,22 +41,25 @@ const I = ({
     "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
     f(),
     b()
-  ].join(" "), g = "block text-sm font-medium text-primary mb-1", p = (x) => {
-    t && t(x);
+  ].join(" "), p = "block text-sm font-medium text-primary mb-1", g = (x) => {
+    r && r(x);
   };
-  return /* @__PURE__ */ e.createElement("div", null, r && /* @__PURE__ */ e.createElement("label", { htmlFor: s, className: g }, r), /* @__PURE__ */ e.createElement(
-    "input",
-    {
-      id: s,
-      type: n,
-      name: u,
-      value: o,
-      placeholder: a,
-      disabled: c,
-      className: m,
-      onInput: p
-    }
-  ));
+  return /* @__PURE__ */ e.jsxs("div", { children: [
+    s && /* @__PURE__ */ e.jsx("label", { htmlFor: t, className: p, children: s }),
+    /* @__PURE__ */ e.jsx(
+      "input",
+      {
+        id: t,
+        type: n,
+        name: u,
+        value: o,
+        placeholder: a,
+        disabled: c,
+        className: m,
+        onInput: g
+      }
+    )
+  ] });
 };
 export {
   I as Input,

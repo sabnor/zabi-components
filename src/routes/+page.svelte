@@ -126,17 +126,15 @@
                         size="lg"
                         onclick={() => goto("/docs")}
                         className="px-8 py-3"
-                    >
-                        Get Started
-                    </Button>
+                        text="Get Started"
+                    />
                     <Button
                         variant="secondary"
                         size="lg"
                         onclick={() => goto("/components")}
                         className="px-8 py-3"
-                    >
-                        View Components
-                    </Button>
+                        text="View Components"
+                    />
                 </div>
 
                 <!-- Version Badge -->
@@ -196,11 +194,15 @@
 <Button variant="brand">Brand Button</Button>`}
                 >
                     <div class="flex flex-wrap gap-4 items-center">
-                        <Button variant="primary" size="lg">Primary</Button>
-                        <Button variant="secondary" size="md">Secondary</Button>
-                        <Button variant="danger" size="sm">Danger</Button>
-                        <Button variant="ghost">Ghost</Button>
-                        <Button variant="brand">Brand</Button>
+                        <Button variant="primary" size="lg" text="Primary" />
+                        <Button
+                            variant="secondary"
+                            size="md"
+                            text="Secondary"
+                        />
+                        <Button variant="danger" size="sm" text="Danger" />
+                        <Button variant="ghost" text="Ghost" />
+                        <Button variant="brand" text="Brand" />
                     </div>
                 </ComponentDemo>
 
@@ -337,9 +339,8 @@
                     size="lg"
                     onclick={() => goto("/components")}
                     className="px-8 py-3"
-                >
-                    View All Components
-                </Button>
+                    text="View All Components"
+                />
             </div>
         </section>
 

@@ -1,5 +1,5 @@
 // Navigation utilities for common navigation patterns
-import type { NavigationEvents } from '../types/events';
+import type { NavigationEvents } from '../../types/events';
 
 export interface NavigationItem {
     id: string;
