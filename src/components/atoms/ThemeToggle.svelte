@@ -17,10 +17,19 @@
         const storage = safeLocalStorage();
         if (storage) {
             const savedTheme = storage.getItem("theme");
-            const prefersDark =
-                typeof window !== "undefined"
-                    ? window.matchMedia("(prefers-color-scheme: dark)").matches
-                    : false;
+            let prefersDark = false;
+
+            // Only check media query when mounted and in browser
+            if (mounted && typeof window !== "undefined" && window.matchMedia) {
+                try {
+                    prefersDark = window.matchMedia(
+                        "(prefers-color-scheme: dark)",
+                    ).matches;
+                } catch (e) {
+                    // Fallback if matchMedia fails
+                    prefersDark = false;
+                }
+            }
 
             isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
             updateTheme();
@@ -48,15 +57,26 @@
     }
 </script>
 
-<button
-    onclick={toggleTheme}
-    class="w-10 h-10 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-    {...restProps}
->
-    {#if isDark}
-        <span class="text-lg">☀️</span>
-    {:else}
+{#if mounted}
+    <button
+        onclick={toggleTheme}
+        class="w-10 h-10 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        {...restProps}
+    >
+        {#if isDark}
+            <span class="text-lg">☀️</span>
+        {:else}
+            <span class="text-lg">🌙</span>
+        {/if}
+    </button>
+{:else}
+    <!-- SSR fallback -->
+    <button
+        class="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700"
+        aria-label="Theme toggle"
+        {...restProps}
+    >
         <span class="text-lg">🌙</span>
-    {/if}
-</button>
+    </button>
+{/if}

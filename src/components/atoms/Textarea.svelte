@@ -31,29 +31,31 @@
     let textareaId = $state(generateId("textarea"));
 
     // Simple size classes
-    let sizeClasses = $derived({
+    let sizeClasses = $derived(() => ({
         sm: "px-3 py-1.5 text-sm",
         md: "px-4 py-2 text-sm",
         lg: "px-5 py-3 text-base",
-    });
+    }));
 
     // Get variant class using utility function
-    let variantClass = $derived(getInputVariantClasses(variant));
+    let variantClass = $derived(() => getInputVariantClasses(variant));
 
     // Textarea classes
-    let textareaClasses = $derived(
+    let textareaClasses = $derived(() =>
         [
             "w-full rounded-md transition-colors duration-200",
             "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
             "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
             "resize-y",
-            sizeClasses[size],
-            variantClass,
+            sizeClasses()[size],
+            variantClass(),
         ].join(" "),
     );
 
     // Label classes using semantic text colors
-    let labelClasses = $derived("block text-sm font-medium text-primary mb-1");
+    let labelClasses = $derived(
+        () => "block text-sm font-medium text-primary mb-1",
+    );
 
     function handleInput(event: Event) {
         const target = event.target as HTMLTextAreaElement;

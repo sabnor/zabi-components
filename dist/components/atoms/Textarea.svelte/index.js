@@ -18,18 +18,18 @@ function A(u, t) {
     "size",
     "variant",
     "oninput"
-  ]), o = e.proxy(j("textarea")), g = e.derived(() => ({
+  ]), o = e.proxy(j("textarea")), g = e.derived(() => () => ({
     sm: "px-3 py-1.5 text-sm",
     md: "px-4 py-2 text-sm",
     lg: "px-5 py-3 text-base"
-  })), _ = e.derived(() => I(b())), h = e.derived(() => [
+  })), _ = e.derived(() => () => I(b())), h = e.derived(() => () => [
     "w-full rounded-md transition-colors duration-200",
     "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
     "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
     "resize-y",
-    e.get(g)[v()],
-    e.get(_)
-  ].join(" ")), y = e.derived(() => "block text-sm font-medium text-primary mb-1");
+    e.get(g)()[v()],
+    e.get(_)()
+  ].join(" ")), y = e.derived(() => () => "block text-sm font-medium text-primary mb-1");
   function w(r) {
     const a = r.target;
     s(a.value), t.oninput && t.oninput(r);
@@ -37,11 +37,9 @@ function A(u, t) {
   var l = P(), d = e.child(l);
   {
     var z = (r) => {
-      var a = k();
-      e.set_class(a, 1, e.clsx(e.get(y)));
-      var C = e.child(a, !0);
+      var a = k(), C = e.child(a, !0);
       e.reset(a), e.template_effect(() => {
-        e.set_attribute(a, "for", o), e.set_text(C, i());
+        e.set_attribute(a, "for", o), e.set_class(a, 1, e.clsx(e.get(y))), e.set_text(C, i());
       }), e.append(r, a);
     };
     e.if(d, (r) => {

@@ -1,4 +1,4 @@
-import { y as attributes, G as attr_class, z as stringify, x as head } from "../../../chunks/index.js";
+import { x as attributes, F as attr_class, y as stringify, w as head } from "../../../chunks/index.js";
 import { g as goto } from "../../../chunks/client.js";
 import { h as html, N as Navigation, T as ThemeToggle, C as Card, B as Button } from "../../../chunks/Card.js";
 const $$css = {

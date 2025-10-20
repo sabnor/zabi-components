@@ -1,4 +1,4 @@
-import { y as attributes, z as stringify, F as attr, G as attr_class, J as clsx, x as head, K as ensure_array_like } from "../../chunks/index.js";
+import { x as attributes, y as stringify, z as attr, F as attr_class, G as clsx, w as head, J as ensure_array_like } from "../../chunks/index.js";
 import { g as goto } from "../../chunks/client.js";
 import { B as Button, N as Navigation, T as ThemeToggle, C as Card } from "../../chunks/Card.js";
 import { g as generateId, I as Input, B as Badge, C as ComponentDemo, A as Alert } from "../../chunks/Badge.js";
@@ -52,21 +52,21 @@ function Textarea($$renderer, $$props) {
       ...restProps
     } = $$props;
     let textareaId = generateId("textarea");
-    let sizeClasses = {
+    let sizeClasses = () => ({
       sm: "px-3 py-1.5 text-sm",
       md: "px-4 py-2 text-sm",
       lg: "px-5 py-3 text-base"
-    };
-    let variantClass = getInputVariantClasses(variant);
-    let textareaClasses = [
+    });
+    let variantClass = () => getInputVariantClasses(variant);
+    let textareaClasses = () => [
       "w-full rounded-md transition-colors duration-200",
       "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
       "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
       "resize-y",
-      sizeClasses[size],
-      variantClass
+      sizeClasses()[size],
+      variantClass()
     ].join(" ");
-    let labelClasses = "block text-sm font-medium text-primary mb-1";
+    let labelClasses = () => "block text-sm font-medium text-primary mb-1";
     $$renderer2.push(`<div>`);
     if (label) {
       $$renderer2.push("<!--[-->");
@@ -102,7 +102,7 @@ function Checkbox($$renderer, $$props) {
       ...restProps
     } = $$props;
     let checkboxId = "";
-    let checkboxClasses = [
+    let checkboxClasses = () => [
       "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded",
       "focus:ring-blue-500 focus:ring-2",
       "disabled:opacity-50 disabled:cursor-not-allowed"
@@ -203,19 +203,25 @@ function ContactForm($$renderer, $$props) {
   });
 }
 function FeatureCard($$renderer, $$props) {
-  let {
-    icon = "✨",
-    title,
-    description,
-    className = "",
-    $$slots,
-    $$events,
-    ...restProps
-  } = $$props;
-  $$renderer.push(`<div${attributes({
-    class: `p-6 rounded-lg bg-surface border border-border hover:border-primary/20 hover:shadow-sm transition-colors duration-200 ${stringify(className)}`,
-    ...restProps
-  })}><div class="flex items-start gap-4"><div class="flex-shrink-0 text-2xl" aria-hidden="true">${escape_html(icon)}</div> <div class="flex-1 min-w-0"><h3 class="text-lg font-semibold text-text mb-2">${escape_html(title)}</h3> <p class="text-text-secondary leading-relaxed">${escape_html(description)}</p></div></div></div>`);
+  $$renderer.component(($$renderer2) => {
+    let {
+      icon = "✨",
+      title,
+      description,
+      className = "",
+      $$slots,
+      $$events,
+      ...restProps
+    } = $$props;
+    {
+      $$renderer2.push("<!--[!-->");
+      $$renderer2.push(`<div${attributes({
+        class: `p-6 rounded-lg bg-gray-100 border border-gray-300 hover:border-gray-400 hover:shadow-sm transition-colors duration-200 ${stringify(className)}`,
+        ...restProps
+      })}><div class="flex items-start gap-4"><div class="flex-shrink-0 text-2xl" aria-hidden="true">${escape_html(icon)}</div> <div class="flex-1 min-w-0"><h3 class="text-lg font-semibold text-gray-900 mb-2">${escape_html(title)}</h3> <p class="text-gray-600 leading-relaxed">${escape_html(description)}</p></div></div></div>`);
+    }
+    $$renderer2.push(`<!--]-->`);
+  });
 }
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {

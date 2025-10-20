@@ -230,11 +230,6 @@ https://svelte.dev/e/await_invalid`);
   error.name = "Svelte error";
   throw error;
 }
-function experimental_async_ssr() {
-  {
-    console.warn(`https://svelte.dev/e/experimental_async_ssr`);
-  }
-}
 class Renderer {
   /**
    * The contents of the renderer.
@@ -518,7 +513,6 @@ class Renderer {
            */
           (onfulfilled, onrejected) => {
             {
-              experimental_async_ssr();
               const result2 = sync ??= Renderer.#render(component, options);
               const user_result = onfulfilled({
                 head: result2.head,
@@ -793,12 +787,11 @@ export {
   COMMENT_NODE as C,
   DIRTY as D,
   ERROR_VALUE as E,
-  attr as F,
-  attr_class as G,
+  attr_class as F,
+  clsx as G,
   HYDRATION_ERROR as H,
   INERT as I,
-  clsx as J,
-  ensure_array_like as K,
+  ensure_array_like as J,
   LEGACY_PROPS as L,
   MAYBE_DIRTY as M,
   ROOT_EFFECT as R,
@@ -826,8 +819,8 @@ export {
   REACTION_IS_UPDATING as t,
   is_passive_event as u,
   render as v,
-  experimental_async_ssr as w,
-  head as x,
-  attributes as y,
-  stringify as z
+  head as w,
+  attributes as x,
+  stringify as y,
+  attr as z
 };

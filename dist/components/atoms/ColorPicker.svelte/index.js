@@ -1,9 +1,10 @@
 import "svelte/internal/disclose-version";
 import * as e from "svelte/internal/client";
-var y = e.from_html('<label class="block text-sm font-medium text-gray-700"> </label>'), x = e.from_html('<span class="text-white text-lg">✓</span>'), w = e.from_html("<button><!></button>"), P = e.from_html('<div class="space-y-2"><!> <div></div></div>');
-function G(c, l) {
+import { onMount as y } from "svelte";
+var w = e.from_html('<label class="block text-sm font-medium text-gray-700"> </label>'), P = e.from_html('<span class="text-white text-lg">✓</span>'), B = e.from_html("<button><!></button>"), G = e.from_html('<div class="space-y-2"><!> <div></div></div>');
+function D(c, l) {
   e.push(l, !0);
-  let i = e.prop(l, "value", 7, ""), n = e.prop(l, "label", 3, ""), f = e.prop(l, "disabled", 3, !1), s = e.rest_props(l, [
+  let i = e.prop(l, "value", 7, ""), u = e.prop(l, "label", 3, ""), f = e.prop(l, "disabled", 3, !1), n = e.rest_props(l, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -12,7 +13,7 @@ function G(c, l) {
     "disabled",
     "onclick"
   ]);
-  const p = [
+  const g = [
     { label: "Red", value: "#ef4444" },
     { label: "Blue", value: "#3b82f6" },
     { label: "Green", value: "#10b981" },
@@ -22,27 +23,30 @@ function G(c, l) {
     { label: "Gray", value: "#6b7280" },
     { label: "Black", value: "#000000" }
   ];
-  let v = e.proxy(typeof window < "u" ? `color-picker-${Math.random().toString(36).substr(2, 9)}` : `color-picker-ssr-${Date.now()}`);
-  var d = P(), u = e.child(d);
+  let s = e.state(`color-picker-ssr-${Date.now()}`), p = e.state(!1);
+  y(() => {
+    e.set(p, !0), e.set(s, `color-picker-${Math.random().toString(36).substr(2, 9)}`);
+  });
+  var d = G(), v = e.child(d);
   {
-    var g = (r) => {
-      var a = y(), t = e.child(a, !0);
+    var m = (r) => {
+      var a = w(), t = e.child(a, !0);
       e.reset(a), e.template_effect(() => {
-        e.set_attribute(a, "for", v), e.set_text(t, n());
+        e.set_attribute(a, "for", e.get(s)), e.set_text(t, u());
       }), e.append(r, a);
     };
-    e.if(u, (r) => {
-      n() && r(g);
+    e.if(v, (r) => {
+      u() && r(m);
     });
   }
-  var b = e.sibling(u, 2);
+  var b = e.sibling(v, 2);
   e.attribute_effect(b, () => ({
-    id: v,
+    id: e.get(s),
     class: "grid grid-cols-4 gap-2",
     role: "radiogroup",
-    ...s
-  })), e.each(b, 21, () => p, e.index, (r, a) => {
-    var t = w(), _ = (o) => {
+    ...n
+  })), e.each(b, 21, () => g, e.index, (r, a) => {
+    var t = B(), _ = (o) => {
       i(e.get(a).value), l.onclick && l.onclick(o);
     };
     e.attribute_effect(t, () => ({
@@ -54,21 +58,21 @@ function G(c, l) {
       role: "radio",
       "aria-checked": i() === e.get(a).value,
       "aria-label": e.get(a).label,
-      ...s
+      ...n
     }));
-    var m = e.child(t);
+    var h = e.child(t);
     {
-      var h = (o) => {
-        var k = x();
-        e.append(o, k);
+      var k = (o) => {
+        var x = P();
+        e.append(o, x);
       };
-      e.if(m, (o) => {
-        i() === e.get(a).value && o(h);
+      e.if(h, (o) => {
+        i() === e.get(a).value && o(k);
       });
     }
     e.reset(t), e.append(r, t);
   }), e.reset(b), e.reset(d), e.append(c, d), e.pop();
 }
 export {
-  G as default
+  D as default
 };

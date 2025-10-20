@@ -30,11 +30,11 @@
     let inputId = $state(generateId("input"));
 
     // Simple size classes
-    let sizeClasses = $derived({
+    let sizeClasses = $derived(() => ({
         sm: "px-3 py-1.5 text-sm",
         md: "px-4 py-2 text-sm",
         lg: "px-5 py-3 text-base",
-    });
+    }));
 
     // Get variant class using utility function
     let variantClass = $derived(() => {
@@ -51,18 +51,20 @@
     });
 
     // Input classes
-    let inputClasses = $derived(
+    let inputClasses = $derived(() =>
         [
             "w-full rounded-md transition-colors duration-200",
             "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
             "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
-            sizeClasses[size],
-            variantClass,
+            sizeClasses()[size],
+            variantClass(),
         ].join(" "),
     );
 
     // Label classes using semantic text colors
-    let labelClasses = $derived("block text-sm font-medium text-primary mb-1");
+    let labelClasses = $derived(
+        () => "block text-sm font-medium text-primary mb-1",
+    );
 
     function handleInput(event: Event) {
         const target = event.target as HTMLInputElement;

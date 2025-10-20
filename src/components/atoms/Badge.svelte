@@ -5,68 +5,48 @@
     to prevent DOM access errors during hydration and rapid state changes.
 -->
 <script lang="ts">
-    import type { Snippet } from "svelte";
-    import { onMount } from "svelte";
-
     // Props using Svelte 5 runes
     let {
         variant = "default",
+        size = "md",
         className = "",
         text = "",
-        children,
     }: {
         variant?: "default" | "success" | "warning" | "error" | "info";
+        size?: "sm" | "md" | "lg";
         className?: string;
-        text?: string;
-        children?: Snippet;
+        text: string;
     } = $props();
 
-    // Track mounting state for SSR safety
-    let mounted = $state(false);
-
-    onMount(() => {
-        mounted = true;
-    });
-
-    // Variant classes mapping
-    const variantClasses = {
-        success: "bg-green-100 text-green-800 border-green-300",
-        warning: "bg-yellow-100 text-yellow-800 border-yellow-300",
-        error: "bg-red-100 text-red-800 border-red-300",
-        info: "bg-blue-100 text-blue-800 border-blue-300",
-        default: "bg-gray-100 text-gray-800 border-gray-300",
-    };
-
-    // Safe class computation
+    // Class computation using conditional logic with full class names
     const classes = $derived(() => {
         const baseClasses =
-            "inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md";
-        const variantClass = variantClasses[variant] || variantClasses.default;
+            "inline-flex items-center font-medium border rounded-md";
 
-        return [baseClasses, variantClass, className].filter(Boolean).join(" ");
+        // Size classes - using full class names
+        const sizeClass =
+            size === "sm"
+                ? "px-2 py-0.5 text-xs"
+                : size === "lg"
+                  ? "px-4 py-2 text-base"
+                  : "px-3 py-1 text-sm"; // default md
+
+        // Variant classes - using full class names
+        const variantClass =
+            variant === "success"
+                ? "bg-green-100 text-green-800 border-green-300"
+                : variant === "warning"
+                  ? "bg-yellow-100 text-yellow-800 border-yellow-300"
+                  : variant === "error"
+                    ? "bg-red-100 text-red-800 border-red-300"
+                    : variant === "info"
+                      ? "bg-blue-100 text-blue-800 border-blue-300"
+                      : "bg-gray-100 text-gray-800 border-gray-300"; // default
+
+        return `${baseClasses} ${sizeClass} ${variantClass} ${className}`.trim();
     });
-
-    // Safe text content
-    const displayText = $derived(() => text || "");
 </script>
 
-{#if mounted}
-    <span class={classes}>
-        {#if children}
-            {@render children()}
-        {:else if displayText}
-            {displayText}
-        {/if}
-    </span>
-{:else}
-    <!-- SSR fallback -->
-    <span
-        class="inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md bg-gray-100 text-gray-800 border-gray-300"
-    >
-        {#if children}
-            {@render children()}
-        {:else if displayText}
-            {displayText}
-        {/if}
-    </span>
-{/if}
+<span class={classes()}>
+    {text}
+</span>

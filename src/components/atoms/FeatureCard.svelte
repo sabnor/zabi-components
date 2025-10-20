@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+
     /**
      * FeatureCard component - SSR-safe implementation
      * @component
@@ -22,23 +24,51 @@
         className = "",
         ...restProps
     }: Props = $props();
+
+    let mounted = $state(false);
+
+    onMount(() => {
+        mounted = true;
+    });
 </script>
 
-<div
-    class="p-6 rounded-lg bg-surface border border-border hover:border-primary/20 hover:shadow-sm transition-colors duration-200 {className}"
-    {...restProps}
->
-    <div class="flex items-start gap-4">
-        <div class="flex-shrink-0 text-2xl" aria-hidden="true">
-            {icon}
-        </div>
-        <div class="flex-1 min-w-0">
-            <h3 class="text-lg font-semibold text-text mb-2">
-                {title}
-            </h3>
-            <p class="text-text-secondary leading-relaxed">
-                {description}
-            </p>
+{#if mounted}
+    <div
+        class="p-6 rounded-lg bg-surface border border-border hover:border-primary/20 hover:shadow-sm transition-colors duration-200 {className}"
+        {...restProps}
+    >
+        <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 text-2xl" aria-hidden="true">
+                {icon}
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-semibold text-text mb-2">
+                    {title}
+                </h3>
+                <p class="text-text-secondary leading-relaxed">
+                    {description}
+                </p>
+            </div>
         </div>
     </div>
-</div>
+{:else}
+    <!-- SSR fallback -->
+    <div
+        class="p-6 rounded-lg bg-gray-100 border border-gray-300 hover:border-gray-400 hover:shadow-sm transition-colors duration-200 {className}"
+        {...restProps}
+    >
+        <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 text-2xl" aria-hidden="true">
+                {icon}
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                    {title}
+                </h3>
+                <p class="text-gray-600 leading-relaxed">
+                    {description}
+                </p>
+            </div>
+        </div>
+    </div>
+{/if}

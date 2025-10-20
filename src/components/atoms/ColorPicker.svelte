@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+
     interface Props {
         value?: string;
         label?: string;
@@ -26,11 +28,14 @@
     ];
 
     // Generate unique ID - SSR safe
-    let groupId = $state(
-        typeof window !== "undefined"
-            ? `color-picker-${Math.random().toString(36).substr(2, 9)}`
-            : `color-picker-ssr-${Date.now()}`,
-    );
+    let groupId = $state(`color-picker-ssr-${Date.now()}`);
+    let mounted = $state(false);
+
+    onMount(() => {
+        mounted = true;
+        // Update ID to be more unique on client side
+        groupId = `color-picker-${Math.random().toString(36).substr(2, 9)}`;
+    });
 </script>
 
 <div class="space-y-2">
