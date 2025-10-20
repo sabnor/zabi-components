@@ -1,4 +1,4 @@
-import { F as attr, G as attr_class, J as clsx, y as attributes, z as stringify } from "./index.js";
+import { z as attr, F as attr_class, G as clsx, x as attributes, y as stringify } from "./index.js";
 import { e as escape_html } from "./context.js";
 import { h as html } from "./Card.js";
 import "clsx";
@@ -30,11 +30,11 @@ function Input($$renderer, $$props) {
       ...restProps
     } = $$props;
     let inputId = generateId("input");
-    let sizeClasses = {
+    let sizeClasses = () => ({
       sm: "px-3 py-1.5 text-sm",
       md: "px-4 py-2 text-sm",
       lg: "px-5 py-3 text-base"
-    };
+    });
     let variantClass = () => {
       const variantMap = {
         default: "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
@@ -44,14 +44,14 @@ function Input($$renderer, $$props) {
       };
       return variantMap[variant] || variantMap.default;
     };
-    let inputClasses = [
+    let inputClasses = () => [
       "w-full rounded-md transition-colors duration-200",
       "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
       "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
-      sizeClasses[size],
-      variantClass
+      sizeClasses()[size],
+      variantClass()
     ].join(" ");
-    let labelClasses = "block text-sm font-medium text-primary mb-1";
+    let labelClasses = () => "block text-sm font-medium text-primary mb-1";
     $$renderer2.push(`<div>`);
     if (label) {
       $$renderer2.push("<!--[-->");

@@ -17,7 +17,7 @@ function q(n, t) {
     "size",
     "variant",
     "oninput"
-  ]), d = e.proxy(I("input")), g = e.derived(() => ({
+  ]), d = e.proxy(I("input")), g = e.derived(() => () => ({
     sm: "px-3 py-1.5 text-sm",
     md: "px-4 py-2 text-sm",
     lg: "px-5 py-3 text-base"
@@ -29,13 +29,13 @@ function q(n, t) {
       error: "border-red-300 focus:border-red-500 focus:ring-red-500"
     };
     return r[v()] || r.default;
-  }), x = e.derived(() => [
+  }), x = e.derived(() => () => [
     "w-full rounded-md transition-colors duration-200",
     "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
     "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
-    e.get(g)[b()],
-    e.get(y)
-  ].join(" ")), h = e.derived(() => "block text-sm font-medium text-primary mb-1");
+    e.get(g)()[b()],
+    e.get(y)()
+  ].join(" ")), h = e.derived(() => () => "block text-sm font-medium text-primary mb-1");
   function _(r) {
     const a = r.target;
     o(a.value), t.oninput && t.oninput(r);
@@ -43,11 +43,9 @@ function q(n, t) {
   var l = k(), s = e.child(l);
   {
     var w = (r) => {
-      var a = j();
-      e.set_class(a, 1, e.clsx(e.get(h)));
-      var C = e.child(a, !0);
+      var a = j(), C = e.child(a, !0);
       e.reset(a), e.template_effect(() => {
-        e.set_attribute(a, "for", d), e.set_text(C, i());
+        e.set_attribute(a, "for", d), e.set_class(a, 1, e.clsx(e.get(h))), e.set_text(C, i());
       }), e.append(r, a);
     };
     e.if(s, (r) => {

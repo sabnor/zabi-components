@@ -1,42 +1,21 @@
 import "svelte/internal/disclose-version";
 import * as e from "svelte/internal/client";
-var v = e.from_html("<span><!></span>");
-function _(f, t) {
+var m = e.from_html("<span> </span>");
+function g(o, t) {
   e.push(t, !0);
-  let n = e.prop(t, "variant", 3, "default"), m = e.prop(t, "className", 3, ""), i = e.prop(t, "text", 3, "");
-  const c = e.derived(() => [
-    "inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md",
-    n() === "success" ? "bg-green-100 text-green-800 border-green-300" : n() === "warning" ? "bg-yellow-100 text-yellow-800 border-yellow-300" : n() === "error" ? "bg-red-100 text-red-800 border-red-300" : n() === "info" ? "bg-blue-100 text-blue-800 border-blue-300" : "bg-gray-100 text-gray-800 border-gray-300",
-    m()
-  ].filter(Boolean).join(" "));
-  var l = v(), p = e.child(l);
-  {
-    var g = (r) => {
-      var a = e.comment(), d = e.first_child(a);
-      e.snippet(d, () => t.children), e.append(r, a);
-    }, x = (r) => {
-      var a = e.comment(), d = e.first_child(a);
-      {
-        var b = (o) => {
-          var s = e.text();
-          e.template_effect(() => e.set_text(s, i())), e.append(o, s);
-        };
-        e.if(
-          d,
-          (o) => {
-            i() && o(b);
-          },
-          !0
-        );
-      }
-      e.append(r, a);
-    };
-    e.if(p, (r) => {
-      t.children ? r(g) : r(x, !1);
-    });
-  }
-  e.reset(l), e.template_effect(() => e.set_class(l, 1, e.clsx(e.get(c)))), e.append(f, l), e.pop();
+  let r = e.prop(t, "variant", 3, "default"), l = e.prop(t, "size", 3, "md"), n = e.prop(t, "className", 3, ""), d = e.prop(t, "text", 3, "");
+  const x = e.derived(() => () => {
+    const a = "inline-flex items-center font-medium border rounded-md", p = l() === "sm" ? "px-2 py-0.5 text-xs" : l() === "lg" ? "px-4 py-2 text-base" : "px-3 py-1 text-sm", b = r() === "success" ? "bg-green-100 text-green-800 border-green-300" : r() === "warning" ? "bg-yellow-100 text-yellow-800 border-yellow-300" : r() === "error" ? "bg-red-100 text-red-800 border-red-300" : r() === "info" ? "bg-blue-100 text-blue-800 border-blue-300" : "bg-gray-100 text-gray-800 border-gray-300";
+    return `${a} ${p} ${b} ${n()}`.trim();
+  });
+  var s = m(), i = e.child(s, !0);
+  e.reset(s), e.template_effect(
+    (a) => {
+      e.set_class(s, 1, a), e.set_text(i, d());
+    },
+    [() => e.clsx(e.get(x)())]
+  ), e.append(o, s), e.pop();
 }
 export {
-  _ as default
+  g as default
 };

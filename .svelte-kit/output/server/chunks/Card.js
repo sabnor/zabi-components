@@ -1,4 +1,4 @@
-import { y as attributes, G as attr_class, K as ensure_array_like, F as attr, z as stringify, J as clsx } from "./index.js";
+import { x as attributes, F as attr_class, J as ensure_array_like, z as attr, y as stringify, G as clsx } from "./index.js";
 import { e as escape_html } from "./context.js";
 function html(value) {
   var html2 = String(value ?? "");
@@ -29,19 +29,15 @@ function Navigation($$renderer, $$props) {
 function ThemeToggle($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let { isDark = false, $$slots, $$events, ...restProps } = $$props;
-    $$renderer2.push(`<button${attributes({
-      class: "w-10 h-10 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500",
-      "aria-label": isDark ? "Switch to light mode" : "Switch to dark mode",
-      ...restProps
-    })}>`);
-    if (isDark) {
-      $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<span class="text-lg">☀️</span>`);
-    } else {
+    {
       $$renderer2.push("<!--[!-->");
-      $$renderer2.push(`<span class="text-lg">🌙</span>`);
+      $$renderer2.push(`<button${attributes({
+        class: "w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700",
+        "aria-label": "Theme toggle",
+        ...restProps
+      })}><span class="text-lg">🌙</span></button>`);
     }
-    $$renderer2.push(`<!--]--></button>`);
+    $$renderer2.push(`<!--]-->`);
   });
 }
 function Button($$renderer, $$props) {

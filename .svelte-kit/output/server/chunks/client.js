@@ -3,7 +3,7 @@ import { w as writable } from "./exports.js";
 import "./utils.js";
 import "@sveltejs/kit/internal/server";
 import "clsx";
-import { n as noop } from "./equality.js";
+import { n as noop } from "./utils2.js";
 function create_updated_store() {
   const { set, subscribe } = writable(false);
   {
