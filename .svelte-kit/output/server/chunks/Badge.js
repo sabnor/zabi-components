@@ -1,6 +1,7 @@
 import { F as attr, G as attr_class, J as clsx, y as attributes, z as stringify } from "./index.js";
 import { e as escape_html } from "./context.js";
 import { h as html } from "./Card.js";
+import "clsx";
 function isBrowser() {
   return typeof window !== "undefined";
 }
@@ -182,35 +183,27 @@ function Alert($$renderer, $$props) {
 function Badge($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let { variant = "default", className = "", text = "", children } = $$props;
-    const variantClasses = {
-      success: "bg-green-100 text-green-800 border-green-300",
-      warning: "bg-yellow-100 text-yellow-800 border-yellow-300",
-      error: "bg-red-100 text-red-800 border-red-300",
-      info: "bg-blue-100 text-blue-800 border-blue-300",
-      default: "bg-gray-100 text-gray-800 border-gray-300"
-    };
-    const classes = () => {
-      const baseClasses = "inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md";
-      const variantClass = variantClasses[variant] || variantClasses.default;
-      return [baseClasses, variantClass, className].filter(Boolean).join(" ");
-    };
     const displayText = () => text || "";
-    $$renderer2.push(`<span${attr_class(clsx(classes))}>`);
-    if (children) {
-      $$renderer2.push("<!--[-->");
-      children($$renderer2);
-      $$renderer2.push(`<!---->`);
-    } else {
+    {
       $$renderer2.push("<!--[!-->");
-      if (displayText) {
+      $$renderer2.push(`<span class="inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md bg-gray-100 text-gray-800 border-gray-300">`);
+      if (children) {
         $$renderer2.push("<!--[-->");
-        $$renderer2.push(`${escape_html(displayText)}`);
+        children($$renderer2);
+        $$renderer2.push(`<!---->`);
       } else {
         $$renderer2.push("<!--[!-->");
+        if (displayText) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`${escape_html(displayText)}`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+        }
+        $$renderer2.push(`<!--]-->`);
       }
-      $$renderer2.push(`<!--]-->`);
+      $$renderer2.push(`<!--]--></span>`);
     }
-    $$renderer2.push(`<!--]--></span>`);
+    $$renderer2.push(`<!--]-->`);
   });
 }
 export {

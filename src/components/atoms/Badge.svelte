@@ -50,10 +50,23 @@
     const displayText = $derived(() => text || "");
 </script>
 
-<span class={classes}>
-    {#if children}
-        {@render children()}
-    {:else if displayText}
-        {displayText}
-    {/if}
-</span>
+{#if mounted}
+    <span class={classes}>
+        {#if children}
+            {@render children()}
+        {:else if displayText}
+            {displayText}
+        {/if}
+    </span>
+{:else}
+    <!-- SSR fallback -->
+    <span
+        class="inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md bg-gray-100 text-gray-800 border-gray-300"
+    >
+        {#if children}
+            {@render children()}
+        {:else if displayText}
+            {displayText}
+        {/if}
+    </span>
+{/if}
