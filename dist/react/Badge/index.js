@@ -1,10 +1,11 @@
-import n from "react";
-const l = ({
+import { j as n } from "../../_virtual/jsx-runtime/index.js";
+import "react";
+const d = ({
   variant: e = "default",
   className: r = "",
   children: t
 }) => {
-  const a = [
+  const s = [
     "inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md",
     (() => {
       switch (e) {
@@ -22,9 +23,9 @@ const l = ({
     })(),
     r
   ].filter(Boolean).join(" ");
-  return /* @__PURE__ */ n.createElement("span", { className: a }, t);
+  return /* @__PURE__ */ n.jsx("span", { className: s, children: t });
 };
 export {
-  l as Badge,
-  l as default
+  d as Badge,
+  d as default
 };

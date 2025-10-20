@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { safeLocalStorage, safeDocument } from "../../lib/ssr-safe";
+    import { safeLocalStorage, safeDocument } from "../../routes/lib/ssr-safe";
 
     interface Props {
         isDark?: boolean;
@@ -17,9 +17,10 @@
         const storage = safeLocalStorage();
         if (storage) {
             const savedTheme = storage.getItem("theme");
-            const prefersDark = window.matchMedia(
-                "(prefers-color-scheme: dark)",
-            ).matches;
+            const prefersDark =
+                typeof window !== "undefined"
+                    ? window.matchMedia("(prefers-color-scheme: dark)").matches
+                    : false;
 
             isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
             updateTheme();

@@ -1,7 +1,7 @@
 import "svelte/internal/disclose-version";
 import * as e from "svelte/internal/client";
 import { createEventDispatcher as _ } from "svelte";
-import { generateId as k } from "../../../lib/ssr-safe/index.js";
+import { generateId as k } from "../../../routes/lib/ssr-safe/index.js";
 function v(l, a, r) {
   a() || (l.key === " " || l.key === "Enter") && (l.preventDefault(), r(l));
 }

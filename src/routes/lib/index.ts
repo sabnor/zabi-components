@@ -2,22 +2,22 @@
 // Main library entry point - All components in one place
 
 // Import base styles
-import '../styles/base.css';
+import '../../styles/base.css';
 
 // ============================================================================
 // ATOM COMPONENTS - Basic UI building blocks
 // ============================================================================
 
 // Form Controls - All SSR-safe components
-export { default as Toggle } from '../components/atoms/Toggle.svelte';
-export { default as Badge } from '../components/atoms/Badge.svelte';
-export { default as Button } from '../components/atoms/Button.svelte';
-export { default as Card } from '../components/atoms/Card.svelte';
-export { default as Input } from '../components/atoms/Input.svelte';
-export { default as Textarea } from '../components/atoms/Textarea.svelte';
-export { default as Select } from '../components/atoms/Select.svelte';
-export { default as ColorPicker } from '../components/atoms/ColorPicker.svelte';
-export { default as Heading } from '../components/atoms/Heading.svelte';
+export { default as Toggle } from '../../components/atoms/Toggle.svelte';
+export { default as Badge } from '../../components/atoms/Badge.svelte';
+export { default as Button } from '../../components/atoms/Button.svelte';
+export { default as Card } from '../../components/atoms/Card.svelte';
+export { default as Input } from '../../components/atoms/Input.svelte';
+export { default as Textarea } from '../../components/atoms/Textarea.svelte';
+export { default as Select } from '../../components/atoms/Select.svelte';
+export { default as ColorPicker } from '../../components/atoms/ColorPicker.svelte';
+export { default as Heading } from '../../components/atoms/Heading.svelte';
 
 // ============================================================================
 // MOLECULE COMPONENTS - Composite UI elements
@@ -200,6 +200,6 @@ export const validateRequired = (value: any): boolean => {
 // ============================================================================
 
 // Re-export all from sub-categories for backward compatibility
-export * from '../components/atoms/index';
-// export * from '../components/molecules/index'; // Temporarily disabled - empty module
-// export * from '../components/organisms/index'; // Temporarily disabled - empty module
+export * from '../../components/atoms/index';
+// export * from '../../components/molecules/index'; // Temporarily disabled - empty module
+// export * from '../../components/organisms/index'; // Temporarily disabled - empty module

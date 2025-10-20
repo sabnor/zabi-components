@@ -1,5 +1,5 @@
 // Tabs utilities for common tab patterns
-import type { TabsEvents } from '../types/events';
+import type { TabsEvents } from '../../types/events';
 
 export interface TabItem {
     id: string;
@@ -155,6 +155,9 @@ export function createTabsKeyboardNavigation(
     onTabClick: (tab: TabItem, event: MouseEvent) => void
 ) {
     return function handleKeydown(event: KeyboardEvent) {
+        // SSR-safe DOM access
+        if (typeof document === 'undefined') return;
+
         const tabElements = Array.from(
             document.querySelectorAll('[role="tab"]')
         ) as HTMLElement[];
@@ -221,6 +224,9 @@ export function createTabClickHandler(
  * Focus tab by ID
  */
 export function focusTab(tabId: string, container: HTMLElement): void {
+    // SSR-safe DOM access
+    if (typeof document === 'undefined' || !container) return;
+
     const tabElement = container.querySelector(
         `[data-tab-id="${tabId}"]`
     ) as HTMLElement;

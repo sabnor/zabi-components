@@ -3,7 +3,9 @@ import * as e from "svelte/internal/client";
 var c = e.from_html("<button><!></button>");
 function v(s, t) {
   e.push(t, !0);
-  let i = e.prop(t, "variant", 3, "primary"), o = e.prop(t, "size", 3, "md"), a = e.prop(t, "disabled", 3, !1), n = e.prop(t, "type", 3, "button"), g = e.prop(t, "className", 3, ""), d = e.rest_props(t, [
+  let i = e.prop(t, "variant", 3, "primary"), a = e.prop(t, "size", 3, "md"), o = e.prop(t, "disabled", 3, !1), n = e.prop(t, "type", 3, "button"), g = e.prop(t, "className", 3, "");
+  e.prop(t, "text", 3, "");
+  let d = e.rest_props(t, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -12,6 +14,7 @@ function v(s, t) {
     "disabled",
     "type",
     "className",
+    "text",
     "onclick",
     "children"
   ]), l = e.derived(() => ({
@@ -31,7 +34,7 @@ function v(s, t) {
     "focus:outline-none focus:ring-2 focus:ring-offset-2",
     "active:scale-95 transform-gpu",
     "shadow-sm hover:shadow-md",
-    e.get(l)[o()],
+    e.get(l)[a()],
     e.get(u)[i()],
     g()
   ].filter(Boolean).join(" "));
@@ -39,11 +42,11 @@ function v(s, t) {
   e.attribute_effect(r, () => ({
     type: n(),
     class: e.get(b),
-    disabled: a(),
+    disabled: o(),
     ...d
   }));
   var f = e.child(r);
-  e.snippet(f, () => t.children ?? e.noop), e.reset(r), e.append(s, r), e.pop();
+  e.snippet(f, () => t.children), e.reset(r), e.append(s, r), e.pop();
 }
 export {
   v as default

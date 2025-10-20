@@ -1,4 +1,6 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
+
     interface Props {
         variant?:
             | "primary"
@@ -13,7 +15,7 @@
         className?: string;
         text?: string;
         onclick?: (event: MouseEvent) => void;
-        children?: any;
+        children?: Snippet;
     }
 
     let {
@@ -65,6 +67,10 @@
     );
 </script>
 
-<button {type} class={buttonClasses} {disabled} {...restProps}>
-    {@render children()}
+<button {type} class={buttonClasses} {disabled} {onclick} {...restProps}>
+    {#if text}
+        {text}
+    {:else if children}
+        {@render children()}
+    {/if}
 </button>
