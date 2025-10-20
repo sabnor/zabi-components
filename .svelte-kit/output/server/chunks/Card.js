@@ -83,8 +83,21 @@ function Button($$renderer, $$props) {
       className
     ].filter(Boolean).join(" ");
     $$renderer2.push(`<button${attributes({ type, class: clsx(buttonClasses), disabled, ...restProps })}>`);
-    children($$renderer2);
-    $$renderer2.push(`<!----></button>`);
+    if (text) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`${escape_html(text)}`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+      if (children) {
+        $$renderer2.push("<!--[-->");
+        children($$renderer2);
+        $$renderer2.push(`<!---->`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]-->`);
+    }
+    $$renderer2.push(`<!--]--></button>`);
   });
 }
 function Card($$renderer, $$props) {
@@ -134,8 +147,14 @@ function Card($$renderer, $$props) {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--> `);
-    children?.($$renderer2);
-    $$renderer2.push(`<!----></div>`);
+    if (children) {
+      $$renderer2.push("<!--[-->");
+      children($$renderer2);
+      $$renderer2.push(`<!---->`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></div>`);
   });
 }
 export {

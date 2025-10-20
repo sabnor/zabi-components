@@ -8,7 +8,18 @@ const meta = {
         layout: 'centered'
     },
     tags: ['autodocs'],
-    argTypes: {}
+    argTypes: {
+        variant: {
+            control: { type: 'select' },
+            options: ['default', 'success', 'warning', 'error', 'info']
+        },
+        text: {
+            control: { type: 'text' }
+        },
+        className: {
+            control: { type: 'text' }
+        }
+    }
 } satisfies Meta<typeof Badge>;
 
 export default meta;
@@ -54,5 +65,45 @@ export const WithCustomClass: Story = {
         variant: 'default',
         text: 'Custom Styled Badge',
         className: 'text-lg px-4 py-2'
+    }
+};
+
+export const EmptyText: Story = {
+    args: {
+        variant: 'default',
+        text: ''
+    }
+};
+
+export const NullText: Story = {
+    args: {
+        variant: 'default',
+        text: null as any
+    }
+};
+
+export const WithChildren: Story = {
+    args: {
+        variant: 'info',
+        text: ''
+    },
+    render: (args) => ({
+        Component: Badge,
+        props: args,
+        children: 'Custom content with children'
+    })
+};
+
+export const DynamicContent: Story = {
+    args: {
+        variant: 'success',
+        text: 'Dynamic content test'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'This story tests the Badge component with dynamic content to ensure it handles rapid state changes without DOM access errors.'
+            }
+        }
     }
 };
