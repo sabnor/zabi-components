@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { generateId } from "../../routes/lib/ssr-safe";
 
     interface Props {
         value?: string;
@@ -27,14 +27,20 @@
         { label: "Black", value: "#000000" },
     ];
 
-    // Generate unique ID - SSR safe
-    let groupId = $state(`color-picker-ssr-${Date.now()}`);
-    let mounted = $state(false);
+    // Generate unique ID - SSR safe (call directly, not in onMount)
+    const groupId = generateId("color-picker");
 
-    onMount(() => {
-        mounted = true;
-        // Update ID to be more unique on client side
-        groupId = `color-picker-${Math.random().toString(36).substr(2, 9)}`;
+    // Color button classes using full class names
+    const colorButtonClasses = $derived(() => {
+        return (colorValue: string) => {
+            const baseClasses = "w-12 h-12 rounded-lg border-2 transition-all";
+            const stateClasses =
+                value === colorValue
+                    ? "border-blue-500 ring-2 ring-blue-200"
+                    : "border-gray-300 hover:border-gray-400";
+
+            return `${baseClasses} ${stateClasses}`.trim();
+        };
     });
 </script>
 
@@ -54,10 +60,7 @@
         {#each colors as color}
             <button
                 type="button"
-                class="w-12 h-12 rounded-lg border-2 transition-all {value ===
-                color.value
-                    ? 'border-blue-500 ring-2 ring-blue-200'
-                    : 'border-gray-300 hover:border-gray-400'}"
+                class={colorButtonClasses()(color.value)}
                 style="background-color: {color.value};"
                 onclick={(e) => {
                     value = color.value;
