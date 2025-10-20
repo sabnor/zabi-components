@@ -26,43 +26,39 @@
         ...restProps
     }: Props = $props();
 
-    // Generate unique ID - SSR safe
-    let inputId = $state(generateId("input"));
+    // Generate unique ID - SSR safe (call directly, not in $state)
+    const inputId = generateId("input");
 
-    // Simple size classes
-    let sizeClasses = $derived(() => ({
-        sm: "px-3 py-1.5 text-sm",
-        md: "px-4 py-2 text-sm",
-        lg: "px-5 py-3 text-base",
-    }));
-
-    // Get variant class using utility function
-    let variantClass = $derived(() => {
-        const variantMap = {
-            default:
-                "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
-            success:
-                "border-green-300 focus:border-green-500 focus:ring-green-500",
-            warning:
-                "border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500",
-            error: "border-red-300 focus:border-red-500 focus:ring-red-500",
-        };
-        return variantMap[variant] || variantMap.default;
+    // Size classes using full class names
+    const sizeClass = $derived(() => {
+        return size === "sm"
+            ? "px-3 py-1.5 text-sm"
+            : size === "lg"
+              ? "px-5 py-3 text-base"
+              : "px-4 py-2 text-sm"; // default md
     });
 
-    // Input classes
-    let inputClasses = $derived(() =>
-        [
-            "w-full rounded-md transition-colors duration-200",
-            "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
-            "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
-            sizeClasses()[size],
-            variantClass(),
-        ].join(" "),
-    );
+    // Variant classes using full class names
+    const variantClass = $derived(() => {
+        return variant === "success"
+            ? "border-green-300 focus:border-green-500 focus:ring-green-500"
+            : variant === "warning"
+              ? "border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500"
+              : variant === "error"
+                ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"; // default
+    });
+
+    // Input classes using Badge pattern
+    const inputClasses = $derived(() => {
+        const baseClasses =
+            "w-full rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled";
+
+        return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
+    });
 
     // Label classes using semantic text colors
-    let labelClasses = $derived(
+    const labelClasses = $derived(
         () => "block text-sm font-medium text-primary mb-1",
     );
 
@@ -79,7 +75,7 @@
 
 <div>
     {#if label}
-        <label for={inputId} class={labelClasses}>{label}</label>
+        <label for={inputId} class={labelClasses()}>{label}</label>
     {/if}
     <input
         id={inputId}
@@ -88,7 +84,7 @@
         {value}
         {placeholder}
         {disabled}
-        class={inputClasses}
+        class={inputClasses()}
         oninput={handleInput}
         {...restProps}
     />

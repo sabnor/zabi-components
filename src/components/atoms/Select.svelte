@@ -25,25 +25,25 @@
         ...restProps
     }: Props = $props();
 
-    // Generate unique ID - SSR safe
-    let selectId = $state(generateId("select"));
+    // Generate unique ID - SSR safe (call directly, not in $state)
+    const selectId = generateId("select");
 
-    // Simple size classes
-    let sizeClasses = $derived({
-        sm: "px-3 py-1.5 text-sm",
-        md: "px-4 py-2 text-sm",
-        lg: "px-5 py-3 text-base",
+    // Size classes using full class names
+    const sizeClass = $derived(() => {
+        return size === "sm"
+            ? "px-3 py-1.5 text-sm"
+            : size === "lg"
+              ? "px-5 py-3 text-base"
+              : "px-4 py-2 text-sm"; // default md
     });
 
-    // Select classes
-    let selectClasses = $derived(
-        [
-            "w-full border border-gray-300 rounded-md bg-white",
-            "focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            sizeClasses[size],
-        ].join(" "),
-    );
+    // Select classes using Badge pattern
+    const selectClasses = $derived(() => {
+        const baseClasses =
+            "w-full border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed";
+
+        return `${baseClasses} ${sizeClass()}`.trim();
+    });
 
     function handleChange(event: Event) {
         const target = event.target as HTMLSelectElement;
@@ -63,7 +63,7 @@
         id={selectId}
         {value}
         {disabled}
-        class={selectClasses}
+        class={selectClasses()}
         onchange={handleChange}
         {...restProps}
     >
