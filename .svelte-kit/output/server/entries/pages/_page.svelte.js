@@ -279,10 +279,7 @@ function _page($$renderer, $$props) {
       size: "lg",
       onclick: () => goto(),
       className: "px-8 py-3",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->Get Started`);
-      },
-      $$slots: { default: true }
+      text: "Get Started"
     });
     $$renderer2.push(`<!----> `);
     Button($$renderer2, {
@@ -290,10 +287,7 @@ function _page($$renderer, $$props) {
       size: "lg",
       onclick: () => goto(),
       className: "px-8 py-3",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->View Components`);
-      },
-      $$slots: { default: true }
+      text: "View Components"
     });
     $$renderer2.push(`<!----></div> <div class="mt-8 flex justify-center">`);
     Badge($$renderer2, {
@@ -323,48 +317,15 @@ function _page($$renderer, $$props) {
 <Button variant="brand">Brand Button</Button>`,
       children: ($$renderer3) => {
         $$renderer3.push(`<div class="flex flex-wrap gap-4 items-center">`);
-        Button($$renderer3, {
-          variant: "primary",
-          size: "lg",
-          children: ($$renderer4) => {
-            $$renderer4.push(`<!---->Primary`);
-          },
-          $$slots: { default: true }
-        });
+        Button($$renderer3, { variant: "primary", size: "lg", text: "Primary" });
         $$renderer3.push(`<!----> `);
-        Button($$renderer3, {
-          variant: "secondary",
-          size: "md",
-          children: ($$renderer4) => {
-            $$renderer4.push(`<!---->Secondary`);
-          },
-          $$slots: { default: true }
-        });
+        Button($$renderer3, { variant: "secondary", size: "md", text: "Secondary" });
         $$renderer3.push(`<!----> `);
-        Button($$renderer3, {
-          variant: "danger",
-          size: "sm",
-          children: ($$renderer4) => {
-            $$renderer4.push(`<!---->Danger`);
-          },
-          $$slots: { default: true }
-        });
+        Button($$renderer3, { variant: "danger", size: "sm", text: "Danger" });
         $$renderer3.push(`<!----> `);
-        Button($$renderer3, {
-          variant: "ghost",
-          children: ($$renderer4) => {
-            $$renderer4.push(`<!---->Ghost`);
-          },
-          $$slots: { default: true }
-        });
+        Button($$renderer3, { variant: "ghost", text: "Ghost" });
         $$renderer3.push(`<!----> `);
-        Button($$renderer3, {
-          variant: "brand",
-          children: ($$renderer4) => {
-            $$renderer4.push(`<!---->Brand`);
-          },
-          $$slots: { default: true }
-        });
+        Button($$renderer3, { variant: "brand", text: "Brand" });
         $$renderer3.push(`<!----></div>`);
       },
       $$slots: { default: true }
@@ -523,10 +484,7 @@ function _page($$renderer, $$props) {
       size: "lg",
       onclick: () => goto(),
       className: "px-8 py-3",
-      children: ($$renderer3) => {
-        $$renderer3.push(`<!---->View All Components`);
-      },
-      $$slots: { default: true }
+      text: "View All Components"
     });
     $$renderer2.push(`<!----></div></section> <section class="py-16"><div class="text-center mb-12"><h2 class="text-3xl font-bold text-text mb-4">Get In Touch</h2> <p class="text-lg text-text-secondary max-w-2xl mx-auto">Have questions or feedback? We'd love to hear from you.</p></div> `);
     ContactForm($$renderer2, { onsubmit: handleFormSubmit });

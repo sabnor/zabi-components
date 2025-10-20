@@ -182,11 +182,19 @@ function Alert($$renderer, $$props) {
 function Badge($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let { variant = "default", className = "", text = "", children } = $$props;
-    const classes = [
-      "inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md",
-      variant === "success" ? "bg-green-100 text-green-800 border-green-300" : variant === "warning" ? "bg-yellow-100 text-yellow-800 border-yellow-300" : variant === "error" ? "bg-red-100 text-red-800 border-red-300" : variant === "info" ? "bg-blue-100 text-blue-800 border-blue-300" : "bg-gray-100 text-gray-800 border-gray-300",
-      className
-    ].filter(Boolean).join(" ");
+    const variantClasses = {
+      success: "bg-green-100 text-green-800 border-green-300",
+      warning: "bg-yellow-100 text-yellow-800 border-yellow-300",
+      error: "bg-red-100 text-red-800 border-red-300",
+      info: "bg-blue-100 text-blue-800 border-blue-300",
+      default: "bg-gray-100 text-gray-800 border-gray-300"
+    };
+    const classes = () => {
+      const baseClasses = "inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md";
+      const variantClass = variantClasses[variant] || variantClasses.default;
+      return [baseClasses, variantClass, className].filter(Boolean).join(" ");
+    };
+    const displayText = () => text || "";
     $$renderer2.push(`<span${attr_class(clsx(classes))}>`);
     if (children) {
       $$renderer2.push("<!--[-->");
@@ -194,9 +202,9 @@ function Badge($$renderer, $$props) {
       $$renderer2.push(`<!---->`);
     } else {
       $$renderer2.push("<!--[!-->");
-      if (text) {
+      if (displayText) {
         $$renderer2.push("<!--[-->");
-        $$renderer2.push(`${escape_html(text)}`);
+        $$renderer2.push(`${escape_html(displayText)}`);
       } else {
         $$renderer2.push("<!--[!-->");
       }
