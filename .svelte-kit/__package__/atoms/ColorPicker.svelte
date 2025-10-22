@@ -34,13 +34,52 @@
         { label: "Black", value: "#000000" },
     ];
 
-    // Generate unique ID - SSR safe (call directly, not in onMount)
+    // Generate unique IDs - SSR safe (call directly, not in onMount)
     const groupId = generateId("color-picker");
+    const inputId = generateId("color-input");
+
+    // Hex color validation
+    function isValidHex(hex: string): boolean {
+        const hexPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+        return hexPattern.test(hex);
+    }
+
+    // Handle hex input changes
+    function handleHexInput(event: Event) {
+        const target = event.target as HTMLInputElement;
+        const hexValue = target.value;
+
+        if (hexValue === "" || isValidHex(hexValue)) {
+            value = hexValue;
+            if (onclick) onclick(event);
+        }
+    }
+
+    // Handle hex input blur - validate and format
+    function handleHexBlur(event: Event) {
+        const target = event.target as HTMLInputElement;
+        let hexValue = target.value.trim();
+
+        // Add # if missing
+        if (hexValue && !hexValue.startsWith("#")) {
+            hexValue = "#" + hexValue;
+        }
+
+        // Validate and update
+        if (hexValue === "" || isValidHex(hexValue)) {
+            value = hexValue;
+            target.value = hexValue;
+        } else {
+            // Reset to current value if invalid
+            target.value = value;
+        }
+    }
 
     // Color button classes using full class names
     const colorButtonClasses = $derived(() => {
         return (colorValue: string) => {
-            const baseClasses = "w-12 h-12 rounded-lg border-2 transition-all";
+            const baseClasses =
+                "w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 transition-all";
             const stateClasses =
                 value === colorValue
                     ? "border-blue-500 ring-2 ring-blue-200"
@@ -49,18 +88,31 @@
             return `${baseClasses} ${stateClasses}`.trim();
         };
     });
+
+    // Input classes
+    const inputClasses = $derived(() => {
+        const baseClasses =
+            "w-full px-3 py-2 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-200";
+        const stateClasses =
+            isValidHex(value) || value === ""
+                ? "border-gray-300 focus:border-blue-500"
+                : "border-red-300 focus:border-red-500 focus:ring-red-200";
+
+        return `${baseClasses} ${stateClasses}`.trim();
+    });
 </script>
 
-<div class="space-y-2">
+<div class="space-y-3 sm:space-y-4">
     {#if label}
         <label for={groupId} class="block text-sm font-medium text-label"
             >{label}</label
         >
     {/if}
 
+    <!-- Predefined Colors -->
     <div
         id={groupId}
-        class="grid grid-cols-4 gap-2"
+        class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-3"
         role="radiogroup"
         {...restProps}
     >
@@ -77,12 +129,43 @@
                 role="radio"
                 aria-checked={value === color.value}
                 aria-label={color.label}
-                {...restProps}
             >
                 {#if value === color.value}
                     <span class="text-white text-lg">✓</span>
                 {/if}
             </button>
         {/each}
+    </div>
+
+    <!-- Custom Hex Input -->
+    <div class="space-y-1">
+        <label for={inputId} class="block text-xs font-medium text-label">
+            Or enter custom color
+        </label>
+        <div class="flex items-center space-x-2">
+            <input
+                id={inputId}
+                type="text"
+                placeholder="#000000"
+                {value}
+                oninput={handleHexInput}
+                onblur={handleHexBlur}
+                {disabled}
+                class={inputClasses()}
+                aria-label="Custom hex color input"
+            />
+            {#if value && isValidHex(value)}
+                <div
+                    class="w-6 h-6 sm:w-8 sm:h-8 rounded border-2 border-gray-300 shrink-0"
+                    style="background-color: {value};"
+                    aria-label="Color preview"
+                ></div>
+            {/if}
+        </div>
+        {#if value && !isValidHex(value)}
+            <p class="text-xs text-red-500">
+                Please enter a valid hex color (e.g., #ff0000)
+            </p>
+        {/if}
     </div>
 </div>

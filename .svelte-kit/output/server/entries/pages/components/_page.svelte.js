@@ -1,7 +1,390 @@
-import { w as head, J as ensure_array_like, F as attr_class, y as stringify } from "../../../chunks/index.js";
-import { N as Navigation, T as ThemeToggle, B as Button, C as Card } from "../../../chunks/Card.js";
-import { B as Badge, C as ComponentDemo, I as Input, A as Alert } from "../../../chunks/Badge.js";
+import { y as attr, x as ensure_array_like, z as attr_class, F as stringify, G as attributes, J as attr_style, K as clsx, w as head } from "../../../chunks/index.js";
+import { B as Button, T as ThemeToggle, N as Navigation, C as Card } from "../../../chunks/Card.js";
+import { B as Badge, C as ComponentDemo, I as Input, A as Alert, a as ContactForm, b as Form, T as Textarea, c as Checkbox, F as FeatureCard } from "../../../chunks/Badge.js";
 import { e as escape_html } from "../../../chunks/context.js";
+import "clsx";
+import { C as CodeBlock } from "../../../chunks/CodeBlock.js";
+function Heading($$renderer, $$props) {
+  let { level = 1, text } = $$props;
+  $$renderer.push(`<div class="text-headline" role="heading"${attr("aria-level", level)}>${escape_html(text)}</div>`);
+}
+function Modal($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let {
+      isOpen = false,
+      title = "",
+      onclick,
+      onkeydown,
+      children,
+      footer,
+      $$slots,
+      $$events,
+      ...restProps
+    } = $$props;
+    if (isOpen) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" tabindex="-1"><div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"><div class="flex items-center justify-between p-6 border-b border-gray-200"><h2 class="text-xl font-semibold text-headline">${escape_html(title)}</h2> <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl" aria-label="Close">×</button></div> <div class="p-6">`);
+      children?.($$renderer2);
+      $$renderer2.push(`<!----></div> `);
+      if (footer) {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<div class="flex justify-end gap-3 p-6 border-t border-gray-200">`);
+        footer?.($$renderer2);
+        $$renderer2.push(`<!----></div>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]--></div></div>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]-->`);
+  });
+}
+function Dropdown($$renderer, $$props) {
+  let {
+    isOpen = false,
+    placement = "bottom-start",
+    children,
+    trigger,
+    $$slots,
+    $$events,
+    ...restProps
+  } = $$props;
+  $$renderer.push(`<div class="dropdown-container group relative inline-block svelte-1o1q13x"${attr("data-placement", placement)}>`);
+  trigger?.($$renderer);
+  $$renderer.push(`<!----> `);
+  if (isOpen) {
+    $$renderer.push("<!--[-->");
+    $$renderer.push(`<div class="dropdown-content opacity-100 visible transform-none group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible svelte-1o1q13x">`);
+    children?.($$renderer);
+    $$renderer.push(`<!----></div>`);
+  } else {
+    $$renderer.push("<!--[!-->");
+  }
+  $$renderer.push(`<!--]--></div>`);
+}
+function Tabs($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let {
+      tabs = [],
+      activeTab = "",
+      variant = "default",
+      children,
+      $$slots,
+      $$events,
+      ...restProps
+    } = $$props;
+    $$renderer2.push(`<div class="tabs-container"><div class="flex border-b border-gray-200" role="tablist" tabindex="0"><!--[-->`);
+    const each_array = ensure_array_like(tabs);
+    for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+      let tab = each_array[$$index];
+      $$renderer2.push(`<button type="button" role="tab"${attr_class(`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${stringify(activeTab === tab.id ? variant === "pills" ? "bg-blue-100 text-blue-700 border-blue-500" : "border-blue-500 text-body" : "border-transparent text-description hover:text-body hover:border-gray-300")}`)}${attr("disabled", tab.disabled, true)}${attr("aria-selected", activeTab === tab.id)}>${escape_html(tab.label)}</button>`);
+    }
+    $$renderer2.push(`<!--]--></div> <div class="mt-4">`);
+    children?.($$renderer2, { activeTab });
+    $$renderer2.push(`<!----></div></div>`);
+  });
+}
+function ColorPicker($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    function generateId(prefix = "id") {
+      if (typeof window !== "undefined") {
+        return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+      } else {
+        return `${prefix}-ssr-${Date.now()}`;
+      }
+    }
+    let {
+      value = "",
+      label = "",
+      disabled = false,
+      onclick,
+      $$slots,
+      $$events,
+      ...restProps
+    } = $$props;
+    const colors = [
+      { label: "Red", value: "#ef4444" },
+      { label: "Blue", value: "#3b82f6" },
+      { label: "Green", value: "#10b981" },
+      { label: "Yellow", value: "#f59e0b" },
+      { label: "Purple", value: "#8b5cf6" },
+      { label: "Pink", value: "#ec4899" },
+      { label: "Gray", value: "#6b7280" },
+      { label: "Black", value: "#000000" }
+    ];
+    const groupId = generateId("color-picker");
+    const inputId = generateId("color-input");
+    function isValidHex(hex) {
+      const hexPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+      return hexPattern.test(hex);
+    }
+    const colorButtonClasses = () => {
+      return (colorValue) => {
+        const baseClasses = "w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 transition-all";
+        const stateClasses = value === colorValue ? "border-blue-500 ring-2 ring-blue-200" : "border-gray-300 hover:border-gray-400";
+        return `${baseClasses} ${stateClasses}`.trim();
+      };
+    };
+    const inputClasses = () => {
+      const baseClasses = "w-full px-3 py-2 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-200";
+      const stateClasses = isValidHex(value) || value === "" ? "border-gray-300 focus:border-blue-500" : "border-red-300 focus:border-red-500 focus:ring-red-200";
+      return `${baseClasses} ${stateClasses}`.trim();
+    };
+    $$renderer2.push(`<div class="space-y-3 sm:space-y-4">`);
+    if (label) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<label${attr("for", groupId)} class="block text-sm font-medium text-label">${escape_html(label)}</label>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> <div${attributes({
+      id: groupId,
+      class: "grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-3",
+      role: "radiogroup",
+      ...restProps
+    })}><!--[-->`);
+    const each_array = ensure_array_like(colors);
+    for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+      let color = each_array[$$index];
+      $$renderer2.push(`<button type="button"${attr_class(clsx(colorButtonClasses()(color.value)))}${attr_style(`background-color: ${stringify(color.value)};`)}${attr("disabled", disabled, true)} role="radio"${attr("aria-checked", value === color.value)}${attr("aria-label", color.label)}>`);
+      if (value === color.value) {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<span class="text-white text-lg">✓</span>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]--></button>`);
+    }
+    $$renderer2.push(`<!--]--></div> <div class="space-y-1"><label${attr("for", inputId)} class="block text-xs font-medium text-gray-600">Or enter custom color</label> <div class="flex items-center space-x-2"><input${attr("id", inputId)} type="text" placeholder="#000000"${attr("value", value)}${attr("disabled", disabled, true)}${attr_class(clsx(inputClasses()))} aria-label="Custom hex color input"/> `);
+    if (value && isValidHex(value)) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<div class="w-6 h-6 sm:w-8 sm:h-8 rounded border-2 border-gray-300 shrink-0"${attr_style(`background-color: ${stringify(value)};`)} aria-label="Color preview"></div>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></div> `);
+    if (value && !isValidHex(value)) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<p class="text-xs text-red-500">Please enter a valid hex color (e.g., #ff0000)</p>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></div></div>`);
+  });
+}
+function OptimizedImage($$renderer, $$props) {
+  let {
+    src,
+    alt = "",
+    width = "100%",
+    height = "auto",
+    className = "",
+    children,
+    $$slots,
+    $$events,
+    ...restProps
+  } = $$props;
+  $$renderer.push(`<img${attributes({
+    src,
+    alt,
+    class: `w-full h-auto object-cover ${stringify(className)}`,
+    style: `width: ${stringify(typeof width === "number" ? width + "px" : width)}; height: ${stringify(typeof height === "number" ? height + "px" : height)};`,
+    loading: "lazy",
+    ...restProps
+  })} onload="this.__e=event" onerror="this.__e=event"/>`);
+}
+function Skeleton($$renderer, $$props) {
+  let {
+    width = "100%",
+    height = "1rem",
+    className = "",
+    $$slots,
+    $$events,
+    ...restProps
+  } = $$props;
+  $$renderer.push(`<div${attributes({
+    class: `animate-pulse bg-gray-200 rounded ${stringify(className)}`,
+    style: `width: ${stringify(width)}; height: ${stringify(height)};`,
+    ...restProps
+  })}></div>`);
+}
+function Toast($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let {
+      message = "",
+      type = "info",
+      closable = true,
+      onclick,
+      $$slots,
+      $$events,
+      ...restProps
+    } = $$props;
+    const typeClasses = {
+      success: "bg-green-100 border-green-300 text-success",
+      error: "bg-red-100 border-red-300 text-error",
+      warning: "bg-yellow-100 border-yellow-300 text-warning",
+      info: "bg-blue-100 border-blue-300 text-body"
+    };
+    {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<div${attributes({
+        class: "fixed top-4 right-4 max-w-sm w-full bg-white border rounded-lg shadow-lg p-4 z-50",
+        role: "alert",
+        ...restProps
+      })}><div class="flex items-start"><div class="flex-1"><p${attr_class(`text-sm ${stringify(typeClasses[type])}`)}>${escape_html(message)}</p></div> `);
+      if (closable) {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<button type="button" class="ml-3 text-gray-400 hover:text-gray-600" aria-label="Close notification">×</button>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]--></div></div>`);
+    }
+    $$renderer2.push(`<!--]-->`);
+  });
+}
+function Tooltip($$renderer, $$props) {
+  let {
+    content = "",
+    placement = "top",
+    delay = 0,
+    disabled = false,
+    children,
+    $$slots,
+    $$events,
+    ...restProps
+  } = $$props;
+  $$renderer.push(`<div${attributes(
+    {
+      class: "tooltip-container group relative inline-block",
+      "data-placement": placement,
+      "data-delay": delay,
+      "data-disabled": disabled,
+      ...restProps
+    },
+    "svelte-13nzt82"
+  )}>`);
+  children?.($$renderer);
+  $$renderer.push(`<!----> `);
+  if (content && !disabled) {
+    $$renderer.push("<!--[-->");
+    $$renderer.push(`<div class="tooltip group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible svelte-13nzt82" role="tooltip" aria-hidden="true">${escape_html(content)}</div>`);
+  } else {
+    $$renderer.push("<!--[!-->");
+  }
+  $$renderer.push(`<!--]--></div>`);
+}
+function ImageUpload($$renderer, $$props) {
+  let {
+    value = null,
+    disabled = false,
+    accept = "image/*",
+    placeholder = "No image selected",
+    children,
+    $$slots,
+    $$events,
+    ...restProps
+  } = $$props;
+  function removeImage() {
+    if (value && typeof URL !== "undefined" && URL.revokeObjectURL) {
+      URL.revokeObjectURL(value);
+    }
+    value = null;
+  }
+  function triggerFileSelect() {
+  }
+  $$renderer.push(`<div class="space-y-3">`);
+  if (value) {
+    $$renderer.push("<!--[-->");
+    $$renderer.push(`<div class="relative group"><img${attr("src", value)} alt="" class="w-full h-32 object-cover rounded-lg border border-gray-300"/> <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"><div class="flex gap-2">`);
+    Button($$renderer, {
+      variant: "secondary",
+      size: "sm",
+      onclick: triggerFileSelect,
+      disabled,
+      children: ($$renderer2) => {
+        $$renderer2.push(`<!---->Change`);
+      },
+      $$slots: { default: true }
+    });
+    $$renderer.push(`<!----> `);
+    Button($$renderer, {
+      variant: "danger",
+      size: "sm",
+      onclick: removeImage,
+      disabled,
+      children: ($$renderer2) => {
+        $$renderer2.push(`<!---->Remove`);
+      },
+      $$slots: { default: true }
+    });
+    $$renderer.push(`<!----></div></div></div>`);
+  } else {
+    $$renderer.push("<!--[!-->");
+    $$renderer.push(`<div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer" role="button" tabindex="0"><div class="space-y-3"><div class="w-12 h-12 mx-auto bg-gray-100 rounded-lg flex items-center justify-center"><span class="text-2xl">📷</span></div> <div><p class="font-medium text-gray-900">${escape_html(placeholder)}</p> <p class="text-sm text-gray-500">Click to choose a file</p></div></div></div>`);
+  }
+  $$renderer.push(`<!--]--> <input type="file"${attr("accept", accept)} class="hidden"/></div>`);
+}
+function SlideUp($$renderer, $$props) {
+  let {
+    isOpen = false,
+    title = "",
+    children,
+    $$slots,
+    $$events,
+    ...restProps
+  } = $$props;
+  if (isOpen) {
+    $$renderer.push("<!--[-->");
+    $$renderer.push(`<div class="fixed inset-0 bg-black/50 z-50" role="dialog" aria-modal="true" tabindex="-1"></div> <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 rounded-t-xl shadow-xl z-50 max-h-[80vh] overflow-y-auto" role="dialog" aria-modal="true">`);
+    if (title) {
+      $$renderer.push("<!--[-->");
+      $$renderer.push(`<div class="flex items-center justify-between p-4 border-b border-gray-200"><h3 class="text-lg font-semibold text-gray-900">${escape_html(title)}</h3> <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl" aria-label="Close">×</button></div>`);
+    } else {
+      $$renderer.push("<!--[!-->");
+    }
+    $$renderer.push(`<!--]--> <div class="p-4">`);
+    children?.($$renderer);
+    $$renderer.push(`<!----></div></div>`);
+  } else {
+    $$renderer.push("<!--[!-->");
+  }
+  $$renderer.push(`<!--]-->`);
+}
+function Navbar($$renderer, $$props) {
+  let {
+    brand = "",
+    showThemeToggle = true,
+    className = "",
+    children,
+    nav,
+    actions,
+    $$slots,
+    $$events,
+    ...restProps
+  } = $$props;
+  $$renderer.push(`<nav${attributes({
+    class: `bg-white border-b border-gray-200 sticky top-0 z-50 ${stringify(className)}`,
+    ...restProps
+  })}><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><div class="flex justify-between items-center h-16"><div class="shrink-0"><button type="button" class="text-xl font-bold text-headline">${escape_html(brand)}</button></div> <div class="hidden md:block"><div class="ml-10 flex items-baseline space-x-4">`);
+  nav?.($$renderer);
+  $$renderer.push(`<!----></div></div> <div class="hidden md:block"><div class="ml-4 flex items-center space-x-4">`);
+  actions?.($$renderer);
+  $$renderer.push(`<!----> `);
+  if (showThemeToggle) {
+    $$renderer.push("<!--[-->");
+    ThemeToggle($$renderer, {});
+  } else {
+    $$renderer.push("<!--[!-->");
+  }
+  $$renderer.push(`<!--]--></div></div> <div class="md:hidden"><button type="button" class="text-description hover:text-body" aria-label="Toggle menu"><span class="text-2xl">☰</span></button></div></div> `);
+  {
+    $$renderer.push("<!--[!-->");
+  }
+  $$renderer.push(`<!--]--></div></nav>`);
+}
 function _page($$renderer) {
   const navItems = [
     { label: "Home", href: "/" },
@@ -28,6 +411,13 @@ function _page($$renderer) {
   ];
   let selectedCategory = "atoms";
   let selectedComponent = "button";
+  let modalOpen = false;
+  let slideUpOpen = false;
+  const sampleCode = `function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+
+console.log(greet('World'));`;
   const components = {
     atoms: [
       {
@@ -178,6 +568,465 @@ function _page($$renderer) {
 </Card>`
           }
         ]
+      },
+      {
+        name: "ColorPicker",
+        category: "atoms",
+        description: "Color picker with predefined colors and custom hex input",
+        props: [
+          {
+            name: "value",
+            type: "string",
+            required: false,
+            defaultValue: "",
+            description: "Selected color value (hex code)"
+          },
+          {
+            name: "label",
+            type: "string",
+            required: false,
+            defaultValue: "",
+            description: "Color picker label"
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            required: false,
+            defaultValue: "false",
+            description: "Disable the color picker"
+          },
+          {
+            name: "onclick",
+            type: "function",
+            required: false,
+            defaultValue: "undefined",
+            description: "Click event handler"
+          }
+        ],
+        variants: [],
+        examples: [
+          {
+            title: "Basic Color Picker",
+            description: "Color picker with predefined colors and hex input",
+            code: '&lt;ColorPicker label="Choose a color" /&gt;'
+          },
+          {
+            title: "With Initial Value",
+            description: "Color picker with pre-selected color",
+            code: '&lt;ColorPicker value="#3b82f6" label="Background Color" /&gt;'
+          },
+          {
+            title: "Disabled State",
+            description: "Disabled color picker",
+            code: '&lt;ColorPicker disabled={true} label="Disabled Picker" /&gt;'
+          }
+        ]
+      },
+      {
+        name: "Badge",
+        category: "atoms",
+        description: "Small status indicators with semantic color variants",
+        props: [
+          {
+            name: "text",
+            type: "string",
+            required: true,
+            defaultValue: "",
+            description: "Badge text content"
+          },
+          {
+            name: "variant",
+            type: "string",
+            required: false,
+            defaultValue: "default",
+            description: "Badge color variant"
+          },
+          {
+            name: "size",
+            type: "string",
+            required: false,
+            defaultValue: "md",
+            description: "Badge size"
+          }
+        ],
+        variants: ["default", "success", "warning", "error", "info"],
+        examples: [
+          {
+            title: "Basic Badge",
+            description: "Simple badge with text",
+            code: '&lt;Badge text="New" /&gt;'
+          },
+          {
+            title: "Variants",
+            description: "Different badge variants",
+            code: '&lt;Badge variant="success" text="Active" /&gt;\n&lt;Badge variant="warning" text="Pending" /&gt;\n&lt;Badge variant="error" text="Error" /&gt;'
+          }
+        ]
+      },
+      {
+        name: "Checkbox",
+        category: "atoms",
+        description: "Form checkbox with label and validation states",
+        props: [
+          {
+            name: "checked",
+            type: "boolean",
+            required: false,
+            defaultValue: "false",
+            description: "Checkbox checked state"
+          },
+          {
+            name: "label",
+            type: "string",
+            required: false,
+            defaultValue: "",
+            description: "Checkbox label"
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            required: false,
+            defaultValue: "false",
+            description: "Disable the checkbox"
+          },
+          {
+            name: "variant",
+            type: "string",
+            required: false,
+            defaultValue: "default",
+            description: "Checkbox variant"
+          }
+        ],
+        variants: ["default", "success", "warning", "error"],
+        examples: [
+          {
+            title: "Basic Checkbox",
+            description: "Simple checkbox with label",
+            code: '&lt;Checkbox label="Accept terms" /&gt;'
+          },
+          {
+            title: "Variants",
+            description: "Checkbox with different variants",
+            code: '&lt;Checkbox variant="success" label="Verified" checked={true} /&gt;\n&lt;Checkbox variant="warning" label="Review needed" /&gt;'
+          }
+        ]
+      },
+      {
+        name: "CodeBlock",
+        category: "atoms",
+        description: "Syntax-highlighted code blocks with copy functionality",
+        props: [
+          {
+            name: "code",
+            type: "string",
+            required: true,
+            defaultValue: "",
+            description: "Code content to display"
+          },
+          {
+            name: "language",
+            type: "string",
+            required: false,
+            defaultValue: "javascript",
+            description: "Programming language for syntax highlighting"
+          },
+          {
+            name: "showLineNumbers",
+            type: "boolean",
+            required: false,
+            defaultValue: "false",
+            description: "Show line numbers"
+          }
+        ],
+        variants: [],
+        examples: [
+          {
+            title: "Basic Code Block",
+            description: "Simple code block with syntax highlighting",
+            code: `&lt;CodeBlock code="console.log('Hello World');" language="javascript" /&gt;`
+          },
+          {
+            title: "With Line Numbers",
+            description: "Code block with line numbers",
+            code: `&lt;CodeBlock code="function example() {
+  return 'Hello';
+}" language="javascript" showLineNumbers={true} /&gt;`
+          }
+        ]
+      },
+      {
+        name: "FeatureCard",
+        category: "atoms",
+        description: "Card component optimized for feature showcases",
+        props: [
+          {
+            name: "title",
+            type: "string",
+            required: true,
+            defaultValue: "",
+            description: "Feature card title"
+          },
+          {
+            name: "description",
+            type: "string",
+            required: false,
+            defaultValue: "",
+            description: "Feature description"
+          },
+          {
+            name: "icon",
+            type: "string",
+            required: false,
+            defaultValue: "",
+            description: "Icon name or URL"
+          },
+          {
+            name: "variant",
+            type: "string",
+            required: false,
+            defaultValue: "default",
+            description: "Card variant"
+          }
+        ],
+        variants: ["default", "highlighted", "minimal"],
+        examples: [
+          {
+            title: "Basic Feature Card",
+            description: "Simple feature card with title and description",
+            code: '&lt;FeatureCard title="Fast Performance" description="Lightning fast loading times" /&gt;'
+          },
+          {
+            title: "With Icon",
+            description: "Feature card with icon",
+            code: '&lt;FeatureCard title="Secure" description="End-to-end encryption" icon="shield" /&gt;'
+          }
+        ]
+      },
+      {
+        name: "Heading",
+        category: "atoms",
+        description: "Semantic heading component with consistent styling",
+        props: [
+          {
+            name: "level",
+            type: "number",
+            required: false,
+            defaultValue: "1",
+            description: "Heading level (1-6)"
+          },
+          {
+            name: "variant",
+            type: "string",
+            required: false,
+            defaultValue: "default",
+            description: "Heading variant"
+          },
+          {
+            name: "color",
+            type: "string",
+            required: false,
+            defaultValue: "inherit",
+            description: "Text color"
+          }
+        ],
+        variants: ["default", "display", "subtitle"],
+        examples: [
+          {
+            title: "Basic Heading",
+            description: "Simple heading component",
+            code: "&lt;Heading level={1}&gt;Main Title&lt;/Heading&gt;"
+          },
+          {
+            title: "Variants",
+            description: "Different heading variants",
+            code: '&lt;Heading level={1} variant="display"&gt;Display Heading&lt;/Heading&gt;\n&lt;Heading level={2} variant="subtitle"&gt;Subtitle&lt;/Heading&gt;'
+          }
+        ]
+      },
+      {
+        name: "OptimizedImage",
+        category: "atoms",
+        description: "Image component with lazy loading and optimization",
+        props: [
+          {
+            name: "src",
+            type: "string",
+            required: true,
+            defaultValue: "",
+            description: "Image source URL"
+          },
+          {
+            name: "alt",
+            type: "string",
+            required: true,
+            defaultValue: "",
+            description: "Image alt text"
+          },
+          {
+            name: "width",
+            type: "number",
+            required: false,
+            defaultValue: "undefined",
+            description: "Image width"
+          },
+          {
+            name: "height",
+            type: "number",
+            required: false,
+            defaultValue: "undefined",
+            description: "Image height"
+          },
+          {
+            name: "lazy",
+            type: "boolean",
+            required: false,
+            defaultValue: "true",
+            description: "Enable lazy loading"
+          }
+        ],
+        variants: [],
+        examples: [
+          {
+            title: "Basic Image",
+            description: "Simple optimized image",
+            code: '&lt;OptimizedImage src="/image.jpg" alt="Description" /&gt;'
+          },
+          {
+            title: "With Dimensions",
+            description: "Image with specific dimensions",
+            code: '&lt;OptimizedImage src="/image.jpg" alt="Description" width={300} height={200} /&gt;'
+          }
+        ]
+      },
+      {
+        name: "Skeleton",
+        category: "atoms",
+        description: "Loading skeleton placeholder component",
+        props: [
+          {
+            name: "width",
+            type: "string",
+            required: false,
+            defaultValue: "100%",
+            description: "Skeleton width"
+          },
+          {
+            name: "height",
+            type: "string",
+            required: false,
+            defaultValue: "1rem",
+            description: "Skeleton height"
+          },
+          {
+            name: "variant",
+            type: "string",
+            required: false,
+            defaultValue: "text",
+            description: "Skeleton variant"
+          }
+        ],
+        variants: ["text", "rectangular", "circular"],
+        examples: [
+          {
+            title: "Basic Skeleton",
+            description: "Simple text skeleton",
+            code: "&lt;Skeleton /&gt;"
+          },
+          {
+            title: "Variants",
+            description: "Different skeleton shapes",
+            code: '&lt;Skeleton variant="rectangular" width="200px" height="100px" /&gt;\n&lt;Skeleton variant="circular" width="40px" height="40px" /&gt;'
+          }
+        ]
+      },
+      {
+        name: "Toast",
+        category: "atoms",
+        description: "Notification toast with auto-dismiss functionality",
+        props: [
+          {
+            name: "message",
+            type: "string",
+            required: true,
+            defaultValue: "",
+            description: "Toast message"
+          },
+          {
+            name: "variant",
+            type: "string",
+            required: false,
+            defaultValue: "info",
+            description: "Toast variant"
+          },
+          {
+            name: "duration",
+            type: "number",
+            required: false,
+            defaultValue: "5000",
+            description: "Auto-dismiss duration in ms"
+          },
+          {
+            name: "closable",
+            type: "boolean",
+            required: false,
+            defaultValue: "true",
+            description: "Show close button"
+          }
+        ],
+        variants: ["info", "success", "warning", "error"],
+        examples: [
+          {
+            title: "Basic Toast",
+            description: "Simple notification toast",
+            code: '&lt;Toast message="Operation completed" /&gt;'
+          },
+          {
+            title: "Variants",
+            description: "Different toast variants",
+            code: '&lt;Toast variant="success" message="Success!" /&gt;\n&lt;Toast variant="error" message="Error occurred" /&gt;'
+          }
+        ]
+      },
+      {
+        name: "Tooltip",
+        category: "atoms",
+        description: "Contextual tooltip with positioning options",
+        props: [
+          {
+            name: "content",
+            type: "string",
+            required: true,
+            defaultValue: "",
+            description: "Tooltip content"
+          },
+          {
+            name: "position",
+            type: "string",
+            required: false,
+            defaultValue: "top",
+            description: "Tooltip position"
+          },
+          {
+            name: "trigger",
+            type: "string",
+            required: false,
+            defaultValue: "hover",
+            description: "Tooltip trigger"
+          }
+        ],
+        variants: [],
+        examples: [
+          {
+            title: "Basic Tooltip",
+            description: "Simple tooltip on hover",
+            code: '&lt;Tooltip content="This is a tooltip"&gt;\n  &lt;Button&gt;Hover me&lt;/Button&gt;\n&lt;/Tooltip&gt;'
+          },
+          {
+            title: "Positions",
+            description: "Tooltip with different positions",
+            code: '&lt;Tooltip content="Top tooltip" position="top"&gt;\n  &lt;Button&gt;Top&lt;/Button&gt;\n&lt;/Tooltip&gt;'
+          }
+        ]
       }
     ],
     molecules: [
@@ -223,9 +1072,400 @@ function _page($$renderer) {
             code: '&lt;Alert variant="info" message="This is an info alert" /&gt;'
           }
         ]
+      },
+      {
+        name: "ContactForm",
+        category: "molecules",
+        description: "Complete contact form with validation and submission handling",
+        props: [
+          {
+            name: "onSubmit",
+            type: "function",
+            required: false,
+            defaultValue: "undefined",
+            description: "Form submission handler"
+          },
+          {
+            name: "fields",
+            type: "array",
+            required: false,
+            defaultValue: "[]",
+            description: "Custom form fields"
+          },
+          {
+            name: "variant",
+            type: "string",
+            required: false,
+            defaultValue: "default",
+            description: "Form variant"
+          }
+        ],
+        variants: ["default", "minimal", "detailed"],
+        examples: [
+          {
+            title: "Basic Contact Form",
+            description: "Simple contact form with standard fields",
+            code: "&lt;ContactForm /&gt;"
+          },
+          {
+            title: "With Custom Handler",
+            description: "Contact form with custom submission handler",
+            code: "&lt;ContactForm onSubmit={handleSubmit} /&gt;"
+          }
+        ]
+      },
+      {
+        name: "Dropdown",
+        category: "molecules",
+        description: "Dropdown menu with customizable options and positioning",
+        props: [
+          {
+            name: "options",
+            type: "array",
+            required: true,
+            defaultValue: "[]",
+            description: "Dropdown options"
+          },
+          {
+            name: "value",
+            type: "string",
+            required: false,
+            defaultValue: "",
+            description: "Selected value"
+          },
+          {
+            name: "placeholder",
+            type: "string",
+            required: false,
+            defaultValue: "Select an option",
+            description: "Placeholder text"
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            required: false,
+            defaultValue: "false",
+            description: "Disable the dropdown"
+          }
+        ],
+        variants: ["default", "searchable", "multi-select"],
+        examples: [
+          {
+            title: "Basic Dropdown",
+            description: "Simple dropdown with options",
+            code: '&lt;Dropdown options={[{value: "1", label: "Option 1"}]} /&gt;'
+          },
+          {
+            title: "With Placeholder",
+            description: "Dropdown with custom placeholder",
+            code: '&lt;Dropdown placeholder="Choose..." options={options} /&gt;'
+          }
+        ]
+      },
+      {
+        name: "Form",
+        category: "molecules",
+        description: "Flexible form component with validation and field management",
+        props: [
+          {
+            name: "fields",
+            type: "array",
+            required: true,
+            defaultValue: "[]",
+            description: "Form field definitions"
+          },
+          {
+            name: "onSubmit",
+            type: "function",
+            required: false,
+            defaultValue: "undefined",
+            description: "Form submission handler"
+          },
+          {
+            name: "validation",
+            type: "object",
+            required: false,
+            defaultValue: "{}",
+            description: "Validation rules"
+          }
+        ],
+        variants: ["default", "inline", "wizard"],
+        examples: [
+          {
+            title: "Basic Form",
+            description: "Simple form with fields",
+            code: "&lt;Form fields={formFields} onSubmit={handleSubmit} /&gt;"
+          },
+          {
+            title: "With Validation",
+            description: "Form with validation rules",
+            code: "&lt;Form fields={fields} validation={rules} /&gt;"
+          }
+        ]
+      },
+      {
+        name: "ImageUpload",
+        category: "molecules",
+        description: "Image upload component with preview and drag-and-drop",
+        props: [
+          {
+            name: "onUpload",
+            type: "function",
+            required: false,
+            defaultValue: "undefined",
+            description: "Upload handler"
+          },
+          {
+            name: "maxSize",
+            type: "number",
+            required: false,
+            defaultValue: "5242880",
+            description: "Max file size in bytes"
+          },
+          {
+            name: "acceptedTypes",
+            type: "array",
+            required: false,
+            defaultValue: "['image/*']",
+            description: "Accepted file types"
+          },
+          {
+            name: "multiple",
+            type: "boolean",
+            required: false,
+            defaultValue: "false",
+            description: "Allow multiple files"
+          }
+        ],
+        variants: ["default", "drag-drop", "preview"],
+        examples: [
+          {
+            title: "Basic Upload",
+            description: "Simple image upload",
+            code: "&lt;ImageUpload onUpload={handleUpload} /&gt;"
+          },
+          {
+            title: "With Restrictions",
+            description: "Upload with size and type restrictions",
+            code: '&lt;ImageUpload maxSize={2097152} acceptedTypes={["image/jpeg", "image/png"]} /&gt;'
+          }
+        ]
+      },
+      {
+        name: "Modal",
+        category: "molecules",
+        description: "Modal dialog with backdrop and customizable content",
+        props: [
+          {
+            name: "isOpen",
+            type: "boolean",
+            required: true,
+            defaultValue: "false",
+            description: "Modal open state"
+          },
+          {
+            name: "onClose",
+            type: "function",
+            required: false,
+            defaultValue: "undefined",
+            description: "Close handler"
+          },
+          {
+            name: "title",
+            type: "string",
+            required: false,
+            defaultValue: "",
+            description: "Modal title"
+          },
+          {
+            name: "size",
+            type: "string",
+            required: false,
+            defaultValue: "md",
+            description: "Modal size"
+          }
+        ],
+        variants: ["default", "large", "small", "fullscreen"],
+        examples: [
+          {
+            title: "Basic Modal",
+            description: "Simple modal dialog",
+            code: "&lt;Modal isOpen={isOpen} onClose={() => isOpen = false}&gt;\n  &lt;p&gt;Modal content&lt;/p&gt;\n&lt;/Modal&gt;"
+          },
+          {
+            title: "With Title",
+            description: "Modal with title and close button",
+            code: '&lt;Modal isOpen={isOpen} title="Confirm Action" onClose={handleClose}&gt;\n  &lt;p&gt;Are you sure?&lt;/p&gt;\n&lt;/Modal&gt;'
+          }
+        ]
+      },
+      {
+        name: "SlideUp",
+        category: "molecules",
+        description: "Slide-up panel component with smooth animations",
+        props: [
+          {
+            name: "isOpen",
+            type: "boolean",
+            required: true,
+            defaultValue: "false",
+            description: "Panel open state"
+          },
+          {
+            name: "onClose",
+            type: "function",
+            required: false,
+            defaultValue: "undefined",
+            description: "Close handler"
+          },
+          {
+            name: "height",
+            type: "string",
+            required: false,
+            defaultValue: "50vh",
+            description: "Panel height"
+          }
+        ],
+        variants: ["default", "full", "half"],
+        examples: [
+          {
+            title: "Basic SlideUp",
+            description: "Simple slide-up panel",
+            code: "&lt;SlideUp isOpen={isOpen} onClose={() => isOpen = false}&gt;\n  &lt;p&gt;Panel content&lt;/p&gt;\n&lt;/SlideUp&gt;"
+          },
+          {
+            title: "Custom Height",
+            description: "Slide-up with custom height",
+            code: '&lt;SlideUp isOpen={isOpen} height="75vh"&gt;\n  &lt;p&gt;Tall panel&lt;/p&gt;\n&lt;/SlideUp&gt;'
+          }
+        ]
+      },
+      {
+        name: "Tabs",
+        category: "molecules",
+        description: "Tabbed interface with customizable tabs and content",
+        props: [
+          {
+            name: "tabs",
+            type: "array",
+            required: true,
+            defaultValue: "[]",
+            description: "Tab definitions"
+          },
+          {
+            name: "activeTab",
+            type: "string",
+            required: false,
+            defaultValue: "",
+            description: "Active tab ID"
+          },
+          {
+            name: "onTabChange",
+            type: "function",
+            required: false,
+            defaultValue: "undefined",
+            description: "Tab change handler"
+          }
+        ],
+        variants: ["default", "pills", "underline"],
+        examples: [
+          {
+            title: "Basic Tabs",
+            description: "Simple tabbed interface",
+            code: '&lt;Tabs tabs={[{id: "tab1", label: "Tab 1", content: "Content 1"}]} /&gt;'
+          },
+          {
+            title: "With Handler",
+            description: "Tabs with change handler",
+            code: "&lt;Tabs tabs={tabs} onTabChange={handleTabChange} /&gt;"
+          }
+        ]
       }
     ],
-    organisms: []
+    organisms: [
+      {
+        name: "Navbar",
+        category: "organisms",
+        description: "Navigation bar with logo, menu items, and responsive design",
+        props: [
+          {
+            name: "logo",
+            type: "string",
+            required: false,
+            defaultValue: "",
+            description: "Logo text or URL"
+          },
+          {
+            name: "items",
+            type: "array",
+            required: false,
+            defaultValue: "[]",
+            description: "Navigation items"
+          },
+          {
+            name: "variant",
+            type: "string",
+            required: false,
+            defaultValue: "default",
+            description: "Navbar variant"
+          }
+        ],
+        variants: ["default", "transparent", "fixed"],
+        examples: [
+          {
+            title: "Basic Navbar",
+            description: "Simple navigation bar",
+            code: '&lt;Navbar logo="My App" items={navItems} /&gt;'
+          },
+          {
+            title: "Transparent",
+            description: "Transparent navbar variant",
+            code: '&lt;Navbar variant="transparent" logo="Brand" /&gt;'
+          }
+        ]
+      },
+      {
+        name: "Navigation",
+        category: "organisms",
+        description: "Navigation component with multiple variants and responsive behavior",
+        props: [
+          {
+            name: "items",
+            type: "array",
+            required: true,
+            defaultValue: "[]",
+            description: "Navigation items"
+          },
+          {
+            name: "variant",
+            type: "string",
+            required: false,
+            defaultValue: "default",
+            description: "Navigation variant"
+          },
+          {
+            name: "orientation",
+            type: "string",
+            required: false,
+            defaultValue: "horizontal",
+            description: "Navigation orientation"
+          }
+        ],
+        variants: ["default", "header", "sidebar", "breadcrumb"],
+        examples: [
+          {
+            title: "Basic Navigation",
+            description: "Simple navigation menu",
+            code: "&lt;Navigation items={navItems} /&gt;"
+          },
+          {
+            title: "Header Navigation",
+            description: "Navigation for header",
+            code: '&lt;Navigation variant="header" items={items} /&gt;'
+          }
+        ]
+      }
+    ]
   };
   let currentComponents = components[selectedCategory] || [];
   head($$renderer, ($$renderer2) => {
@@ -280,55 +1520,29 @@ function _page($$renderer) {
           children: ($$renderer2) => {
             if (component.name === "Button") {
               $$renderer2.push("<!--[-->");
-              $$renderer2.push(`<div class="flex flex-wrap gap-4 items-center">`);
-              Button($$renderer2, {
-                variant: "primary",
-                children: ($$renderer3) => {
-                  $$renderer3.push(`<!---->Primary`);
-                },
-                $$slots: { default: true }
-              });
+              $$renderer2.push(`<div class="space-y-4"><div class="flex flex-wrap gap-4 items-center">`);
+              Button($$renderer2, { variant: "primary", text: "Primary" });
+              $$renderer2.push(`<!----> `);
+              Button($$renderer2, { variant: "secondary", text: "Secondary" });
+              $$renderer2.push(`<!----> `);
+              Button($$renderer2, { variant: "danger", text: "Danger" });
+              $$renderer2.push(`<!----> `);
+              Button($$renderer2, { variant: "success", text: "Success" });
+              $$renderer2.push(`<!----> `);
+              Button($$renderer2, { variant: "ghost", text: "Ghost" });
+              $$renderer2.push(`<!----> `);
+              Button($$renderer2, { variant: "brand", text: "Brand" });
+              $$renderer2.push(`<!----></div> <div class="flex flex-wrap gap-4 items-center">`);
+              Button($$renderer2, { variant: "primary", disabled: true, text: "Disabled Primary" });
               $$renderer2.push(`<!----> `);
               Button($$renderer2, {
                 variant: "secondary",
-                children: ($$renderer3) => {
-                  $$renderer3.push(`<!---->Secondary`);
-                },
-                $$slots: { default: true }
+                disabled: true,
+                text: "Disabled Secondary"
               });
               $$renderer2.push(`<!----> `);
-              Button($$renderer2, {
-                variant: "danger",
-                children: ($$renderer3) => {
-                  $$renderer3.push(`<!---->Danger`);
-                },
-                $$slots: { default: true }
-              });
-              $$renderer2.push(`<!----> `);
-              Button($$renderer2, {
-                variant: "success",
-                children: ($$renderer3) => {
-                  $$renderer3.push(`<!---->Success`);
-                },
-                $$slots: { default: true }
-              });
-              $$renderer2.push(`<!----> `);
-              Button($$renderer2, {
-                variant: "ghost",
-                children: ($$renderer3) => {
-                  $$renderer3.push(`<!---->Ghost`);
-                },
-                $$slots: { default: true }
-              });
-              $$renderer2.push(`<!----> `);
-              Button($$renderer2, {
-                variant: "brand",
-                children: ($$renderer3) => {
-                  $$renderer3.push(`<!---->Brand`);
-                },
-                $$slots: { default: true }
-              });
-              $$renderer2.push(`<!----></div>`);
+              Button($$renderer2, { variant: "danger", disabled: true, text: "Disabled Danger" });
+              $$renderer2.push(`<!----></div></div>`);
             } else {
               $$renderer2.push("<!--[!-->");
               if (component.name === "Input") {
@@ -353,6 +1567,18 @@ function _page($$renderer) {
                   placeholder: "Enter your password",
                   variant: "warning"
                 });
+                $$renderer2.push(`<!----> `);
+                Input($$renderer2, {
+                  label: "Error Field",
+                  placeholder: "This field has an error",
+                  variant: "error"
+                });
+                $$renderer2.push(`<!----> `);
+                Input($$renderer2, {
+                  label: "Disabled Field",
+                  placeholder: "This field is disabled",
+                  disabled: true
+                });
                 $$renderer2.push(`<!----></div>`);
               } else {
                 $$renderer2.push("<!--[!-->");
@@ -362,7 +1588,7 @@ function _page($$renderer) {
                   Card($$renderer2, {
                     title: "Default Card",
                     children: ($$renderer3) => {
-                      $$renderer3.push(`<p class="text-description">This is a default card with
+                      $$renderer3.push(`<p class="text-text-secondary">This is a default card with
                                                     clean styling.</p>`);
                     },
                     $$slots: { default: true }
@@ -371,7 +1597,7 @@ function _page($$renderer) {
                   Card($$renderer2, {
                     title: "Success Card",
                     children: ($$renderer3) => {
-                      $$renderer3.push(`<p class="text-description">This card indicates a
+                      $$renderer3.push(`<p class="text-text-secondary">This card indicates a
                                                     successful action.</p>`);
                     },
                     $$slots: { default: true }
@@ -380,7 +1606,7 @@ function _page($$renderer) {
                   Card($$renderer2, {
                     title: "Warning Card",
                     children: ($$renderer3) => {
-                      $$renderer3.push(`<p class="text-description">This card shows a warning
+                      $$renderer3.push(`<p class="text-text-secondary">This card shows a warning
                                                     state.</p>`);
                     },
                     $$slots: { default: true }
@@ -389,8 +1615,17 @@ function _page($$renderer) {
                   Card($$renderer2, {
                     title: "Error Card",
                     children: ($$renderer3) => {
-                      $$renderer3.push(`<p class="text-description">This card indicates an error
+                      $$renderer3.push(`<p class="text-text-secondary">This card indicates an error
                                                     state.</p>`);
+                    },
+                    $$slots: { default: true }
+                  });
+                  $$renderer2.push(`<!----> `);
+                  Card($$renderer2, {
+                    title: "Info Card",
+                    children: ($$renderer3) => {
+                      $$renderer3.push(`<p class="text-text-secondary">This card provides
+                                                    informational content.</p>`);
                     },
                     $$slots: { default: true }
                   });
@@ -426,6 +1661,388 @@ function _page($$renderer) {
                     $$renderer2.push(`<!----></div>`);
                   } else {
                     $$renderer2.push("<!--[!-->");
+                    if (component.name === "ContactForm") {
+                      $$renderer2.push("<!--[-->");
+                      $$renderer2.push(`<div class="max-w-md">`);
+                      ContactForm($$renderer2, {});
+                      $$renderer2.push(`<!----></div>`);
+                    } else {
+                      $$renderer2.push("<!--[!-->");
+                      if (component.name === "Dropdown") {
+                        $$renderer2.push("<!--[-->");
+                        $$renderer2.push(`<div class="space-y-4 max-w-md">`);
+                        {
+                          let trigger = function($$renderer3) {
+                            Button($$renderer3, { text: "Select an option" });
+                          }, children = function($$renderer3) {
+                            $$renderer3.push(`<div class="p-2 space-y-1"><button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Option 1</button> <button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Option 2</button> <button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Option 3</button></div>`);
+                          };
+                          Dropdown($$renderer2, { trigger, children, $$slots: { trigger: true, default: true } });
+                        }
+                        $$renderer2.push(`<!----> `);
+                        {
+                          let trigger = function($$renderer3) {
+                            Button($$renderer3, { text: "Choose a color" });
+                          }, children = function($$renderer3) {
+                            $$renderer3.push(`<div class="p-2 space-y-1"><button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Red</button> <button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Blue</button> <button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Green</button></div>`);
+                          };
+                          Dropdown($$renderer2, { trigger, children, $$slots: { trigger: true, default: true } });
+                        }
+                        $$renderer2.push(`<!----></div>`);
+                      } else {
+                        $$renderer2.push("<!--[!-->");
+                        if (component.name === "Form") {
+                          $$renderer2.push("<!--[-->");
+                          $$renderer2.push(`<div class="max-w-md">`);
+                          Form($$renderer2, {
+                            children: ($$renderer3) => {
+                              $$renderer3.push(`<div class="space-y-4">`);
+                              Input($$renderer3, { label: "Name", placeholder: "Enter your name" });
+                              $$renderer3.push(`<!----> `);
+                              Input($$renderer3, {
+                                label: "Email",
+                                type: "email",
+                                placeholder: "Enter your email"
+                              });
+                              $$renderer3.push(`<!----> `);
+                              Textarea($$renderer3, { label: "Message", placeholder: "Enter your message" });
+                              $$renderer3.push(`<!----> `);
+                              Button($$renderer3, { type: "submit", text: "Submit" });
+                              $$renderer3.push(`<!----></div>`);
+                            },
+                            $$slots: { default: true }
+                          });
+                          $$renderer2.push(`<!----></div>`);
+                        } else {
+                          $$renderer2.push("<!--[!-->");
+                          if (component.name === "ImageUpload") {
+                            $$renderer2.push("<!--[-->");
+                            $$renderer2.push(`<div class="max-w-md">`);
+                            ImageUpload($$renderer2, {
+                              accept: "image/jpeg,image/png,image/gif",
+                              placeholder: "Choose an image"
+                            });
+                            $$renderer2.push(`<!----></div>`);
+                          } else {
+                            $$renderer2.push("<!--[!-->");
+                            if (component.name === "Modal") {
+                              $$renderer2.push("<!--[-->");
+                              $$renderer2.push(`<div class="space-y-4">`);
+                              Button($$renderer2, { onclick: () => modalOpen = true, text: "Open Modal" });
+                              $$renderer2.push(`<!----> `);
+                              Modal($$renderer2, {
+                                isOpen: modalOpen,
+                                onclick: () => modalOpen = false,
+                                title: "Example Modal",
+                                children: ($$renderer3) => {
+                                  $$renderer3.push(`<p class="text-text-secondary mb-4">This is a modal dialog with
+                                                    some content.</p> <div class="flex gap-2 justify-end">`);
+                                  Button($$renderer3, {
+                                    variant: "secondary",
+                                    onclick: () => modalOpen = false,
+                                    text: "Cancel"
+                                  });
+                                  $$renderer3.push(`<!----> `);
+                                  Button($$renderer3, { onclick: () => modalOpen = false, text: "Confirm" });
+                                  $$renderer3.push(`<!----></div>`);
+                                },
+                                $$slots: { default: true }
+                              });
+                              $$renderer2.push(`<!----></div>`);
+                            } else {
+                              $$renderer2.push("<!--[!-->");
+                              if (component.name === "SlideUp") {
+                                $$renderer2.push("<!--[-->");
+                                $$renderer2.push(`<div class="space-y-4">`);
+                                Button($$renderer2, { onclick: () => slideUpOpen = true, text: "Open Slide Up" });
+                                $$renderer2.push(`<!----> `);
+                                SlideUp($$renderer2, {
+                                  isOpen: slideUpOpen,
+                                  onclick: () => slideUpOpen = false,
+                                  title: "Slide Up Panel",
+                                  children: ($$renderer3) => {
+                                    $$renderer3.push(`<div class="p-6"><h3 class="text-lg font-semibold text-text mb-4">Slide Up Panel</h3> <p class="text-text-secondary mb-4">This is a slide-up panel
+                                                        with custom content.</p> `);
+                                    Button($$renderer3, { onclick: () => slideUpOpen = false, text: "Close" });
+                                    $$renderer3.push(`<!----></div>`);
+                                  },
+                                  $$slots: { default: true }
+                                });
+                                $$renderer2.push(`<!----></div>`);
+                              } else {
+                                $$renderer2.push("<!--[!-->");
+                                if (component.name === "Tabs") {
+                                  $$renderer2.push("<!--[-->");
+                                  $$renderer2.push(`<div class="max-w-2xl">`);
+                                  Tabs($$renderer2, {
+                                    tabs: [
+                                      { id: "tab1", label: "Overview" },
+                                      { id: "tab2", label: "Details" },
+                                      { id: "tab3", label: "Settings" }
+                                    ],
+                                    activeTab: "tab1",
+                                    children: ($$renderer3) => {
+                                      {
+                                        $$renderer3.push("<!--[-->");
+                                        $$renderer3.push(`<p>This is the overview tab
+                                                        content.</p>`);
+                                      }
+                                      $$renderer3.push(`<!--]-->`);
+                                    },
+                                    $$slots: { default: true }
+                                  });
+                                  $$renderer2.push(`<!----></div>`);
+                                } else {
+                                  $$renderer2.push("<!--[!-->");
+                                  if (component.name === "Navbar") {
+                                    $$renderer2.push("<!--[-->");
+                                    $$renderer2.push(`<div class="space-y-4">`);
+                                    {
+                                      let nav = function($$renderer3) {
+                                        Navigation($$renderer3, {
+                                          items: [
+                                            { label: "Home", href: "/" },
+                                            { label: "Components", href: "/components" },
+                                            { label: "Docs", href: "/docs" }
+                                          ]
+                                        });
+                                      };
+                                      Navbar($$renderer2, { brand: "Zabi Components", nav, $$slots: { nav: true } });
+                                    }
+                                    $$renderer2.push(`<!----> `);
+                                    {
+                                      let nav = function($$renderer3) {
+                                        Navigation($$renderer3, {
+                                          items: [
+                                            { label: "About", href: "/about" },
+                                            { label: "Contact", href: "/contact" }
+                                          ]
+                                        });
+                                      };
+                                      Navbar($$renderer2, { brand: "Brand", nav, $$slots: { nav: true } });
+                                    }
+                                    $$renderer2.push(`<!----></div>`);
+                                  } else {
+                                    $$renderer2.push("<!--[!-->");
+                                    if (component.name === "Navigation") {
+                                      $$renderer2.push("<!--[-->");
+                                      $$renderer2.push(`<div class="space-y-6"><div><h4 class="text-sm font-medium text-text-secondary mb-2">Default Navigation</h4> `);
+                                      Navigation($$renderer2, {
+                                        items: [
+                                          { label: "Home", href: "/" },
+                                          { label: "About", href: "/about" },
+                                          { label: "Contact", href: "/contact" }
+                                        ]
+                                      });
+                                      $$renderer2.push(`<!----></div> <div><h4 class="text-sm font-medium text-text-secondary mb-2">Header Navigation</h4> `);
+                                      Navigation($$renderer2, {
+                                        items: [
+                                          { label: "Dashboard", href: "/dashboard" },
+                                          { label: "Profile", href: "/profile" },
+                                          { label: "Settings", href: "/settings" }
+                                        ]
+                                      });
+                                      $$renderer2.push(`<!----></div></div>`);
+                                    } else {
+                                      $$renderer2.push("<!--[!-->");
+                                      if (component.name === "ColorPicker") {
+                                        $$renderer2.push("<!--[-->");
+                                        $$renderer2.push(`<div class="space-y-6 max-w-md">`);
+                                        ColorPicker($$renderer2, { label: "Choose a color" });
+                                        $$renderer2.push(`<!----> `);
+                                        ColorPicker($$renderer2, { value: "#3b82f6", label: "Background Color" });
+                                        $$renderer2.push(`<!----> `);
+                                        ColorPicker($$renderer2, { disabled: true, label: "Disabled Picker" });
+                                        $$renderer2.push(`<!----></div>`);
+                                      } else {
+                                        $$renderer2.push("<!--[!-->");
+                                        if (component.name === "Badge") {
+                                          $$renderer2.push("<!--[-->");
+                                          $$renderer2.push(`<div class="flex flex-wrap gap-2 items-center">`);
+                                          Badge($$renderer2, { text: "Default" });
+                                          $$renderer2.push(`<!----> `);
+                                          Badge($$renderer2, { variant: "success", text: "Success" });
+                                          $$renderer2.push(`<!----> `);
+                                          Badge($$renderer2, { variant: "warning", text: "Warning" });
+                                          $$renderer2.push(`<!----> `);
+                                          Badge($$renderer2, { variant: "error", text: "Error" });
+                                          $$renderer2.push(`<!----> `);
+                                          Badge($$renderer2, { variant: "info", text: "Info" });
+                                          $$renderer2.push(`<!----></div>`);
+                                        } else {
+                                          $$renderer2.push("<!--[!-->");
+                                          if (component.name === "Checkbox") {
+                                            $$renderer2.push("<!--[-->");
+                                            $$renderer2.push(`<div class="space-y-4 max-w-md">`);
+                                            Checkbox($$renderer2, { label: "Accept terms and conditions" });
+                                            $$renderer2.push(`<!----> `);
+                                            Checkbox($$renderer2, { label: "Email verified", checked: true });
+                                            $$renderer2.push(`<!----> `);
+                                            Checkbox($$renderer2, { label: "Review required" });
+                                            $$renderer2.push(`<!----> `);
+                                            Checkbox($$renderer2, { disabled: true, label: "Disabled option" });
+                                            $$renderer2.push(`<!----></div>`);
+                                          } else {
+                                            $$renderer2.push("<!--[!-->");
+                                            if (component.name === "CodeBlock") {
+                                              $$renderer2.push("<!--[-->");
+                                              $$renderer2.push(`<div class="max-w-2xl">`);
+                                              CodeBlock($$renderer2, {
+                                                code: sampleCode,
+                                                language: "javascript",
+                                                showLineNumbers: true
+                                              });
+                                              $$renderer2.push(`<!----></div>`);
+                                            } else {
+                                              $$renderer2.push("<!--[!-->");
+                                              if (component.name === "FeatureCard") {
+                                                $$renderer2.push("<!--[-->");
+                                                $$renderer2.push(`<div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">`);
+                                                FeatureCard($$renderer2, {
+                                                  title: "Fast Performance",
+                                                  description: "Lightning fast loading times with optimized code"
+                                                });
+                                                $$renderer2.push(`<!----> `);
+                                                FeatureCard($$renderer2, {
+                                                  title: "Secure by Default",
+                                                  description: "End-to-end encryption and security best practices",
+                                                  icon: "shield"
+                                                });
+                                                $$renderer2.push(`<!----> `);
+                                                FeatureCard($$renderer2, {
+                                                  title: "Easy to Use",
+                                                  description: "Intuitive interface designed for productivity",
+                                                  icon: "star"
+                                                });
+                                                $$renderer2.push(`<!----></div>`);
+                                              } else {
+                                                $$renderer2.push("<!--[!-->");
+                                                if (component.name === "Heading") {
+                                                  $$renderer2.push("<!--[-->");
+                                                  $$renderer2.push(`<div class="space-y-4">`);
+                                                  Heading($$renderer2, { level: 1, text: "Display Heading" });
+                                                  $$renderer2.push(`<!----> `);
+                                                  Heading($$renderer2, { level: 2, text: "Section Heading" });
+                                                  $$renderer2.push(`<!----> `);
+                                                  Heading($$renderer2, { level: 3, text: "Subtitle Heading" });
+                                                  $$renderer2.push(`<!----> `);
+                                                  Heading($$renderer2, { level: 4, text: "Subsection" });
+                                                  $$renderer2.push(`<!----></div>`);
+                                                } else {
+                                                  $$renderer2.push("<!--[!-->");
+                                                  if (component.name === "OptimizedImage") {
+                                                    $$renderer2.push("<!--[-->");
+                                                    $$renderer2.push(`<div class="space-y-4 max-w-md">`);
+                                                    OptimizedImage($$renderer2, { src: "/vite.svg", alt: "Vite Logo", width: 200, height: 200 });
+                                                    $$renderer2.push(`<!----> `);
+                                                    OptimizedImage($$renderer2, {
+                                                      src: "/svelte.svg",
+                                                      alt: "Svelte Logo",
+                                                      width: 150,
+                                                      height: 150
+                                                    });
+                                                    $$renderer2.push(`<!----></div>`);
+                                                  } else {
+                                                    $$renderer2.push("<!--[!-->");
+                                                    if (component.name === "Skeleton") {
+                                                      $$renderer2.push("<!--[-->");
+                                                      $$renderer2.push(`<div class="space-y-4 max-w-md">`);
+                                                      Skeleton($$renderer2, {});
+                                                      $$renderer2.push(`<!----> `);
+                                                      Skeleton($$renderer2, { width: "200px", height: "100px" });
+                                                      $$renderer2.push(`<!----> `);
+                                                      Skeleton($$renderer2, { width: "40px", height: "40px" });
+                                                      $$renderer2.push(`<!----> <div class="flex space-x-2">`);
+                                                      Skeleton($$renderer2, { width: "32px", height: "32px" });
+                                                      $$renderer2.push(`<!----> <div class="space-y-2 flex-1">`);
+                                                      Skeleton($$renderer2, { width: "80%" });
+                                                      $$renderer2.push(`<!----> `);
+                                                      Skeleton($$renderer2, { width: "60%" });
+                                                      $$renderer2.push(`<!----></div></div></div>`);
+                                                    } else {
+                                                      $$renderer2.push("<!--[!-->");
+                                                      if (component.name === "Toast") {
+                                                        $$renderer2.push("<!--[-->");
+                                                        $$renderer2.push(`<div class="space-y-4 max-w-md">`);
+                                                        Toast($$renderer2, { message: "This is an info toast" });
+                                                        $$renderer2.push(`<!----> `);
+                                                        Toast($$renderer2, { message: "Operation completed successfully!" });
+                                                        $$renderer2.push(`<!----> `);
+                                                        Toast($$renderer2, { message: "Please review your input" });
+                                                        $$renderer2.push(`<!----> `);
+                                                        Toast($$renderer2, { message: "An error occurred" });
+                                                        $$renderer2.push(`<!----></div>`);
+                                                      } else {
+                                                        $$renderer2.push("<!--[!-->");
+                                                        if (component.name === "Tooltip") {
+                                                          $$renderer2.push("<!--[-->");
+                                                          $$renderer2.push(`<div class="flex gap-4 items-center">`);
+                                                          Tooltip($$renderer2, {
+                                                            content: "This is a tooltip",
+                                                            children: ($$renderer3) => {
+                                                              Button($$renderer3, { text: "Hover me" });
+                                                            },
+                                                            $$slots: { default: true }
+                                                          });
+                                                          $$renderer2.push(`<!----> `);
+                                                          Tooltip($$renderer2, {
+                                                            content: "Top tooltip",
+                                                            placement: "top",
+                                                            children: ($$renderer3) => {
+                                                              Button($$renderer3, { variant: "secondary", text: "Top" });
+                                                            },
+                                                            $$slots: { default: true }
+                                                          });
+                                                          $$renderer2.push(`<!----> `);
+                                                          Tooltip($$renderer2, {
+                                                            content: "Bottom tooltip",
+                                                            placement: "bottom",
+                                                            children: ($$renderer3) => {
+                                                              Button($$renderer3, { variant: "ghost", text: "Bottom" });
+                                                            },
+                                                            $$slots: { default: true }
+                                                          });
+                                                          $$renderer2.push(`<!----></div>`);
+                                                        } else {
+                                                          $$renderer2.push("<!--[!-->");
+                                                        }
+                                                        $$renderer2.push(`<!--]-->`);
+                                                      }
+                                                      $$renderer2.push(`<!--]-->`);
+                                                    }
+                                                    $$renderer2.push(`<!--]-->`);
+                                                  }
+                                                  $$renderer2.push(`<!--]-->`);
+                                                }
+                                                $$renderer2.push(`<!--]-->`);
+                                              }
+                                              $$renderer2.push(`<!--]-->`);
+                                            }
+                                            $$renderer2.push(`<!--]-->`);
+                                          }
+                                          $$renderer2.push(`<!--]-->`);
+                                        }
+                                        $$renderer2.push(`<!--]-->`);
+                                      }
+                                      $$renderer2.push(`<!--]-->`);
+                                    }
+                                    $$renderer2.push(`<!--]-->`);
+                                  }
+                                  $$renderer2.push(`<!--]-->`);
+                                }
+                                $$renderer2.push(`<!--]-->`);
+                              }
+                              $$renderer2.push(`<!--]-->`);
+                            }
+                            $$renderer2.push(`<!--]-->`);
+                          }
+                          $$renderer2.push(`<!--]-->`);
+                        }
+                        $$renderer2.push(`<!--]-->`);
+                      }
+                      $$renderer2.push(`<!--]-->`);
+                    }
+                    $$renderer2.push(`<!--]-->`);
                   }
                   $$renderer2.push(`<!--]-->`);
                 }
