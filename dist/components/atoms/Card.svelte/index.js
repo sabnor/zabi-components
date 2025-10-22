@@ -1,71 +1,63 @@
 import "svelte/internal/disclose-version";
 import * as e from "svelte/internal/client";
-var C = e.from_html('<img class="w-full h-48 object-cover rounded-md mb-4"/>'), z = e.from_html("<h3> </h3>"), j = e.from_html("<div><!> <!> <!></div>");
-function P(v, a) {
-  e.push(a, !0);
-  let l = e.prop(a, "title", 3, ""), s = e.prop(a, "image", 3, ""), c = e.prop(a, "interactive", 3, !1), m = e.prop(a, "variant", 3, "default"), f = e.prop(a, "size", 3, "md"), g = e.rest_props(a, [
+var z = e.from_html('<img class="w-full h-48 object-cover rounded-md mb-4"/>'), W = e.from_html("<h3> </h3>"), y = e.from_html("<div><!> <!> <!></div>");
+function P(v, i) {
+  e.push(i, !0);
+  let l = e.prop(i, "title", 3, ""), d = e.prop(i, "image", 3, ""), f = e.prop(i, "interactive", 3, !1), o = e.prop(i, "size", 3, "md"), m = e.prop(i, "fullWidth", 3, !1), h = e.rest_props(i, [
     "$$slots",
     "$$events",
     "$$legacy",
     "title",
     "image",
     "interactive",
-    "variant",
     "size",
+    "fullWidth",
     "children"
-  ]), p = e.derived(() => ({ sm: "p-3", md: "p-4", lg: "p-6" })), b = e.derived(() => () => {
-    const t = {
-      default: "border-gray-200 bg-white",
-      success: "border-green-200 bg-green-50",
-      warning: "border-yellow-200 bg-yellow-50",
-      error: "border-red-200 bg-red-50",
-      info: "border-blue-200 bg-blue-50"
-    };
-    return t[m()] || t.default;
-  }), u = e.derived(() => [
-    "rounded-lg transition-all duration-200",
-    "hover:shadow-adaptive-md",
-    c() ? "cursor-pointer hover:scale-[1.02]" : "",
-    e.get(p)[f()],
-    e.get(b)
-  ].join(" ")), h = e.derived(() => "text-lg font-semibold mb-2 text-primary");
-  var i = j();
-  e.attribute_effect(i, () => ({ class: e.get(u), ...g }));
-  var o = e.child(i);
+  ]);
+  const p = e.derived(() => () => o() === "sm" ? "p-3" : o() === "lg" ? "p-6" : "p-4"), u = e.derived(() => () => {
+    const t = "bg-surface rounded-lg transition-all duration-200 hover:shadow-adaptive-md", r = f() ? "cursor-pointer hover:scale-[1.02]" : "", a = m() ? "w-full" : "";
+    return `${t} ${r} ${a} ${e.get(p)()}`.trim();
+  }), _ = e.derived(() => () => "text-lg font-semibold mb-2 text-primary");
+  var s = y();
+  e.attribute_effect(s, (t) => ({ class: t, ...h }), [() => e.get(u)()]);
+  var n = e.child(s);
   {
-    var _ = (t) => {
-      var r = C();
+    var g = (t) => {
+      var r = z();
       e.template_effect(() => {
-        e.set_attribute(r, "src", s()), e.set_attribute(r, "alt", l());
+        e.set_attribute(r, "src", d()), e.set_attribute(r, "alt", l());
       }), e.append(t, r);
     };
-    e.if(o, (t) => {
-      s() && t(_);
-    });
-  }
-  var n = e.sibling(o, 2);
-  {
-    var w = (t) => {
-      var r = z();
-      e.set_class(r, 1, e.clsx(e.get(h)));
-      var d = e.child(r, !0);
-      e.reset(r), e.template_effect(() => e.set_text(d, l())), e.append(t, r);
-    };
     e.if(n, (t) => {
-      l() && t(w);
+      d() && t(g);
     });
   }
-  var x = e.sibling(n, 2);
+  var c = e.sibling(n, 2);
   {
-    var y = (t) => {
-      var r = e.comment(), d = e.first_child(r);
-      e.snippet(d, () => a.children), e.append(t, r);
+    var b = (t) => {
+      var r = W(), a = e.child(r, !0);
+      e.reset(r), e.template_effect(
+        (w) => {
+          e.set_class(r, 1, w), e.set_text(a, l());
+        },
+        [() => e.clsx(e.get(_)())]
+      ), e.append(t, r);
     };
-    e.if(x, (t) => {
-      a.children && t(y);
+    e.if(c, (t) => {
+      l() && t(b);
     });
   }
-  e.reset(i), e.append(v, i), e.pop();
+  var C = e.sibling(c, 2);
+  {
+    var x = (t) => {
+      var r = e.comment(), a = e.first_child(r);
+      e.snippet(a, () => i.children), e.append(t, r);
+    };
+    e.if(C, (t) => {
+      i.children && t(x);
+    });
+  }
+  e.reset(s), e.append(v, s), e.pop();
 }
 export {
   P as default

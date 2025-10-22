@@ -1,50 +1,62 @@
 import "svelte/internal/disclose-version";
 import * as e from "svelte/internal/client";
-import { createEventDispatcher as _ } from "svelte";
 import { generateId as k } from "../../../routes/lib/ssr-safe/index.js";
-function v(l, a, r) {
-  a() || (l.key === " " || l.key === "Enter") && (l.preventDefault(), r(l));
+function p(o, t, n) {
+  t() || (o.key === " " || o.key === "Enter") && (o.preventDefault(), n(o));
 }
-var x = e.from_html('<label class="text-sm font-medium text-gray-700 cursor-pointer"> </label>'), y = e.from_html('<div><button type="button" role="switch"><span></span></button> <!></div>');
-function E(l, a) {
-  e.push(a, !0);
-  let r = e.prop(a, "checked", 7, !1), s = e.prop(a, "disabled", 3, !1), c = e.prop(a, "label", 3, ""), b = e.prop(a, "className", 3, "");
-  e.rest_props(a, [
+var v = e.from_html('<label class="text-sm font-medium text-gray-700 cursor-pointer"> </label>'), x = e.from_html('<div class="flex items-center gap-3"><button type="button" role="switch"><span></span></button> <!></div>');
+function C(o, t) {
+  e.push(t, !0);
+  let n = e.prop(t, "checked", 7, !1), r = e.prop(t, "disabled", 3, !1), i = e.prop(t, "label", 3, "");
+  e.rest_props(t, [
     "$$slots",
     "$$events",
     "$$legacy",
     "checked",
     "disabled",
     "label",
-    "className"
+    "onclick",
+    "onchange"
   ]);
-  const d = _();
-  let u = k("toggle");
-  function f(o) {
-    s() || (r(!r()), d("click", o), d("change", { checked: r() }));
+  const u = k("toggle");
+  function f(s) {
+    r() || (n(!n()), t.onclick && t.onclick(s), t.onchange && t.onchange({ checked: n() }));
   }
-  var i = y(), t = e.child(i);
-  t.__click = // Handle keyboard
-  f, t.__keydown = [v, s, f];
-  var p = e.child(t);
-  e.reset(t);
-  var g = e.sibling(t, 2);
+  const b = e.derived(() => () => {
+    const s = "relative inline-flex w-11 h-6 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2", l = n() ? "bg-blue-600" : "bg-gray-200", d = r() ? "opacity-50 cursor-not-allowed" : "";
+    return `${s} ${l} ${d}`.trim();
+  }), g = e.derived(() => () => {
+    const s = "pointer-events-none inline-block w-5 h-5 transform rounded-full bg-white shadow-lg transition duration-200 ease-in-out", l = n() ? "translate-x-5" : "translate-x-0";
+    return `${s} ${l}`.trim();
+  });
+  var c = x(), a = e.child(c);
+  a.__click = // Handle keyboard
+  f, a.__keydown = [p, r, f];
+  var h = e.child(a);
+  e.reset(a);
+  var m = e.sibling(a, 2);
   {
-    var h = (o) => {
-      var n = x(), m = e.child(n, !0);
-      e.reset(n), e.template_effect(() => {
-        e.set_attribute(n, "for", u), e.set_text(m, c());
-      }), e.append(o, n);
+    var _ = (s) => {
+      var l = v(), d = e.child(l, !0);
+      e.reset(l), e.template_effect(() => {
+        e.set_attribute(l, "for", u), e.set_text(d, i());
+      }), e.append(s, l);
     };
-    e.if(g, (o) => {
-      c() && o(h);
+    e.if(m, (s) => {
+      i() && s(_);
     });
   }
-  e.reset(i), e.template_effect(() => {
-    e.set_class(i, 1, `flex items-center gap-3 ${b() ?? ""}`), e.set_attribute(t, "id", u), e.set_attribute(t, "aria-checked", r()), e.set_attribute(t, "aria-label", c() || "Toggle"), t.disabled = s(), e.set_class(t, 1, `relative inline-flex w-11 h-6 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${r() ? "bg-blue-600" : "bg-gray-200"} ${s() ? "opacity-50 cursor-not-allowed" : ""}`), e.set_class(p, 1, `pointer-events-none inline-block w-5 h-5 transform rounded-full bg-white shadow-lg transition duration-200 ease-in-out ${r() ? "translate-x-5" : "translate-x-0"}`);
-  }), e.append(l, i), e.pop();
+  e.reset(c), e.template_effect(
+    (s, l) => {
+      e.set_attribute(a, "id", u), e.set_attribute(a, "aria-checked", n()), e.set_attribute(a, "aria-label", i() || "Toggle"), a.disabled = r(), e.set_class(a, 1, s), e.set_class(h, 1, l);
+    },
+    [
+      () => e.clsx(e.get(b)()),
+      () => e.clsx(e.get(g)())
+    ]
+  ), e.append(o, c), e.pop();
 }
 e.delegate(["click", "keydown"]);
 export {
-  E as default
+  C as default
 };
