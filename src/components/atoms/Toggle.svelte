@@ -6,7 +6,6 @@
         checked?: boolean;
         disabled?: boolean;
         label?: string;
-        className?: string;
         onclick?: (event: MouseEvent) => void;
         onchange?: (event: { checked: boolean }) => void;
     }
@@ -15,7 +14,6 @@
         checked = false,
         disabled = false,
         label = "",
-        className = "",
         onclick,
         onchange,
         ...restProps
@@ -41,7 +39,7 @@
         const stateClasses = checked ? "bg-blue-600" : "bg-gray-200";
         const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
 
-        return `${baseClasses} ${stateClasses} ${disabledClasses} ${className}`.trim();
+        return `${baseClasses} ${stateClasses} ${disabledClasses}`.trim();
     });
 
     // Toggle thumb classes using full class names

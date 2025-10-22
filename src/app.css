@@ -2,191 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Semantic Design Token System */
+/* ========================================
+   LIGHT MODE THEME
+   ======================================== */
 :root {
-  /* Base color scales */
-  --color-primary-50: 240 249 255;
-  --color-primary-100: 219 234 254;
-  --color-primary-200: 191 219 254;
-  --color-primary-300: 147 197 253;
-  --color-primary-400: 96 165 250;
-  --color-primary-500: 59 130 246;
-  --color-primary-600: 37 99 235;
-  --color-primary-700: 29 78 216;
-  --color-primary-800: 30 64 175;
-  --color-primary-900: 30 58 138;
-  --color-primary-950: 23 37 84;
-
-  --color-secondary-50: 245 243 255;
-  --color-secondary-100: 237 233 254;
-  --color-secondary-200: 221 214 254;
-  --color-secondary-300: 196 181 253;
-  --color-secondary-400: 147 51 234;
-  --color-secondary-500: 124 58 237;
-  --color-secondary-600: 109 40 217;
-  --color-secondary-700: 91 33 182;
-  --color-secondary-800: 76 29 149;
-  --color-secondary-900: 59 7 100;
-  --color-secondary-950: 36 4 66;
-
-  --color-neutral-50: 250 250 250;
-  --color-neutral-100: 245 245 245;
-  --color-neutral-200: 229 229 229;
-  --color-neutral-300: 212 212 212;
-  --color-neutral-400: 163 163 163;
-  --color-neutral-500: 115 115 115;
-  --color-neutral-600: 82 82 82;
-  --color-neutral-700: 64 64 64;
-  --color-neutral-800: 38 38 38;
-  --color-neutral-900: 23 23 23;
-  --color-neutral-950: 10 10 10;
-
-  /* Semantic color scales */
-  --color-success-50: 240 253 244;
-  --color-success-100: 220 252 231;
-  --color-success-200: 187 247 208;
-  --color-success-300: 134 239 172;
-  --color-success-400: 74 222 128;
-  --color-success-500: 34 197 94;
-  --color-success-600: 22 163 74;
-  --color-success-700: 21 128 61;
-  --color-success-800: 22 101 52;
-  --color-success-900: 20 83 45;
-  --color-success-950: 5 46 22;
-
-  --color-warning-50: 255 251 235;
-  --color-warning-100: 254 243 199;
-  --color-warning-200: 253 230 138;
-  --color-warning-300: 252 211 77;
-  --color-warning-400: 251 191 36;
-  --color-warning-500: 245 158 11;
-  --color-warning-600: 217 119 6;
-  --color-warning-700: 180 83 9;
-  --color-warning-800: 146 64 14;
-  --color-warning-900: 120 53 15;
-  --color-warning-950: 69 26 3;
-
-  --color-error-50: 254 242 242;
-  --color-error-100: 254 226 226;
-  --color-error-200: 254 202 202;
-  --color-error-300: 252 165 165;
-  --color-error-400: 248 113 113;
-  --color-error-500: 239 68 68;
-  --color-error-600: 220 38 38;
-  --color-error-700: 185 28 28;
-  --color-error-800: 153 27 27;
-  --color-error-900: 127 29 29;
-  --color-error-950: 69 10 10;
-
-  /* SEMANTIC TOKENS - Light Mode */
+  /* Background Colors */
+  --color-background: theme('colors.white');
+  --color-background-secondary: theme('colors.stone.50');
+  --color-background-tertiary: theme('colors.stone.100');
   
-  /* Primary semantic tokens */
-  --color-primary: var(--color-primary-500);
-  --color-primary-hover: var(--color-primary-600);
-  --color-primary-active: var(--color-primary-700);
-  --color-primary-disabled: var(--color-primary-300);
-  --color-primary-light: var(--color-primary-100);
-  --color-primary-dark: var(--color-primary-700);
-
-  /* Secondary semantic tokens */
-  --color-secondary: var(--color-secondary-500);
-  --color-secondary-hover: var(--color-secondary-600);
-  --color-secondary-active: var(--color-secondary-700);
-  --color-secondary-disabled: var(--color-secondary-300);
-  --color-secondary-light: var(--color-secondary-100);
-  --color-secondary-dark: var(--color-secondary-700);
-
-  /* Success semantic tokens */
-  --color-success: var(--color-success-500);
-  --color-success-hover: var(--color-success-600);
-  --color-success-active: var(--color-success-700);
-  --color-success-disabled: var(--color-success-300);
-  --color-success-light: var(--color-success-100);
-  --color-success-dark: var(--color-success-700);
-  --color-success-surface: var(--color-success-50);
-  --color-success-text: var(--color-success-700);
-
-  /* Warning semantic tokens */
-  --color-warning: var(--color-warning-500);
-  --color-warning-hover: var(--color-warning-600);
-  --color-warning-active: var(--color-warning-700);
-  --color-warning-disabled: var(--color-warning-300);
-  --color-warning-light: var(--color-warning-100);
-  --color-warning-dark: var(--color-warning-700);
-  --color-warning-surface: var(--color-warning-50);
-  --color-warning-text: var(--color-warning-700);
-
-  /* Error semantic tokens */
-  --color-error: var(--color-error-500);
-  --color-error-hover: var(--color-error-600);
-  --color-error-active: var(--color-error-700);
-  --color-error-disabled: var(--color-error-300);
-  --color-error-light: var(--color-error-100);
-  --color-error-dark: var(--color-error-700);
-  --color-error-surface: var(--color-error-50);
-  --color-error-text: var(--color-error-700);
-
-  /* Info semantic tokens (using primary) */
-  --color-info: var(--color-primary-500);
-  --color-info-hover: var(--color-primary-600);
-  --color-info-active: var(--color-primary-700);
-  --color-info-disabled: var(--color-primary-300);
-  --color-info-light: var(--color-primary-100);
-  --color-info-dark: var(--color-primary-700);
-  --color-info-surface: var(--color-primary-50);
-  --color-info-text: var(--color-primary-700);
-
-  /* Background semantic tokens */
-  --color-background: 255 255 255;
-  --color-background-secondary: 249 250 251;
-  --color-background-tertiary: 243 244 246;
+  /* Page Colors */
+  --color-page: theme('colors.white');
+  --color-page-secondary: theme('colors.stone.50');
   
-  /* Page and card semantic tokens */
-  --color-page: 255 255 255;
-  --color-page-secondary: 249 250 251;
-  --color-card: 255 255 255;
-  --color-card-hover: 249 250 251;
-  --color-card-active: 243 244 246;
-  --color-card-elevated: 255 255 255;
+  /* Card Colors */
+  --color-card: theme('colors.white');
+  --color-card-hover: theme('colors.stone.50');
+  --color-card-active: theme('colors.stone.100');
+  --color-card-elevated: theme('colors.white');
 
-  /* Surface semantic tokens */
-  --color-surface: 255 255 255;
-  --color-surface-secondary: 249 250 251;
-  --color-surface-tertiary: 243 244 246;
-  --color-surface-elevated: 255 255 255;
-  --color-surface-hover: 249 250 251;
-  --color-surface-active: 243 244 246;
+  /* Surface Colors */
+  --color-surface: theme('colors.white');
+  --color-surface-secondary: theme('colors.stone.50');
+  --color-surface-tertiary: theme('colors.stone.100');
+  --color-surface-elevated: theme('colors.white');
+  --color-surface-hover: theme('colors.stone.50');
+  --color-surface-active: theme('colors.stone.100');
 
-  /* Text semantic tokens */
-  --color-text: 10 10 10;
-  --color-text-secondary: 64 64 64;
-  --color-text-tertiary: 115 115 115;
-  --color-text-inverse: 255 255 255;
-  --color-text-disabled: 163 163 163;
-  --color-text-placeholder: 115 115 115;
+  /* Text Colors */
+  --color-text: theme('colors.stone.900');
+  --color-text-secondary: theme('colors.stone.600');
+  --color-text-tertiary: theme('colors.stone.500');
+  --color-text-inverse: theme('colors.white');
+  --color-text-disabled: theme('colors.stone.400');
+  --color-text-placeholder: theme('colors.stone.400');
 
-  /* Border semantic tokens */
-  --color-border: 229 229 229;
-  --color-border-secondary: 212 212 212;
-  --color-border-hover: 163 163 163;
-  --color-border-focus: 59 130 246;
-  --color-border-disabled: 243 244 246;
+  /* Border Colors */
+  --color-border: theme('colors.stone.200');
+  --color-border-secondary: theme('colors.stone.300');
+  --color-border-hover: theme('colors.stone.400');
+  --color-border-focus: theme('colors.blue.500');
+  --color-border-disabled: theme('colors.stone.200');
 
-    /* Focus semantic tokens */
-    --color-focus: 59 130 246;
-    --color-focus-hover: 37 99 235;
-    --color-focus-active: 29 78 216;
-    --color-focus-disabled: 147 197 253;
-    --color-focus-light: 219 234 254;
-    --color-focus-dark: 29 78 216;
-    --color-focus-surface: 240 249 255;
-    --color-focus-text: 29 78 216;
-    
-    /* Focus ring semantic tokens */
-    --color-focus-ring: 59 130 246;
-    --color-focus-ring-offset: 255 255 255;
+  /* Focus Colors */
+  --color-focus: theme('colors.blue.500');
+  --color-focus-hover: theme('colors.blue.600');
+  --color-focus-active: theme('colors.blue.700');
+  --color-focus-disabled: theme('colors.blue.300');
+  --color-focus-light: theme('colors.blue.50');
+  --color-focus-dark: theme('colors.blue.700');
+  --color-focus-surface: theme('colors.blue.50');
+  --color-focus-text: theme('colors.blue.700');
+  --color-focus-ring: theme('colors.blue.500');
+  --color-focus-ring-offset: theme('colors.white');
 
-  /* Shadow semantic tokens */
+  /* Shadow Colors */
   --shadow-color: 0 0 0;
   --shadow-opacity: 0.1;
   --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
@@ -194,7 +64,7 @@
   --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
 
-  /* Spacing semantic tokens */
+  /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
@@ -202,13 +72,13 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
 
-  /* Border radius semantic tokens */
+  /* Border Radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
 
-  /* Z-index semantic tokens */
+  /* Z-index */
   --z-dropdown: 1000;
   --z-sticky: 1020;
   --z-fixed: 1030;
@@ -219,59 +89,61 @@
   --z-toast: 1080;
 }
 
-/* Dark mode overrides */
+/* ========================================
+   DARK MODE THEME
+   ======================================== */
 .dark {
-  /* Background semantic tokens - Dark mode */
-  --color-background: 10 10 10;
-  --color-background-secondary: 23 23 23;
-  --color-background-tertiary: 38 38 38;
+  /* Background Colors */
+  --color-background: theme('colors.stone.900');
+  --color-background-secondary: theme('colors.stone.800');
+  --color-background-tertiary: theme('colors.stone.700');
   
-  /* Page and card semantic tokens - Dark mode */
-  --color-page: 10 10 10;
-  --color-page-secondary: 23 23 23;
-  --color-card: 23 23 23;
-  --color-card-hover: 38 38 38;
-  --color-card-active: 64 64 64;
-  --color-card-elevated: 38 38 38;
+  /* Page Colors */
+  --color-page: theme('colors.stone.800');
+  --color-page-secondary: theme('colors.stone.800');
+  
+  /* Card Colors */
+  --color-card: theme('colors.stone.500');
+  --color-card-hover: theme('colors.stone.700');
+  --color-card-active: theme('colors.stone.600');
+  --color-card-elevated: theme('colors.stone.700');
 
-  /* Surface semantic tokens - Dark mode */
-  --color-surface: 23 23 23;
-  --color-surface-secondary: 38 38 38;
-  --color-surface-tertiary: 64 64 64;
-  --color-surface-elevated: 38 38 38;
-  --color-surface-hover: 38 38 38;
-  --color-surface-active: 64 64 64;
+  /* Surface Colors */
+  --color-surface: theme('colors.stone.600');
+  --color-surface-secondary: theme('colors.stone.600');
+  --color-surface-tertiary: theme('colors.stone.500');
+  --color-surface-elevated: theme('colors.stone.600');
+  --color-surface-hover: theme('colors.stone.600');
+  --color-surface-active: theme('colors.stone.500');
 
-  /* Text semantic tokens - Dark mode */
-  --color-text: 250 250 250;
-  --color-text-secondary: 212 212 212;
-  --color-text-tertiary: 163 163 163;
-  --color-text-inverse: 10 10 10;
-  --color-text-disabled: 115 115 115;
-  --color-text-placeholder: 163 163 163;
+  /* Text Colors */
+  --color-text: theme('colors.stone.100');
+  --color-text-secondary: theme('colors.stone.300');
+  --color-text-tertiary: theme('colors.stone.400');
+  --color-text-inverse: theme('colors.stone.900');
+  --color-text-disabled: theme('colors.stone.500');
+  --color-text-placeholder: theme('colors.stone.500');
 
-  /* Border semantic tokens - Dark mode */
-  --color-border: 64 64 64;
-  --color-border-secondary: 82 82 82;
-  --color-border-hover: 115 115 115;
-  --color-border-focus: 96 165 250;
-  --color-border-disabled: 64 64 64;
+  /* Border Colors */
+  --color-border: theme('colors.stone.600');
+  --color-border-secondary: theme('colors.stone.500');
+  --color-border-hover: theme('colors.stone.400');
+  --color-border-focus: theme('colors.blue.400');
+  --color-border-disabled: theme('colors.stone.600');
 
-    /* Focus semantic tokens - Dark mode */
-    --color-focus: 96 165 250;
-    --color-focus-hover: 59 130 246;
-    --color-focus-active: 37 99 235;
-    --color-focus-disabled: 59 130 246;
-    --color-focus-light: 30 64 175;
-    --color-focus-dark: 96 165 250;
-    --color-focus-surface: 30 58 138;
-    --color-focus-text: 96 165 250;
-    
-    /* Focus ring semantic tokens - Dark mode */
-    --color-focus-ring: 96 165 250;
-    --color-focus-ring-offset: 23 23 23;
+  /* Focus Colors */
+  --color-focus: theme('colors.blue.400');
+  --color-focus-hover: theme('colors.blue.500');
+  --color-focus-active: theme('colors.blue.600');
+  --color-focus-disabled: theme('colors.blue.600');
+  --color-focus-light: theme('colors.blue.900');
+  --color-focus-dark: theme('colors.blue.400');
+  --color-focus-surface: theme('colors.blue.900');
+  --color-focus-text: theme('colors.blue.400');
+  --color-focus-ring: theme('colors.blue.400');
+  --color-focus-ring-offset: theme('colors.stone.700');
 
-  /* Shadow semantic tokens - Dark mode */
+  /* Shadow Colors */
   --shadow-opacity: 0.3;
   --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
@@ -279,9 +151,11 @@
   --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
 }
 
-/* Semantic utility classes */
-@layer utilities {
-  /* Background utilities using semantic tokens */
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Surface utilities */
   .bg-surface {
     background-color: rgb(var(--color-surface));
   }
@@ -298,33 +172,19 @@
     background-color: rgb(var(--color-surface-elevated));
   }
   
-  /* Page background utilities */
-  .bg-page {
-    background-color: rgb(var(--color-page));
-  }
-  
-  .bg-page-secondary {
-    background-color: rgb(var(--color-page-secondary));
-  }
-  
-  /* Card background utilities */
-  .bg-card {
-    background-color: rgb(var(--color-card));
-  }
-  
-  .bg-card-hover {
-    background-color: rgb(var(--color-card-hover));
-  }
-  
-  .bg-card-active {
-    background-color: rgb(var(--color-card-active));
-  }
-  
-  .bg-card-elevated {
-    background-color: rgb(var(--color-card-elevated));
-  }
+.bg-surface-hover:hover {
+  background-color: rgb(var(--color-surface-hover));
+}
 
-  /* Text utilities using semantic tokens */
+.bg-surface-active:active {
+  background-color: rgb(var(--color-surface-active));
+}
+
+.bg-page {
+  background-color: rgb(var(--color-page));
+}
+
+/* Text utilities */
   .text-primary {
     color: rgb(var(--color-text));
   }
@@ -349,33 +209,7 @@
     color: rgb(var(--color-text-placeholder));
   }
 
-  /* Focus color utilities */
-  .bg-focus { background-color: rgb(var(--color-focus)); }
-  .bg-focus-hover { background-color: rgb(var(--color-focus-hover)); }
-  .bg-focus-active { background-color: rgb(var(--color-focus-active)); }
-  .bg-focus-disabled { background-color: rgb(var(--color-focus-disabled)); }
-  .bg-focus-light { background-color: rgb(var(--color-focus-light)); }
-  .bg-focus-dark { background-color: rgb(var(--color-focus-dark)); }
-  .bg-focus-surface { background-color: rgb(var(--color-focus-surface)); }
-  
-  .text-focus { color: rgb(var(--color-focus)); }
-  .text-focus-hover { color: rgb(var(--color-focus-hover)); }
-  .text-focus-active { color: rgb(var(--color-focus-active)); }
-  .text-focus-disabled { color: rgb(var(--color-focus-disabled)); }
-  .text-focus-light { color: rgb(var(--color-focus-light)); }
-  .text-focus-dark { color: rgb(var(--color-focus-dark)); }
-  .text-focus-surface { color: rgb(var(--color-focus-surface)); }
-  .text-focus-text { color: rgb(var(--color-focus-text)); }
-
-  
-  .border-focus { border-color: rgb(var(--color-focus)); }
-  .border-focus-hover { border-color: rgb(var(--color-focus-hover)); }
-  .border-focus-active { border-color: rgb(var(--color-focus-active)); }
-  .border-focus-disabled { border-color: rgb(var(--color-focus-disabled)); }
-  .border-focus-light { border-color: rgb(var(--color-focus-light)); }
-  .border-focus-dark { border-color: rgb(var(--color-focus-dark)); }
-
-  /* Border utilities using semantic tokens */
+/* Border utilities */
   .border-primary {
     border-color: rgb(var(--color-border));
   }
@@ -384,546 +218,24 @@
     border-color: rgb(var(--color-border-secondary));
   }
   
-  .border-focus {
+.border-hover:hover {
+  border-color: rgb(var(--color-border-hover));
+}
+
+.border-focus:focus {
     border-color: rgb(var(--color-border-focus));
   }
 
-  .border-disabled {
+.border-disabled:disabled {
     border-color: rgb(var(--color-border-disabled));
   }
 
-  /* Focus ring utilities */
+/* Focus utilities */
   .focus-ring {
+  box-shadow: 0 0 0 2px rgb(var(--color-focus-ring-offset)), 0 0 0 4px rgb(var(--color-focus-ring));
+}
+
+.focus-outline {
     outline: 2px solid rgb(var(--color-focus-ring));
     outline-offset: 2px;
-  }
-
-  .focus-ring-inset {
-    outline: 2px solid rgb(var(--color-focus-ring));
-    outline-offset: -2px;
-  }
-
-  /* Shadow utilities using semantic tokens */
-  .shadow-adaptive-sm {
-    box-shadow: var(--shadow-sm);
-  }
-  
-  .shadow-adaptive-md {
-    box-shadow: var(--shadow-md);
-  }
-  
-  .shadow-adaptive-lg {
-    box-shadow: var(--shadow-lg);
-  }
-  
-  .shadow-adaptive-xl {
-    box-shadow: var(--shadow-xl);
-  }
-
-  /* Semantic color utilities */
-  .bg-primary {
-    background-color: rgb(var(--color-primary));
-  }
-
-  .bg-primary-hover:hover {
-    background-color: rgb(var(--color-primary-hover));
-  }
-
-  .bg-primary-active:active {
-    background-color: rgb(var(--color-primary-active));
-  }
-
-  .bg-primary-disabled:disabled {
-    background-color: rgb(var(--color-primary-disabled));
-  }
-
-  .text-primary {
-    color: rgb(var(--color-primary));
-  }
-
-  .text-primary-hover:hover {
-    color: rgb(var(--color-primary-hover));
-  }
-
-  .border-primary {
-    border-color: rgb(var(--color-primary));
-  }
-
-  /* Success utilities */
-  .bg-success {
-    background-color: rgb(var(--color-success));
-  }
-
-  .bg-success-surface {
-    background-color: rgb(var(--color-success-surface));
-  }
-
-  .text-success {
-    color: rgb(var(--color-success));
-  }
-
-  .text-success-text {
-    color: rgb(var(--color-success-text));
-  }
-
-  .border-success {
-    border-color: rgb(var(--color-success));
-  }
-
-  /* Error utilities */
-  .bg-error {
-    background-color: rgb(var(--color-error));
-  }
-
-  .bg-error-surface {
-    background-color: rgb(var(--color-error-surface));
-  }
-
-  .text-error {
-    color: rgb(var(--color-error));
-  }
-
-  .text-error-text {
-    color: rgb(var(--color-error-text));
-  }
-
-  .border-error {
-    border-color: rgb(var(--color-error));
-  }
-
-  /* Warning utilities */
-  .bg-warning {
-    background-color: rgb(var(--color-warning));
-  }
-
-  .bg-warning-surface {
-    background-color: rgb(var(--color-warning-surface));
-  }
-
-  .text-warning {
-    color: rgb(var(--color-warning));
-  }
-
-  .text-warning-text {
-    color: rgb(var(--color-warning-text));
-  }
-
-  .border-warning {
-    border-color: rgb(var(--color-warning));
-  }
-
-  /* Info utilities */
-  .bg-info {
-    background-color: rgb(var(--color-info));
-  }
-
-  .bg-info-surface {
-    background-color: rgb(var(--color-info-surface));
-  }
-
-  .text-info {
-    color: rgb(var(--color-info));
-  }
-
-  .text-info-text {
-    color: rgb(var(--color-info-text));
-  }
-
-  .border-info {
-    border-color: rgb(var(--color-info));
-  }
-}
-
-/* Modern CSS Features - Container Queries Support */
-@supports (container-type: inline-size) {
-  .container-query {
-    container-type: inline-size;
-  }
-  
-  .container-query-block {
-    container-type: block-size;
-  }
-  
-  .container-query-both {
-    container-type: inline-size block-size;
-  }
-}
-
-/* CSS Logical Properties Support */
-@supports (margin-inline-start: 1rem) {
-  .logical-spacing {
-    margin-inline-start: var(--spacing-md);
-    margin-inline-end: var(--spacing-md);
-    padding-block-start: var(--spacing-sm);
-    padding-block-end: var(--spacing-sm);
-  }
-}
-
-/* CSS Cascade Layers for Better Organization */
-@layer reset, base, components, utilities, overrides;
-
-/* Component base styles using semantic tokens */
-@layer components {
-  .card {
-    @apply bg-surface border border-primary rounded-lg shadow-adaptive-sm;
-    /* CSS Containment for performance */
-    contain: layout style paint;
-  }
-  
-  .card-elevated {
-    @apply bg-surface-elevated border border-primary rounded-lg shadow-adaptive-md;
-    contain: layout style paint;
-  }
-  
-  .button-primary {
-    @apply bg-primary hover:bg-primary-hover text-inverse font-medium px-4 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-primary;
-  }
-  
-  .button-secondary {
-    @apply bg-surface-secondary hover:bg-surface-tertiary text-primary border border-primary rounded-md px-4 py-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-primary;
-  }
-  
-  .button-success {
-    @apply bg-success hover:bg-success-hover text-inverse font-medium px-4 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-primary;
-  }
-  
-  .button-error {
-    @apply bg-error hover:bg-error-hover text-inverse font-medium px-4 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-primary;
-  }
-  
-  .button-warning {
-    @apply bg-warning hover:bg-warning-hover text-inverse font-medium px-4 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-primary;
-  }
-  
-  .input {
-    @apply bg-surface border border-primary text-primary placeholder-placeholder rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-primary focus:border-transparent transition-colors duration-200;
-  }
-  
-  .input-error {
-    @apply bg-surface border border-error text-primary placeholder-placeholder rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-primary focus:border-transparent transition-colors duration-200;
-  }
-  
-  .input-success {
-    @apply bg-surface border border-success text-primary placeholder-placeholder rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-primary focus:border-transparent transition-colors duration-200;
-  }
-
-  /* Variant utility classes for reusable semantic styling */
-  .variant-default {
-    @apply bg-surface border border-primary text-primary;
-  }
-
-  .variant-success {
-    @apply bg-surface border border-success text-primary;
-  }
-
-  .variant-warning {
-    @apply bg-surface border border-warning text-primary;
-  }
-
-  .variant-error {
-    @apply bg-surface border border-error text-primary;
-  }
-
-  .variant-info {
-    @apply bg-surface border border-info text-primary;
-  }
-
-  /* Input-specific variant utilities */
-  .input-variant-default {
-    @apply bg-surface border border-primary text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
-  }
-
-  .input-variant-success {
-    @apply bg-surface border border-success text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
-  }
-
-  .input-variant-warning {
-    @apply bg-surface border border-warning text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
-  }
-
-  .input-variant-error {
-    @apply bg-surface border border-error text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
-  }
-
-  .input-variant-info {
-    @apply bg-surface border border-info text-primary placeholder-placeholder focus:border-focus focus:ring-focus;
-  }
-
-  /* Card-specific variant utilities */
-  .card-variant-default {
-    @apply bg-surface border border-primary text-primary;
-  }
-
-  .card-variant-success {
-    @apply bg-surface border border-success text-primary;
-  }
-
-  .card-variant-warning {
-    @apply bg-surface border border-warning text-primary;
-  }
-
-  .card-variant-error {
-    @apply bg-surface border border-error text-primary;
-  }
-
-  .card-variant-info {
-    @apply bg-surface border border-info text-primary;
-  }
-
-  /* Generic variant utilities for any component */
-  .variant-border-default { @apply border-primary; }
-  .variant-border-success { @apply border-success; }
-  .variant-border-warning { @apply border-warning; }
-  .variant-border-error { @apply border-error; }
-  .variant-border-info { @apply border-info; }
-
-  .variant-text-default { @apply text-primary; }
-  .variant-text-success { @apply text-success; }
-  .variant-text-warning { @apply text-warning; }
-  .variant-text-error { @apply text-error; }
-  .variant-text-info { @apply text-info; }
-
-  .variant-bg-default { @apply bg-surface; }
-  .variant-bg-success { @apply bg-success-surface; }
-  .variant-bg-warning { @apply bg-warning-surface; }
-  .variant-bg-error { @apply bg-error-surface; }
-  .variant-bg-info { @apply bg-info-surface; }
-
-  /* Modern Layout Components */
-  .grid-auto-fit {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-md);
-  }
-
-  .grid-auto-fill {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--spacing-md);
-  }
-
-  .grid-subgrid {
-    display: grid;
-    grid-template-columns: subgrid;
-    gap: inherit;
-  }
-
-  .flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .flex-between {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .flex-stack {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
-
-  /* Container Query Responsive Components */
-  .responsive-card {
-    container-type: inline-size;
-    @apply card;
-  }
-
-  @container (min-width: 300px) {
-    .responsive-card {
-      @apply card-elevated;
-    }
-  }
-
-  @container (min-width: 500px) {
-    .responsive-card {
-      @apply p-6;
-    }
-  }
-
-  /* Modern Focus Management */
-  .focus-visible {
-    outline: 2px solid rgb(var(--color-focus-ring));
-    outline-offset: 2px;
-  }
-
-  .focus-within {
-    position: relative;
-  }
-
-  .focus-within::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    background: rgb(var(--color-focus-ring));
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    z-index: -1;
-  }
-
-  .focus-within:focus-within::before {
-    opacity: 0.2;
-  }
-
-  /* Performance Optimized Animations */
-  .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
-    will-change: opacity;
-  }
-
-  .animate-slide-up {
-    animation: slideUp 0.3s ease-out;
-    will-change: transform, opacity;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.2s ease-out;
-    will-change: transform, opacity;
-  }
-
-  /* CSS Custom Properties for Dynamic Theming */
-  .theme-aware {
-    background: hsl(var(--theme-bg-h) var(--theme-bg-s) var(--theme-bg-l));
-    color: hsl(var(--theme-text-h) var(--theme-text-s) var(--theme-text-l));
-    border-color: hsl(var(--theme-border-h) var(--theme-border-s) var(--theme-border-l));
-  }
-
-  /* Modern Button with CSS Logical Properties */
-  .button-modern {
-    @apply button-primary;
-    padding-inline: var(--spacing-md);
-    padding-block: var(--spacing-sm);
-    border-inline-start: 2px solid transparent;
-    border-inline-end: 2px solid transparent;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .button-modern:hover {
-    border-inline-start-color: rgb(var(--color-primary-hover));
-    border-inline-end-color: rgb(var(--color-primary-hover));
-  }
-
-  /* Semantic Layout Components */
-  .layout-main {
-    display: grid;
-    grid-template-areas: 
-      "header"
-      "main"
-      "footer";
-    grid-template-rows: auto 1fr auto;
-    min-height: 100vh;
-  }
-
-  .layout-sidebar {
-    display: grid;
-    grid-template-areas: 
-      "sidebar main";
-    grid-template-columns: 250px 1fr;
-    min-height: 100vh;
-  }
-
-  .layout-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: var(--spacing-md);
-  }
-
-  /* Accessibility Enhancements */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  .skip-link {
-    position: absolute;
-    top: -40px;
-    left: 6px;
-    background: rgb(var(--color-primary));
-    color: rgb(var(--color-text-inverse));
-    padding: 8px;
-    text-decoration: none;
-    border-radius: 4px;
-    z-index: 1000;
-    transition: top 0.3s;
-  }
-
-  .skip-link:focus {
-    top: 6px;
-  }
-}
-
-/* Modern Keyframe Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideLeft {
-  from {
-    transform: translateX(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideRight {
-  from {
-    transform: translateX(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
 }

@@ -12,7 +12,6 @@
         size?: "sm" | "md" | "lg";
         disabled?: boolean;
         type?: "button" | "submit" | "reset";
-        className?: string;
         text?: string;
         onclick?: (event: MouseEvent) => void;
         children?: Snippet;
@@ -23,7 +22,6 @@
         size = "md",
         disabled = false,
         type = "button",
-        className = "",
         text = "",
         onclick,
         children,
@@ -61,7 +59,7 @@
         const baseClasses =
             "inline-flex items-center justify-center rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95 transform-gpu shadow-sm hover:shadow-md";
 
-        return `${baseClasses} ${sizeClass()} ${variantClass()} ${className}`.trim();
+        return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
     });
 </script>
 

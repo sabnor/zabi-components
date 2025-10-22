@@ -1,11 +1,10 @@
 import "svelte/internal/disclose-version";
 import * as e from "svelte/internal/client";
-import { getInputVariantClasses as I } from "../../../routes/lib/variant-utils/index.js";
-import { generateId as j } from "../../../routes/lib/ssr-safe/index.js";
-var k = e.from_html("<label> </label>"), P = e.from_html("<div><!> <textarea></textarea></div>");
-function A(u, t) {
-  e.push(t, !0);
-  let s = e.prop(t, "value", 7, ""), f = e.prop(t, "name", 3, ""), i = e.prop(t, "label", 3, ""), p = e.prop(t, "placeholder", 3, ""), m = e.prop(t, "disabled", 3, !1), c = e.prop(t, "rows", 3, 4), v = e.prop(t, "size", 3, "md"), b = e.prop(t, "variant", 3, "default"), x = e.rest_props(t, [
+import { generateId as k } from "../../../routes/lib/ssr-safe/index.js";
+var P = e.from_html("<label> </label>"), T = e.from_html("<div><!> <textarea></textarea></div>");
+function A(f, r) {
+  e.push(r, !0);
+  let l = e.prop(r, "value", 7, ""), b = e.prop(r, "name", 3, ""), d = e.prop(r, "label", 3, ""), m = e.prop(r, "placeholder", 3, ""), p = e.prop(r, "disabled", 3, !1), v = e.prop(r, "rows", 3, 4), i = e.prop(r, "size", 3, "md"), s = e.prop(r, "variant", 3, "default"), g = e.rest_props(r, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -18,46 +17,43 @@ function A(u, t) {
     "size",
     "variant",
     "oninput"
-  ]), o = e.proxy(j("textarea")), g = e.derived(() => () => ({
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-sm",
-    lg: "px-5 py-3 text-base"
-  })), _ = e.derived(() => () => I(b())), h = e.derived(() => () => [
-    "w-full rounded-md transition-colors duration-200",
-    "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
-    "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
-    "resize-y",
-    e.get(g)()[v()],
-    e.get(_)()
-  ].join(" ")), y = e.derived(() => () => "block text-sm font-medium text-primary mb-1");
-  function w(r) {
-    const a = r.target;
-    s(a.value), t.oninput && t.oninput(r);
+  ]);
+  const n = k("textarea"), x = e.derived(() => () => i() === "sm" ? "px-3 py-1.5 text-sm" : i() === "lg" ? "px-5 py-3 text-base" : "px-4 py-2 text-sm"), _ = e.derived(() => () => s() === "success" ? "border-green-300 focus:border-green-500 focus:ring-green-500" : s() === "warning" ? "border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500" : s() === "error" ? "border-red-300 focus:border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"), h = e.derived(() => () => `w-full rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled resize-y ${e.get(x)()} ${e.get(_)()}`.trim()), y = e.derived(() => () => "block text-sm font-medium text-primary mb-1");
+  function w(t) {
+    const a = t.target;
+    l(a.value), r.oninput && r.oninput(t);
   }
-  var l = P(), d = e.child(l);
+  var o = T(), u = e.child(o);
   {
-    var z = (r) => {
-      var a = k(), C = e.child(a, !0);
-      e.reset(a), e.template_effect(() => {
-        e.set_attribute(a, "for", o), e.set_class(a, 1, e.clsx(e.get(y))), e.set_text(C, i());
-      }), e.append(r, a);
+    var C = (t) => {
+      var a = P(), z = e.child(a, !0);
+      e.reset(a), e.template_effect(
+        (I) => {
+          e.set_attribute(a, "for", n), e.set_class(a, 1, I), e.set_text(z, d());
+        },
+        [() => e.clsx(e.get(y)())]
+      ), e.append(t, a);
     };
-    e.if(d, (r) => {
-      i() && r(z);
+    e.if(u, (t) => {
+      d() && t(C);
     });
   }
-  var n = e.sibling(d, 2);
-  e.remove_textarea_child(n), e.attribute_effect(n, () => ({
-    id: o,
-    name: f(),
-    value: s(),
-    placeholder: p(),
-    disabled: m(),
-    rows: c(),
-    class: e.get(h),
-    oninput: w,
-    ...x
-  })), e.reset(l), e.append(u, l), e.pop();
+  var c = e.sibling(u, 2);
+  e.remove_textarea_child(c), e.attribute_effect(
+    c,
+    (t) => ({
+      id: n,
+      name: b(),
+      value: l(),
+      placeholder: m(),
+      disabled: p(),
+      rows: v(),
+      class: t,
+      oninput: w,
+      ...g
+    }),
+    [() => e.get(h)()]
+  ), e.reset(o), e.append(f, o), e.pop();
 }
 export {
   A as default

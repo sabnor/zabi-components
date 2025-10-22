@@ -9,12 +9,10 @@
     let {
         variant = "default",
         size = "md",
-        className = "",
         text = "",
     }: {
         variant?: "default" | "success" | "warning" | "error" | "info";
         size?: "sm" | "md" | "lg";
-        className?: string;
         text: string;
     } = $props();
 
@@ -43,7 +41,7 @@
                       ? "bg-blue-100 text-blue-800 border-blue-300"
                       : "bg-gray-100 text-gray-800 border-gray-300"; // default
 
-        return `${baseClasses} ${sizeClass} ${variantClass} ${className}`.trim();
+        return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     });
 </script>
 
