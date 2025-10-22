@@ -157,7 +157,7 @@ function ColorPicker($$renderer, $$props) {
       }
       $$renderer2.push(`<!--]--></button>`);
     }
-    $$renderer2.push(`<!--]--></div> <div class="space-y-1"><label${attr("for", inputId)} class="block text-xs font-medium text-gray-600">Or enter custom color</label> <div class="flex items-center space-x-2"><input${attr("id", inputId)} type="text" placeholder="#000000"${attr("value", value)}${attr("disabled", disabled, true)}${attr_class(clsx(inputClasses()))} aria-label="Custom hex color input"/> `);
+    $$renderer2.push(`<!--]--></div> <div class="space-y-1"><label${attr("for", inputId)} class="block text-xs font-medium text-label">Or enter custom color</label> <div class="flex items-center space-x-2"><input${attr("id", inputId)} type="text" placeholder="#000000"${attr("value", value)}${attr("disabled", disabled, true)}${attr_class(clsx(inputClasses()))} aria-label="Custom hex color input"/> `);
     if (value && isValidHex(value)) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<div class="w-6 h-6 sm:w-8 sm:h-8 rounded border-2 border-gray-300 shrink-0"${attr_style(`background-color: ${stringify(value)};`)} aria-label="Color preview"></div>`);
