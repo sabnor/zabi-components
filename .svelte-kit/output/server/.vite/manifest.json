@@ -33,6 +33,14 @@
       "_app/immutable/assets/Card.9NBVysfc.css"
     ]
   },
+  "_CodeBlock.js": {
+    "file": "chunks/CodeBlock.js",
+    "name": "CodeBlock",
+    "imports": [
+      "_index.js",
+      "_Card.js"
+    ]
+  },
   "_client.js": {
     "file": "chunks/client.js",
     "name": "client",
@@ -66,7 +74,8 @@
     "file": "chunks/index.js",
     "name": "index",
     "imports": [
-      "_context.js"
+      "_context.js",
+      "_utils2.js"
     ]
   },
   "_internal.js": {
@@ -138,7 +147,7 @@
       "_index.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.qkcWWvU4.css"
+      "_app/immutable/assets/_layout.DYjUaQ-M.css"
     ]
   },
   "src/routes/+page.svelte": {
@@ -150,8 +159,7 @@
       "_index.js",
       "_client.js",
       "_Card.js",
-      "_Badge.js",
-      "_context.js"
+      "_Badge.js"
     ]
   },
   "src/routes/components/+page.svelte": {
@@ -163,7 +171,11 @@
       "_index.js",
       "_Card.js",
       "_Badge.js",
-      "_context.js"
+      "_context.js",
+      "_CodeBlock.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.xuI36Jax.css"
     ]
   },
   "src/routes/docs/+page.svelte": {
@@ -174,7 +186,8 @@
     "imports": [
       "_index.js",
       "_client.js",
-      "_Card.js"
+      "_Card.js",
+      "_CodeBlock.js"
     ]
   }
 }

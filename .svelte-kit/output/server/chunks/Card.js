@@ -1,4 +1,4 @@
-import { x as attributes, F as attr_class, J as ensure_array_like, z as attr, y as stringify, G as clsx } from "./index.js";
+import { G as attributes, z as attr_class, x as ensure_array_like, y as attr, F as stringify, K as clsx } from "./index.js";
 import { e as escape_html } from "./context.js";
 function html(value) {
   var html2 = String(value ?? "");
@@ -99,7 +99,7 @@ function Card($$renderer, $$props) {
       return size === "sm" ? "p-3" : size === "lg" ? "p-6" : "p-4";
     };
     const cardClasses = () => {
-      const baseClasses = "bg-surface rounded-lg transition-all duration-200 hover:shadow-adaptive-md";
+      const baseClasses = "bg-surface rounded-lg transition-all duration-200 hover:shadow-adaptive-md min-w-64";
       const interactiveClasses = onclick ? "cursor-pointer hover:bg-surface-hover hover:border-focus" : "";
       const widthClasses = fullWidth ? "w-full" : "";
       return `${baseClasses} ${interactiveClasses} ${widthClasses} ${sizeClass()}`.trim();

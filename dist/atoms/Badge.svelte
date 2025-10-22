@@ -5,15 +5,18 @@
     to prevent DOM access errors during hydration and rapid state changes.
 -->
 <script lang="ts">
+    import { Check, AlertTriangle, X, Info } from "@lucide/svelte";
     // Props using Svelte 5 runes
     let {
         variant = "default",
         size = "md",
         text = "",
+        showIcon = true,
     }: {
         variant?: "default" | "success" | "warning" | "error" | "info";
         size?: "sm" | "md" | "lg";
         text: string;
+        showIcon?: boolean;
     } = $props();
 
     // Class computation using conditional logic with full class names
@@ -29,22 +32,45 @@
                   ? "px-4 py-2 text-base"
                   : "px-3 py-1 text-sm"; // default md
 
-        // Variant classes - using full class names
+        // Variant classes - using semantic color system
         const variantClass =
             variant === "success"
-                ? "bg-green-100 border-green-300 text-success"
+                ? "bg-surface-secondary border-secondary text-success"
                 : variant === "warning"
-                  ? "bg-yellow-100 border-yellow-300 text-warning"
+                  ? "bg-surface-secondary border-secondary text-warning"
                   : variant === "error"
-                    ? "bg-red-100 border-red-300 text-error"
+                    ? "bg-surface-secondary border-secondary text-error"
                     : variant === "info"
-                      ? "bg-blue-100 border-blue-300 text-body"
-                      : "bg-gray-100 border-gray-300 text-body"; // default
+                      ? "bg-surface-secondary border-secondary text-body"
+                      : "bg-surface-secondary border-secondary text-body"; // default
 
         return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
+    });
+
+    // Icon size based on badge size
+    const iconSize = $derived(() => {
+        return size === "sm" ? 12 : size === "lg" ? 20 : 16; // default md
+    });
+
+    // Icon spacing class
+    const iconSpacingClass = $derived(() => {
+        return size === "sm" ? "mr-1" : size === "lg" ? "mr-2" : "mr-1.5"; // default md
     });
 </script>
 
 <span class={classes()}>
+    {#if showIcon}
+        {#if variant === "success"}
+            <Check size={iconSize()} class={iconSpacingClass()} />
+        {:else if variant === "warning"}
+            <AlertTriangle size={iconSize()} class={iconSpacingClass()} />
+        {:else if variant === "error"}
+            <X size={iconSize()} class={iconSpacingClass()} />
+        {:else if variant === "info"}
+            <Info size={iconSize()} class={iconSpacingClass()} />
+        {:else}
+            <Info size={iconSize()} class={iconSpacingClass()} />
+        {/if}
+    {/if}
     {text}
 </span>

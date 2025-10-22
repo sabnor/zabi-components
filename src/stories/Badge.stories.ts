@@ -15,6 +15,9 @@ const meta = {
         },
         text: {
             control: { type: 'text' }
+        },
+        showIcon: {
+            control: { type: 'boolean' }
         }
     }
 } satisfies Meta<typeof Badge>;
@@ -99,6 +102,59 @@ export const DynamicContent: Story = {
         docs: {
             description: {
                 story: 'This story tests the Badge component with dynamic content to ensure it handles rapid state changes without DOM access errors.'
+            }
+        }
+    }
+};
+
+export const WithIcons: Story = {
+    args: {
+        variant: 'success',
+        text: 'With Icons',
+        showIcon: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Badge variants with their respective Lucide icons enabled by default.'
+            }
+        }
+    }
+};
+
+export const WithoutIcons: Story = {
+    args: {
+        variant: 'success',
+        text: 'Without Icons',
+        showIcon: false
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Badge variants with icons disabled for a cleaner look.'
+            }
+        }
+    }
+};
+
+export const AllVariantsWithIcons: Story = {
+    render: () => ({
+        Component: 'div',
+        props: {
+            class: 'flex flex-wrap gap-2 items-center'
+        },
+        children: [
+            { Component: Badge, props: { variant: 'default', text: 'Default', showIcon: true } },
+            { Component: Badge, props: { variant: 'success', text: 'Success', showIcon: true } },
+            { Component: Badge, props: { variant: 'warning', text: 'Warning', showIcon: true } },
+            { Component: Badge, props: { variant: 'error', text: 'Error', showIcon: true } },
+            { Component: Badge, props: { variant: 'info', text: 'Info', showIcon: true } }
+        ]
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'All badge variants displayed with their respective Lucide icons (Check, AlertTriangle, X, Info).'
             }
         }
     }

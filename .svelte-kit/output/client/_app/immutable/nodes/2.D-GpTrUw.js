@@ -1,0 +1,45 @@
+import"../chunks/DsnmJJEf.js";import{p as U,f as d,h as X,a as c,b as tt,$ as et,c as s,s as t,r as e,n as at,g as S}from"../chunks/DjtL8Tgn.js";import{N as st,T as rt,B as m,e as it,i as ot,C as x}from"../chunks/CjaCNiiF.js";import{g as I}from"../chunks/B4z1FK0y.js";import{B as nt,C as h,a as lt,I as P,A as g,F as ct}from"../chunks/2vifFCwy.js";var dt=d('<meta name="description" content="Clean, minimal Svelte 5 components that just work"/>'),pt=d('<div class="flex flex-wrap gap-4 items-center"><!> <!> <!> <!> <!></div>'),mt=d('<p class="text-description">This is a default card with clean styling.</p>'),vt=d('<p class="text-description">This card indicates a successful action.</p>'),ut=d('<p class="text-description">This card shows a warning state.</p>'),xt=d('<p class="text-description">This card indicates an error state.</p>'),ht=d('<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><!> <!> <!> <!></div>'),gt=d('<div class="space-y-4 max-w-md"><!> <!> <!></div>'),ft=d('<div class="space-y-4"><!> <!> <!> <!></div>'),bt=d(`<div class="min-h-screen bg-background"><header class="flex items-center justify-between p-4 bg-surface border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4"><!> <!></div></header> <main class="container mx-auto p-6 space-y-16"><section class="py-20 px-4 text-center"><div class="max-w-4xl mx-auto"><h1 class="text-5xl md:text-6xl font-bold text-text mb-6">Zabi Components</h1> <p class="text-xl md:text-2xl text-text-secondary mb-8">Clean, minimal Svelte 5 components that just work</p> <p class="text-lg text-text-secondary/80 max-w-2xl mx-auto mb-12">Build beautiful, accessible user interfaces with our
+                    carefully crafted component library. Less is more.</p> <div class="flex flex-col sm:flex-row gap-4 justify-center items-center"><!> <!></div> <div class="mt-8 flex justify-center"><!></div></div></section> <section class="py-16"><div class="text-center mb-12"><h2 class="text-3xl font-bold text-text mb-4">Why Choose Zabi Components?</h2> <p class="text-lg text-text-secondary max-w-2xl mx-auto">Built with modern web standards and developer experience in
+                    mind</p></div> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div></section> <section class="py-16"><div class="text-center mb-12"><h2 class="text-3xl font-bold text-text mb-4">See It In Action</h2> <p class="text-lg text-text-secondary max-w-2xl mx-auto">Interactive examples of our most popular components</p></div> <div class="space-y-8"><!> <!> <!> <!></div> <div class="text-center mt-12"><!></div></section> <section class="py-16"><div class="text-center mb-12"><h2 class="text-3xl font-bold text-text mb-4">Get In Touch</h2> <p class="text-lg text-text-secondary max-w-2xl mx-auto">Have questions or feedback? We'd love to hear from you.</p></div> <!></section></main> <footer class="bg-surface-secondary border-t border-border py-8"><div class="container mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><div class="text-center md:text-left"><p class="text-text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-text-secondary/80">© 2024 Zabi Components. MIT License.</p></div> <div class="flex gap-6"><a href="/docs" class="text-text-secondary hover:text-text transition-colors">Docs</a> <a href="/components" class="text-text-secondary hover:text-text transition-colors">Components</a> <a href="https://github.com" class="text-text-secondary hover:text-text transition-colors">GitHub</a></div></div></div></footer></div>`);function Bt(N,R){U(R,!0);const L=[{label:"Home",href:"/"},{label:"Components",href:"/components"},{label:"Docs",href:"/docs"},{label:"GitHub",href:"https://github.com"}],M=[{icon:"🎯",title:"TypeScript First",description:"Full TypeScript support with comprehensive type definitions and excellent IDE experience."},{icon:"🎨",title:"Semantic Colors",description:"Built-in semantic color system with automatic dark mode support and consistent theming."},{icon:"🌙",title:"Dark Mode Ready",description:"Automatic dark mode switching with CSS custom properties and seamless theme transitions."},{icon:"♿",title:"Accessibility First",description:"ARIA compliant components with keyboard navigation support and screen reader compatibility."},{icon:"📱",title:"Responsive Design",description:"Mobile-first approach with responsive utilities and adaptive layouts for all screen sizes."},{icon:"🧩",title:"Clean API",description:"Simple, intuitive component APIs with minimal props and maximum flexibility."}];function V(r){const i=new FormData(r.target),a=Object.fromEntries(i.entries());console.log("Form submitted:",a)}var f=bt();X(r=>{var i=dt();et.title="Zabi Components - Clean & Simple",c(r,i)});var b=s(f),A=t(s(b),2),T=s(A);st(T,{variant:"header",get items(){return L}});var Y=t(T,2);rt(Y,{}),e(A),e(b);var E=t(b,2),y=s(E),k=s(y),w=t(s(k),6),D=s(w);m(D,{variant:"primary",size:"lg",onclick:()=>I("/docs"),text:"Get Started"});var q=t(D,2);m(q,{variant:"secondary",size:"lg",onclick:()=>I("/components"),text:"View Components"}),e(w);var z=t(w,2),O=s(z);nt(O,{variant:"info",text:"v4.0.0 - Svelte 5 Ready"}),e(z),e(k),e(y);var _=t(y,2),F=t(s(_),2);it(F,21,()=>M,ot,(r,i)=>{ct(r,{get icon(){return S(i).icon},get title(){return S(i).title},get description(){return S(i).description}})}),e(F),e(_);var C=t(_,2),$=t(s(C),2),j=s($);h(j,{title:"Button Component",description:"Clean, accessible buttons with multiple variants and sizes",code:`<Button variant="primary" size="lg">Primary Button</Button>
+<Button variant="secondary" size="md">Secondary Button</Button>
+<Button variant="danger" size="sm">Danger Button</Button>
+<Button variant="ghost">Ghost Button</Button>
+<Button variant="brand">Brand Button</Button>`,children:(r,i)=>{var a=pt(),o=s(a);m(o,{variant:"primary",size:"lg",text:"Primary"});var n=t(o,2);m(n,{variant:"secondary",size:"md",text:"Secondary"});var l=t(n,2);m(l,{variant:"danger",size:"sm",text:"Danger"});var u=t(l,2);m(u,{variant:"ghost",text:"Ghost"});var p=t(u,2);m(p,{variant:"brand",text:"Brand"}),e(a),c(r,a)},$$slots:{default:!0}});var G=t(j,2);h(G,{title:"Card Component",description:"Flexible card containers with semantic color variants",code:`<Card title="Default Card" variant="default">
+  This is a default card with clean styling.
+</Card>
+
+<Card title="Success Card" variant="success">
+  This card indicates a successful action.
+</Card>
+
+<Card title="Warning Card" variant="warning">
+  This card shows a warning state.
+</Card>
+
+<Card title="Error Card" variant="error">
+  This card indicates an error state.
+</Card>`,children:(r,i)=>{var a=ht(),o=s(a);x(o,{title:"Default Card",children:(p,B)=>{var v=mt();c(p,v)},$$slots:{default:!0}});var n=t(o,2);x(n,{title:"Success Card",children:(p,B)=>{var v=vt();c(p,v)},$$slots:{default:!0}});var l=t(n,2);x(l,{title:"Warning Card",children:(p,B)=>{var v=ut();c(p,v)},$$slots:{default:!0}});var u=t(l,2);x(u,{title:"Error Card",children:(p,B)=>{var v=xt();c(p,v)},$$slots:{default:!0}}),e(a),c(r,a)},$$slots:{default:!0}});var W=t(G,2);h(W,{title:"Input Component",description:"Form inputs with labels, variants, and accessibility features",code:`<Input 
+  label="Name" 
+  placeholder="Enter your name" 
+  variant="default"
+/>
+
+<Input 
+  label="Email" 
+  type="email" 
+  placeholder="Enter your email" 
+  variant="success"
+/>
+
+<Input 
+  label="Password" 
+  type="password" 
+  placeholder="Enter your password" 
+  variant="warning"
+/>`,children:(r,i)=>{var a=gt(),o=s(a);P(o,{label:"Name",placeholder:"Enter your name",variant:"default"});var n=t(o,2);P(n,{label:"Email",type:"email",placeholder:"Enter your email",variant:"success"});var l=t(n,2);P(l,{label:"Password",type:"password",placeholder:"Enter your password",variant:"warning"}),e(a),c(r,a)},$$slots:{default:!0}});var J=t(W,2);h(J,{title:"Alert Component",description:"Contextual alerts with different variants and optional close functionality",code:`<Alert variant="info" title="Info Alert" message="This is an informational message." />
+
+<Alert variant="success" title="Success!" message="Your action was completed successfully." />
+
+<Alert variant="warning" title="Warning" message="Please review your input before proceeding." />
+
+<Alert variant="error" title="Error" message="Something went wrong. Please try again." />`,children:(r,i)=>{var a=ft(),o=s(a);g(o,{variant:"info",title:"Info Alert",message:"This is an informational message."});var n=t(o,2);g(n,{variant:"success",title:"Success!",message:"Your action was completed successfully."});var l=t(n,2);g(l,{variant:"warning",title:"Warning",message:"Please review your input before proceeding."});var u=t(l,2);g(u,{variant:"error",title:"Error",message:"Something went wrong. Please try again."}),e(a),c(r,a)},$$slots:{default:!0}}),e($);var Z=t($,2),K=s(Z);m(K,{variant:"primary",size:"lg",onclick:()=>I("/components"),text:"View All Components"}),e(Z),e(C);var H=t(C,2),Q=t(s(H),2);lt(Q,{onsubmit:V}),e(H),e(E),at(2),e(f),c(N,f),tt()}export{Bt as component};
