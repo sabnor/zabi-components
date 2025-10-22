@@ -1,1 +1,357 @@
-:root{--color-primary: #2563eb;--color-primary-hover: #1d4ed8;--color-primary-active: #1e40af;--color-primary-disabled: #93c5fd;--color-primary-light: #dbeafe;--color-primary-dark: #1e40af;--color-secondary: #57534e;--color-secondary-hover: #44403c;--color-secondary-active: #292524;--color-secondary-disabled: #d6d3d1;--color-secondary-light: #f5f5f4;--color-secondary-dark: #292524;--color-success: #16a34a;--color-success-hover: #15803d;--color-success-active: #166534;--color-success-disabled: #86efac;--color-success-light: #dcfce7;--color-success-dark: #166534;--color-success-surface: #dcfce7;--color-success-text: #166534;--color-warning: #ca8a04;--color-warning-hover: #a16207;--color-warning-active: #854d0e;--color-warning-disabled: #fde047;--color-warning-light: #fef9c3;--color-warning-dark: #854d0e;--color-warning-surface: #fef9c3;--color-warning-text: #854d0e;--color-error: #dc2626;--color-error-hover: #b91c1c;--color-error-active: #991b1b;--color-error-disabled: #fca5a5;--color-error-light: #fee2e2;--color-error-dark: #991b1b;--color-error-surface: #fee2e2;--color-error-text: #991b1b;--color-info: #2563eb;--color-info-hover: #1d4ed8;--color-info-active: #1e40af;--color-info-disabled: #93c5fd;--color-info-light: #dbeafe;--color-info-dark: #1e40af;--color-info-surface: #dbeafe;--color-info-text: #1e40af;--color-focus: #3b82f6;--color-focus-hover: #2563eb;--color-focus-active: #1d4ed8;--color-focus-disabled: #93c5fd;--color-focus-light: #eff6ff;--color-focus-dark: #1d4ed8;--color-focus-surface: #eff6ff;--color-focus-text: #1d4ed8;--color-focus-ring: #3b82f6;--color-focus-ring-offset: #fff;--color-background: #fff;--color-background-secondary: #fafaf9;--color-background-tertiary: #f5f5f4;--color-page: #fff;--color-page-secondary: #fafaf9;--color-card: #fff;--color-card-hover: #fafaf9;--color-card-active: #f5f5f4;--color-card-elevated: #fff;--color-surface: #fff;--color-surface-secondary: #fafaf9;--color-surface-tertiary: #f5f5f4;--color-surface-elevated: #fff;--color-surface-hover: #fafaf9;--color-surface-active: #f5f5f4;--color-surface-inverse: #1c1917;--color-surface-disabled: #f5f5f4;--color-text: #1c1917;--color-text-secondary: #57534e;--color-text-tertiary: #78716c;--color-text-inverse: #fff;--color-text-disabled: #a8a29e;--color-text-placeholder: #a8a29e;--color-border: #e7e5e4;--color-border-secondary: #d6d3d1;--color-border-hover: #a8a29e;--color-border-focus: #3b82f6;--color-border-disabled: #e7e5e4;--shadow-xs: 0 1px 2px 0 rgb(0 0 0 / .05);--shadow-sm: 0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1);--shadow-md: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1);--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / .1), 0 8px 10px -6px rgb(0 0 0 / .1);--shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / .25);--radius-sm: var(--radius-sm);--radius-md: var(--radius-md);--radius-lg: var(--radius-lg);--radius-xl: var(--radius-xl);--spacing-xs: .25rem;--spacing-sm: .5rem;--spacing-md: 1rem;--spacing-lg: 1.5rem;--spacing-xl: 2rem;--spacing-2xl: 3rem;--z-dropdown: 1000;--z-sticky: 1020;--z-fixed: 1030;--z-modal-backdrop: 1040;--z-modal: 1050;--z-popover: 1060;--z-tooltip: 1070;--z-toast: 1080}.dark{--color-background: #1c1917;--color-background-secondary: #292524;--color-background-tertiary: #44403c;--color-page: #292524;--color-page-secondary: #292524;--color-card: #78716c;--color-card-hover: #44403c;--color-card-active: #57534e;--color-card-elevated: #44403c;--color-surface: #57534e;--color-surface-secondary: #57534e;--color-surface-tertiary: #78716c;--color-surface-elevated: #57534e;--color-surface-hover: #57534e;--color-surface-active: #78716c;--color-surface-inverse: #f5f5f4;--color-surface-disabled: #57534e;--color-text: #f5f5f4;--color-text-secondary: #d6d3d1;--color-text-tertiary: #a8a29e;--color-text-inverse: #1c1917;--color-text-disabled: #78716c;--color-text-placeholder: #78716c;--color-border: #57534e;--color-border-secondary: #78716c;--color-border-hover: #a8a29e;--color-border-focus: #60a5fa;--color-border-disabled: #57534e;--color-focus: #60a5fa;--color-focus-hover: #3b82f6;--color-focus-active: #2563eb;--color-focus-disabled: #2563eb;--color-focus-light: #1e3a8a;--color-focus-dark: #60a5fa;--color-focus-surface: #1e3a8a;--color-focus-text: #60a5fa;--color-focus-ring: #60a5fa;--color-focus-ring-offset: #44403c;--shadow-xs: 0 1px 2px 0 rgb(0 0 0 / .05);--shadow-sm: 0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1);--shadow-md: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1);--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / .1), 0 8px 10px -6px rgb(0 0 0 / .1);--shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / .25)}.zabi-primary{background-color:rgb(var(--color-primary));color:rgb(var(--color-text-inverse))}.zabi-primary:hover{background-color:rgb(var(--color-primary-hover))}.zabi-primary:active{background-color:rgb(var(--color-primary-active))}.zabi-primary:disabled{background-color:rgb(var(--color-primary-disabled));color:rgb(var(--color-text-disabled))}.zabi-secondary{background-color:rgb(var(--color-secondary));color:rgb(var(--color-text-inverse))}.zabi-secondary:hover{background-color:rgb(var(--color-secondary-hover))}.zabi-secondary:active{background-color:rgb(var(--color-secondary-active))}.zabi-secondary:disabled{background-color:rgb(var(--color-secondary-disabled));color:rgb(var(--color-text-disabled))}.zabi-success{background-color:rgb(var(--color-success));color:rgb(var(--color-text-inverse))}.zabi-success:hover{background-color:rgb(var(--color-success-hover))}.zabi-success:active{background-color:rgb(var(--color-success-active))}.zabi-success:disabled{background-color:rgb(var(--color-success-disabled));color:rgb(var(--color-text-disabled))}.zabi-warning{background-color:rgb(var(--color-warning));color:rgb(var(--color-text-inverse))}.zabi-warning:hover{background-color:rgb(var(--color-warning-hover))}.zabi-warning:active{background-color:rgb(var(--color-warning-active))}.zabi-warning:disabled{background-color:rgb(var(--color-warning-disabled));color:rgb(var(--color-text-disabled))}.zabi-error{background-color:rgb(var(--color-error));color:rgb(var(--color-text-inverse))}.zabi-error:hover{background-color:rgb(var(--color-error-hover))}.zabi-error:active{background-color:rgb(var(--color-error-active))}.zabi-error:disabled{background-color:rgb(var(--color-error-disabled));color:rgb(var(--color-text-disabled))}.zabi-info{background-color:rgb(var(--color-info));color:rgb(var(--color-text-inverse))}.zabi-info:hover{background-color:rgb(var(--color-info-hover))}.zabi-info:active{background-color:rgb(var(--color-info-active))}.zabi-info:disabled{background-color:rgb(var(--color-info-disabled));color:rgb(var(--color-text-disabled))}.zabi-surface{background-color:rgb(var(--color-surface));color:rgb(var(--color-text))}.zabi-surface:hover{background-color:rgb(var(--color-surface-hover))}.zabi-surface:active{background-color:rgb(var(--color-surface-active))}.zabi-border{border-color:rgb(var(--color-border))}.zabi-border:hover{border-color:rgb(var(--color-border-hover))}.zabi-border:focus{border-color:rgb(var(--color-border-focus))}.zabi-border:disabled{border-color:rgb(var(--color-border-disabled))}.zabi-text{color:rgb(var(--color-text))}.zabi-text-muted{color:rgb(var(--color-text-secondary))}.zabi-text-placeholder{color:rgb(var(--color-text-placeholder))}.zabi-text-inverse{color:rgb(var(--color-text-inverse))}.zabi-text-disabled{color:rgb(var(--color-text-disabled))}.zabi-focus{outline:2px solid rgb(var(--color-focus-ring));outline-offset:2px}.zabi-focus-ring{box-shadow:0 0 0 2px rgb(var(--color-focus-ring-offset)),0 0 0 4px rgb(var(--color-focus-ring))}
+/* Zabi Components CSS */
+@import "tailwindcss";
+
+/* ========================================
+   SEMANTIC COLOR SYSTEM
+   ======================================== */
+
+@theme {
+  /* Surface Colors - Semantic naming with stone palette */
+  --color-surface: theme(colors.stone.50);
+  --color-surface-secondary: theme(colors.stone.100);
+  --color-surface-tertiary: theme(colors.stone.200);
+  --color-surface-elevated: theme(colors.white);
+  --color-surface-hover: theme(colors.stone.100);
+  --color-surface-active: theme(colors.stone.200);
+  --color-surface-inverse: theme(colors.stone.900);
+  --color-surface-disabled: theme(colors.stone.200);
+
+  /* Background Colors */
+  --color-background: theme(colors.white);
+  --color-background-secondary: theme(colors.stone.50);
+  --color-background-tertiary: theme(colors.stone.100);
+
+  /* Page Colors */
+  --color-page: theme(colors.white);
+  --color-page-secondary: theme(colors.stone.50);
+
+  /* Card Colors */
+  --color-card: theme(colors.white);
+  --color-card-hover: theme(colors.stone.50);
+  --color-card-active: theme(colors.stone.100);
+  --color-card-elevated: theme(colors.white);
+
+  /* Text Colors */
+  --color-text: theme(colors.stone.900);
+  --color-text-secondary: theme(colors.stone.600);
+  --color-text-tertiary: theme(colors.stone.500);
+  --color-text-inverse: theme(colors.white);
+  --color-text-disabled: theme(colors.stone.400);
+  --color-text-placeholder: theme(colors.stone.400);
+
+  /* Border Colors */
+  --color-border: theme(colors.stone.200);
+  --color-border-secondary: theme(colors.stone.300);
+  --color-border-hover: theme(colors.stone.400);
+  --color-border-focus: theme(colors.blue.500);
+  --color-border-disabled: theme(colors.stone.200);
+
+  /* Focus Colors */
+  --color-focus: theme(colors.blue.500);
+  --color-focus-hover: theme(colors.blue.600);
+  --color-focus-active: theme(colors.blue.700);
+  --color-focus-disabled: theme(colors.blue.300);
+  --color-focus-light: theme(colors.blue.50);
+  --color-focus-dark: theme(colors.blue.700);
+  --color-focus-surface: theme(colors.blue.50);
+  --color-focus-text: theme(colors.blue.700);
+  --color-focus-ring: theme(colors.blue.500);
+  --color-focus-ring-offset: theme(colors.white);
+
+  /* Primary Colors */
+  --color-primary: theme(colors.blue.600);
+  --color-primary-hover: theme(colors.blue.700);
+  --color-primary-active: theme(colors.blue.800);
+  --color-primary-disabled: theme(colors.blue.300);
+  --color-primary-light: theme(colors.blue.100);
+  --color-primary-dark: theme(colors.blue.800);
+
+  /* Secondary Colors */
+  --color-secondary: theme(colors.stone.600);
+  --color-secondary-hover: theme(colors.stone.700);
+  --color-secondary-active: theme(colors.stone.800);
+  --color-secondary-disabled: theme(colors.stone.300);
+  --color-secondary-light: theme(colors.stone.100);
+  --color-secondary-dark: theme(colors.stone.800);
+
+  /* Success Colors */
+  --color-success: theme(colors.green.600);
+  --color-success-hover: theme(colors.green.700);
+  --color-success-active: theme(colors.green.800);
+  --color-success-disabled: theme(colors.green.300);
+  --color-success-light: theme(colors.green.100);
+  --color-success-dark: theme(colors.green.800);
+  --color-success-surface: theme(colors.green.100);
+  --color-success-text: theme(colors.green.800);
+
+  /* Warning Colors */
+  --color-warning: theme(colors.yellow.600);
+  --color-warning-hover: theme(colors.yellow.700);
+  --color-warning-active: theme(colors.yellow.800);
+  --color-warning-disabled: theme(colors.yellow.300);
+  --color-warning-light: theme(colors.yellow.100);
+  --color-warning-dark: theme(colors.yellow.800);
+  --color-warning-surface: theme(colors.yellow.100);
+  --color-warning-text: theme(colors.yellow.800);
+
+  /* Error Colors */
+  --color-error: theme(colors.red.600);
+  --color-error-hover: theme(colors.red.700);
+  --color-error-active: theme(colors.red.800);
+  --color-error-disabled: theme(colors.red.300);
+  --color-error-light: theme(colors.red.100);
+  --color-error-dark: theme(colors.red.800);
+  --color-error-surface: theme(colors.red.100);
+  --color-error-text: theme(colors.red.800);
+
+  /* Info Colors */
+  --color-info: theme(colors.blue.600);
+  --color-info-hover: theme(colors.blue.700);
+  --color-info-active: theme(colors.blue.800);
+  --color-info-disabled: theme(colors.blue.300);
+  --color-info-light: theme(colors.blue.100);
+  --color-info-dark: theme(colors.blue.800);
+  --color-info-surface: theme(colors.blue.100);
+  --color-info-text: theme(colors.blue.800);
+
+  /* Shadow Colors */
+  --shadow-color: 0 0 0;
+  --shadow-opacity: 0.1;
+  --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  /* Z-index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+}
+
+/* ========================================
+   DARK MODE THEME
+   ======================================== */
+.dark {
+  /* Surface Colors - Dark mode variants */
+  --color-surface: theme(colors.stone.800);
+  --color-surface-secondary: theme(colors.stone.700);
+  --color-surface-tertiary: theme(colors.stone.600);
+  --color-surface-elevated: theme(colors.stone.800);
+  --color-surface-hover: theme(colors.stone.700);
+  --color-surface-active: theme(colors.stone.600);
+  --color-surface-inverse: theme(colors.stone.100);
+  --color-surface-disabled: theme(colors.stone.700);
+
+  /* Background Colors */
+  --color-background: theme(colors.stone.900);
+  --color-background-secondary: theme(colors.stone.800);
+  --color-background-tertiary: theme(colors.stone.700);
+
+  /* Page Colors */
+  --color-page: theme(colors.stone.800);
+  --color-page-secondary: theme(colors.stone.800);
+
+  /* Card Colors */
+  --color-card: theme(colors.stone.800);
+  --color-card-hover: theme(colors.stone.700);
+  --color-card-active: theme(colors.stone.600);
+  --color-card-elevated: theme(colors.stone.800);
+
+  /* Text Colors */
+  --color-text: theme(colors.stone.100);
+  --color-text-secondary: theme(colors.stone.300);
+  --color-text-tertiary: theme(colors.stone.400);
+  --color-text-inverse: theme(colors.stone.900);
+  --color-text-disabled: theme(colors.stone.500);
+  --color-text-placeholder: theme(colors.stone.500);
+
+  /* Border Colors */
+  --color-border: theme(colors.stone.600);
+  --color-border-secondary: theme(colors.stone.500);
+  --color-border-hover: theme(colors.stone.400);
+  --color-border-focus: theme(colors.blue.400);
+  --color-border-disabled: theme(colors.stone.600);
+
+  /* Focus Colors */
+  --color-focus: theme(colors.blue.400);
+  --color-focus-hover: theme(colors.blue.500);
+  --color-focus-active: theme(colors.blue.600);
+  --color-focus-disabled: theme(colors.blue.600);
+  --color-focus-light: theme(colors.blue.900);
+  --color-focus-dark: theme(colors.blue.400);
+  --color-focus-surface: theme(colors.blue.900);
+  --color-focus-text: theme(colors.blue.400);
+  --color-focus-ring: theme(colors.blue.400);
+  --color-focus-ring-offset: theme(colors.stone.700);
+
+  /* Primary Colors */
+  --color-primary: theme(colors.blue.600);
+  --color-primary-hover: theme(colors.blue.700);
+  --color-primary-active: theme(colors.blue.800);
+  --color-primary-disabled: theme(colors.blue.300);
+  --color-primary-light: theme(colors.blue.100);
+  --color-primary-dark: theme(colors.blue.800);
+
+  /* Secondary Colors */
+  --color-secondary: theme(colors.stone.600);
+  --color-secondary-hover: theme(colors.stone.700);
+  --color-secondary-active: theme(colors.stone.800);
+  --color-secondary-disabled: theme(colors.stone.300);
+  --color-secondary-light: theme(colors.stone.100);
+  --color-secondary-dark: theme(colors.stone.800);
+
+  /* Success Colors */
+  --color-success: theme(colors.green.600);
+  --color-success-hover: theme(colors.green.700);
+  --color-success-active: theme(colors.green.800);
+  --color-success-disabled: theme(colors.green.300);
+  --color-success-light: theme(colors.green.100);
+  --color-success-dark: theme(colors.green.800);
+  --color-success-surface: theme(colors.green.100);
+  --color-success-text: theme(colors.green.800);
+
+  /* Warning Colors */
+  --color-warning: theme(colors.yellow.600);
+  --color-warning-hover: theme(colors.yellow.700);
+  --color-warning-active: theme(colors.yellow.800);
+  --color-warning-disabled: theme(colors.yellow.300);
+  --color-warning-light: theme(colors.yellow.100);
+  --color-warning-dark: theme(colors.yellow.800);
+  --color-warning-surface: theme(colors.yellow.100);
+  --color-warning-text: theme(colors.yellow.800);
+
+  /* Error Colors */
+  --color-error: theme(colors.red.600);
+  --color-error-hover: theme(colors.red.700);
+  --color-error-active: theme(colors.red.800);
+  --color-error-disabled: theme(colors.red.300);
+  --color-error-light: theme(colors.red.100);
+  --color-error-dark: theme(colors.red.800);
+  --color-error-surface: theme(colors.red.100);
+  --color-error-text: theme(colors.red.800);
+
+  /* Info Colors */
+  --color-info: theme(colors.blue.600);
+  --color-info-hover: theme(colors.blue.700);
+  --color-info-active: theme(colors.blue.800);
+  --color-info-disabled: theme(colors.blue.300);
+  --color-info-light: theme(colors.blue.100);
+  --color-info-dark: theme(colors.blue.800);
+  --color-info-surface: theme(colors.blue.100);
+  --color-info-text: theme(colors.blue.800);
+
+  /* Shadow Colors */
+  --shadow-opacity: 0.3;
+  --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Surface utilities */
+.bg-surface {
+  background-color: var(--color-surface);
+}
+
+.bg-surface-secondary {
+  background-color: var(--color-surface-secondary);
+}
+
+.bg-surface-tertiary {
+  background-color: var(--color-surface-tertiary);
+}
+
+.bg-surface-elevated {
+  background-color: var(--color-surface-elevated);
+}
+
+.bg-surface-hover:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.bg-surface-active:active {
+  background-color: var(--color-surface-active);
+}
+
+.bg-page {
+  background-color: var(--color-page);
+}
+
+/* Text utilities */
+.text-primary {
+  color: var(--color-text);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-tertiary {
+  color: var(--color-text-tertiary);
+}
+
+.text-inverse {
+  color: var(--color-text-inverse);
+}
+
+.text-disabled {
+  color: var(--color-text-disabled);
+}
+
+.text-placeholder {
+  color: var(--color-text-placeholder);
+}
+
+/* Border utilities */
+.border-primary {
+  border-color: var(--color-border);
+}
+
+.border-secondary {
+  border-color: var(--color-border-secondary);
+}
+
+.border-hover:hover {
+  border-color: var(--color-border-hover);
+}
+
+.border-focus:focus {
+  border-color: var(--color-border-focus);
+}
+
+.border-disabled:disabled {
+  border-color: var(--color-border-disabled);
+}
+
+/* Focus utilities */
+.focus-ring {
+  box-shadow: 0 0 0 2px var(--color-focus-ring-offset), 0 0 0 4px var(--color-focus-ring);
+}
+
+.focus-outline {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}

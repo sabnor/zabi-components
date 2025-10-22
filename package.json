@@ -1,16 +1,16 @@
 {
   "name": "zabi-components",
-  "version": "4.0.3",
-  "description": "A modern Svelte 5 component library with TypeScript, Tailwind CSS, and 100% SSR-safe components",
+  "version": "5.0.0",
+  "description": "A modern Svelte 5 component library with TypeScript, Tailwind CSS v4, and 100% SSR-safe components",
   "type": "module",
-  "main": "dist/index/index.js",
-  "module": "dist/index/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index/index.js",
-      "svelte": "./dist/index/index.js"
+      "import": "./dist/index.js",
+      "svelte": "./dist/index.js"
     },
     "./atoms": {
       "types": "./dist/atoms/index.d.ts",
@@ -34,6 +34,14 @@
     "./react": {
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.js"
+    },
+    "./lib/ssr-safe": {
+      "types": "./dist/routes/lib/ssr-safe.ts",
+      "import": "./dist/routes/lib/ssr-safe.ts"
+    },
+    "./lib/variant-utils": {
+      "types": "./dist/routes/lib/variant-utils.ts",
+      "import": "./dist/routes/lib/variant-utils.ts"
     },
     "./dist/zabi-components.css": "./dist/zabi-components.css",
     "./package.json": "./package.json"
@@ -62,7 +70,8 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build && npm run build:types",
-    "build:lib": "vite build --config vite.lib.config.ts && node scripts/generate-types.js",
+    "build:lib": "svelte-package -o dist --input src/components && mkdir -p dist/routes/lib && cp src/routes/lib/ssr-safe.ts dist/routes/lib/ && cp src/routes/lib/variant-utils.ts dist/routes/lib/ && npm run build:css && npm run build:types",
+    "build:css": "echo '/* Zabi Components CSS */' > dist/zabi-components.css && cat src/app.css >> dist/zabi-components.css && find dist -name '*.css' -not -name 'zabi-components.css' -exec cat {} \\; >> dist/zabi-components.css",
     "build:types": "tsc --project tsconfig.lib.json",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
@@ -75,22 +84,25 @@
     "@storybook/sveltekit": "^9.1.7",
     "@sveltejs/adapter-auto": "^7.0.0",
     "@sveltejs/kit": "^2.47.2",
+    "@sveltejs/package": "^2.5.4",
     "@sveltejs/vite-plugin-svelte": "^6.2.0",
     "@tsconfig/svelte": "^5.0.5",
     "@types/node": "^24.5.2",
     "@types/react": "^19.2.2",
+    "@tailwindcss/postcss": "^4.1.13",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.35",
     "storybook": "^9.1.7",
     "svelte": "^5.38.10",
     "svelte-check": "^4.3.1",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^4.1.13",
     "typescript": "~5.8.3",
     "vite": "^7.1.6"
   },
   "dependencies": {
     "@lucide/svelte": "^0.544.0",
-    "@opentelemetry/api": "^1.9.0"
+    "@opentelemetry/api": "^1.9.0",
+    "glob": "^11.0.3"
   },
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
@@ -111,6 +123,6 @@
   "overrides": {
     "cookie": "^0.7.0"
   },
-  "svelte": "./dist/index/index.js",
+  "svelte": "./dist/index.js",
   "ssr": true
 }

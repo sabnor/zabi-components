@@ -8,8 +8,7 @@ const config = {
         adapter: adapter()
     },
     compilerOptions: {
-        // Enable CSS extraction for library builds
-        css: 'injected'
+        runes: true  // Enable Svelte 5 runes
     }
 };
 
