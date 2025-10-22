@@ -66,7 +66,7 @@
 
     // Label classes using semantic text colors
     const labelClasses = $derived(
-        () => "block text-sm font-medium text-primary mb-1",
+        () => "block text-sm font-medium text-label mb-1",
     );
 
     function handleInput(event: Event) {

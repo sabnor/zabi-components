@@ -22,7 +22,7 @@ function Navigation($$renderer, $$props) {
   const each_array = ensure_array_like(items);
   for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
     let item = each_array[$$index];
-    $$renderer.push(`<li><a${attr("href", item.href)}${attr_class(`px-3 py-2 text-sm font-medium rounded-md transition-colors ${stringify(currentPath === item.href ? "bg-blue-100 text-blue-700" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100")}`)}>${escape_html(item.label)}</a></li>`);
+    $$renderer.push(`<li><a${attr("href", item.href)}${attr_class(`px-3 py-2 text-sm font-medium rounded-md transition-colors ${stringify(currentPath === item.href ? "bg-blue-100 text-body" : "text-description hover:text-body hover:bg-gray-100")}`)}>${escape_html(item.label)}</a></li>`);
   }
   $$renderer.push(`<!--]--></ul></nav>`);
 }
@@ -87,7 +87,7 @@ function Card($$renderer, $$props) {
     let {
       title = "",
       image = "",
-      interactive = false,
+      onclick,
       size = "md",
       fullWidth = false,
       children,
@@ -100,11 +100,11 @@ function Card($$renderer, $$props) {
     };
     const cardClasses = () => {
       const baseClasses = "bg-surface rounded-lg transition-all duration-200 hover:shadow-adaptive-md";
-      const interactiveClasses = interactive ? "cursor-pointer hover:bg-surface-hover hover:border-focus" : "";
+      const interactiveClasses = onclick ? "cursor-pointer hover:bg-surface-hover hover:border-focus" : "";
       const widthClasses = fullWidth ? "w-full" : "";
       return `${baseClasses} ${interactiveClasses} ${widthClasses} ${sizeClass()}`.trim();
     };
-    const titleClasses = () => "text-lg font-semibold mb-2 text-primary";
+    const titleClasses = () => "text-lg font-semibold mb-2 text-headline";
     $$renderer2.push(`<div${attributes({ class: clsx(cardClasses()), ...restProps })}>`);
     if (image) {
       $$renderer2.push("<!--[-->");

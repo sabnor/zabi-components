@@ -86,7 +86,7 @@
     {#if label}
         <label
             for={toggleId}
-            class="text-sm font-medium text-gray-700 cursor-pointer"
+            class="text-sm font-medium text-label cursor-pointer"
         >
             {label}
         </label>

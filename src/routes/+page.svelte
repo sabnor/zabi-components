@@ -125,25 +125,19 @@
                         variant="primary"
                         size="lg"
                         onclick={() => goto("/docs")}
-                        className="px-8 py-3"
                         text="Get Started"
                     />
                     <Button
                         variant="secondary"
                         size="lg"
                         onclick={() => goto("/components")}
-                        className="px-8 py-3"
                         text="View Components"
                     />
                 </div>
 
                 <!-- Version Badge -->
                 <div class="mt-8 flex justify-center">
-                    <Badge
-                        variant="info"
-                        className="text-sm"
-                        text="v4.0.0 - Svelte 5 Ready"
-                    />
+                    <Badge variant="info" text="v4.0.0 - Svelte 5 Ready" />
                 </div>
             </div>
         </section>
@@ -227,23 +221,23 @@
 </Card>`}
                 >
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Card title="Default Card" variant="default">
-                            <p class="text-text-secondary">
+                        <Card title="Default Card">
+                            <p class="text-description">
                                 This is a default card with clean styling.
                             </p>
                         </Card>
-                        <Card title="Success Card" variant="success">
-                            <p class="text-text-secondary">
+                        <Card title="Success Card">
+                            <p class="text-description">
                                 This card indicates a successful action.
                             </p>
                         </Card>
-                        <Card title="Warning Card" variant="warning">
-                            <p class="text-text-secondary">
+                        <Card title="Warning Card">
+                            <p class="text-description">
                                 This card shows a warning state.
                             </p>
                         </Card>
-                        <Card title="Error Card" variant="error">
-                            <p class="text-text-secondary">
+                        <Card title="Error Card">
+                            <p class="text-description">
                                 This card indicates an error state.
                             </p>
                         </Card>
@@ -338,7 +332,6 @@
                     variant="primary"
                     size="lg"
                     onclick={() => goto("/components")}
-                    className="px-8 py-3"
                     text="View All Components"
                 />
             </div>

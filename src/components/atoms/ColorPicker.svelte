@@ -53,7 +53,7 @@
 
 <div class="space-y-2">
     {#if label}
-        <label for={groupId} class="block text-sm font-medium text-gray-700"
+        <label for={groupId} class="block text-sm font-medium text-label"
             >{label}</label
         >
     {/if}

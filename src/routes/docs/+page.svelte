@@ -103,38 +103,38 @@ let name = $state("");
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card title="Svelte 5 Ready" variant="info">
+                <Card title="Svelte 5 Ready">
                     <p class="text-text-secondary">
                         Built with Svelte 5 runes and modern patterns
                     </p>
                 </Card>
 
-                <Card title="TypeScript First" variant="success">
+                <Card title="TypeScript First">
                     <p class="text-text-secondary">
                         Full TypeScript support with proper type definitions
                     </p>
                 </Card>
 
-                <Card title="Accessible" variant="warning">
+                <Card title="Accessible">
                     <p class="text-text-secondary">
                         WCAG compliant with keyboard navigation and screen
                         reader support
                     </p>
                 </Card>
 
-                <Card title="Customizable" variant="error">
+                <Card title="Customizable">
                     <p class="text-text-secondary">
                         Easy theming with CSS custom properties
                     </p>
                 </Card>
 
-                <Card title="Lightweight" variant="info">
+                <Card title="Lightweight">
                     <p class="text-text-secondary">
                         Tree-shakeable with minimal bundle impact
                     </p>
                 </Card>
 
-                <Card title="Modern" variant="success">
+                <Card title="Modern">
                     <p class="text-text-secondary">
                         Clean, minimal design that just works
                     </p>
@@ -151,7 +151,7 @@ let name = $state("");
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card title="Explore Components" variant="info">
+                <Card title="Explore Components">
                     <p class="text-text-secondary mb-4">
                         Browse our interactive component showcase
                     </p>
@@ -163,7 +163,7 @@ let name = $state("");
                     </Button>
                 </Card>
 
-                <Card title="Get Support" variant="success">
+                <Card title="Get Support">
                     <p class="text-text-secondary mb-4">
                         Check out our GitHub repository for help
                     </p>

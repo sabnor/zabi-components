@@ -31,12 +31,19 @@
   --color-card-elevated: theme(colors.white);
 
   /* Text Colors */
-  --color-text: theme(colors.stone.900);
-  --color-text-secondary: theme(colors.stone.600);
-  --color-text-tertiary: theme(colors.stone.500);
-  --color-text-inverse: theme(colors.white);
-  --color-text-disabled: theme(colors.stone.400);
-  --color-text-placeholder: theme(colors.stone.400);
+  --color-headline: theme(colors.stone.900);
+  --color-body: theme(colors.stone.800);
+  --color-description: theme(colors.stone.600);
+  --color-caption: theme(colors.stone.500);
+  --color-input-placeholder: theme(colors.stone.400);
+  --color-label: theme(colors.stone.700);
+  --color-link: theme(colors.blue.600);
+  --color-link-hover: theme(colors.blue.700);
+  --color-success: theme(colors.green.700);
+  --color-warning: theme(colors.yellow.700);
+  --color-error: theme(colors.red.700);
+  --color-inverse: theme(colors.white);
+  --color-disabled: theme(colors.stone.400);
 
   /* Border Colors */
   --color-border: theme(colors.stone.200);
@@ -176,12 +183,19 @@
   --color-card-elevated: theme(colors.stone.800);
 
   /* Text Colors */
-  --color-text: theme(colors.stone.100);
-  --color-text-secondary: theme(colors.stone.300);
-  --color-text-tertiary: theme(colors.stone.400);
-  --color-text-inverse: theme(colors.stone.900);
-  --color-text-disabled: theme(colors.stone.500);
-  --color-text-placeholder: theme(colors.stone.500);
+  --color-headline: theme(colors.stone.100);
+  --color-body: theme(colors.stone.200);
+  --color-description: theme(colors.stone.300);
+  --color-caption: theme(colors.stone.400);
+  --color-input-placeholder: theme(colors.stone.500);
+  --color-label: theme(colors.stone.200);
+  --color-link: theme(colors.blue.400);
+  --color-link-hover: theme(colors.blue.300);
+  --color-success: theme(colors.green.400);
+  --color-warning: theme(colors.yellow.400);
+  --color-error: theme(colors.red.400);
+  --color-inverse: theme(colors.stone.900);
+  --color-disabled: theme(colors.stone.500);
 
   /* Border Colors */
   --color-border: theme(colors.stone.600);
@@ -300,28 +314,56 @@
 }
 
 /* Text utilities */
-.text-primary {
-  color: var(--color-text);
+.text-headline {
+  color: var(--color-headline);
 }
 
-.text-secondary {
-  color: var(--color-text-secondary);
+.text-body {
+  color: var(--color-body);
 }
 
-.text-tertiary {
-  color: var(--color-text-tertiary);
+.text-description {
+  color: var(--color-description);
+}
+
+.text-caption {
+  color: var(--color-caption);
+}
+
+.text-input-placeholder {
+  color: var(--color-input-placeholder);
+}
+
+.text-label {
+  color: var(--color-label);
+}
+
+.text-link {
+  color: var(--color-link);
+}
+
+.text-link:hover {
+  color: var(--color-link-hover);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-error {
+  color: var(--color-error);
 }
 
 .text-inverse {
-  color: var(--color-text-inverse);
+  color: var(--color-inverse);
 }
 
 .text-disabled {
-  color: var(--color-text-disabled);
-}
-
-.text-placeholder {
-  color: var(--color-text-placeholder);
+  color: var(--color-disabled);
 }
 
 /* Border utilities */

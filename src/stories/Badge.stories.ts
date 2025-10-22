@@ -15,9 +15,6 @@ const meta = {
         },
         text: {
             control: { type: 'text' }
-        },
-        className: {
-            control: { type: 'text' }
         }
     }
 } satisfies Meta<typeof Badge>;
@@ -63,8 +60,7 @@ export const Info: Story = {
 export const WithCustomClass: Story = {
     args: {
         variant: 'default',
-        text: 'Custom Styled Badge',
-        className: 'text-lg px-4 py-2'
+        text: 'Custom Styled Badge'
     }
 };
 

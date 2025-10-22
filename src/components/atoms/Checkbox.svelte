@@ -52,8 +52,9 @@
         {...restProps}
     />
     {#if label}
-        <label for={checkboxId} class="text-sm font-medium cursor-pointer"
-            >{label}</label
+        <label
+            for={checkboxId}
+            class="text-sm font-medium cursor-pointer text-label">{label}</label
         >
     {/if}
 </div>

@@ -4,7 +4,7 @@
     interface Props {
         title?: string;
         image?: string;
-        interactive?: boolean;
+        onclick?: (event: MouseEvent) => void | Promise<void>;
         size?: "sm" | "md" | "lg";
         fullWidth?: boolean;
         children?: Snippet;
@@ -13,7 +13,7 @@
     let {
         title = "",
         image = "",
-        interactive = false,
+        onclick,
         size = "md",
         fullWidth = false,
         children,
@@ -27,7 +27,7 @@
     const cardClasses = $derived(() => {
         const baseClasses =
             "bg-surface rounded-lg transition-all duration-200 hover:shadow-adaptive-md";
-        const interactiveClasses = interactive
+        const interactiveClasses = onclick
             ? "cursor-pointer hover:bg-surface-hover hover:border-focus"
             : "";
         const widthClasses = fullWidth ? "w-full" : "";
@@ -36,11 +36,11 @@
     });
 
     const titleClasses = $derived(
-        () => "text-lg font-semibold mb-2 text-primary",
+        () => "text-lg font-semibold mb-2 text-headline",
     );
 </script>
 
-<div class={cardClasses()} {...restProps}>
+<div class={cardClasses()} {onclick} {...restProps}>
     {#if image}
         <img
             src={image}

@@ -361,9 +361,8 @@ function _page($$renderer) {
                   $$renderer2.push(`<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`);
                   Card($$renderer2, {
                     title: "Default Card",
-                    variant: "default",
                     children: ($$renderer3) => {
-                      $$renderer3.push(`<p class="text-text-secondary">This is a default card with
+                      $$renderer3.push(`<p class="text-description">This is a default card with
                                                     clean styling.</p>`);
                     },
                     $$slots: { default: true }
@@ -371,9 +370,8 @@ function _page($$renderer) {
                   $$renderer2.push(`<!----> `);
                   Card($$renderer2, {
                     title: "Success Card",
-                    variant: "success",
                     children: ($$renderer3) => {
-                      $$renderer3.push(`<p class="text-text-secondary">This card indicates a
+                      $$renderer3.push(`<p class="text-description">This card indicates a
                                                     successful action.</p>`);
                     },
                     $$slots: { default: true }
@@ -381,9 +379,8 @@ function _page($$renderer) {
                   $$renderer2.push(`<!----> `);
                   Card($$renderer2, {
                     title: "Warning Card",
-                    variant: "warning",
                     children: ($$renderer3) => {
-                      $$renderer3.push(`<p class="text-text-secondary">This card shows a warning
+                      $$renderer3.push(`<p class="text-description">This card shows a warning
                                                     state.</p>`);
                     },
                     $$slots: { default: true }
@@ -391,9 +388,8 @@ function _page($$renderer) {
                   $$renderer2.push(`<!----> `);
                   Card($$renderer2, {
                     title: "Error Card",
-                    variant: "error",
                     children: ($$renderer3) => {
-                      $$renderer3.push(`<p class="text-text-secondary">This card indicates an error
+                      $$renderer3.push(`<p class="text-description">This card indicates an error
                                                     state.</p>`);
                     },
                     $$slots: { default: true }

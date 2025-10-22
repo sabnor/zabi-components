@@ -50,8 +50,8 @@
                 tab.id
                     ? variant === 'pills'
                         ? 'bg-blue-100 text-blue-700 border-blue-500'
-                        : 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+                        : 'border-blue-500 text-body'
+                    : 'border-transparent text-description hover:text-body hover:border-gray-300'}"
                 onclick={() => selectTab(tab.id)}
                 disabled={tab.disabled}
                 aria-selected={activeTab === tab.id}

@@ -41,8 +41,8 @@
 
 <div class="max-w-md mx-auto {className}">
     <div class="mb-6">
-        <h2 class="text-2xl font-bold text-text mb-2">Get in Touch</h2>
-        <p class="text-text-secondary">
+        <h2 class="text-2xl font-bold text-headline mb-2">Get in Touch</h2>
+        <p class="text-description">
             We'd love to hear from you. Send us a message and we'll respond as
             soon as possible.
         </p>

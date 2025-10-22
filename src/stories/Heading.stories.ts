@@ -57,10 +57,10 @@ export const H6: Story = {
 };
 
 export const AllLevels: Story = {
-    render: () => ({
-        Component: Heading,
-        props: { level: 1, text: 'All Levels Showcase' }
-    })
+    args: {
+        level: 1,
+        text: 'All Levels Showcase'
+    }
 };
 
 export const WithSlot: Story = {

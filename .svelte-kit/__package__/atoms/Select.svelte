@@ -60,9 +60,8 @@
 
 <div>
     {#if label}
-        <label
-            for={selectId}
-            class="block text-sm font-medium text-gray-700 mb-1">{label}</label
+        <label for={selectId} class="block text-sm font-medium text-label mb-1"
+            >{label}</label
         >
     {/if}
 
