@@ -3,7 +3,7 @@ import * as e from "svelte/internal/client";
 var z = e.from_html('<img class="w-full h-48 object-cover rounded-md mb-4"/>'), W = e.from_html("<h3> </h3>"), y = e.from_html("<div><!> <!> <!></div>");
 function P(v, i) {
   e.push(i, !0);
-  let l = e.prop(i, "title", 3, ""), d = e.prop(i, "image", 3, ""), f = e.prop(i, "interactive", 3, !1), o = e.prop(i, "size", 3, "md"), m = e.prop(i, "fullWidth", 3, !1), h = e.rest_props(i, [
+  let l = e.prop(i, "title", 3, ""), o = e.prop(i, "image", 3, ""), f = e.prop(i, "interactive", 3, !1), d = e.prop(i, "size", 3, "md"), m = e.prop(i, "fullWidth", 3, !1), h = e.rest_props(i, [
     "$$slots",
     "$$events",
     "$$legacy",
@@ -14,22 +14,22 @@ function P(v, i) {
     "fullWidth",
     "children"
   ]);
-  const p = e.derived(() => () => o() === "sm" ? "p-3" : o() === "lg" ? "p-6" : "p-4"), u = e.derived(() => () => {
-    const t = "bg-surface rounded-lg transition-all duration-200 hover:shadow-adaptive-md", r = f() ? "cursor-pointer hover:scale-[1.02]" : "", a = m() ? "w-full" : "";
-    return `${t} ${r} ${a} ${e.get(p)()}`.trim();
-  }), _ = e.derived(() => () => "text-lg font-semibold mb-2 text-primary");
+  const u = e.derived(() => () => d() === "sm" ? "p-3" : d() === "lg" ? "p-6" : "p-4"), p = e.derived(() => () => {
+    const t = "bg-surface rounded-lg transition-all duration-200 hover:shadow-adaptive-md", r = f() ? "cursor-pointer hover:bg-surface-hover hover:border-focus" : "", a = m() ? "w-full" : "";
+    return `${t} ${r} ${a} ${e.get(u)()}`.trim();
+  }), g = e.derived(() => () => "text-lg font-semibold mb-2 text-primary");
   var s = y();
-  e.attribute_effect(s, (t) => ({ class: t, ...h }), [() => e.get(u)()]);
+  e.attribute_effect(s, (t) => ({ class: t, ...h }), [() => e.get(p)()]);
   var n = e.child(s);
   {
-    var g = (t) => {
+    var _ = (t) => {
       var r = z();
       e.template_effect(() => {
-        e.set_attribute(r, "src", d()), e.set_attribute(r, "alt", l());
+        e.set_attribute(r, "src", o()), e.set_attribute(r, "alt", l());
       }), e.append(t, r);
     };
     e.if(n, (t) => {
-      d() && t(g);
+      o() && t(_);
     });
   }
   var c = e.sibling(n, 2);
@@ -40,7 +40,7 @@ function P(v, i) {
         (w) => {
           e.set_class(r, 1, w), e.set_text(a, l());
         },
-        [() => e.clsx(e.get(_)())]
+        [() => e.clsx(e.get(g)())]
       ), e.append(t, r);
     };
     e.if(c, (t) => {

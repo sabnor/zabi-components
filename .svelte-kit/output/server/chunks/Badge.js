@@ -1,7 +1,6 @@
 import { z as attr, F as attr_class, G as clsx, x as attributes, y as stringify } from "./index.js";
 import { e as escape_html } from "./context.js";
 import { h as html } from "./Card.js";
-import "clsx";
 function isBrowser() {
   return typeof window !== "undefined";
 }
@@ -29,33 +28,22 @@ function Input($$renderer, $$props) {
       $$events,
       ...restProps
     } = $$props;
-    let inputId = generateId("input");
-    let sizeClasses = () => ({
-      sm: "px-3 py-1.5 text-sm",
-      md: "px-4 py-2 text-sm",
-      lg: "px-5 py-3 text-base"
-    });
-    let variantClass = () => {
-      const variantMap = {
-        default: "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
-        success: "border-green-300 focus:border-green-500 focus:ring-green-500",
-        warning: "border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500",
-        error: "border-red-300 focus:border-red-500 focus:ring-red-500"
-      };
-      return variantMap[variant] || variantMap.default;
+    const inputId = generateId("input");
+    const sizeClass = () => {
+      return size === "sm" ? "px-3 py-1.5 text-sm" : size === "lg" ? "px-5 py-3 text-base" : "px-4 py-2 text-sm";
     };
-    let inputClasses = () => [
-      "w-full rounded-md transition-colors duration-200",
-      "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
-      "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
-      sizeClasses()[size],
-      variantClass()
-    ].join(" ");
-    let labelClasses = () => "block text-sm font-medium text-primary mb-1";
+    const variantClass = () => {
+      return variant === "success" ? "border-green-300 focus:border-green-500 focus:ring-green-500" : variant === "warning" ? "border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500" : variant === "error" ? "border-red-300 focus:border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-blue-500";
+    };
+    const inputClasses = () => {
+      const baseClasses = "w-full rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled";
+      return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
+    };
+    const labelClasses = () => "block text-sm font-medium text-primary mb-1";
     $$renderer2.push(`<div>`);
     if (label) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<label${attr("for", inputId)}${attr_class(clsx(labelClasses))}>${escape_html(label)}</label>`);
+      $$renderer2.push(`<label${attr("for", inputId)}${attr_class(clsx(labelClasses()))}>${escape_html(label)}</label>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -67,7 +55,7 @@ function Input($$renderer, $$props) {
         value,
         placeholder,
         disabled,
-        class: clsx(inputClasses),
+        class: clsx(inputClasses()),
         ...restProps
       },
       void 0,
@@ -182,28 +170,14 @@ function Alert($$renderer, $$props) {
 }
 function Badge($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
-    let { variant = "default", className = "", text = "", children } = $$props;
-    const displayText = () => text || "";
-    {
-      $$renderer2.push("<!--[!-->");
-      $$renderer2.push(`<span class="inline-flex items-center px-3 py-1 text-sm font-medium border rounded-md bg-gray-100 text-gray-800 border-gray-300">`);
-      if (children) {
-        $$renderer2.push("<!--[-->");
-        children($$renderer2);
-        $$renderer2.push(`<!---->`);
-      } else {
-        $$renderer2.push("<!--[!-->");
-        if (displayText) {
-          $$renderer2.push("<!--[-->");
-          $$renderer2.push(`${escape_html(displayText)}`);
-        } else {
-          $$renderer2.push("<!--[!-->");
-        }
-        $$renderer2.push(`<!--]-->`);
-      }
-      $$renderer2.push(`<!--]--></span>`);
-    }
-    $$renderer2.push(`<!--]-->`);
+    let { variant = "default", size = "md", text = "" } = $$props;
+    const classes = () => {
+      const baseClasses = "inline-flex items-center font-medium border rounded-md";
+      const sizeClass = size === "sm" ? "px-2 py-0.5 text-xs" : size === "lg" ? "px-4 py-2 text-base" : "px-3 py-1 text-sm";
+      const variantClass = variant === "success" ? "bg-green-100 text-green-800 border-green-300" : variant === "warning" ? "bg-yellow-100 text-yellow-800 border-yellow-300" : variant === "error" ? "bg-red-100 text-red-800 border-red-300" : variant === "info" ? "bg-blue-100 text-blue-800 border-blue-300" : "bg-gray-100 text-gray-800 border-gray-300";
+      return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
+    };
+    $$renderer2.push(`<span${attr_class(clsx(classes()))}>${escape_html(text)}</span>`);
   });
 }
 export {
