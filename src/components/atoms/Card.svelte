@@ -4,7 +4,7 @@
     interface Props {
         title?: string;
         image?: string;
-        onclick?: (event: MouseEvent) => void;
+        onclick?: (event: MouseEvent) => void | Promise<void>;
         size?: "sm" | "md" | "lg";
         fullWidth?: boolean;
         children?: Snippet;
@@ -36,11 +36,11 @@
     });
 
     const titleClasses = $derived(
-        () => "text-lg font-semibold mb-2 text-primary",
+        () => "text-lg font-semibold mb-2 text-headline",
     );
 </script>
 
-<div class={cardClasses()} {...restProps}>
+<div class={cardClasses()} {onclick} {...restProps}>
     {#if image}
         <img
             src={image}

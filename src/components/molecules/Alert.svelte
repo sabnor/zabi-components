@@ -27,10 +27,10 @@
     }
 
     let alertClasses = $derived({
-        info: "bg-info-surface text-info-text border border-info",
-        success: "bg-success-surface text-success-text border border-success",
-        warning: "bg-warning-surface text-warning-text border border-warning",
-        error: "bg-error-surface text-error-text border border-error",
+        info: "bg-info-surface text-body border border-info",
+        success: "bg-success-surface text-success border border-success",
+        warning: "bg-warning-surface text-warning border border-warning",
+        error: "bg-error-surface text-error border border-error",
     });
 
     let alertRole = $derived(
@@ -68,7 +68,7 @@
     {#if closable}
         <button
             onclick={handleDismiss}
-            class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+            class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-description hover:text-body transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
             aria-label="Dismiss alert"
             type="button"
         >
@@ -91,19 +91,19 @@
     <!-- Content -->
     <div class="flex items-start gap-3 {closable ? 'pr-8' : ''}">
         <!-- Icon -->
-        <div class="flex-shrink-0 mt-0.5">
+        <div class="shrink-0 mt-0.5">
             {@html iconSvg[variant]}
         </div>
 
         <!-- Text content -->
         <div class="flex-1 min-w-0">
             {#if title}
-                <h4 class="font-semibold text-sm mb-1 text-inherit">
+                <h4 class="font-semibold text-sm mb-1 text-headline">
                     {title}
                 </h4>
             {/if}
             {#if message}
-                <p class="text-sm leading-relaxed text-inherit">
+                <p class="text-sm leading-relaxed text-body">
                     {message}
                 </p>
             {/if}

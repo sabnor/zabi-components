@@ -35,10 +35,10 @@
 <div>
     {#if label}
         <div class="flex justify-between items-center mb-2">
-            <label for={progressId} class="text-sm font-medium text-gray-700"
+            <label for={progressId} class="text-sm font-medium text-label"
                 >{label}</label
             >
-            <span class="text-sm text-gray-500">{Math.round(percentage)}%</span>
+            <span class="text-sm text-caption">{Math.round(percentage)}%</span>
         </div>
     {/if}
 

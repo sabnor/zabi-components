@@ -1,19 +1,15 @@
 import { z as attr, F as attr_class, G as clsx, x as attributes, y as stringify } from "./index.js";
 import { e as escape_html } from "./context.js";
 import { h as html } from "./Card.js";
-function isBrowser() {
-  return typeof window !== "undefined";
-}
-let idCounter = 0;
-function generateId(prefix = "id") {
-  if (isBrowser()) {
-    return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
-  } else {
-    return `${prefix}-ssr-${++idCounter}`;
-  }
-}
 function Input($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
+    function generateId(prefix = "id") {
+      if (typeof window !== "undefined") {
+        return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+      } else {
+        return `${prefix}-ssr-${Date.now()}`;
+      }
+    }
     let {
       value = "",
       type = "text",
@@ -39,7 +35,7 @@ function Input($$renderer, $$props) {
       const baseClasses = "w-full rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled";
       return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
     };
-    const labelClasses = () => "block text-sm font-medium text-primary mb-1";
+    const labelClasses = () => "block text-sm font-medium text-label mb-1";
     $$renderer2.push(`<div>`);
     if (label) {
       $$renderer2.push("<!--[-->");
@@ -116,10 +112,10 @@ function Alert($$renderer, $$props) {
       ...restProps
     } = $$props;
     let alertClasses = {
-      info: "bg-info-surface text-info-text border border-info",
-      success: "bg-success-surface text-success-text border border-success",
-      warning: "bg-warning-surface text-warning-text border border-warning",
-      error: "bg-error-surface text-error-text border border-error"
+      info: "bg-info-surface text-body border border-info",
+      success: "bg-success-surface text-success border border-success",
+      warning: "bg-warning-surface text-warning border border-warning",
+      error: "bg-error-surface text-error border border-error"
     };
     let alertRole = variant === "success" || variant === "info" ? "status" : "alert";
     let iconSvg = {
@@ -145,21 +141,21 @@ function Alert($$renderer, $$props) {
     })}>`);
     if (closable) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<button class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-text-secondary hover:text-primary transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2" aria-label="Dismiss alert" type="button"><svg class="w-4 h-4 text-current group-hover:scale-110 transition-transform duration-200 motion-reduce:transition-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`);
+      $$renderer2.push(`<button class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full text-description hover:text-body transition-colors duration-200 motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2" aria-label="Dismiss alert" type="button"><svg class="w-4 h-4 text-current group-hover:scale-110 transition-transform duration-200 motion-reduce:transition-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div${attr_class(`flex items-start gap-3 ${stringify(closable ? "pr-8" : "")}`)}><div class="flex-shrink-0 mt-0.5">${html(iconSvg[variant])}</div> <div class="flex-1 min-w-0">`);
+    $$renderer2.push(`<!--]--> <div${attr_class(`flex items-start gap-3 ${stringify(closable ? "pr-8" : "")}`)}><div class="shrink-0 mt-0.5">${html(iconSvg[variant])}</div> <div class="flex-1 min-w-0">`);
     if (title) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<h4 class="font-semibold text-sm mb-1 text-inherit">${escape_html(title)}</h4>`);
+      $$renderer2.push(`<h4 class="font-semibold text-sm mb-1 text-headline">${escape_html(title)}</h4>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--> `);
     if (message) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<p class="text-sm leading-relaxed text-inherit">${escape_html(message)}</p>`);
+      $$renderer2.push(`<p class="text-sm leading-relaxed text-body">${escape_html(message)}</p>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -174,7 +170,7 @@ function Badge($$renderer, $$props) {
     const classes = () => {
       const baseClasses = "inline-flex items-center font-medium border rounded-md";
       const sizeClass = size === "sm" ? "px-2 py-0.5 text-xs" : size === "lg" ? "px-4 py-2 text-base" : "px-3 py-1 text-sm";
-      const variantClass = variant === "success" ? "bg-green-100 text-green-800 border-green-300" : variant === "warning" ? "bg-yellow-100 text-yellow-800 border-yellow-300" : variant === "error" ? "bg-red-100 text-red-800 border-red-300" : variant === "info" ? "bg-blue-100 text-blue-800 border-blue-300" : "bg-gray-100 text-gray-800 border-gray-300";
+      const variantClass = variant === "success" ? "bg-green-100 border-green-300 text-success" : variant === "warning" ? "bg-yellow-100 border-yellow-300 text-warning" : variant === "error" ? "bg-red-100 border-red-300 text-error" : variant === "info" ? "bg-blue-100 border-blue-300 text-body" : "bg-gray-100 border-gray-300 text-body";
       return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     };
     $$renderer2.push(`<span${attr_class(clsx(classes()))}>${escape_html(text)}</span>`);
@@ -184,6 +180,5 @@ export {
   Alert as A,
   Badge as B,
   ComponentDemo as C,
-  Input as I,
-  generateId as g
+  Input as I
 };

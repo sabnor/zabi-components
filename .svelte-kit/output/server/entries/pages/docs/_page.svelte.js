@@ -1,12 +1,7 @@
 import { x as attributes, F as attr_class, y as stringify, w as head } from "../../../chunks/index.js";
 import { g as goto } from "../../../chunks/client.js";
 import { h as html, N as Navigation, T as ThemeToggle, C as Card, B as Button } from "../../../chunks/Card.js";
-const $$css = {
-  hash: "svelte-1dmazsz",
-  code: '.code-block.svelte-1dmazsz {font-family:"Monaco", "Menlo", "Ubuntu Mono", monospace;}\n\n    /* Basic syntax highlighting for common languages */.language-svelte .token.tag,\n    .language-html .token.tag {color:#f92672;}.language-svelte .token.attr-name,\n    .language-html .token.attr-name {color:#a6e22e;}.language-svelte .token.attr-value,\n    .language-html .token.attr-value {color:#e6db74;}.language-javascript .token.keyword,\n    .language-typescript .token.keyword {color:#66d9ef;}.language-javascript .token.string,\n    .language-typescript .token.string {color:#e6db74;}.language-javascript .token.function,\n    .language-typescript .token.function {color:#a6e22e;}'
-};
 function CodeBlock($$renderer, $$props) {
-  $$renderer.global.css.add($$css);
   let {
     code,
     language = "svelte",
@@ -92,7 +87,6 @@ let name = $state("");
     $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Why Zabi Components?</h2></div> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`);
     Card($$renderer2, {
       title: "Svelte 5 Ready",
-      variant: "info",
       children: ($$renderer3) => {
         $$renderer3.push(`<p class="text-text-secondary">Built with Svelte 5 runes and modern patterns</p>`);
       },
@@ -101,7 +95,6 @@ let name = $state("");
     $$renderer2.push(`<!----> `);
     Card($$renderer2, {
       title: "TypeScript First",
-      variant: "success",
       children: ($$renderer3) => {
         $$renderer3.push(`<p class="text-text-secondary">Full TypeScript support with proper type definitions</p>`);
       },
@@ -110,7 +103,6 @@ let name = $state("");
     $$renderer2.push(`<!----> `);
     Card($$renderer2, {
       title: "Accessible",
-      variant: "warning",
       children: ($$renderer3) => {
         $$renderer3.push(`<p class="text-text-secondary">WCAG compliant with keyboard navigation and screen
                         reader support</p>`);
@@ -120,7 +112,6 @@ let name = $state("");
     $$renderer2.push(`<!----> `);
     Card($$renderer2, {
       title: "Customizable",
-      variant: "error",
       children: ($$renderer3) => {
         $$renderer3.push(`<p class="text-text-secondary">Easy theming with CSS custom properties</p>`);
       },
@@ -129,7 +120,6 @@ let name = $state("");
     $$renderer2.push(`<!----> `);
     Card($$renderer2, {
       title: "Lightweight",
-      variant: "info",
       children: ($$renderer3) => {
         $$renderer3.push(`<p class="text-text-secondary">Tree-shakeable with minimal bundle impact</p>`);
       },
@@ -138,7 +128,6 @@ let name = $state("");
     $$renderer2.push(`<!----> `);
     Card($$renderer2, {
       title: "Modern",
-      variant: "success",
       children: ($$renderer3) => {
         $$renderer3.push(`<p class="text-text-secondary">Clean, minimal design that just works</p>`);
       },
@@ -147,7 +136,6 @@ let name = $state("");
     $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Ready to Start?</h2></div> <div class="grid grid-cols-1 md:grid-cols-2 gap-6">`);
     Card($$renderer2, {
       title: "Explore Components",
-      variant: "info",
       children: ($$renderer3) => {
         $$renderer3.push(`<p class="text-text-secondary mb-4">Browse our interactive component showcase</p> `);
         Button($$renderer3, {
@@ -165,7 +153,6 @@ let name = $state("");
     $$renderer2.push(`<!----> `);
     Card($$renderer2, {
       title: "Get Support",
-      variant: "success",
       children: ($$renderer3) => {
         $$renderer3.push(`<p class="text-text-secondary mb-4">Check out our GitHub repository for help</p> `);
         Button($$renderer3, {

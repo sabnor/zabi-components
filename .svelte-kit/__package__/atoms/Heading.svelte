@@ -2,4 +2,4 @@
     let { level = 1, text }: { level?: number; text: string } = $props();
 </script>
 
-<div class="text-primary" role="heading" aria-level={level}>{text}</div>
+<div class="text-headline" role="heading" aria-level={level}>{text}</div>

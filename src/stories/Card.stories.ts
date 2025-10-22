@@ -16,44 +16,38 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        title: 'Card Title',
-        variant: 'default'
+        title: 'Card Title'
     }
 };
 
 export const WithImage: Story = {
     args: {
         title: 'Card with Image',
-        image: 'https://via.placeholder.com/300x200',
-        variant: 'default'
+        image: 'https://via.placeholder.com/300x200'
     }
 };
 
 export const Success: Story = {
     args: {
-        title: 'Success Card',
-        variant: 'success'
+        title: 'Success Card'
     }
 };
 
 export const Warning: Story = {
     args: {
-        title: 'Warning Card',
-        variant: 'warning'
+        title: 'Warning Card'
     }
 };
 
 export const Error: Story = {
     args: {
-        title: 'Error Card',
-        variant: 'error'
+        title: 'Error Card'
     }
 };
 
 export const Interactive: Story = {
     args: {
-        title: 'Interactive Card',
-        interactive: true
+        title: 'Interactive Card'
     }
 };
 

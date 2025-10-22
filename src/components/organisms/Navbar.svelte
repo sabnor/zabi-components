@@ -37,10 +37,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             <!-- Brand -->
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <button
                     type="button"
-                    class="text-xl font-bold text-gray-900"
+                    class="text-xl font-bold text-headline"
                     onclick={handleBrandClick}
                 >
                     {brand}
@@ -68,7 +68,7 @@
             <div class="md:hidden">
                 <button
                     type="button"
-                    class="text-gray-500 hover:text-gray-600"
+                    class="text-description hover:text-body"
                     onclick={toggleMenu}
                     aria-label="Toggle menu"
                 >

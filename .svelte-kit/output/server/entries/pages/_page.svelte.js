@@ -1,7 +1,7 @@
 import { x as attributes, y as stringify, z as attr, F as attr_class, G as clsx, w as head, J as ensure_array_like } from "../../chunks/index.js";
 import { g as goto } from "../../chunks/client.js";
 import { B as Button, N as Navigation, T as ThemeToggle, C as Card } from "../../chunks/Card.js";
-import { g as generateId, I as Input, B as Badge, C as ComponentDemo, A as Alert } from "../../chunks/Badge.js";
+import { I as Input, B as Badge, C as ComponentDemo, A as Alert } from "../../chunks/Badge.js";
 import { e as escape_html } from "../../chunks/context.js";
 function Form($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
@@ -27,6 +27,13 @@ function Form($$renderer, $$props) {
 }
 function Textarea($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
+    function generateId(prefix = "id") {
+      if (typeof window !== "undefined") {
+        return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+      } else {
+        return `${prefix}-ssr-${Date.now()}`;
+      }
+    }
     let {
       value = "",
       name = "",
@@ -52,7 +59,7 @@ function Textarea($$renderer, $$props) {
       const baseClasses = "w-full rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled resize-y";
       return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
     };
-    const labelClasses = () => "block text-sm font-medium text-primary mb-1";
+    const labelClasses = () => "block text-sm font-medium text-label mb-1";
     $$renderer2.push(`<div>`);
     if (label) {
       $$renderer2.push("<!--[-->");
@@ -78,6 +85,13 @@ function Textarea($$renderer, $$props) {
 }
 function Checkbox($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
+    function generateId(prefix = "id") {
+      if (typeof window !== "undefined") {
+        return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+      } else {
+        return `${prefix}-ssr-${Date.now()}`;
+      }
+    }
     let {
       checked = false,
       name = "",
@@ -106,7 +120,7 @@ function Checkbox($$renderer, $$props) {
     )}/> `);
     if (label) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<label${attr("for", checkboxId)} class="text-sm font-medium cursor-pointer">${escape_html(label)}</label>`);
+      $$renderer2.push(`<label${attr("for", checkboxId)} class="text-sm font-medium cursor-pointer text-label">${escape_html(label)}</label>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -127,7 +141,7 @@ function ContactForm($$renderer, $$props) {
       };
       console.log("Form submitted with data:", data);
     }
-    $$renderer2.push(`<div${attr_class(`max-w-md mx-auto ${stringify(className)}`)}><div class="mb-6"><h2 class="text-2xl font-bold text-text mb-2">Get in Touch</h2> <p class="text-text-secondary">We'd love to hear from you. Send us a message and we'll respond as
+    $$renderer2.push(`<div${attr_class(`max-w-md mx-auto ${stringify(className)}`)}><div class="mb-6"><h2 class="text-2xl font-bold text-headline mb-2">Get in Touch</h2> <p class="text-description">We'd love to hear from you. Send us a message and we'll respond as
             soon as possible.</p></div> `);
     Form($$renderer2, {
       onsubmit: handleFormSubmit,
@@ -200,7 +214,7 @@ function FeatureCard($$renderer, $$props) {
       $$renderer2.push(`<div${attributes({
         class: `p-6 rounded-lg bg-gray-100 border border-gray-300 hover:border-gray-400 hover:shadow-sm transition-colors duration-200 ${stringify(className)}`,
         ...restProps
-      })}><div class="flex items-start gap-4"><div class="flex-shrink-0 text-2xl" aria-hidden="true">${escape_html(icon)}</div> <div class="flex-1 min-w-0"><h3 class="text-lg font-semibold text-gray-900 mb-2">${escape_html(title)}</h3> <p class="text-gray-600 leading-relaxed">${escape_html(description)}</p></div></div></div>`);
+      })}><div class="flex items-start gap-4"><div class="shrink-0 text-2xl" aria-hidden="true">${escape_html(icon)}</div> <div class="flex-1 min-w-0"><h3 class="text-lg font-semibold text-headline mb-2">${escape_html(title)}</h3> <p class="text-description leading-relaxed">${escape_html(description)}</p></div></div></div>`);
     }
     $$renderer2.push(`<!--]-->`);
   });
@@ -266,7 +280,6 @@ function _page($$renderer, $$props) {
       variant: "primary",
       size: "lg",
       onclick: () => goto(),
-      className: "px-8 py-3",
       text: "Get Started"
     });
     $$renderer2.push(`<!----> `);
@@ -274,14 +287,10 @@ function _page($$renderer, $$props) {
       variant: "secondary",
       size: "lg",
       onclick: () => goto(),
-      className: "px-8 py-3",
       text: "View Components"
     });
     $$renderer2.push(`<!----></div> <div class="mt-8 flex justify-center">`);
-    Badge($$renderer2, {
-      variant: "info",
-      text: "v4.0.0 - Svelte 5 Ready"
-    });
+    Badge($$renderer2, { variant: "info", text: "v4.0.0 - Svelte 5 Ready" });
     $$renderer2.push(`<!----></div></div></section> <section class="py-16"><div class="text-center mb-12"><h2 class="text-3xl font-bold text-text mb-4">Why Choose Zabi Components?</h2> <p class="text-lg text-text-secondary max-w-2xl mx-auto">Built with modern web standards and developer experience in
                     mind</p></div> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!--[-->`);
     const each_array = ensure_array_like(features);
@@ -340,36 +349,32 @@ function _page($$renderer, $$props) {
         $$renderer3.push(`<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`);
         Card($$renderer3, {
           title: "Default Card",
-          variant: "default",
           children: ($$renderer4) => {
-            $$renderer4.push(`<p class="text-text-secondary">This is a default card with clean styling.</p>`);
+            $$renderer4.push(`<p class="text-description">This is a default card with clean styling.</p>`);
           },
           $$slots: { default: true }
         });
         $$renderer3.push(`<!----> `);
         Card($$renderer3, {
           title: "Success Card",
-          variant: "success",
           children: ($$renderer4) => {
-            $$renderer4.push(`<p class="text-text-secondary">This card indicates a successful action.</p>`);
+            $$renderer4.push(`<p class="text-description">This card indicates a successful action.</p>`);
           },
           $$slots: { default: true }
         });
         $$renderer3.push(`<!----> `);
         Card($$renderer3, {
           title: "Warning Card",
-          variant: "warning",
           children: ($$renderer4) => {
-            $$renderer4.push(`<p class="text-text-secondary">This card shows a warning state.</p>`);
+            $$renderer4.push(`<p class="text-description">This card shows a warning state.</p>`);
           },
           $$slots: { default: true }
         });
         $$renderer3.push(`<!----> `);
         Card($$renderer3, {
           title: "Error Card",
-          variant: "error",
           children: ($$renderer4) => {
-            $$renderer4.push(`<p class="text-text-secondary">This card indicates an error state.</p>`);
+            $$renderer4.push(`<p class="text-description">This card indicates an error state.</p>`);
           },
           $$slots: { default: true }
         });
@@ -470,7 +475,6 @@ function _page($$renderer, $$props) {
       variant: "primary",
       size: "lg",
       onclick: () => goto(),
-      className: "px-8 py-3",
       text: "View All Components"
     });
     $$renderer2.push(`<!----></div></section> <section class="py-16"><div class="text-center mb-12"><h2 class="text-3xl font-bold text-text mb-4">Get In Touch</h2> <p class="text-lg text-text-secondary max-w-2xl mx-auto">Have questions or feedback? We'd love to hear from you.</p></div> `);
