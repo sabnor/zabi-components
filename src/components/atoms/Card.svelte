@@ -28,7 +28,7 @@
         const baseClasses =
             "bg-surface rounded-lg transition-all duration-200 hover:shadow-adaptive-md";
         const interactiveClasses = interactive
-            ? "cursor-pointer hover:scale-[1.02]"
+            ? "cursor-pointer hover:bg-surface-hover hover:border-focus"
             : "";
         const widthClasses = fullWidth ? "w-full" : "";
 

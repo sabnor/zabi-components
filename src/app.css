@@ -28,6 +28,8 @@
   --color-surface-elevated: theme('colors.white');
   --color-surface-hover: theme('colors.stone.50');
   --color-surface-active: theme('colors.stone.100');
+  --color-surface-inverse: theme('colors.stone.900');
+  --color-surface-disabled: theme('colors.stone.100');
 
   /* Text Colors */
   --color-text: theme('colors.stone.900');
@@ -55,6 +57,62 @@
   --color-focus-text: theme('colors.blue.700');
   --color-focus-ring: theme('colors.blue.500');
   --color-focus-ring-offset: theme('colors.white');
+
+  /* Primary Colors */
+  --color-primary: theme('colors.blue.600');
+  --color-primary-hover: theme('colors.blue.700');
+  --color-primary-active: theme('colors.blue.800');
+  --color-primary-disabled: theme('colors.blue.300');
+  --color-primary-light: theme('colors.blue.100');
+  --color-primary-dark: theme('colors.blue.800');
+
+  /* Secondary Colors */
+  --color-secondary: theme('colors.stone.600');
+  --color-secondary-hover: theme('colors.stone.700');
+  --color-secondary-active: theme('colors.stone.800');
+  --color-secondary-disabled: theme('colors.stone.300');
+  --color-secondary-light: theme('colors.stone.100');
+  --color-secondary-dark: theme('colors.stone.800');
+
+  /* Success Colors */
+  --color-success: theme('colors.green.600');
+  --color-success-hover: theme('colors.green.700');
+  --color-success-active: theme('colors.green.800');
+  --color-success-disabled: theme('colors.green.300');
+  --color-success-light: theme('colors.green.100');
+  --color-success-dark: theme('colors.green.800');
+  --color-success-surface: theme('colors.green.100');
+  --color-success-text: theme('colors.green.800');
+
+  /* Warning Colors */
+  --color-warning: theme('colors.yellow.600');
+  --color-warning-hover: theme('colors.yellow.700');
+  --color-warning-active: theme('colors.yellow.800');
+  --color-warning-disabled: theme('colors.yellow.300');
+  --color-warning-light: theme('colors.yellow.100');
+  --color-warning-dark: theme('colors.yellow.800');
+  --color-warning-surface: theme('colors.yellow.100');
+  --color-warning-text: theme('colors.yellow.800');
+
+  /* Error Colors */
+  --color-error: theme('colors.red.600');
+  --color-error-hover: theme('colors.red.700');
+  --color-error-active: theme('colors.red.800');
+  --color-error-disabled: theme('colors.red.300');
+  --color-error-light: theme('colors.red.100');
+  --color-error-dark: theme('colors.red.800');
+  --color-error-surface: theme('colors.red.100');
+  --color-error-text: theme('colors.red.800');
+
+  /* Info Colors */
+  --color-info: theme('colors.blue.600');
+  --color-info-hover: theme('colors.blue.700');
+  --color-info-active: theme('colors.blue.800');
+  --color-info-disabled: theme('colors.blue.300');
+  --color-info-light: theme('colors.blue.100');
+  --color-info-dark: theme('colors.blue.800');
+  --color-info-surface: theme('colors.blue.100');
+  --color-info-text: theme('colors.blue.800');
 
   /* Shadow Colors */
   --shadow-color: 0 0 0;
@@ -115,6 +173,8 @@
   --color-surface-elevated: theme('colors.stone.600');
   --color-surface-hover: theme('colors.stone.600');
   --color-surface-active: theme('colors.stone.500');
+  --color-surface-inverse: theme('colors.stone.100');
+  --color-surface-disabled: theme('colors.stone.600');
 
   /* Text Colors */
   --color-text: theme('colors.stone.100');
@@ -142,6 +202,62 @@
   --color-focus-text: theme('colors.blue.400');
   --color-focus-ring: theme('colors.blue.400');
   --color-focus-ring-offset: theme('colors.stone.700');
+
+  /* Primary Colors */
+  --color-primary: theme('colors.blue.600');
+  --color-primary-hover: theme('colors.blue.700');
+  --color-primary-active: theme('colors.blue.800');
+  --color-primary-disabled: theme('colors.blue.300');
+  --color-primary-light: theme('colors.blue.100');
+  --color-primary-dark: theme('colors.blue.800');
+
+  /* Secondary Colors */
+  --color-secondary: theme('colors.stone.600');
+  --color-secondary-hover: theme('colors.stone.700');
+  --color-secondary-active: theme('colors.stone.800');
+  --color-secondary-disabled: theme('colors.stone.300');
+  --color-secondary-light: theme('colors.stone.100');
+  --color-secondary-dark: theme('colors.stone.800');
+
+  /* Success Colors */
+  --color-success: theme('colors.green.600');
+  --color-success-hover: theme('colors.green.700');
+  --color-success-active: theme('colors.green.800');
+  --color-success-disabled: theme('colors.green.300');
+  --color-success-light: theme('colors.green.100');
+  --color-success-dark: theme('colors.green.800');
+  --color-success-surface: theme('colors.green.100');
+  --color-success-text: theme('colors.green.800');
+
+  /* Warning Colors */
+  --color-warning: theme('colors.yellow.600');
+  --color-warning-hover: theme('colors.yellow.700');
+  --color-warning-active: theme('colors.yellow.800');
+  --color-warning-disabled: theme('colors.yellow.300');
+  --color-warning-light: theme('colors.yellow.100');
+  --color-warning-dark: theme('colors.yellow.800');
+  --color-warning-surface: theme('colors.yellow.100');
+  --color-warning-text: theme('colors.yellow.800');
+
+  /* Error Colors */
+  --color-error: theme('colors.red.600');
+  --color-error-hover: theme('colors.red.700');
+  --color-error-active: theme('colors.red.800');
+  --color-error-disabled: theme('colors.red.300');
+  --color-error-light: theme('colors.red.100');
+  --color-error-dark: theme('colors.red.800');
+  --color-error-surface: theme('colors.red.100');
+  --color-error-text: theme('colors.red.800');
+
+  /* Info Colors */
+  --color-info: theme('colors.blue.600');
+  --color-info-hover: theme('colors.blue.700');
+  --color-info-active: theme('colors.blue.800');
+  --color-info-disabled: theme('colors.blue.300');
+  --color-info-light: theme('colors.blue.100');
+  --color-info-dark: theme('colors.blue.800');
+  --color-info-surface: theme('colors.blue.100');
+  --color-info-text: theme('colors.blue.800');
 
   /* Shadow Colors */
   --shadow-opacity: 0.3;

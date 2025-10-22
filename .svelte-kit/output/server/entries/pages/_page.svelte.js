@@ -25,16 +25,6 @@ function Form($$renderer, $$props) {
     $$renderer2.push(`<!----></form>`);
   });
 }
-function getInputVariantClasses(variant) {
-  const variantMap = {
-    default: "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
-    success: "border-green-300 focus:border-green-500 focus:ring-green-500",
-    warning: "border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500",
-    error: "border-red-300 focus:border-red-500 focus:ring-red-500",
-    info: "border-blue-300 focus:border-blue-500 focus:ring-blue-500"
-  };
-  return variantMap[variant] || variantMap.default;
-}
 function Textarea($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let {
@@ -51,26 +41,22 @@ function Textarea($$renderer, $$props) {
       $$events,
       ...restProps
     } = $$props;
-    let textareaId = generateId("textarea");
-    let sizeClasses = () => ({
-      sm: "px-3 py-1.5 text-sm",
-      md: "px-4 py-2 text-sm",
-      lg: "px-5 py-3 text-base"
-    });
-    let variantClass = () => getInputVariantClasses(variant);
-    let textareaClasses = () => [
-      "w-full rounded-md transition-colors duration-200",
-      "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface",
-      "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled",
-      "resize-y",
-      sizeClasses()[size],
-      variantClass()
-    ].join(" ");
-    let labelClasses = () => "block text-sm font-medium text-primary mb-1";
+    const textareaId = generateId("textarea");
+    const sizeClass = () => {
+      return size === "sm" ? "px-3 py-1.5 text-sm" : size === "lg" ? "px-5 py-3 text-base" : "px-4 py-2 text-sm";
+    };
+    const variantClass = () => {
+      return variant === "success" ? "border-green-300 focus:border-green-500 focus:ring-green-500" : variant === "warning" ? "border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500" : variant === "error" ? "border-red-300 focus:border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-blue-500";
+    };
+    const textareaClasses = () => {
+      const baseClasses = "w-full rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled resize-y";
+      return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
+    };
+    const labelClasses = () => "block text-sm font-medium text-primary mb-1";
     $$renderer2.push(`<div>`);
     if (label) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<label${attr("for", textareaId)}${attr_class(clsx(labelClasses))}>${escape_html(label)}</label>`);
+      $$renderer2.push(`<label${attr("for", textareaId)}${attr_class(clsx(labelClasses()))}>${escape_html(label)}</label>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -80,7 +66,7 @@ function Textarea($$renderer, $$props) {
       placeholder,
       disabled,
       rows,
-      class: clsx(textareaClasses),
+      class: clsx(textareaClasses()),
       ...restProps
     })}>`);
     const $$body = escape_html(value);
@@ -101,12 +87,8 @@ function Checkbox($$renderer, $$props) {
       $$events,
       ...restProps
     } = $$props;
-    let checkboxId = "";
-    let checkboxClasses = () => [
-      "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded",
-      "focus:ring-blue-500 focus:ring-2",
-      "disabled:opacity-50 disabled:cursor-not-allowed"
-    ].join(" ");
+    const checkboxId = generateId("checkbox");
+    const checkboxClasses = () => "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed";
     $$renderer2.push(`<div class="flex items-center gap-2"><input${attributes(
       {
         type: "checkbox",
@@ -114,7 +96,7 @@ function Checkbox($$renderer, $$props) {
         name,
         checked,
         disabled,
-        class: clsx(checkboxClasses),
+        class: clsx(checkboxClasses()),
         ...restProps
       },
       void 0,
@@ -298,7 +280,6 @@ function _page($$renderer, $$props) {
     $$renderer2.push(`<!----></div> <div class="mt-8 flex justify-center">`);
     Badge($$renderer2, {
       variant: "info",
-      className: "text-sm",
       text: "v4.0.0 - Svelte 5 Ready"
     });
     $$renderer2.push(`<!----></div></div></section> <section class="py-16"><div class="text-center mb-12"><h2 class="text-3xl font-bold text-text mb-4">Why Choose Zabi Components?</h2> <p class="text-lg text-text-secondary max-w-2xl mx-auto">Built with modern web standards and developer experience in
