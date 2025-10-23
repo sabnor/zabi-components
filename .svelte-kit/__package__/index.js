@@ -13,6 +13,7 @@ export { default as Textarea } from './atoms/Textarea.svelte';
 export { default as Select } from './atoms/Select.svelte';
 export { default as ColorPicker } from './atoms/ColorPicker.svelte';
 export { default as Heading } from './atoms/Heading.svelte';
+export { default as ThemeToggle } from './atoms/ThemeToggle.svelte';
 // ============================================================================
 // MOLECULE COMPONENTS - Composite UI elements
 // ============================================================================

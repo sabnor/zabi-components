@@ -7,6 +7,7 @@ export { default as Textarea } from './atoms/Textarea.svelte';
 export { default as Select } from './atoms/Select.svelte';
 export { default as ColorPicker } from './atoms/ColorPicker.svelte';
 export { default as Heading } from './atoms/Heading.svelte';
+export { default as ThemeToggle } from './atoms/ThemeToggle.svelte';
 export { default as Alert } from './molecules/Alert.svelte';
 export { default as ComponentDemo } from './molecules/ComponentDemo.svelte';
 export { default as ContactForm } from './molecules/ContactForm.svelte';
