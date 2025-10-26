@@ -15,7 +15,7 @@
         image = "",
         onclick,
         size = "md",
-        fullWidth = false,
+        fullWidth = true,
         children,
         ...restProps
     }: Props = $props();
