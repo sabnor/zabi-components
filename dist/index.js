@@ -70,6 +70,5 @@ export const safeDocument = () => {
 export const safeLocalStorage = () => {
     return isBrowser() ? localStorage : undefined;
 };
-export const generateId = (prefix = 'id') => {
-    return createId(prefix);
-};
+// Alias for backward compatibility
+export const generateId = createId;
