@@ -7,3 +7,4 @@ export { default as Textarea } from './Textarea.svelte';
 export { default as Select } from './Select.svelte';
 export { default as ColorPicker } from './ColorPicker.svelte';
 export { default as Heading } from './Heading.svelte';
+export { default as ThemeToggle } from './ThemeToggle.svelte';
