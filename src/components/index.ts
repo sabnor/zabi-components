@@ -76,16 +76,21 @@ export const isBrowser = (): boolean => {
 };
 
 export const safeWindow = (): Window | undefined => {
-    return isBrowser() ? window : undefined;
+    return typeof window !== 'undefined' ? window : undefined;
 };
 
 export const safeDocument = (): Document | undefined => {
-    return isBrowser() ? document : undefined;
+    return typeof window !== 'undefined' ? document : undefined;
 };
 
 export const safeLocalStorage = (): Storage | undefined => {
-    return isBrowser() ? localStorage : undefined;
+    return typeof window !== 'undefined' ? localStorage : undefined;
 };
 
-// Alias for backward compatibility
-export const generateId = createId;
+// Alias for backward compatibility - separate function to avoid initialization issues
+export const generateId = (prefix: string = 'id'): string => {
+    if (typeof window !== 'undefined') {
+        return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+    }
+    return `${prefix}-ssr-${Date.now()}`;
+};
