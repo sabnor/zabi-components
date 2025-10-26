@@ -89,7 +89,7 @@ function Card($$renderer, $$props) {
       image = "",
       onclick,
       size = "md",
-      fullWidth = false,
+      fullWidth = true,
       children,
       $$slots,
       $$events,
