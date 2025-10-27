@@ -31,7 +31,7 @@ let name = $state("");
       });
       $$renderer3.push(`<meta name="description" content="Getting started guide and API reference for Zabi Components"/>`);
     });
-    $$renderer2.push(`<div class="min-h-screen bg-background"><div class="flex items-center justify-between p-4 bg-surface border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
+    $$renderer2.push(`<div class="min-h-screen bg-background"><div class="flex items-center justify-between p-4 bg-surface-level-0 border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
     Navigation($$renderer2, { variant: "header", items: navItems });
     $$renderer2.push(`<!----> `);
     ThemeToggle($$renderer2, {});
@@ -138,7 +138,7 @@ let name = $state("");
       },
       $$slots: { default: true }
     });
-    $$renderer2.push(`<!----></div></section></div> <div class="bg-surface-secondary border-t border-border py-8"><div class="container mx-auto px-6 text-center"><p class="text-text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-text-secondary/80">© 2024 Zabi Components. MIT License.</p></div></div></div>`);
+    $$renderer2.push(`<!----></div></section></div> <div class="bg-surface-level-1 border-t border-border py-8"><div class="container mx-auto px-6 text-center"><p class="text-text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-text-secondary/80">© 2024 Zabi Components. MIT License.</p></div></div></div>`);
   });
 }
 export {

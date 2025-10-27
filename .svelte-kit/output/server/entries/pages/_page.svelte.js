@@ -53,7 +53,7 @@ function _page($$renderer, $$props) {
       });
       $$renderer3.push(`<meta name="description" content="Clean, minimal Svelte 5 components that just work"/>`);
     });
-    $$renderer2.push(`<div class="min-h-screen bg-background"><header class="flex items-center justify-between p-4 bg-surface border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
+    $$renderer2.push(`<div class="min-h-screen bg-background"><header class="flex items-center justify-between p-4 bg-surface-level-0 border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
     Navigation($$renderer2, { variant: "header", items: navItems });
     $$renderer2.push(`<!----> `);
     ThemeToggle($$renderer2, {});
@@ -262,7 +262,7 @@ function _page($$renderer, $$props) {
     });
     $$renderer2.push(`<!----></div></section> <section class="py-16"><div class="text-center mb-12"><h2 class="text-3xl font-bold text-text mb-4">Get In Touch</h2> <p class="text-lg text-text-secondary max-w-2xl mx-auto">Have questions or feedback? We'd love to hear from you.</p></div> `);
     ContactForm($$renderer2, { onsubmit: handleFormSubmit });
-    $$renderer2.push(`<!----></section></main> <footer class="bg-surface-secondary border-t border-border py-8"><div class="container mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><div class="text-center md:text-left"><p class="text-text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-text-secondary/80">© 2024 Zabi Components. MIT License.</p></div> <div class="flex gap-6"><a href="/docs" class="text-text-secondary hover:text-text transition-colors">Docs</a> <a href="/components" class="text-text-secondary hover:text-text transition-colors">Components</a> <a href="https://github.com" class="text-text-secondary hover:text-text transition-colors">GitHub</a></div></div></div></footer></div>`);
+    $$renderer2.push(`<!----></section></main> <footer class="bg-surface-level-1 border-t border-border py-8"><div class="container mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><div class="text-center md:text-left"><p class="text-text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-text-secondary/80">© 2024 Zabi Components. MIT License.</p></div> <div class="flex gap-6"><a href="/docs" class="text-text-secondary hover:text-text transition-colors">Docs</a> <a href="/components" class="text-text-secondary hover:text-text transition-colors">Components</a> <a href="https://github.com" class="text-text-secondary hover:text-text transition-colors">GitHub</a></div></div></div></footer></div>`);
   });
 }
 export {

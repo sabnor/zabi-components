@@ -31,11 +31,13 @@ Combinations of atoms that form more complex UI elements:
 - **KeyValueForm** - Dynamic form generator with various field types
 - **Modal** - Overlay dialogs with backdrop and keyboard navigation
 - **SlideUp** - Mobile-friendly bottom sheet component
+- **Tabs** - Tabbed interface for organizing content
 
 ### Organisms
 Complex components that manage state and combine multiple molecules:
 
-- **NotificationManager** - Global notification system with store integration
+- **Navbar** - Sticky navigation bar with brand, menu items, and actions
+- **Navigation** - Navigation component with header and sidebar variants
 
 ## Usage
 
