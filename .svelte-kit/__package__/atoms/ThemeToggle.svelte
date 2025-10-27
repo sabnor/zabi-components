@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { Sun, Moon } from "@lucide/svelte";
     // SSR-safe utilities
     function safeLocalStorage(): Storage | undefined {
         return typeof window !== "undefined" ? localStorage : undefined;
@@ -67,23 +68,23 @@
 {#if mounted}
     <button
         onclick={toggleTheme}
-        class="w-10 h-10 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-10 h-10 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         {...restProps}
     >
         {#if isDark}
-            <span class="text-lg">☀️</span>
+            <Moon size={20} class="text-label" />
         {:else}
-            <span class="text-lg">🌙</span>
+            <Sun size={20} class="text-label" />
         {/if}
     </button>
 {:else}
     <!-- SSR fallback -->
     <button
-        class="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700"
+        class="w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700 cursor-pointer"
         aria-label="Theme toggle"
         {...restProps}
     >
-        <span class="text-lg">🌙</span>
+        <Sun size={20} class="text-label" />
     </button>
 {/if}

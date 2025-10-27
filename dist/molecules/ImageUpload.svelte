@@ -1,5 +1,6 @@
 <script lang="ts">
     import Button from "../atoms/Button.svelte";
+    import { Image } from "@lucide/svelte";
 
     interface Props {
         value?: string | null;
@@ -53,7 +54,7 @@
             <img
                 src={value}
                 alt=""
-                class="w-full h-32 object-cover rounded-lg border border-gray-300"
+                class="w-full h-32 object-cover rounded-lg border border-border"
             />
             <div
                 class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"
@@ -81,7 +82,7 @@
     {:else}
         <!-- Empty State -->
         <div
-            class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer"
+            class="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-border-strong transition-colors cursor-pointer"
             onclick={triggerFileSelect}
             role="button"
             tabindex="0"
@@ -89,13 +90,15 @@
         >
             <div class="space-y-3">
                 <div
-                    class="w-12 h-12 mx-auto bg-gray-100 rounded-lg flex items-center justify-center"
+                    class="w-12 h-12 mx-auto bg-surface-level-1 rounded-lg flex items-center justify-center"
                 >
-                    <span class="text-2xl">📷</span>
+                    <Image size={24} class="text-description" />
                 </div>
                 <div>
-                    <p class="font-medium text-gray-900">{placeholder}</p>
-                    <p class="text-sm text-gray-500">Click to choose a file</p>
+                    <p class="font-medium text-headline">{placeholder}</p>
+                    <p class="text-sm text-description">
+                        Click to choose a file
+                    </p>
                 </div>
             </div>
         </div>

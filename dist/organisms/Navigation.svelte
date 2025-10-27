@@ -7,13 +7,15 @@
         }>;
         currentPath?: string;
         onclick?: (event: Event) => void;
+        className?: string;
     }
 
     let {
         variant = "header",
         items = [],
         currentPath = "",
-        children,
+        onclick,
+        className = "",
         ...restProps
     }: Props & { children?: any } = $props();
 
@@ -22,27 +24,37 @@
         // Navigation is now handled by the parent component
         // through event forwarding
     }
+
+    // Derived class for ul container based on variant
+    const ulClasses = $derived(() => {
+        return variant === "sidebar"
+            ? "flex flex-col space-y-2"
+            : "flex space-x-6";
+    });
+
+    // Function to get link classes based on active state
+    function getLinkClasses(itemHref: string): string {
+        const isActive = currentPath === itemHref;
+        const baseClasses = "px-3 py-2 text-sm font-medium rounded-md";
+
+        if (isActive) {
+            return `${baseClasses} text-body font-semibold`;
+        }
+        return `${baseClasses} text-description hover:text-body`;
+    }
 </script>
 
-<nav class="navigation navigation-{variant}" {...restProps}>
-    <ul
-        class="flex {variant === 'sidebar'
-            ? 'flex-col space-y-2'
-            : 'space-x-6'}"
-    >
-        {#each items as item}
-            <li>
-                <a
-                    href={item.href}
-                    class="px-3 py-2 text-sm font-medium rounded-md transition-colors {currentPath ===
-                    item.href
-                        ? 'bg-blue-100 text-body'
-                        : 'text-description hover:text-body hover:bg-gray-100'}"
-                    onclick={(e) => handleClick(item, e)}
-                >
-                    {item.label}
-                </a>
-            </li>
-        {/each}
-    </ul>
-</nav>
+<ul class="{ulClasses()} {className}" {...restProps}>
+    {#each items as item}
+        {@const linkClasses = getLinkClasses(item.href)}
+        <li>
+            <a
+                href={item.href}
+                class={linkClasses}
+                onclick={(e) => handleClick(item, e)}
+            >
+                {item.label}
+            </a>
+        </li>
+    {/each}
+</ul>

@@ -31,7 +31,7 @@
 </script>
 
 <nav
-    class="bg-white border-b border-gray-200 sticky top-0 z-50 {className}"
+    class="bg-surface-elevated border-b border-border sticky top-0 z-50 {className}"
     {...restProps}
 >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,7 +81,7 @@
         {#if isMenuOpen}
             <div class="md:hidden">
                 <div
-                    class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200"
+                    class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-border"
                 >
                     {@render nav?.()}
                     <div class="pt-4">

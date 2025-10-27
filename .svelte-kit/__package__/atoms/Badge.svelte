@@ -35,14 +35,14 @@
         // Variant classes - using semantic color system
         const variantClass =
             variant === "success"
-                ? "bg-surface-secondary border-secondary text-success"
+                ? "bg-surface-level-1 border-secondary text-success"
                 : variant === "warning"
-                  ? "bg-surface-secondary border-secondary text-warning"
+                  ? "bg-surface-level-1 border-secondary text-warning"
                   : variant === "error"
-                    ? "bg-surface-secondary border-secondary text-error"
+                    ? "bg-surface-level-1 border-secondary text-error"
                     : variant === "info"
-                      ? "bg-surface-secondary border-secondary text-body"
-                      : "bg-surface-secondary border-secondary text-body"; // default
+                      ? "bg-surface-level-1 border-secondary text-body"
+                      : "bg-surface-level-1 border-secondary text-body"; // default
 
         return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     });

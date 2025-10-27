@@ -1,6 +1,6 @@
 import type { Snippet } from "svelte";
 interface Props {
-    variant?: "primary" | "secondary" | "danger" | "success" | "ghost" | "brand";
+    variant?: "primary" | "secondary" | "danger" | "ghost";
     size?: "sm" | "md" | "lg";
     disabled?: boolean;
     type?: "button" | "submit" | "reset";
