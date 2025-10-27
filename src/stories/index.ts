@@ -22,6 +22,11 @@ export { default as DropdownStories } from './Dropdown.stories';
 export { default as ImageUploadStories } from './ImageUpload.stories';
 export { default as ModalStories } from './Modal.stories';
 export { default as SlideUpStories } from './SlideUp.stories';
+export { default as TabsStories } from './Tabs.stories';
+
+// Organisms
+export { default as NavbarStories } from './Navbar.stories';
+export { default as NavigationStories } from './Navigation.stories';
 
 // Story Categories
 export const storyCategories = {
@@ -45,9 +50,13 @@ export const storyCategories = {
         'Dropdown',
         'ImageUpload',
         'Modal',
-        'SlideUp'
+        'SlideUp',
+        'Tabs'
     ],
-    organisms: []
+    organisms: [
+        'Navbar',
+        'Navigation'
+    ]
 } as const;
 
 // Component count

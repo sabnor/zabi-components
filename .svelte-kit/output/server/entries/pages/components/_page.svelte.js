@@ -1,18 +1,126 @@
-import { y as attr, x as ensure_array_like, z as attr_class, F as stringify, G as attributes, J as attr_style, K as clsx, w as head } from "../../../chunks/index.js";
-import { B as Button, T as ThemeToggle, N as Navigation, C as Card } from "../../../chunks/Card.js";
+import { y as spread_props, z as element, F as attr_class, G as attr_style, J as stringify, K as attr, x as ensure_array_like, N as attributes, O as clsx, w as head } from "../../../chunks/index.js";
+import { I as Icon, B as Button, T as ThemeToggle, N as Navigation, C as Card } from "../../../chunks/Card.js";
 import { B as Badge, C as ComponentDemo, I as Input, A as Alert, a as ContactForm, b as Form, T as Textarea, c as Checkbox, F as FeatureCard } from "../../../chunks/Badge.js";
 import { e as escape_html } from "../../../chunks/context.js";
-import "clsx";
 import { C as CodeBlock } from "../../../chunks/CodeBlock.js";
+import "clsx";
+function Image($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      [
+        "rect",
+        {
+          "width": "18",
+          "height": "18",
+          "x": "3",
+          "y": "3",
+          "rx": "2",
+          "ry": "2"
+        }
+      ],
+      ["circle", { "cx": "9", "cy": "9", "r": "2" }],
+      ["path", { "d": "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "image" },
+      /**
+       * @component @name Image
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHg9IjMiIHk9IjMiIHJ4PSIyIiByeT0iMiIgLz4KICA8Y2lyY2xlIGN4PSI5IiBjeT0iOSIgcj0iMiIgLz4KICA8cGF0aCBkPSJtMjEgMTUtMy4wODYtMy4wODZhMiAyIDAgMCAwLTIuODI4IDBMNiAyMSIgLz4KPC9zdmc+Cg==) - https://lucide.dev/icons/image
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
 function Heading($$renderer, $$props) {
   let { level = 1, text } = $$props;
-  $$renderer.push(`<div class="text-headline" role="heading"${attr("aria-level", level)}>${escape_html(text)}</div>`);
+  const fontWeight = level <= 2 ? "700" : "500";
+  const Tag = `h${level}`;
+  const sizeClasses = {
+    1: "text-4xl",
+    2: "text-3xl",
+    3: "text-2xl",
+    4: "text-xl",
+    5: "text-lg",
+    6: "text-base"
+  };
+  const sizeClass = sizeClasses[level] || "text-base";
+  element(
+    $$renderer,
+    Tag,
+    () => {
+      $$renderer.push(`${attr_class(`text-headline font-nunito ${stringify(sizeClass)}`, "svelte-1mn08on")}${attr_style(`font-weight: ${stringify(fontWeight)};`)}`);
+    },
+    () => {
+      $$renderer.push(`${escape_html(text)}`);
+    }
+  );
 }
 function Modal($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let {
       isOpen = false,
       title = "",
+      size = "md",
       onclick,
       onkeydown,
       children,
@@ -21,9 +129,14 @@ function Modal($$renderer, $$props) {
       $$events,
       ...restProps
     } = $$props;
+    const sizeClasses = {
+      sm: "w-full md:w-[24rem]",
+      md: "w-full md:w-[28rem]",
+      lg: "w-full md:w-[42rem]"
+    }[size] || "w-full md:w-[28rem]";
     if (isOpen) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" tabindex="-1"><div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"><div class="flex items-center justify-between p-6 border-b border-gray-200"><h2 class="text-xl font-semibold text-headline">${escape_html(title)}</h2> <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl" aria-label="Close">×</button></div> <div class="p-6">`);
+      $$renderer2.push(`<div class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center p-0 md:p-4 z-50" role="dialog" aria-modal="true" tabindex="-1"><div${attr_class(`bg-white rounded-t-2xl md:rounded-lg shadow-xl min-w-[320px] ${stringify(sizeClasses)} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none`)}><div class="flex items-center justify-between p-6 border-b border-gray-200"><h2 class="text-xl font-semibold text-headline">${escape_html(title)}</h2> <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl cursor-pointer" aria-label="Close">×</button></div> <div class="p-6">`);
       children?.($$renderer2);
       $$renderer2.push(`<!----></div> `);
       if (footer) {
@@ -99,79 +212,44 @@ function ColorPicker($$renderer, $$props) {
       value = "",
       label = "",
       disabled = false,
-      onclick,
+      placeholder = "#000000",
+      onchange,
       $$slots,
       $$events,
       ...restProps
     } = $$props;
-    const colors = [
-      { label: "Red", value: "#ef4444" },
-      { label: "Blue", value: "#3b82f6" },
-      { label: "Green", value: "#10b981" },
-      { label: "Yellow", value: "#f59e0b" },
-      { label: "Purple", value: "#8b5cf6" },
-      { label: "Pink", value: "#ec4899" },
-      { label: "Gray", value: "#6b7280" },
-      { label: "Black", value: "#000000" }
-    ];
-    const groupId = generateId("color-picker");
-    const inputId = generateId("color-input");
+    const inputId = generateId("color-picker");
     function isValidHex(hex) {
       const hexPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
       return hexPattern.test(hex);
     }
-    const colorButtonClasses = () => {
-      return (colorValue) => {
-        const baseClasses = "w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 transition-all";
-        const stateClasses = value === colorValue ? "border-blue-500 ring-2 ring-blue-200" : "border-gray-300 hover:border-gray-400";
-        return `${baseClasses} ${stateClasses}`.trim();
-      };
-    };
     const inputClasses = () => {
       const baseClasses = "w-full px-3 py-2 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-200";
       const stateClasses = isValidHex(value) || value === "" ? "border-gray-300 focus:border-blue-500" : "border-red-300 focus:border-red-500 focus:ring-red-200";
       return `${baseClasses} ${stateClasses}`.trim();
     };
-    $$renderer2.push(`<div class="space-y-3 sm:space-y-4">`);
+    $$renderer2.push(`<div${attributes({ class: "space-y-2", ...restProps })}>`);
     if (label) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<label${attr("for", groupId)} class="block text-sm font-medium text-label">${escape_html(label)}</label>`);
+      $$renderer2.push(`<label${attr("for", inputId)} class="block text-sm font-medium text-label">${escape_html(label)}</label>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div${attributes({
-      id: groupId,
-      class: "grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-3",
-      role: "radiogroup",
-      ...restProps
-    })}><!--[-->`);
-    const each_array = ensure_array_like(colors);
-    for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-      let color = each_array[$$index];
-      $$renderer2.push(`<button type="button"${attr_class(clsx(colorButtonClasses()(color.value)))}${attr_style(`background-color: ${stringify(color.value)};`)}${attr("disabled", disabled, true)} role="radio"${attr("aria-checked", value === color.value)}${attr("aria-label", color.label)}>`);
-      if (value === color.value) {
-        $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<span class="text-white text-lg">✓</span>`);
-      } else {
-        $$renderer2.push("<!--[!-->");
-      }
-      $$renderer2.push(`<!--]--></button>`);
-    }
-    $$renderer2.push(`<!--]--></div> <div class="space-y-1"><label${attr("for", inputId)} class="block text-xs font-medium text-label">Or enter custom color</label> <div class="flex items-center space-x-2"><input${attr("id", inputId)} type="text" placeholder="#000000"${attr("value", value)}${attr("disabled", disabled, true)}${attr_class(clsx(inputClasses()))} aria-label="Custom hex color input"/> `);
+    $$renderer2.push(`<!--]--> <div class="flex items-center space-x-2"><input${attr("id", inputId)} type="text"${attr("placeholder", placeholder)}${attr("value", value)}${attr("disabled", disabled, true)}${attr_class(clsx(inputClasses()))} aria-label="Hex color input"/> `);
     if (value && isValidHex(value)) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="w-6 h-6 sm:w-8 sm:h-8 rounded border-2 border-gray-300 shrink-0"${attr_style(`background-color: ${stringify(value)};`)} aria-label="Color preview"></div>`);
+      $$renderer2.push(`<div class="w-8 h-8 rounded border-2 border-gray-300 shrink-0"${attr_style(`background-color: ${stringify(value)};`)} aria-label="Color preview"></div>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
     $$renderer2.push(`<!--]--></div> `);
     if (value && !isValidHex(value)) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<p class="text-xs text-red-500">Please enter a valid hex color (e.g., #ff0000)</p>`);
+      $$renderer2.push(`<p class="text-xs text-red-500">Please enter a valid hex color (e.g., #ff0000 or #f00)</p>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--></div></div>`);
+    $$renderer2.push(`<!--]--></div>`);
   });
 }
 function OptimizedImage($$renderer, $$props) {
@@ -298,7 +376,7 @@ function ImageUpload($$renderer, $$props) {
   $$renderer.push(`<div class="space-y-3">`);
   if (value) {
     $$renderer.push("<!--[-->");
-    $$renderer.push(`<div class="relative group"><img${attr("src", value)} alt="" class="w-full h-32 object-cover rounded-lg border border-gray-300"/> <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"><div class="flex gap-2">`);
+    $$renderer.push(`<div class="relative group"><img${attr("src", value)} alt="" class="w-full h-32 object-cover rounded-lg border border-border"/> <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"><div class="flex gap-2">`);
     Button($$renderer, {
       variant: "secondary",
       size: "sm",
@@ -323,7 +401,9 @@ function ImageUpload($$renderer, $$props) {
     $$renderer.push(`<!----></div></div></div>`);
   } else {
     $$renderer.push("<!--[!-->");
-    $$renderer.push(`<div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer" role="button" tabindex="0"><div class="space-y-3"><div class="w-12 h-12 mx-auto bg-gray-100 rounded-lg flex items-center justify-center"><span class="text-2xl">📷</span></div> <div><p class="font-medium text-gray-900">${escape_html(placeholder)}</p> <p class="text-sm text-gray-500">Click to choose a file</p></div></div></div>`);
+    $$renderer.push(`<div class="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-border-strong transition-colors cursor-pointer" role="button" tabindex="0"><div class="space-y-3"><div class="w-12 h-12 mx-auto bg-surface-level-1 rounded-lg flex items-center justify-center">`);
+    Image($$renderer, { size: 24, class: "text-description" });
+    $$renderer.push(`<!----></div> <div><p class="font-medium text-headline">${escape_html(placeholder)}</p> <p class="text-sm text-description">Click to choose a file</p></div></div></div>`);
   }
   $$renderer.push(`<!--]--> <input type="file"${attr("accept", accept)} class="hidden"/></div>`);
 }
@@ -366,7 +446,7 @@ function Navbar($$renderer, $$props) {
     ...restProps
   } = $$props;
   $$renderer.push(`<nav${attributes({
-    class: `bg-white border-b border-gray-200 sticky top-0 z-50 ${stringify(className)}`,
+    class: `bg-surface-elevated border-b border-border sticky top-0 z-50 ${stringify(className)}`,
     ...restProps
   })}><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><div class="flex justify-between items-center h-16"><div class="shrink-0"><button type="button" class="text-xl font-bold text-headline">${escape_html(brand)}</button></div> <div class="hidden md:block"><div class="ml-10 flex items-baseline space-x-4">`);
   nav?.($$renderer);
@@ -1474,21 +1554,21 @@ console.log(greet('World'));`;
     });
     $$renderer2.push(`<meta name="description" content="Interactive component showcase and documentation"/>`);
   });
-  $$renderer.push(`<div class="min-h-screen bg-background"><header class="flex items-center justify-between p-4 bg-surface border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
+  $$renderer.push(`<div class="min-h-screen bg-background"><header class="flex items-center justify-between p-4 bg-surface-level-0 border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
   Navigation($$renderer, { variant: "header", items: navItems });
   $$renderer.push(`<!----> `);
   ThemeToggle($$renderer, {});
-  $$renderer.push(`<!----></div></header> <main class="flex min-h-screen"><aside class="w-64 bg-surface-secondary border-r border-border p-6"><h2 class="text-lg font-semibold text-text mb-4">Components</h2> <nav class="space-y-2 mb-8"><!--[-->`);
+  $$renderer.push(`<!----></div></header> <main class="flex min-h-screen"><aside class="w-64 bg-surface-level-1 border-r border-border p-6"><h2 class="text-lg font-semibold text-text mb-4">Components</h2> <nav class="space-y-2 mb-8"><!--[-->`);
   const each_array = ensure_array_like(categories);
   for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
     let category = each_array[$$index];
-    $$renderer.push(`<button${attr_class(`w-full text-left px-3 py-2 rounded-md transition-colors duration-200 ${stringify(selectedCategory === category.id ? "bg-primary text-white" : "text-text-secondary hover:text-text hover:bg-surface")}`)}><div class="font-medium">${escape_html(category.label)}</div> <div class="text-xs opacity-75">${escape_html(category.description)}</div></button>`);
+    $$renderer.push(`<button${attr_class(`w-full text-left px-3 py-2 rounded-md transition-colors duration-200 ${stringify(selectedCategory === category.id ? "bg-primary text-white" : "text-text-secondary hover:text-text hover:bg-surface-level-0")}`)}><div class="font-medium">${escape_html(category.label)}</div> <div class="text-xs opacity-75">${escape_html(category.description)}</div></button>`);
   }
   $$renderer.push(`<!--]--></nav> <div class="space-y-1"><!--[-->`);
   const each_array_1 = ensure_array_like(currentComponents);
   for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
     let component = each_array_1[$$index_1];
-    $$renderer.push(`<button${attr_class(`w-full text-left px-3 py-2 rounded-md transition-colors duration-200 ${stringify(selectedComponent === component.name.toLowerCase() ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-text-secondary hover:text-text hover:bg-surface")}`)}>${escape_html(component.name)}</button>`);
+    $$renderer.push(`<button${attr_class(`w-full text-left px-3 py-2 rounded-md transition-colors duration-200 ${stringify(selectedComponent === component.name.toLowerCase() ? "bg-primary/10 text-primary border-l-2 border-primary" : "text-text-secondary hover:text-text hover:bg-surface-level-0")}`)}>${escape_html(component.name)}</button>`);
   }
   $$renderer.push(`<!--]--></div></aside> <div class="flex-1 p-8"><!--[-->`);
   const each_array_2 = ensure_array_like(currentComponents);
@@ -2055,7 +2135,7 @@ console.log(greet('World'));`;
           $$slots: { default: true }
         });
       }
-      $$renderer.push(`<!--]--></div> <div class="mt-12"><h2 class="text-2xl font-bold text-text mb-6">Props</h2> <div class="overflow-x-auto"><table class="w-full border-collapse border border-border"><thead><tr class="bg-surface-secondary"><th class="border border-border px-4 py-2 text-left text-text font-semibold">Name</th><th class="border border-border px-4 py-2 text-left text-text font-semibold">Type</th><th class="border border-border px-4 py-2 text-left text-text font-semibold">Required</th><th class="border border-border px-4 py-2 text-left text-text font-semibold">Default</th><th class="border border-border px-4 py-2 text-left text-text font-semibold">Description</th></tr></thead><tbody><!--[-->`);
+      $$renderer.push(`<!--]--></div> <div class="mt-12"><h2 class="text-2xl font-bold text-text mb-6">Props</h2> <div class="overflow-x-auto"><table class="w-full border-collapse border border-border"><thead><tr class="bg-surface-level-1"><th class="border border-border px-4 py-2 text-left text-text font-semibold">Name</th><th class="border border-border px-4 py-2 text-left text-text font-semibold">Type</th><th class="border border-border px-4 py-2 text-left text-text font-semibold">Required</th><th class="border border-border px-4 py-2 text-left text-text font-semibold">Default</th><th class="border border-border px-4 py-2 text-left text-text font-semibold">Description</th></tr></thead><tbody><!--[-->`);
       const each_array_4 = ensure_array_like(component.props);
       for (let $$index_3 = 0, $$length2 = each_array_4.length; $$index_3 < $$length2; $$index_3++) {
         let prop = each_array_4[$$index_3];
@@ -2067,7 +2147,7 @@ console.log(greet('World'));`;
     }
     $$renderer.push(`<!--]-->`);
   }
-  $$renderer.push(`<!--]--></div></main> <footer class="bg-surface-secondary border-t border-border py-8"><div class="container mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><div class="text-center md:text-left"><p class="text-text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-text-secondary/80">© 2024 Zabi Components. MIT License.</p></div> <div class="flex gap-6"><a href="/docs" class="text-text-secondary hover:text-text transition-colors">Docs</a> <a href="/components" class="text-text-secondary hover:text-text transition-colors">Components</a> <a href="https://github.com" class="text-text-secondary hover:text-text transition-colors">GitHub</a></div></div></div></footer></div>`);
+  $$renderer.push(`<!--]--></div></main> <footer class="bg-surface-level-1 border-t border-border py-8"><div class="container mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><div class="text-center md:text-left"><p class="text-text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-text-secondary/80">© 2024 Zabi Components. MIT License.</p></div> <div class="flex gap-6"><a href="/docs" class="text-text-secondary hover:text-text transition-colors">Docs</a> <a href="/components" class="text-text-secondary hover:text-text transition-colors">Components</a> <a href="https://github.com" class="text-text-secondary hover:text-text transition-colors">GitHub</a></div></div></div></footer></div>`);
 }
 export {
   _page as default

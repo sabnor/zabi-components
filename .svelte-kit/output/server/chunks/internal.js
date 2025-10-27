@@ -2454,7 +2454,7 @@ const options = {
   service_worker: false,
   service_worker_options: void 0,
   templates: {
-    app: ({ head, body, assets, nonce, env }) => '<!doctype html>\n<html lang="en">\n\n<head>\n    <meta charset="utf-8" />\n    <link rel="icon" href="' + assets + '/favicon.png" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    ' + head + '\n</head>\n\n<body data-sveltekit-preload-data="hover">\n    <div style="display: contents">' + body + "</div>\n</body>\n\n</html>",
+    app: ({ head, body, assets, nonce, env }) => '<!doctype html>\n<html lang="en">\n\n<head>\n    <meta charset="utf-8" />\n    <link rel="icon" href="' + assets + '/favicon.png" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <link rel="preconnect" href="https://fonts.googleapis.com">\n    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&display=swap"\n        rel="stylesheet">\n    ' + head + '\n</head>\n\n<body data-sveltekit-preload-data="hover">\n    <div style="display: contents">' + body + "</div>\n</body>\n\n</html>",
     error: ({ status, message }) => '<!doctype html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<title>' + message + `</title>
 
 		<style>
@@ -2526,7 +2526,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "17d9ee4"
+  version_hash: "1l5gmca"
 };
 async function get_hooks() {
   let handle;
