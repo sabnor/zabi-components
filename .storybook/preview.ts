@@ -11,17 +11,29 @@ const preview: Preview = {
       }
     },
     backgrounds: {
-      default: 'light',
-      values: [
-        {
+      options: {
+        light: {
           name: 'light',
           value: '#ffffff'
         },
-        {
+
+        dark: {
           name: 'dark',
           value: '#333333'
         }
-      ]
+      }
+    },
+    svelte: {
+      options: {
+        legacyMode: false,
+        runes: true
+      }
+    }
+  },
+
+  initialGlobals: {
+    backgrounds: {
+      value: 'light'
     }
   }
 };

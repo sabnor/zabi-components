@@ -2,17 +2,19 @@ import type { StorybookConfig } from '@storybook/sveltekit';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|ts|svelte)'],
-  addons: [
-    '@storybook/addon-svelte-csf'
-  ],
+  addons: [],
+
   framework: {
     name: '@storybook/sveltekit',
     options: {}
   },
+
   docs: {
     autodocs: 'tag'
   },
+
   staticDirs: ['../static'],
+
   options: {
     storySort: {
       order: [

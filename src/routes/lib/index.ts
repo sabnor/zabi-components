@@ -203,3 +203,22 @@ export const validateRequired = (value: any): boolean => {
 export * from '../../components/atoms/index';
 // export * from '../../components/molecules/index'; // Temporarily disabled - empty module
 // export * from '../../components/organisms/index'; // Temporarily disabled - empty module
+
+// ============================================================================
+// ICONS - Re-export commonly used Lucide icons
+// ============================================================================
+
+export {
+    Sun,
+    Moon,
+    Monitor,
+    Grip,
+    GripVertical,
+    ChevronUp,
+    ChevronDown,
+    ChevronRight,
+    Zap,
+    Briefcase,
+    Clipboard,
+    Settings
+} from '@lucide/svelte';
