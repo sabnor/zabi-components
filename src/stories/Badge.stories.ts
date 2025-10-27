@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/svelte';
+import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Badge from '../components/atoms/Badge.svelte';
 
 const meta = {
@@ -138,8 +138,13 @@ export const WithoutIcons: Story = {
 };
 
 export const AllVariantsWithIcons: Story = {
+    args: {
+        variant: 'default',
+        text: 'Badge',
+        showIcon: false
+    },
     render: () => ({
-        Component: 'div',
+        Component: 'div' as any,
         props: {
             class: 'flex flex-wrap gap-2 items-center'
         },
@@ -150,7 +155,7 @@ export const AllVariantsWithIcons: Story = {
             { Component: Badge, props: { variant: 'error', text: 'Error', showIcon: true } },
             { Component: Badge, props: { variant: 'info', text: 'Info', showIcon: true } }
         ]
-    }),
+    } as any),
     parameters: {
         docs: {
             description: {

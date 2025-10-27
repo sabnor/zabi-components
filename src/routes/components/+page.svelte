@@ -1255,16 +1255,16 @@ console.log(greet('World'));`;
                                                     text="Danger"
                                                 />
                                                 <Button
-                                                    variant="success"
-                                                    text="Success"
+                                                    variant="secondary"
+                                                    text="Secondary"
                                                 />
                                                 <Button
                                                     variant="ghost"
                                                     text="Ghost"
                                                 />
                                                 <Button
-                                                    variant="brand"
-                                                    text="Brand"
+                                                    variant="primary"
+                                                    text="Primary"
                                                 />
                                             </div>
                                             <div

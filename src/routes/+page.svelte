@@ -196,7 +196,7 @@
                         />
                         <Button variant="danger" size="sm" text="Danger" />
                         <Button variant="ghost" text="Ghost" />
-                        <Button variant="brand" text="Brand" />
+                        <Button variant="primary" text="Primary" />
                     </div>
                 </ComponentDemo>
 

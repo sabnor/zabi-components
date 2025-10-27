@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/svelte';
+import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Card from '../components/atoms/Card.svelte';
 
 const meta = {
@@ -8,7 +8,7 @@ const meta = {
         layout: 'centered',
         docs: {
             description: {
-                component: 'Card component with built-in support for different sizes and interactive states. Use the semantic color system classes to style cards contextually for different states and meanings.'
+                component: 'Card component with built-in support for different sizes and interactive states. Cards with an `onclick` handler will show hover effects (shadow, background change, border change), while cards without `onclick` remain static. Use the semantic color system classes to style cards contextually for different states and meanings.'
             }
         }
     },
@@ -50,14 +50,24 @@ export const WithImage: Story = {
 export const WithContent: Story = {
     args: {
         title: 'Card with Content'
-    }
+    },
+    render: (args) => ({
+        Component: Card,
+        props: args,
+        children: ['This is an example of a card with custom content. You can add any content you like here.']
+    })
 };
 
 export const Interactive: Story = {
     args: {
         title: 'Interactive Card',
         onclick: () => alert('Card clicked!')
-    }
+    },
+    render: (args) => ({
+        Component: Card,
+        props: args,
+        children: ['This card has an onclick handler and shows hover effects. Try hovering over it!']
+    })
 };
 
 export const Small: Story = {

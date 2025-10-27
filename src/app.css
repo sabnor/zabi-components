@@ -317,35 +317,13 @@ body {
   background-color: var(--color-surface-elevated);
 }
 
-.bg-surface-level-0:hover {
-  background-color: var(--color-surface-level-0-hover);
-}
-
-.bg-surface-level-1:hover {
-  background-color: var(--color-surface-level-1-hover);
-}
-
-.bg-surface-level-2:hover {
-  background-color: var(--color-surface-level-2-hover);
-}
-
-.bg-surface-elevated:hover {
-  background-color: var(--color-surface-elevated-hover);
-}
+/* Global hover effects removed - components should define their own hover states */
 
 .bg-surface-hover {
   background-color: var(--color-surface-hover);
 }
 
-.bg-surface-hover:hover {
-  background-color: var(--color-surface-hover);
-}
-
 .bg-surface-active {
-  background-color: var(--color-surface-active);
-}
-
-.bg-surface-active:active {
   background-color: var(--color-surface-active);
 }
 
