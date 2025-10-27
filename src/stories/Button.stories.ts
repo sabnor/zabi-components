@@ -17,36 +17,42 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         variant: 'primary',
-        size: 'md'
+        size: 'md',
+        text: 'Button'
     }
 };
 
 export const Secondary: Story = {
     args: {
-        variant: 'secondary'
+        variant: 'secondary',
+        text: 'Button'
     }
 };
 
 export const Danger: Story = {
     args: {
-        variant: 'danger'
+        variant: 'danger',
+        text: 'Button'
     }
 };
 
 export const Small: Story = {
     args: {
-        size: 'sm'
+        size: 'sm',
+        text: 'Button'
     }
 };
 
 export const Large: Story = {
     args: {
-        size: 'lg'
+        size: 'lg',
+        text: 'Button'
     }
 };
 
 export const Disabled: Story = {
     args: {
-        disabled: true
+        disabled: true,
+        text: 'Button'
     }
 };
