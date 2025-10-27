@@ -512,3 +512,13 @@ body {
 .bg-action-danger-subtle:hover {
   background-color: var(--color-action-danger-subtle-hover);
 }
+
+/* Modal Animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
