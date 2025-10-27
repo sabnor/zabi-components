@@ -23,9 +23,6 @@ export { default as ImageUploadStories } from './ImageUpload.stories';
 export { default as ModalStories } from './Modal.stories';
 export { default as SlideUpStories } from './SlideUp.stories';
 
-// Organisms
-export { default as NotificationManagerStories } from './NotificationManager.stories';
-
 // Story Categories
 export const storyCategories = {
     atoms: [
@@ -47,13 +44,10 @@ export const storyCategories = {
         'Alert',
         'Dropdown',
         'ImageUpload',
-        'KeyValueForm',
         'Modal',
         'SlideUp'
     ],
-    organisms: [
-        'NotificationManager'
-    ]
+    organisms: []
 } as const;
 
 // Component count

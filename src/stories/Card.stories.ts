@@ -5,7 +5,12 @@ const meta = {
     title: 'Design System/Atoms/Card',
     component: Card,
     parameters: {
-        layout: 'centered'
+        layout: 'centered',
+        docs: {
+            description: {
+                component: 'Card component with built-in support for different sizes and interactive states. Use the semantic color system classes to style cards contextually for different states and meanings.'
+            }
+        }
     },
     tags: ['autodocs'],
     argTypes: {}
@@ -16,7 +21,22 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        title: 'Card Title'
+        title: 'Default Card'
+    }
+};
+
+export const SemanticColors: Story = {
+    args: {
+        title: 'Semantic Colors Documentation',
+        fullWidth: false
+    },
+    parameters: {
+        layout: 'padded',
+        docs: {
+            description: {
+                story: 'Apply semantic color classes to your Card components: `bg-info-surface border-info text-info` (blue), `bg-success-surface border-success text-success` (green), `bg-warning-surface border-warning text-warning` (yellow), `bg-error-surface border-error text-error` (red).'
+            }
+        }
     }
 };
 
@@ -27,27 +47,16 @@ export const WithImage: Story = {
     }
 };
 
-export const Success: Story = {
+export const WithContent: Story = {
     args: {
-        title: 'Success Card'
-    }
-};
-
-export const Warning: Story = {
-    args: {
-        title: 'Warning Card'
-    }
-};
-
-export const Error: Story = {
-    args: {
-        title: 'Error Card'
+        title: 'Card with Content'
     }
 };
 
 export const Interactive: Story = {
     args: {
-        title: 'Interactive Card'
+        title: 'Interactive Card',
+        onclick: () => alert('Card clicked!')
     }
 };
 
@@ -62,5 +71,12 @@ export const Large: Story = {
     args: {
         title: 'Large Card',
         size: 'lg'
+    }
+};
+
+export const CustomWidth: Story = {
+    args: {
+        title: 'Custom Width Card',
+        fullWidth: false
     }
 };

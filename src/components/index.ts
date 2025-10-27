@@ -94,3 +94,22 @@ export const generateId = (prefix: string = 'id'): string => {
     }
     return `${prefix}-ssr-${Date.now()}`;
 };
+
+// ============================================================================
+// ICONS - Re-export commonly used Lucide icons
+// ============================================================================
+
+export {
+    Sun,
+    Moon,
+    Monitor,
+    Grip,
+    GripVertical,
+    ChevronUp,
+    ChevronDown,
+    ChevronRight,
+    Zap,
+    Briefcase,
+    Clipboard,
+    Settings
+} from '@lucide/svelte';

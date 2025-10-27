@@ -29,4 +29,5 @@ export declare const safeWindow: () => Window | undefined;
 export declare const safeDocument: () => Document | undefined;
 export declare const safeLocalStorage: () => Storage | undefined;
 export declare const generateId: (prefix?: string) => string;
+export { Sun, Moon, Monitor, Grip, GripVertical, ChevronUp, ChevronDown, ChevronRight, Zap, Briefcase, Clipboard, Settings } from '@lucide/svelte';
 //# sourceMappingURL=index.d.ts.map
