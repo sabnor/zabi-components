@@ -47,7 +47,7 @@ let name = $state("");
 <div class="min-h-screen bg-background">
     <!-- Header -->
     <div
-        class="flex items-center justify-between p-4 bg-surface border-b border-border"
+        class="flex items-center justify-between p-4 bg-surface-level-0 border-b border-border"
     >
         <h1 class="text-xl font-bold text-text">Zabi Components</h1>
         <div class="flex items-center gap-4">
@@ -179,7 +179,7 @@ let name = $state("");
     </div>
 
     <!-- Footer -->
-    <div class="bg-surface-secondary border-t border-border py-8">
+    <div class="bg-surface-level-1 border-t border-border py-8">
         <div class="container mx-auto px-6 text-center">
             <p class="text-text-secondary mb-2">
                 Clean components that just work. Less is more.

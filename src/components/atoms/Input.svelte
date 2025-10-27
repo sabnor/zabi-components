@@ -45,21 +45,21 @@
               : "px-4 py-2 text-sm"; // default md
     });
 
-    // Variant classes using full class names
+    // Variant classes using semantic colors
     const variantClass = $derived(() => {
         return variant === "success"
-            ? "border-green-300 focus:border-green-500 focus:ring-green-500"
+            ? "border-success focus:border-success focus:ring-success"
             : variant === "warning"
-              ? "border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500"
+              ? "border-warning focus:border-warning focus:ring-warning"
               : variant === "error"
-                ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"; // default
+                ? "border-error focus:border-error focus:ring-error"
+                : "border-border focus:border-focus focus:ring-focus"; // default
     });
 
     // Input classes using Badge pattern
     const inputClasses = $derived(() => {
         const baseClasses =
-            "w-full rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled";
+            "w-full border rounded-md transition-colors duration-200 placeholder:text-input-placeholder focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled";
 
         return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
     });

@@ -23,7 +23,7 @@ export const Default: Story = {
 export const WithValue: Story = {
     args: {
         label: 'Color Picker',
-        value: 'bg-plasma-red-500'
+        value: '#3b82f6'
     }
 };
 

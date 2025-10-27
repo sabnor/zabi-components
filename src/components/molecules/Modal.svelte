@@ -1,7 +1,10 @@
 <script lang="ts">
+    type Size = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+
     interface Props {
         isOpen?: boolean;
         title?: string;
+        size?: Size;
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
     }
@@ -9,12 +12,24 @@
     let {
         isOpen = false,
         title = "",
+        size = 'md',
         onclick,
         onkeydown,
         children,
         footer,
         ...restProps
     }: Props & { children?: any; footer?: any } = $props();
+
+    function getSizeClass(size: Size): string {
+        const sizeClasses: Record<Size, string> = {
+            sm: 'max-w-sm',
+            md: 'max-w-md',
+            lg: 'max-w-2xl',
+            xl: 'max-w-4xl',
+            full: 'max-w-[95vw]',
+        };
+        return sizeClasses[size];
+    }
 
     function closeModal(event?: Event) {
         isOpen = false;
@@ -50,7 +65,7 @@
         tabindex="-1"
     >
         <div
-            class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+            class="bg-white rounded-lg shadow-xl {getSizeClass(size)} w-full max-h-[90vh] overflow-y-auto"
         >
             <!-- Header -->
             <div

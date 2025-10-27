@@ -5,11 +5,18 @@
    ======================================== */
 
 @theme {
-  /* Surface Colors - Semantic naming with stone palette */
-  --color-surface: theme(colors.stone.50);
-  --color-surface-secondary: theme(colors.stone.100);
-  --color-surface-tertiary: theme(colors.stone.200);
+  /* Typography - Nunito Sans font family */
+  --font-family-sans: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
+
+  /* Surface Colors - Level-based naming with stone palette */
+  --color-surface-level-0: theme(colors.stone.50);
+  --color-surface-level-0-hover: theme(colors.stone.100);
+  --color-surface-level-1: theme(colors.stone.100);
+  --color-surface-level-1-hover: theme(colors.stone.200);
+  --color-surface-level-2: theme(colors.stone.200);
+  --color-surface-level-2-hover: theme(colors.stone.300);
   --color-surface-elevated: theme(colors.white);
+  --color-surface-elevated-hover: theme(colors.stone.50);
   --color-surface-hover: theme(colors.stone.100);
   --color-surface-active: theme(colors.stone.200);
   --color-surface-inverse: theme(colors.stone.900);
@@ -21,12 +28,12 @@
   --color-background-tertiary: theme(colors.stone.100);
 
   /* Page Colors */
-  --color-page: theme(colors.white);
-  --color-page-secondary: theme(colors.stone.50);
+  --color-page: theme(colors.stone.100);
+  --color-page-secondary: theme(colors.stone.200);
 
   /* Card Colors */
   --color-card: theme(colors.white);
-  --color-card-hover: theme(colors.stone.50);
+  --color-card-hover: theme(colors.stone.100);
   --color-card-active: theme(colors.stone.100);
   --color-card-elevated: theme(colors.white);
 
@@ -47,78 +54,76 @@
 
   /* Border Colors */
   --color-border: theme(colors.stone.200);
-  --color-border-secondary: theme(colors.stone.300);
-  --color-border-hover: theme(colors.stone.400);
-  --color-border-focus: theme(colors.blue.500);
-  --color-border-disabled: theme(colors.stone.200);
+  --color-border-weak: theme(colors.stone.300);
+  --color-border-medium: theme(colors.stone.400);
+  --color-border-strong: theme(colors.stone.500);
 
   /* Focus Colors */
   --color-focus: theme(colors.blue.500);
-  --color-focus-hover: theme(colors.blue.600);
-  --color-focus-active: theme(colors.blue.700);
-  --color-focus-disabled: theme(colors.blue.300);
-  --color-focus-light: theme(colors.blue.50);
-  --color-focus-dark: theme(colors.blue.700);
-  --color-focus-surface: theme(colors.blue.50);
-  --color-focus-text: theme(colors.blue.700);
-  --color-focus-ring: theme(colors.blue.500);
-  --color-focus-ring-offset: theme(colors.white);
+  --color-focus-weak: theme(colors.blue.600);
+  --color-focus-medium: theme(colors.blue.700);
+  --color-focus-strong: theme(colors.blue.800);
 
   /* Primary Colors */
   --color-primary: theme(colors.blue.600);
-  --color-primary-hover: theme(colors.blue.700);
-  --color-primary-active: theme(colors.blue.800);
-  --color-primary-disabled: theme(colors.blue.300);
-  --color-primary-light: theme(colors.blue.100);
-  --color-primary-dark: theme(colors.blue.800);
+  --color-primary-weak: theme(colors.blue.700);
+  --color-primary-medium: theme(colors.blue.800);
+  --color-primary-strong: theme(colors.blue.900);
 
   /* Secondary Colors */
   --color-secondary: theme(colors.stone.600);
-  --color-secondary-hover: theme(colors.stone.700);
-  --color-secondary-active: theme(colors.stone.800);
-  --color-secondary-disabled: theme(colors.stone.300);
-  --color-secondary-light: theme(colors.stone.100);
-  --color-secondary-dark: theme(colors.stone.800);
+  --color-secondary-weak: theme(colors.stone.700);
+  --color-secondary-medium: theme(colors.stone.800);
+  --color-secondary-strong: theme(colors.stone.900);
 
   /* Success Colors */
   --color-success: theme(colors.green.600);
-  --color-success-hover: theme(colors.green.700);
-  --color-success-active: theme(colors.green.800);
-  --color-success-disabled: theme(colors.green.300);
-  --color-success-light: theme(colors.green.100);
-  --color-success-dark: theme(colors.green.800);
-  --color-success-surface: theme(colors.green.100);
-  --color-success-text: theme(colors.green.800);
+  --color-success-weak: theme(colors.green.700);
+  --color-success-medium: theme(colors.green.800);
+  --color-success-strong: theme(colors.green.900);  
 
   /* Warning Colors */
   --color-warning: theme(colors.yellow.600);
-  --color-warning-hover: theme(colors.yellow.700);
-  --color-warning-active: theme(colors.yellow.800);
-  --color-warning-disabled: theme(colors.yellow.300);
-  --color-warning-light: theme(colors.yellow.100);
-  --color-warning-dark: theme(colors.yellow.800);
-  --color-warning-surface: theme(colors.yellow.100);
-  --color-warning-text: theme(colors.yellow.800);
+  --color-warning-weak: theme(colors.yellow.700);
+  --color-warning-medium: theme(colors.yellow.800);
+  --color-warning-strong: theme(colors.yellow.900);
 
   /* Error Colors */
   --color-error: theme(colors.red.600);
-  --color-error-hover: theme(colors.red.700);
-  --color-error-active: theme(colors.red.800);
-  --color-error-disabled: theme(colors.red.300);
-  --color-error-light: theme(colors.red.100);
-  --color-error-dark: theme(colors.red.800);
-  --color-error-surface: theme(colors.red.100);
-  --color-error-text: theme(colors.red.800);
+  --color-error-weak: theme(colors.red.700);
+  --color-error-medium: theme(colors.red.800);
+  --color-error-strong: theme(colors.red.900);
 
   /* Info Colors */
   --color-info: theme(colors.blue.600);
-  --color-info-hover: theme(colors.blue.700);
-  --color-info-active: theme(colors.blue.800);
-  --color-info-disabled: theme(colors.blue.300);
-  --color-info-light: theme(colors.blue.100);
-  --color-info-dark: theme(colors.blue.800);
-  --color-info-surface: theme(colors.blue.100);
-  --color-info-text: theme(colors.blue.800);
+  --color-info-weak: theme(colors.blue.700);
+  --color-info-medium: theme(colors.blue.800);
+  --color-info-strong: theme(colors.blue.900);
+
+  /* Action Colors - For interactive elements like buttons */
+  /* Primary Actions */
+  --color-action-primary: theme(colors.blue.600);
+  --color-action-primary-hover: theme(colors.blue.700);
+  --color-action-primary-active: theme(colors.blue.800);
+  --color-action-primary-disabled: theme(colors.blue.300);
+  --color-action-primary-subtle: theme(colors.blue.50);
+  --color-action-primary-subtle-hover: theme(colors.blue.100);
+
+  /* Secondary Actions */
+  --color-action-secondary: theme(colors.stone.600);
+  --color-action-secondary-hover: theme(colors.stone.700);
+  --color-action-secondary-active: theme(colors.stone.800);
+  --color-action-secondary-disabled: theme(colors.stone.300);
+  --color-action-secondary-subtle: theme(colors.stone.100);
+  --color-action-secondary-subtle-hover: theme(colors.stone.200);
+
+  /* Danger Actions */
+  --color-action-danger: theme(colors.red.600);
+  --color-action-danger-hover: theme(colors.red.700);
+  --color-action-danger-active: theme(colors.red.800);
+  --color-action-danger-disabled: theme(colors.red.300);
+  --color-action-danger-subtle: theme(colors.red.50);
+  --color-action-danger-subtle-hover: theme(colors.red.100);
 
   /* Shadow Colors */
   --shadow-color: 0 0 0;
@@ -154,14 +159,25 @@
 }
 
 /* ========================================
+   BASE TYPOGRAPHY
+   ======================================== */
+body {
+  font-family: var(--font-family-sans);
+}
+
+/* ========================================
    DARK MODE THEME
    ======================================== */
 .dark {
   /* Surface Colors - Dark mode variants */
-  --color-surface: theme(colors.stone.800);
-  --color-surface-secondary: theme(colors.stone.700);
-  --color-surface-tertiary: theme(colors.stone.600);
+  --color-surface-level-0: theme(colors.stone.800);
+  --color-surface-level-0-hover: theme(colors.stone.700);
+  --color-surface-level-1: theme(colors.stone.700);
+  --color-surface-level-1-hover: theme(colors.stone.600);
+  --color-surface-level-2: theme(colors.stone.600);
+  --color-surface-level-2-hover: theme(colors.stone.500);
   --color-surface-elevated: theme(colors.stone.800);
+  --color-surface-elevated-hover: theme(colors.stone.700);
   --color-surface-hover: theme(colors.stone.700);
   --color-surface-active: theme(colors.stone.600);
   --color-surface-inverse: theme(colors.stone.100);
@@ -199,78 +215,78 @@
 
   /* Border Colors */
   --color-border: theme(colors.stone.600);
-  --color-border-secondary: theme(colors.stone.500);
-  --color-border-hover: theme(colors.stone.400);
-  --color-border-focus: theme(colors.blue.400);
-  --color-border-disabled: theme(colors.stone.600);
+  --color-border-weak: theme(colors.stone.500);
+  --color-border-medium: theme(colors.stone.400);
+  --color-border-strong: theme(colors.stone.300);
 
   /* Focus Colors */
   --color-focus: theme(colors.blue.400);
-  --color-focus-hover: theme(colors.blue.500);
-  --color-focus-active: theme(colors.blue.600);
+  --color-focus-weak: theme(colors.blue.500);
+  --color-focus-medium: theme(colors.blue.600);
+  --color-focus-strong: theme(colors.blue.700);
   --color-focus-disabled: theme(colors.blue.600);
-  --color-focus-light: theme(colors.blue.900);
-  --color-focus-dark: theme(colors.blue.400);
-  --color-focus-surface: theme(colors.blue.900);
-  --color-focus-text: theme(colors.blue.400);
-  --color-focus-ring: theme(colors.blue.400);
-  --color-focus-ring-offset: theme(colors.stone.700);
 
   /* Primary Colors */
   --color-primary: theme(colors.blue.600);
-  --color-primary-hover: theme(colors.blue.700);
-  --color-primary-active: theme(colors.blue.800);
-  --color-primary-disabled: theme(colors.blue.300);
-  --color-primary-light: theme(colors.blue.100);
-  --color-primary-dark: theme(colors.blue.800);
+  --color-primary-weak: theme(colors.blue.700);
+  --color-primary-medium: theme(colors.blue.800);
+  --color-primary-strong: theme(colors.blue.900);
 
   /* Secondary Colors */
   --color-secondary: theme(colors.stone.600);
-  --color-secondary-hover: theme(colors.stone.700);
-  --color-secondary-active: theme(colors.stone.800);
-  --color-secondary-disabled: theme(colors.stone.300);
-  --color-secondary-light: theme(colors.stone.100);
-  --color-secondary-dark: theme(colors.stone.800);
+  --color-secondary-weak: theme(colors.stone.700);
+  --color-secondary-medium: theme(colors.stone.800);
+  --color-secondary-strong: theme(colors.stone.900);
 
   /* Success Colors */
   --color-success: theme(colors.green.600);
-  --color-success-hover: theme(colors.green.700);
-  --color-success-active: theme(colors.green.800);
-  --color-success-disabled: theme(colors.green.300);
-  --color-success-light: theme(colors.green.100);
-  --color-success-dark: theme(colors.green.800);
-  --color-success-surface: theme(colors.green.100);
-  --color-success-text: theme(colors.green.800);
+  --color-success-weak: theme(colors.green.700);
+  --color-success-medium: theme(colors.green.800);
+  --color-success-strong: theme(colors.green.900);
 
   /* Warning Colors */
   --color-warning: theme(colors.yellow.600);
-  --color-warning-hover: theme(colors.yellow.700);
-  --color-warning-active: theme(colors.yellow.800);
-  --color-warning-disabled: theme(colors.yellow.300);
-  --color-warning-light: theme(colors.yellow.100);
-  --color-warning-dark: theme(colors.yellow.800);
-  --color-warning-surface: theme(colors.yellow.100);
-  --color-warning-text: theme(colors.yellow.800);
+  --color-warning-weak: theme(colors.yellow.700);
+  --color-warning-medium: theme(colors.yellow.800);
+  --color-warning-strong: theme(colors.yellow.900);
 
   /* Error Colors */
   --color-error: theme(colors.red.600);
-  --color-error-hover: theme(colors.red.700);
-  --color-error-active: theme(colors.red.800);
-  --color-error-disabled: theme(colors.red.300);
-  --color-error-light: theme(colors.red.100);
-  --color-error-dark: theme(colors.red.800);
-  --color-error-surface: theme(colors.red.100);
-  --color-error-text: theme(colors.red.800);
+  --color-error-weak: theme(colors.red.700);
+  --color-error-medium: theme(colors.red.800);
+  --color-error-strong: theme(colors.red.900);
 
   /* Info Colors */
   --color-info: theme(colors.blue.600);
-  --color-info-hover: theme(colors.blue.700);
+  --color-info-weak: theme(colors.blue.700);
   --color-info-active: theme(colors.blue.800);
-  --color-info-disabled: theme(colors.blue.300);
-  --color-info-light: theme(colors.blue.100);
-  --color-info-dark: theme(colors.blue.800);
-  --color-info-surface: theme(colors.blue.100);
-  --color-info-text: theme(colors.blue.800);
+  --color-info-medium: theme(colors.blue.800);
+  --color-info-strong: theme(colors.blue.900);
+
+  /* Action Colors - Dark mode variants */
+  /* Primary Actions */
+  --color-action-primary: theme(colors.blue.500);
+  --color-action-primary-hover: theme(colors.blue.600);
+  --color-action-primary-active: theme(colors.blue.700);
+  --color-action-primary-disabled: theme(colors.blue.700);
+  --color-action-primary-subtle: theme(colors.blue.950);
+  --color-action-primary-subtle-hover: theme(colors.blue.900);
+
+  /* Secondary Actions */
+  --color-action-secondary: theme(colors.stone.500);
+  --color-action-secondary-hover: theme(colors.stone.600);
+  --color-action-secondary-active: theme(colors.stone.700);
+  --color-action-secondary-disabled: theme(colors.stone.700);
+  --color-action-secondary-subtle: theme(colors.stone.800);
+  --color-action-secondary-subtle-hover: theme(colors.stone.700);
+
+  /* Danger Actions */
+  --color-action-danger: theme(colors.red.500);
+  --color-action-danger-hover: theme(colors.red.600);
+  --color-action-danger-active: theme(colors.red.700);
+  --color-action-danger-disabled: theme(colors.red.700);
+  --color-action-danger-subtle: theme(colors.red.950);
+  --color-action-danger-subtle-hover: theme(colors.red.900);
 
   /* Shadow Colors */
   --shadow-opacity: 0.3;
@@ -285,24 +301,48 @@
    ======================================== */
 
 /* Surface utilities */
-.bg-surface {
-  background-color: var(--color-surface);
+.bg-surface-level-0 {
+  background-color: var(--color-surface-level-0);
 }
 
-.bg-surface-secondary {
-  background-color: var(--color-surface-secondary);
+.bg-surface-level-1 {
+  background-color: var(--color-surface-level-1);
 }
 
-.bg-surface-tertiary {
-  background-color: var(--color-surface-tertiary);
+.bg-surface-level-2 {
+  background-color: var(--color-surface-level-2);
 }
 
 .bg-surface-elevated {
   background-color: var(--color-surface-elevated);
 }
 
+.bg-surface-level-0:hover {
+  background-color: var(--color-surface-level-0-hover);
+}
+
+.bg-surface-level-1:hover {
+  background-color: var(--color-surface-level-1-hover);
+}
+
+.bg-surface-level-2:hover {
+  background-color: var(--color-surface-level-2-hover);
+}
+
+.bg-surface-elevated:hover {
+  background-color: var(--color-surface-elevated-hover);
+}
+
+.bg-surface-hover {
+  background-color: var(--color-surface-hover);
+}
+
 .bg-surface-hover:hover {
   background-color: var(--color-surface-hover);
+}
+
+.bg-surface-active {
+  background-color: var(--color-surface-active);
 }
 
 .bg-surface-active:active {
@@ -395,4 +435,80 @@
 .focus-outline {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
+}
+
+/* Action utilities - For interactive elements like buttons */
+/* Primary Actions */
+.bg-action-primary {
+  background-color: var(--color-action-primary);
+}
+
+.bg-action-primary:hover {
+  background-color: var(--color-action-primary-hover);
+}
+
+.bg-action-primary:active {
+  background-color: var(--color-action-primary-active);
+}
+
+.bg-action-primary:disabled {
+  background-color: var(--color-action-primary-disabled);
+}
+
+.bg-action-primary-subtle {
+  background-color: var(--color-action-primary-subtle);
+}
+
+.bg-action-primary-subtle:hover {
+  background-color: var(--color-action-primary-subtle-hover);
+}
+
+/* Secondary Actions */
+.bg-action-secondary {
+  background-color: var(--color-action-secondary);
+}
+
+.bg-action-secondary:hover {
+  background-color: var(--color-action-secondary-hover);
+}
+
+.bg-action-secondary:active {
+  background-color: var(--color-action-secondary-active);
+}
+
+.bg-action-secondary:disabled {
+  background-color: var(--color-action-secondary-disabled);
+}
+
+.bg-action-secondary-subtle {
+  background-color: var(--color-action-secondary-subtle);
+}
+
+.bg-action-secondary-subtle:hover {
+  background-color: var(--color-action-secondary-subtle-hover);
+}
+
+/* Danger Actions */
+.bg-action-danger {
+  background-color: var(--color-action-danger);
+}
+
+.bg-action-danger:hover {
+  background-color: var(--color-action-danger-hover);
+}
+
+.bg-action-danger:active {
+  background-color: var(--color-action-danger-active);
+}
+
+.bg-action-danger:disabled {
+  background-color: var(--color-action-danger-disabled);
+}
+
+.bg-action-danger-subtle {
+  background-color: var(--color-action-danger-subtle);
+}
+
+.bg-action-danger-subtle:hover {
+  background-color: var(--color-action-danger-subtle-hover);
 }

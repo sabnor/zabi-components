@@ -91,7 +91,7 @@
 
 <div class="min-h-screen bg-background">
     <header
-        class="flex items-center justify-between p-4 bg-surface border-b border-border"
+        class="flex items-center justify-between p-4 bg-surface-level-0 border-b border-border"
     >
         <h1 class="text-xl font-bold text-text">Zabi Components</h1>
         <div class="flex items-center gap-4">
@@ -349,7 +349,7 @@
         </section>
     </main>
 
-    <footer class="bg-surface-secondary border-t border-border py-8">
+    <footer class="bg-surface-level-1 border-t border-border py-8">
         <div class="container mx-auto px-6">
             <div
                 class="flex flex-col md:flex-row justify-between items-center gap-4"
