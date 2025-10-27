@@ -8,7 +8,13 @@ const meta = {
         layout: 'fullscreen'
     },
     tags: ['autodocs'],
-    argTypes: {}
+    argTypes: {
+        size: {
+            control: 'select',
+            options: ['sm', 'md', 'lg'],
+            description: 'Size of the modal'
+        }
+    }
 } satisfies Meta<typeof Modal>;
 
 export default meta;
@@ -47,5 +53,44 @@ export const Closed: Story = {
         Component: Modal,
         props: args,
         children: ['This modal is closed.']
+    })
+};
+
+export const Small: Story = {
+    args: {
+        isOpen: true,
+        title: 'Small Modal',
+        size: 'sm'
+    },
+    render: (args) => ({
+        Component: Modal,
+        props: args,
+        children: ['Small modal (max width 24rem on desktop). On mobile, all modals slide up from the bottom.']
+    })
+};
+
+export const Medium: Story = {
+    args: {
+        isOpen: true,
+        title: 'Medium Modal',
+        size: 'md'
+    },
+    render: (args) => ({
+        Component: Modal,
+        props: args,
+        children: ['Medium modal (max width 28rem on desktop). This is the default size.']
+    })
+};
+
+export const Large: Story = {
+    args: {
+        isOpen: true,
+        title: 'Large Modal',
+        size: 'lg'
+    },
+    render: (args) => ({
+        Component: Modal,
+        props: args,
+        children: ['Large modal (max width 42rem on desktop). Perfect for displaying more content.']
     })
 };
