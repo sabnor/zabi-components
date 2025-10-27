@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/svelte';
+import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Tooltip from '../components/atoms/Tooltip.svelte';
 import Button from '../components/atoms/Button.svelte';
 

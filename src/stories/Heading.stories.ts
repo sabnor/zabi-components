@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/svelte';
+import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Heading from '../components/atoms/Heading.svelte';
 
 const meta = {
@@ -61,8 +61,12 @@ export const H6: Story = {
 };
 
 export const AllLevels: Story = {
+    args: {
+        level: 1,
+        text: 'Heading'
+    },
     render: () => ({
-        Component: 'div',
+        Component: 'div' as any,
         props: { style: 'display: flex; flex-direction: column; gap: 1rem;' },
         children: [
             { Component: Heading, props: { level: 1, text: 'Heading 1 - Bold' } },
@@ -72,7 +76,7 @@ export const AllLevels: Story = {
             { Component: Heading, props: { level: 5, text: 'Heading 5 - Medium' } },
             { Component: Heading, props: { level: 6, text: 'Heading 6 - Medium' } }
         ]
-    })
+    } as any)
 };
 
 export const WithSlot: Story = {

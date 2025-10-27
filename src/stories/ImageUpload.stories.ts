@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/svelte';
+import type { Meta, StoryObj } from '@storybook/sveltekit';
 import ImageUpload from '../components/molecules/ImageUpload.svelte';
 
 const meta = {

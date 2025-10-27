@@ -104,7 +104,7 @@ function _page($$renderer, $$props) {
         $$renderer3.push(`<!----> `);
         Button($$renderer3, { variant: "ghost", text: "Ghost" });
         $$renderer3.push(`<!----> `);
-        Button($$renderer3, { variant: "brand", text: "Brand" });
+        Button($$renderer3, { variant: "primary", text: "Primary" });
         $$renderer3.push(`<!----></div>`);
       },
       $$slots: { default: true }
