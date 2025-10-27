@@ -6,6 +6,7 @@ interface Props {
     }>;
     currentPath?: string;
     onclick?: (event: Event) => void;
+    className?: string;
 }
 type $$ComponentProps = Props & {
     children?: any;

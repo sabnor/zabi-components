@@ -23,11 +23,11 @@
 </script>
 
 <div
-    class="component-demo bg-surface border border-border rounded-lg overflow-hidden {className}"
+    class="component-demo bg-surface-level-0 border border-border rounded-lg overflow-hidden {className}"
     {...restProps}
 >
     <!-- Header -->
-    <div class="px-6 py-4 border-b border-border bg-surface-secondary">
+    <div class="px-6 py-4 border-b border-border bg-surface-level-1">
         <div class="flex items-center justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-text">{title}</h3>
@@ -39,7 +39,7 @@
             </div>
             <button
                 onclick={() => (showCode = !showCode)}
-                class="flex items-center gap-2 px-3 py-1.5 text-sm text-text-secondary hover:text-text hover:bg-surface rounded-md transition-colors duration-200"
+                class="flex items-center gap-2 px-3 py-1.5 text-sm text-text-secondary hover:text-text hover:bg-surface-level-0 rounded-md transition-colors duration-200"
                 aria-label={showCode ? "Show preview" : "Show code"}
             >
                 {#if showCode}

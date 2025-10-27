@@ -26,7 +26,7 @@
 
     const cardClasses = $derived(() => {
         const baseClasses =
-            "bg-surface rounded-lg transition-all duration-200 hover:shadow-adaptive-md min-w-64";
+            "bg-surface-level-0 rounded-lg transition-all duration-200 hover:shadow-adaptive-md min-w-64";
         const interactiveClasses = onclick
             ? "cursor-pointer hover:bg-surface-hover hover:border-focus"
             : "";

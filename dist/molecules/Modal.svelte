@@ -1,7 +1,10 @@
 <script lang="ts">
+    type Size = "sm" | "md" | "lg";
+
     interface Props {
         isOpen?: boolean;
         title?: string;
+        size?: Size;
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
     }
@@ -9,12 +12,21 @@
     let {
         isOpen = false,
         title = "",
+        size = "md",
         onclick,
         onkeydown,
         children,
         footer,
         ...restProps
     }: Props & { children?: any; footer?: any } = $props();
+
+    const sizeClasses = $derived(
+        {
+            sm: "w-full md:w-[24rem]",
+            md: "w-full md:w-[28rem]",
+            lg: "w-full md:w-[42rem]",
+        }[size] || "w-full md:w-[28rem]",
+    );
 
     function closeModal(event?: Event) {
         isOpen = false;
@@ -42,7 +54,7 @@
 
 {#if isOpen}
     <div
-        class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+        class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center p-0 md:p-4 z-50"
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
         role="dialog"
@@ -50,7 +62,7 @@
         tabindex="-1"
     >
         <div
-            class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+            class="bg-white rounded-t-2xl md:rounded-lg shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none"
         >
             <!-- Header -->
             <div
@@ -60,7 +72,7 @@
                 <button
                     type="button"
                     onclick={closeModal}
-                    class="text-gray-400 hover:text-gray-600 text-2xl"
+                    class="text-gray-400 hover:text-gray-600 text-2xl cursor-pointer"
                     aria-label="Close"
                 >
                     ×
