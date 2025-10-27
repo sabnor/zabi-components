@@ -136,12 +136,12 @@ function Modal($$renderer, $$props) {
     }[size] || "w-full md:w-[28rem]";
     if (isOpen) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center p-0 md:p-4 z-50" role="dialog" aria-modal="true" tabindex="-1"><div${attr_class(`bg-white rounded-t-2xl md:rounded-lg shadow-xl min-w-[320px] ${stringify(sizeClasses)} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none`)}><div class="flex items-center justify-between p-6 border-b border-gray-200"><h2 class="text-xl font-semibold text-headline">${escape_html(title)}</h2> <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl cursor-pointer" aria-label="Close">×</button></div> <div class="p-6">`);
+      $$renderer2.push(`<div class="fixed inset-0 bg-background/50 dark:bg-background/80 flex items-end md:items-center justify-center p-0 md:p-4 z-50" role="dialog" aria-modal="true" tabindex="-1"><div${attr_class(`bg-surface-elevated rounded-t-2xl md:rounded-lg shadow-xl min-w-[320px] ${stringify(sizeClasses)} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none`)}><div class="flex items-center justify-between p-6 border-b border-(--color-border)"><h2 class="text-xl font-semibold text-headline">${escape_html(title)}</h2> <button type="button" class="text-description hover:text-headline text-2xl cursor-pointer transition-colors" aria-label="Close">×</button></div> <div class="p-6">`);
       children?.($$renderer2);
       $$renderer2.push(`<!----></div> `);
       if (footer) {
         $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<div class="flex justify-end gap-3 p-6 border-t border-gray-200">`);
+        $$renderer2.push(`<div class="flex justify-end gap-3 p-6 border-t border-(--color-border)">`);
         footer?.($$renderer2);
         $$renderer2.push(`<!----></div>`);
       } else {
