@@ -54,7 +54,7 @@
 
 {#if isOpen}
     <div
-        class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center p-0 md:p-4 z-50"
+        class="fixed inset-0 bg-background/50 dark:bg-background/80 flex items-end md:items-center justify-center p-0 md:p-4 z-50"
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
         role="dialog"
@@ -62,17 +62,17 @@
         tabindex="-1"
     >
         <div
-            class="bg-white rounded-t-2xl md:rounded-lg shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none"
+            class="bg-surface-elevated rounded-t-2xl md:rounded-lg shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none"
         >
             <!-- Header -->
             <div
-                class="flex items-center justify-between p-6 border-b border-gray-200"
+                class="flex items-center justify-between p-6 border-b border-(--color-border)"
             >
                 <h2 class="text-xl font-semibold text-headline">{title}</h2>
                 <button
                     type="button"
                     onclick={closeModal}
-                    class="text-gray-400 hover:text-gray-600 text-2xl cursor-pointer"
+                    class="text-description hover:text-headline text-2xl cursor-pointer transition-colors"
                     aria-label="Close"
                 >
                     ×
@@ -87,7 +87,7 @@
             <!-- Footer -->
             {#if footer}
                 <div
-                    class="flex justify-end gap-3 p-6 border-t border-gray-200"
+                    class="flex justify-end gap-3 p-6 border-t border-(--color-border)"
                 >
                     {@render footer?.()}
                 </div>
