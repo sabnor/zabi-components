@@ -42,7 +42,7 @@
     // Toggle button classes using full class names
     const toggleButtonClasses = $derived(() =>
         [
-            "relative inline-flex w-11 h-6 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2",
+            "relative inline-flex w-10 h-6 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2",
             checked ? "bg-brand-600" : "bg-gray-200",
             disabled && "opacity-50 cursor-not-allowed",
         ]
@@ -54,7 +54,7 @@
     const toggleThumbClasses = $derived(() => {
         const baseClasses =
             "pointer-events-none inline-block w-5 h-5 transform rounded-full bg-white shadow-lg transition duration-200 ease-in-out";
-        const positionClasses = checked ? "translate-x-5" : "translate-x-0";
+        const positionClasses = checked ? "translate-x-4" : "translate-x-0";
 
         return `${baseClasses} ${positionClasses}`.trim();
     });
