@@ -1,5 +1,5 @@
 interface Props {
-    variant?: "info" | "success" | "warning" | "error";
+    variant?: "info" | "success" | "warning" | "error" | "neutral" | "energetic";
     title?: string;
     message?: string;
     closable?: boolean;

@@ -9,6 +9,58 @@
   /* Typography - Nunito Sans font family */
   --font-family-sans: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
 
+  /* Brand Color Scale */
+  --color-brand-50: #f7faff;
+  --color-brand-100: #edf2fb; /* provided */
+  --color-brand-200: #dfe7fb;
+  --color-brand-300: #ccdbfd; /* provided */
+  --color-brand-400: #abc4ff; /* provided */
+  --color-brand-500: #8fa8ff;
+  --color-brand-600: #6e84fa;
+  --color-brand-700: #5366e2;
+  --color-brand-800: #3f4fc0;
+  --color-brand-900: #2f3c99;
+  --color-brand-950: #1f2866;
+
+  /* Citron Color Scale */
+  --color-citron-50: #f9faeb;
+  --color-citron-100: #f1f5cf;
+  --color-citron-200: #e4ecaa;
+  --color-citron-300: #d5e184;
+  --color-citron-400: #c7d460;
+  --color-citron-500: #bbbe64; /* provided */
+  --color-citron-600: #a3a852;
+  --color-citron-700: #848a43;
+  --color-citron-800: #666c35;
+  --color-citron-900: #4d5229;
+  --color-citron-950: #323518;
+
+  /* Pine Color Scale */
+  --color-pine-50: #e9f6f2;
+  --color-pine-100: #d2ece4;
+  --color-pine-200: #a7d9c9;
+  --color-pine-300: #78c4ad;
+  --color-pine-400: #49ad91;
+  --color-pine-500: #0C5D43; /* provided */
+  --color-pine-600: #0a513a;
+  --color-pine-700: #084532;
+  --color-pine-800: #063a2a;
+  --color-pine-900: #04231a;
+  --color-pine-950: #02160f;
+
+  /* Iris Color Scale */
+  --color-iris-50: #f4f4fa;
+  --color-iris-100: #e9e9f7;
+  --color-iris-200: #d6d6f0;
+  --color-iris-300: #bdbde6;
+  --color-iris-400: #a3a3d8;
+  --color-iris-500: #6969B3; /* provided */
+  --color-iris-600: #58589e;
+  --color-iris-700: #474788;
+  --color-iris-800: #38386f;
+  --color-iris-900: #2a2a56;
+  --color-iris-950: #1b1b37;
+
   /* Surface Colors - Level-based naming with stone palette */
   --color-surface-level-0: theme(colors.stone.50);
   --color-surface-level-0-hover: theme(colors.stone.100);
@@ -45,11 +97,13 @@
   --color-caption: theme(colors.stone.500);
   --color-input-placeholder: theme(colors.stone.400);
   --color-label: theme(colors.stone.700);
-  --color-link: theme(colors.blue.600);
-  --color-link-hover: theme(colors.blue.700);
-  --color-success: theme(colors.green.700);
-  --color-warning: theme(colors.yellow.700);
-  --color-error: theme(colors.red.700);
+  --color-link: theme(colors.brand.600);
+  --color-link-hover: theme(colors.brand.700);
+  --color-success-text: theme(colors.pine.700);
+  --color-warning-text: theme(colors.amber.700);
+  --color-neutral-text: theme(colors.stone.700);
+  --color-energetic-text: theme(colors.citron.700);
+  --color-error-text: theme(colors.red.700);
   --color-inverse: theme(colors.white);
   --color-disabled: theme(colors.stone.400);
 
@@ -60,16 +114,16 @@
   --color-border-strong: theme(colors.stone.500);
 
   /* Focus Colors */
-  --color-focus: theme(colors.blue.500);
-  --color-focus-weak: theme(colors.blue.600);
-  --color-focus-medium: theme(colors.blue.700);
-  --color-focus-strong: theme(colors.blue.800);
+  --color-focus: theme(colors.brand.500);
+  --color-focus-weak: theme(colors.brand.600);
+  --color-focus-medium: theme(colors.brand.700);
+  --color-focus-strong: theme(colors.brand.800);
 
   /* Primary Colors */
-  --color-primary: theme(colors.blue.600);
-  --color-primary-weak: theme(colors.blue.700);
-  --color-primary-medium: theme(colors.blue.800);
-  --color-primary-strong: theme(colors.blue.900);
+  --color-primary: theme(colors.brand.600);
+  --color-primary-weak: theme(colors.brand.700);
+  --color-primary-medium: theme(colors.brand.800);
+  --color-primary-strong: theme(colors.brand.900);
 
   /* Secondary Colors */
   --color-secondary: theme(colors.stone.600);
@@ -78,37 +132,51 @@
   --color-secondary-strong: theme(colors.stone.900);
 
   /* Success Colors */
-  --color-success: theme(colors.green.600);
-  --color-success-weak: theme(colors.green.700);
-  --color-success-medium: theme(colors.green.800);
-  --color-success-strong: theme(colors.green.900);  
+  --color-success: theme(colors.pine.600);
+  --color-success-weak: theme(colors.pine.700);
+  --color-success-medium: theme(colors.pine.800);
+  --color-success-strong: theme(colors.pine.900);  
 
   /* Warning Colors */
-  --color-warning: theme(colors.yellow.600);
-  --color-warning-weak: theme(colors.yellow.700);
-  --color-warning-medium: theme(colors.yellow.800);
-  --color-warning-strong: theme(colors.yellow.900);
+  --color-warning: theme(colors.amber.500);
+  --color-warning-weak: theme(colors.amber.600);
+  --color-warning-medium: theme(colors.amber.400);
+  --color-warning-strong: theme(colors.amber.300);
 
   /* Error Colors */
-  --color-error: theme(colors.red.600);
-  --color-error-weak: theme(colors.red.700);
-  --color-error-medium: theme(colors.red.800);
-  --color-error-strong: theme(colors.red.900);
+  --color-error: theme(colors.red.500);
+  --color-error-weak: theme(colors.red.600);
+  --color-error-medium: theme(colors.red.400);
+  --color-error-strong: theme(colors.red.300);
+
+  /* Energetic Colors (Citron) */
+  --color-energetic: theme(colors.citron.500);
+  --color-energetic-weak: theme(colors.citron.600);
+  --color-energetic-medium: theme(colors.citron.400);
+  --color-energetic-strong: theme(colors.citron.300);
+
+  /* Neutral Colors */
+  --color-neutral: theme(colors.stone.600);
+  --color-neutral-weak: theme(colors.stone.700);
+  --color-neutral-medium: theme(colors.stone.800);
+  --color-neutral-strong: theme(colors.stone.900);
 
   /* Info Colors */
-  --color-info: theme(colors.blue.600);
-  --color-info-weak: theme(colors.blue.700);
-  --color-info-medium: theme(colors.blue.800);
-  --color-info-strong: theme(colors.blue.900);
+  --color-info: theme(colors.iris.600);
+  --color-info-weak: theme(colors.iris.700);
+  --color-info-medium: theme(colors.iris.800);
+  --color-info-strong: theme(colors.iris.900);
+  /* Text alias */
+  --color-info-text: var(--color-info);
 
   /* Action Colors - For interactive elements like buttons */
   /* Primary Actions */
-  --color-action-primary: theme(colors.blue.600);
-  --color-action-primary-hover: theme(colors.blue.700);
-  --color-action-primary-active: theme(colors.blue.800);
-  --color-action-primary-disabled: theme(colors.blue.300);
-  --color-action-primary-subtle: theme(colors.blue.50);
-  --color-action-primary-subtle-hover: theme(colors.blue.100);
+  --color-action-primary: theme(colors.brand.600);
+  --color-action-primary-hover: theme(colors.brand.700);
+  --color-action-primary-active: theme(colors.brand.800);
+  --color-action-primary-disabled: theme(colors.brand.300);
+  --color-action-primary-subtle: theme(colors.brand.50);
+  --color-action-primary-subtle-hover: theme(colors.brand.100);
 
   /* Secondary Actions */
   --color-action-secondary: theme(colors.stone.600);
@@ -206,11 +274,13 @@ body {
   --color-caption: theme(colors.stone.400);
   --color-input-placeholder: theme(colors.stone.500);
   --color-label: theme(colors.stone.200);
-  --color-link: theme(colors.blue.400);
-  --color-link-hover: theme(colors.blue.300);
-  --color-success: theme(colors.green.400);
-  --color-warning: theme(colors.yellow.400);
-  --color-error: theme(colors.red.400);
+  --color-link: theme(colors.brand.400);
+  --color-link-hover: theme(colors.brand.300);
+  --color-success-text: theme(colors.pine.400);
+  --color-warning-text: theme(colors.amber.400);
+  --color-neutral-text: theme(colors.stone.400);
+  --color-energetic-text: theme(colors.citron.400);
+  --color-error-text: theme(colors.red.400);
   --color-inverse: theme(colors.stone.900);
   --color-disabled: theme(colors.stone.500);
 
@@ -221,17 +291,17 @@ body {
   --color-border-strong: theme(colors.stone.300);
 
   /* Focus Colors */
-  --color-focus: theme(colors.blue.400);
-  --color-focus-weak: theme(colors.blue.500);
-  --color-focus-medium: theme(colors.blue.600);
-  --color-focus-strong: theme(colors.blue.700);
-  --color-focus-disabled: theme(colors.blue.600);
+  --color-focus: theme(colors.brand.400);
+  --color-focus-weak: theme(colors.brand.500);
+  --color-focus-medium: theme(colors.brand.600);
+  --color-focus-strong: theme(colors.brand.700);
+  --color-focus-disabled: theme(colors.brand.600);
 
   /* Primary Colors */
-  --color-primary: theme(colors.blue.600);
-  --color-primary-weak: theme(colors.blue.700);
-  --color-primary-medium: theme(colors.blue.800);
-  --color-primary-strong: theme(colors.blue.900);
+  --color-primary: theme(colors.brand.600);
+  --color-primary-weak: theme(colors.brand.700);
+  --color-primary-medium: theme(colors.brand.800);
+  --color-primary-strong: theme(colors.brand.900);
 
   /* Secondary Colors */
   --color-secondary: theme(colors.stone.600);
@@ -240,16 +310,16 @@ body {
   --color-secondary-strong: theme(colors.stone.900);
 
   /* Success Colors */
-  --color-success: theme(colors.green.600);
-  --color-success-weak: theme(colors.green.700);
-  --color-success-medium: theme(colors.green.800);
-  --color-success-strong: theme(colors.green.900);
+  --color-success: theme(colors.pine.500);
+  --color-success-weak: theme(colors.pine.600);
+  --color-success-medium: theme(colors.pine.400);
+  --color-success-strong: theme(colors.pine.300);
 
   /* Warning Colors */
-  --color-warning: theme(colors.yellow.600);
-  --color-warning-weak: theme(colors.yellow.700);
-  --color-warning-medium: theme(colors.yellow.800);
-  --color-warning-strong: theme(colors.yellow.900);
+  --color-warning: theme(colors.amber.600);
+  --color-warning-weak: theme(colors.amber.700);
+  --color-warning-medium: theme(colors.amber.800);
+  --color-warning-strong: theme(colors.amber.900);
 
   /* Error Colors */
   --color-error: theme(colors.red.600);
@@ -257,21 +327,35 @@ body {
   --color-error-medium: theme(colors.red.800);
   --color-error-strong: theme(colors.red.900);
 
+  /* Energetic Colors (Citron) */
+  --color-energetic: theme(colors.citron.600);
+  --color-energetic-weak: theme(colors.citron.700);
+  --color-energetic-medium: theme(colors.citron.800);
+  --color-energetic-strong: theme(colors.citron.900);
+
+  /* Neutral Colors */
+  --color-neutral: theme(colors.stone.600);
+  --color-neutral-weak: theme(colors.stone.500);
+  --color-neutral-medium: theme(colors.stone.400);
+  --color-neutral-strong: theme(colors.stone.300);
+
   /* Info Colors */
-  --color-info: theme(colors.blue.600);
-  --color-info-weak: theme(colors.blue.700);
-  --color-info-active: theme(colors.blue.800);
-  --color-info-medium: theme(colors.blue.800);
-  --color-info-strong: theme(colors.blue.900);
+  --color-info: theme(colors.iris.500);
+  --color-info-weak: theme(colors.iris.600);
+  --color-info-active: theme(colors.iris.400);
+  --color-info-medium: theme(colors.iris.400);
+  --color-info-strong: theme(colors.iris.300);
+  /* Text alias */
+  --color-info-text: var(--color-info);
 
   /* Action Colors - Dark mode variants */
   /* Primary Actions */
-  --color-action-primary: theme(colors.blue.500);
-  --color-action-primary-hover: theme(colors.blue.600);
-  --color-action-primary-active: theme(colors.blue.700);
-  --color-action-primary-disabled: theme(colors.blue.700);
-  --color-action-primary-subtle: theme(colors.blue.950);
-  --color-action-primary-subtle-hover: theme(colors.blue.900);
+  --color-action-primary: theme(colors.brand.500);
+  --color-action-primary-hover: theme(colors.brand.600);
+  --color-action-primary-active: theme(colors.brand.700);
+  --color-action-primary-disabled: theme(colors.brand.700);
+  --color-action-primary-subtle: theme(colors.brand.950);
+  --color-action-primary-subtle-hover: theme(colors.brand.900);
 
   /* Secondary Actions */
   --color-action-secondary: theme(colors.stone.500);
@@ -365,16 +449,30 @@ body {
   color: var(--color-link-hover);
 }
 
+
 .text-success {
-  color: var(--color-success);
+  color: var(--color-success-text);
 }
 
 .text-warning {
-  color: var(--color-warning);
+  color: var(--color-warning-text);
 }
 
 .text-error {
-  color: var(--color-error);
+  color: var(--color-error-text);
+}
+
+/* Additional status text utilities */
+.text-info {
+  color: var(--color-info-text);
+}
+
+.text-neutral {
+  color: var(--color-neutral-text);
+}
+
+.text-energetic {
+  color: var(--color-energetic-text);
 }
 
 .text-inverse {
@@ -404,6 +502,31 @@ body {
 
 .border-disabled:disabled {
   border-color: var(--color-border-disabled);
+}
+
+/* Status border utilities */
+.border-success {
+  border-color: var(--color-success);
+}
+
+.border-warning {
+  border-color: var(--color-warning);
+}
+
+.border-error {
+  border-color: var(--color-error);
+}
+
+.border-info {
+  border-color: var(--color-info);
+}
+
+.border-neutral {
+  border-color: var(--color-neutral);
+}
+
+.border-energetic {
+  border-color: var(--color-energetic);
 }
 
 /* Focus utilities */

@@ -21,7 +21,7 @@
         success: "bg-green-100 border-green-300 text-success",
         error: "bg-red-100 border-red-300 text-error",
         warning: "bg-yellow-100 border-yellow-300 text-warning",
-        info: "bg-blue-100 border-blue-300 text-body",
+        info: "bg-iris-100 border-iris-300 text-body",
     };
 
     function closeToast(event: Event) {

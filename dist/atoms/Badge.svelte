@@ -13,7 +13,14 @@
         text = "",
         showIcon = true,
     }: {
-        variant?: "default" | "success" | "warning" | "error" | "info";
+        variant?:
+            | "default"
+            | "success"
+            | "warning"
+            | "error"
+            | "info"
+            | "neutral"
+            | "energetic";
         size?: "sm" | "md" | "lg";
         text: string;
         showIcon?: boolean;
@@ -35,14 +42,18 @@
         // Variant classes - using semantic color system
         const variantClass =
             variant === "success"
-                ? "bg-surface-level-1 border-secondary text-success"
+                ? "bg-surface-level-1 border-success text-success"
                 : variant === "warning"
                   ? "bg-surface-level-1 border-secondary text-warning"
                   : variant === "error"
                     ? "bg-surface-level-1 border-secondary text-error"
                     : variant === "info"
-                      ? "bg-surface-level-1 border-secondary text-body"
-                      : "bg-surface-level-1 border-secondary text-body"; // default
+                      ? "bg-surface-level-1 border-secondary text-info"
+                      : variant === "neutral"
+                        ? "bg-surface-level-1 border-secondary text-neutral"
+                        : variant === "energetic"
+                          ? "bg-surface-level-1 border-secondary text-energetic"
+                          : "bg-surface-level-1 border-secondary text-body"; // default
 
         return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     });
@@ -67,6 +78,10 @@
         {:else if variant === "error"}
             <X size={iconSize()} class={iconSpacingClass()} />
         {:else if variant === "info"}
+            <Info size={iconSize()} class={iconSpacingClass()} />
+        {:else if variant === "neutral"}
+            <Info size={iconSize()} class={iconSpacingClass()} />
+        {:else if variant === "energetic"}
             <Info size={iconSize()} class={iconSpacingClass()} />
         {:else}
             <Info size={iconSize()} class={iconSpacingClass()} />
