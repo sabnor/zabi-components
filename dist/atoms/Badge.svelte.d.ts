@@ -1,5 +1,5 @@
 type $$ComponentProps = {
-    variant?: "default" | "success" | "warning" | "error" | "info";
+    variant?: "default" | "success" | "warning" | "error" | "info" | "neutral" | "energetic";
     size?: "sm" | "md" | "lg";
     text: string;
     showIcon?: boolean;

@@ -1,6 +1,6 @@
 <script lang="ts">
     interface Props {
-        variant?: "info" | "success" | "warning" | "error";
+        variant?: "info" | "success" | "warning" | "error" | "neutral" | "energetic";
         title?: string;
         message?: string;
         closable?: boolean;
@@ -27,10 +27,12 @@
     }
 
     let alertClasses = $derived({
-        info: "bg-info-surface text-body border border-info",
-        success: "bg-success-surface text-success border border-success",
-        warning: "bg-warning-surface text-warning border border-warning",
-        error: "bg-error-surface text-error border border-error",
+        info: "bg-surface-level-1 text-info border border-info",
+        success: "bg-surface-level-1 text-success border border-success",
+        warning: "bg-surface-level-1 text-warning border border-warning",
+        error: "bg-surface-level-1 text-error border border-error",
+        neutral: "bg-surface-level-1 text-neutral border border-neutral",
+        energetic: "bg-surface-level-1 text-energetic border border-energetic",
     });
 
     let alertRole = $derived(
@@ -49,6 +51,12 @@
         </svg>`,
         error: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>`,
+        neutral: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM10 9a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+        </svg>`,
+        energetic: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M11 3L4 14h6l-1 7 7-11h-6l1-7z" />
         </svg>`,
     });
 </script>
