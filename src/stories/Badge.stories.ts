@@ -11,7 +11,7 @@ const meta = {
     argTypes: {
         variant: {
             control: { type: 'select' },
-            options: ['default', 'success', 'warning', 'error', 'info']
+            options: ['default', 'success', 'warning', 'error', 'info', 'neutral', 'energetic']
         },
         text: {
             control: { type: 'text' }
@@ -57,6 +57,20 @@ export const Info: Story = {
     args: {
         variant: 'info',
         text: 'Info Badge'
+    }
+};
+
+export const Neutral: Story = {
+    args: {
+        variant: 'neutral',
+        text: 'Neutral Badge'
+    }
+};
+
+export const Energetic: Story = {
+    args: {
+        variant: 'energetic',
+        text: 'Energetic Badge'
     }
 };
 
@@ -153,7 +167,9 @@ export const AllVariantsWithIcons: Story = {
             { Component: Badge, props: { variant: 'success', text: 'Success', showIcon: true } },
             { Component: Badge, props: { variant: 'warning', text: 'Warning', showIcon: true } },
             { Component: Badge, props: { variant: 'error', text: 'Error', showIcon: true } },
-            { Component: Badge, props: { variant: 'info', text: 'Info', showIcon: true } }
+            { Component: Badge, props: { variant: 'info', text: 'Info', showIcon: true } },
+            { Component: Badge, props: { variant: 'neutral', text: 'Neutral', showIcon: true } },
+            { Component: Badge, props: { variant: 'energetic', text: 'Energetic', showIcon: true } }
         ]
     } as any),
     parameters: {

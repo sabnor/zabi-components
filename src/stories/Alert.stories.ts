@@ -8,7 +8,12 @@ const meta = {
         layout: 'centered'
     },
     tags: ['autodocs'],
-    argTypes: {}
+    argTypes: {
+        variant: {
+            control: { type: 'select' },
+            options: ['info', 'success', 'warning', 'error', 'neutral', 'energetic']
+        }
+    }
 } satisfies Meta<typeof Alert>;
 
 export default meta;
@@ -43,6 +48,22 @@ export const Error: Story = {
         variant: 'error',
         title: 'Error',
         message: 'Something went wrong. Please try again.'
+    }
+};
+
+export const Neutral: Story = {
+    args: {
+        variant: 'neutral',
+        title: 'Neutral',
+        message: 'General notice without positive or negative connotation.'
+    }
+};
+
+export const Energetic: Story = {
+    args: {
+        variant: 'energetic',
+        title: 'Energetic',
+        message: 'Promotional or accentual information using the citron scale.'
     }
 };
 

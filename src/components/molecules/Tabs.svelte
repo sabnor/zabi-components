@@ -49,8 +49,8 @@
                 class="px-4 py-2 text-sm font-medium border-b-2 transition-colors {activeTab ===
                 tab.id
                     ? variant === 'pills'
-                        ? 'bg-blue-100 text-blue-700 border-blue-500'
-                        : 'border-blue-500 text-body'
+                        ? 'bg-brand-100 text-brand-700 border-brand-500'
+                        : 'border-brand-500 text-body'
                     : 'border-transparent text-description hover:text-body hover:border-gray-300'}"
                 onclick={() => selectTab(tab.id)}
                 disabled={tab.disabled}
