@@ -34,14 +34,14 @@
     // Variant classes using semantic action colors
     const variantClass = $derived(() => {
         return variant === "primary"
-            ? "bg-action-primary text-inverse focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            ? "bg-action-primary text-inverse focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             : variant === "secondary"
               ? "border border-secondary text-description hover:border-secondary-hover focus:ring-2 focus:ring-stone-500 focus:ring-offset-2"
               : variant === "danger"
                 ? "bg-action-danger text-inverse focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 : variant === "ghost"
                   ? "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 disabled:text-disabled"
-                  : "bg-action-primary text-inverse focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"; // default primary
+                  : "bg-action-primary text-inverse focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"; // default primary
     });
 
     // Button classes using Badge pattern

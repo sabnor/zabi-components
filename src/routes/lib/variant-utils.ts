@@ -9,11 +9,11 @@ export type Variant = 'default' | 'success' | 'warning' | 'error' | 'info';
  */
 export function getInputVariantClasses(variant: Variant): string {
     const variantMap: Record<Variant, string> = {
-        default: 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
+        default: 'border-gray-300 focus:border-brand-500 focus:ring-brand-500',
         success: 'border-green-300 focus:border-green-500 focus:ring-green-500',
         warning: 'border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500',
         error: 'border-red-300 focus:border-red-500 focus:ring-red-500',
-        info: 'border-blue-300 focus:border-blue-500 focus:ring-blue-500',
+        info: 'border-iris-300 focus:border-iris-500 focus:ring-iris-500',
     };
 
     return variantMap[variant] || variantMap.default;
@@ -28,7 +28,7 @@ export function getCardVariantClasses(variant: Variant): string {
         success: 'border-green-200 bg-green-50',
         warning: 'border-yellow-200 bg-yellow-50',
         error: 'border-red-200 bg-red-50',
-        info: 'border-blue-200 bg-blue-50',
+        info: 'border-iris-200 bg-iris-50',
     };
 
     return variantMap[variant] || variantMap.default;
@@ -60,9 +60,9 @@ export function getVariantClasses(variant: Variant, type: 'border' | 'text' | 'b
             bg: 'bg-red-50'
         },
         info: {
-            border: 'border-blue-300',
-            text: 'text-blue-900',
-            bg: 'bg-blue-50'
+            border: 'border-iris-300',
+            text: 'text-iris-900',
+            bg: 'bg-iris-50'
         },
     };
 

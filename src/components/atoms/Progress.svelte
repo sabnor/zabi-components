@@ -54,7 +54,7 @@
         {...restProps}
     >
         <div
-            class="h-full bg-blue-600 rounded-full"
+            class="h-full bg-brand-600 rounded-full"
             style="width: {percentage}%"
         ></div>
     </div>
