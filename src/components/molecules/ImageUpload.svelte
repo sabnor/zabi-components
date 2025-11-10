@@ -23,6 +23,8 @@
     let fileInput = $state<HTMLInputElement>();
 
     function handleFileSelect(event: Event) {
+        if (disabled) return;
+
         const input = event.target as HTMLInputElement;
         if (!input.files || input.files.length === 0) return;
 
@@ -36,6 +38,8 @@
     }
 
     function removeImage() {
+        if (disabled) return;
+
         if (value && typeof URL !== "undefined" && URL.revokeObjectURL) {
             URL.revokeObjectURL(value);
         }
@@ -43,6 +47,7 @@
     }
 
     function triggerFileSelect() {
+        if (disabled) return;
         fileInput?.click();
     }
 </script>
@@ -54,10 +59,10 @@
             <img
                 src={value}
                 alt=""
-                class="w-full h-32 object-cover rounded-lg border border-border"
+                class="w-full h-32 object-cover rounded-lg border-0"
             />
             <div
-                class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"
+                class="absolute inset-0 bg-black/50 dark:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"
             >
                 <div class="flex gap-2">
                     <Button
@@ -82,11 +87,15 @@
     {:else}
         <!-- Empty State -->
         <div
-            class="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-border-strong transition-colors cursor-pointer"
+            class="border-2 border-dashed border-stone-200 rounded-lg p-6 text-center hover:border-brand-500 transition-colors {disabled
+                ? 'cursor-not-allowed opacity-50'
+                : 'cursor-pointer'}"
             onclick={triggerFileSelect}
             role="button"
-            tabindex="0"
-            onkeydown={(e) => e.key === "Enter" && triggerFileSelect()}
+            tabindex={disabled ? -1 : 0}
+            onkeydown={(e) =>
+                e.key === "Enter" && !disabled && triggerFileSelect()}
+            aria-disabled={disabled}
         >
             <div class="space-y-3">
                 <div
@@ -110,6 +119,7 @@
         type="file"
         {accept}
         onchange={handleFileSelect}
+        {disabled}
         class="hidden"
     />
 </div>

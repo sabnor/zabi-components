@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Card from '../components/atoms/Card.svelte';
+import CardWithContent from './CardWithContent.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Card',
@@ -8,12 +9,26 @@ const meta = {
         layout: 'centered',
         docs: {
             description: {
-                component: 'Card component with built-in support for different sizes and interactive states. Cards with an `onclick` handler will show hover effects (shadow, background change, border change), while cards without `onclick` remain static. Use the semantic color system classes to style cards contextually for different states and meanings.'
+                component: 'Card component with built-in support for different sizes and interactive states. Cards with an `onclick` handler will show hover effects (shadow and background change), while cards without `onclick` remain static. Uses semantic color system for consistent theming.'
             }
         }
     },
     tags: ['autodocs'],
-    argTypes: {}
+    argTypes: {
+        size: {
+            control: 'select',
+            options: ['sm', 'md', 'lg'],
+            description: 'Size of the card padding'
+        },
+        fullWidth: {
+            control: 'boolean',
+            description: 'Whether the card takes full width'
+        },
+        description: {
+            control: 'text',
+            description: 'Optional description text displayed under the title'
+        }
+    }
 } satisfies Meta<typeof Card>;
 
 export default meta;
@@ -22,29 +37,33 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         title: 'Default Card'
-    }
+    },
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
 };
 
-export const SemanticColors: Story = {
+export const WithDescription: Story = {
     args: {
-        title: 'Semantic Colors Documentation',
-        fullWidth: false
+        title: 'Card with Description',
+        description: 'This is an optional description that appears under the title.'
     },
-    parameters: {
-        layout: 'padded',
-        docs: {
-            description: {
-                story: 'Apply semantic color classes to your Card components: `bg-info-surface border-info text-info` (blue), `bg-success-surface border-success text-success` (green), `bg-warning-surface border-warning text-warning` (yellow), `bg-error-surface border-error text-error` (red).'
-            }
-        }
-    }
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
 };
 
 export const WithImage: Story = {
     args: {
         title: 'Card with Image',
-        image: 'https://via.placeholder.com/300x200'
-    }
+        image: 'https://via.placeholder.com/400x200'
+    },
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
 };
 
 export const WithContent: Story = {
@@ -52,9 +71,8 @@ export const WithContent: Story = {
         title: 'Card with Content'
     },
     render: (args) => ({
-        Component: Card,
-        props: args,
-        children: ['This is an example of a card with custom content. You can add any content you like here.']
+        Component: CardWithContent,
+        props: args
     })
 };
 
@@ -64,9 +82,8 @@ export const Interactive: Story = {
         onclick: () => alert('Card clicked!')
     },
     render: (args) => ({
-        Component: Card,
-        props: args,
-        children: ['This card has an onclick handler and shows hover effects. Try hovering over it!']
+        Component: CardWithContent,
+        props: args
     })
 };
 
@@ -74,19 +91,42 @@ export const Small: Story = {
     args: {
         title: 'Small Card',
         size: 'sm'
-    }
+    },
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
+};
+
+export const Medium: Story = {
+    args: {
+        title: 'Medium Card',
+        size: 'md'
+    },
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
 };
 
 export const Large: Story = {
     args: {
         title: 'Large Card',
         size: 'lg'
-    }
+    },
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
 };
 
 export const CustomWidth: Story = {
     args: {
         title: 'Custom Width Card',
         fullWidth: false
-    }
+    },
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
 };

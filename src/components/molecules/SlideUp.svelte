@@ -13,61 +13,67 @@
         ...restProps
     } = $props<Props & { children?: any }>();
 
-    function closeSlideUp() {
+    function closeSlideUp(event?: Event) {
         isOpen = false;
+        if (onclick && event) {
+            (onclick as (event: Event) => void)(event);
+        }
     }
 
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) {
-            closeSlideUp();
+            closeSlideUp(event);
         }
     }
 
     function handleKeydown(event: Event) {
         const keyboardEvent = event as KeyboardEvent;
         if (keyboardEvent.key === "Escape") {
-            closeSlideUp();
+            closeSlideUp(event);
+        }
+        if (onkeydown) {
+            (onkeydown as (event: Event) => void)(event);
         }
     }
 </script>
 
 {#if isOpen}
-    <!-- Backdrop -->
     <div
-        class="fixed inset-0 bg-black/50 z-50"
+        class="fixed inset-0 bg-black/50 dark:bg-black/70 z-modal"
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={title ? "slideup-title" : undefined}
         tabindex="-1"
-    ></div>
-
-    <!-- SlideUp Content -->
-    <div
-        class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 rounded-t-xl shadow-xl z-50 max-h-[80vh] overflow-y-auto"
-        role="dialog"
-        aria-modal="true"
     >
-        <!-- Header -->
-        {#if title}
-            <div
-                class="flex items-center justify-between p-4 border-b border-gray-200"
-            >
-                <h3 class="text-lg font-semibold text-gray-900">{title}</h3>
-                <button
-                    type="button"
-                    class="text-gray-400 hover:text-gray-600 text-2xl"
-                    onclick={closeSlideUp}
-                    aria-label="Close"
-                >
-                    ×
-                </button>
-            </div>
-        {/if}
+        <div
+            class="fixed bottom-0 left-0 right-0 bg-surface-elevated rounded-t-3xl shadow-xl z-modal max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] flex flex-col"
+        >
+            <!-- Header -->
+            {#if title}
+                <div class="flex items-center justify-between px-6 pt-6 pb-4">
+                    <h2
+                        id="slideup-title"
+                        class="text-2xl font-normal leading-8 text-headline tracking-normal"
+                    >
+                        {title}
+                    </h2>
+                    <button
+                        type="button"
+                        onclick={closeSlideUp}
+                        class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-hover"
+                        aria-label="Close"
+                    >
+                        ×
+                    </button>
+                </div>
+            {/if}
 
-        <!-- Content -->
-        <div class="p-4">
-            {@render children?.()}
+            <!-- Content -->
+            <div class="px-6 pb-6 flex-1">
+                {@render children?.()}
+            </div>
         </div>
     </div>
 {/if}

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Navigation from '../components/organisms/Navigation.svelte';
+import { Star } from '@lucide/svelte';
 
 const meta = {
     title: 'Design System/Organisms/Navigation',
@@ -27,10 +28,24 @@ const sampleItems = [
     { label: 'Contact', href: '/contact' }
 ];
 
+const sampleItemsWithIcons = [
+    { label: 'Home', href: '/', icon: Star },
+    { label: 'About', href: '/about', icon: Star },
+    { label: 'Services', href: '/services', icon: Star }
+];
+
 export const Default: Story = {
     args: {
         variant: 'header',
         items: sampleItems,
+        currentPath: '/'
+    }
+};
+
+export const WithIcons: Story = {
+    args: {
+        variant: 'header',
+        items: sampleItemsWithIcons,
         currentPath: '/'
     }
 };

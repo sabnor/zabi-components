@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Modal from '../components/molecules/Modal.svelte';
+import ModalWithContent from './ModalWithContent.svelte';
 
 const meta = {
     title: 'Design System/Molecules/Modal',
@@ -29,6 +30,18 @@ export const Default: Story = {
         Component: Modal,
         props: args,
         children: ['This is the modal content. You can put any content here.']
+    })
+};
+
+export const WithContentAndButtons: Story = {
+    args: {
+        isOpen: true,
+        title: 'Dialog title',
+        size: 'md'
+    },
+    render: (args) => ({
+        Component: ModalWithContent,
+        props: args
     })
 };
 

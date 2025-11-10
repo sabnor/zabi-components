@@ -13,32 +13,54 @@ const meta = {
         }
     },
     tags: ['autodocs'],
-    argTypes: {}
+    argTypes: {
+        size: {
+            control: 'select',
+            options: ['sm', 'md', 'lg'],
+            description: 'Size of the toggle button'
+        },
+        variant: {
+            control: 'select',
+            options: ['default', 'ghost', 'outline'],
+            description: 'Visual variant of the toggle button'
+        }
+    }
 } satisfies Meta<typeof ThemeToggle>;
 
 export default meta;
-type Story = StoryObj<typeof ThemeToggle>;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    args: {}
+    args: {
+        size: 'md',
+        variant: 'default'
+    }
 };
 
 export const Small: Story = {
-    args: {}
+    args: {
+        size: 'sm',
+        variant: 'default'
+    }
 };
 
 export const Large: Story = {
-    args: {}
+    args: {
+        size: 'lg',
+        variant: 'default'
+    }
 };
 
-export const Minimal: Story = {
-    args: {}
+export const Ghost: Story = {
+    args: {
+        size: 'md',
+        variant: 'ghost'
+    }
 };
 
 export const Outline: Story = {
-    args: {}
-};
-
-export const AllVariants: Story = {
-    args: {}
+    args: {
+        size: 'md',
+        variant: 'outline'
+    }
 };
