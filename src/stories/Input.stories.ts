@@ -72,7 +72,8 @@ export const Success: Story = {
     args: {
         label: 'Success Input',
         placeholder: 'This input has success styling',
-        variant: 'success'
+        variant: 'success',
+        message: 'This field looks good!'
     }
 };
 
@@ -80,7 +81,8 @@ export const Warning: Story = {
     args: {
         label: 'Warning Input',
         placeholder: 'This input has warning styling',
-        variant: 'warning'
+        variant: 'warning',
+        message: 'Please review this field'
     }
 };
 
@@ -88,6 +90,7 @@ export const Error: Story = {
     args: {
         label: 'Error Input',
         placeholder: 'This input has error styling',
-        variant: 'error'
+        variant: 'error',
+        message: 'This field is required'
     }
 };

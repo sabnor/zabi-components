@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Dropdown from '../components/molecules/Dropdown.svelte';
+import Button from '../components/atoms/Button.svelte';
+import DropdownWithContent from './DropdownWithContent.svelte';
 
 const meta = {
     title: 'Design System/Molecules/Dropdown',
@@ -8,7 +10,17 @@ const meta = {
         layout: 'centered'
     },
     tags: ['autodocs'],
-    argTypes: {}
+    argTypes: {
+        placement: {
+            control: 'select',
+            options: ['bottom-start', 'bottom-end', 'top-start', 'top-end'],
+            description: 'Placement of the dropdown menu'
+        },
+        isOpen: {
+            control: 'boolean',
+            description: 'Whether the dropdown is open'
+        }
+    }
 } satisfies Meta<typeof Dropdown>;
 
 export default meta;
@@ -16,12 +28,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        isOpen: true
+        isOpen: true,
+        placement: 'bottom-start'
     },
     render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Default Dropdown Content']
+        Component: DropdownWithContent,
+        props: args
     })
 };
 
@@ -31,9 +43,8 @@ export const BottomStart: Story = {
         placement: 'bottom-start'
     },
     render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Bottom Start Placement']
+        Component: DropdownWithContent,
+        props: args
     })
 };
 
@@ -43,9 +54,8 @@ export const BottomEnd: Story = {
         placement: 'bottom-end'
     },
     render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Bottom End Placement']
+        Component: DropdownWithContent,
+        props: args
     })
 };
 
@@ -55,9 +65,8 @@ export const TopStart: Story = {
         placement: 'top-start'
     },
     render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Top Start Placement']
+        Component: DropdownWithContent,
+        props: args
     })
 };
 
@@ -67,43 +76,18 @@ export const TopEnd: Story = {
         placement: 'top-end'
     },
     render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Top End Placement']
-    })
-};
-
-export const WithTopPlacement: Story = {
-    args: {
-        isOpen: true,
-        placement: 'top-start'
-    },
-    render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Dropdown with Top Placement']
-    })
-};
-
-export const WithBottomEndPlacement: Story = {
-    args: {
-        isOpen: true,
-        placement: 'bottom-end'
-    },
-    render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Dropdown with Bottom End Placement']
+        Component: DropdownWithContent,
+        props: args
     })
 };
 
 export const Closed: Story = {
     args: {
-        isOpen: false
+        isOpen: false,
+        placement: 'bottom-start'
     },
     render: (args) => ({
-        Component: Dropdown,
-        props: args,
-        children: ['Closed Dropdown']
+        Component: DropdownWithContent,
+        props: args
     })
 };
