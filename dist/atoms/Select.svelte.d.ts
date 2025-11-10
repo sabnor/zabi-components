@@ -9,6 +9,8 @@ interface Props {
     label?: string;
     disabled?: boolean;
     size?: "sm" | "md" | "lg";
+    variant?: "default" | "success" | "warning" | "error";
+    message?: string;
     onchange?: (event: Event) => void;
 }
 declare const Select: import("svelte").Component<Props, {}, "">;
