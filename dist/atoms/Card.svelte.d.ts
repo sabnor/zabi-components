@@ -1,6 +1,7 @@
 import type { Snippet } from "svelte";
 interface Props {
     title?: string;
+    description?: string;
     image?: string;
     onclick?: (event: MouseEvent) => void | Promise<void>;
     size?: "sm" | "md" | "lg";

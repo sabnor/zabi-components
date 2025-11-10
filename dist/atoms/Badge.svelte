@@ -39,21 +39,24 @@
                   ? "px-4 py-2 text-base"
                   : "px-3 py-1 text-sm"; // default md
 
-        // Variant classes - using semantic color system
+        // Variant classes - using semantic color system with improved WCAG contrast
+        // Using colored backgrounds with white text for better contrast ratios (4.5:1+)
+        // Using darker shades for warning and energetic to ensure WCAG AA compliance
+        // Note: Using text-white instead of text-inverse to ensure light text in both light and dark modes
         const variantClass =
             variant === "success"
-                ? "bg-surface-level-1 border-success text-success"
+                ? "bg-[var(--color-success)] border-[var(--color-success)] text-white"
                 : variant === "warning"
-                  ? "bg-surface-level-1 border-secondary text-warning"
+                  ? "bg-[var(--color-warning-weak)] border-[var(--color-warning-weak)] text-white"
                   : variant === "error"
-                    ? "bg-surface-level-1 border-secondary text-error"
+                    ? "bg-[var(--color-error)] border-[var(--color-error)] text-white"
                     : variant === "info"
-                      ? "bg-surface-level-1 border-secondary text-info"
+                      ? "bg-[var(--color-info)] border-[var(--color-info)] text-white"
                       : variant === "neutral"
-                        ? "bg-surface-level-1 border-secondary text-neutral"
+                        ? "bg-[var(--color-neutral)] border-[var(--color-neutral)] text-white"
                         : variant === "energetic"
-                          ? "bg-surface-level-1 border-secondary text-energetic"
-                          : "bg-surface-level-1 border-secondary text-body"; // default
+                          ? "bg-[var(--color-energetic-weak)] border-[var(--color-energetic-weak)] text-white"
+                          : "bg-[var(--color-secondary)] border-[var(--color-secondary)] text-white"; // default
 
         return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     });
@@ -72,19 +75,19 @@
 <span class={classes()}>
     {#if showIcon}
         {#if variant === "success"}
-            <Check size={iconSize()} class={iconSpacingClass()} />
+            <Check size={iconSize()} class="{iconSpacingClass()} text-white" />
         {:else if variant === "warning"}
-            <AlertTriangle size={iconSize()} class={iconSpacingClass()} />
+            <AlertTriangle size={iconSize()} class="{iconSpacingClass()} text-white" />
         {:else if variant === "error"}
-            <X size={iconSize()} class={iconSpacingClass()} />
+            <X size={iconSize()} class="{iconSpacingClass()} text-white" />
         {:else if variant === "info"}
-            <Info size={iconSize()} class={iconSpacingClass()} />
+            <Info size={iconSize()} class="{iconSpacingClass()} text-white" />
         {:else if variant === "neutral"}
-            <Info size={iconSize()} class={iconSpacingClass()} />
+            <Info size={iconSize()} class="{iconSpacingClass()} text-white" />
         {:else if variant === "energetic"}
-            <Info size={iconSize()} class={iconSpacingClass()} />
+            <Info size={iconSize()} class="{iconSpacingClass()} text-white" />
         {:else}
-            <Info size={iconSize()} class={iconSpacingClass()} />
+            <Info size={iconSize()} class="{iconSpacingClass()} text-white" />
         {/if}
     {/if}
     {text}
