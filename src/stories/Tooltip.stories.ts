@@ -11,10 +11,10 @@ const meta = {
     tags: ['autodocs'],
     argTypes: {
         content: {
-            control: { type: 'text' }
+            control: 'text'
         },
         placement: {
-            control: { type: 'select' },
+            control: 'select',
             options: ['top', 'bottom', 'left', 'right']
         }
     }

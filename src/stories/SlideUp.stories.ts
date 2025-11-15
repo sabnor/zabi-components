@@ -10,10 +10,10 @@ const meta = {
     tags: ['autodocs'],
     argTypes: {
         isOpen: {
-            control: { type: 'boolean' }
+            control: 'boolean'
         },
         title: {
-            control: { type: 'text' }
+            control: 'text'
         }
     }
 } satisfies Meta<typeof SlideUp>;
