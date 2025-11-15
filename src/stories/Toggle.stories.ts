@@ -10,13 +10,13 @@ const meta = {
     tags: ['autodocs'],
     argTypes: {
         checked: {
-            control: { type: 'boolean' }
+            control: 'boolean'
         },
         disabled: {
-            control: { type: 'boolean' }
+            control: 'boolean'
         },
         label: {
-            control: { type: 'text' }
+            control: 'text'
         }
     }
 } satisfies Meta<typeof Toggle>;

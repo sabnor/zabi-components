@@ -10,14 +10,14 @@ const meta = {
     tags: ['autodocs'],
     argTypes: {
         variant: {
-            control: { type: 'select' },
+            control: 'select',
             options: ['default', 'success', 'warning', 'error', 'info', 'neutral', 'energetic']
         },
         text: {
-            control: { type: 'text' }
+            control: 'text'
         },
         showIcon: {
-            control: { type: 'boolean' }
+            control: 'boolean'
         }
     }
 } satisfies Meta<typeof Badge>;

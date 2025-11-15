@@ -10,7 +10,7 @@ const meta = {
     tags: ['autodocs'],
     argTypes: {
         variant: {
-            control: { type: 'select' },
+            control: 'select',
             options: ['info', 'success', 'warning', 'error', 'neutral', 'energetic']
         }
     }
