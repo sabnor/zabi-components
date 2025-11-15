@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.15] - 2025-01-27
+
+### 🎨 **Color System Improvements**
+
+#### **Standalone Colors File**
+- **New Export**: Added `zabi-components-colors.css` as a separate export for consumer apps
+  - Contains resolved CSS custom properties that work without Tailwind CSS processing
+  - Perfect for apps not using Tailwind CSS v4
+  - Includes all color variables with resolved hex values
+  - Supports both light and dark mode variants
+- **Package Export**: Added `./dist/zabi-components-colors.css` to package.json exports
+- **Usage**: Consumer apps can now import colors independently:
+  ```css
+  /* For Tailwind v4 users */
+  @import "zabi-components/dist/zabi-components.css";
+  
+  /* For non-Tailwind users */
+  @import "zabi-components/dist/zabi-components-colors.css";
+  ```
+
+#### **Component Cleanup**
+- **Badge Component**: Removed all arbitrary Tailwind values (`[var(--color-*)]`)
+  - Now uses proper utility classes: `bg-success border-success` instead of `bg-success border-[var(--color-success)]`
+  - More maintainable and consistent code
+- **Added Background Utilities**: Created explicit background utility classes to match border utilities
+  - Added: `bg-success`, `bg-warning`, `bg-error`, `bg-info`, `bg-neutral`, `bg-energetic`, `bg-secondary`
+  - Ensures consistent styling across all components
+
+#### **Build Improvements**
+- **Simplified Build Script**: Cleaned up CSS build process
+- **Better Separation**: Colors file is now separate from main CSS, making it easier to import independently
+
+### 🎯 **Technical Details**
+
+- **Color System**: Colors now work correctly in consumer apps regardless of Tailwind CSS setup
+- **Code Quality**: Removed all arbitrary value syntax for better maintainability
+- **Consistency**: All color utilities now follow the same pattern
+
+### ✅ **No Breaking Changes**
+
+This is a backward-compatible update. Existing usage continues to work, with improved color system support.
+
+---
+
 ## [5.0.14] - 2025-01-27
 
 ### ✨ **Component Improvements**

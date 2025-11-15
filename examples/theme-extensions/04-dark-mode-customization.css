@@ -1,0 +1,30 @@
+/* Example 4: Dark Mode Customization
+ * 
+ * This example shows how to customize dark mode colors
+ * by importing the dark theme and then overriding specific values.
+ */
+
+@import "tailwindcss";
+@import 'zabi-components/theme-only';
+@import 'zabi-components/theme-dark-only';
+
+/* Customize light mode */
+@theme {
+  --color-background: theme(colors.white);
+  --color-headline: theme(colors.gray.900);
+}
+
+/* Customize dark mode */
+.dark {
+  /* Override specific dark mode colors */
+  --color-background: #0a0a0a; /* Deeper black */
+  --color-headline: #f5f5f5; /* Softer white */
+  --color-body: #e5e5e5;
+  
+  /* Custom dark mode brand colors */
+  --color-primary: theme(colors.brand.400); /* Lighter in dark mode */
+  --color-link: theme(colors.brand.400);
+}
+
+@import 'zabi-components/dist/zabi-components.css';
+

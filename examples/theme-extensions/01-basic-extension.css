@@ -1,0 +1,19 @@
+/* Example 1: Basic Theme Extension
+ * 
+ * This example shows how to extend the Zabi theme with custom fonts
+ * and a few custom colors while keeping all Zabi defaults.
+ */
+
+@import "tailwindcss";
+@import 'zabi-components/theme-only';
+
+/* Extend theme with custom fonts */
+@theme {
+  /* Custom font families */
+  --font-family-title: 'Inter', 'Helvetica Neue', sans-serif;
+  --font-family-body: 'Inter', 'Helvetica Neue', sans-serif;
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+@import 'zabi-components/dist/zabi-components.css';
+

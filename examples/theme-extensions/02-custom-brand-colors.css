@@ -1,0 +1,32 @@
+/* Example 2: Custom Brand Colors
+ * 
+ * This example shows how to override the brand color palette
+ * with your own custom colors while keeping other Zabi defaults.
+ */
+
+@import "tailwindcss";
+@import 'zabi-components/theme-only';
+
+/* Override brand colors with custom palette */
+@theme {
+  /* Custom brand color scale - replace Zabi's blue with your brand colors */
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
+  --color-brand-950: #082f49;
+  
+  /* Update semantic colors that reference brand */
+  --color-primary: theme(colors.brand.600);
+  --color-link: theme(colors.brand.600);
+  --color-focus: theme(colors.brand.500);
+}
+
+@import 'zabi-components/dist/zabi-components.css';
+

@@ -1,6 +1,6 @@
 {
   "name": "zabi-components",
-  "version": "5.0.14",
+  "version": "5.0.16",
   "description": "A modern Svelte 5 component library with TypeScript, Tailwind CSS v4, and 100% SSR-safe components",
   "type": "module",
   "main": "dist/index.js",
@@ -45,6 +45,14 @@
     },
     "./dist/zabi-components.css": "./dist/zabi-components.css",
     "./dist/zabi-components-colors.css": "./dist/zabi-components-colors.css",
+    "./dist/zabi-components-theme.css": "./dist/zabi-components-theme.css",
+    "./dist/zabi-components-theme-only.css": "./dist/zabi-components-theme-only.css",
+    "./dist/zabi-components-theme-dark.css": "./dist/zabi-components-theme-dark.css",
+    "./dist/zabi-components-theme-dark-only.css": "./dist/zabi-components-theme-dark-only.css",
+    "./theme": "./dist/zabi-components-theme.css",
+    "./theme-only": "./dist/zabi-components-theme-only.css",
+    "./theme-dark": "./dist/zabi-components-theme-dark.css",
+    "./theme-dark-only": "./dist/zabi-components-theme-dark-only.css",
     "./package.json": "./package.json"
   },
   "files": [
@@ -71,8 +79,10 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build && npm run build:types",
-    "build:lib": "svelte-package -o dist --input src/components && mkdir -p dist/routes/lib && cp src/routes/lib/ssr-safe.ts dist/routes/lib/ && cp src/routes/lib/variant-utils.ts dist/routes/lib/ && npm run build:css && npm run build:types",
-    "build:css": "node scripts/build-css.js && cp src/styles/colors.css dist/zabi-components-colors.css && find dist -name '*.css' -not -name 'zabi-components.css' -not -name 'zabi-components-colors.css' -exec cat {} \\; >> dist/zabi-components.css",
+    "build:components": "svelte-package -o dist --input src/components",
+    "build:lib-files": "mkdir -p dist/routes/lib && cp src/routes/lib/ssr-safe.ts dist/routes/lib/ && cp src/routes/lib/variant-utils.ts dist/routes/lib/",
+    "build:lib": "npm run build:css && npm run build:components && npm run build:lib-files && npm run build:types && npm run build:css && node scripts/verify-build.js",
+    "build:css": "node scripts/build-css.js && node scripts/validate-theme.js && cp src/styles/colors.css dist/zabi-components-colors.css && find dist -name '*.css' -not -name 'zabi-components.css' -not -name 'zabi-components-colors.css' -exec cat {} \\; >> dist/zabi-components.css",
     "build:types": "tsc --project tsconfig.lib.json",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
