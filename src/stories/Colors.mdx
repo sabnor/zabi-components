@@ -1,0 +1,258 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/addon-docs/blocks';
+
+<Meta title="Design System/Colors" />
+
+# Colors
+
+The Zabi Components color system is built on a semantic color foundation with custom color scales for brand identity. All colors are defined as CSS custom properties and work seamlessly with Tailwind CSS.
+
+## Color Scales
+
+<ColorPalette>
+  <ColorItem
+    title="Brand Colors"
+    subtitle="Primary brand color scale using a blue palette for primary actions and brand elements"
+    colors={{
+      'Brand 50': '#f7faff',
+      'Brand 100': '#edf2fb',
+      'Brand 200': '#dfe7fb',
+      'Brand 300': '#ccdbfd',
+      'Brand 400': '#abc4ff',
+      'Brand 500': '#8fa8ff',
+      'Brand 600': '#6e84fa',
+      'Brand 700': '#5366e2',
+      'Brand 800': '#3f4fc0',
+      'Brand 900': '#2f3c99',
+      'Brand 950': '#1f2866'
+    }}
+  />
+  
+  <ColorItem
+    title="Citron Colors"
+    subtitle="Energetic and vibrant yellow-green tones"
+    colors={{
+      'Citron 50': '#f9faeb',
+      'Citron 100': '#f1f5cf',
+      'Citron 200': '#e4ecaa',
+      'Citron 300': '#d5e184',
+      'Citron 400': '#c7d460',
+      'Citron 500': '#bbbe64',
+      'Citron 600': '#a3a852',
+      'Citron 700': '#848a43',
+      'Citron 800': '#666c35',
+      'Citron 900': '#4d5229',
+      'Citron 950': '#323518'
+    }}
+  />
+  
+  <ColorItem
+    title="Pine Colors"
+    subtitle="Success states with deep green tones"
+    colors={{
+      'Pine 50': '#e9f6f2',
+      'Pine 100': '#d2ece4',
+      'Pine 200': '#a7d9c9',
+      'Pine 300': '#78c4ad',
+      'Pine 400': '#49ad91',
+      'Pine 500': '#0C5D43',
+      'Pine 600': '#0a513a',
+      'Pine 700': '#084532',
+      'Pine 800': '#063a2a',
+      'Pine 900': '#04231a',
+      'Pine 950': '#02160f'
+    }}
+  />
+  
+  <ColorItem
+    title="Iris Colors"
+    subtitle="Purple tones for informational states"
+    colors={{
+      'Iris 50': '#f4f4fa',
+      'Iris 100': '#e9e9f7',
+      'Iris 200': '#d6d6f0',
+      'Iris 300': '#bdbde6',
+      'Iris 400': '#a3a3d8',
+      'Iris 500': '#6969B3',
+      'Iris 600': '#58589e',
+      'Iris 700': '#474788',
+      'Iris 800': '#38386f',
+      'Iris 900': '#2a2a56',
+      'Iris 950': '#1b1b37'
+    }}
+  />
+</ColorPalette>
+
+## Semantic Colors
+
+Semantic colors provide meaning and context to UI elements. They map to the color scales above and adapt to light and dark themes.
+
+### Primary Colors
+
+Used for primary actions and brand elements.
+
+- **Primary**: `--color-primary` (Brand 600)
+- **Primary Weak**: `--color-primary-weak` (Brand 700)
+- **Primary Medium**: `--color-primary-medium` (Brand 800)
+- **Primary Strong**: `--color-primary-strong` (Brand 900)
+
+### Secondary Colors
+
+Used for secondary actions and neutral elements.
+
+- **Secondary**: `--color-secondary` (Stone 600)
+- **Secondary Weak**: `--color-secondary-weak` (Stone 700)
+- **Secondary Medium**: `--color-secondary-medium` (Stone 800)
+- **Secondary Strong**: `--color-secondary-strong` (Stone 900)
+
+### Status Colors
+
+#### Success
+
+Used for positive feedback and successful actions.
+
+- **Success**: `--color-success` (Pine 600)
+- **Success Text**: `--color-success-text` (Pine 700)
+
+#### Warning
+
+Used for cautionary messages and warnings.
+
+- **Warning**: `--color-warning` (Amber 500)
+- **Warning Text**: `--color-warning-text` (Amber 700)
+
+#### Error
+
+Used for error states and destructive actions.
+
+- **Error**: `--color-error` (Red 500)
+- **Error Text**: `--color-error-text` (Red 700)
+
+#### Info
+
+Used for informational messages.
+
+- **Info**: `--color-info` (Iris 600)
+- **Info Text**: `--color-info-text` (Iris 600)
+
+#### Neutral
+
+Used for neutral states and information.
+
+- **Neutral**: `--color-neutral` (Stone 600)
+- **Neutral Text**: `--color-neutral-text` (Stone 700)
+
+#### Energetic
+
+Used for energetic and attention-grabbing elements.
+
+- **Energetic**: `--color-energetic` (Citron 500)
+- **Energetic Text**: `--color-energetic-text` (Citron 700)
+
+## Surface Colors
+
+Surface colors define the background layers of the interface.
+
+### Surface Levels
+
+- **Level 0**: `--color-surface-level-0` - Base surface
+- **Level 1**: `--color-surface-level-1` - Elevated surface
+- **Level 2**: `--color-surface-level-2` - Higher elevation
+- **Elevated**: `--color-surface-elevated` - Highest elevation
+
+### Background Colors
+
+- **Background**: `--color-background` - Main page background
+- **Background Secondary**: `--color-background-secondary` - Secondary background
+- **Background Tertiary**: `--color-background-tertiary` - Tertiary background
+
+### Card Colors
+
+- **Card**: `--color-card` - Card background
+- **Card Hover**: `--color-card-hover` - Card hover state
+- **Card Active**: `--color-card-active` - Card active state
+- **Card Elevated**: `--color-card-elevated` - Elevated card background
+
+## Text Colors
+
+Text colors provide hierarchy and readability.
+
+- **Headline**: `--color-headline` - Primary headings
+- **Body**: `--color-body` - Body text
+- **Description**: `--color-description` - Secondary text
+- **Caption**: `--color-caption` - Captions and labels
+- **Label**: `--color-label` - Form labels
+- **Link**: `--color-link` - Links
+- **Link Hover**: `--color-link-hover` - Link hover state
+- **Disabled**: `--color-disabled` - Disabled text
+- **Inverse**: `--color-inverse` - Text on dark backgrounds
+
+## Border Colors
+
+Border colors define element boundaries.
+
+- **Border**: `--color-border` - Default border
+- **Border Weak**: `--color-border-weak` - Subtle border
+- **Border Medium**: `--color-border-medium` - Medium border
+- **Border Strong**: `--color-border-strong` - Strong border
+
+## Focus Colors
+
+Focus colors indicate keyboard navigation and focus states.
+
+- **Focus**: `--color-focus` - Default focus ring
+- **Focus Weak**: `--color-focus-weak` - Subtle focus
+- **Focus Medium**: `--color-focus-medium` - Medium focus
+- **Focus Strong**: `--color-focus-strong` - Strong focus
+
+## Action Colors
+
+Action colors define interactive element states.
+
+### Primary Actions
+
+- **Action Primary**: `--color-action-primary` - Primary button
+- **Action Primary Hover**: `--color-action-primary-hover` - Hover state
+- **Action Primary Active**: `--color-action-primary-active` - Active state
+- **Action Primary Disabled**: `--color-action-primary-disabled` - Disabled state
+- **Action Primary Subtle**: `--color-action-primary-subtle` - Subtle variant
+
+### Secondary Actions
+
+- **Action Secondary**: `--color-action-secondary` - Secondary button
+- **Action Secondary Hover**: `--color-action-secondary-hover` - Hover state
+- **Action Secondary Active**: `--color-action-secondary-active` - Active state
+- **Action Secondary Disabled**: `--color-action-secondary-disabled` - Disabled state
+- **Action Secondary Subtle**: `--color-action-secondary-subtle` - Subtle variant
+
+### Danger Actions
+
+- **Action Danger**: `--color-action-danger` - Danger button
+- **Action Danger Hover**: `--color-action-danger-hover` - Hover state
+- **Action Danger Active**: `--color-action-danger-active` - Active state
+- **Action Danger Disabled**: `--color-action-danger-disabled` - Disabled state
+- **Action Danger Subtle**: `--color-action-danger-subtle` - Subtle variant
+
+## Usage
+
+All colors are available as CSS custom properties and can be used in your components:
+
+```css
+.my-component {
+  background-color: var(--color-primary);
+  color: var(--color-inverse);
+  border-color: var(--color-border);
+}
+```
+
+They're also available as Tailwind utility classes:
+
+```html
+<div class="bg-brand-600 text-inverse border-border">
+  Content
+</div>
+```
+
+## Dark Mode
+
+All colors automatically adapt to dark mode when the `.dark` class is applied to the root element. The color system provides appropriate contrast ratios for both light and dark themes.
+

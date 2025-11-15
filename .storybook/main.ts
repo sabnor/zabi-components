@@ -1,16 +1,15 @@
 import type { StorybookConfig } from '@storybook/sveltekit';
 
 const config: StorybookConfig = {
-  stories: ['../src/**/*.stories.@(js|ts|svelte)'],
-  addons: [],
+  stories: ['../src/**/*.stories.@(js|ts|svelte)', '../src/**/*.mdx'],
+
+  addons: [
+    '@storybook/addon-docs'
+  ],
 
   framework: {
     name: '@storybook/sveltekit',
     options: {}
-  },
-
-  docs: {
-    autodocs: 'tag'
   },
 
   staticDirs: ['../static'],
