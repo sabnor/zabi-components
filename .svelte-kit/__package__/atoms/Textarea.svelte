@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
+    
     // SSR-safe ID generation
     function generateId(prefix: string = "id"): string {
         if (typeof window !== "undefined") {
@@ -15,8 +17,8 @@
         placeholder?: string;
         disabled?: boolean;
         rows?: number;
-        size?: "sm" | "md" | "lg";
         variant?: "default" | "success" | "warning" | "error";
+        message?: string;
         oninput?: (event: Event) => void;
     }
 
@@ -27,23 +29,14 @@
         placeholder = "",
         disabled = false,
         rows = 4,
-        size = "md",
         variant = "default",
+        message = "",
         oninput,
         ...restProps
     }: Props = $props();
 
     // Generate unique ID - SSR safe (call directly, not in $state)
     const textareaId = generateId("textarea");
-
-    // Size classes using full class names
-    const sizeClass = $derived(() => {
-        return size === "sm"
-            ? "px-3 py-1.5 text-sm"
-            : size === "lg"
-              ? "px-5 py-3 text-base"
-              : "px-4 py-2 text-sm"; // default md
-    });
 
     // Variant classes using semantic colors
     const variantClass = $derived(() => {
@@ -53,21 +46,41 @@
               ? "border-warning focus:border-warning focus:ring-warning"
               : variant === "error"
                 ? "border-error focus:border-error focus:ring-error"
-                : "border-border focus:border-focus focus:ring-focus"; // default
+                : "border-0 focus:ring-2 focus:ring-brand-500"; // default - no border
     });
 
-    // Textarea classes using Badge pattern
+    // Textarea classes matching M3 design
     const textareaClasses = $derived(() => {
         const baseClasses =
-            "w-full border rounded-md transition-colors duration-200 placeholder:text-input-placeholder focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled resize-y";
+            "w-full bg-brand-100 rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6";
 
-        return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
+        return `${baseClasses} ${variantClass()}`.trim();
     });
 
     // Label classes using semantic text colors
     const labelClasses = $derived(
         () => "block text-sm font-medium text-label mb-1",
     );
+
+    // Message classes based on variant
+    const messageClasses = $derived(() => {
+        if (variant === "error") {
+            return "text-error text-sm mt-1 flex items-center gap-1.5";
+        } else if (variant === "success") {
+            return "text-success text-sm mt-1 flex items-center gap-1.5";
+        } else if (variant === "warning") {
+            return "text-warning text-sm mt-1 flex items-center gap-1.5";
+        }
+        return "text-description text-sm mt-1 flex items-center gap-1.5";
+    });
+
+    // Get icon component based on variant
+    const getIcon = $derived(() => {
+        if (variant === "error") return AlertCircle;
+        if (variant === "success") return CheckCircle;
+        if (variant === "warning") return AlertTriangle;
+        return null;
+    });
 
     function handleInput(event: Event) {
         const target = event.target as HTMLTextAreaElement;
@@ -84,7 +97,6 @@
     {#if label}
         <label for={textareaId} class={labelClasses()}>{label}</label>
     {/if}
-
     <textarea
         id={textareaId}
         {name}
@@ -94,6 +106,17 @@
         {rows}
         class={textareaClasses()}
         oninput={handleInput}
+        aria-invalid={variant === "error" ? "true" : undefined}
+        aria-describedby={message ? `${textareaId}-message` : undefined}
         {...restProps}
     ></textarea>
+    {#if message && variant !== "default"}
+        <p id={`${textareaId}-message`} class={messageClasses()} role="alert">
+            {#if getIcon()}
+                {@const Icon = getIcon()}
+                <Icon size={14} class="shrink-0" />
+            {/if}
+            <span>{message}</span>
+        </p>
+    {/if}
 </div>

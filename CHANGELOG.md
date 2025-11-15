@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.14] - 2025-01-27
+
+### ✨ **Component Improvements**
+
+#### **Textarea Component**
+- **Visual Consistency**: Updated Textarea styling to match Input component exactly
+  - Changed background to `bg-brand-100` (matching Input)
+  - Updated border radius from `rounded-md` to `rounded-lg`
+  - Removed border for default variant (matches Input's borderless design)
+  - Updated focus states to use `focus:ring-2 focus:ring-brand-500` with `focus:ring-offset-0`
+  - Standardized placeholder and text colors to match Input
+- **Simplified API**: Removed `size` prop - Textarea now uses a fixed size (matching Input's default "md" size)
+- **Enhanced Features**: Added message support with icons for success, warning, and error variants (matching Input component)
+
+#### **Storybook Updates**
+- **Storybook 10 Compatibility**: Standardized `argTypes` controls across all stories
+  - Updated Alert, Badge, Toggle, Tooltip, and SlideUp stories to use string shorthand for controls
+  - Improved consistency and cleaner code
+- **Textarea Stories**: Added message examples for success, warning, and error variants
+- **Removed Deprecated Stories**: Removed Small and Large Textarea stories (size prop removed)
+
+### 🎯 **Technical Details**
+
+- **Styling Alignment**: Textarea now visually matches Input component for consistent form design
+- **API Simplification**: Removed unnecessary size variations from Textarea
+- **Storybook Modernization**: All stories now use Storybook 10 best practices
+
+### ✅ **No Breaking Changes**
+
+This is a backward-compatible update. Existing Textarea usage continues to work, with improved visual consistency.
+
+---
+
 ## [4.0.1] - 2025-01-27
 
 ### 🛡️ **SSR Safety Overhaul - "Zero Runtime Errors" Edition**

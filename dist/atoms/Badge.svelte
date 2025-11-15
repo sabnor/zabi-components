@@ -45,18 +45,18 @@
         // Note: Using text-white instead of text-inverse to ensure light text in both light and dark modes
         const variantClass =
             variant === "success"
-                ? "bg-success border-[var(--color-success)] text-white"
+                ? "bg-success border-success text-white"
                 : variant === "warning"
-                  ? "bg-warning-weak border-[var(--color-warning-weak)] text-white"
+                  ? "bg-warning border-warning text-white"
                   : variant === "error"
-                    ? "bg-error border-[var(--color-error)] text-white"
+                    ? "bg-error border-error text-white"
                     : variant === "info"
-                      ? "bg-info border-[var(--color-info)] text-white"
+                      ? "bg-info border-info text-white"
                       : variant === "neutral"
-                        ? "bg-neutral border-[var(--color-neutral)] text-white"
+                        ? "bg-neutral border-neutral text-white"
                         : variant === "energetic"
-                          ? "bg-energetic-weak border-[var(--color-energetic-weak)] text-white"
-                          : "bg-secondary border-[var(--color-secondary)] text-white"; // default
+                          ? "bg-energetic border-energetic text-white"
+                          : "bg-secondary border-secondary text-white"; // default
 
         return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     });
@@ -77,7 +77,10 @@
         {#if variant === "success"}
             <Check size={iconSize()} class="{iconSpacingClass()} text-white" />
         {:else if variant === "warning"}
-            <AlertTriangle size={iconSize()} class="{iconSpacingClass()} text-white" />
+            <AlertTriangle
+                size={iconSize()}
+                class="{iconSpacingClass()} text-white"
+            />
         {:else if variant === "error"}
             <X size={iconSize()} class="{iconSpacingClass()} text-white" />
         {:else if variant === "info"}

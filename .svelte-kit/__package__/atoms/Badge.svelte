@@ -47,7 +47,7 @@
             variant === "success"
                 ? "bg-success border-success text-white"
                 : variant === "warning"
-                  ? "bg-warning-weak border-warning-weak text-white"
+                  ? "bg-warning border-warning text-white"
                   : variant === "error"
                     ? "bg-error border-error text-white"
                     : variant === "info"
@@ -55,10 +55,10 @@
                       : variant === "neutral"
                         ? "bg-neutral border-neutral text-white"
                         : variant === "energetic"
-                          ? "bg-energetic-weak border-energetic-weak text-white"
+                          ? "bg-energetic border-energetic text-white"
                           : "bg-secondary border-secondary text-white"; // default
 
-        return `badge ${sizeClass} ${variantClass}`.trim();
+        return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     });
 
     // Icon size based on badge size
