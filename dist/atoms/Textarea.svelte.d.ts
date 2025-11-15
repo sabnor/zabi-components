@@ -5,8 +5,8 @@ interface Props {
     placeholder?: string;
     disabled?: boolean;
     rows?: number;
-    size?: "sm" | "md" | "lg";
     variant?: "default" | "success" | "warning" | "error";
+    message?: string;
     oninput?: (event: Event) => void;
 }
 declare const Textarea: import("svelte").Component<Props, {}, "">;

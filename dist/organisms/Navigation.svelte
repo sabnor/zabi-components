@@ -41,8 +41,7 @@
 
     // Function to get nav item classes based on active state
     function getNavItemClasses(itemHref: string): string {
-        const baseClasses =
-            "flex flex-col gap-1 grow h-full items-center justify-center min-h-0 min-w-0 relative shrink-0 cursor-pointer";
+        const baseClasses = "flex flex-col gap-1 grow h-full items-center justify-center min-h-0 min-w-0 relative shrink-0 cursor-pointer";
 
         return baseClasses;
     }
@@ -50,8 +49,7 @@
     // Function to get icon container classes based on active state
     function getIconContainerClasses(itemHref: string): string {
         const isActive = currentPath === itemHref;
-        const baseClasses =
-            "flex flex-col items-center justify-center overflow-clip relative rounded-[20px] shrink-0 transition-colors duration-200";
+        const baseClasses = "flex flex-col items-center justify-center overflow-clip relative rounded-[20px] shrink-0 transition-colors duration-200";
 
         if (isActive) {
             return `${baseClasses} bg-action-primary-subtle-hover`;
@@ -67,8 +65,7 @@
     // Function to get label classes based on active state
     function getLabelClasses(itemHref: string): string {
         const isActive = currentPath === itemHref;
-        const baseClasses =
-            "font-medium leading-4 relative shrink-0 text-center text-nowrap tracking-[0.5px] whitespace-pre text-xs";
+        const baseClasses = "font-medium leading-4 relative shrink-0 text-center text-nowrap tracking-[0.5px] whitespace-pre text-xs";
 
         if (isActive) {
             return `${baseClasses} text-link`;
@@ -105,17 +102,13 @@
                     {#if item.iconFilled && isActive}
                         {@const iconClasses = getIconClasses(item.href)}
                         {@const Icon = item.iconFilled}
-                        <div
-                            class="overflow-clip relative shrink-0 size-4 {iconClasses}"
-                        >
+                        <div class="overflow-clip relative shrink-0 size-4 {iconClasses}">
                             <Icon size={16} class="w-4 h-4" />
                         </div>
                     {:else if item.icon}
                         {@const iconClasses = getIconClasses(item.href)}
                         {@const Icon = item.icon}
-                        <div
-                            class="overflow-clip relative shrink-0 size-4 {iconClasses}"
-                        >
+                        <div class="overflow-clip relative shrink-0 size-4 {iconClasses}">
                             <Icon size={16} class="w-4 h-4" />
                         </div>
                     {/if}

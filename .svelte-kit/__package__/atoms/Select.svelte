@@ -1,11 +1,6 @@
 <script lang="ts">
     import Dropdown from "../molecules/Dropdown.svelte";
-    import {
-        ChevronDown,
-        CheckCircle,
-        AlertTriangle,
-        AlertCircle,
-    } from "@lucide/svelte";
+    import { ChevronDown, CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
 
     // SSR-safe ID generation
     function generateId(prefix: string = "id"): string {
@@ -53,20 +48,20 @@
             return {
                 padding: "px-4 py-2",
                 text: "text-sm",
-                leading: "leading-5",
+                leading: "leading-5"
             };
         } else if (size === "lg") {
             return {
                 padding: "px-4 py-3",
                 text: "text-base",
-                leading: "leading-6",
+                leading: "leading-6"
             };
         } else {
             // default md
             return {
                 padding: "px-4 py-2.5",
                 text: "text-base",
-                leading: "leading-6",
+                leading: "leading-6"
             };
         }
     });
@@ -125,9 +120,7 @@
             return String(placeholder || "Select an option");
         }
         const selected = options.find((opt) => opt.value === value);
-        return selected?.label
-            ? String(selected.label)
-            : String(placeholder || "Select an option");
+        return selected?.label ? String(selected.label) : String(placeholder || "Select an option");
     });
 
     // Check if value is empty
@@ -145,7 +138,7 @@
             const syntheticEvent = new Event("change", { bubbles: true });
             Object.defineProperty(syntheticEvent, "target", {
                 value: { value: optionValue },
-                enumerable: true,
+                enumerable: true
             });
             (onchange as (event: Event) => void)(syntheticEvent);
         }
@@ -159,10 +152,7 @@
 
     // Close dropdown when clicking outside
     function handleClickOutside(event: MouseEvent) {
-        if (
-            isOpen &&
-            !(event.target as HTMLElement).closest(".select-container")
-        ) {
+        if (isOpen && !(event.target as HTMLElement).closest('.select-container')) {
             isOpen = false;
         }
     }
@@ -182,7 +172,7 @@
         <label for={selectId} class={labelClasses()}>{label}</label>
     {/if}
 
-    <Dropdown {isOpen} placement="bottom-start">
+    <Dropdown isOpen={isOpen} placement="bottom-start">
         {#snippet trigger()}
             <button
                 type="button"
@@ -194,21 +184,12 @@
                 aria-expanded={isOpen}
                 aria-describedby={message ? `${selectId}-message` : undefined}
             >
-                <span
-                    class="text-left flex-1 {isEmpty()
-                        ? 'text-description'
-                        : 'text-body'}"
-                >
-                    {isEmpty()
-                        ? placeholder
-                        : options.find((opt) => opt.value === value)?.label ||
-                          placeholder}
+                <span class="text-left flex-1 {isEmpty() ? 'text-description' : 'text-body'}">
+                    {isEmpty() ? placeholder : (options.find((opt) => opt.value === value)?.label || placeholder)}
                 </span>
                 <ChevronDown
                     size={20}
-                    class="text-description transition-transform duration-200 {isOpen
-                        ? 'rotate-180'
-                        : ''}"
+                    class="text-description transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"
                 />
             </button>
         {/snippet}
@@ -217,11 +198,7 @@
                 {#each options as option (option.value)}
                     <button
                         type="button"
-                        class="w-full text-left px-4 py-2 text-body hover:bg-brand-50 transition-colors rounded-md my-0.5 {option.disabled
-                            ? 'opacity-50 cursor-not-allowed'
-                            : 'cursor-pointer'} {value === option.value
-                            ? 'bg-brand-50'
-                            : ''}"
+                        class="w-full text-left px-4 py-2 text-body hover:bg-brand-50 transition-colors rounded-md my-0.5 {option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} {value === option.value ? 'bg-brand-50' : ''}"
                         onclick={() => handleOptionClick(option.value)}
                         disabled={option.disabled}
                     >

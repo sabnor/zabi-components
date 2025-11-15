@@ -1,0 +1,325 @@
+/* ========================================
+   ZABI COMPONENTS COLOR SYSTEM
+   Standalone CSS Custom Properties
+   Works without Tailwind CSS processing
+   ======================================== */
+
+:root {
+  /* Brand Color Scale */
+  --color-brand-50: #f7faff;
+  --color-brand-100: #edf2fb;
+  --color-brand-200: #dfe7fb;
+  --color-brand-300: #ccdbfd;
+  --color-brand-400: #abc4ff;
+  --color-brand-500: #8fa8ff;
+  --color-brand-600: #6e84fa;
+  --color-brand-700: #5366e2;
+  --color-brand-800: #3f4fc0;
+  --color-brand-900: #2f3c99;
+  --color-brand-950: #1f2866;
+
+  /* Citron Color Scale */
+  --color-citron-50: #f9faeb;
+  --color-citron-100: #f1f5cf;
+  --color-citron-200: #e4ecaa;
+  --color-citron-300: #d5e184;
+  --color-citron-400: #c7d460;
+  --color-citron-500: #bbbe64;
+  --color-citron-600: #a3a852;
+  --color-citron-700: #848a43;
+  --color-citron-800: #666c35;
+  --color-citron-900: #4d5229;
+  --color-citron-950: #323518;
+
+  /* Pine Color Scale */
+  --color-pine-50: #e9f6f2;
+  --color-pine-100: #d2ece4;
+  --color-pine-200: #a7d9c9;
+  --color-pine-300: #78c4ad;
+  --color-pine-400: #49ad91;
+  --color-pine-500: #0C5D43;
+  --color-pine-600: #0a513a;
+  --color-pine-700: #084532;
+  --color-pine-800: #063a2a;
+  --color-pine-900: #04231a;
+  --color-pine-950: #02160f;
+
+  /* Iris Color Scale */
+  --color-iris-50: #f4f4fa;
+  --color-iris-100: #e9e9f7;
+  --color-iris-200: #d6d6f0;
+  --color-iris-300: #bdbde6;
+  --color-iris-400: #a3a3d8;
+  --color-iris-500: #6969B3;
+  --color-iris-600: #58589e;
+  --color-iris-700: #474788;
+  --color-iris-800: #38386f;
+  --color-iris-900: #2a2a56;
+  --color-iris-950: #1b1b37;
+
+  /* Surface Colors - Tailwind stone palette */
+  --color-surface-level-0: #fafaf9;
+  --color-surface-level-0-hover: #f5f5f4;
+  --color-surface-level-1: #f5f5f4;
+  --color-surface-level-1-hover: #e7e5e4;
+  --color-surface-level-2: #e7e5e4;
+  --color-surface-level-2-hover: #d6d3d1;
+  --color-surface-elevated: #ffffff;
+  --color-surface-elevated-hover: #fafaf9;
+  --color-surface-hover: #f5f5f4;
+  --color-surface-active: #e7e5e4;
+  --color-surface-inverse: #1c1917;
+  --color-surface-disabled: #e7e5e4;
+  --color-surface-container-high: #ece6f0;
+
+  /* Background Colors */
+  --color-background: #ffffff;
+  --color-background-secondary: #fafaf9;
+  --color-background-tertiary: #f5f5f4;
+
+  /* Page Colors */
+  --color-page: #f5f5f4;
+  --color-page-secondary: #e7e5e4;
+
+  /* Card Colors */
+  --color-card: #ffffff;
+  --color-card-hover: #f5f5f4;
+  --color-card-active: #f5f5f4;
+  --color-card-elevated: #ffffff;
+
+  /* Text Colors */
+  --color-headline: #1c1917;
+  --color-body: #292524;
+  --color-description: #57534e;
+  --color-caption: #78716c;
+  --color-input-placeholder: #a8a29e;
+  --color-label: #44403c;
+  --color-link: #6e84fa;
+  --color-link-hover: #5366e2;
+  --color-success-text: #084532;
+  --color-warning-text: #b45309;
+  --color-neutral-text: #44403c;
+  --color-energetic-text: #848a43;
+  --color-error-text: #b91c1c;
+  --color-inverse: #ffffff;
+  --color-disabled: #a8a29e;
+
+  /* Border Colors */
+  --color-border: #e7e5e4;
+  --color-border-weak: #d6d3d1;
+  --color-border-medium: #a8a29e;
+  --color-border-strong: #78716c;
+
+  /* Focus Colors */
+  --color-focus: #8fa8ff;
+  --color-focus-weak: #6e84fa;
+  --color-focus-medium: #5366e2;
+  --color-focus-strong: #3f4fc0;
+
+  /* Primary Colors */
+  --color-primary: #6e84fa;
+  --color-primary-weak: #5366e2;
+  --color-primary-medium: #3f4fc0;
+  --color-primary-strong: #2f3c99;
+
+  /* Secondary Colors */
+  --color-secondary: #57534e;
+  --color-secondary-weak: #44403c;
+  --color-secondary-medium: #292524;
+  --color-secondary-strong: #1c1917;
+
+  /* Success Colors */
+  --color-success: #0a513a;
+  --color-success-weak: #084532;
+  --color-success-medium: #063a2a;
+  --color-success-strong: #04231a;
+
+  /* Warning Colors */
+  --color-warning: #f59e0b;
+  --color-warning-weak: #d97706;
+  --color-warning-medium: #fbbf24;
+  --color-warning-strong: #fcd34d;
+
+  /* Error Colors */
+  --color-error: #ef4444;
+  --color-error-weak: #dc2626;
+  --color-error-medium: #f87171;
+  --color-error-strong: #fca5a5;
+
+  /* Energetic Colors (Citron) */
+  --color-energetic: #bbbe64;
+  --color-energetic-weak: #a3a852;
+  --color-energetic-medium: #c7d460;
+  --color-energetic-strong: #d5e184;
+
+  /* Neutral Colors */
+  --color-neutral: #57534e;
+  --color-neutral-weak: #44403c;
+  --color-neutral-medium: #292524;
+  --color-neutral-strong: #1c1917;
+
+  /* Info Colors */
+  --color-info: #58589e;
+  --color-info-weak: #474788;
+  --color-info-medium: #38386f;
+  --color-info-strong: #2a2a56;
+  --color-info-text: var(--color-info);
+
+  /* Action Colors */
+  --color-action-primary: #6e84fa;
+  --color-action-primary-hover: #5366e2;
+  --color-action-primary-active: #3f4fc0;
+  --color-action-primary-disabled: #ccdbfd;
+  --color-action-primary-subtle: #f7faff;
+  --color-action-primary-subtle-hover: #edf2fb;
+
+  --color-action-secondary: #57534e;
+  --color-action-secondary-hover: #44403c;
+  --color-action-secondary-active: #292524;
+  --color-action-secondary-disabled: #d6d3d1;
+  --color-action-secondary-subtle: #f5f5f4;
+  --color-action-secondary-subtle-hover: #e7e5e4;
+
+  --color-action-danger: #dc2626;
+  --color-action-danger-hover: #b91c1c;
+  --color-action-danger-active: #991b1b;
+  --color-action-danger-disabled: #fca5a5;
+  --color-action-danger-subtle: #fef2f2;
+  --color-action-danger-subtle-hover: #fee2e2;
+}
+
+/* Dark Mode */
+.dark {
+  /* Surface Colors - Dark mode variants */
+  --color-surface-level-0: #292524;
+  --color-surface-level-0-hover: #44403c;
+  --color-surface-level-1: #44403c;
+  --color-surface-level-1-hover: #57534e;
+  --color-surface-level-2: #57534e;
+  --color-surface-level-2-hover: #78716c;
+  --color-surface-elevated: #292524;
+  --color-surface-elevated-hover: #44403c;
+  --color-surface-hover: #44403c;
+  --color-surface-active: #57534e;
+  --color-surface-inverse: #f5f5f4;
+  --color-surface-disabled: #44403c;
+  --color-surface-container-high: #44403c;
+
+  /* Background Colors */
+  --color-background: #1c1917;
+  --color-background-secondary: #292524;
+  --color-background-tertiary: #44403c;
+
+  /* Page Colors */
+  --color-page: #292524;
+  --color-page-secondary: #292524;
+
+  /* Card Colors */
+  --color-card: #292524;
+  --color-card-hover: #44403c;
+  --color-card-active: #57534e;
+  --color-card-elevated: #292524;
+
+  /* Text Colors */
+  --color-headline: #f5f5f4;
+  --color-body: #e7e5e4;
+  --color-description: #d6d3d1;
+  --color-caption: #a8a29e;
+  --color-input-placeholder: #78716c;
+  --color-label: #e7e5e4;
+  --color-link: #abc4ff;
+  --color-link-hover: #ccdbfd;
+  --color-success-text: #49ad91;
+  --color-warning-text: #fbbf24;
+  --color-neutral-text: #a8a29e;
+  --color-energetic-text: #c7d460;
+  --color-error-text: #f87171;
+  --color-inverse: #1c1917;
+  --color-disabled: #78716c;
+
+  /* Border Colors */
+  --color-border: #57534e;
+  --color-border-weak: #78716c;
+  --color-border-medium: #a8a29e;
+  --color-border-strong: #d6d3d1;
+
+  /* Focus Colors */
+  --color-focus: #abc4ff;
+  --color-focus-weak: #8fa8ff;
+  --color-focus-medium: #6e84fa;
+  --color-focus-strong: #5366e2;
+  --color-focus-disabled: #6e84fa;
+
+  /* Primary Colors */
+  --color-primary: #6e84fa;
+  --color-primary-weak: #5366e2;
+  --color-primary-medium: #3f4fc0;
+  --color-primary-strong: #2f3c99;
+
+  /* Secondary Colors */
+  --color-secondary: #57534e;
+  --color-secondary-weak: #44403c;
+  --color-secondary-medium: #292524;
+  --color-secondary-strong: #1c1917;
+
+  /* Success Colors */
+  --color-success: #0C5D43;
+  --color-success-weak: #0a513a;
+  --color-success-medium: #49ad91;
+  --color-success-strong: #78c4ad;
+
+  /* Warning Colors */
+  --color-warning: #d97706;
+  --color-warning-weak: #b45309;
+  --color-warning-medium: #92400e;
+  --color-warning-strong: #78350f;
+
+  /* Error Colors */
+  --color-error: #dc2626;
+  --color-error-weak: #b91c1c;
+  --color-error-medium: #991b1b;
+  --color-error-strong: #7f1d1d;
+
+  /* Energetic Colors (Citron) */
+  --color-energetic: #a3a852;
+  --color-energetic-weak: #848a43;
+  --color-energetic-medium: #666c35;
+  --color-energetic-strong: #4d5229;
+
+  /* Neutral Colors */
+  --color-neutral: #57534e;
+  --color-neutral-weak: #78716c;
+  --color-neutral-medium: #a8a29e;
+  --color-neutral-strong: #d6d3d1;
+
+  /* Info Colors */
+  --color-info: #6969B3;
+  --color-info-weak: #58589e;
+  --color-info-active: #a3a3d8;
+  --color-info-medium: #a3a3d8;
+  --color-info-strong: #bdbde6;
+  --color-info-text: var(--color-info);
+
+  /* Action Colors - Dark mode variants */
+  --color-action-primary: #8fa8ff;
+  --color-action-primary-hover: #6e84fa;
+  --color-action-primary-active: #5366e2;
+  --color-action-primary-disabled: #5366e2;
+  --color-action-primary-subtle: #1f2866;
+  --color-action-primary-subtle-hover: #2f3c99;
+
+  --color-action-secondary: #78716c;
+  --color-action-secondary-hover: #57534e;
+  --color-action-secondary-active: #44403c;
+  --color-action-secondary-disabled: #44403c;
+  --color-action-secondary-subtle: #292524;
+  --color-action-secondary-subtle-hover: #44403c;
+
+  --color-action-danger: #ef4444;
+  --color-action-danger-hover: #dc2626;
+  --color-action-danger-active: #b91c1c;
+  --color-action-danger-disabled: #b91c1c;
+  --color-action-danger-subtle: #450a0a;
+  --color-action-danger-subtle-hover: #7f1d1d;
+}
+

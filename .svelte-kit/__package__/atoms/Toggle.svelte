@@ -54,7 +54,7 @@
     const toggleThumbClasses = $derived(() => {
         const baseClasses =
             "pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-200 ease-in-out";
-        const positionClasses = checked ? "translate-x-5" : "translate-x-0";
+        const positionClasses = checked ? "translate-x-4" : "translate-x-0";
 
         return `${baseClasses} ${positionClasses}`.trim();
     });

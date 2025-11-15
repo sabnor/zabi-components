@@ -1,6 +1,6 @@
 {
   "name": "zabi-components",
-  "version": "5.0.13",
+  "version": "5.0.14",
   "description": "A modern Svelte 5 component library with TypeScript, Tailwind CSS v4, and 100% SSR-safe components",
   "type": "module",
   "main": "dist/index.js",
@@ -44,6 +44,7 @@
       "import": "./dist/routes/lib/variant-utils.ts"
     },
     "./dist/zabi-components.css": "./dist/zabi-components.css",
+    "./dist/zabi-components-colors.css": "./dist/zabi-components-colors.css",
     "./package.json": "./package.json"
   },
   "files": [
@@ -71,7 +72,7 @@
     "dev": "vite dev",
     "build": "vite build && npm run build:types",
     "build:lib": "svelte-package -o dist --input src/components && mkdir -p dist/routes/lib && cp src/routes/lib/ssr-safe.ts dist/routes/lib/ && cp src/routes/lib/variant-utils.ts dist/routes/lib/ && npm run build:css && npm run build:types",
-    "build:css": "echo '/* Zabi Components CSS */' > dist/zabi-components.css && cat src/app.css >> dist/zabi-components.css && find dist -name '*.css' -not -name 'zabi-components.css' -exec cat {} \\; >> dist/zabi-components.css",
+    "build:css": "node scripts/build-css.js && cp src/styles/colors.css dist/zabi-components-colors.css && find dist -name '*.css' -not -name 'zabi-components.css' -not -name 'zabi-components-colors.css' -exec cat {} \\; >> dist/zabi-components.css",
     "build:types": "tsc --project tsconfig.lib.json",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",

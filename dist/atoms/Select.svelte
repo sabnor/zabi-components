@@ -36,6 +36,7 @@
         size = "md",
         variant = "default",
         message = "",
+        onchange,
         ...restProps
     }: Props = $props();
 
