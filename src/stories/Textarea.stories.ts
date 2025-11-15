@@ -44,27 +44,12 @@ export const WithRows: Story = {
     }
 };
 
-export const Small: Story = {
-    args: {
-        label: 'Small Textarea',
-        placeholder: 'Small size textarea',
-        size: 'sm'
-    }
-};
-
-export const Large: Story = {
-    args: {
-        label: 'Large Textarea',
-        placeholder: 'Large size textarea',
-        size: 'lg'
-    }
-};
-
 export const Success: Story = {
     args: {
         label: 'Success Textarea',
         placeholder: 'This textarea has success styling',
-        variant: 'success'
+        variant: 'success',
+        message: 'This field looks good!'
     }
 };
 
@@ -72,7 +57,8 @@ export const Warning: Story = {
     args: {
         label: 'Warning Textarea',
         placeholder: 'This textarea has warning styling',
-        variant: 'warning'
+        variant: 'warning',
+        message: 'Please review this field'
     }
 };
 
@@ -80,6 +66,7 @@ export const Error: Story = {
     args: {
         label: 'Error Textarea',
         placeholder: 'This textarea has error styling',
-        variant: 'error'
+        variant: 'error',
+        message: 'This field is required'
     }
 };
