@@ -18,6 +18,19 @@
   --color-surface-disabled: theme(colors.stone.700);
   --color-surface-container-high: theme(colors.stone.700);
 
+  /* Brand Color Scale - Dark mode variants */
+  --color-brand-50: theme(colors.brand.950);
+  --color-brand-100: theme(colors.brand.900);
+  --color-brand-200: theme(colors.brand.800);
+  --color-brand-300: theme(colors.brand.700);
+  --color-brand-400: theme(colors.brand.600);
+  --color-brand-500: theme(colors.brand.500);
+  --color-brand-600: theme(colors.brand.400);
+  --color-brand-700: theme(colors.brand.300);
+  --color-brand-800: theme(colors.brand.200);
+  --color-brand-900: theme(colors.brand.100);
+  --color-brand-950: theme(colors.brand.50);
+
   /* Background Colors */
   --color-background: theme(colors.stone.900);
   --color-background-secondary: theme(colors.stone.800);
