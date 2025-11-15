@@ -14,8 +14,8 @@
     "name": "Badge",
     "imports": [
       "_index.js",
-      "_context.js",
-      "_Card.js"
+      "_Card.js",
+      "_context.js"
     ]
   },
   "_Card.9NBVysfc.css": {
@@ -147,7 +147,7 @@
       "_index.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.CMcImMkS.css"
+      "_app/immutable/assets/_layout.BXeDcrVt.css"
     ]
   },
   "src/routes/+page.svelte": {
@@ -175,7 +175,7 @@
       "_CodeBlock.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.CDjR0kvO.css"
+      "_app/immutable/assets/_page.BhY-VFmB.css"
     ]
   },
   "src/routes/docs/+page.svelte": {

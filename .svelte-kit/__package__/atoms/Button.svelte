@@ -22,34 +22,62 @@
         ...restProps
     }: Props = $props();
 
-    // Size classes using full class names
+    // Size classes matching M3 design specifications
     const sizeClass = $derived(() => {
-        return size === "sm"
-            ? "px-3 py-1.5 text-sm font-medium"
-            : size === "lg"
-              ? "px-6 py-3 text-base font-semibold"
-              : "px-4 py-2 text-sm font-medium"; // default md
+        if (size === "sm") {
+            return {
+                padding: "px-4 py-2.5",
+                text: "text-sm",
+                font: "font-medium",
+                leading: "leading-5",
+                tracking: "tracking-[0.1px]",
+                radius: "rounded-lg",
+                gap: "gap-2"
+            };
+        } else if (size === "lg") {
+            return {
+                padding: "px-12 py-8",
+                text: "text-2xl",
+                font: "font-normal",
+                leading: "leading-8",
+                tracking: "tracking-normal",
+                radius: "rounded-2xl",
+                gap: "gap-3"
+            };
+        } else {
+            // default md
+            return {
+                padding: "px-6 py-4",
+                text: "text-base",
+                font: "font-medium",
+                leading: "leading-6",
+                tracking: "tracking-[0.15px]",
+                radius: "rounded-lg",
+                gap: "gap-2"
+            };
+        }
     });
 
     // Variant classes using semantic action colors
     const variantClass = $derived(() => {
         return variant === "primary"
-            ? "bg-action-primary text-inverse focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+            ? "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             : variant === "secondary"
-              ? "border border-secondary text-description hover:border-secondary-hover focus:ring-2 focus:ring-stone-500 focus:ring-offset-2"
+              ? "bg-brand-100 text-brand-800 hover:bg-brand-200 active:bg-brand-300 focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
               : variant === "danger"
-                ? "bg-action-danger text-inverse focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                ? "bg-action-danger text-inverse hover:bg-action-danger-hover active:bg-action-danger-active focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 : variant === "ghost"
                   ? "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 disabled:text-disabled"
-                  : "bg-action-primary text-inverse focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"; // default primary
+                  : "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"; // default primary
     });
 
-    // Button classes using Badge pattern
+    // Button classes matching M3 design pattern
     const buttonClasses = $derived(() => {
+        const sizeStyles = sizeClass();
         const baseClasses =
-            "inline-flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95 transform-gpu";
+            "inline-flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus:outline-none";
 
-        return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
+        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.font} ${sizeStyles.leading} ${sizeStyles.tracking} ${sizeStyles.radius} ${sizeStyles.gap} ${variantClass()}`.trim();
     });
 </script>
 

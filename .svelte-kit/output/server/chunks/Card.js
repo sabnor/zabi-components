@@ -1,4 +1,4 @@
-import { N as attributes, x as ensure_array_like, K as attr, F as attr_class, O as clsx, J as stringify, z as element, y as spread_props } from "./index.js";
+import { O as attributes, x as ensure_array_like, F as attr_class, z as attr, G as clsx, N as stringify, J as element, y as spread_props } from "./index.js";
 import { e as escape_html } from "./context.js";
 function html(value) {
   var html2 = String(value ?? "");
@@ -6,38 +6,87 @@ function html(value) {
   return open + html2 + "<!---->";
 }
 function Navigation($$renderer, $$props) {
-  let {
-    variant = "header",
-    items = [],
-    currentPath = "",
-    onclick,
-    className = "",
-    $$slots,
-    $$events,
-    ...restProps
-  } = $$props;
-  const ulClasses = () => {
-    return variant === "sidebar" ? "flex flex-col space-y-2" : "flex space-x-6";
-  };
-  function getLinkClasses(itemHref) {
-    const isActive = currentPath === itemHref;
-    const baseClasses = "px-3 py-2 text-sm font-medium rounded-md";
-    if (isActive) {
-      return `${baseClasses} text-body font-semibold`;
+  $$renderer.component(($$renderer2) => {
+    let {
+      variant = "header",
+      items = [],
+      currentPath = "",
+      onclick,
+      className = "",
+      $$slots,
+      $$events,
+      ...restProps
+    } = $$props;
+    const ulClasses = () => {
+      return variant === "sidebar" ? "flex flex-col gap-1" : "flex items-center justify-between gap-1";
+    };
+    function getNavItemClasses(itemHref) {
+      const baseClasses = "flex flex-col gap-1 grow h-full items-center justify-center min-h-0 min-w-0 relative shrink-0 cursor-pointer";
+      return baseClasses;
     }
-    return `${baseClasses} text-description hover:text-body`;
-  }
-  $$renderer.push(`<ul${attributes({
-    class: `${stringify(ulClasses())} ${stringify(className)}`,
-    ...restProps
-  })}><!--[-->`);
-  const each_array = ensure_array_like(items);
-  for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-    let item = each_array[$$index];
-    const linkClasses = getLinkClasses(item.href);
-    $$renderer.push(`<li><a${attr("href", item.href)}${attr_class(clsx(linkClasses))}>${escape_html(item.label)}</a></li>`);
-  }
-  $$renderer.push(`<!--]--></ul>`);
+    function getIconContainerClasses(itemHref) {
+      const isActive = currentPath === itemHref;
+      const baseClasses = "flex flex-col items-center justify-center overflow-clip relative rounded-[20px] shrink-0 transition-colors duration-200";
+      if (isActive) {
+        return `${baseClasses} bg-action-primary-subtle-hover`;
+      }
+      return `${baseClasses}`;
+    }
+    function getStateLayerClasses() {
+      return "box-border flex gap-1 h-10 items-center px-4 py-2 relative shrink-0";
+    }
+    function getLabelClasses(itemHref) {
+      const isActive = currentPath === itemHref;
+      const baseClasses = "font-medium leading-4 relative shrink-0 text-center text-nowrap tracking-[0.5px] whitespace-pre text-xs";
+      if (isActive) {
+        return `${baseClasses} text-link`;
+      }
+      return `${baseClasses} text-description`;
+    }
+    function getIconClasses(itemHref) {
+      const isActive = currentPath === itemHref;
+      if (isActive) {
+        return "text-link";
+      }
+      return "text-description";
+    }
+    $$renderer2.push(`<ul${attributes({
+      class: `${stringify(ulClasses())} ${stringify(className)}`,
+      ...restProps
+    })}><!--[-->`);
+    const each_array = ensure_array_like(items);
+    for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+      let item = each_array[$$index];
+      const isActive = currentPath === item.href;
+      const navItemClasses = getNavItemClasses(item.href);
+      const iconContainerClasses = getIconContainerClasses(item.href);
+      const labelClasses = getLabelClasses(item.href);
+      $$renderer2.push(`<li${attr_class(clsx(navItemClasses))}><a${attr("href", item.href)}${attr_class(clsx(iconContainerClasses))} role="button"${attr("aria-current", isActive ? "page" : void 0)}><div${attr_class(clsx(getStateLayerClasses()))}>`);
+      if (item.iconFilled && isActive) {
+        $$renderer2.push("<!--[-->");
+        const iconClasses = getIconClasses(item.href);
+        const Icon2 = item.iconFilled;
+        $$renderer2.push(`<div${attr_class(`overflow-clip relative shrink-0 size-4 ${stringify(iconClasses)}`)}><!---->`);
+        Icon2($$renderer2, { size: 16, class: "w-4 h-4" });
+        $$renderer2.push(`<!----></div>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+        if (item.icon) {
+          $$renderer2.push("<!--[-->");
+          const iconClasses = getIconClasses(item.href);
+          const Icon2 = item.icon;
+          $$renderer2.push(`<div${attr_class(`overflow-clip relative shrink-0 size-4 ${stringify(iconClasses)}`)}><!---->`);
+          Icon2($$renderer2, { size: 16, class: "w-4 h-4" });
+          $$renderer2.push(`<!----></div>`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+        }
+        $$renderer2.push(`<!--]-->`);
+      }
+      $$renderer2.push(`<!--]--> <p${attr_class(clsx(labelClasses))}>${escape_html(item.label)}</p></div></a></li>`);
+    }
+    $$renderer2.push(`<!--]--></ul>`);
+  });
 }
 /**
  * @license @lucide/svelte v0.544.0 - ISC
@@ -220,12 +269,19 @@ function Sun($$renderer, $$props) {
 }
 function ThemeToggle($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
-    let { isDark = false, $$slots, $$events, ...restProps } = $$props;
+    let {
+      size = "md",
+      variant = "default",
+      $$slots,
+      $$events,
+      ...restProps
+    } = $$props;
     {
       $$renderer2.push("<!--[!-->");
       $$renderer2.push(`<button${attributes({
-        class: "w-10 h-10 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center text-gray-700 cursor-pointer",
+        class: "w-10 h-10 bg-surface-elevated rounded-lg flex items-center justify-center text-label cursor-pointer",
         "aria-label": "Theme toggle",
+        type: "button",
         ...restProps
       })}>`);
       Sun($$renderer2, { size: 20, class: "text-label" });
@@ -249,14 +305,45 @@ function Button($$renderer, $$props) {
       ...restProps
     } = $$props;
     const sizeClass = () => {
-      return size === "sm" ? "px-3 py-1.5 text-sm font-medium" : size === "lg" ? "px-6 py-3 text-base font-semibold" : "px-4 py-2 text-sm font-medium";
+      if (size === "sm") {
+        return {
+          padding: "px-4 py-2.5",
+          text: "text-sm",
+          font: "font-medium",
+          leading: "leading-5",
+          tracking: "tracking-[0.1px]",
+          radius: "rounded-lg",
+          gap: "gap-2"
+        };
+      } else if (size === "lg") {
+        return {
+          padding: "px-12 py-8",
+          text: "text-2xl",
+          font: "font-normal",
+          leading: "leading-8",
+          tracking: "tracking-normal",
+          radius: "rounded-2xl",
+          gap: "gap-3"
+        };
+      } else {
+        return {
+          padding: "px-6 py-4",
+          text: "text-base",
+          font: "font-medium",
+          leading: "leading-6",
+          tracking: "tracking-[0.15px]",
+          radius: "rounded-lg",
+          gap: "gap-2"
+        };
+      }
     };
     const variantClass = () => {
-      return variant === "primary" ? "bg-action-primary text-inverse focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" : variant === "secondary" ? "border border-secondary text-description hover:border-secondary-hover focus:ring-2 focus:ring-stone-500 focus:ring-offset-2" : variant === "danger" ? "bg-action-danger text-inverse focus:ring-2 focus:ring-red-500 focus:ring-offset-2" : variant === "ghost" ? "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 disabled:text-disabled" : "bg-action-primary text-inverse focus:ring-2 focus:ring-blue-500 focus:ring-offset-2";
+      return variant === "primary" ? "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2" : variant === "secondary" ? "bg-brand-100 text-brand-800 hover:bg-brand-200 active:bg-brand-300 focus:ring-2 focus:ring-brand-500 focus:ring-offset-2" : variant === "danger" ? "bg-action-danger text-inverse hover:bg-action-danger-hover active:bg-action-danger-active focus:ring-2 focus:ring-red-500 focus:ring-offset-2" : variant === "ghost" ? "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 disabled:text-disabled" : "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2";
     };
     const buttonClasses = () => {
-      const baseClasses = "inline-flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95 transform-gpu";
-      return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
+      const sizeStyles = sizeClass();
+      const baseClasses = "inline-flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus:outline-none";
+      return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.font} ${sizeStyles.leading} ${sizeStyles.tracking} ${sizeStyles.radius} ${sizeStyles.gap} ${variantClass()}`.trim();
     };
     $$renderer2.push(`<button${attributes({ type, class: clsx(buttonClasses()), disabled, ...restProps })}>`);
     if (text) {
@@ -280,6 +367,7 @@ function Card($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let {
       title = "",
+      description = "",
       image = "",
       onclick,
       size = "md",
@@ -290,19 +378,36 @@ function Card($$renderer, $$props) {
       ...restProps
     } = $$props;
     const sizeClass = () => {
-      return size === "sm" ? "p-3" : size === "lg" ? "p-6" : "p-4";
+      return size === "sm" ? "p-4" : size === "lg" ? "p-8" : "p-6";
     };
     const cardClasses = () => {
-      const baseClasses = "rounded-lg transition-all duration-200 min-w-64 bg-surface-level-0";
-      const interactiveClasses = onclick ? "cursor-pointer hover:shadow-adaptive-md hover:bg-surface-hover hover:border-focus" : "";
+      const baseClasses = "rounded-lg transition-all duration-200 min-w-64 bg-surface-elevated shadow-sm";
+      const interactiveClasses = onclick ? "cursor-pointer hover:shadow-lg hover:bg-surface-hover" : "";
       const widthClasses = fullWidth ? "w-full" : "";
       return `${baseClasses} ${interactiveClasses} ${widthClasses} ${sizeClass()}`.trim();
     };
-    const titleClasses = () => "text-lg font-semibold mb-2 text-headline";
+    const titleClasses = () => {
+      if (size === "sm") {
+        return "text-lg font-medium mb-2 text-headline";
+      } else if (size === "lg") {
+        return "text-2xl font-medium mb-4 text-headline";
+      } else {
+        return "text-xl font-medium mb-3 text-headline";
+      }
+    };
+    const descriptionClasses = () => {
+      if (size === "sm") {
+        return "text-xs text-description mb-3";
+      } else if (size === "lg") {
+        return "text-base text-description mb-5";
+      } else {
+        return "text-sm text-description mb-4";
+      }
+    };
     $$renderer2.push(`<div${attributes({ class: clsx(cardClasses()), ...restProps })}>`);
     if (image) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<img${attr("src", image)}${attr("alt", title)} class="w-full h-48 object-cover rounded-md mb-4"/>`);
+      $$renderer2.push(`<img${attr("src", image)}${attr("alt", title)} class="w-full h-48 object-cover rounded-lg mb-4"/>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -310,6 +415,13 @@ function Card($$renderer, $$props) {
     if (title) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<h3${attr_class(clsx(titleClasses()))}>${escape_html(title)}</h3>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (description) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<p${attr_class(clsx(descriptionClasses()))}>${escape_html(description)}</p>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }

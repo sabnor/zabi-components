@@ -3,6 +3,7 @@
 
     interface Props {
         title?: string;
+        description?: string;
         image?: string;
         onclick?: (event: MouseEvent) => void | Promise<void>;
         size?: "sm" | "md" | "lg";
@@ -12,6 +13,7 @@
 
     let {
         title = "",
+        description = "",
         image = "",
         onclick,
         size = "md",
@@ -21,23 +23,41 @@
     }: Props = $props();
 
     const sizeClass = $derived(() => {
-        return size === "sm" ? "p-3" : size === "lg" ? "p-6" : "p-4"; // default md
+        return size === "sm" ? "p-4" : size === "lg" ? "p-8" : "p-6"; // default md
     });
 
     const cardClasses = $derived(() => {
         const baseClasses =
-            "rounded-lg transition-all duration-200 min-w-64 bg-surface-level-0";
+            "rounded-lg transition-all duration-200 min-w-64 bg-surface-elevated shadow-sm";
         const interactiveClasses = onclick
-            ? "cursor-pointer hover:shadow-adaptive-md hover:bg-surface-hover hover:border-focus"
+            ? "cursor-pointer hover:shadow-lg hover:bg-surface-hover"
             : "";
         const widthClasses = fullWidth ? "w-full" : "";
 
         return `${baseClasses} ${interactiveClasses} ${widthClasses} ${sizeClass()}`.trim();
     });
 
-    const titleClasses = $derived(
-        () => "text-lg font-semibold mb-2 text-headline",
-    );
+    const titleClasses = $derived(() => {
+        if (size === "sm") {
+            return "text-lg font-medium mb-2 text-headline";
+        } else if (size === "lg") {
+            return "text-2xl font-medium mb-4 text-headline";
+        } else {
+            // default md
+            return "text-xl font-medium mb-3 text-headline";
+        }
+    });
+
+    const descriptionClasses = $derived(() => {
+        if (size === "sm") {
+            return "text-xs text-description mb-3";
+        } else if (size === "lg") {
+            return "text-base text-description mb-5";
+        } else {
+            // default md
+            return "text-sm text-description mb-4";
+        }
+    });
 </script>
 
 <div class={cardClasses()} {onclick} {...restProps}>
@@ -45,12 +65,16 @@
         <img
             src={image}
             alt={title}
-            class="w-full h-48 object-cover rounded-md mb-4"
+            class="w-full h-48 object-cover rounded-lg mb-4"
         />
     {/if}
 
     {#if title}
         <h3 class={titleClasses()}>{title}</h3>
+    {/if}
+
+    {#if description}
+        <p class={descriptionClasses()}>{description}</p>
     {/if}
 
     {#if children}

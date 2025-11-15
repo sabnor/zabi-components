@@ -11,118 +11,56 @@
         trigger,
         ...restProps
     }: Props & { children?: any; trigger?: any } = $props();
+
+    // Get positioning classes based on placement
+    const placementClasses = $derived(() => {
+        const base = "absolute z-dropdown min-w-[12rem]";
+        const positioning = {
+            "bottom-start": "top-full left-0 mt-2",
+            "bottom-end": "top-full right-0 mt-2",
+            "top-start": "bottom-full left-0 mb-2",
+            "top-end": "bottom-full right-0 mb-2",
+        };
+        return `${base} ${positioning[placement]}`;
+    });
+
+    // Get transform classes based on placement and open state
+    const transformClasses = $derived(() => {
+        if (!isOpen) {
+            const hiddenTransform = {
+                "bottom-start": "translate-y-1",
+                "bottom-end": "translate-y-1",
+                "top-start": "-translate-y-1",
+                "top-end": "-translate-y-1",
+            };
+            return `opacity-0 invisible ${hiddenTransform[placement]}`;
+        }
+        return "opacity-100 visible translate-y-0";
+    });
+
+    // Get dropdown content classes
+    const dropdownContentClasses = $derived(() => {
+        return `
+            ${placementClasses()}
+            bg-brand-100
+            rounded-lg
+            shadow-lg
+            border-0
+            py-2
+            transition-all
+            duration-200
+            ease-in-out
+            ${transformClasses()}
+        `.trim().replace(/\s+/g, " ");
+    });
 </script>
 
-<div
-    class="dropdown-container group relative inline-block"
-    data-placement={placement}
->
+<div class="relative inline-block" data-placement={placement}>
     {@render trigger?.()}
 
     {#if isOpen}
-        <div
-            class="dropdown-content opacity-100 visible transform-none group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible"
-        >
+        <div class={dropdownContentClasses()}>
             {@render children?.()}
         </div>
     {/if}
 </div>
-
-<style>
-    .dropdown-container {
-        position: relative;
-        display: inline-block;
-    }
-
-    .dropdown-content {
-        position: absolute;
-        z-index: 50;
-        background-color: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.5rem;
-        box-shadow:
-            0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        min-width: 12rem;
-        opacity: 0;
-        visibility: hidden;
-        transition:
-            opacity 0.2s ease-in-out,
-            visibility 0.2s ease-in-out,
-            transform 0.2s ease-in-out;
-    }
-
-    /* Positioning based on data-placement */
-    .dropdown-container[data-placement="bottom-start"] .dropdown-content {
-        top: calc(100% + 8px);
-        left: 0;
-        transform: translateY(4px);
-    }
-
-    .dropdown-container[data-placement="bottom-end"] .dropdown-content {
-        top: calc(100% + 8px);
-        right: 0;
-        transform: translateY(4px);
-    }
-
-    .dropdown-container[data-placement="top-start"] .dropdown-content {
-        bottom: calc(100% + 8px);
-        left: 0;
-        transform: translateY(-4px);
-    }
-
-    .dropdown-container[data-placement="top-end"] .dropdown-content {
-        bottom: calc(100% + 8px);
-        right: 0;
-        transform: translateY(-4px);
-    }
-
-    /* Show on hover/focus */
-    .dropdown-container:hover .dropdown-content,
-    .dropdown-container:focus-within .dropdown-content {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
-
-    /* Arrow styling */
-    .dropdown-content::before {
-        content: "";
-        position: absolute;
-        width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 6px;
-        border-color: transparent;
-    }
-
-    .dropdown-container[data-placement="bottom-start"]
-        .dropdown-content::before,
-    .dropdown-container[data-placement="bottom-end"] .dropdown-content::before {
-        top: -6px;
-        border-bottom-color: white;
-    }
-
-    .dropdown-container[data-placement="top-start"] .dropdown-content::before,
-    .dropdown-container[data-placement="top-end"] .dropdown-content::before {
-        bottom: -6px;
-        border-top-color: white;
-    }
-
-    .dropdown-container[data-placement="bottom-start"]
-        .dropdown-content::before {
-        left: 1rem;
-    }
-
-    .dropdown-container[data-placement="bottom-end"] .dropdown-content::before {
-        right: 1rem;
-    }
-
-    .dropdown-container[data-placement="top-start"] .dropdown-content::before {
-        left: 1rem;
-    }
-
-    .dropdown-container[data-placement="top-end"] .dropdown-content::before {
-        right: 1rem;
-    }
-</style>
