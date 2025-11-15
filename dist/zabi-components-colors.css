@@ -205,6 +205,19 @@
   --color-surface-disabled: #44403c;
   --color-surface-container-high: #44403c;
 
+  /* Brand Color Scale - Dark mode variants */
+  --color-brand-50: #1f2866;
+  --color-brand-100: #2f3c99;
+  --color-brand-200: #3f4fc0;
+  --color-brand-300: #5366e2;
+  --color-brand-400: #6e84fa;
+  --color-brand-500: #8fa8ff;
+  --color-brand-600: #abc4ff;
+  --color-brand-700: #ccdbfd;
+  --color-brand-800: #dfe7fb;
+  --color-brand-900: #edf2fb;
+  --color-brand-950: #f7faff;
+
   /* Background Colors */
   --color-background: #1c1917;
   --color-background-secondary: #292524;
