@@ -1,6 +1,6 @@
 <script lang="ts">
     import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
-    
+
     // SSR-safe ID generation
     function generateId(prefix: string = "id"): string {
         if (typeof window !== "undefined") {
@@ -46,20 +46,20 @@
             return {
                 padding: "px-4 py-2",
                 text: "text-sm",
-                leading: "leading-5"
+                leading: "leading-5",
             };
         } else if (size === "lg") {
             return {
                 padding: "px-4 py-3",
                 text: "text-base",
-                leading: "leading-6"
+                leading: "leading-6",
             };
         } else {
             // default md
             return {
                 padding: "px-4 py-2.5",
                 text: "text-base",
-                leading: "leading-6"
+                leading: "leading-6",
             };
         }
     });

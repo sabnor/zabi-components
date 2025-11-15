@@ -40,6 +40,57 @@ npm install svelte@^5.38.10
 npm install @sveltejs/kit@^2.0.0  # Optional, for SvelteKit projects
 ```
 
+## Theme Setup
+
+Zabi Components includes a comprehensive theme system with Tailwind CSS v4. You need to import the theme before using components.
+
+### Quick Setup
+
+**For projects with existing Tailwind CSS:**
+
+```css
+/* app.css */
+@import "tailwindcss";
+@import 'zabi-components/theme-only';
+@import 'zabi-components/dist/zabi-components.css';
+```
+
+**For standalone projects (no Tailwind setup):**
+
+```css
+/* app.css */
+@import 'zabi-components/theme';
+@import 'zabi-components/dist/zabi-components.css';
+```
+
+### With Dark Mode
+
+```css
+@import "tailwindcss";
+@import 'zabi-components/theme-only';
+@import 'zabi-components/theme-dark-only'; /* Add dark mode support */
+@import 'zabi-components/dist/zabi-components.css';
+```
+
+### Extending the Theme
+
+You can extend the theme with custom colors and fonts:
+
+```css
+@import "tailwindcss";
+@import 'zabi-components/theme-only';
+
+/* Your custom theme extensions */
+@theme {
+  --font-family-title: 'Your Font', sans-serif;
+  --color-custom-primary: #ff0000;
+}
+
+@import 'zabi-components/dist/zabi-components.css';
+```
+
+> 📖 **Complete Theme Guide**: See [THEME.md](./THEME.md) for comprehensive documentation on theme usage, customization, dark mode, and advanced patterns.
+
 ## Import Methods
 
 Zabi Components supports multiple import patterns:

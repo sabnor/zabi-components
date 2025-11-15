@@ -1,0 +1,31 @@
+/* Example 3: Custom Semantic Colors
+ * 
+ * This example shows how to customize semantic colors
+ * (primary, secondary, success, etc.) without changing color scales.
+ */
+
+@import "tailwindcss";
+@import 'zabi-components/theme-only';
+
+/* Customize semantic colors */
+@theme {
+  /* Use purple for primary instead of brand blue */
+  --color-primary: theme(colors.purple.600);
+  --color-primary-weak: theme(colors.purple.700);
+  --color-primary-medium: theme(colors.purple.800);
+  --color-primary-strong: theme(colors.purple.900);
+  
+  /* Use teal for secondary */
+  --color-secondary: theme(colors.teal.600);
+  --color-secondary-weak: theme(colors.teal.700);
+  --color-secondary-medium: theme(colors.teal.800);
+  --color-secondary-strong: theme(colors.teal.900);
+  
+  /* Customize action colors */
+  --color-action-primary: theme(colors.purple.600);
+  --color-action-primary-hover: theme(colors.purple.700);
+  --color-action-primary-active: theme(colors.purple.800);
+}
+
+@import 'zabi-components/dist/zabi-components.css';
+

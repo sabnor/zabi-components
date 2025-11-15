@@ -1,0 +1,47 @@
+/* Example 5: Multiple Theme Variants
+ * 
+ * This example shows how to create multiple theme variants
+ * that can be toggled at runtime using CSS classes.
+ */
+
+@import "tailwindcss";
+@import 'zabi-components/theme-only';
+
+/* Default theme */
+@theme {
+  --color-primary: theme(colors.blue.600);
+  --color-secondary: theme(colors.gray.600);
+}
+
+/* Corporate variant */
+.corporate {
+  --color-primary: theme(colors.indigo.600);
+  --color-secondary: theme(colors.slate.600);
+  --color-background: theme(colors.white);
+  --color-headline: theme(colors.slate.900);
+}
+
+/* Creative variant */
+.creative {
+  --color-primary: theme(colors.pink.600);
+  --color-secondary: theme(colors.purple.600);
+  --color-background: theme(colors.gray.50);
+  --color-headline: theme(colors.purple.900);
+}
+
+/* Minimal variant */
+.minimal {
+  --color-primary: theme(colors.gray.700);
+  --color-secondary: theme(colors.gray.500);
+  --color-background: theme(colors.white);
+  --color-headline: theme(colors.black);
+  --color-border: theme(colors.gray.200);
+}
+
+@import 'zabi-components/dist/zabi-components.css';
+
+/* Usage in JavaScript:
+ * document.documentElement.classList.add('corporate');
+ * document.documentElement.classList.remove('corporate');
+ */
+
