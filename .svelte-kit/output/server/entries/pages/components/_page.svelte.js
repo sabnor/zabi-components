@@ -1,9 +1,8 @@
-import { y as spread_props, z as element, F as attr_class, G as attr_style, J as stringify, K as attr, x as ensure_array_like, N as attributes, O as clsx, w as head } from "../../../chunks/index.js";
+import { y as spread_props, z as attr, F as attr_class, G as clsx, J as element, K as attr_style, N as stringify, x as ensure_array_like, O as attributes, w as head } from "../../../chunks/index.js";
 import { I as Icon, B as Button, T as ThemeToggle, N as Navigation, C as Card } from "../../../chunks/Card.js";
 import { B as Badge, C as ComponentDemo, I as Input, A as Alert, a as ContactForm, b as Form, T as Textarea, c as Checkbox, F as FeatureCard } from "../../../chunks/Badge.js";
 import { e as escape_html } from "../../../chunks/context.js";
 import { C as CodeBlock } from "../../../chunks/CodeBlock.js";
-import "clsx";
 function Image($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     /**
@@ -91,6 +90,67 @@ function Image($$renderer, $$props) {
     ]));
   });
 }
+function Dropdown($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let {
+      isOpen = false,
+      placement = "bottom-start",
+      children,
+      trigger,
+      $$slots,
+      $$events,
+      ...restProps
+    } = $$props;
+    const placementClasses = () => {
+      const base = "absolute z-dropdown min-w-[12rem]";
+      const positioning = {
+        "bottom-start": "top-full left-0 mt-2",
+        "bottom-end": "top-full right-0 mt-2",
+        "top-start": "bottom-full left-0 mb-2",
+        "top-end": "bottom-full right-0 mb-2"
+      };
+      return `${base} ${positioning[placement]}`;
+    };
+    const transformClasses = () => {
+      if (!isOpen) {
+        const hiddenTransform = {
+          "bottom-start": "translate-y-1",
+          "bottom-end": "translate-y-1",
+          "top-start": "-translate-y-1",
+          "top-end": "-translate-y-1"
+        };
+        return `opacity-0 invisible ${hiddenTransform[placement]}`;
+      }
+      return "opacity-100 visible translate-y-0";
+    };
+    const dropdownContentClasses = () => {
+      return `
+            ${placementClasses()}
+            bg-brand-100
+            rounded-lg
+            shadow-lg
+            border-0
+            py-2
+            transition-all
+            duration-200
+            ease-in-out
+            ${transformClasses()}
+        `.trim().replace(/\s+/g, " ");
+    };
+    $$renderer2.push(`<div class="relative inline-block"${attr("data-placement", placement)}>`);
+    trigger?.($$renderer2);
+    $$renderer2.push(`<!----> `);
+    if (isOpen) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<div${attr_class(clsx(dropdownContentClasses()))}>`);
+      children?.($$renderer2);
+      $$renderer2.push(`<!----></div>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></div>`);
+  });
+}
 function Heading($$renderer, $$props) {
   let { level = 1, text } = $$props;
   const fontWeight = level <= 2 ? "700" : "500";
@@ -136,12 +196,19 @@ function Modal($$renderer, $$props) {
     }[size] || "w-full md:w-[28rem]";
     if (isOpen) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="fixed inset-0 bg-background/50 dark:bg-background/80 flex items-end md:items-center justify-center p-0 md:p-4 z-50" role="dialog" aria-modal="true" tabindex="-1"><div${attr_class(`bg-surface-elevated rounded-t-2xl md:rounded-lg shadow-xl min-w-[320px] ${stringify(sizeClasses)} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none`)}><div class="flex items-center justify-between p-6 border-b border-(--color-border)"><h2 class="text-xl font-semibold text-headline">${escape_html(title)}</h2> <button type="button" class="text-description hover:text-headline text-2xl cursor-pointer transition-colors" aria-label="Close">×</button></div> <div class="p-6">`);
+      $$renderer2.push(`<div class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-end md:items-center justify-center p-0 md:p-4 z-modal" role="dialog" aria-modal="true"${attr("aria-labelledby", title ? "modal-title" : void 0)} tabindex="-1"><div${attr_class(`bg-surface-elevated rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] ${stringify(sizeClasses)} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col`)}>`);
+      if (title) {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<div class="flex items-center justify-between px-6 pt-6 pb-4"><h2 id="modal-title" class="text-2xl font-normal leading-8 text-headline tracking-normal">${escape_html(title)}</h2> <button type="button" class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-hover" aria-label="Close">×</button></div>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]--> <div class="px-6 pb-6 flex-1">`);
       children?.($$renderer2);
       $$renderer2.push(`<!----></div> `);
       if (footer) {
         $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<div class="flex justify-end gap-3 p-6 border-t border-(--color-border)">`);
+        $$renderer2.push(`<div class="flex justify-end gap-3 px-6 pb-6 pt-4">`);
         footer?.($$renderer2);
         $$renderer2.push(`<!----></div>`);
       } else {
@@ -153,29 +220,6 @@ function Modal($$renderer, $$props) {
     }
     $$renderer2.push(`<!--]-->`);
   });
-}
-function Dropdown($$renderer, $$props) {
-  let {
-    isOpen = false,
-    placement = "bottom-start",
-    children,
-    trigger,
-    $$slots,
-    $$events,
-    ...restProps
-  } = $$props;
-  $$renderer.push(`<div class="dropdown-container group relative inline-block svelte-1o1q13x"${attr("data-placement", placement)}>`);
-  trigger?.($$renderer);
-  $$renderer.push(`<!----> `);
-  if (isOpen) {
-    $$renderer.push("<!--[-->");
-    $$renderer.push(`<div class="dropdown-content opacity-100 visible transform-none group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible svelte-1o1q13x">`);
-    children?.($$renderer);
-    $$renderer.push(`<!----></div>`);
-  } else {
-    $$renderer.push("<!--[!-->");
-  }
-  $$renderer.push(`<!--]--></div>`);
 }
 function Tabs($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
@@ -192,7 +236,7 @@ function Tabs($$renderer, $$props) {
     const each_array = ensure_array_like(tabs);
     for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
       let tab = each_array[$$index];
-      $$renderer2.push(`<button type="button" role="tab"${attr_class(`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${stringify(activeTab === tab.id ? variant === "pills" ? "bg-blue-100 text-blue-700 border-blue-500" : "border-blue-500 text-body" : "border-transparent text-description hover:text-body hover:border-gray-300")}`)}${attr("disabled", tab.disabled, true)}${attr("aria-selected", activeTab === tab.id)}>${escape_html(tab.label)}</button>`);
+      $$renderer2.push(`<button type="button" role="tab"${attr_class(`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${stringify(activeTab === tab.id ? variant === "pills" ? "bg-brand-100 text-brand-700 border-brand-500" : "border-brand-500 text-body" : "border-transparent text-description hover:text-body hover:border-gray-300")}`)}${attr("disabled", tab.disabled, true)}${attr("aria-selected", activeTab === tab.id)}>${escape_html(tab.label)}</button>`);
     }
     $$renderer2.push(`<!--]--></div> <div class="mt-4">`);
     children?.($$renderer2, { activeTab });
@@ -224,8 +268,8 @@ function ColorPicker($$renderer, $$props) {
       return hexPattern.test(hex);
     }
     const inputClasses = () => {
-      const baseClasses = "w-full px-3 py-2 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-200";
-      const stateClasses = isValidHex(value) || value === "" ? "border-gray-300 focus:border-blue-500" : "border-red-300 focus:border-red-500 focus:ring-red-200";
+      const baseClasses = "w-full px-3 py-2 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-200";
+      const stateClasses = isValidHex(value) || value === "" ? "border-gray-300 focus:border-brand-500" : "border-red-300 focus:border-red-500 focus:ring-red-200";
       return `${baseClasses} ${stateClasses}`.trim();
     };
     $$renderer2.push(`<div${attributes({ class: "space-y-2", ...restProps })}>`);
@@ -303,7 +347,7 @@ function Toast($$renderer, $$props) {
       success: "bg-green-100 border-green-300 text-success",
       error: "bg-red-100 border-red-300 text-error",
       warning: "bg-yellow-100 border-yellow-300 text-warning",
-      info: "bg-blue-100 border-blue-300 text-body"
+      info: "bg-iris-100 border-iris-300 text-body"
     };
     {
       $$renderer2.push("<!--[-->");
@@ -366,17 +410,19 @@ function ImageUpload($$renderer, $$props) {
     ...restProps
   } = $$props;
   function removeImage() {
+    if (disabled) return;
     if (value && typeof URL !== "undefined" && URL.revokeObjectURL) {
       URL.revokeObjectURL(value);
     }
     value = null;
   }
   function triggerFileSelect() {
+    if (disabled) return;
   }
   $$renderer.push(`<div class="space-y-3">`);
   if (value) {
     $$renderer.push("<!--[-->");
-    $$renderer.push(`<div class="relative group"><img${attr("src", value)} alt="" class="w-full h-32 object-cover rounded-lg border border-border"/> <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"><div class="flex gap-2">`);
+    $$renderer.push(`<div class="relative group"><img${attr("src", value)} alt="" class="w-full h-32 object-cover rounded-lg border-0"/> <div class="absolute inset-0 bg-black/50 dark:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"><div class="flex gap-2">`);
     Button($$renderer, {
       variant: "secondary",
       size: "sm",
@@ -401,11 +447,11 @@ function ImageUpload($$renderer, $$props) {
     $$renderer.push(`<!----></div></div></div>`);
   } else {
     $$renderer.push("<!--[!-->");
-    $$renderer.push(`<div class="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-border-strong transition-colors cursor-pointer" role="button" tabindex="0"><div class="space-y-3"><div class="w-12 h-12 mx-auto bg-surface-level-1 rounded-lg flex items-center justify-center">`);
+    $$renderer.push(`<div${attr_class(`border-2 border-dashed border-stone-200 rounded-lg p-6 text-center hover:border-brand-500 transition-colors ${stringify(disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer")}`)} role="button"${attr("tabindex", disabled ? -1 : 0)}${attr("aria-disabled", disabled)}><div class="space-y-3"><div class="w-12 h-12 mx-auto bg-surface-level-1 rounded-lg flex items-center justify-center">`);
     Image($$renderer, { size: 24, class: "text-description" });
     $$renderer.push(`<!----></div> <div><p class="font-medium text-headline">${escape_html(placeholder)}</p> <p class="text-sm text-description">Click to choose a file</p></div></div></div>`);
   }
-  $$renderer.push(`<!--]--> <input type="file"${attr("accept", accept)} class="hidden"/></div>`);
+  $$renderer.push(`<!--]--> <input type="file"${attr("accept", accept)}${attr("disabled", disabled, true)} class="hidden"/></div>`);
 }
 function SlideUp($$renderer, $$props) {
   let {
@@ -418,16 +464,16 @@ function SlideUp($$renderer, $$props) {
   } = $$props;
   if (isOpen) {
     $$renderer.push("<!--[-->");
-    $$renderer.push(`<div class="fixed inset-0 bg-black/50 z-50" role="dialog" aria-modal="true" tabindex="-1"></div> <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 rounded-t-xl shadow-xl z-50 max-h-[80vh] overflow-y-auto" role="dialog" aria-modal="true">`);
+    $$renderer.push(`<div class="fixed inset-0 bg-black/50 dark:bg-black/70 z-modal" role="dialog" aria-modal="true"${attr("aria-labelledby", title ? "slideup-title" : void 0)} tabindex="-1"><div class="fixed bottom-0 left-0 right-0 bg-surface-elevated rounded-t-3xl shadow-xl z-modal max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] flex flex-col">`);
     if (title) {
       $$renderer.push("<!--[-->");
-      $$renderer.push(`<div class="flex items-center justify-between p-4 border-b border-gray-200"><h3 class="text-lg font-semibold text-gray-900">${escape_html(title)}</h3> <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl" aria-label="Close">×</button></div>`);
+      $$renderer.push(`<div class="flex items-center justify-between px-6 pt-6 pb-4"><h2 id="slideup-title" class="text-2xl font-normal leading-8 text-headline tracking-normal">${escape_html(title)}</h2> <button type="button" class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-hover" aria-label="Close">×</button></div>`);
     } else {
       $$renderer.push("<!--[!-->");
     }
-    $$renderer.push(`<!--]--> <div class="p-4">`);
+    $$renderer.push(`<!--]--> <div class="px-6 pb-6 flex-1">`);
     children?.($$renderer);
-    $$renderer.push(`<!----></div></div>`);
+    $$renderer.push(`<!----></div></div></div>`);
   } else {
     $$renderer.push("<!--[!-->");
   }

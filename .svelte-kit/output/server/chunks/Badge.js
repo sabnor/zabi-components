@@ -1,6 +1,6 @@
-import { y as spread_props, N as attributes, J as stringify, K as attr, F as attr_class, O as clsx } from "./index.js";
-import { e as escape_html } from "./context.js";
+import { y as spread_props, O as attributes, N as stringify, z as attr, F as attr_class, G as clsx } from "./index.js";
 import { I as Icon, B as Button, h as html } from "./Card.js";
+import { e as escape_html } from "./context.js";
 function Check($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     /**
@@ -56,6 +56,162 @@ function Check($$renderer, $$props) {
        * @description Lucide SVG icon component, renders SVG Element with children.
        *
        * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjAgNiA5IDE3bC01LTUiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/check
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Circle_alert($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      ["circle", { "cx": "12", "cy": "12", "r": "10" }],
+      ["line", { "x1": "12", "x2": "12", "y1": "8", "y2": "12" }],
+      [
+        "line",
+        { "x1": "12", "x2": "12.01", "y1": "16", "y2": "16" }
+      ]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "circle-alert" },
+      /**
+       * @component @name CircleAlert
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgLz4KICA8bGluZSB4MT0iMTIiIHgyPSIxMiIgeTE9IjgiIHkyPSIxMiIgLz4KICA8bGluZSB4MT0iMTIiIHgyPSIxMi4wMSIgeTE9IjE2IiB5Mj0iMTYiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/circle-alert
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Circle_check_big($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      ["path", { "d": "M21.801 10A10 10 0 1 1 17 3.335" }],
+      ["path", { "d": "m9 11 3 3L22 4" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "circle-check-big" },
+      /**
+       * @component @name CircleCheckBig
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjEuODAxIDEwQTEwIDEwIDAgMSAxIDE3IDMuMzM1IiAvPgogIDxwYXRoIGQ9Im05IDExIDMgM0wyMiA0IiAvPgo8L3N2Zz4K) - https://lucide.dev/icons/circle-check-big
        * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
        *
        * @param {Object} props - Lucide icons props and any valid SVG attribute
@@ -349,6 +505,7 @@ function Input($$renderer, $$props) {
       disabled = false,
       size = "md",
       variant = "default",
+      message = "",
       oninput,
       $$slots,
       $$events,
@@ -356,16 +513,47 @@ function Input($$renderer, $$props) {
     } = $$props;
     const inputId = generateId("input");
     const sizeClass = () => {
-      return size === "sm" ? "px-3 py-1.5 text-sm" : size === "lg" ? "px-5 py-3 text-base" : "px-4 py-2 text-sm";
+      if (size === "sm") {
+        return { padding: "px-4 py-2", text: "text-sm", leading: "leading-5" };
+      } else if (size === "lg") {
+        return {
+          padding: "px-4 py-3",
+          text: "text-base",
+          leading: "leading-6"
+        };
+      } else {
+        return {
+          padding: "px-4 py-2.5",
+          text: "text-base",
+          leading: "leading-6"
+        };
+      }
     };
     const variantClass = () => {
-      return variant === "success" ? "border-success focus:border-success focus:ring-success" : variant === "warning" ? "border-warning focus:border-warning focus:ring-warning" : variant === "error" ? "border-error focus:border-error focus:ring-error" : "border-border focus:border-focus focus:ring-focus";
+      return variant === "success" ? "border-success focus:border-success focus:ring-success" : variant === "warning" ? "border-warning focus:border-warning focus:ring-warning" : variant === "error" ? "border-error focus:border-error focus:ring-error" : "border-0 focus:ring-2 focus:ring-brand-500";
     };
     const inputClasses = () => {
-      const baseClasses = "w-full border rounded-md transition-colors duration-200 placeholder:text-input-placeholder focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled";
-      return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
+      const sizeStyles = sizeClass();
+      const baseClasses = "w-full bg-brand-100 rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
+      return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     };
     const labelClasses = () => "block text-sm font-medium text-label mb-1";
+    const messageClasses = () => {
+      if (variant === "error") {
+        return "text-error text-sm mt-1 flex items-center gap-1.5";
+      } else if (variant === "success") {
+        return "text-success text-sm mt-1 flex items-center gap-1.5";
+      } else if (variant === "warning") {
+        return "text-warning text-sm mt-1 flex items-center gap-1.5";
+      }
+      return "text-description text-sm mt-1 flex items-center gap-1.5";
+    };
+    const getIcon = () => {
+      if (variant === "error") return Circle_alert;
+      if (variant === "success") return Circle_check_big;
+      if (variant === "warning") return Triangle_alert;
+      return null;
+    };
     $$renderer2.push(`<div>`);
     if (label) {
       $$renderer2.push("<!--[-->");
@@ -382,13 +570,32 @@ function Input($$renderer, $$props) {
         placeholder,
         disabled,
         class: clsx(inputClasses()),
+        "aria-invalid": variant === "error" ? "true" : void 0,
+        "aria-describedby": message ? `${inputId}-message` : void 0,
         ...restProps
       },
       void 0,
       void 0,
       void 0,
       4
-    )}/></div>`);
+    )}/> `);
+    if (message && variant !== "default") {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<p${attr("id", `${inputId}-message`)}${attr_class(clsx(messageClasses()))} role="alert">`);
+      if (getIcon()) {
+        $$renderer2.push("<!--[-->");
+        const Icon2 = getIcon();
+        $$renderer2.push(`<!---->`);
+        Icon2($$renderer2, { size: 14, class: "shrink-0" });
+        $$renderer2.push(`<!---->`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]--> <span>${escape_html(message)}</span></p>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></div>`);
   });
 }
 function Textarea($$renderer, $$props) {
@@ -463,34 +670,54 @@ function Checkbox($$renderer, $$props) {
       name = "",
       disabled = false,
       label = "",
+      onchange,
       $$slots,
       $$events,
       ...restProps
     } = $$props;
     const checkboxId = generateId("checkbox");
-    const checkboxClasses = () => "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed";
-    $$renderer2.push(`<div class="flex items-center gap-2"><input${attributes(
+    const checkboxContainerClasses = () => {
+      const baseClasses = "relative inline-flex items-center justify-center w-5 h-5 rounded transition-all duration-200";
+      if (disabled) {
+        return `${baseClasses} opacity-50 cursor-not-allowed`;
+      }
+      return `${baseClasses} cursor-pointer`;
+    };
+    const checkboxBoxClasses = () => {
+      if (checked) {
+        return disabled ? "border-0 bg-brand-300" : "border-0 bg-brand-600";
+      }
+      return disabled ? "border-2 border-stone-400 bg-transparent" : "border-2 border-stone-400 bg-transparent";
+    };
+    $$renderer2.push(`<div class="flex items-center gap-2"><label${attr("for", checkboxId)}${attr_class(`flex items-center gap-2 cursor-pointer ${stringify(disabled ? "opacity-50 cursor-not-allowed" : "")}`)}><div${attr_class(clsx(checkboxContainerClasses()))}><input${attributes(
       {
         type: "checkbox",
         id: checkboxId,
         name,
         checked,
         disabled,
-        class: clsx(checkboxClasses()),
+        class: "sr-only",
         ...restProps
       },
       void 0,
       void 0,
       void 0,
       4
-    )}/> `);
-    if (label) {
+    )}/> <div${attr_class(`absolute inset-0 ${stringify(checkboxBoxClasses())} rounded`)}></div> `);
+    if (checked) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<label${attr("for", checkboxId)} class="text-sm font-medium cursor-pointer text-label">${escape_html(label)}</label>`);
+      $$renderer2.push(`<svg class="absolute w-3 h-3 text-white pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--></div>`);
+    $$renderer2.push(`<!--]--></div> `);
+    if (label) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<span class="text-sm font-medium text-label">${escape_html(label)}</span>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></label></div>`);
   });
 }
 function ContactForm($$renderer, $$props) {
@@ -636,10 +863,12 @@ function Alert($$renderer, $$props) {
       ...restProps
     } = $$props;
     let alertClasses = {
-      info: "bg-info-surface text-body border border-info",
-      success: "bg-success-surface text-success border border-success",
-      warning: "bg-warning-surface text-warning border border-warning",
-      error: "bg-error-surface text-error border border-error"
+      info: "bg-surface-level-1 text-info border border-info",
+      success: "bg-surface-level-1 text-success border border-success",
+      warning: "bg-surface-level-1 text-warning border border-warning",
+      error: "bg-surface-level-1 text-error border border-error",
+      neutral: "bg-surface-level-1 text-neutral border border-neutral",
+      energetic: "bg-surface-level-1 text-energetic border border-energetic"
     };
     let alertRole = variant === "success" || variant === "info" ? "status" : "alert";
     let iconSvg = {
@@ -654,6 +883,12 @@ function Alert($$renderer, $$props) {
         </svg>`,
       error: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>`,
+      neutral: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM10 9a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+        </svg>`,
+      energetic: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M11 3L4 14h6l-1 7 7-11h-6l1-7z" />
         </svg>`
     };
     $$renderer2.push(`<div${attributes({
@@ -694,7 +929,7 @@ function Badge($$renderer, $$props) {
     const classes = () => {
       const baseClasses = "inline-flex items-center font-medium border rounded-md";
       const sizeClass = size === "sm" ? "px-2 py-0.5 text-xs" : size === "lg" ? "px-4 py-2 text-base" : "px-3 py-1 text-sm";
-      const variantClass = variant === "success" ? "bg-surface-level-1 border-secondary text-success" : variant === "warning" ? "bg-surface-level-1 border-secondary text-warning" : variant === "error" ? "bg-surface-level-1 border-secondary text-error" : variant === "info" ? "bg-surface-level-1 border-secondary text-body" : "bg-surface-level-1 border-secondary text-body";
+      const variantClass = variant === "success" ? "bg-success border-[var(--color-success)] text-white" : variant === "warning" ? "bg-warning-weak border-[var(--color-warning-weak)] text-white" : variant === "error" ? "bg-error border-[var(--color-error)] text-white" : variant === "info" ? "bg-info border-[var(--color-info)] text-white" : variant === "neutral" ? "bg-neutral border-[var(--color-neutral)] text-white" : variant === "energetic" ? "bg-energetic-weak border-[var(--color-energetic-weak)] text-white" : "bg-secondary border-[var(--color-secondary)] text-white";
       return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     };
     const iconSize = () => {
@@ -708,25 +943,60 @@ function Badge($$renderer, $$props) {
       $$renderer2.push("<!--[-->");
       if (variant === "success") {
         $$renderer2.push("<!--[-->");
-        Check($$renderer2, { size: iconSize(), class: iconSpacingClass() });
+        Check($$renderer2, {
+          size: iconSize(),
+          class: `${stringify(iconSpacingClass())} text-white`
+        });
       } else {
         $$renderer2.push("<!--[!-->");
         if (variant === "warning") {
           $$renderer2.push("<!--[-->");
-          Triangle_alert($$renderer2, { size: iconSize(), class: iconSpacingClass() });
+          Triangle_alert($$renderer2, {
+            size: iconSize(),
+            class: `${stringify(iconSpacingClass())} text-white`
+          });
         } else {
           $$renderer2.push("<!--[!-->");
           if (variant === "error") {
             $$renderer2.push("<!--[-->");
-            X($$renderer2, { size: iconSize(), class: iconSpacingClass() });
+            X($$renderer2, {
+              size: iconSize(),
+              class: `${stringify(iconSpacingClass())} text-white`
+            });
           } else {
             $$renderer2.push("<!--[!-->");
             if (variant === "info") {
               $$renderer2.push("<!--[-->");
-              Info($$renderer2, { size: iconSize(), class: iconSpacingClass() });
+              Info($$renderer2, {
+                size: iconSize(),
+                class: `${stringify(iconSpacingClass())} text-white`
+              });
             } else {
               $$renderer2.push("<!--[!-->");
-              Info($$renderer2, { size: iconSize(), class: iconSpacingClass() });
+              if (variant === "neutral") {
+                $$renderer2.push("<!--[-->");
+                Info($$renderer2, {
+                  size: iconSize(),
+                  class: `${stringify(iconSpacingClass())} text-white`
+                });
+              } else {
+                $$renderer2.push("<!--[!-->");
+                if (variant === "energetic") {
+                  $$renderer2.push("<!--[-->");
+                  Info($$renderer2, {
+                    size: iconSize(),
+                    class: `${stringify(iconSpacingClass())} text-white`
+                  });
+                } else {
+                  $$renderer2.push("<!--[!-->");
+                  Info($$renderer2, {
+                    size: iconSize(),
+                    class: `${stringify(iconSpacingClass())} text-white`
+                  });
+                }
+                $$renderer2.push(`<!--]-->`);
+              }
+              $$renderer2.push(`<!--]-->`);
             }
             $$renderer2.push(`<!--]-->`);
           }

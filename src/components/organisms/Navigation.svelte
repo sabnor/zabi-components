@@ -52,7 +52,7 @@
         const baseClasses = "flex flex-col items-center justify-center overflow-clip relative rounded-[20px] shrink-0 transition-colors duration-200";
 
         if (isActive) {
-            return `${baseClasses} bg-[var(--color-action-primary-subtle-hover)]`;
+            return `${baseClasses} bg-action-primary-subtle-hover`;
         }
         return `${baseClasses}`;
     }

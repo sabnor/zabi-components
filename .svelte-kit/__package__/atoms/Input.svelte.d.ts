@@ -7,6 +7,7 @@ interface Props {
     disabled?: boolean;
     size?: "sm" | "md" | "lg";
     variant?: "default" | "success" | "warning" | "error";
+    message?: string;
     oninput?: (event: Event) => void;
 }
 declare const Input: import("svelte").Component<Props, {}, "">;

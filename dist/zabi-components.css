@@ -422,6 +422,133 @@ body {
   background-color: var(--color-page);
 }
 
+/* Brand color utilities */
+.bg-brand-50 {
+  background-color: var(--color-brand-50);
+}
+
+.bg-brand-100 {
+  background-color: var(--color-brand-100);
+}
+
+.bg-brand-200 {
+  background-color: var(--color-brand-200);
+}
+
+.bg-brand-300 {
+  background-color: var(--color-brand-300);
+}
+
+.bg-brand-400 {
+  background-color: var(--color-brand-400);
+}
+
+.bg-brand-500 {
+  background-color: var(--color-brand-500);
+}
+
+.bg-brand-600 {
+  background-color: var(--color-brand-600);
+}
+
+.bg-brand-700 {
+  background-color: var(--color-brand-700);
+}
+
+.bg-brand-800 {
+  background-color: var(--color-brand-800);
+}
+
+.bg-brand-900 {
+  background-color: var(--color-brand-900);
+}
+
+.bg-brand-950 {
+  background-color: var(--color-brand-950);
+}
+
+.hover\:bg-brand-50:hover {
+  background-color: var(--color-brand-50);
+}
+
+.hover\:bg-brand-100:hover {
+  background-color: var(--color-brand-100);
+}
+
+.hover\:bg-brand-200:hover {
+  background-color: var(--color-brand-200);
+}
+
+.text-brand-50 {
+  color: var(--color-brand-50);
+}
+
+.text-brand-100 {
+  color: var(--color-brand-100);
+}
+
+.text-brand-200 {
+  color: var(--color-brand-200);
+}
+
+.text-brand-300 {
+  color: var(--color-brand-300);
+}
+
+.text-brand-400 {
+  color: var(--color-brand-400);
+}
+
+.text-brand-500 {
+  color: var(--color-brand-500);
+}
+
+.text-brand-600 {
+  color: var(--color-brand-600);
+}
+
+.text-brand-700 {
+  color: var(--color-brand-700);
+}
+
+.text-brand-800 {
+  color: var(--color-brand-800);
+}
+
+.text-brand-900 {
+  color: var(--color-brand-900);
+}
+
+.text-brand-950 {
+  color: var(--color-brand-950);
+}
+
+.border-brand-50 {
+  border-color: var(--color-brand-50);
+}
+
+.border-brand-100 {
+  border-color: var(--color-brand-100);
+}
+
+.border-brand-500 {
+  border-color: var(--color-brand-500);
+}
+
+.border-brand-600 {
+  border-color: var(--color-brand-600);
+}
+
+.focus\:ring-brand-500:focus {
+  --tw-ring-color: var(--color-brand-500);
+  box-shadow: 0 0 0 2px var(--tw-ring-color);
+}
+
+.focus\:ring-brand-600:focus {
+  --tw-ring-color: var(--color-brand-600);
+  box-shadow: 0 0 0 2px var(--tw-ring-color);
+}
+
 /* Text utilities */
 .text-headline {
   color: var(--color-headline);

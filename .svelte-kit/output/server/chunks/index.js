@@ -857,15 +857,15 @@ export {
   DIRTY as D,
   ERROR_VALUE as E,
   attr_class as F,
-  attr_style as G,
+  clsx as G,
   HYDRATION_ERROR as H,
   INERT as I,
-  stringify as J,
-  attr as K,
+  element as J,
+  attr_style as K,
   LEGACY_PROPS as L,
   MAYBE_DIRTY as M,
-  attributes as N,
-  clsx as O,
+  stringify as N,
+  attributes as O,
   ROOT_EFFECT as R,
   STATE_SYMBOL as S,
   UNOWNED as U,
@@ -894,5 +894,5 @@ export {
   head as w,
   ensure_array_like as x,
   spread_props as y,
-  element as z
+  attr as z
 };
