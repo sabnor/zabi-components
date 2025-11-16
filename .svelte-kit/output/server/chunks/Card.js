@@ -317,17 +317,17 @@ function Button($$renderer, $$props) {
         };
       } else if (size === "lg") {
         return {
-          padding: "px-12 py-8",
-          text: "text-2xl",
+          padding: "px-8 py-4",
+          text: "text-lg",
           font: "font-normal",
           leading: "leading-8",
           tracking: "tracking-normal",
-          radius: "rounded-2xl",
+          radius: "rounded-xl",
           gap: "gap-3"
         };
       } else {
         return {
-          padding: "px-6 py-4",
+          padding: "px-5 py-3",
           text: "text-base",
           font: "font-medium",
           leading: "leading-6",

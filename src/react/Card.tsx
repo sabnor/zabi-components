@@ -39,7 +39,7 @@ export const Card: React.FC<CardProps> = ({
             case 'info':
                 return 'border-blue-200 bg-blue-50';
             default:
-                return 'border-gray-200 bg-white';
+                return 'border-base-200 bg-white';
         }
     };
 

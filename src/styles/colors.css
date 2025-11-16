@@ -57,7 +57,20 @@
   --color-iris-900: #2a2a56;
   --color-iris-950: #1b1b37;
 
-  /* Surface Colors - Tailwind stone palette */
+  /* Base Color Scale - Maps to neutral palette */
+  --color-base-50: #fafaf9;
+  --color-base-100: #f5f5f4;
+  --color-base-200: #e7e5e4;
+  --color-base-300: #d6d3d1;
+  --color-base-400: #a8a29e;
+  --color-base-500: #78716c;
+  --color-base-600: #57534e;
+  --color-base-700: #44403c;
+  --color-base-800: #292524;
+  --color-base-900: #1c1917;
+  --color-base-950: #0c0a09;
+
+  /* Surface Colors - Tailwind neutral palette */
   --color-surface-level-0: #fafaf9;
   --color-surface-level-0-hover: #f5f5f4;
   --color-surface-level-1: #f5f5f4;
@@ -218,6 +231,58 @@
   --color-brand-900: #edf2fb;
   --color-brand-950: #f7faff;
 
+  /* Citron Color Scale - Dark mode variants */
+  --color-citron-50: #323518;
+  --color-citron-100: #4d5229;
+  --color-citron-200: #666c35;
+  --color-citron-300: #848a43;
+  --color-citron-400: #a3a852;
+  --color-citron-500: #bbbe64;
+  --color-citron-600: #c7d460;
+  --color-citron-700: #d5e184;
+  --color-citron-800: #e4ecaa;
+  --color-citron-900: #f1f5cf;
+  --color-citron-950: #f9faeb;
+
+  /* Pine Color Scale - Dark mode variants */
+  --color-pine-50: #02160f;
+  --color-pine-100: #04231a;
+  --color-pine-200: #063a2a;
+  --color-pine-300: #084532;
+  --color-pine-400: #0a513a;
+  --color-pine-500: #0C5D43;
+  --color-pine-600: #49ad91;
+  --color-pine-700: #78c4ad;
+  --color-pine-800: #a7d9c9;
+  --color-pine-900: #d2ece4;
+  --color-pine-950: #e9f6f2;
+
+  /* Iris Color Scale - Dark mode variants */
+  --color-iris-50: #1b1b37;
+  --color-iris-100: #2a2a56;
+  --color-iris-200: #38386f;
+  --color-iris-300: #474788;
+  --color-iris-400: #58589e;
+  --color-iris-500: #6969B3;
+  --color-iris-600: #a3a3d8;
+  --color-iris-700: #bdbde6;
+  --color-iris-800: #d6d6f0;
+  --color-iris-900: #e9e9f7;
+  --color-iris-950: #f4f4fa;
+
+  /* Base Color Scale - Dark mode variants (inverted neutral palette) */
+  --color-base-50: #0c0a09;
+  --color-base-100: #1c1917;
+  --color-base-200: #292524;
+  --color-base-300: #44403c;
+  --color-base-400: #57534e;
+  --color-base-500: #78716c;
+  --color-base-600: #a8a29e;
+  --color-base-700: #d6d3d1;
+  --color-base-800: #e7e5e4;
+  --color-base-900: #f5f5f4;
+  --color-base-950: #fafaf9;
+
   /* Background Colors */
   --color-background: #1c1917;
   --color-background-secondary: #292524;
@@ -264,46 +329,46 @@
   --color-focus-disabled: #6e84fa;
 
   /* Primary Colors */
-  --color-primary: #6e84fa;
-  --color-primary-weak: #5366e2;
-  --color-primary-medium: #3f4fc0;
-  --color-primary-strong: #2f3c99;
+  --color-primary: #abc4ff;
+  --color-primary-weak: #8fa8ff;
+  --color-primary-medium: #6e84fa;
+  --color-primary-strong: #5366e2;
 
   /* Secondary Colors */
-  --color-secondary: #57534e;
-  --color-secondary-weak: #44403c;
-  --color-secondary-medium: #292524;
-  --color-secondary-strong: #1c1917;
+  --color-secondary: #78716c;
+  --color-secondary-weak: #57534e;
+  --color-secondary-medium: #44403c;
+  --color-secondary-strong: #292524;
 
   /* Success Colors */
-  --color-success: #0C5D43;
-  --color-success-weak: #0a513a;
-  --color-success-medium: #49ad91;
-  --color-success-strong: #78c4ad;
+  --color-success: #49ad91;
+  --color-success-weak: #0C5D43;
+  --color-success-medium: #78c4ad;
+  --color-success-strong: #a7d9c9;
 
   /* Warning Colors */
-  --color-warning: #d97706;
-  --color-warning-weak: #b45309;
-  --color-warning-medium: #92400e;
-  --color-warning-strong: #78350f;
+  --color-warning: #f59e0b;
+  --color-warning-weak: #d97706;
+  --color-warning-medium: #fbbf24;
+  --color-warning-strong: #fcd34d;
 
   /* Error Colors */
-  --color-error: #dc2626;
-  --color-error-weak: #b91c1c;
-  --color-error-medium: #991b1b;
-  --color-error-strong: #7f1d1d;
+  --color-error: #ef4444;
+  --color-error-weak: #dc2626;
+  --color-error-medium: #f87171;
+  --color-error-strong: #fca5a5;
 
   /* Energetic Colors (Citron) */
-  --color-energetic: #a3a852;
-  --color-energetic-weak: #848a43;
-  --color-energetic-medium: #666c35;
-  --color-energetic-strong: #4d5229;
+  --color-energetic: #c7d460;
+  --color-energetic-weak: #bbbe64;
+  --color-energetic-medium: #d5e184;
+  --color-energetic-strong: #e4ecaa;
 
   /* Neutral Colors */
-  --color-neutral: #57534e;
-  --color-neutral-weak: #78716c;
-  --color-neutral-medium: #a8a29e;
-  --color-neutral-strong: #d6d3d1;
+  --color-neutral: #78716c;
+  --color-neutral-weak: #57534e;
+  --color-neutral-medium: #44403c;
+  --color-neutral-strong: #292524;
 
   /* Info Colors */
   --color-info: #6969B3;

@@ -534,7 +534,7 @@ function Input($$renderer, $$props) {
     };
     const inputClasses = () => {
       const sizeStyles = sizeClass();
-      const baseClasses = "w-full bg-brand-100 rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
+      const baseClasses = "w-full bg-base-100 rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
       return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     };
     const labelClasses = () => "block text-sm font-medium text-label mb-1";
@@ -614,25 +614,38 @@ function Textarea($$renderer, $$props) {
       placeholder = "",
       disabled = false,
       rows = 4,
-      size = "md",
       variant = "default",
+      message = "",
       oninput,
       $$slots,
       $$events,
       ...restProps
     } = $$props;
     const textareaId = generateId("textarea");
-    const sizeClass = () => {
-      return size === "sm" ? "px-3 py-1.5 text-sm" : size === "lg" ? "px-5 py-3 text-base" : "px-4 py-2 text-sm";
-    };
     const variantClass = () => {
-      return variant === "success" ? "border-success focus:border-success focus:ring-success" : variant === "warning" ? "border-warning focus:border-warning focus:ring-warning" : variant === "error" ? "border-error focus:border-error focus:ring-error" : "border-border focus:border-focus focus:ring-focus";
+      return variant === "success" ? "border-success focus:border-success focus:ring-success" : variant === "warning" ? "border-warning focus:border-warning focus:ring-warning" : variant === "error" ? "border-error focus:border-error focus:ring-error" : "border-0 focus:ring-2 focus:ring-brand-500";
     };
     const textareaClasses = () => {
-      const baseClasses = "w-full border rounded-md transition-colors duration-200 placeholder:text-input-placeholder focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-disabled resize-y";
-      return `${baseClasses} ${sizeClass()} ${variantClass()}`.trim();
+      const baseClasses = "w-full bg-base-100 rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6";
+      return `${baseClasses} ${variantClass()}`.trim();
     };
     const labelClasses = () => "block text-sm font-medium text-label mb-1";
+    const messageClasses = () => {
+      if (variant === "error") {
+        return "text-error text-sm mt-1 flex items-center gap-1.5";
+      } else if (variant === "success") {
+        return "text-success text-sm mt-1 flex items-center gap-1.5";
+      } else if (variant === "warning") {
+        return "text-warning text-sm mt-1 flex items-center gap-1.5";
+      }
+      return "text-description text-sm mt-1 flex items-center gap-1.5";
+    };
+    const getIcon = () => {
+      if (variant === "error") return Circle_alert;
+      if (variant === "success") return Circle_check_big;
+      if (variant === "warning") return Triangle_alert;
+      return null;
+    };
     $$renderer2.push(`<div>`);
     if (label) {
       $$renderer2.push("<!--[-->");
@@ -647,13 +660,32 @@ function Textarea($$renderer, $$props) {
       disabled,
       rows,
       class: clsx(textareaClasses()),
+      "aria-invalid": variant === "error" ? "true" : void 0,
+      "aria-describedby": message ? `${textareaId}-message` : void 0,
       ...restProps
     })}>`);
     const $$body = escape_html(value);
     if ($$body) {
       $$renderer2.push(`${$$body}`);
     }
-    $$renderer2.push(`</textarea></div>`);
+    $$renderer2.push(`</textarea> `);
+    if (message && variant !== "default") {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<p${attr("id", `${textareaId}-message`)}${attr_class(clsx(messageClasses()))} role="alert">`);
+      if (getIcon()) {
+        $$renderer2.push("<!--[-->");
+        const Icon2 = getIcon();
+        $$renderer2.push(`<!---->`);
+        Icon2($$renderer2, { size: 14, class: "shrink-0" });
+        $$renderer2.push(`<!---->`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]--> <span>${escape_html(message)}</span></p>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></div>`);
   });
 }
 function Checkbox($$renderer, $$props) {
@@ -929,7 +961,7 @@ function Badge($$renderer, $$props) {
     const classes = () => {
       const baseClasses = "inline-flex items-center font-medium border rounded-md";
       const sizeClass = size === "sm" ? "px-2 py-0.5 text-xs" : size === "lg" ? "px-4 py-2 text-base" : "px-3 py-1 text-sm";
-      const variantClass = variant === "success" ? "bg-success border-[var(--color-success)] text-white" : variant === "warning" ? "bg-warning-weak border-[var(--color-warning-weak)] text-white" : variant === "error" ? "bg-error border-[var(--color-error)] text-white" : variant === "info" ? "bg-info border-[var(--color-info)] text-white" : variant === "neutral" ? "bg-neutral border-[var(--color-neutral)] text-white" : variant === "energetic" ? "bg-energetic-weak border-[var(--color-energetic-weak)] text-white" : "bg-secondary border-[var(--color-secondary)] text-white";
+      const variantClass = variant === "success" ? "bg-success border-success text-white" : variant === "warning" ? "bg-warning border-warning text-white" : variant === "error" ? "bg-error border-error text-white" : variant === "info" ? "bg-info border-info text-white" : variant === "neutral" ? "bg-neutral border-neutral text-white" : variant === "energetic" ? "bg-energetic border-energetic text-white" : "bg-secondary border-secondary text-white";
       return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     };
     const iconSize = () => {
