@@ -12,13 +12,13 @@
   --color-primary-light: theme('colors.blue.100');
   --color-primary-dark: theme('colors.blue.800');
 
-  /* Secondary Colors - Default to stone */
-  --color-secondary: theme('colors.stone.600');
-  --color-secondary-hover: theme('colors.stone.700');
-  --color-secondary-active: theme('colors.stone.800');
-  --color-secondary-disabled: theme('colors.stone.300');
-  --color-secondary-light: theme('colors.stone.100');
-  --color-secondary-dark: theme('colors.stone.800');
+  /* Secondary Colors - Default to neutral */
+  --color-secondary: theme('colors.neutral.600');
+  --color-secondary-hover: theme('colors.neutral.700');
+  --color-secondary-active: theme('colors.neutral.800');
+  --color-secondary-disabled: theme('colors.neutral.300');
+  --color-secondary-light: theme('colors.neutral.100');
+  --color-secondary-dark: theme('colors.neutral.800');
 
   /* Success Colors - Default to green */
   --color-success: theme('colors.green.600');
@@ -74,47 +74,47 @@
 
   /* Background Colors */
   --color-background: theme('colors.white');
-  --color-background-secondary: theme('colors.stone.50');
-  --color-background-tertiary: theme('colors.stone.100');
+  --color-background-secondary: theme('colors.neutral.50');
+  --color-background-tertiary: theme('colors.neutral.100');
 
   /* Page Colors */
   --color-page: theme('colors.white');
-  --color-page-secondary: theme('colors.stone.50');
+  --color-page-secondary: theme('colors.neutral.50');
 
   /* Card Colors */
   --color-card: theme('colors.white');
-  --color-card-hover: theme('colors.stone.50');
-  --color-card-active: theme('colors.stone.100');
+  --color-card-hover: theme('colors.neutral.50');
+  --color-card-active: theme('colors.neutral.100');
   --color-card-elevated: theme('colors.white');
 
   /* Surface Colors */
   --color-surface-level-0: theme('colors.white');
-  --color-surface-level-0-hover: theme('colors.stone.50');
-  --color-surface-level-1: theme('colors.stone.50');
-  --color-surface-level-1-hover: theme('colors.stone.100');
-  --color-surface-level-2: theme('colors.stone.100');
-  --color-surface-level-2-hover: theme('colors.stone.200');
+  --color-surface-level-0-hover: theme('colors.neutral.50');
+  --color-surface-level-1: theme('colors.neutral.50');
+  --color-surface-level-1-hover: theme('colors.neutral.100');
+  --color-surface-level-2: theme('colors.neutral.100');
+  --color-surface-level-2-hover: theme('colors.neutral.200');
   --color-surface-elevated: theme('colors.white');
-  --color-surface-elevated-hover: theme('colors.stone.50');
-  --color-surface-hover: theme('colors.stone.50');
-  --color-surface-active: theme('colors.stone.100');
-  --color-surface-inverse: theme('colors.stone.900');
-  --color-surface-disabled: theme('colors.stone.100');
+  --color-surface-elevated-hover: theme('colors.neutral.50');
+  --color-surface-hover: theme('colors.neutral.50');
+  --color-surface-active: theme('colors.neutral.100');
+  --color-surface-inverse: theme('colors.neutral.900');
+  --color-surface-disabled: theme('colors.neutral.100');
 
   /* Text Colors */
-  --color-text: theme('colors.stone.900');
-  --color-text-secondary: theme('colors.stone.600');
-  --color-text-tertiary: theme('colors.stone.500');
+  --color-text: theme('colors.neutral.900');
+  --color-text-secondary: theme('colors.neutral.600');
+  --color-text-tertiary: theme('colors.neutral.500');
   --color-text-inverse: theme('colors.white');
-  --color-text-disabled: theme('colors.stone.400');
-  --color-text-placeholder: theme('colors.stone.400');
+  --color-text-disabled: theme('colors.neutral.400');
+  --color-text-placeholder: theme('colors.neutral.400');
 
   /* Border Colors */
-  --color-border: theme('colors.stone.200');
-  --color-border-secondary: theme('colors.stone.300');
-  --color-border-hover: theme('colors.stone.400');
+  --color-border: theme('colors.neutral.200');
+  --color-border-secondary: theme('colors.neutral.300');
+  --color-border-hover: theme('colors.neutral.400');
   --color-border-focus: theme('colors.blue.500');
-  --color-border-disabled: theme('colors.stone.200');
+  --color-border-disabled: theme('colors.neutral.200');
 
   /* Shadows */
   --shadow-xs: theme('boxShadow.xs');
@@ -152,48 +152,48 @@
 /* Dark mode overrides */
 .dark {
   /* Background Colors */
-  --color-background: theme('colors.stone.900');
-  --color-background-secondary: theme('colors.stone.800');
-  --color-background-tertiary: theme('colors.stone.700');
+  --color-background: theme('colors.neutral.900');
+  --color-background-secondary: theme('colors.neutral.800');
+  --color-background-tertiary: theme('colors.neutral.700');
 
   /* Page Colors */
-  --color-page: theme('colors.stone.800');
-  --color-page-secondary: theme('colors.stone.800');
+  --color-page: theme('colors.neutral.800');
+  --color-page-secondary: theme('colors.neutral.800');
 
   /* Card Colors */
-  --color-card: theme('colors.stone.500');
-  --color-card-hover: theme('colors.stone.700');
-  --color-card-active: theme('colors.stone.600');
-  --color-card-elevated: theme('colors.stone.700');
+  --color-card: theme('colors.neutral.500');
+  --color-card-hover: theme('colors.neutral.700');
+  --color-card-active: theme('colors.neutral.600');
+  --color-card-elevated: theme('colors.neutral.700');
 
   /* Surface Colors */
-  --color-surface-level-0: theme('colors.stone.600');
-  --color-surface-level-0-hover: theme('colors.stone.500');
-  --color-surface-level-1: theme('colors.stone.600');
-  --color-surface-level-1-hover: theme('colors.stone.500');
-  --color-surface-level-2: theme('colors.stone.500');
-  --color-surface-level-2-hover: theme('colors.stone.400');
-  --color-surface-elevated: theme('colors.stone.600');
-  --color-surface-elevated-hover: theme('colors.stone.500');
-  --color-surface-hover: theme('colors.stone.600');
-  --color-surface-active: theme('colors.stone.500');
-  --color-surface-inverse: theme('colors.stone.100');
-  --color-surface-disabled: theme('colors.stone.600');
+  --color-surface-level-0: theme('colors.neutral.600');
+  --color-surface-level-0-hover: theme('colors.neutral.500');
+  --color-surface-level-1: theme('colors.neutral.600');
+  --color-surface-level-1-hover: theme('colors.neutral.500');
+  --color-surface-level-2: theme('colors.neutral.500');
+  --color-surface-level-2-hover: theme('colors.neutral.400');
+  --color-surface-elevated: theme('colors.neutral.600');
+  --color-surface-elevated-hover: theme('colors.neutral.500');
+  --color-surface-hover: theme('colors.neutral.600');
+  --color-surface-active: theme('colors.neutral.500');
+  --color-surface-inverse: theme('colors.neutral.100');
+  --color-surface-disabled: theme('colors.neutral.600');
 
   /* Text Colors */
-  --color-text: theme('colors.stone.100');
-  --color-text-secondary: theme('colors.stone.300');
-  --color-text-tertiary: theme('colors.stone.400');
-  --color-text-inverse: theme('colors.stone.900');
-  --color-text-disabled: theme('colors.stone.500');
-  --color-text-placeholder: theme('colors.stone.500');
+  --color-text: theme('colors.neutral.100');
+  --color-text-secondary: theme('colors.neutral.300');
+  --color-text-tertiary: theme('colors.neutral.400');
+  --color-text-inverse: theme('colors.neutral.900');
+  --color-text-disabled: theme('colors.neutral.500');
+  --color-text-placeholder: theme('colors.neutral.500');
 
   /* Border Colors */
-  --color-border: theme('colors.stone.600');
-  --color-border-secondary: theme('colors.stone.500');
-  --color-border-hover: theme('colors.stone.400');
+  --color-border: theme('colors.neutral.600');
+  --color-border-secondary: theme('colors.neutral.500');
+  --color-border-hover: theme('colors.neutral.400');
   --color-border-focus: theme('colors.blue.400');
-  --color-border-disabled: theme('colors.stone.600');
+  --color-border-disabled: theme('colors.neutral.600');
 
   /* Focus Colors */
   --color-focus: theme('colors.blue.400');
@@ -205,7 +205,7 @@
   --color-focus-surface: theme('colors.blue.900');
   --color-focus-text: theme('colors.blue.400');
   --color-focus-ring: theme('colors.blue.400');
-  --color-focus-ring-offset: theme('colors.stone.700');
+  --color-focus-ring-offset: theme('colors.neutral.700');
 
   /* Shadow Colors */
   --shadow-xs: theme('boxShadow.xs');

@@ -204,20 +204,20 @@ input, button, textarea, select {
   color: #3b82f6;
 }
 
-.text-gray-600 {
-  color: #4b5563;
+.text-base-600 {
+  color: #57534e;
 }
 
-.text-gray-900 {
-  color: #111827;
+.text-base-900 {
+  color: #1c1917;
 }
 
 .bg-white {
   background-color: #ffffff;
 }
 
-.bg-gray-50 {
-  background-color: #f9fafb;
+.bg-base-50 {
+  background-color: #fafaf9;
 }
 
 .bg-blue-50 {
@@ -300,8 +300,8 @@ input, button, textarea, select {
   border-bottom-width: 1px;
 }
 
-.border-gray-200 {
-  border-color: #e5e7eb;
+.border-base-200 {
+  border-color: #e7e5e4;
 }
 
 .rounded {
@@ -353,8 +353,8 @@ input, button, textarea, select {
   color: #3b82f6;
 }
 
-.hover\:bg-gray-100:hover {
-  background-color: #f3f4f6;
+.hover\:bg-base-100:hover {
+  background-color: #f5f5f4;
 }
 
 .hover\:shadow-md:hover {

@@ -87,7 +87,7 @@
     {:else}
         <!-- Empty State -->
         <div
-            class="border-2 border-dashed border-stone-200 rounded-lg p-6 text-center hover:border-brand-500 transition-colors {disabled
+            class="border-2 border-dashed border-base-200 rounded-lg p-6 text-center hover:border-brand-500 transition-colors {disabled
                 ? 'cursor-not-allowed opacity-50'
                 : 'cursor-pointer'}"
             onclick={triggerFileSelect}

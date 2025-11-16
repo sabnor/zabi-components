@@ -71,7 +71,7 @@
             "w-full px-3 py-2 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-200";
         const stateClasses =
             isValidHex(value) || value === ""
-                ? "border-gray-300 focus:border-brand-500"
+                ? "border-base-300 focus:border-brand-500"
                 : "border-red-300 focus:border-red-500 focus:ring-red-200";
 
         return `${baseClasses} ${stateClasses}`.trim();
@@ -99,7 +99,7 @@
         />
         {#if value && isValidHex(value)}
             <div
-                class="w-8 h-8 rounded border-2 border-gray-300 shrink-0"
+                class="w-8 h-8 rounded border-2 border-base-300 shrink-0"
                 style="background-color: {value};"
                 aria-label="Color preview"
             ></div>

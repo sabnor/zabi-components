@@ -49,7 +49,7 @@ export const Input: React.FC<InputProps> = ({
             case 'error':
                 return 'border-red-300 focus:border-red-500 focus:ring-red-500';
             default:
-                return 'border-gray-300 focus:border-blue-500 focus:ring-blue-500';
+                return 'border-base-300 focus:border-blue-500 focus:ring-blue-500';
         }
     };
 

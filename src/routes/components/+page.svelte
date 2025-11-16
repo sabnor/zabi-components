@@ -1390,15 +1390,15 @@ console.log(greet('World'));`;
                                                 {#snippet children()}
                                                     <div class="p-2 space-y-1">
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded"
+                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
                                                             >Option 1</button
                                                         >
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded"
+                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
                                                             >Option 2</button
                                                         >
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded"
+                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
                                                             >Option 3</button
                                                         >
                                                     </div>
@@ -1413,15 +1413,15 @@ console.log(greet('World'));`;
                                                 {#snippet children()}
                                                     <div class="p-2 space-y-1">
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded"
+                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
                                                             >Red</button
                                                         >
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded"
+                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
                                                             >Blue</button
                                                         >
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded"
+                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
                                                             >Green</button
                                                         >
                                                     </div>
