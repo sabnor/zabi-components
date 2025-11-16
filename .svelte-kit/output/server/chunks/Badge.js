@@ -534,7 +534,7 @@ function Input($$renderer, $$props) {
     };
     const inputClasses = () => {
       const sizeStyles = sizeClass();
-      const baseClasses = "w-full bg-base-100 rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
+      const baseClasses = "w-full bg-base-200 rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
       return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     };
     const labelClasses = () => "block text-sm font-medium text-label mb-1";
@@ -626,7 +626,7 @@ function Textarea($$renderer, $$props) {
       return variant === "success" ? "border-success focus:border-success focus:ring-success" : variant === "warning" ? "border-warning focus:border-warning focus:ring-warning" : variant === "error" ? "border-error focus:border-error focus:ring-error" : "border-0 focus:ring-2 focus:ring-brand-500";
     };
     const textareaClasses = () => {
-      const baseClasses = "w-full bg-base-100 rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6";
+      const baseClasses = "w-full bg-base-200 rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6";
       return `${baseClasses} ${variantClass()}`.trim();
     };
     const labelClasses = () => "block text-sm font-medium text-label mb-1";
@@ -719,7 +719,7 @@ function Checkbox($$renderer, $$props) {
       if (checked) {
         return disabled ? "border-0 bg-brand-300" : "border-0 bg-brand-600";
       }
-      return disabled ? "border-2 border-stone-400 bg-transparent" : "border-2 border-stone-400 bg-transparent";
+      return disabled ? "border-2 border-base-400 bg-transparent" : "border-2 border-base-400 bg-transparent";
     };
     $$renderer2.push(`<div class="flex items-center gap-2"><label${attr("for", checkboxId)}${attr_class(`flex items-center gap-2 cursor-pointer ${stringify(disabled ? "opacity-50 cursor-not-allowed" : "")}`)}><div${attr_class(clsx(checkboxContainerClasses()))}><input${attributes(
       {
@@ -738,7 +738,7 @@ function Checkbox($$renderer, $$props) {
     )}/> <div${attr_class(`absolute inset-0 ${stringify(checkboxBoxClasses())} rounded`)}></div> `);
     if (checked) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<svg class="absolute w-3 h-3 text-white pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>`);
+      $$renderer2.push(`<svg class="absolute w-3 h-3 text-base-50 pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -837,7 +837,7 @@ function FeatureCard($$renderer, $$props) {
     {
       $$renderer2.push("<!--[!-->");
       $$renderer2.push(`<div${attributes({
-        class: `p-6 rounded-lg bg-gray-100 border border-gray-300 hover:border-gray-400 hover:shadow-sm transition-colors duration-200 ${stringify(className)}`,
+        class: `p-6 rounded-lg bg-base-100 border border-base-300 hover:border-base-400 hover:shadow-sm transition-colors duration-200 ${stringify(className)}`,
         ...restProps
       })}><div class="flex items-start gap-4"><div class="shrink-0 text-2xl" aria-hidden="true">${escape_html(icon)}</div> <div class="flex-1 min-w-0"><h3 class="text-lg font-semibold text-headline mb-2">${escape_html(title)}</h3> <p class="text-description leading-relaxed">${escape_html(description)}</p></div></div></div>`);
     }

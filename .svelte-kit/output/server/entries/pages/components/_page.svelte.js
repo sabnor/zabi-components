@@ -232,11 +232,11 @@ function Tabs($$renderer, $$props) {
       $$events,
       ...restProps
     } = $$props;
-    $$renderer2.push(`<div class="tabs-container"><div class="flex border-b border-gray-200" role="tablist" tabindex="0"><!--[-->`);
+    $$renderer2.push(`<div class="tabs-container"><div class="flex border-b border-base-200" role="tablist" tabindex="0"><!--[-->`);
     const each_array = ensure_array_like(tabs);
     for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
       let tab = each_array[$$index];
-      $$renderer2.push(`<button type="button" role="tab"${attr_class(`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${stringify(activeTab === tab.id ? variant === "pills" ? "bg-brand-100 text-brand-700 border-brand-500" : "border-brand-500 text-body" : "border-transparent text-description hover:text-body hover:border-gray-300")}`)}${attr("disabled", tab.disabled, true)}${attr("aria-selected", activeTab === tab.id)}>${escape_html(tab.label)}</button>`);
+      $$renderer2.push(`<button type="button" role="tab"${attr_class(`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${stringify(activeTab === tab.id ? variant === "pills" ? "bg-brand-100 text-brand-700 border-brand-500" : "border-brand-500 text-body" : "border-transparent text-description hover:text-body hover:border-base-300")}`)}${attr("disabled", tab.disabled, true)}${attr("aria-selected", activeTab === tab.id)}>${escape_html(tab.label)}</button>`);
     }
     $$renderer2.push(`<!--]--></div> <div class="mt-4">`);
     children?.($$renderer2, { activeTab });
@@ -269,7 +269,7 @@ function ColorPicker($$renderer, $$props) {
     }
     const inputClasses = () => {
       const baseClasses = "w-full px-3 py-2 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-200";
-      const stateClasses = isValidHex(value) || value === "" ? "border-gray-300 focus:border-brand-500" : "border-red-300 focus:border-red-500 focus:ring-red-200";
+      const stateClasses = isValidHex(value) || value === "" ? "border-base-300 focus:border-brand-500" : "border-red-300 focus:border-red-500 focus:ring-red-200";
       return `${baseClasses} ${stateClasses}`.trim();
     };
     $$renderer2.push(`<div${attributes({ class: "space-y-2", ...restProps })}>`);
@@ -282,7 +282,7 @@ function ColorPicker($$renderer, $$props) {
     $$renderer2.push(`<!--]--> <div class="flex items-center space-x-2"><input${attr("id", inputId)} type="text"${attr("placeholder", placeholder)}${attr("value", value)}${attr("disabled", disabled, true)}${attr_class(clsx(inputClasses()))} aria-label="Hex color input"/> `);
     if (value && isValidHex(value)) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="w-8 h-8 rounded border-2 border-gray-300 shrink-0"${attr_style(`background-color: ${stringify(value)};`)} aria-label="Color preview"></div>`);
+      $$renderer2.push(`<div class="w-8 h-8 rounded border-2 border-base-300 shrink-0"${attr_style(`background-color: ${stringify(value)};`)} aria-label="Color preview"></div>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -327,7 +327,7 @@ function Skeleton($$renderer, $$props) {
     ...restProps
   } = $$props;
   $$renderer.push(`<div${attributes({
-    class: `animate-pulse bg-gray-200 rounded ${stringify(className)}`,
+    class: `animate-pulse bg-base-200 rounded ${stringify(className)}`,
     style: `width: ${stringify(width)}; height: ${stringify(height)};`,
     ...restProps
   })}></div>`);
@@ -358,7 +358,7 @@ function Toast($$renderer, $$props) {
       })}><div class="flex items-start"><div class="flex-1"><p${attr_class(`text-sm ${stringify(typeClasses[type])}`)}>${escape_html(message)}</p></div> `);
       if (closable) {
         $$renderer2.push("<!--[-->");
-        $$renderer2.push(`<button type="button" class="ml-3 text-gray-400 hover:text-gray-600" aria-label="Close notification">×</button>`);
+        $$renderer2.push(`<button type="button" class="ml-3 text-base-400 hover:text-base-600" aria-label="Close notification">×</button>`);
       } else {
         $$renderer2.push("<!--[!-->");
       }
@@ -447,7 +447,7 @@ function ImageUpload($$renderer, $$props) {
     $$renderer.push(`<!----></div></div></div>`);
   } else {
     $$renderer.push("<!--[!-->");
-    $$renderer.push(`<div${attr_class(`border-2 border-dashed border-stone-200 rounded-lg p-6 text-center hover:border-brand-500 transition-colors ${stringify(disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer")}`)} role="button"${attr("tabindex", disabled ? -1 : 0)}${attr("aria-disabled", disabled)}><div class="space-y-3"><div class="w-12 h-12 mx-auto bg-surface-level-1 rounded-lg flex items-center justify-center">`);
+    $$renderer.push(`<div${attr_class(`border-2 border-dashed border-base-200 rounded-lg p-6 text-center hover:border-brand-500 transition-colors ${stringify(disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer")}`)} role="button"${attr("tabindex", disabled ? -1 : 0)}${attr("aria-disabled", disabled)}><div class="space-y-3"><div class="w-12 h-12 mx-auto bg-surface-level-1 rounded-lg flex items-center justify-center">`);
     Image($$renderer, { size: 24, class: "text-description" });
     $$renderer.push(`<!----></div> <div><p class="font-medium text-headline">${escape_html(placeholder)}</p> <p class="text-sm text-description">Click to choose a file</p></div></div></div>`);
   }
@@ -1801,7 +1801,7 @@ console.log(greet('World'));`;
                           let trigger = function($$renderer3) {
                             Button($$renderer3, { text: "Select an option" });
                           }, children = function($$renderer3) {
-                            $$renderer3.push(`<div class="p-2 space-y-1"><button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Option 1</button> <button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Option 2</button> <button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Option 3</button></div>`);
+                            $$renderer3.push(`<div class="p-2 space-y-1"><button class="w-full text-left px-3 py-2 hover:bg-base-100 rounded">Option 1</button> <button class="w-full text-left px-3 py-2 hover:bg-base-100 rounded">Option 2</button> <button class="w-full text-left px-3 py-2 hover:bg-base-100 rounded">Option 3</button></div>`);
                           };
                           Dropdown($$renderer2, { trigger, children, $$slots: { trigger: true, default: true } });
                         }
@@ -1810,7 +1810,7 @@ console.log(greet('World'));`;
                           let trigger = function($$renderer3) {
                             Button($$renderer3, { text: "Choose a color" });
                           }, children = function($$renderer3) {
-                            $$renderer3.push(`<div class="p-2 space-y-1"><button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Red</button> <button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Blue</button> <button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded">Green</button></div>`);
+                            $$renderer3.push(`<div class="p-2 space-y-1"><button class="w-full text-left px-3 py-2 hover:bg-base-100 rounded">Red</button> <button class="w-full text-left px-3 py-2 hover:bg-base-100 rounded">Blue</button> <button class="w-full text-left px-3 py-2 hover:bg-base-100 rounded">Green</button></div>`);
                           };
                           Dropdown($$renderer2, { trigger, children, $$slots: { trigger: true, default: true } });
                         }
