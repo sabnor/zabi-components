@@ -86,9 +86,9 @@
   --color-surface-container-high: #ece6f0;
 
   /* Background Colors */
-  --color-background: #ffffff;
-  --color-background-secondary: #fafaf9;
-  --color-background-tertiary: #f5f5f4;
+  --color-background: var(--color-base-100);
+  --color-background-secondary: var(--color-base-50);
+  --color-background-tertiary: var(--color-base-100);
 
   /* Page Colors */
   --color-page: #f5f5f4;
@@ -179,12 +179,12 @@
   --color-info-text: var(--color-info);
 
   /* Action Colors */
-  --color-action-primary: #6e84fa;
-  --color-action-primary-hover: #5366e2;
-  --color-action-primary-active: #3f4fc0;
-  --color-action-primary-disabled: #ccdbfd;
-  --color-action-primary-subtle: #f7faff;
-  --color-action-primary-subtle-hover: #edf2fb;
+  --color-action-primary: var(--color-brand-300);
+  --color-action-primary-hover: var(--color-brand-400);
+  --color-action-primary-active: var(--color-brand-800);
+  --color-action-primary-disabled: var(--color-brand-300);
+  --color-action-primary-subtle: var(--color-brand-50);
+  --color-action-primary-subtle-hover: var(--color-brand-100);
 
   --color-action-secondary: #57534e;
   --color-action-secondary-hover: #44403c;
@@ -284,9 +284,9 @@
   --color-base-950: #fafaf9;
 
   /* Background Colors */
-  --color-background: #1c1917;
-  --color-background-secondary: #292524;
-  --color-background-tertiary: #44403c;
+  --color-background: var(--color-base-100);
+  --color-background-secondary: var(--color-base-200);
+  --color-background-tertiary: var(--color-base-300);
 
   /* Page Colors */
   --color-page: #292524;
@@ -379,12 +379,7 @@
   --color-info-text: var(--color-info);
 
   /* Action Colors - Dark mode variants */
-  --color-action-primary: #8fa8ff;
-  --color-action-primary-hover: #6e84fa;
-  --color-action-primary-active: #5366e2;
-  --color-action-primary-disabled: #5366e2;
-  --color-action-primary-subtle: #1f2866;
-  --color-action-primary-subtle-hover: #2f3c99;
+  /* Primary Actions - No dark mode overrides needed, brand colors are already inverted */
 
   --color-action-secondary: #78716c;
   --color-action-secondary-hover: #57534e;

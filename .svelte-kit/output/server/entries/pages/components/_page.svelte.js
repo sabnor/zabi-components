@@ -1,4 +1,4 @@
-import { y as spread_props, z as attr, F as attr_class, G as clsx, J as element, K as attr_style, N as stringify, x as ensure_array_like, O as attributes, w as head } from "../../../chunks/index.js";
+import { x as spread_props, y as attr, z as attr_class, F as clsx, G as element, J as attr_style, K as stringify, w as ensure_array_like, N as attributes, v as head } from "../../../chunks/index.js";
 import { I as Icon, B as Button, T as ThemeToggle, N as Navigation, C as Card } from "../../../chunks/Card.js";
 import { B as Badge, C as ComponentDemo, I as Input, A as Alert, a as ContactForm, b as Form, T as Textarea, c as Checkbox, F as FeatureCard } from "../../../chunks/Badge.js";
 import { e as escape_html } from "../../../chunks/context.js";
@@ -126,7 +126,7 @@ function Dropdown($$renderer, $$props) {
     const dropdownContentClasses = () => {
       return `
             ${placementClasses()}
-            bg-brand-100
+            bg-base-50
             rounded-lg
             shadow-lg
             border-0
@@ -1594,7 +1594,7 @@ console.log(greet('World'));`;
     ]
   };
   let currentComponents = components[selectedCategory] || [];
-  head($$renderer, ($$renderer2) => {
+  head("136c6pl", $$renderer, ($$renderer2) => {
     $$renderer2.title(($$renderer3) => {
       $$renderer3.push(`<title>Components - Zabi Components</title>`);
     });

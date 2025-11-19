@@ -44,7 +44,7 @@
 
     <div
         id={progressId}
-        class="w-full bg-gray-200 rounded-full overflow-hidden {sizeClasses[
+        class="w-full bg-base-200 rounded-full overflow-hidden {sizeClasses[
             size
         ]}"
         role="progressbar"

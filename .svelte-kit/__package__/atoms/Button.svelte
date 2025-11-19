@@ -32,28 +32,28 @@
                 leading: "leading-5",
                 tracking: "tracking-[0.1px]",
                 radius: "rounded-lg",
-                gap: "gap-2"
+                gap: "gap-2",
             };
         } else if (size === "lg") {
             return {
-                padding: "px-12 py-8",
-                text: "text-2xl",
+                padding: "px-8 py-4",
+                text: "text-lg",
                 font: "font-normal",
                 leading: "leading-8",
                 tracking: "tracking-normal",
-                radius: "rounded-2xl",
-                gap: "gap-3"
+                radius: "rounded-xl",
+                gap: "gap-3",
             };
         } else {
             // default md
             return {
-                padding: "px-6 py-4",
+                padding: "px-5 py-3",
                 text: "text-base",
                 font: "font-medium",
                 leading: "leading-6",
                 tracking: "tracking-[0.15px]",
                 radius: "rounded-lg",
-                gap: "gap-2"
+                gap: "gap-2",
             };
         }
     });
@@ -67,7 +67,7 @@
               : variant === "danger"
                 ? "bg-action-danger text-inverse hover:bg-action-danger-hover active:bg-action-danger-active focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 : variant === "ghost"
-                  ? "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 disabled:text-disabled"
+                  ? "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active focus:ring-2 focus:ring-base-500 focus:ring-offset-2 disabled:text-disabled"
                   : "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"; // default primary
     });
 

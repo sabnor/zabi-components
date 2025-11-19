@@ -42,7 +42,7 @@
     const dropdownContentClasses = $derived(() => {
         return `
             ${placementClasses()}
-            bg-brand-100
+            bg-base-50
             rounded-lg
             shadow-lg
             border-0
@@ -51,7 +51,9 @@
             duration-200
             ease-in-out
             ${transformClasses()}
-        `.trim().replace(/\s+/g, " ");
+        `
+            .trim()
+            .replace(/\s+/g, " ");
     });
 </script>
 

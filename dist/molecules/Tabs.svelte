@@ -37,7 +37,7 @@
 <div class="tabs-container">
     <!-- Tab List -->
     <div
-        class="flex border-b border-gray-200"
+        class="flex border-b border-base-200"
         role="tablist"
         tabindex="0"
         onkeydown={handleKeydown}
@@ -51,7 +51,7 @@
                     ? variant === 'pills'
                         ? 'bg-brand-100 text-brand-700 border-brand-500'
                         : 'border-brand-500 text-body'
-                    : 'border-transparent text-description hover:text-body hover:border-gray-300'}"
+                    : 'border-transparent text-description hover:text-body hover:border-base-300'}"
                 onclick={() => selectTab(tab.id)}
                 disabled={tab.disabled}
                 aria-selected={activeTab === tab.id}

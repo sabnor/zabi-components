@@ -1,4 +1,4 @@
-import { O as attributes, F as attr_class, N as stringify } from "./index.js";
+import { N as attributes, z as attr_class, K as stringify } from "./index.js";
 import { h as html } from "./Card.js";
 function CodeBlock($$renderer, $$props) {
   let {

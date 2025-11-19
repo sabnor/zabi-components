@@ -1,4 +1,4 @@
-import { w as head } from "../../../chunks/index.js";
+import { v as head } from "../../../chunks/index.js";
 import { g as goto } from "../../../chunks/client.js";
 import { N as Navigation, T as ThemeToggle, C as Card, B as Button } from "../../../chunks/Card.js";
 import { C as CodeBlock } from "../../../chunks/CodeBlock.js";
@@ -25,7 +25,7 @@ let name = $state("");
   </Button>
 </Card>`;
     const installCode = `npm install zabi-components`;
-    head($$renderer2, ($$renderer3) => {
+    head("1xmjmrw", $$renderer2, ($$renderer3) => {
       $$renderer3.title(($$renderer4) => {
         $$renderer4.push(`<title>Documentation - Zabi Components</title>`);
       });

@@ -1,4 +1,4 @@
-import { O as attributes, x as ensure_array_like, F as attr_class, z as attr, G as clsx, N as stringify, J as element, y as spread_props } from "./index.js";
+import { N as attributes, w as ensure_array_like, z as attr_class, y as attr, F as clsx, K as stringify, G as element, x as spread_props } from "./index.js";
 import { e as escape_html } from "./context.js";
 function html(value) {
   var html2 = String(value ?? "");

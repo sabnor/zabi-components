@@ -1,4 +1,4 @@
-import { y as spread_props, O as attributes, N as stringify, z as attr, F as attr_class, G as clsx } from "./index.js";
+import { x as spread_props, N as attributes, K as stringify, y as attr, z as attr_class, F as clsx } from "./index.js";
 import { I as Icon, B as Button, h as html } from "./Card.js";
 import { e as escape_html } from "./context.js";
 function Check($$renderer, $$props) {

@@ -127,6 +127,11 @@ async function buildCSS() {
 
   css = result.css;
 
+  // Remove all @import statements from the final output
+  // PostCSS/Tailwind should have resolved all imports during processing
+  // Any remaining @import statements are invalid and cause PostCSS errors
+  css = css.replace(/@import\s+["'][^"']+["'];?\s*\n?/g, '');
+
   // Write the processed CSS (without :root block - colors.css is separate)
   fs.writeFileSync(outputFile, css);
   console.log(`✓ Built CSS: ${outputFile}`);
