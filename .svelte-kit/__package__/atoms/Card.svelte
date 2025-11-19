@@ -28,9 +28,9 @@
 
     const cardClasses = $derived(() => {
         const baseClasses =
-            "rounded-lg transition-all duration-200 min-w-64 bg-surface-elevated shadow-sm";
+            "rounded-lg transition-all duration-200 min-w-64 bg-card shadow-sm";
         const interactiveClasses = onclick
-            ? "cursor-pointer hover:shadow-lg hover:bg-surface-hover"
+            ? "cursor-pointer hover:shadow-lg hover:bg-card-hover"
             : "";
         const widthClasses = fullWidth ? "w-full" : "";
 

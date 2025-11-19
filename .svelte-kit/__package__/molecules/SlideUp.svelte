@@ -48,7 +48,7 @@
         tabindex="-1"
     >
         <div
-            class="fixed bottom-0 left-0 right-0 bg-surface-elevated rounded-t-3xl shadow-xl z-modal max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] flex flex-col"
+            class="fixed bottom-0 left-0 right-0 bg-base-50 rounded-t-3xl shadow-xl z-modal max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] flex flex-col"
         >
             <!-- Header -->
             {#if title}
@@ -62,7 +62,7 @@
                     <button
                         type="button"
                         onclick={closeSlideUp}
-                        class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-hover"
+                        class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-100"
                         aria-label="Close"
                     >
                         ×

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+
     interface Props {
         content?: string;
         placement?: "top" | "bottom" | "left" | "right";
@@ -14,22 +16,82 @@
         children,
         ...restProps
     }: Props & { children?: any } = $props();
+
+    let triggerId = `tooltip-trigger-${Math.random().toString(36).substr(2, 9)}`;
+    let tooltipId = `tooltip-${Math.random().toString(36).substr(2, 9)}`;
+    let isVisible = $state(false);
+    let triggerElement: HTMLElement | null = $state(null);
+
+    // Handle keyboard events
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === "Escape" && isVisible) {
+            isVisible = false;
+            triggerElement?.focus();
+        }
+    }
+
+    // Handle focus events for accessibility
+    function handleFocus() {
+        if (!disabled && content) {
+            isVisible = true;
+        }
+    }
+
+    function handleBlur() {
+        // Delay hiding to allow clicking on tooltip content if needed
+        setTimeout(() => {
+            isVisible = false;
+        }, 100);
+    }
+
+    function handleMouseEnter() {
+        if (!disabled && content) {
+            if (delay > 0) {
+                setTimeout(() => {
+                    isVisible = true;
+                }, delay);
+            } else {
+                isVisible = true;
+            }
+        }
+    }
+
+    function handleMouseLeave() {
+        isVisible = false;
+    }
+
+    onMount(() => {
+        if (typeof window !== "undefined") {
+            window.addEventListener("keydown", handleKeydown);
+            return () => {
+                window.removeEventListener("keydown", handleKeydown);
+            };
+        }
+    });
 </script>
 
 <div
-    class="tooltip-container group relative inline-block"
+    class="tooltip-container relative inline-block"
     data-placement={placement}
-    data-delay={delay}
     data-disabled={disabled}
+    onmouseenter={handleMouseEnter}
+    onmouseleave={handleMouseLeave}
+    onfocusin={handleFocus}
+    onfocusout={handleBlur}
     {...restProps}
 >
-    {@render children?.()}
+    <div bind:this={triggerElement} id={triggerId} aria-describedby={isVisible ? tooltipId : undefined}>
+        {@render children?.()}
+    </div>
 
     {#if content && !disabled}
         <div
-            class="tooltip group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible"
+            id={tooltipId}
+            class="tooltip"
             role="tooltip"
-            aria-hidden="true"
+            aria-hidden={!isVisible}
+            data-visible={isVisible}
+            data-placement={placement}
         >
             {content}
         </div>
@@ -48,7 +110,7 @@
         --tooltip-gap: 0.5rem;
         --tooltip-arrow-size: 4px;
         --tooltip-transition: opacity 0.2s ease-in-out,
-            visibility 0.2s ease-in-out;
+            visibility 0.2s ease-in-out, transform 0.2s ease-in-out;
     }
 
     .tooltip-container {
@@ -58,7 +120,7 @@
 
     .tooltip {
         position: absolute;
-        z-index: 50;
+        z-index: var(--z-tooltip, 1070);
         padding: var(--tooltip-padding);
         background-color: var(--tooltip-bg);
         color: var(--tooltip-color);
@@ -72,39 +134,59 @@
         visibility: hidden;
         transition: var(--tooltip-transition);
         pointer-events: none;
-        /* Use logical properties for better internationalization */
-        inset-inline-start: 50%;
-        inset-block-start: 50%;
-        transform: translate(-50%, -50%);
     }
 
     /* Simplified positioning using CSS custom properties and logical properties */
     .tooltip-container[data-placement="top"] .tooltip {
         inset-block-end: 100%;
         inset-inline-start: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-50%) translateY(4px) scale(0.95);
         margin-block-end: var(--tooltip-gap);
+    }
+
+    .tooltip-container[data-placement="top"] .tooltip[data-visible="true"] {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0) scale(1);
     }
 
     .tooltip-container[data-placement="bottom"] .tooltip {
         inset-block-start: 100%;
         inset-inline-start: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-50%) translateY(-4px) scale(0.95);
         margin-block-start: var(--tooltip-gap);
+    }
+
+    .tooltip-container[data-placement="bottom"] .tooltip[data-visible="true"] {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0) scale(1);
     }
 
     .tooltip-container[data-placement="left"] .tooltip {
         inset-inline-end: 100%;
         inset-block-start: 50%;
-        transform: translateY(-50%);
+        transform: translateY(-50%) translateX(4px) scale(0.95);
         margin-inline-end: var(--tooltip-gap);
+    }
+
+    .tooltip-container[data-placement="left"] .tooltip[data-visible="true"] {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-50%) translateX(0) scale(1);
     }
 
     .tooltip-container[data-placement="right"] .tooltip {
         inset-inline-start: 100%;
         inset-block-start: 50%;
-        transform: translateY(-50%);
+        transform: translateY(-50%) translateX(-4px) scale(0.95);
         margin-inline-start: var(--tooltip-gap);
+    }
+
+    .tooltip-container[data-placement="right"] .tooltip[data-visible="true"] {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-50%) translateX(0) scale(1);
     }
 
     /* Modern arrow implementation using CSS clip-path for better performance */
@@ -134,14 +216,14 @@
         inset-inline-start: 100%;
         inset-block-start: 50%;
         transform: translateY(-50%);
-        clip-path: polygon(0 50%, 100% 0, 100% 100%);
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
     }
 
     .tooltip-container[data-placement="right"] .tooltip::before {
         inset-inline-end: 100%;
         inset-block-start: 50%;
         transform: translateY(-50%);
-        clip-path: polygon(0 0, 100% 50%, 0 100%);
+        clip-path: polygon(0 50%, 100% 0, 100% 100%);
     }
 
     /* Delay support using CSS custom properties */
@@ -155,8 +237,12 @@
             --tooltip-max-width: calc(100vw - 2rem);
             inset-inline-start: 50% !important;
             inset-inline-end: auto !important;
-            transform: translateX(-50%) !important;
+            transform: translateX(-50%) scale(0.95) !important;
             margin: var(--tooltip-gap) 0 !important;
+        }
+
+        .tooltip[data-visible="true"] {
+            transform: translateX(-50%) scale(1) !important;
         }
 
         .tooltip::before {
@@ -171,18 +257,41 @@
         }
     }
 
+    /* Use CSS color-scheme for better dark mode support */
+    .dark :root {
+        --tooltip-bg: #374151;
+    }
+
     /* High contrast mode support */
     @media (prefers-contrast: high) {
         :root {
             --tooltip-bg: #000000;
             --tooltip-color: #ffffff;
+            --tooltip-padding: 0.75rem 1rem;
         }
     }
 
     /* Reduced motion support */
     @media (prefers-reduced-motion: reduce) {
         .tooltip {
-            transition: none;
+            transition: opacity 0.1s ease-in-out, visibility 0.1s ease-in-out;
         }
+
+        .tooltip-container[data-placement="top"] .tooltip[data-visible="true"],
+        .tooltip-container[data-placement="bottom"] .tooltip[data-visible="true"] {
+            transform: translateX(-50%) !important;
+        }
+
+        .tooltip-container[data-placement="left"] .tooltip[data-visible="true"],
+        .tooltip-container[data-placement="right"] .tooltip[data-visible="true"] {
+            transform: translateY(-50%) !important;
+        }
+    }
+
+    /* Focus-visible for better keyboard navigation */
+    .tooltip-container:focus-visible {
+        outline: 2px solid var(--color-focus, #8fa8ff);
+        outline-offset: 2px;
+        border-radius: var(--tooltip-radius);
     }
 </style>

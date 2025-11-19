@@ -63,7 +63,7 @@
         tabindex="-1"
     >
         <div
-            class="bg-surface-elevated rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col"
+            class="bg-base-50 rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col"
         >
             <!-- Header -->
             {#if title}
@@ -77,7 +77,7 @@
                     <button
                         type="button"
                         onclick={closeModal}
-                        class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-hover"
+                        class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-100"
                         aria-label="Close"
                     >
                         ×
