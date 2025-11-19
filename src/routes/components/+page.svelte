@@ -1151,7 +1151,7 @@ console.log(greet('World'));`;
 
 <div class="min-h-screen bg-background">
     <header
-        class="flex items-center justify-between p-4 bg-surface-level-0 border-b border-border"
+        class="flex items-center justify-between p-4 bg-base-50 border-b border-border"
     >
         <h1 class="text-xl font-bold text-text">Zabi Components</h1>
         <div class="flex items-center gap-4">
@@ -1162,7 +1162,7 @@ console.log(greet('World'));`;
 
     <main class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-surface-level-1 border-r border-border p-6">
+        <aside class="w-64 bg-base-100 border-r border-border p-6">
             <h2 class="text-lg font-semibold text-text mb-4">Components</h2>
 
             <!-- Category Navigation -->
@@ -1173,7 +1173,7 @@ console.log(greet('World'));`;
                         class="w-full text-left px-3 py-2 rounded-md transition-colors duration-200 {selectedCategory ===
                         category.id
                             ? 'bg-primary text-white'
-                            : 'text-text-secondary hover:text-text hover:bg-surface-level-0'}"
+                            : 'text-text-secondary hover:text-text hover:bg-base-50'}"
                     >
                         <div class="font-medium">{category.label}</div>
                         <div class="text-xs opacity-75">
@@ -1192,7 +1192,7 @@ console.log(greet('World'));`;
                         class="w-full text-left px-3 py-2 rounded-md transition-colors duration-200 {selectedComponent ===
                         component.name.toLowerCase()
                             ? 'bg-primary/10 text-primary border-l-2 border-primary'
-                            : 'text-text-secondary hover:text-text hover:bg-surface-level-0'}"
+                            : 'text-text-secondary hover:text-text hover:bg-base-50'}"
                     >
                         {component.name}
                     </button>
@@ -1840,7 +1840,7 @@ console.log(greet('World'));`;
                                     class="w-full border-collapse border border-border"
                                 >
                                     <thead>
-                                        <tr class="bg-surface-level-1">
+                                        <tr class="bg-base-100">
                                             <th
                                                 class="border border-border px-4 py-2 text-left text-text font-semibold"
                                                 >Name</th
@@ -1901,7 +1901,7 @@ console.log(greet('World'));`;
         </div>
     </main>
 
-    <footer class="bg-surface-level-1 border-t border-border py-8">
+    <footer class="bg-base-100 border-t border-border py-8">
         <div class="container mx-auto px-6">
             <div
                 class="flex flex-col md:flex-row justify-between items-center gap-4"

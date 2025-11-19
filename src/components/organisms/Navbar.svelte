@@ -31,7 +31,7 @@
 </script>
 
 <nav
-    class="bg-surface-elevated border-b border-border sticky top-0 z-50 {className}"
+    class="bg-base-50 border-b border-border sticky top-0 z-50 {className}"
     {...restProps}
 >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

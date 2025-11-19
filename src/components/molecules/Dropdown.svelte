@@ -42,7 +42,7 @@
     const dropdownContentClasses = $derived(() => {
         return `
             ${placementClasses()}
-            bg-base-50
+            bg-input
             rounded-lg
             shadow-lg
             border-0

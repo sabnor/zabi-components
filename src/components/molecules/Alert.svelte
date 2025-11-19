@@ -1,6 +1,12 @@
 <script lang="ts">
     interface Props {
-        variant?: "info" | "success" | "warning" | "error" | "neutral" | "energetic";
+        variant?:
+            | "info"
+            | "success"
+            | "warning"
+            | "error"
+            | "neutral"
+            | "energetic";
         title?: string;
         message?: string;
         closable?: boolean;
@@ -27,12 +33,12 @@
     }
 
     let alertClasses = $derived({
-        info: "bg-surface-level-1 text-info border border-info",
-        success: "bg-surface-level-1 text-success border border-success",
-        warning: "bg-surface-level-1 text-warning border border-warning",
-        error: "bg-surface-level-1 text-error border border-error",
-        neutral: "bg-surface-level-1 text-neutral border border-neutral",
-        energetic: "bg-surface-level-1 text-energetic border border-energetic",
+        info: "text-info border border-info",
+        success: "text-success border border-success",
+        warning: "text-warning border border-warning",
+        error: "text-error border border-error",
+        neutral: "text-neutral border border-neutral",
+        energetic: "text-energetic border border-energetic",
     });
 
     let alertRole = $derived(

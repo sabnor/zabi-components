@@ -73,20 +73,6 @@
   --color-base-900: theme(colors.neutral.900);
   --color-base-950: theme(colors.neutral.950);
 
-  /* Surface Colors - Level-based naming with base palette */
-  --color-surface-level-0: var(--color-base-50);
-  --color-surface-level-0-hover: var(--color-base-100);
-  --color-surface-level-1: var(--color-base-100);
-  --color-surface-level-1-hover: var(--color-base-200);
-  --color-surface-level-2: var(--color-base-200);
-  --color-surface-level-2-hover: var(--color-base-300);
-  --color-surface-elevated: var(--color-base-50);
-  --color-surface-elevated-hover: var(--color-base-100);
-  --color-surface-hover: var(--color-base-100);
-  --color-surface-active: var(--color-base-200);
-  --color-surface-inverse: var(--color-base-900);
-  --color-surface-disabled: var(--color-base-200);
-  --color-surface-container-high: var(--color-base-200);
 
   /* Background Colors */
   --color-background: var(--color-base-100);
@@ -103,6 +89,12 @@
   --color-card-active: var(--color-base-100);
   --color-card-elevated: theme(colors.white);
 
+  /* Input Colors */
+  --color-input: var(--color-base-200);
+  --color-input-hover: var(--color-base-100);
+  --color-input-focus: var(--color-base-100);
+  --color-input-disabled: var(--color-base-100);
+
   /* Text Colors */
   --color-headline: var(--color-base-900);
   --color-body: var(--color-base-800);
@@ -112,7 +104,7 @@
   --color-label: var(--color-base-700);
   --color-link: theme(colors.brand.600);
   --color-link-hover: theme(colors.brand.700);
-  --color-success-text: theme(colors.pine.700);
+  --color-success-text: var(--color-success);
   --color-warning-text: theme(colors.amber.700);
   --color-neutral-text: var(--color-base-700);
   --color-energetic-text: theme(colors.citron.700);
@@ -251,20 +243,6 @@ body {
    DARK MODE THEME
    ======================================== */
 .dark {
-  /* Surface Colors - Dark mode variants (lighter layers for elevation) */
-  --color-surface-level-0: var(--color-base-300);
-  --color-surface-level-0-hover: var(--color-base-400);
-  --color-surface-level-1: var(--color-base-400);
-  --color-surface-level-1-hover: var(--color-base-500);
-  --color-surface-level-2: var(--color-base-500);
-  --color-surface-level-2-hover: var(--color-base-600);
-  --color-surface-elevated: var(--color-base-300);
-  --color-surface-elevated-hover: var(--color-base-400);
-  --color-surface-hover: var(--color-base-400);
-  --color-surface-active: var(--color-base-500);
-  --color-surface-inverse: var(--color-base-100);
-  --color-surface-disabled: var(--color-base-400);
-  --color-surface-container-high: var(--color-base-400);
 
   /* Brand Color Scale - Dark mode variants */
   --color-brand-50: theme(colors.brand.950);
@@ -335,24 +313,25 @@ body {
 
   /* Page Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Card Colors - No dark mode overrides needed, base colors are already inverted */
+  /* Card Colors */
+  --color-card: var(--color-base-200);
+  --color-card-hover: var(--color-base-300);
+  --color-card-active: var(--color-base-400);
+  --color-card-elevated: var(--color-base-200);
+
+  /* Input Colors */
+  --color-input: var(--color-base-300);
+  --color-input-hover: var(--color-base-400);
+  --color-input-focus: var(--color-base-300);
+  --color-input-disabled: var(--color-base-400);
 
   /* Text Colors - No dark mode overrides needed, base colors are already inverted */
 
   /* Border Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Focus Colors */
-  --color-focus: theme(colors.brand.400);
-  --color-focus-weak: theme(colors.brand.500);
-  --color-focus-medium: theme(colors.brand.600);
-  --color-focus-strong: theme(colors.brand.700);
-  --color-focus-disabled: theme(colors.brand.600);
+  /* Focus Colors - No dark mode overrides needed, brand colors are already inverted */
 
-  /* Primary Colors */
-  --color-primary: theme(colors.brand.400);
-  --color-primary-weak: theme(colors.brand.500);
-  --color-primary-medium: theme(colors.brand.600);
-  --color-primary-strong: theme(colors.brand.700);
+  /* Primary Colors - No dark mode overrides needed, brand colors are already inverted */
 
   /* Secondary Colors - No dark mode overrides needed, base colors are already inverted */
 
@@ -416,35 +395,92 @@ body {
    UTILITY CLASSES
    ======================================== */
 
-/* Surface utilities */
-.bg-surface-level-0 {
-  background-color: var(--color-surface-level-0);
+/* Base color utilities (replacing surface utilities) */
+.bg-base-50 {
+  background-color: var(--color-base-50);
 }
 
-.bg-surface-level-1 {
-  background-color: var(--color-surface-level-1);
+.bg-base-100 {
+  background-color: var(--color-base-100);
 }
 
-.bg-surface-level-2 {
-  background-color: var(--color-surface-level-2);
+.bg-base-200 {
+  background-color: var(--color-base-200);
 }
 
-.bg-surface-elevated {
-  background-color: var(--color-surface-elevated);
+.bg-base-300 {
+  background-color: var(--color-base-300);
 }
 
-/* Global hover effects removed - components should define their own hover states */
-
-.bg-surface-hover {
-  background-color: var(--color-surface-hover);
+.bg-base-400 {
+  background-color: var(--color-base-400);
 }
 
-.bg-surface-active {
-  background-color: var(--color-surface-active);
+.bg-base-500 {
+  background-color: var(--color-base-500);
 }
 
-.bg-surface-container-high {
-  background-color: var(--color-surface-container-high);
+.bg-base-600 {
+  background-color: var(--color-base-600);
+}
+
+.bg-base-700 {
+  background-color: var(--color-base-700);
+}
+
+.bg-base-800 {
+  background-color: var(--color-base-800);
+}
+
+.bg-base-900 {
+  background-color: var(--color-base-900);
+}
+
+.bg-base-950 {
+  background-color: var(--color-base-950);
+}
+
+/* Hover utilities for base colors */
+.hover\:bg-base-50:hover {
+  background-color: var(--color-base-50);
+}
+
+.hover\:bg-base-100:hover {
+  background-color: var(--color-base-100);
+}
+
+.hover\:bg-base-200:hover {
+  background-color: var(--color-base-200);
+}
+
+.hover\:bg-base-300:hover {
+  background-color: var(--color-base-300);
+}
+
+/* Card utilities */
+.bg-card {
+  background-color: var(--color-card);
+}
+
+.hover\:bg-card-hover:hover {
+  background-color: var(--color-card-hover);
+}
+
+/* Input utilities */
+.bg-input {
+  background-color: var(--color-input);
+}
+
+.hover\:bg-input-hover:hover {
+  background-color: var(--color-input-hover);
+}
+
+.focus\:bg-input-focus:focus {
+  background-color: var(--color-input-focus);
+}
+
+.disabled\:bg-input-disabled:disabled {
+  background-color: var(--color-input-disabled);
 }
 
 .bg-page {

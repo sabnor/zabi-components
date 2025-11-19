@@ -160,7 +160,7 @@ export function getStateClasses(hasError: boolean, hasSuccess: boolean): string 
  */
 export function getDisabledClasses(disabled: boolean): string {
     return disabled
-        ? "bg-surface-disabled text-text-disabled border-border-disabled cursor-not-allowed"
+        ? "bg-base-200 text-text-disabled border-border-disabled cursor-not-allowed"
         : "";
 }
 

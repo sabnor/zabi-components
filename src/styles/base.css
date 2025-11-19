@@ -87,19 +87,6 @@
   --color-card-active: theme('colors.neutral.100');
   --color-card-elevated: theme('colors.white');
 
-  /* Surface Colors */
-  --color-surface-level-0: theme('colors.white');
-  --color-surface-level-0-hover: theme('colors.neutral.50');
-  --color-surface-level-1: theme('colors.neutral.50');
-  --color-surface-level-1-hover: theme('colors.neutral.100');
-  --color-surface-level-2: theme('colors.neutral.100');
-  --color-surface-level-2-hover: theme('colors.neutral.200');
-  --color-surface-elevated: theme('colors.white');
-  --color-surface-elevated-hover: theme('colors.neutral.50');
-  --color-surface-hover: theme('colors.neutral.50');
-  --color-surface-active: theme('colors.neutral.100');
-  --color-surface-inverse: theme('colors.neutral.900');
-  --color-surface-disabled: theme('colors.neutral.100');
 
   /* Text Colors */
   --color-text: theme('colors.neutral.900');
@@ -166,19 +153,6 @@
   --color-card-active: theme('colors.neutral.600');
   --color-card-elevated: theme('colors.neutral.700');
 
-  /* Surface Colors */
-  --color-surface-level-0: theme('colors.neutral.600');
-  --color-surface-level-0-hover: theme('colors.neutral.500');
-  --color-surface-level-1: theme('colors.neutral.600');
-  --color-surface-level-1-hover: theme('colors.neutral.500');
-  --color-surface-level-2: theme('colors.neutral.500');
-  --color-surface-level-2-hover: theme('colors.neutral.400');
-  --color-surface-elevated: theme('colors.neutral.600');
-  --color-surface-elevated-hover: theme('colors.neutral.500');
-  --color-surface-hover: theme('colors.neutral.600');
-  --color-surface-active: theme('colors.neutral.500');
-  --color-surface-inverse: theme('colors.neutral.100');
-  --color-surface-disabled: theme('colors.neutral.600');
 
   /* Text Colors */
   --color-text: theme('colors.neutral.100');
@@ -332,11 +306,11 @@
 }
 
 .zabi-surface:hover {
-  background-color: rgb(var(--color-surface-hover));
+  background-color: rgb(var(--color-base-100));
 }
 
 .zabi-surface:active {
-  background-color: rgb(var(--color-surface-active));
+  background-color: rgb(var(--color-base-200));
 }
 
 /* Border utilities */
