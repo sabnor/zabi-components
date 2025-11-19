@@ -33,7 +33,6 @@
     class="code-block relative bg-base-900 rounded-lg overflow-hidden {className}"
     {...restProps}
 >
-    <!-- Header -->
     <div
         class="flex items-center justify-between px-4 py-2 bg-base-800 border-b border-base-700"
     >
@@ -81,7 +80,6 @@
         {/if}
     </div>
 
-    <!-- Code content -->
     <pre class="p-4 overflow-x-auto text-sm text-base-100 leading-relaxed"><code
             class="language-{language}">{@html code}</code
         ></pre>

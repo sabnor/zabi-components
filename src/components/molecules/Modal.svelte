@@ -65,7 +65,6 @@
         <div
             class="bg-base-50 rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col"
         >
-            <!-- Header -->
             {#if title}
                 <div class="flex items-center justify-between px-6 pt-6 pb-4">
                     <h2
@@ -85,12 +84,10 @@
                 </div>
             {/if}
 
-            <!-- Content -->
             <div class="px-6 pb-6 flex-1">
                 {@render children?.()}
             </div>
 
-            <!-- Footer -->
             {#if footer}
                 <div class="flex justify-end gap-3 px-6 pb-6 pt-4">
                     {@render footer?.()}

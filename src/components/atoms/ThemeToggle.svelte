@@ -2,7 +2,6 @@
     import { onMount } from "svelte";
     import { Sun, Moon } from "@lucide/svelte";
     
-    // SSR-safe utilities
     function safeLocalStorage(): Storage | undefined {
         return typeof window !== "undefined" ? localStorage : undefined;
     }
@@ -28,7 +27,6 @@
 
     onMount(() => {
         mounted = true;
-        // Check for saved theme preference or default to light mode
         const storage = safeLocalStorage();
         if (storage) {
             const savedTheme = storage.getItem("theme");
@@ -71,7 +69,6 @@
         }
     }
 
-    // Size classes matching M3 design
     const sizeClass = $derived(() => {
         if (size === "sm") {
             return {
@@ -84,7 +81,6 @@
                 icon: 24
             };
         } else {
-            // default md
             return {
                 button: "w-10 h-10",
                 icon: 20
@@ -92,14 +88,12 @@
         }
     });
 
-    // Variant classes using semantic colors
     const variantClass = $derived(() => {
         if (variant === "ghost") {
             return "bg-transparent hover:bg-base-100 border-0";
         } else if (variant === "outline") {
             return "bg-base-50 hover:bg-base-100 border border-border";
         } else {
-            // default
             return "bg-base-50 hover:bg-base-100 border-0";
         }
     });
@@ -141,7 +135,6 @@
         {/if}
     </button>
 {:else}
-    <!-- SSR fallback -->
     <button
         class="w-10 h-10 bg-base-50 rounded-lg flex items-center justify-center text-label cursor-pointer"
         aria-label="Theme toggle"

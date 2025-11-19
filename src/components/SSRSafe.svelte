@@ -1,4 +1,3 @@
-<!-- SSR-safe wrapper component for zabi-components -->
 <script lang="ts">
     import { onMount } from "svelte";
 
@@ -33,7 +32,6 @@
         {@render children?.()}
     </FallbackComponent>
 {:else}
-    <!-- Fallback content for SSR -->
     <div class="zabi-ssr-fallback">
         {@render children?.()}
     </div>
@@ -41,7 +39,6 @@
 
 <style>
     .zabi-ssr-fallback {
-        /* Minimal styling for SSR fallback */
         display: contents;
     }
 </style>

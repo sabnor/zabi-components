@@ -30,7 +30,6 @@
 
         const file = input.files[0];
 
-        // SSR-safe URL creation
         if (typeof URL !== "undefined" && URL.createObjectURL) {
             const url = URL.createObjectURL(file);
             value = url;
@@ -54,7 +53,6 @@
 
 <div class="space-y-3">
     {#if value}
-        <!-- Image Display -->
         <div class="relative group">
             <img
                 src={value}
@@ -85,7 +83,6 @@
             </div>
         </div>
     {:else}
-        <!-- Empty State -->
         <div
             class="border-2 border-dashed border-base-200 rounded-lg p-6 text-center hover:border-brand-500 transition-colors {disabled
                 ? 'cursor-not-allowed opacity-50'
@@ -113,7 +110,6 @@
         </div>
     {/if}
 
-    <!-- Hidden File Input -->
     <input
         bind:this={fileInput}
         type="file"

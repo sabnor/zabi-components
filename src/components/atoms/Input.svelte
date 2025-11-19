@@ -1,7 +1,6 @@
 <script lang="ts">
     import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
 
-    // SSR-safe ID generation
     function generateId(prefix: string = "id"): string {
         if (typeof window !== "undefined") {
             return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
@@ -37,10 +36,8 @@
         ...restProps
     }: Props = $props();
 
-    // Generate unique ID - SSR safe (call directly, not in $state)
     const inputId = generateId("input");
 
-    // Size classes matching M3 design specifications
     const sizeClass = $derived(() => {
         if (size === "sm") {
             return {
@@ -55,7 +52,6 @@
                 leading: "leading-6",
             };
         } else {
-            // default md
             return {
                 padding: "px-4 py-2.5",
                 text: "text-base",
@@ -64,7 +60,6 @@
         }
     });
 
-    // Variant classes using semantic colors
     const variantClass = $derived(() => {
         return variant === "success"
             ? "border-success focus:border-success focus:ring-success"
@@ -75,7 +70,6 @@
                 : "border-0 focus:ring-2 focus:ring-brand-500"; // default - no border
     });
 
-    // Input classes matching M3 design
     const inputClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
@@ -84,12 +78,10 @@
         return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     });
 
-    // Label classes using semantic text colors
     const labelClasses = $derived(
         () => "block text-sm font-medium text-label mb-1",
     );
 
-    // Message classes based on variant
     const messageClasses = $derived(() => {
         if (variant === "error") {
             return "text-error text-sm mt-1 flex items-center gap-1.5";
@@ -101,7 +93,6 @@
         return "text-description text-sm mt-1 flex items-center gap-1.5";
     });
 
-    // Get icon component based on variant
     const getIcon = $derived(() => {
         if (variant === "error") return AlertCircle;
         if (variant === "success") return CheckCircle;
@@ -113,7 +104,6 @@
         const target = event.target as HTMLInputElement;
         value = target.value;
 
-        // Call the parent's oninput handler if provided
         if (oninput) {
             oninput(event);
         }

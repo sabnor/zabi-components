@@ -33,8 +33,6 @@
             subscribe: formData.get("subscribe") === "on" || false,
         };
 
-        // Form submission is now handled by the parent component
-        // through event forwarding. The data is available for processing.
         console.log("Form submitted with data:", data);
     }
 </script>

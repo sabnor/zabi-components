@@ -22,7 +22,6 @@
     let isVisible = $state(false);
     let triggerElement: HTMLElement | null = $state(null);
 
-    // Handle keyboard events
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape" && isVisible) {
             isVisible = false;
@@ -30,7 +29,6 @@
         }
     }
 
-    // Handle focus events for accessibility
     function handleFocus() {
         if (!disabled && content) {
             isVisible = true;
@@ -38,7 +36,6 @@
     }
 
     function handleBlur() {
-        // Delay hiding to allow clicking on tooltip content if needed
         setTimeout(() => {
             isVisible = false;
         }, 100);

@@ -1,7 +1,6 @@
 <script lang="ts">
     import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
 
-    // SSR-safe ID generation
     function generateId(prefix: string = "id"): string {
         if (typeof window !== "undefined") {
             return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
@@ -35,10 +34,8 @@
         ...restProps
     }: Props = $props();
 
-    // Generate unique ID - SSR safe (call directly, not in $state)
     const textareaId = generateId("textarea");
 
-    // Variant classes using semantic colors
     const variantClass = $derived(() => {
         return variant === "success"
             ? "border-success focus:border-success focus:ring-success"
@@ -49,7 +46,6 @@
                 : "border-0 focus:ring-2 focus:ring-brand-500"; // default - no border
     });
 
-    // Textarea classes matching M3 design
     const textareaClasses = $derived(() => {
         const baseClasses =
             "w-full bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6";
@@ -57,12 +53,10 @@
         return `${baseClasses} ${variantClass()}`.trim();
     });
 
-    // Label classes using semantic text colors
     const labelClasses = $derived(
         () => "block text-sm font-medium text-label mb-1",
     );
 
-    // Message classes based on variant
     const messageClasses = $derived(() => {
         if (variant === "error") {
             return "text-error text-sm mt-1 flex items-center gap-1.5";
@@ -74,7 +68,6 @@
         return "text-description text-sm mt-1 flex items-center gap-1.5";
     });
 
-    // Get icon component based on variant
     const getIcon = $derived(() => {
         if (variant === "error") return AlertCircle;
         if (variant === "success") return CheckCircle;
@@ -86,7 +79,6 @@
         const target = event.target as HTMLTextAreaElement;
         value = target.value;
 
-        // Call the parent's oninput handler if provided
         if (oninput) {
             oninput(event);
         }

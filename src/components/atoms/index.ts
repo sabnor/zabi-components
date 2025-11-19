@@ -1,4 +1,3 @@
-// Export atom components - All SSR-safe components
 export { default as Toggle } from './Toggle.svelte';
 export { default as Badge } from './Badge.svelte';
 export { default as Button } from './Button.svelte';
