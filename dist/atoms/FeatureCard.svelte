@@ -54,7 +54,7 @@
 {:else}
     <!-- SSR fallback -->
     <div
-        class="p-6 rounded-lg bg-gray-100 border border-gray-300 hover:border-gray-400 hover:shadow-sm transition-colors duration-200 {className}"
+        class="p-6 rounded-lg bg-base-100 border border-base-300 hover:border-base-400 hover:shadow-sm transition-colors duration-200 {className}"
         {...restProps}
     >
         <div class="flex items-start gap-4">

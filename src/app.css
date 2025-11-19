@@ -89,7 +89,7 @@
   --color-surface-container-high: var(--color-base-200);
 
   /* Background Colors */
-  --color-background: theme(colors.white);
+  --color-background: var(--color-base-100);
   --color-background-secondary: var(--color-base-50);
   --color-background-tertiary: var(--color-base-100);
 
@@ -184,12 +184,12 @@
 
   /* Action Colors - For interactive elements like buttons */
   /* Primary Actions */
-  --color-action-primary: theme(colors.brand.600);
-  --color-action-primary-hover: theme(colors.brand.700);
-  --color-action-primary-active: theme(colors.brand.800);
-  --color-action-primary-disabled: theme(colors.brand.300);
-  --color-action-primary-subtle: theme(colors.brand.50);
-  --color-action-primary-subtle-hover: theme(colors.brand.100);
+  --color-action-primary: theme(colors.brand.800);
+  --color-action-primary-hover: theme(colors.brand.900);
+  --color-action-primary-active: theme(colors.brand.600);
+  --color-action-primary-disabled: theme(colors.brand.400);
+  --color-action-primary-subtle: theme(colors.brand.100);
+  --color-action-primary-subtle-hover: theme(colors.brand.200);
 
   /* Secondary Actions */
   --color-action-secondary: var(--color-base-600);
@@ -331,28 +331,15 @@ body {
   --color-base-900: theme(colors.neutral.100);
   --color-base-950: theme(colors.neutral.50);
 
-  /* Background Colors */
-  --color-background: var(--color-base-900);
-  --color-background-secondary: var(--color-base-800);
-  --color-background-tertiary: var(--color-base-700);
+  /* Background Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Page Colors */
-  --color-page: var(--color-base-800);
-  --color-page-secondary: var(--color-base-800);
+  /* Page Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Card Colors */
-  --color-card: var(--color-base-800);
-  --color-card-hover: var(--color-base-700);
-  --color-card-active: var(--color-base-600);
-  --color-card-elevated: var(--color-base-800);
+  /* Card Colors - No dark mode overrides needed, base colors are already inverted */
 
   /* Text Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Border Colors */
-  --color-border: var(--color-base-600);
-  --color-border-weak: var(--color-base-500);
-  --color-border-medium: var(--color-base-400);
-  --color-border-strong: var(--color-base-300);
+  /* Border Colors - No dark mode overrides needed, base colors are already inverted */
 
   /* Focus Colors */
   --color-focus: theme(colors.brand.400);
@@ -367,11 +354,7 @@ body {
   --color-primary-medium: theme(colors.brand.600);
   --color-primary-strong: theme(colors.brand.700);
 
-  /* Secondary Colors */
-  --color-secondary: var(--color-base-500);
-  --color-secondary-weak: var(--color-base-600);
-  --color-secondary-medium: var(--color-base-700);
-  --color-secondary-strong: var(--color-base-800);
+  /* Secondary Colors - No dark mode overrides needed, base colors are already inverted */
 
   /* Success Colors */
   --color-success: theme(colors.pine.400);
@@ -397,11 +380,7 @@ body {
   --color-energetic-medium: theme(colors.citron.300);
   --color-energetic-strong: theme(colors.citron.200);
 
-  /* Neutral Colors */
-  --color-neutral: var(--color-base-500);
-  --color-neutral-weak: var(--color-base-600);
-  --color-neutral-medium: var(--color-base-700);
-  --color-neutral-strong: var(--color-base-800);
+  /* Neutral Colors - No dark mode overrides needed, base colors are already inverted */
 
   /* Info Colors */
   --color-info: theme(colors.iris.500);
@@ -413,21 +392,9 @@ body {
   --color-info-text: var(--color-info);
 
   /* Action Colors - Dark mode variants */
-  /* Primary Actions */
-  --color-action-primary: theme(colors.brand.500);
-  --color-action-primary-hover: theme(colors.brand.600);
-  --color-action-primary-active: theme(colors.brand.700);
-  --color-action-primary-disabled: theme(colors.brand.700);
-  --color-action-primary-subtle: theme(colors.brand.950);
-  --color-action-primary-subtle-hover: theme(colors.brand.900);
+  /* Primary Actions - No dark mode overrides needed, brand colors are already inverted */
 
-  /* Secondary Actions */
-  --color-action-secondary: var(--color-base-500);
-  --color-action-secondary-hover: var(--color-base-600);
-  --color-action-secondary-active: var(--color-base-700);
-  --color-action-secondary-disabled: var(--color-base-700);
-  --color-action-secondary-subtle: var(--color-base-800);
-  --color-action-secondary-subtle-hover: var(--color-base-700);
+  /* Secondary Actions - No dark mode overrides needed, base colors are already inverted */
 
   /* Danger Actions */
   --color-action-danger: theme(colors.red.500);

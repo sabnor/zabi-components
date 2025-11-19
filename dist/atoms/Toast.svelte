@@ -46,7 +46,7 @@
             {#if closable}
                 <button
                     type="button"
-                    class="ml-3 text-gray-400 hover:text-gray-600"
+                    class="ml-3 text-base-400 hover:text-base-600"
                     onclick={closeToast}
                     aria-label="Close notification"
                 >

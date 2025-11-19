@@ -27,12 +27,12 @@ function deferred() {
   return { promise, resolve, reject };
 }
 export {
-  deferred as a,
-  array_prototype as b,
-  get_prototype_of as c,
-  define_property as d,
-  is_extensible as e,
-  index_of as f,
+  array_prototype as a,
+  get_prototype_of as b,
+  is_extensible as c,
+  deferred as d,
+  index_of as e,
+  define_property as f,
   get_descriptor as g,
   array_from as h,
   is_array as i,

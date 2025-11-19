@@ -43,7 +43,7 @@
     const toggleButtonClasses = $derived(() =>
         [
             "relative inline-flex w-10 h-6 flex-shrink-0 cursor-pointer rounded-full border-0 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2",
-            checked ? "bg-brand-600" : "bg-stone-300",
+            checked ? "bg-brand-600" : "bg-base-300",
             disabled && "opacity-50 cursor-not-allowed",
         ]
             .filter(Boolean)

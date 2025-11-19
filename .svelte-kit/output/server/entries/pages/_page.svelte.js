@@ -1,4 +1,4 @@
-import { w as head, x as ensure_array_like } from "../../chunks/index.js";
+import { v as head, w as ensure_array_like } from "../../chunks/index.js";
 import { g as goto } from "../../chunks/client.js";
 import { N as Navigation, T as ThemeToggle, B as Button, C as Card } from "../../chunks/Card.js";
 import { B as Badge, F as FeatureCard, C as ComponentDemo, I as Input, A as Alert, a as ContactForm } from "../../chunks/Badge.js";
@@ -47,7 +47,7 @@ function _page($$renderer, $$props) {
       const data = Object.fromEntries(formData.entries());
       console.log("Form submitted:", data);
     }
-    head($$renderer2, ($$renderer3) => {
+    head("1uha8ag", $$renderer2, ($$renderer3) => {
       $$renderer3.title(($$renderer4) => {
         $$renderer4.push(`<title>Zabi Components - Clean &amp; Simple</title>`);
       });

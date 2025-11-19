@@ -30,12 +30,12 @@
 </script>
 
 <div
-    class="code-block relative bg-gray-900 rounded-lg overflow-hidden {className}"
+    class="code-block relative bg-base-900 rounded-lg overflow-hidden {className}"
     {...restProps}
 >
     <!-- Header -->
     <div
-        class="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700"
+        class="flex items-center justify-between px-4 py-2 bg-base-800 border-b border-base-700"
     >
         <div class="flex items-center gap-2">
             <div class="w-3 h-3 rounded-full bg-red-500"></div>
@@ -45,7 +45,7 @@
         {#if showCopyButton}
             <button
                 onclick={copyToClipboard}
-                class="flex items-center gap-2 px-3 py-1 text-xs text-gray-300 hover:text-white hover:bg-gray-700 rounded transition-colors duration-200"
+                class="flex items-center gap-2 px-3 py-1 text-xs text-base-300 hover:text-white hover:bg-base-700 rounded transition-colors duration-200"
                 aria-label="Copy code to clipboard"
             >
                 {#if copied}
@@ -82,7 +82,7 @@
     </div>
 
     <!-- Code content -->
-    <pre class="p-4 overflow-x-auto text-sm text-gray-100 leading-relaxed"><code
+    <pre class="p-4 overflow-x-auto text-sm text-base-100 leading-relaxed"><code
             class="language-{language}">{@html code}</code
         ></pre>
 </div>
