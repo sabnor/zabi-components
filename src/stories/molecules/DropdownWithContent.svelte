@@ -17,19 +17,19 @@
     {#snippet children()}
         <div class="py-2">
             <button
-                class="w-full text-left px-4 py-2 text-body hover:bg-surface-hover transition-colors"
+                class="w-full text-left px-4 py-2 text-body hover:bg-base-100 transition-colors"
                 type="button"
             >
                 Option 1
             </button>
             <button
-                class="w-full text-left px-4 py-2 text-body hover:bg-surface-hover transition-colors"
+                class="w-full text-left px-4 py-2 text-body hover:bg-base-100 transition-colors"
                 type="button"
             >
                 Option 2
             </button>
             <button
-                class="w-full text-left px-4 py-2 text-body hover:bg-surface-hover transition-colors"
+                class="w-full text-left px-4 py-2 text-body hover:bg-base-100 transition-colors"
                 type="button"
             >
                 Option 3

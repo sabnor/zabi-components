@@ -68,11 +68,11 @@
     // Input classes
     const inputClasses = $derived(() => {
         const baseClasses =
-            "w-full px-3 py-2 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-200";
+            "w-full px-3 py-2 bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg text-sm text-body placeholder:text-description transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
         const stateClasses =
             isValidHex(value) || value === ""
-                ? "border-base-300 focus:border-brand-500"
-                : "border-red-300 focus:border-red-500 focus:ring-red-200";
+                ? "border-base-300 focus:border-brand-500 focus:ring-brand-500"
+                : "border-red-300 focus:border-red-500 focus:ring-red-500";
 
         return `${baseClasses} ${stateClasses}`.trim();
     });

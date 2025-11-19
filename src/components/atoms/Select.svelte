@@ -86,7 +86,7 @@
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "w-full bg-base-50 rounded-lg transition-all duration-200 text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between";
+            "w-full bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between";
 
         return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     });
@@ -217,10 +217,10 @@
                 {#each options as option (option.value)}
                     <button
                         type="button"
-                        class="w-full text-left px-4 py-2 text-body hover:bg-brand-50 transition-colors rounded-md my-0.5 {option.disabled
+                        class="w-full text-left px-4 py-2 text-body hover:bg-base-100 transition-colors rounded-md my-0.5 {option.disabled
                             ? 'opacity-50 cursor-not-allowed'
                             : 'cursor-pointer'} {value === option.value
-                            ? 'bg-brand-50'
+                            ? 'bg-base-100'
                             : ''}"
                         onclick={() => handleOptionClick(option.value)}
                         disabled={option.disabled}

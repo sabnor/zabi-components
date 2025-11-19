@@ -95,12 +95,12 @@
     // Variant classes using semantic colors
     const variantClass = $derived(() => {
         if (variant === "ghost") {
-            return "bg-transparent hover:bg-surface-hover border-0";
+            return "bg-transparent hover:bg-base-100 border-0";
         } else if (variant === "outline") {
-            return "bg-surface-elevated hover:bg-surface-hover border border-border";
+            return "bg-base-50 hover:bg-base-100 border border-border";
         } else {
             // default
-            return "bg-surface-elevated hover:bg-surface-hover border-0";
+            return "bg-base-50 hover:bg-base-100 border-0";
         }
     });
 
@@ -121,7 +121,7 @@
             focus:ring-2
             focus:ring-brand-500
             focus:ring-offset-2
-            focus:ring-offset-surface
+            focus:ring-offset-base-50
         `.trim().replace(/\s+/g, " ");
     });
 </script>
@@ -143,7 +143,7 @@
 {:else}
     <!-- SSR fallback -->
     <button
-        class="w-10 h-10 bg-surface-elevated rounded-lg flex items-center justify-center text-label cursor-pointer"
+        class="w-10 h-10 bg-base-50 rounded-lg flex items-center justify-center text-label cursor-pointer"
         aria-label="Theme toggle"
         type="button"
         {...restProps}
