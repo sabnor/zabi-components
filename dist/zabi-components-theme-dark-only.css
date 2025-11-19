@@ -1,22 +1,7 @@
 /* Dark Mode Theme - CSS Custom Properties */
 /* Import this file after the main theme to enable dark mode support */
 .dark {
-/* Surface Colors - Dark mode variants (lighter layers for elevation) */
-  --color-surface-level-0: var(--color-base-300);
-  --color-surface-level-0-hover: var(--color-base-400);
-  --color-surface-level-1: var(--color-base-400);
-  --color-surface-level-1-hover: var(--color-base-500);
-  --color-surface-level-2: var(--color-base-500);
-  --color-surface-level-2-hover: var(--color-base-600);
-  --color-surface-elevated: var(--color-base-300);
-  --color-surface-elevated-hover: var(--color-base-400);
-  --color-surface-hover: var(--color-base-400);
-  --color-surface-active: var(--color-base-500);
-  --color-surface-inverse: var(--color-base-100);
-  --color-surface-disabled: var(--color-base-400);
-  --color-surface-container-high: var(--color-base-400);
-
-  /* Brand Color Scale - Dark mode variants */
+/* Brand Color Scale - Dark mode variants */
   --color-brand-50: theme(colors.brand.950);
   --color-brand-100: theme(colors.brand.900);
   --color-brand-200: theme(colors.brand.800);
@@ -85,24 +70,25 @@
 
   /* Page Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Card Colors - No dark mode overrides needed, base colors are already inverted */
+  /* Card Colors */
+  --color-card: var(--color-base-200);
+  --color-card-hover: var(--color-base-300);
+  --color-card-active: var(--color-base-400);
+  --color-card-elevated: var(--color-base-200);
+
+  /* Input Colors */
+  --color-input: var(--color-base-300);
+  --color-input-hover: var(--color-base-400);
+  --color-input-focus: var(--color-base-300);
+  --color-input-disabled: var(--color-base-400);
 
   /* Text Colors - No dark mode overrides needed, base colors are already inverted */
 
   /* Border Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Focus Colors */
-  --color-focus: theme(colors.brand.400);
-  --color-focus-weak: theme(colors.brand.500);
-  --color-focus-medium: theme(colors.brand.600);
-  --color-focus-strong: theme(colors.brand.700);
-  --color-focus-disabled: theme(colors.brand.600);
+  /* Focus Colors - No dark mode overrides needed, brand colors are already inverted */
 
-  /* Primary Colors */
-  --color-primary: theme(colors.brand.400);
-  --color-primary-weak: theme(colors.brand.500);
-  --color-primary-medium: theme(colors.brand.600);
-  --color-primary-strong: theme(colors.brand.700);
+  /* Primary Colors - No dark mode overrides needed, brand colors are already inverted */
 
   /* Secondary Colors - No dark mode overrides needed, base colors are already inverted */
 
@@ -142,13 +128,7 @@
   --color-info-text: var(--color-info);
 
   /* Action Colors - Dark mode variants */
-  /* Primary Actions */
-  --color-action-primary: theme(colors.brand.500);
-  --color-action-primary-hover: theme(colors.brand.600);
-  --color-action-primary-active: theme(colors.brand.700);
-  --color-action-primary-disabled: theme(colors.brand.700);
-  --color-action-primary-subtle: theme(colors.brand.950);
-  --color-action-primary-subtle-hover: theme(colors.brand.900);
+  /* Primary Actions - No dark mode overrides needed, brand colors are already inverted */
 
   /* Secondary Actions - No dark mode overrides needed, base colors are already inverted */
 

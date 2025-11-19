@@ -67,23 +67,9 @@
   --color-base-900: theme(colors.neutral.900);
   --color-base-950: theme(colors.neutral.950);
 
-  /* Surface Colors - Level-based naming with base palette */
-  --color-surface-level-0: var(--color-base-50);
-  --color-surface-level-0-hover: var(--color-base-100);
-  --color-surface-level-1: var(--color-base-100);
-  --color-surface-level-1-hover: var(--color-base-200);
-  --color-surface-level-2: var(--color-base-200);
-  --color-surface-level-2-hover: var(--color-base-300);
-  --color-surface-elevated: var(--color-base-50);
-  --color-surface-elevated-hover: var(--color-base-100);
-  --color-surface-hover: var(--color-base-100);
-  --color-surface-active: var(--color-base-200);
-  --color-surface-inverse: var(--color-base-900);
-  --color-surface-disabled: var(--color-base-200);
-  --color-surface-container-high: var(--color-base-200);
 
   /* Background Colors */
-  --color-background: theme(colors.white);
+  --color-background: var(--color-base-100);
   --color-background-secondary: var(--color-base-50);
   --color-background-tertiary: var(--color-base-100);
 
@@ -97,6 +83,12 @@
   --color-card-active: var(--color-base-100);
   --color-card-elevated: theme(colors.white);
 
+  /* Input Colors */
+  --color-input: var(--color-base-200);
+  --color-input-hover: var(--color-base-100);
+  --color-input-focus: var(--color-base-100);
+  --color-input-disabled: var(--color-base-100);
+
   /* Text Colors */
   --color-headline: var(--color-base-900);
   --color-body: var(--color-base-800);
@@ -106,7 +98,7 @@
   --color-label: var(--color-base-700);
   --color-link: theme(colors.brand.600);
   --color-link-hover: theme(colors.brand.700);
-  --color-success-text: theme(colors.pine.700);
+  --color-success-text: var(--color-success);
   --color-warning-text: theme(colors.amber.700);
   --color-neutral-text: var(--color-base-700);
   --color-energetic-text: theme(colors.citron.700);
@@ -178,12 +170,12 @@
 
   /* Action Colors - For interactive elements like buttons */
   /* Primary Actions */
-  --color-action-primary: theme(colors.brand.600);
-  --color-action-primary-hover: theme(colors.brand.700);
-  --color-action-primary-active: theme(colors.brand.800);
-  --color-action-primary-disabled: theme(colors.brand.300);
-  --color-action-primary-subtle: theme(colors.brand.50);
-  --color-action-primary-subtle-hover: theme(colors.brand.100);
+  --color-action-primary: theme(colors.brand.800);
+  --color-action-primary-hover: theme(colors.brand.900);
+  --color-action-primary-active: theme(colors.brand.600);
+  --color-action-primary-disabled: theme(colors.brand.400);
+  --color-action-primary-subtle: theme(colors.brand.100);
+  --color-action-primary-subtle-hover: theme(colors.brand.200);
 
   /* Secondary Actions */
   --color-action-secondary: var(--color-base-600);

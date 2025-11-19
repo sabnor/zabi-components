@@ -42,7 +42,9 @@
     // Checkbox border and background classes matching M3 design
     const checkboxBoxClasses = $derived(() => {
         if (checked) {
-            return disabled ? "border-0 bg-brand-300" : "border-0 bg-brand-600";
+            return disabled
+                ? "border-0 opacity-50 bg-brand-500"
+                : "border-0 bg-brand-500";
         }
         return disabled
             ? "border-2 border-base-400 bg-transparent"

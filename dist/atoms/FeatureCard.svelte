@@ -34,7 +34,7 @@
 
 {#if mounted}
     <div
-        class="p-6 rounded-lg bg-surface-level-0 border border-border hover:border-primary/20 hover:shadow-sm transition-colors duration-200 {className}"
+        class="p-6 rounded-lg bg-base-50 border border-border hover:border-primary/20 hover:shadow-sm transition-colors duration-200 {className}"
         {...restProps}
     >
         <div class="flex items-start gap-4">

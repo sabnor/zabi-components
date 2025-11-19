@@ -45,18 +45,18 @@
         // Note: Using text-white instead of text-inverse to ensure light text in both light and dark modes
         const variantClass =
             variant === "success"
-                ? "bg-success border-success text-white"
+                ? "bg-success border-success text-card"
                 : variant === "warning"
-                  ? "bg-warning border-warning text-white"
+                  ? "bg-warning border-warning text-card"
                   : variant === "error"
-                    ? "bg-error border-error text-white"
+                    ? "bg-error border-error text-card"
                     : variant === "info"
-                      ? "bg-info border-info text-white"
+                      ? "bg-info border-info text-card"
                       : variant === "neutral"
-                        ? "bg-neutral border-neutral text-white"
+                        ? "bg-neutral border-neutral text-card"
                         : variant === "energetic"
-                          ? "bg-energetic border-energetic text-white"
-                          : "bg-secondary border-secondary text-white"; // default
+                          ? "bg-energetic border-energetic text-card"
+                          : "bg-secondary border-secondary text-card"; // default
 
         return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     });
@@ -75,22 +75,22 @@
 <span class={classes()}>
     {#if showIcon}
         {#if variant === "success"}
-            <Check size={iconSize()} class="{iconSpacingClass()} text-white" />
+            <Check size={iconSize()} class="{iconSpacingClass()} text-card" />
         {:else if variant === "warning"}
             <AlertTriangle
                 size={iconSize()}
-                class="{iconSpacingClass()} text-white"
+                class="{iconSpacingClass()} text-card"
             />
         {:else if variant === "error"}
-            <X size={iconSize()} class="{iconSpacingClass()} text-white" />
+            <X size={iconSize()} class="{iconSpacingClass()} text-card" />
         {:else if variant === "info"}
-            <Info size={iconSize()} class="{iconSpacingClass()} text-white" />
+            <Info size={iconSize()} class="{iconSpacingClass()} text-card" />
         {:else if variant === "neutral"}
-            <Info size={iconSize()} class="{iconSpacingClass()} text-white" />
+            <Info size={iconSize()} class="{iconSpacingClass()} text-card" />
         {:else if variant === "energetic"}
-            <Info size={iconSize()} class="{iconSpacingClass()} text-white" />
+            <Info size={iconSize()} class="{iconSpacingClass()} text-card" />
         {:else}
-            <Info size={iconSize()} class="{iconSpacingClass()} text-white" />
+            <Info size={iconSize()} class="{iconSpacingClass()} text-card" />
         {/if}
     {/if}
     {text}

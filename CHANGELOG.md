@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.17] - 2025-01-27
+
+### 🔧 **Patch Release**
+
+- **Documentation**: Updated changelog with version 5.0.16 release notes
+- **Build Improvements**: Adjusted theme validation script to be less strict for dark theme structure differences
+- **Version Bump**: Patch release for improved stability
+
+---
+
+## [5.0.16] - 2025-01-27
+
+### 🎨 **Color System & Component Styling Updates**
+
+#### **Color System Refactoring**
+- **Enhanced Color Variables**: Improved color system with better CSS variable resolution
+- **Theme Updates**: Updated theme files with improved color consistency
+- **Build Process**: Enhanced CSS build scripts for better color processing
+
+#### **Component Style Improvements**
+- **Checkbox Component**: Updated styling to match M3 design system with improved visual consistency
+- **Input Component**: Enhanced color system integration and styling updates
+- **Multiple Components**: Updated Button, CodeBlock, ColorPicker, FeatureCard, Progress, Skeleton, Textarea, Toast, Toggle, and more with consistent styling
+- **Molecule Components**: Updated Alert, ComponentDemo, Dropdown, ImageUpload, Modal, SlideUp, and Tabs with improved styling
+
+#### **Storybook Configuration**
+- **Story Organization**: Reorganized stories into atoms/, molecules/, and organisms/ folders for better structure
+- **Enhanced Stories**: Updated component stories with improved examples and controls
+- **Configuration Updates**: Enhanced Storybook configuration for better development experience
+
+#### **Build & Dependency Updates**
+- **Dependency Updates**: Updated package dependencies for improved compatibility
+- **Build Scripts**: Enhanced CSS build and cleanup scripts
+- **Type Definitions**: Updated TypeScript definitions for better type safety
+
+### ✅ **No Breaking Changes**
+
+This is a backward-compatible update focusing on styling improvements and build enhancements.
+
+---
+
 ## [5.0.15] - 2025-01-27
 
 ### 🎨 **Color System Improvements**

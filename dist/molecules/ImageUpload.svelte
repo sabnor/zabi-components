@@ -99,7 +99,7 @@
         >
             <div class="space-y-3">
                 <div
-                    class="w-12 h-12 mx-auto bg-surface-level-1 rounded-lg flex items-center justify-center"
+                    class="w-12 h-12 mx-auto bg-base-100 rounded-lg flex items-center justify-center"
                 >
                     <Image size={24} class="text-description" />
                 </div>

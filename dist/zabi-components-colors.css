@@ -70,82 +70,68 @@
   --color-base-900: #1c1917;
   --color-base-950: #0c0a09;
 
-  /* Surface Colors - Tailwind neutral palette */
-  --color-surface-level-0: #fafaf9;
-  --color-surface-level-0-hover: #f5f5f4;
-  --color-surface-level-1: #f5f5f4;
-  --color-surface-level-1-hover: #e7e5e4;
-  --color-surface-level-2: #e7e5e4;
-  --color-surface-level-2-hover: #d6d3d1;
-  --color-surface-elevated: #ffffff;
-  --color-surface-elevated-hover: #fafaf9;
-  --color-surface-hover: #f5f5f4;
-  --color-surface-active: #e7e5e4;
-  --color-surface-inverse: #1c1917;
-  --color-surface-disabled: #e7e5e4;
-  --color-surface-container-high: #ece6f0;
 
   /* Background Colors */
-  --color-background: #ffffff;
-  --color-background-secondary: #fafaf9;
-  --color-background-tertiary: #f5f5f4;
+  --color-background: var(--color-base-100);
+  --color-background-secondary: var(--color-base-50);
+  --color-background-tertiary: var(--color-base-100);
 
   /* Page Colors */
-  --color-page: #f5f5f4;
-  --color-page-secondary: #e7e5e4;
+  --color-page: var(--color-base-100);
+  --color-page-secondary: var(--color-base-200);
 
   /* Card Colors */
   --color-card: #ffffff;
-  --color-card-hover: #f5f5f4;
-  --color-card-active: #f5f5f4;
+  --color-card-hover: var(--color-base-100);
+  --color-card-active: var(--color-base-100);
   --color-card-elevated: #ffffff;
 
   /* Text Colors */
-  --color-headline: #1c1917;
-  --color-body: #292524;
-  --color-description: #57534e;
-  --color-caption: #78716c;
-  --color-input-placeholder: #a8a29e;
-  --color-label: #44403c;
-  --color-link: #6e84fa;
-  --color-link-hover: #5366e2;
-  --color-success-text: #084532;
+  --color-headline: var(--color-base-900);
+  --color-body: var(--color-base-800);
+  --color-description: var(--color-base-600);
+  --color-caption: var(--color-base-500);
+  --color-input-placeholder: var(--color-base-400);
+  --color-label: var(--color-base-700);
+  --color-link: var(--color-brand-600);
+  --color-link-hover: var(--color-brand-700);
+  --color-success-text: var(--color-pine-700);
   --color-warning-text: #b45309;
-  --color-neutral-text: #44403c;
-  --color-energetic-text: #848a43;
+  --color-neutral-text: var(--color-base-700);
+  --color-energetic-text: var(--color-citron-700);
   --color-error-text: #b91c1c;
   --color-inverse: #ffffff;
-  --color-disabled: #a8a29e;
+  --color-disabled: var(--color-base-400);
 
   /* Border Colors */
-  --color-border: #e7e5e4;
-  --color-border-weak: #d6d3d1;
-  --color-border-medium: #a8a29e;
-  --color-border-strong: #78716c;
+  --color-border: var(--color-base-200);
+  --color-border-weak: var(--color-base-300);
+  --color-border-medium: var(--color-base-400);
+  --color-border-strong: var(--color-base-500);
 
   /* Focus Colors */
-  --color-focus: #8fa8ff;
-  --color-focus-weak: #6e84fa;
-  --color-focus-medium: #5366e2;
-  --color-focus-strong: #3f4fc0;
+  --color-focus: var(--color-brand-500);
+  --color-focus-weak: var(--color-brand-600);
+  --color-focus-medium: var(--color-brand-700);
+  --color-focus-strong: var(--color-brand-800);
 
   /* Primary Colors */
-  --color-primary: #6e84fa;
-  --color-primary-weak: #5366e2;
-  --color-primary-medium: #3f4fc0;
-  --color-primary-strong: #2f3c99;
+  --color-primary: var(--color-brand-600);
+  --color-primary-weak: var(--color-brand-700);
+  --color-primary-medium: var(--color-brand-800);
+  --color-primary-strong: var(--color-brand-900);
 
   /* Secondary Colors */
-  --color-secondary: #57534e;
-  --color-secondary-weak: #44403c;
-  --color-secondary-medium: #292524;
-  --color-secondary-strong: #1c1917;
+  --color-secondary: var(--color-base-600);
+  --color-secondary-weak: var(--color-base-700);
+  --color-secondary-medium: var(--color-base-800);
+  --color-secondary-strong: var(--color-base-900);
 
   /* Success Colors */
-  --color-success: #0a513a;
-  --color-success-weak: #084532;
-  --color-success-medium: #063a2a;
-  --color-success-strong: #04231a;
+  --color-success: var(--color-pine-600);
+  --color-success-weak: var(--color-pine-700);
+  --color-success-medium: var(--color-pine-800);
+  --color-success-strong: var(--color-pine-900);
 
   /* Warning Colors */
   --color-warning: #f59e0b;
@@ -160,38 +146,38 @@
   --color-error-strong: #fca5a5;
 
   /* Energetic Colors (Citron) */
-  --color-energetic: #bbbe64;
-  --color-energetic-weak: #a3a852;
-  --color-energetic-medium: #c7d460;
-  --color-energetic-strong: #d5e184;
+  --color-energetic: var(--color-citron-500);
+  --color-energetic-weak: var(--color-citron-600);
+  --color-energetic-medium: var(--color-citron-400);
+  --color-energetic-strong: var(--color-citron-300);
 
   /* Neutral Colors */
-  --color-neutral: #57534e;
-  --color-neutral-weak: #44403c;
-  --color-neutral-medium: #292524;
-  --color-neutral-strong: #1c1917;
+  --color-neutral: var(--color-base-600);
+  --color-neutral-weak: var(--color-base-700);
+  --color-neutral-medium: var(--color-base-800);
+  --color-neutral-strong: var(--color-base-900);
 
   /* Info Colors */
-  --color-info: #58589e;
-  --color-info-weak: #474788;
-  --color-info-medium: #38386f;
-  --color-info-strong: #2a2a56;
+  --color-info: var(--color-iris-600);
+  --color-info-weak: var(--color-iris-700);
+  --color-info-medium: var(--color-iris-800);
+  --color-info-strong: var(--color-iris-900);
   --color-info-text: var(--color-info);
 
   /* Action Colors */
-  --color-action-primary: #6e84fa;
-  --color-action-primary-hover: #5366e2;
-  --color-action-primary-active: #3f4fc0;
-  --color-action-primary-disabled: #ccdbfd;
-  --color-action-primary-subtle: #f7faff;
-  --color-action-primary-subtle-hover: #edf2fb;
+  --color-action-primary: var(--color-brand-300);
+  --color-action-primary-hover: var(--color-brand-400);
+  --color-action-primary-active: var(--color-brand-800);
+  --color-action-primary-disabled: var(--color-brand-300);
+  --color-action-primary-subtle: var(--color-brand-50);
+  --color-action-primary-subtle-hover: var(--color-brand-100);
 
-  --color-action-secondary: #57534e;
-  --color-action-secondary-hover: #44403c;
-  --color-action-secondary-active: #292524;
-  --color-action-secondary-disabled: #d6d3d1;
-  --color-action-secondary-subtle: #f5f5f4;
-  --color-action-secondary-subtle-hover: #e7e5e4;
+  --color-action-secondary: var(--color-base-600);
+  --color-action-secondary-hover: var(--color-base-700);
+  --color-action-secondary-active: var(--color-base-800);
+  --color-action-secondary-disabled: var(--color-base-300);
+  --color-action-secondary-subtle: var(--color-base-100);
+  --color-action-secondary-subtle-hover: var(--color-base-200);
 
   --color-action-danger: #dc2626;
   --color-action-danger-hover: #b91c1c;
@@ -203,20 +189,6 @@
 
 /* Dark Mode */
 .dark {
-  /* Surface Colors - Dark mode variants */
-  --color-surface-level-0: #292524;
-  --color-surface-level-0-hover: #44403c;
-  --color-surface-level-1: #44403c;
-  --color-surface-level-1-hover: #57534e;
-  --color-surface-level-2: #57534e;
-  --color-surface-level-2-hover: #78716c;
-  --color-surface-elevated: #292524;
-  --color-surface-elevated-hover: #44403c;
-  --color-surface-hover: #44403c;
-  --color-surface-active: #57534e;
-  --color-surface-inverse: #f5f5f4;
-  --color-surface-disabled: #44403c;
-  --color-surface-container-high: #44403c;
 
   /* Brand Color Scale - Dark mode variants */
   --color-brand-50: #1f2866;
@@ -284,67 +256,49 @@
   --color-base-950: #fafaf9;
 
   /* Background Colors */
-  --color-background: #1c1917;
-  --color-background-secondary: #292524;
-  --color-background-tertiary: #44403c;
+  --color-background: var(--color-base-100);
+  --color-background-secondary: var(--color-base-200);
+  --color-background-tertiary: var(--color-base-300);
 
   /* Page Colors */
-  --color-page: #292524;
-  --color-page-secondary: #292524;
+  --color-page: var(--color-base-200);
+  --color-page-secondary: var(--color-base-200);
 
   /* Card Colors */
-  --color-card: #292524;
-  --color-card-hover: #44403c;
-  --color-card-active: #57534e;
-  --color-card-elevated: #292524;
+  --color-card: var(--color-base-200);
+  --color-card-hover: var(--color-base-300);
+  --color-card-active: var(--color-base-400);
+  --color-card-elevated: var(--color-base-200);
 
   /* Text Colors */
-  --color-headline: #f5f5f4;
-  --color-body: #e7e5e4;
-  --color-description: #d6d3d1;
-  --color-caption: #a8a29e;
-  --color-input-placeholder: #78716c;
-  --color-label: #e7e5e4;
-  --color-link: #abc4ff;
-  --color-link-hover: #ccdbfd;
-  --color-success-text: #49ad91;
+  --color-headline: var(--color-base-900);
+  --color-body: var(--color-base-800);
+  --color-description: var(--color-base-700);
+  --color-caption: var(--color-base-600);
+  --color-input-placeholder: var(--color-base-500);
+  --color-label: var(--color-base-800);
+  /* Link Colors - No dark mode overrides needed, brand colors are already inverted */
+  /* Success Text - No dark mode overrides needed, pine colors are already inverted */
   --color-warning-text: #fbbf24;
-  --color-neutral-text: #a8a29e;
-  --color-energetic-text: #c7d460;
+  /* Neutral Text - No dark mode overrides needed, base colors are already inverted */
+  /* Energetic Text - No dark mode overrides needed, citron colors are already inverted */
   --color-error-text: #f87171;
-  --color-inverse: #1c1917;
-  --color-disabled: #78716c;
+  --color-inverse: var(--color-base-100);
+  --color-disabled: var(--color-base-500);
 
   /* Border Colors */
-  --color-border: #57534e;
-  --color-border-weak: #78716c;
-  --color-border-medium: #a8a29e;
-  --color-border-strong: #d6d3d1;
+  --color-border: var(--color-base-400);
+  --color-border-weak: var(--color-base-500);
+  --color-border-medium: var(--color-base-600);
+  --color-border-strong: var(--color-base-700);
 
-  /* Focus Colors */
-  --color-focus: #abc4ff;
-  --color-focus-weak: #8fa8ff;
-  --color-focus-medium: #6e84fa;
-  --color-focus-strong: #5366e2;
-  --color-focus-disabled: #6e84fa;
+  /* Focus Colors - No dark mode overrides needed, brand colors are already inverted */
 
-  /* Primary Colors */
-  --color-primary: #abc4ff;
-  --color-primary-weak: #8fa8ff;
-  --color-primary-medium: #6e84fa;
-  --color-primary-strong: #5366e2;
+  /* Primary Colors - No dark mode overrides needed, brand colors are already inverted */
 
-  /* Secondary Colors */
-  --color-secondary: #78716c;
-  --color-secondary-weak: #57534e;
-  --color-secondary-medium: #44403c;
-  --color-secondary-strong: #292524;
+  /* Secondary Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Success Colors */
-  --color-success: #49ad91;
-  --color-success-weak: #0C5D43;
-  --color-success-medium: #78c4ad;
-  --color-success-strong: #a7d9c9;
+  /* Success Colors - No dark mode overrides needed, pine colors are already inverted */
 
   /* Warning Colors */
   --color-warning: #f59e0b;
@@ -358,40 +312,16 @@
   --color-error-medium: #f87171;
   --color-error-strong: #fca5a5;
 
-  /* Energetic Colors (Citron) */
-  --color-energetic: #c7d460;
-  --color-energetic-weak: #bbbe64;
-  --color-energetic-medium: #d5e184;
-  --color-energetic-strong: #e4ecaa;
+  /* Energetic Colors (Citron) - No dark mode overrides needed, citron colors are already inverted */
 
-  /* Neutral Colors */
-  --color-neutral: #78716c;
-  --color-neutral-weak: #57534e;
-  --color-neutral-medium: #44403c;
-  --color-neutral-strong: #292524;
+  /* Neutral Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Info Colors */
-  --color-info: #6969B3;
-  --color-info-weak: #58589e;
-  --color-info-active: #a3a3d8;
-  --color-info-medium: #a3a3d8;
-  --color-info-strong: #bdbde6;
-  --color-info-text: var(--color-info);
+  /* Info Colors - No dark mode overrides needed, iris colors are already inverted */
 
   /* Action Colors - Dark mode variants */
-  --color-action-primary: #8fa8ff;
-  --color-action-primary-hover: #6e84fa;
-  --color-action-primary-active: #5366e2;
-  --color-action-primary-disabled: #5366e2;
-  --color-action-primary-subtle: #1f2866;
-  --color-action-primary-subtle-hover: #2f3c99;
+  /* Primary Actions - No dark mode overrides needed, brand colors are already inverted */
 
-  --color-action-secondary: #78716c;
-  --color-action-secondary-hover: #57534e;
-  --color-action-secondary-active: #44403c;
-  --color-action-secondary-disabled: #44403c;
-  --color-action-secondary-subtle: #292524;
-  --color-action-secondary-subtle-hover: #44403c;
+  /* Action Secondary - No dark mode overrides needed, base colors are already inverted */
 
   --color-action-danger: #ef4444;
   --color-action-danger-hover: #dc2626;
