@@ -12,7 +12,6 @@
         ...restProps
     }: Props & { children?: any; trigger?: any } = $props();
 
-    // Get positioning classes based on placement
     const placementClasses = $derived(() => {
         const base = "absolute z-dropdown min-w-[12rem]";
         const positioning = {
@@ -24,7 +23,6 @@
         return `${base} ${positioning[placement]}`;
     });
 
-    // Get transform classes based on placement and open state
     const transformClasses = $derived(() => {
         if (!isOpen) {
             const hiddenTransform = {
@@ -38,7 +36,6 @@
         return "opacity-100 visible translate-y-0";
     });
 
-    // Get dropdown content classes
     const dropdownContentClasses = $derived(() => {
         return `
             ${placementClasses()}

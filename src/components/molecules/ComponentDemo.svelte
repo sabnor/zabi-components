@@ -32,7 +32,6 @@
         className="overflow-hidden {className}"
         {...restProps}
     >
-        <!-- Toggle Button positioned absolutely -->
         <button
             onclick={() => (showCode = !showCode)}
             class="absolute top-8 right-8 flex items-center gap-2 px-3 py-1.5 text-sm text-description hover:text-body hover:bg-base-50 rounded-md transition-colors duration-200 z-10"
@@ -77,7 +76,6 @@
             {/if}
         </button>
 
-        <!-- Content -->
         {#if showCode}
             <CodeBlock {code} {language} />
         {:else}

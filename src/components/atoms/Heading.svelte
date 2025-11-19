@@ -6,11 +6,9 @@
 
     let { level = 1, text }: Props = $props();
 
-    // Automatic weight and size based on heading level
     const fontWeight = $derived(level <= 2 ? "700" : "500");
     const Tag = $derived(`h${level}`);
 
-    // Size classes for different heading levels
     const sizeClasses = {
         1: "text-4xl",
         2: "text-3xl",

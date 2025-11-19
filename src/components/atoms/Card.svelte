@@ -23,7 +23,7 @@
     }: Props = $props();
 
     const sizeClass = $derived(() => {
-        return size === "sm" ? "p-4" : size === "lg" ? "p-8" : "p-6"; // default md
+        return size === "sm" ? "p-4" : size === "lg" ? "p-8" : "p-6";
     });
 
     const cardClasses = $derived(() => {
@@ -43,7 +43,6 @@
         } else if (size === "lg") {
             return "text-2xl font-medium mb-4 text-headline";
         } else {
-            // default md
             return "text-xl font-medium mb-3 text-headline";
         }
     });
@@ -54,7 +53,6 @@
         } else if (size === "lg") {
             return "text-base text-description mb-5";
         } else {
-            // default md
             return "text-sm text-description mb-4";
         }
     });

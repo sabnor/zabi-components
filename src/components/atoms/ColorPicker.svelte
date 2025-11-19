@@ -1,5 +1,4 @@
 <script lang="ts">
-    // SSR-safe ID generation
     function generateId(prefix: string = "id"): string {
         if (typeof window !== "undefined") {
             return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
@@ -25,16 +24,13 @@
         ...restProps
     }: Props = $props();
 
-    // Generate unique ID - SSR safe
     const inputId = generateId("color-picker");
 
-    // Hex color validation
     function isValidHex(hex: string): boolean {
         const hexPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
         return hexPattern.test(hex);
     }
 
-    // Handle hex input changes
     function handleHexInput(event: Event) {
         const target = event.target as HTMLInputElement;
         const hexValue = target.value;
@@ -45,27 +41,22 @@
         }
     }
 
-    // Handle hex input blur - validate and format
     function handleHexBlur(event: Event) {
         const target = event.target as HTMLInputElement;
         let hexValue = target.value.trim();
 
-        // Add # if missing
         if (hexValue && !hexValue.startsWith("#")) {
             hexValue = "#" + hexValue;
         }
 
-        // Validate and update
         if (hexValue === "" || isValidHex(hexValue)) {
             value = hexValue;
             target.value = hexValue;
         } else {
-            // Reset to current value if invalid
             target.value = value;
         }
     }
 
-    // Input classes
     const inputClasses = $derived(() => {
         const baseClasses =
             "w-full px-3 py-2 bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg text-sm text-body placeholder:text-description transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";

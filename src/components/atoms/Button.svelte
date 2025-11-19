@@ -22,7 +22,6 @@
         ...restProps
     }: Props = $props();
 
-    // Size classes matching M3 design specifications
     const sizeClass = $derived(() => {
         if (size === "sm") {
             return {
@@ -45,7 +44,6 @@
                 gap: "gap-3",
             };
         } else {
-            // default md
             return {
                 padding: "px-5 py-3",
                 text: "text-base",
@@ -58,7 +56,6 @@
         }
     });
 
-    // Variant classes using semantic action colors
     const variantClass = $derived(() => {
         return variant === "primary"
             ? "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
@@ -68,10 +65,9 @@
                 ? "bg-action-danger text-inverse hover:bg-action-danger-hover active:bg-action-danger-active focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 : variant === "ghost"
                   ? "bg-transparent text-headline hover:bg-base-100 active:bg-base-200 focus:ring-2 focus:ring-base-500 focus:ring-offset-2 disabled:text-disabled"
-                  : "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"; // default primary
+                  : "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2";
     });
 
-    // Button classes matching M3 design pattern
     const buttonClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
