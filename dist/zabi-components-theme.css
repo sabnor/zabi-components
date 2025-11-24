@@ -6,10 +6,10 @@
 
   /* Brand Color Scale */
   --color-brand-50: #f7faff;
-  --color-brand-100: #edf2fb; /* provided */
+  --color-brand-100: #edf2fb;
   --color-brand-200: #dfe7fb;
-  --color-brand-300: #ccdbfd; /* provided */
-  --color-brand-400: #abc4ff; /* provided */
+  --color-brand-300: #ccdbfd;
+  --color-brand-400: #abc4ff;
   --color-brand-500: #8fa8ff;
   --color-brand-600: #6e84fa;
   --color-brand-700: #5366e2;
@@ -23,7 +23,7 @@
   --color-citron-200: #e4ecaa;
   --color-citron-300: #d5e184;
   --color-citron-400: #c7d460;
-  --color-citron-500: #bbbe64; /* provided */
+  --color-citron-500: #bbbe64;
   --color-citron-600: #a3a852;
   --color-citron-700: #848a43;
   --color-citron-800: #666c35;
@@ -36,7 +36,7 @@
   --color-pine-200: #a7d9c9;
   --color-pine-300: #78c4ad;
   --color-pine-400: #49ad91;
-  --color-pine-500: #0C5D43; /* provided */
+  --color-pine-500: #0C5D43;
   --color-pine-600: #0a513a;
   --color-pine-700: #084532;
   --color-pine-800: #063a2a;
@@ -49,7 +49,7 @@
   --color-iris-200: #d6d6f0;
   --color-iris-300: #bdbde6;
   --color-iris-400: #a3a3d8;
-  --color-iris-500: #6969B3; /* provided */
+  --color-iris-500: #6969B3;
   --color-iris-600: #58589e;
   --color-iris-700: #474788;
   --color-iris-800: #38386f;
@@ -84,6 +84,9 @@
   --color-card-hover: var(--color-base-100);
   --color-card-active: var(--color-base-100);
   --color-card-elevated: theme(colors.white);
+
+  /* Overlay Colors */
+  --color-overlay: rgba(0, 0, 0, 0.5);
 
   /* Input Colors */
   --color-input: var(--color-base-200);
@@ -170,24 +173,29 @@
   /* Text alias */
   --color-info-text: var(--color-info);
 
-  /* Action Colors - For interactive elements like buttons */
-  /* Primary Actions */
-  --color-action-primary: theme(colors.brand.800);
-  --color-action-primary-hover: theme(colors.brand.900);
-  --color-action-primary-active: theme(colors.brand.600);
-  --color-action-primary-disabled: theme(colors.brand.400);
-  --color-action-primary-subtle: theme(colors.brand.100);
-  --color-action-primary-subtle-hover: theme(colors.brand.200);
+  /* ========================================
+     ACTION COLORS - For interactive elements (buttons, links, etc.)
+     ======================================== */
+  
+  /* Primary Actions - Used by bg-action-primary utility class */
+  /* 🎯 TO CHANGE bg-action-primary COLOR: Edit the values below */
+  --color-action-primary: var(--color-brand-800);
+  --color-action-primary-hover: var(--color-brand-900);
+  --color-action-primary-active: var(--color-brand-600);
+  --color-action-primary-disabled: var(--color-brand-400);
+  --color-action-primary-subtle: var(--color-brand-100);
+  --color-action-primary-subtle-hover: var(--color-brand-200);
+  --color-action-primary-text: var(--color-brand-50);
 
-  /* Secondary Actions */
-  --color-action-secondary: var(--color-base-600);
+  /* Secondary Actions - Used by bg-action-secondary utility class */
+  --color-action-secondary: var(--color-base-800);
   --color-action-secondary-hover: var(--color-base-700);
   --color-action-secondary-active: var(--color-base-800);
   --color-action-secondary-disabled: var(--color-base-300);
   --color-action-secondary-subtle: var(--color-base-100);
   --color-action-secondary-subtle-hover: var(--color-base-200);
 
-  /* Danger Actions */
+  /* Danger Actions - Used by bg-action-danger utility class */
   --color-action-danger: theme(colors.red.600);
   --color-action-danger-hover: theme(colors.red.700);
   --color-action-danger-active: theme(colors.red.800);

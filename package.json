@@ -82,7 +82,7 @@
     "build:components": "svelte-package -o dist --input src/components",
     "build:lib-files": "mkdir -p dist/routes/lib && cp src/routes/lib/ssr-safe.ts dist/routes/lib/ && cp src/routes/lib/variant-utils.ts dist/routes/lib/",
     "build:lib": "npm run build:css && npm run build:components && npm run build:lib-files && npm run build:types && npm run build:css && node scripts/verify-build.js",
-    "build:css": "node scripts/build-css.js && node scripts/validate-theme.js && cp src/styles/colors.css dist/zabi-components-colors.css && node scripts/cleanup-css.js",
+    "build:css": "node scripts/build-css.js && node scripts/validate-theme.js && node scripts/cleanup-css.js",
     "build:types": "tsc --project tsconfig.lib.json",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",

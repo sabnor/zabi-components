@@ -5,7 +5,12 @@ const meta = {
     title: 'Design System/Molecules/Tabs',
     component: Tabs,
     parameters: {
-        layout: 'padded'
+        layout: 'padded',
+        docs: {
+            description: {
+                component: 'Tabs component with full keyboard navigation. Use Arrow Left/Right to navigate between tabs, Home/End to jump to first/last tab, and Enter/Space to activate a tab.'
+            }
+        }
     },
     tags: ['autodocs'],
     argTypes: {}

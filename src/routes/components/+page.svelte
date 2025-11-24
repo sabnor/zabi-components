@@ -30,7 +30,6 @@
     import Navbar from "../../components/organisms/Navbar.svelte";
     import type { NavItem, ComponentMetadata } from "../../types/page.types";
 
-    // Navigation data
     const navItems: NavItem[] = [
         { label: "Home", href: "/" },
         { label: "Components", href: "/components" },
@@ -38,7 +37,6 @@
         { label: "GitHub", href: "https://github.com" },
     ];
 
-    // Component categories
     const categories = [
         { id: "atoms", label: "Atoms", description: "Basic building blocks" },
         {
@@ -59,14 +57,12 @@
     let slideUpOpen = $state(false);
     let activeTab = $state("tab1");
 
-    // Sample code for CodeBlock demo
     const sampleCode = `function greet(name) {
   return \`Hello, \${name}!\`;
 }
 
 console.log(greet('World'));`;
 
-    // Component metadata
     const components: Record<string, ComponentMetadata[]> = {
         atoms: [
             {
@@ -108,9 +104,9 @@ console.log(greet('World'));`;
                     "primary",
                     "secondary",
                     "danger",
-                    "success",
                     "ghost",
-                    "brand",
+                    "outline",
+                    "link",
                 ],
                 examples: [
                     {
@@ -121,7 +117,7 @@ console.log(greet('World'));`;
                     {
                         title: "Variants",
                         description: "Different button variants",
-                        code: '&lt;Button variant="primary"&gt;Primary&lt;/Button&gt;\n&lt;Button variant="secondary"&gt;Secondary&lt;/Button&gt;\n&lt;Button variant="danger"&gt;Danger&lt;/Button&gt;',
+                        code: '&lt;Button variant="primary"&gt;Primary&lt;/Button&gt;\n&lt;Button variant="secondary"&gt;Secondary&lt;/Button&gt;\n&lt;Button variant="outline"&gt;Outline&lt;/Button&gt;\n&lt;Button variant="ghost"&gt;Ghost&lt;/Button&gt;\n&lt;Button variant="link"&gt;Link&lt;/Button&gt;\n&lt;Button variant="danger"&gt;Danger&lt;/Button&gt;',
                     },
                 ],
             },
@@ -1153,7 +1149,7 @@ console.log(greet('World'));`;
     <header
         class="flex items-center justify-between p-4 bg-base-50 border-b border-border"
     >
-        <h1 class="text-xl font-bold text-text">Zabi Components</h1>
+        <h1 class="text-xl font-bold text-headline">Zabi Components</h1>
         <div class="flex items-center gap-4">
             <Navigation variant="header" items={navItems} />
             <ThemeToggle />
@@ -1163,7 +1159,7 @@ console.log(greet('World'));`;
     <main class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="w-64 bg-base-100 border-r border-border p-6">
-            <h2 class="text-lg font-semibold text-text mb-4">Components</h2>
+            <h2 class="text-lg font-semibold text-headline mb-4">Components</h2>
 
             <!-- Category Navigation -->
             <nav class="space-y-2 mb-8">
@@ -1172,11 +1168,11 @@ console.log(greet('World'));`;
                         onclick={() => (selectedCategory = category.id)}
                         class="w-full text-left px-3 py-2 rounded-md transition-colors duration-200 {selectedCategory ===
                         category.id
-                            ? 'bg-primary text-white'
-                            : 'text-text-secondary hover:text-text hover:bg-base-50'}"
+                            ? 'bg-action-primary text-action-primary'
+                            : 'text-text-secondary hover:text-headline hover:bg-base-50'}"
                     >
                         <div class="font-medium">{category.label}</div>
-                        <div class="text-xs opacity-75">
+                        <div class="text-xs text-description">
                             {category.description}
                         </div>
                     </button>
@@ -1191,8 +1187,8 @@ console.log(greet('World'));`;
                             (selectedComponent = component.name.toLowerCase())}
                         class="w-full text-left px-3 py-2 rounded-md transition-colors duration-200 {selectedComponent ===
                         component.name.toLowerCase()
-                            ? 'bg-primary/10 text-primary border-l-2 border-primary'
-                            : 'text-text-secondary hover:text-text hover:bg-base-50'}"
+                            ? 'bg-action-primary-subtle text-headline border-l-2 border-action-primary'
+                            : 'text-text-secondary hover:text-headline hover:bg-base-50'}"
                     >
                         {component.name}
                     </button>
@@ -1207,10 +1203,10 @@ console.log(greet('World'));`;
                     <div class="max-w-4xl">
                         <!-- Component Header -->
                         <div class="mb-8">
-                            <h1 class="text-3xl font-bold text-text mb-2">
+                            <h1 class="text-3xl font-bold text-headline mb-2">
                                 {component.name}
                             </h1>
-                            <p class="text-lg text-text-secondary mb-4">
+                            <p class="text-lg text-description mb-4">
                                 {component.description}
                             </p>
                             <div class="flex gap-2">
@@ -1251,20 +1247,20 @@ console.log(greet('World'));`;
                                                     text="Secondary"
                                                 />
                                                 <Button
-                                                    variant="danger"
-                                                    text="Danger"
-                                                />
-                                                <Button
-                                                    variant="secondary"
-                                                    text="Secondary"
+                                                    variant="outline"
+                                                    text="Outline"
                                                 />
                                                 <Button
                                                     variant="ghost"
                                                     text="Ghost"
                                                 />
                                                 <Button
-                                                    variant="primary"
-                                                    text="Primary"
+                                                    variant="link"
+                                                    text="Link"
+                                                />
+                                                <Button
+                                                    variant="danger"
+                                                    text="Danger"
                                                 />
                                             </div>
                                             <div
@@ -1322,31 +1318,31 @@ console.log(greet('World'));`;
                                             class="grid grid-cols-1 md:grid-cols-2 gap-4"
                                         >
                                             <Card title="Default Card">
-                                                <p class="text-text-secondary">
+                                                <p class="text-description">
                                                     This is a default card with
                                                     clean styling.
                                                 </p>
                                             </Card>
                                             <Card title="Success Card">
-                                                <p class="text-text-secondary">
+                                                <p class="text-description">
                                                     This card indicates a
                                                     successful action.
                                                 </p>
                                             </Card>
                                             <Card title="Warning Card">
-                                                <p class="text-text-secondary">
+                                                <p class="text-description">
                                                     This card shows a warning
                                                     state.
                                                 </p>
                                             </Card>
                                             <Card title="Error Card">
-                                                <p class="text-text-secondary">
+                                                <p class="text-description">
                                                     This card indicates an error
                                                     state.
                                                 </p>
                                             </Card>
                                             <Card title="Info Card">
-                                                <p class="text-text-secondary">
+                                                <p class="text-description">
                                                     This card provides
                                                     informational content.
                                                 </p>
@@ -1473,7 +1469,7 @@ console.log(greet('World'));`;
                                                 title="Example Modal"
                                             >
                                                 <p
-                                                    class="text-text-secondary mb-4"
+                                                    class="text-description mb-4"
                                                 >
                                                     This is a modal dialog with
                                                     some content.
@@ -1510,12 +1506,12 @@ console.log(greet('World'));`;
                                             >
                                                 <div class="p-6">
                                                     <h3
-                                                        class="text-lg font-semibold text-text mb-4"
+                                                        class="text-lg font-semibold text-headline mb-4"
                                                     >
                                                         Slide Up Panel
                                                     </h3>
                                                     <p
-                                                        class="text-text-secondary mb-4"
+                                                        class="text-description mb-4"
                                                     >
                                                         This is a slide-up panel
                                                         with custom content.
@@ -1608,7 +1604,7 @@ console.log(greet('World'));`;
                                         <div class="space-y-6">
                                             <div>
                                                 <h4
-                                                    class="text-sm font-medium text-text-secondary mb-2"
+                                                    class="text-sm font-medium text-headline mb-2"
                                                 >
                                                     Default Navigation
                                                 </h4>
@@ -1631,7 +1627,7 @@ console.log(greet('World'));`;
                                             </div>
                                             <div>
                                                 <h4
-                                                    class="text-sm font-medium text-text-secondary mb-2"
+                                                    class="text-sm font-medium text-headline mb-2"
                                                 >
                                                     Header Navigation
                                                 </h4>
@@ -1832,7 +1828,7 @@ console.log(greet('World'));`;
 
                         <!-- Props Table -->
                         <div class="mt-12">
-                            <h2 class="text-2xl font-bold text-text mb-6">
+                            <h2 class="text-2xl font-bold text-headline mb-6">
                                 Props
                             </h2>
                             <div class="overflow-x-auto">
@@ -1842,23 +1838,23 @@ console.log(greet('World'));`;
                                     <thead>
                                         <tr class="bg-base-100">
                                             <th
-                                                class="border border-border px-4 py-2 text-left text-text font-semibold"
+                                                class="border border-border px-4 py-2 text-left text-headline font-semibold"
                                                 >Name</th
                                             >
                                             <th
-                                                class="border border-border px-4 py-2 text-left text-text font-semibold"
+                                                class="border border-border px-4 py-2 text-left text-headline font-semibold"
                                                 >Type</th
                                             >
                                             <th
-                                                class="border border-border px-4 py-2 text-left text-text font-semibold"
+                                                class="border border-border px-4 py-2 text-left text-headline font-semibold"
                                                 >Required</th
                                             >
                                             <th
-                                                class="border border-border px-4 py-2 text-left text-text font-semibold"
+                                                class="border border-border px-4 py-2 text-left text-headline font-semibold"
                                                 >Default</th
                                             >
                                             <th
-                                                class="border border-border px-4 py-2 text-left text-text font-semibold"
+                                                class="border border-border px-4 py-2 text-left text-headline font-semibold"
                                                 >Description</th
                                             >
                                         </tr>
@@ -1867,26 +1863,26 @@ console.log(greet('World'));`;
                                         {#each component.props as prop}
                                             <tr>
                                                 <td
-                                                    class="border border-border px-4 py-2 text-text font-mono"
+                                                    class="border border-border px-4 py-2 text-body font-mono"
                                                     >{prop.name}</td
                                                 >
                                                 <td
-                                                    class="border border-border px-4 py-2 text-text-secondary"
+                                                    class="border border-border px-4 py-2 text-description"
                                                     >{prop.type}</td
                                                 >
                                                 <td
-                                                    class="border border-border px-4 py-2 text-text-secondary"
+                                                    class="border border-border px-4 py-2 text-description"
                                                     >{prop.required
                                                         ? "Yes"
                                                         : "No"}</td
                                                 >
                                                 <td
-                                                    class="border border-border px-4 py-2 text-text-secondary"
+                                                    class="border border-border px-4 py-2 text-description"
                                                     >{prop.defaultValue ||
                                                         "-"}</td
                                                 >
                                                 <td
-                                                    class="border border-border px-4 py-2 text-text-secondary"
+                                                    class="border border-border px-4 py-2 text-description"
                                                     >{prop.description}</td
                                                 >
                                             </tr>
@@ -1907,27 +1903,27 @@ console.log(greet('World'));`;
                 class="flex flex-col md:flex-row justify-between items-center gap-4"
             >
                 <div class="text-center md:text-left">
-                    <p class="text-text-secondary mb-2">
+                    <p class="text-description mb-2">
                         Clean components that just work. Less is more.
                     </p>
-                    <p class="text-sm text-text-secondary/80">
+                    <p class="text-sm text-caption">
                         © 2024 Zabi Components. MIT License.
                     </p>
                 </div>
                 <div class="flex gap-6">
                     <a
                         href="/docs"
-                        class="text-text-secondary hover:text-text transition-colors"
+                        class="text-description hover:text-headline transition-colors"
                         >Docs</a
                     >
                     <a
                         href="/components"
-                        class="text-text-secondary hover:text-text transition-colors"
+                        class="text-description hover:text-headline transition-colors"
                         >Components</a
                     >
                     <a
                         href="https://github.com"
-                        class="text-text-secondary hover:text-text transition-colors"
+                        class="text-description hover:text-headline transition-colors"
                         >GitHub</a
                     >
                 </div>

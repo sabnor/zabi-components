@@ -90,7 +90,6 @@
         font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
     }
 
-    /* Basic syntax highlighting for common languages */
     :global(.language-svelte .token.tag),
     :global(.language-html .token.tag) {
         color: #f92672;

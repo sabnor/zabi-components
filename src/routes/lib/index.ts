@@ -1,8 +1,8 @@
 // Zabi Components - Clean & Simple Svelte Component Library
 // Main library entry point - All components in one place
 
-// Import base styles
-import '../../styles/base.css';
+// Import theme styles (single source of truth)
+import '../../app.css';
 
 // ============================================================================
 // ATOM COMPONENTS - Basic UI building blocks

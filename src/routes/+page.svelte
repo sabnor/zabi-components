@@ -44,40 +44,40 @@
     // Features data
     const features = [
         {
-            icon: "🎯",
-            title: "TypeScript First",
+            icon: "⚡",
+            title: "Svelte & Tailwind",
             description:
-                "Full TypeScript support with comprehensive type definitions and excellent IDE experience.",
+                "Built with Svelte 5 runes and Tailwind CSS. Modern, fast, and easy to customize.",
+        },
+        {
+            icon: "🎯",
+            title: "Easy to Use",
+            description:
+                "Simple APIs with minimal props. Get started in minutes, not hours.",
         },
         {
             icon: "🎨",
-            title: "Semantic Colors",
+            title: "Beautiful Design",
             description:
-                "Built-in semantic color system with automatic dark mode support and consistent theming.",
-        },
-        {
-            icon: "🌙",
-            title: "Dark Mode Ready",
-            description:
-                "Automatic dark mode switching with CSS custom properties and seamless theme transitions.",
+                "Carefully crafted components with semantic colors and automatic dark mode support.",
         },
         {
             icon: "♿",
-            title: "Accessibility First",
+            title: "Accessible",
             description:
-                "ARIA compliant components with keyboard navigation support and screen reader compatibility.",
+                "WCAG 2.1 AA compliant with full keyboard navigation and screen reader support.",
         },
         {
-            icon: "📱",
-            title: "Responsive Design",
+            icon: "📦",
+            title: "Lightweight",
             description:
-                "Mobile-first approach with responsive utilities and adaptive layouts for all screen sizes.",
+                "60-80% less code than traditional libraries. Import only what you need.",
         },
         {
-            icon: "🧩",
-            title: "Clean API",
+            icon: "🛡️",
+            title: "SSR Safe",
             description:
-                "Simple, intuitive component APIs with minimal props and maximum flexibility.",
+                "100% server-side rendering compatible with zero runtime errors.",
         },
     ];
 
@@ -123,119 +123,149 @@
 </script>
 
 <svelte:head>
-    <title>Zabi Components - Clean & Simple</title>
+    <title>Zabi Components - Easy-to-Use Design System</title>
     <meta
         name="description"
-        content="Clean, minimal Svelte 5 components that just work"
+        content="An easy-to-use design system built with Svelte and Tailwind CSS. Beautiful, accessible components that just work."
     />
 </svelte:head>
 
 <div class="min-h-screen bg-background">
     <header
-        class="flex items-center justify-between p-4 bg-base-50 border-b border-border"
+        class="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
-        <h1 class="text-xl font-bold text-headline">Zabi Components</h1>
-        <div class="flex items-center gap-4">
-            <Navigation variant="header" items={navItems} />
-            <ThemeToggle />
+        <div
+            class="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8"
+        >
+            <h1 class="text-xl font-bold text-headline">Zabi Components</h1>
+            <div class="flex items-center gap-4">
+                <Navigation variant="header" items={navItems} />
+                <ThemeToggle />
+            </div>
         </div>
     </header>
 
-    <main class="container mx-auto p-6 space-y-16">
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Hero Section -->
-        <section class="py-20 px-4">
-            <div class="max-w-4xl mx-auto">
-                <Card size="lg" fullWidth={false}>
-                    <div class="text-center">
-                        <h1
-                            class="text-5xl md:text-6xl font-bold text-headline mb-6"
-                        >
-                            Zabi Components
-                        </h1>
-                        <p class="text-xl md:text-2xl text-description mb-8">
-                            Clean, minimal Svelte 5 components that just work
-                        </p>
-                        <p
-                            class="text-lg text-description/80 max-w-2xl mx-auto mb-12"
-                        >
-                            Build beautiful, accessible user interfaces with our
-                            carefully crafted component library. Less is more.
-                        </p>
+        <section class="py-24 sm:py-32">
+            <div class="mx-auto max-w-4xl text-center">
+                <div
+                    class="mb-8 inline-flex items-center rounded-full border border-border bg-base-50 px-4 py-2 text-sm text-description"
+                >
+                    <span class="mr-2">⚡</span>
+                    <span>Built with Svelte 5 & Tailwind CSS</span>
+                </div>
+                <h1
+                    class="text-5xl font-bold tracking-tight text-headline sm:text-6xl md:text-7xl mb-6"
+                >
+                    Your Easy-to-Use
+                    <span class="text-brand-700">Design System</span>
+                </h1>
+                <p class="text-xl text-description mb-8 sm:text-2xl">
+                    Beautifully designed components built with Svelte and
+                    Tailwind CSS. Simple, accessible, and ready to use.
+                </p>
+                <p class="text-lg text-description/80 mb-12">
+                    Get started in minutes with clean, minimal components that
+                    just work. Less is more.
+                </p>
 
-                        <!-- CTA Buttons -->
-                        <div
-                            class="flex flex-col sm:flex-row gap-4 justify-center items-center"
-                        >
-                            <Button
-                                variant="primary"
-                                size="lg"
-                                onclick={() => goto("/docs")}
-                                text="Get Started"
-                            />
-                            <Button
-                                variant="secondary"
-                                size="lg"
-                                onclick={() => goto("/components")}
-                                text="View Components"
-                            />
-                        </div>
+                <!-- CTA Buttons -->
+                <div
+                    class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
+                >
+                    <Button
+                        variant="primary"
+                        size="lg"
+                        onclick={() => goto("/docs")}
+                        text="Get Started"
+                    />
+                    <Button
+                        variant="outline"
+                        size="lg"
+                        onclick={() => goto("/components")}
+                        text="View Components"
+                    />
+                </div>
 
-                        <!-- Version Badge -->
-                        <div class="mt-8 flex justify-center">
-                            <Badge
-                                variant="info"
-                                text="v4.0.0 - Svelte 5 Ready"
-                            />
-                        </div>
+                <!-- Stats or badges -->
+                <div
+                    class="flex flex-wrap justify-center gap-6 text-sm text-description"
+                >
+                    <div class="flex items-center gap-2">
+                        <span class="text-brand-600">✓</span>
+                        <span>TypeScript</span>
                     </div>
-                </Card>
+                    <div class="flex items-center gap-2">
+                        <span class="text-brand-600">✓</span>
+                        <span>Accessible</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-brand-600">✓</span>
+                        <span>SSR Safe</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-brand-600">✓</span>
+                        <span>Dark Mode</span>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- Features Section -->
-        <section class="py-16">
-            <div class="max-w-6xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-headline mb-4">
+        <section class="py-24 border-t border-border">
+            <div class="mx-auto max-w-6xl">
+                <div class="text-center mb-16">
+                    <h2
+                        class="text-3xl font-bold text-headline mb-4 sm:text-4xl"
+                    >
                         Why Choose Zabi Components?
                     </h2>
-                    <p class="text-lg text-description max-w-2xl mx-auto">
-                        Built with modern web standards and developer experience
-                        in mind
+                    <p class="text-lg text-description">
+                        An easy-to-use design system built with Svelte and
+                        Tailwind CSS
                     </p>
                 </div>
 
                 <div
-                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
                 >
                     {#each features as feature}
-                        <div class="relative pl-14">
-                            <Card
-                                size="md"
-                                fullWidth={true}
-                                title={feature.title}
-                                description={feature.description}
-                            />
-                            <div
-                                class="absolute top-6 left-6 text-2xl pointer-events-none"
-                                aria-hidden="true"
-                            >
-                                {feature.icon}
+                        <Card variant="flat" size="md" fullWidth={true}>
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="text-3xl flex-shrink-0"
+                                    aria-hidden="true"
+                                >
+                                    {feature.icon}
+                                </div>
+                                <div>
+                                    <h3
+                                        class="text-xl font-semibold text-headline mb-2"
+                                    >
+                                        {feature.title}
+                                    </h3>
+                                    <p class="text-description leading-relaxed">
+                                        {feature.description}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
+                        </Card>
                     {/each}
                 </div>
             </div>
         </section>
 
         <!-- Component Showcase Section -->
-        <section class="py-16">
-            <div class="max-w-7xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-headline mb-4">
-                        See It In Action
+        <section class="py-24 border-t border-border">
+            <div class="mx-auto max-w-7xl">
+                <div class="text-center mb-16">
+                    <h2
+                        class="text-3xl font-bold text-headline mb-4 sm:text-4xl"
+                    >
+                        Components
                     </h2>
-                    <p class="text-lg text-description max-w-2xl mx-auto">
+                    <p class="text-lg text-description">
                         Interactive examples of our most popular components
                     </p>
                 </div>
@@ -863,9 +893,9 @@
                 </div>
 
                 <!-- View All Components CTA -->
-                <div class="text-center mt-12">
+                <div class="text-center mt-16">
                     <Button
-                        variant="primary"
+                        variant="outline"
                         size="lg"
                         onclick={() => goto("/components")}
                         text="View All Components"
@@ -875,51 +905,55 @@
         </section>
 
         <!-- Contact Form -->
-        <section class="py-16">
-            <div class="max-w-2xl mx-auto">
-                <Card size="md">
-                    <div class="text-center mb-8">
-                        <h2 class="text-3xl font-bold text-headline mb-4">
-                            Get In Touch
-                        </h2>
-                        <p class="text-lg text-description">
-                            Have questions or feedback? We'd love to hear from
-                            you.
-                        </p>
-                    </div>
+        <section class="py-24 border-t border-border">
+            <div class="mx-auto">
+                <div class="text-center mb-12">
+                    <h2
+                        class="text-3xl font-bold text-headline mb-4 sm:text-4xl"
+                    >
+                        Get In Touch
+                    </h2>
+                    <p class="text-lg text-description">
+                        Have questions or feedback? We'd love to hear from you.
+                    </p>
+                </div>
+                <Card variant="outlined" size="md" fullWidth={true}>
                     <ContactForm onsubmit={handleFormSubmit} />
                 </Card>
             </div>
         </section>
     </main>
 
-    <footer class="bg-base-100 border-t border-border py-8">
-        <div class="container mx-auto px-6">
+    <footer class="border-t border-border py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div
-                class="flex flex-col md:flex-row justify-between items-center gap-4"
+                class="flex flex-col md:flex-row justify-between items-center gap-6"
             >
                 <div class="text-center md:text-left">
-                    <p class="text-description mb-2">
-                        Clean components that just work. Less is more.
+                    <p class="text-description mb-1 font-medium">
+                        Zabi Components
                     </p>
                     <p class="text-sm text-description/80">
+                        Clean components that just work. Less is more.
+                    </p>
+                    <p class="text-sm text-description/60 mt-2">
                         © 2024 Zabi Components. MIT License.
                     </p>
                 </div>
                 <div class="flex gap-6">
                     <a
                         href="/docs"
-                        class="text-description hover:text-body transition-colors"
+                        class="text-sm text-description hover:text-headline transition-colors"
                         >Docs</a
                     >
                     <a
                         href="/components"
-                        class="text-description hover:text-body transition-colors"
+                        class="text-sm text-description hover:text-headline transition-colors"
                         >Components</a
                     >
                     <a
                         href="https://github.com"
-                        class="text-description hover:text-body transition-colors"
+                        class="text-sm text-description hover:text-headline transition-colors"
                         >GitHub</a
                     >
                 </div>
