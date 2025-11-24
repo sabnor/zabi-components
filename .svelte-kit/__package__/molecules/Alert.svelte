@@ -1,12 +1,8 @@
 <script lang="ts">
+    import type { ExtendedSemanticVariant } from "../../types/variants.js";
+
     interface Props {
-        variant?:
-            | "info"
-            | "success"
-            | "warning"
-            | "error"
-            | "neutral"
-            | "energetic";
+        variant?: ExtendedSemanticVariant;
         title?: string;
         message?: string;
         closable?: boolean;
@@ -26,7 +22,6 @@
     }: Props & { children?: any } = $props();
 
     function handleDismiss(event: MouseEvent) {
-        // Call the parent's onclick handler if provided
         if (onclick) {
             onclick(event);
         }
@@ -78,7 +73,6 @@
     aria-atomic="true"
     {...restProps}
 >
-    <!-- Dismiss button (X in top right) -->
     {#if closable}
         <button
             onclick={handleDismiss}
@@ -102,14 +96,11 @@
         </button>
     {/if}
 
-    <!-- Content -->
     <div class="flex items-start gap-3 {closable ? 'pr-8' : ''}">
-        <!-- Icon -->
         <div class="shrink-0 mt-0.5">
             {@html iconSvg[variant]}
         </div>
 
-        <!-- Text content -->
         <div class="flex-1 min-w-0">
             {#if title}
                 <h4 class="font-semibold text-sm mb-1 text-headline">
@@ -121,7 +112,6 @@
                     {message}
                 </p>
             {/if}
-            <!-- Default slot for custom content -->
             {@render children?.()}
         </div>
     </div>

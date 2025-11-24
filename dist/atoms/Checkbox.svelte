@@ -1,5 +1,4 @@
 <script lang="ts">
-    // SSR-safe ID generation
     function generateId(prefix: string = "id"): string {
         if (typeof window !== "undefined") {
             return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
@@ -25,10 +24,8 @@
         ...restProps
     }: Props = $props();
 
-    // Generate unique ID - SSR safe (call directly, not in $state)
     const checkboxId = generateId("checkbox");
 
-    // Checkbox container classes matching M3 design
     const checkboxContainerClasses = $derived(() => {
         const baseClasses =
             "relative inline-flex items-center justify-center w-5 h-5 rounded transition-all duration-200";
@@ -39,7 +36,6 @@
         return `${baseClasses} cursor-pointer`;
     });
 
-    // Checkbox border and background classes matching M3 design
     const checkboxBoxClasses = $derived(() => {
         if (checked) {
             return disabled

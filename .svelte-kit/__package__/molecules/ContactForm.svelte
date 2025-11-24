@@ -4,6 +4,7 @@
     import Textarea from "../atoms/Textarea.svelte";
     import Checkbox from "../atoms/Checkbox.svelte";
     import Button from "../atoms/Button.svelte";
+    import Card from "../atoms/Card.svelte";
     import type { ContactFormData } from "../../types/page.types";
 
     interface Props {
@@ -33,21 +34,11 @@
             subscribe: formData.get("subscribe") === "on" || false,
         };
 
-        // Form submission is now handled by the parent component
-        // through event forwarding. The data is available for processing.
         console.log("Form submitted with data:", data);
     }
 </script>
 
-<div class="max-w-md mx-auto {className}">
-    <div class="mb-6">
-        <h2 class="text-2xl font-bold text-headline mb-2">Get in Touch</h2>
-        <p class="text-description">
-            We'd love to hear from you. Send us a message and we'll respond as
-            soon as possible.
-        </p>
-    </div>
-
+<Card size="md" fullWidth={true} title="Get in Touch">
     <Form onsubmit={handleFormSubmit} className="space-y-4">
         <div class="space-y-4">
             <Input
@@ -58,6 +49,24 @@
                 value={formData.name}
                 oninput={(e) =>
                     (formData.name = (e.target as HTMLInputElement).value)}
+            />
+            <Input
+                type="email"
+                name="email"
+                label="Email"
+                placeholder="Enter your email"
+                value={formData.email}
+                oninput={(e) =>
+                    (formData.email = (e.target as HTMLInputElement).value)}
+            />
+            <Input
+                type="email"
+                name="email"
+                label="Email"
+                placeholder="Enter your email"
+                value={formData.email}
+                oninput={(e) =>
+                    (formData.email = (e.target as HTMLInputElement).value)}
             />
             <Input
                 type="email"
@@ -95,4 +104,4 @@
             </Button>
         </div>
     </Form>
-</div>
+</Card>

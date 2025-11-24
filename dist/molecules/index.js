@@ -1,4 +1,3 @@
-// Export molecular components - All SSR-safe components
 export { default as Alert } from './Alert.svelte';
 export { default as ComponentDemo } from './ComponentDemo.svelte';
 export { default as ContactForm } from './ContactForm.svelte';

@@ -22,7 +22,6 @@
     let isVisible = $state(false);
     let triggerElement: HTMLElement | null = $state(null);
 
-    // Handle keyboard events
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape" && isVisible) {
             isVisible = false;
@@ -30,7 +29,6 @@
         }
     }
 
-    // Handle focus events for accessibility
     function handleFocus() {
         if (!disabled && content) {
             isVisible = true;
@@ -38,7 +36,6 @@
     }
 
     function handleBlur() {
-        // Delay hiding to allow clicking on tooltip content if needed
         setTimeout(() => {
             isVisible = false;
         }, 100);
@@ -136,7 +133,6 @@
         pointer-events: none;
     }
 
-    /* Simplified positioning using CSS custom properties and logical properties */
     .tooltip-container[data-placement="top"] .tooltip {
         inset-block-end: 100%;
         inset-inline-start: 50%;
@@ -189,7 +185,6 @@
         transform: translateY(-50%) translateX(0) scale(1);
     }
 
-    /* Modern arrow implementation using CSS clip-path for better performance */
     .tooltip::before {
         content: "";
         position: absolute;
@@ -226,12 +221,10 @@
         clip-path: polygon(0 50%, 100% 0, 100% 100%);
     }
 
-    /* Delay support using CSS custom properties */
     .tooltip-container[data-delay] .tooltip {
         transition-delay: calc(var(--tooltip-delay, 0) * 1ms);
     }
 
-    /* Responsive design with modern CSS */
     @media (max-width: 640px) {
         .tooltip {
             --tooltip-max-width: calc(100vw - 2rem);
@@ -250,19 +243,16 @@
         }
     }
 
-    /* Dark mode support */
     @media (prefers-color-scheme: dark) {
         :root {
             --tooltip-bg: #374151;
         }
     }
 
-    /* Use CSS color-scheme for better dark mode support */
     .dark :root {
         --tooltip-bg: #374151;
     }
 
-    /* High contrast mode support */
     @media (prefers-contrast: high) {
         :root {
             --tooltip-bg: #000000;
@@ -271,7 +261,6 @@
         }
     }
 
-    /* Reduced motion support */
     @media (prefers-reduced-motion: reduce) {
         .tooltip {
             transition: opacity 0.1s ease-in-out, visibility 0.1s ease-in-out;
@@ -288,7 +277,6 @@
         }
     }
 
-    /* Focus-visible for better keyboard navigation */
     .tooltip-container:focus-visible {
         outline: 2px solid var(--color-focus, #8fa8ff);
         outline-offset: 2px;

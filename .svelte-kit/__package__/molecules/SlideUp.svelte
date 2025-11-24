@@ -50,7 +50,6 @@
         <div
             class="fixed bottom-0 left-0 right-0 bg-base-50 rounded-t-3xl shadow-xl z-modal max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] flex flex-col"
         >
-            <!-- Header -->
             {#if title}
                 <div class="flex items-center justify-between px-6 pt-6 pb-4">
                     <h2
@@ -70,7 +69,6 @@
                 </div>
             {/if}
 
-            <!-- Content -->
             <div class="px-6 pb-6 flex-1">
                 {@render children?.()}
             </div>

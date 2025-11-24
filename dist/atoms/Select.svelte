@@ -7,7 +7,6 @@
         AlertCircle,
     } from "@lucide/svelte";
 
-    // SSR-safe ID generation
     function generateId(prefix: string = "id"): string {
         if (typeof window !== "undefined") {
             return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
@@ -47,7 +46,6 @@
 
     let isOpen = $state(false);
 
-    // Size classes matching M3 design specifications
     const sizeClass = $derived(() => {
         if (size === "sm") {
             return {
@@ -62,7 +60,6 @@
                 leading: "leading-6",
             };
         } else {
-            // default md
             return {
                 padding: "px-4 py-2.5",
                 text: "text-base",
@@ -71,7 +68,6 @@
         }
     });
 
-    // Variant classes using semantic colors
     const variantClass = $derived(() => {
         return variant === "success"
             ? "border-success focus:border-success focus:ring-success"
@@ -82,7 +78,6 @@
                 : "border-0 focus:ring-2 focus:ring-brand-500"; // default - no border
     });
 
-    // Trigger button classes matching M3 design
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
@@ -91,12 +86,10 @@
         return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     });
 
-    // Label classes using semantic text colors
     const labelClasses = $derived(
         () => "block text-sm font-medium text-label mb-1",
     );
 
-    // Message classes based on variant
     const messageClasses = $derived(() => {
         if (variant === "error") {
             return "text-error text-sm mt-1 flex items-center gap-1.5";
@@ -108,7 +101,6 @@
         return "text-description text-sm mt-1 flex items-center gap-1.5";
     });
 
-    // Get icon component based on variant
     const getIcon = $derived(() => {
         if (variant === "error") return AlertCircle;
         if (variant === "success") return CheckCircle;
@@ -116,10 +108,8 @@
         return null;
     });
 
-    // Generate unique ID - SSR safe
     const selectId = generateId("select");
 
-    // Get selected option label
     const selectedLabel = $derived(() => {
         if (isEmpty()) {
             return String(placeholder || "Select an option");
@@ -130,7 +120,6 @@
             : String(placeholder || "Select an option");
     });
 
-    // Check if value is empty
     const isEmpty = $derived(() => {
         return value === undefined || value === null || value === "";
     });
@@ -140,7 +129,6 @@
         value = optionValue;
         isOpen = false;
 
-        // Create a synthetic event for onchange
         if (onchange) {
             const syntheticEvent = new Event("change", { bubbles: true });
             Object.defineProperty(syntheticEvent, "target", {
@@ -157,7 +145,6 @@
         isOpen = !isOpen;
     }
 
-    // Close dropdown when clicking outside
     function handleClickOutside(event: MouseEvent) {
         if (
             isOpen &&
@@ -167,7 +154,6 @@
         }
     }
 
-    // Handle escape key
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape" && isOpen) {
             isOpen = false;

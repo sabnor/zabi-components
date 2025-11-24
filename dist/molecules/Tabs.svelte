@@ -35,7 +35,6 @@
 </script>
 
 <div class="tabs-container">
-    <!-- Tab List -->
     <div
         class="flex border-b border-base-200"
         role="tablist"
@@ -61,7 +60,6 @@
         {/each}
     </div>
 
-    <!-- Tab Content -->
     <div class="mt-4">
         {@render children?.({ activeTab })}
     </div>

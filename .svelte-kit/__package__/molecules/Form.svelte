@@ -19,7 +19,6 @@
         const formData = new FormData(event.target as HTMLFormElement);
         const data = Object.fromEntries(formData.entries());
 
-        // Call the parent's onsubmit handler if provided
         if (onsubmit) {
             onsubmit(event);
         }
