@@ -4,7 +4,7 @@
         variant = "default",
         size = "md",
         text = "",
-        showIcon = true,
+        showIcon = false,
     }: {
         variant?:
             | "default"
