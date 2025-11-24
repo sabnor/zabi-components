@@ -32,21 +32,18 @@
         }
     }
 
-    // Derived class for ul container based on variant
     const ulClasses = $derived(() => {
         return variant === "sidebar"
             ? "flex flex-col gap-1"
             : "flex items-center justify-between gap-1";
     });
 
-    // Function to get nav item classes based on active state
     function getNavItemClasses(itemHref: string): string {
         const baseClasses = "flex flex-col gap-1 grow h-full items-center justify-center min-h-0 min-w-0 relative shrink-0 cursor-pointer";
 
         return baseClasses;
     }
 
-    // Function to get icon container classes based on active state
     function getIconContainerClasses(itemHref: string): string {
         const isActive = currentPath === itemHref;
         const baseClasses = "flex flex-col items-center justify-center overflow-clip relative rounded-[20px] shrink-0 transition-colors duration-200";
@@ -57,12 +54,10 @@
         return `${baseClasses}`;
     }
 
-    // Function to get state layer classes
     function getStateLayerClasses(): string {
         return "box-border flex gap-1 h-10 items-center px-4 py-2 relative shrink-0";
     }
 
-    // Function to get label classes based on active state
     function getLabelClasses(itemHref: string): string {
         const isActive = currentPath === itemHref;
         const baseClasses = "font-medium leading-4 relative shrink-0 text-center text-nowrap tracking-[0.5px] whitespace-pre text-xs";
@@ -73,7 +68,6 @@
         return `${baseClasses} text-description`;
     }
 
-    // Function to get icon classes based on active state (matches text color)
     function getIconClasses(itemHref: string): string {
         const isActive = currentPath === itemHref;
 

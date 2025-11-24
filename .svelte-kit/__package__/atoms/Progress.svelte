@@ -14,17 +14,14 @@
         ...restProps
     }: Props = $props();
 
-    // Generate unique ID - SSR safe
     let progressId = $state(
         typeof window !== "undefined"
             ? `progress-${Math.random().toString(36).substr(2, 9)}`
             : `progress-ssr-${Date.now()}`,
     );
 
-    // Calculate percentage
     let percentage = $derived(Math.min(Math.max((value / max) * 100, 0), 100));
 
-    // Simple size classes
     let sizeClasses = $derived({
         sm: "h-1",
         md: "h-2",

@@ -1,3 +1,4 @@
+import type { SemanticVariant, SizeVariant } from "../../types/variants.js";
 interface Props {
     value?: string;
     name?: string;
@@ -5,7 +6,8 @@ interface Props {
     placeholder?: string;
     disabled?: boolean;
     rows?: number;
-    variant?: "default" | "success" | "warning" | "error";
+    size?: SizeVariant;
+    variant?: SemanticVariant;
     message?: string;
     oninput?: (event: Event) => void;
 }

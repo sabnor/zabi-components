@@ -179,21 +179,21 @@
   
   /* Primary Actions - Used by bg-action-primary utility class */
   /* 🎯 TO CHANGE bg-action-primary COLOR: Edit the values below */
-  --color-action-primary: var(--color-brand-800);
+  --color-action-primary: var(--color-brand-950);
   --color-action-primary-hover: var(--color-brand-900);
-  --color-action-primary-active: var(--color-brand-600);
-  --color-action-primary-disabled: var(--color-brand-400);
+  --color-action-primary-active: var(--color-brand-400);
+  --color-action-primary-disabled: var(--color-brand-500);
   --color-action-primary-subtle: var(--color-brand-100);
   --color-action-primary-subtle-hover: var(--color-brand-200);
   --color-action-primary-text: var(--color-brand-50);
 
   /* Secondary Actions - Used by bg-action-secondary utility class */
-  --color-action-secondary: var(--color-base-800);
-  --color-action-secondary-hover: var(--color-base-700);
-  --color-action-secondary-active: var(--color-base-800);
-  --color-action-secondary-disabled: var(--color-base-300);
-  --color-action-secondary-subtle: var(--color-base-100);
-  --color-action-secondary-subtle-hover: var(--color-base-200);
+  --color-action-secondary: var(--color-brand-200);
+  --color-action-secondary-hover: var(--color-brand-100);
+  --color-action-secondary-active: var(--color-brand-400);
+  --color-action-secondary-disabled: var(--color-brand-500);
+  --color-action-secondary-subtle: var(--color-brand-600);
+  --color-action-secondary-subtle-hover: var(--color-brand-700);
 
   /* Danger Actions - Used by bg-action-danger utility class */
   --color-action-danger: theme(colors.red.600);

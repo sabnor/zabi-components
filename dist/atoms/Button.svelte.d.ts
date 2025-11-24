@@ -1,7 +1,8 @@
 import type { Snippet } from "svelte";
+import type { ButtonVariant, SizeVariant } from "../../types/variants.js";
 interface Props {
-    variant?: "primary" | "secondary" | "danger" | "ghost";
-    size?: "sm" | "md" | "lg";
+    variant?: ButtonVariant;
+    size?: SizeVariant;
     disabled?: boolean;
     type?: "button" | "submit" | "reset";
     text?: string;

@@ -25,8 +25,6 @@
     }
 
     function handleBrandClick() {
-        // Brand click is now handled by the parent component
-        // through event forwarding
     }
 </script>
 
@@ -36,7 +34,6 @@
 >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
-            <!-- Brand -->
             <div class="shrink-0">
                 <button
                     type="button"
@@ -47,14 +44,12 @@
                 </button>
             </div>
 
-            <!-- Desktop Navigation -->
             <div class="hidden md:block">
                 <div class="ml-10 flex items-baseline space-x-4">
                     {@render nav?.()}
                 </div>
             </div>
 
-            <!-- Right side -->
             <div class="hidden md:block">
                 <div class="ml-4 flex items-center space-x-4">
                     {@render actions?.()}
@@ -64,7 +59,6 @@
                 </div>
             </div>
 
-            <!-- Mobile menu button -->
             <div class="md:hidden">
                 <button
                     type="button"
@@ -77,7 +71,6 @@
             </div>
         </div>
 
-        <!-- Mobile menu -->
         {#if isMenuOpen}
             <div class="md:hidden">
                 <div

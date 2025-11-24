@@ -1,48 +1,35 @@
-<!--
-    Badge Component - SSR-safe and robust
-    
-    A simple badge component with proper SSR handling and defensive programming
-    to prevent DOM access errors during hydration and rapid state changes.
--->
 <script lang="ts">
     import { Check, AlertTriangle, X, Info } from "@lucide/svelte";
-    // Props using Svelte 5 runes
+    import type {
+        ExtendedSemanticVariant,
+        SizeVariant,
+    } from "../../types/variants.js";
+
+    interface Props {
+        variant?: ExtendedSemanticVariant;
+        size?: SizeVariant;
+        text: string;
+        showIcon?: boolean;
+    }
+
     let {
         variant = "default",
         size = "md",
         text = "",
-        showIcon = true,
-    }: {
-        variant?:
-            | "default"
-            | "success"
-            | "warning"
-            | "error"
-            | "info"
-            | "neutral"
-            | "energetic";
-        size?: "sm" | "md" | "lg";
-        text: string;
-        showIcon?: boolean;
-    } = $props();
+        showIcon = false,
+    }: Props = $props();
 
-    // Class computation using conditional logic with full class names
     const classes = $derived(() => {
         const baseClasses =
-            "inline-flex items-center font-medium border rounded-md";
+            "inline-flex items-center font-medium border rounded-xs";
 
-        // Size classes - using full class names
         const sizeClass =
             size === "sm"
                 ? "px-2 py-0.5 text-xs"
                 : size === "lg"
                   ? "px-4 py-2 text-base"
-                  : "px-3 py-1 text-sm"; // default md
+                  : "px-3 py-1 text-sm";
 
-        // Variant classes - using semantic color system with improved WCAG contrast
-        // Using colored backgrounds with white text for better contrast ratios (4.5:1+)
-        // Using darker shades for warning and energetic to ensure WCAG AA compliance
-        // Note: Using text-white instead of text-inverse to ensure light text in both light and dark modes
         const variantClass =
             variant === "success"
                 ? "bg-success border-success text-card"
@@ -56,19 +43,17 @@
                         ? "bg-neutral border-neutral text-card"
                         : variant === "energetic"
                           ? "bg-energetic border-energetic text-card"
-                          : "bg-secondary border-secondary text-card"; // default
+                          : "bg-secondary border-secondary text-card";
 
         return `${baseClasses} ${sizeClass} ${variantClass}`.trim();
     });
 
-    // Icon size based on badge size
     const iconSize = $derived(() => {
-        return size === "sm" ? 12 : size === "lg" ? 20 : 16; // default md
+        return size === "sm" ? 12 : size === "lg" ? 20 : 16;
     });
 
-    // Icon spacing class
     const iconSpacingClass = $derived(() => {
-        return size === "sm" ? "mr-1" : size === "lg" ? "mr-2" : "mr-1.5"; // default md
+        return size === "sm" ? "mr-1" : size === "lg" ? "mr-2" : "mr-1.5";
     });
 </script>
 

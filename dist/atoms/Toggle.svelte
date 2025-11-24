@@ -1,5 +1,4 @@
 <script lang="ts">
-    // SSR-safe ID generation
     function generateId(prefix: string = "id"): string {
         if (typeof window !== "undefined") {
             return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
@@ -8,7 +7,6 @@
         }
     }
 
-    // Props using Svelte 5 runes
     interface Props {
         checked?: boolean;
         disabled?: boolean;
@@ -26,15 +24,12 @@
         ...restProps
     }: Props = $props();
 
-    // SSR-safe ID generation (call directly, not in onMount)
     const toggleId = generateId("toggle");
 
-    // Handle click
     function handleClick(event: MouseEvent) {
         if (disabled) return;
         checked = !checked;
 
-        // Call parent handlers if provided
         if (onclick) onclick(event);
         if (onchange) onchange({ checked });
     }
@@ -57,7 +52,6 @@
         return `${baseClasses} ${positionClasses}`.trim();
     });
 
-    // Handle keyboard
     function handleKeydown(event: KeyboardEvent) {
         if (disabled) return;
         if (event.key === " " || event.key === "Enter") {

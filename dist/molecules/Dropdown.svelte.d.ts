@@ -1,6 +1,7 @@
 interface Props {
     isOpen?: boolean;
     placement?: "bottom-start" | "bottom-end" | "top-start" | "top-end";
+    ariaLabel?: string;
 }
 type $$ComponentProps = Props & {
     children?: any;

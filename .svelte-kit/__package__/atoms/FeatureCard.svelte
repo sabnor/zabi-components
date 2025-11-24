@@ -1,19 +1,10 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    /**
-     * FeatureCard component - SSR-safe implementation
-     * @component
-     */
-
     interface Props {
-        /** Icon to display */
         icon?: string;
-        /** Title of the feature */
         title: string;
-        /** Description of the feature */
         description: string;
-        /** Additional CSS classes */
         className?: string;
     }
 
@@ -52,7 +43,6 @@
         </div>
     </div>
 {:else}
-    <!-- SSR fallback -->
     <div
         class="p-6 rounded-lg bg-base-100 border border-base-300 hover:border-base-400 hover:shadow-sm transition-colors duration-200 {className}"
         {...restProps}

@@ -1,5 +1,6 @@
+import type { ExtendedSemanticVariant } from "../../types/variants.js";
 interface Props {
-    variant?: "info" | "success" | "warning" | "error" | "neutral" | "energetic";
+    variant?: ExtendedSemanticVariant;
     title?: string;
     message?: string;
     closable?: boolean;

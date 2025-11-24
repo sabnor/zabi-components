@@ -2,7 +2,9 @@
  * Utility functions for handling component variants with semantic colors
  */
 
-export type Variant = 'default' | 'success' | 'warning' | 'error' | 'info';
+import type { SemanticVariant } from '../../types/variants.js';
+
+export type Variant = SemanticVariant;
 
 /**
  * Get variant classes for input components (Input, Textarea)
