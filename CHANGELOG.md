@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.18] - 2025-01-27
+
+### ✨ **Component Enhancements & Documentation**
+
+#### **Card Component Improvements**
+- **Compound Components**: Added CardHeader, CardContent, CardFooter, CardTitle, and CardDescription sub-components
+  - Enables flexible card composition with better structure
+  - Maintains backward compatibility with existing title/description/image props
+  - Supports both old and new API patterns
+- **Enhanced Variants**: Improved elevated, outlined, and flat variants with better hover states
+- **Accessibility**: Added keyboard navigation (Enter/Space) and proper ARIA attributes for interactive cards
+- **Size Variants**: Enhanced size support (sm, md, lg) with responsive padding and typography
+
+#### **Button Component Enhancements**
+- **New Variants**: Added ghost, outline, and link variants for more design flexibility
+- **Improved Focus States**: Enhanced focus ring styles for better accessibility
+- **Size Refinements**: Improved size variants with better typography and spacing
+- **Better Disabled States**: Enhanced disabled state styling and interaction
+
+#### **Badge Component Updates**
+- **Icon Support**: Added optional icon display for success, warning, error, and info variants
+- **Size Variants**: Enhanced size support with responsive icon sizing
+- **Visual Consistency**: Improved color system integration
+
+#### **Component Accessibility Improvements**
+- **Modal Component**: Enhanced focus management and keyboard navigation
+- **Dropdown Component**: Improved ARIA attributes and keyboard navigation
+- **Card Component**: Added proper roles and keyboard handlers for interactive cards
+- **Focus Utilities**: New focus-utils.ts for better focus management across components
+
+#### **Documentation Additions**
+- **ACCESSIBILITY.md**: Comprehensive accessibility documentation with component-by-component analysis
+- **KEYBOARD_NAVIGATION.md**: Detailed keyboard navigation patterns and best practices
+- **VARIANTS.md**: Complete variant system documentation
+- **THEMING.md**: Enhanced theming guide with customization examples
+- **THEME_QUICK_REFERENCE.md**: Quick reference for theme customization
+- **SHADCN_INSPIRATION.md**: Design system inspiration and improvement roadmap
+
+#### **Theme & Styling Improvements**
+- **Color System**: Enhanced color variable resolution and consistency
+- **Theme Files**: Updated theme CSS files with improved structure
+- **Build Process**: Enhanced CSS build scripts for better theme processing
+
+#### **Build & Development**
+- **Type Definitions**: Updated TypeScript definitions for new components
+- **Component Exports**: Added exports for new Card compound components
+- **Storybook**: Enhanced Card stories with compound component examples
+
+### ✅ **No Breaking Changes**
+
+This is a backward-compatible update. Existing component usage continues to work, with new features available as optional enhancements.
+
+---
+
 ## [5.0.17] - 2025-01-27
 
 ### 🔧 **Patch Release**
