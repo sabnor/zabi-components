@@ -78,6 +78,9 @@
   --color-card-active: var(--color-base-400);
   --color-card-elevated: var(--color-base-200);
 
+  /* Overlay Colors */
+  --color-overlay: rgba(0, 0, 0, 0.7);
+
   /* Input Colors */
   --color-input: var(--color-base-300);
   --color-input-hover: var(--color-base-400);
@@ -129,8 +132,14 @@
   /* Text alias */
   --color-info-text: var(--color-info);
 
-  /* Action Colors - Dark mode variants */
-  /* Primary Actions - No dark mode overrides needed, brand colors are already inverted */
+  /* ========================================
+     ACTION COLORS - Dark Mode Overrides
+     ======================================== */
+  
+  /* Primary Actions - Background adapts automatically via brand color inversion */
+  /* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit --color-brand-800 in .dark block (line ~275) */
+  /* Text color - Use brand-50 (which maps to brand-950/darkest in dark mode) for proper contrast */
+  --color-action-primary-text: var(--color-brand-50);
 
   /* Secondary Actions - No dark mode overrides needed, base colors are already inverted */
 

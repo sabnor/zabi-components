@@ -16,7 +16,6 @@
 
     let isVisible = $state(true);
 
-    // Simple type classes
     const typeClasses = {
         success: "bg-green-100 border-green-300 text-success",
         error: "bg-red-100 border-red-300 text-error",

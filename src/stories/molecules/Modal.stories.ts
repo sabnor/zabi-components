@@ -6,7 +6,12 @@ const meta = {
     title: 'Design System/Molecules/Modal',
     component: Modal,
     parameters: {
-        layout: 'fullscreen'
+        layout: 'fullscreen',
+        docs: {
+            description: {
+                component: 'Modal component with focus trap and keyboard navigation. Press Escape to close, Tab to navigate within modal. Focus is automatically returned to the trigger element when closed.'
+            }
+        }
     },
     tags: ['autodocs'],
     argTypes: {

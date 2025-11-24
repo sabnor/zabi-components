@@ -5,7 +5,12 @@ const meta = {
     title: 'Design System/Atoms/Button',
     component: Button,
     parameters: {
-        layout: 'centered'
+        layout: 'centered',
+        docs: {
+            description: {
+                component: 'Button component with multiple variants and sizes. Fully keyboard accessible with Enter and Space key support.'
+            }
+        }
     },
     tags: ['autodocs'],
     argTypes: {}
@@ -60,6 +65,27 @@ export const Large: Story = {
 export const Disabled: Story = {
     args: {
         disabled: true,
+        text: 'Button'
+    }
+};
+
+export const Outline: Story = {
+    args: {
+        variant: 'outline',
+        text: 'Button'
+    }
+};
+
+export const Link: Story = {
+    args: {
+        variant: 'link',
+        text: 'Button'
+    }
+};
+
+export const Ghost: Story = {
+    args: {
+        variant: 'ghost',
         text: 'Button'
     }
 };

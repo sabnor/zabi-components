@@ -219,16 +219,16 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
 
 | Component | Category | Description | Key Features |
 |-----------|----------|-------------|--------------|
-| **Card** | Atom | Clean card container | Simple, interactive, image support |
+| **Card** | Atom | Clean card container | Simple, interactive, image support, compound components, 4 variants |
 | **Form** | Molecule | Simple form wrapper | FormData handling, clean API |
 | **Layout** | Molecule | Page layout system | Header, main, footer slots |
 | **Navigation** | Organism | Clean navigation | Header/sidebar variants, active state |
-| **Button** | Atom | Action button | 3 variants (primary, secondary, danger) |
+| **Button** | Atom | Action button | 6 variants (primary, secondary, danger, ghost, outline, link) |
 | **Input** | Atom | Form input | Essential props, accessibility |
 | **Badge** | Atom | Status indicator | 5 color variants, closable |
-| **Modal** | Molecule | Overlay dialog | Simple backdrop, close button |
+| **Modal** | Molecule | Overlay dialog | Focus trap, keyboard navigation, focus return |
 | **Tabs** | Molecule | Tab navigation | Keyboard navigation, 2 variants |
-| **Dropdown** | Molecule | Dropdown menu | CSS-only positioning |
+| **Dropdown** | Molecule | Dropdown menu | CSS-only positioning, keyboard navigation, ARIA support |
 | **ImageUpload** | Molecule | File upload | Direct selection, preview |
 | **Navbar** | Organism | Navigation bar | Mobile menu, responsive |
 
@@ -512,35 +512,67 @@ All components will automatically switch to their dark mode variants without any
 
 ### Card Component
 
+Card component supports two APIs: prop-based (backward compatible) and compound components (recommended).
+
+#### Prop-based API (Backward Compatible)
+
 ```svelte
 <Card
-  variant="default" | "elevated" | "outlined"
-  density="comfortable" | "compact"
-  disabled={boolean}
-  loading={boolean}
-  className={string}
-  on:click={(e) => console.log(e.detail.value, e.detail.event)}
+  title="Card Title"
+  description="Card description"
+  image="image-url.jpg"
+  variant="default" | "elevated" | "outlined" | "flat"
+  size="sm" | "md" | "lg"
+  fullWidth={boolean}
+  onclick={(e) => console.log('Card clicked', e)}
 >
-  <div slot="header">Header Content</div>
-  Main Content
-  <div slot="footer">Footer Content</div>
+  Additional Content
+</Card>
+```
+
+#### Compound Component API (Recommended)
+
+```svelte
+<Card variant="elevated">
+  <CardHeader>
+    <CardTitle>Card Title</CardTitle>
+    <CardDescription>Card description</CardDescription>
+  </CardHeader>
+  <CardContent>
+    Main content goes here
+  </CardContent>
+  <CardFooter>
+    <Button variant="primary">Action</Button>
+  </CardFooter>
 </Card>
 ```
 
 **Props:**
 - `variant`: Card style variant (default: "default")
-- `density`: Card density (default: "comfortable")
-- `disabled`: Disable interactions (default: false)
-- `loading`: Show loading state (default: false)
-- `className`: Additional CSS classes
+  - `default`: Standard card with subtle shadow
+  - `elevated`: Card with stronger shadow (elevated appearance)
+  - `outlined`: Card with border, no shadow
+  - `flat`: Card with no shadow, no border (minimal)
+- `size`: Card size (default: "md")
+- `fullWidth`: Whether card takes full width (default: true)
+- `title`: Card title (old API)
+- `description`: Card description (old API)
+- `image`: Card image URL (old API)
+- `onclick`: Click handler for interactive cards
 
-**Slots:**
-- `header`: Card header content
-- `default`: Main card content
-- `footer`: Card footer content
+**Compound Components:**
+- `CardHeader`: Header section container
+- `CardContent`: Main content area
+- `CardFooter`: Footer section container
+- `CardTitle`: Title component (supports heading levels 1-6)
+- `CardDescription`: Description text component
 
 **Events:**
-- `click`: Fired when card is clicked - `{ detail: { value: true, event: MouseEvent } }`
+- `onclick`: Native click event - `MouseEvent`
+
+**Keyboard Navigation (Interactive Cards):**
+- **Tab**: Focus the card
+- **Enter / Space**: Activate card click handler
 
 ### Alert Component
 
@@ -1197,6 +1229,75 @@ function handleFormSubmit(event: any) {
 - Use semantic HTML elements
 - Test with screen readers
 - Maintain proper color contrast ratios
+
+## Compound Components
+
+Zabi Components supports compound component patterns for flexible composition:
+
+### Card Compound Components
+
+```svelte
+<script>
+  import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription, Button } from 'zabi-components';
+</script>
+
+<Card variant="elevated">
+  <CardHeader>
+    <CardTitle>Card Title</CardTitle>
+    <CardDescription>
+      This is a description using compound components.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>Main content area with flexible composition.</p>
+  </CardContent>
+  <CardFooter>
+    <Button variant="primary">Save</Button>
+    <Button variant="ghost">Cancel</Button>
+  </CardFooter>
+</Card>
+```
+
+## Accessibility
+
+Zabi Components is built with accessibility in mind:
+
+### WCAG 2.1 AA Compliance
+- Comprehensive ARIA attributes
+- Proper semantic HTML
+- Keyboard navigation support
+- Focus management
+- Screen reader compatibility
+
+### Keyboard Navigation
+- **Tab**: Navigate between interactive elements
+- **Enter/Space**: Activate buttons and links
+- **Arrow Keys**: Navigate within components (Tabs, Navigation, Dropdown)
+- **Escape**: Close modals and overlays
+- **Home/End**: Jump to first/last item in lists
+
+### Focus Management
+- Focus trap in modals
+- Focus return after closing modals
+- Visible focus indicators
+- Logical tab order
+
+See [ACCESSIBILITY.md](./docs/ACCESSIBILITY.md) and [KEYBOARD_NAVIGATION.md](./docs/KEYBOARD_NAVIGATION.md) for detailed documentation.
+
+## Variant System
+
+Zabi Components uses a consistent variant system:
+
+### Semantic Variants
+Used for state indication: `default`, `success`, `warning`, `error`, `info`
+
+### Style Variants
+Used for visual appearance: Button (`primary`, `secondary`, `outline`, `link`, etc.), Card (`elevated`, `outlined`, `flat`)
+
+### Size Variants
+Consistent across components: `sm`, `md`, `lg`
+
+See [VARIANTS.md](./docs/VARIANTS.md) for complete variant documentation.
 
 ## Support
 

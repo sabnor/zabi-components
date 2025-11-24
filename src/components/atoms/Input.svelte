@@ -1,5 +1,6 @@
 <script lang="ts">
     import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
+    import type { SemanticVariant, SizeVariant } from "../../types/variants.js";
 
     function generateId(prefix: string = "id"): string {
         if (typeof window !== "undefined") {
@@ -16,8 +17,8 @@
         label?: string;
         placeholder?: string;
         disabled?: boolean;
-        size?: "sm" | "md" | "lg";
-        variant?: "default" | "success" | "warning" | "error";
+        size?: SizeVariant;
+        variant?: SemanticVariant;
         message?: string;
         oninput?: (event: Event) => void;
     }

@@ -1,27 +1,27 @@
 <script lang="ts">
     import { Check, AlertTriangle, X, Info } from "@lucide/svelte";
+    import type {
+        ExtendedSemanticVariant,
+        SizeVariant,
+    } from "../../types/variants.js";
+
+    interface Props {
+        variant?: ExtendedSemanticVariant;
+        size?: SizeVariant;
+        text: string;
+        showIcon?: boolean;
+    }
+
     let {
         variant = "default",
         size = "md",
         text = "",
         showIcon = false,
-    }: {
-        variant?:
-            | "default"
-            | "success"
-            | "warning"
-            | "error"
-            | "info"
-            | "neutral"
-            | "energetic";
-        size?: "sm" | "md" | "lg";
-        text: string;
-        showIcon?: boolean;
-    } = $props();
+    }: Props = $props();
 
     const classes = $derived(() => {
         const baseClasses =
-            "inline-flex items-center font-medium border rounded-md";
+            "inline-flex items-center font-medium border rounded-xs";
 
         const sizeClass =
             size === "sm"

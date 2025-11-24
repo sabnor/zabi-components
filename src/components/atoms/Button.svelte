@@ -1,9 +1,10 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import type { ButtonVariant, SizeVariant } from "../../types/variants.js";
 
     interface Props {
-        variant?: "primary" | "secondary" | "danger" | "ghost";
-        size?: "sm" | "md" | "lg";
+        variant?: ButtonVariant;
+        size?: SizeVariant;
         disabled?: boolean;
         type?: "button" | "submit" | "reset";
         text?: string;
@@ -58,14 +59,18 @@
 
     const variantClass = $derived(() => {
         return variant === "primary"
-            ? "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+            ? "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             : variant === "secondary"
-              ? "bg-brand-100 text-brand-800 hover:bg-brand-200 active:bg-brand-300 focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              ? "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
               : variant === "danger"
                 ? "bg-action-danger text-inverse hover:bg-action-danger-hover active:bg-action-danger-active focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 : variant === "ghost"
                   ? "bg-transparent text-headline hover:bg-base-100 active:bg-base-200 focus:ring-2 focus:ring-base-500 focus:ring-offset-2 disabled:text-disabled"
-                  : "bg-action-primary text-inverse hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2";
+                  : variant === "outline"
+                    ? "bg-transparent border-2 border-action-primary text-headline hover:bg-action-secondary hover:text-action-primary active:bg-action-primary-active active:text-action-primary focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:border-disabled disabled:text-disabled"
+                    : variant === "link"
+                      ? "text-brand-700 active:text-brand-700 underline-offset-4 hover:underline focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:text-disabled disabled:no-underline"
+                      : "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2";
     });
 
     const buttonClasses = $derived(() => {

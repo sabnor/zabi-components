@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Card from '../../components/atoms/Card.svelte';
 import CardWithContent from './CardWithContent.svelte';
+import CardCompound from './CardCompound.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Card',
@@ -127,6 +128,62 @@ export const CustomWidth: Story = {
     },
     render: (args) => ({
         Component: CardWithContent,
+        props: args
+    })
+};
+
+export const Elevated: Story = {
+    args: {
+        title: 'Elevated Card',
+        variant: 'elevated',
+        description: 'Card with stronger shadow for elevated appearance'
+    },
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
+};
+
+export const Outlined: Story = {
+    args: {
+        title: 'Outlined Card',
+        variant: 'outlined',
+        description: 'Card with border and no shadow'
+    },
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
+};
+
+export const Flat: Story = {
+    args: {
+        title: 'Flat Card',
+        variant: 'flat',
+        description: 'Card with no shadow and no border'
+    },
+    render: (args) => ({
+        Component: CardWithContent,
+        props: args
+    })
+};
+
+export const CompoundComponents: Story = {
+    args: {
+        variant: 'default'
+    },
+    render: (args) => ({
+        Component: CardCompound,
+        props: args
+    })
+};
+
+export const CompoundElevated: Story = {
+    args: {
+        variant: 'elevated'
+    },
+    render: (args) => ({
+        Component: CardCompound,
         props: args
     })
 };

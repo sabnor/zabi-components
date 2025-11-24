@@ -1,7 +1,14 @@
 /* Example 2: Custom Brand Colors
  * 
+ * ⚠️ THIS IS AN EXAMPLE FILE - NOT YOUR ACTUAL THEME
+ * 
  * This example shows how to override the brand color palette
  * with your own custom colors while keeping other Zabi defaults.
+ * 
+ * To customize YOUR theme, edit: src/app.css
+ * 
+ * This file is just showing how consumers of the library can
+ * override the theme when importing it.
  */
 
 @import "tailwindcss";

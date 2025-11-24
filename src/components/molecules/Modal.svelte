@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    import { trapFocus, saveFocus, returnFocus, focusFirstElement } from "../../routes/lib/focus-utils.js";
+
     type Size = "sm" | "md" | "lg";
 
     interface Props {
@@ -20,6 +23,9 @@
         ...restProps
     }: Props & { children?: any; footer?: any } = $props();
 
+    let modalContainer: HTMLDivElement;
+    let cleanupFocusTrap: (() => void) | null = null;
+
     const sizeClasses = $derived(
         {
             sm: "w-full md:w-[24rem]",
@@ -30,10 +36,30 @@
 
     function closeModal(event?: Event) {
         isOpen = false;
+        if (cleanupFocusTrap) {
+            cleanupFocusTrap();
+            cleanupFocusTrap = null;
+        }
+        returnFocus();
         if (onclick && event) {
             onclick(event);
         }
     }
+
+    // Handle focus trap when modal opens
+    $effect(() => {
+        if (isOpen && modalContainer) {
+            saveFocus();
+            cleanupFocusTrap = trapFocus(modalContainer);
+            // Small delay to ensure modal is rendered
+            setTimeout(() => {
+                focusFirstElement(modalContainer);
+            }, 0);
+        } else if (!isOpen && cleanupFocusTrap) {
+            cleanupFocusTrap();
+            cleanupFocusTrap = null;
+        }
+    });
 
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) {
@@ -63,6 +89,7 @@
         tabindex="-1"
     >
         <div
+            bind:this={modalContainer}
             class="bg-card rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col"
         >
             {#if title}

@@ -1,7 +1,14 @@
 /* Example 3: Custom Semantic Colors
  * 
+ * ⚠️ THIS IS AN EXAMPLE FILE - NOT YOUR ACTUAL THEME
+ * 
  * This example shows how to customize semantic colors
  * (primary, secondary, success, etc.) without changing color scales.
+ * 
+ * To customize YOUR theme, edit: src/app.css
+ * 
+ * This file is just showing how consumers of the library can
+ * override the theme when importing it.
  */
 
 @import "tailwindcss";

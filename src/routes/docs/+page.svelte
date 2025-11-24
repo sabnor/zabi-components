@@ -142,6 +142,44 @@ let name = $state("");
             </div>
         </section>
 
+        <!-- Button Variants -->
+        <section class="mb-16">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-text mb-4">
+                    Button Variants
+                </h2>
+                <p class="text-text-secondary">
+                    Explore different button styles and variants
+                </p>
+            </div>
+
+            <Card title="Available Variants">
+                <p class="text-text-secondary mb-6">
+                    Zabi Components provides multiple button variants for
+                    different use cases:
+                </p>
+                <div
+                    class="flex flex-wrap gap-4 items-center justify-center mb-6"
+                >
+                    <Button variant="primary" text="Primary" />
+                    <Button variant="secondary" text="Secondary" />
+                    <Button variant="outline" text="Outline" />
+                    <Button variant="ghost" text="Ghost" />
+                    <Button variant="link" text="Link" />
+                    <Button variant="danger" text="Danger" />
+                </div>
+                <CodeBlock
+                    code={`<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+<Button variant="danger">Danger</Button>`}
+                    language="svelte"
+                />
+            </Card>
+        </section>
+
         <!-- Next Steps -->
         <section class="mb-16">
             <div class="text-center mb-8">
@@ -169,7 +207,7 @@ let name = $state("");
                     </p>
                     <Button
                         onclick={() => goto("https://github.com")}
-                        variant="secondary"
+                        variant="outline"
                     >
                         Visit GitHub
                     </Button>

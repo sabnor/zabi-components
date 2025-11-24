@@ -135,6 +135,51 @@ async function buildCSS() {
   // Write the processed CSS (without :root block - colors.css is separate)
   fs.writeFileSync(outputFile, css);
   console.log(`✓ Built CSS: ${outputFile}`);
+
+  // Generate standalone colors.css file from app.css
+  // This extracts CSS custom properties from @theme and .dark blocks
+  // and converts them to :root and .dark format for standalone use
+  // Note: theme() functions will remain as-is (consumers need Tailwind or can override)
+  let colorsCss = '';
+  
+  // Extract @theme block and convert to :root
+  if (themeBlocks.length > 0) {
+    const themeContent = themeBlocks.join('\n\n');
+    colorsCss += `/* ========================================\n`;
+    colorsCss += `   ZABI COMPONENTS COLOR SYSTEM\n`;
+    colorsCss += `   Standalone CSS Custom Properties\n`;
+    colorsCss += `   Generated from src/app.css\n`;
+    colorsCss += `   ⚠️ DO NOT EDIT - This file is auto-generated\n`;
+    colorsCss += `   Edit src/app.css instead\n`;
+    colorsCss += `   ======================================== */\n\n`;
+    colorsCss += `:root {\n`;
+    // Add proper indentation
+    const indentedContent = themeContent.split('\n').map(line => {
+      // Preserve existing indentation but ensure at least 2 spaces
+      if (line.trim() === '') return '';
+      return '  ' + line.trim();
+    }).join('\n');
+    colorsCss += indentedContent + '\n';
+    colorsCss += `}\n\n`;
+  }
+  
+  // Extract .dark block
+  if (darkModeContent) {
+    colorsCss += `/* Dark Mode */\n`;
+    colorsCss += `.dark {\n`;
+    // Add proper indentation
+    const indentedDarkContent = darkModeContent.split('\n').map(line => {
+      if (line.trim() === '') return '';
+      return '  ' + line.trim();
+    }).join('\n');
+    colorsCss += indentedDarkContent + '\n';
+    colorsCss += `}\n`;
+  }
+  
+  // Write standalone colors.css file
+  const colorsOutputFile = path.join(__dirname, '../dist/zabi-components-colors.css');
+  fs.writeFileSync(colorsOutputFile, colorsCss);
+  console.log(`✓ Built standalone colors CSS: ${colorsOutputFile}`);
 }
 
 buildCSS().catch(console.error);
