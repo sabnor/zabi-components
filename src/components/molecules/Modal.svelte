@@ -54,7 +54,7 @@
 
 {#if isOpen}
     <div
-        class="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-end md:items-center justify-center p-0 md:p-4 z-modal"
+        class="fixed inset-0 bg-overlay flex items-end md:items-center justify-center p-0 md:p-4 z-modal"
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
         role="dialog"
@@ -63,7 +63,7 @@
         tabindex="-1"
     >
         <div
-            class="bg-base-50 rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col"
+            class="bg-card rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col"
         >
             {#if title}
                 <div class="flex items-center justify-between px-6 pt-6 pb-4">
