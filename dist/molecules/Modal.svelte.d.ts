@@ -2,6 +2,7 @@ type Size = "sm" | "md" | "lg";
 interface Props {
     isOpen?: boolean;
     title?: string;
+    description?: string;
     size?: Size;
     onclick?: (event: Event) => void;
     onkeydown?: (event: Event) => void;

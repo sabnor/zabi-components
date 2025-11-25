@@ -1,6 +1,8 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import type { CardVariant, SizeVariant } from "../../types/variants.js";
+    import CardHeader from "./CardHeader.svelte";
+    import CardContent from "./CardContent.svelte";
 
     interface Props {
         title?: string;
@@ -42,11 +44,12 @@
         }
     });
 
-    const useOldAPI = $derived(title !== "" || description !== "" || image !== "");
-    
+    const useOldAPI = $derived(
+        title !== "" || description !== "" || image !== "",
+    );
+
     const cardClasses = $derived(() => {
-        const baseClasses =
-            `rounded-lg transition-all duration-200 ${variantClasses()}`;
+        const baseClasses = `rounded-lg transition-all duration-200 ${variantClasses()}`;
         const interactiveClasses = onclick
             ? variant === "elevated"
                 ? "cursor-pointer hover:shadow-xl hover:bg-card-hover"
@@ -63,26 +66,6 @@
         return `${baseClasses} ${interactiveClasses} ${widthClasses} ${minWidthClass} ${paddingClass}`.trim();
     });
 
-    const titleClasses = $derived(() => {
-        if (size === "sm") {
-            return "text-lg font-medium mb-2 text-headline";
-        } else if (size === "lg") {
-            return "text-2xl font-medium mb-4 text-headline";
-        } else {
-            return "text-xl font-medium mb-3 text-headline";
-        }
-    });
-
-    const descriptionClasses = $derived(() => {
-        if (size === "sm") {
-            return "text-xs text-description mb-3";
-        } else if (size === "lg") {
-            return "text-base text-description mb-5";
-        } else {
-            return "text-sm text-description mb-4";
-        }
-    });
-
     function handleKeydown(event: KeyboardEvent) {
         if (onclick && (event.key === "Enter" || event.key === " ")) {
             event.preventDefault();
@@ -91,44 +74,37 @@
     }
 
     const cardRole = $derived(onclick ? "button" : undefined);
-    const cardTabIndex = $derived(onclick ? 0 : undefined);
     const cardAriaLabel = $derived(onclick && title ? title : undefined);
 </script>
 
-<div 
-    class={cardClasses()} 
-    {onclick} 
+<div
+    class={cardClasses()}
+    {onclick}
     role={cardRole}
-    tabindex={cardTabIndex}
+    {...onclick ? { tabindex: 0 } : {}}
     aria-label={cardAriaLabel}
-    onkeydown={handleKeydown}
+    onkeydown={onclick ? handleKeydown : undefined}
     {...restProps}
 >
     {#if useOldAPI}
         <!-- Old API: Using title/description/image props -->
-        {#if image}
-            <img
-                src={image}
-                alt={title}
-                class="w-full h-48 object-cover rounded-lg mb-4"
-            />
+        {#if title || description}
+            <CardHeader {title} {description} />
         {/if}
 
-        {#if title}
-            <h3 class={titleClasses()}>{title}</h3>
-        {/if}
-
-        {#if description}
-            <p class={descriptionClasses()}>{description}</p>
-        {/if}
-
-        {#if children}
-            {@render children()}
+        {#if image || children}
+            <CardContent {image} imageAlt={title}>
+                {#if children}
+                    {@render children()}
+                {/if}
+            </CardContent>
         {/if}
     {:else}
         <!-- New API: Using compound components (CardHeader, CardContent, CardFooter) -->
         {#if children}
-            {@render children()}
+            <CardContent className="pt-6">
+                {@render children()}
+            </CardContent>
         {/if}
     {/if}
 </div>

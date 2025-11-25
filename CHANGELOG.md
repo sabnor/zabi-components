@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.20] - 2025-01-27
+
+### 🔧 **Patch Release**
+
+- **Maintenance**: General improvements and stability updates
+- **Build**: Enhanced build process and type definitions
+- **Documentation**: Minor documentation updates
+
+### ✅ **No Breaking Changes**
+
+This is a backward-compatible patch release.
+
+---
+
 ## [5.0.19] - 2025-01-27
 
 ### 🐛 **Bug Fixes**

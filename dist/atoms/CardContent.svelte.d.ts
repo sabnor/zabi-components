@@ -1,5 +1,7 @@
 import type { Snippet } from "svelte";
 interface Props {
+    image?: string;
+    imageAlt?: string;
     className?: string;
     children?: Snippet;
 }
