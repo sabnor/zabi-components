@@ -6,6 +6,7 @@ interface Props {
     disabled?: boolean;
     type?: "button" | "submit" | "reset";
     text?: string;
+    isFullWidth?: boolean;
     onclick?: (event: MouseEvent) => void;
     children?: Snippet;
 }

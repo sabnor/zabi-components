@@ -1,12 +1,16 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import { trapFocus, saveFocus, returnFocus, focusFirstElement } from "../routes/lib/focus-utils.js";
+    import Card from "../atoms/Card.svelte";
+    import CardHeader from "../atoms/CardHeader.svelte";
+    import CardContent from "../atoms/CardContent.svelte";
+    import CardFooter from "../atoms/CardFooter.svelte";
 
     type Size = "sm" | "md" | "lg";
 
     interface Props {
         isOpen?: boolean;
         title?: string;
+        description?: string;
         size?: Size;
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
@@ -15,6 +19,7 @@
     let {
         isOpen = false,
         title = "",
+        description = "",
         size = "md",
         onclick,
         onkeydown,
@@ -88,38 +93,49 @@
         aria-labelledby={title ? "modal-title" : undefined}
         tabindex="-1"
     >
-        <div
+        <Card
             bind:this={modalContainer}
-            class="bg-card rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col"
+            variant="default"
+            fullWidth={false}
+            class="bg-card rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col p-0"
         >
-            {#if title}
-                <div class="flex items-center justify-between px-6 pt-6 pb-4">
-                    <h2
-                        id="modal-title"
-                        class="text-2xl font-normal leading-8 text-headline tracking-normal"
-                    >
-                        {title}
-                    </h2>
-                    <button
-                        type="button"
-                        onclick={closeModal}
-                        class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-100"
-                        aria-label="Close"
-                    >
-                        ×
-                    </button>
-                </div>
+            {#if title || description}
+                <CardHeader
+                    {description}
+                    className="px-6 pt-6 pb-4"
+                >
+                    {#if title}
+                        <div class="flex items-center justify-between">
+                            <h2
+                                id="modal-title"
+                                class="text-2xl font-normal leading-8 text-headline tracking-normal"
+                            >
+                                {title}
+                            </h2>
+                            <button
+                                type="button"
+                                onclick={closeModal}
+                                class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-100"
+                                aria-label="Close"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    {/if}
+                </CardHeader>
             {/if}
 
-            <div class="px-6 pb-6 flex-1">
-                {@render children?.()}
-            </div>
+            {#if children}
+                <CardContent className="flex-1">
+                    {@render children?.()}
+                </CardContent>
+            {/if}
 
             {#if footer}
-                <div class="flex justify-end gap-3 px-6 pb-6 pt-4">
+                <CardFooter className="flex justify-end gap-3 pt-4">
                     {@render footer?.()}
-                </div>
+                </CardFooter>
             {/if}
-        </div>
+        </Card>
     </div>
 {/if}

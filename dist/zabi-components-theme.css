@@ -188,8 +188,8 @@
   --color-action-primary-text: var(--color-brand-50);
 
   /* Secondary Actions - Used by bg-action-secondary utility class */
-  --color-action-secondary: var(--color-brand-200);
-  --color-action-secondary-hover: var(--color-brand-100);
+  --color-action-secondary: color-mix(in srgb, var(--color-brand-800) 10%, transparent);
+  --color-action-secondary-hover: color-mix(in srgb, var(--color-brand-800) 20%, transparent);
   --color-action-secondary-active: var(--color-brand-400);
   --color-action-secondary-disabled: var(--color-brand-500);
   --color-action-secondary-subtle: var(--color-brand-600);

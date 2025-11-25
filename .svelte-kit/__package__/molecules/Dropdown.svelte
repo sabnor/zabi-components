@@ -1,27 +1,45 @@
 <script lang="ts">
+    import Button from "../atoms/Button.svelte";
+
     interface Props {
         isOpen?: boolean;
         placement?: "bottom-start" | "bottom-end" | "top-start" | "top-end";
         ariaLabel?: string;
+        selectedValue?: string | number | null;
+        options?: Array<{
+            value: string | number;
+            label: string;
+            disabled?: boolean;
+        }>;
+        onOptionClick?: (value: string | number) => void;
     }
 
     let {
         isOpen = false,
         placement = "bottom-start",
         ariaLabel = "Menu",
+        selectedValue = null,
+        options = [],
+        onOptionClick,
         children,
         trigger,
         ...restProps
     }: Props & { children?: any; trigger?: any } = $props();
 
     let dropdownId = `dropdown-${Math.random().toString(36).substr(2, 9)}`;
-    let triggerElement: HTMLElement | null = null;
-    let menuElement: HTMLElement | null = null;
+    let triggerElement = $state<HTMLElement | null>(null);
+    let menuElement = $state<HTMLElement | null>(null);
+    let openedViaKeyboard = $state(false);
 
     function handleKeydown(event: KeyboardEvent) {
         if (!isOpen) {
-            if (event.key === "Enter" || event.key === " " || event.key === "ArrowDown") {
+            if (
+                event.key === "Enter" ||
+                event.key === " " ||
+                event.key === "ArrowDown"
+            ) {
                 event.preventDefault();
+                openedViaKeyboard = true;
                 isOpen = true;
             }
             return;
@@ -58,21 +76,29 @@
     function getMenuItems(): HTMLElement[] {
         if (!menuElement) return [];
         return Array.from(
-            menuElement.querySelectorAll<HTMLElement>('[role="menuitem"], button, a')
+            menuElement.querySelectorAll<HTMLElement>(
+                '[role="menuitem"], button, a',
+            ),
         );
     }
 
     function focusNextItem() {
         const items = getMenuItems();
-        const currentIndex = items.findIndex((item) => item === document.activeElement);
-        const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+        const currentIndex = items.findIndex(
+            (item) => item === document.activeElement,
+        );
+        const nextIndex =
+            currentIndex < items.length - 1 ? currentIndex + 1 : 0;
         items[nextIndex]?.focus();
     }
 
     function focusPreviousItem() {
         const items = getMenuItems();
-        const currentIndex = items.findIndex((item) => item === document.activeElement);
-        const prevIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+        const currentIndex = items.findIndex(
+            (item) => item === document.activeElement,
+        );
+        const prevIndex =
+            currentIndex > 0 ? currentIndex - 1 : items.length - 1;
         items[prevIndex]?.focus();
     }
 
@@ -86,11 +112,41 @@
         items[items.length - 1]?.focus();
     }
 
-    // Focus first item when dropdown opens
+    // Focus first item when dropdown opens via keyboard
     $effect(() => {
-        if (isOpen && menuElement) {
+        if (isOpen && menuElement && openedViaKeyboard) {
             setTimeout(() => {
                 focusFirstItem();
+                openedViaKeyboard = false;
+            }, 0);
+        } else if (!isOpen) {
+            openedViaKeyboard = false;
+        }
+    });
+
+    // Mark selected items
+    $effect(() => {
+        if (isOpen && menuElement) {
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                const items = getMenuItems();
+                items.forEach((item) => {
+                    if (selectedValue !== null && selectedValue !== undefined) {
+                        const itemValue =
+                            item.getAttribute("data-value") ||
+                            item.textContent?.trim();
+                        if (String(itemValue) === String(selectedValue)) {
+                            item.setAttribute("data-selected", "true");
+                            item.setAttribute("aria-selected", "true");
+                        } else {
+                            item.removeAttribute("data-selected");
+                            item.removeAttribute("aria-selected");
+                        }
+                    } else {
+                        item.removeAttribute("data-selected");
+                        item.removeAttribute("aria-selected");
+                    }
+                });
             }, 0);
         }
     });
@@ -137,8 +193,8 @@
     });
 </script>
 
-<div 
-    class="relative inline-block" 
+<div
+    class="relative inline-block"
     data-placement={placement}
     onkeydown={handleKeydown}
     {...restProps}
@@ -148,7 +204,7 @@
     </div>
 
     {#if isOpen}
-        <div 
+        <div
             bind:this={menuElement}
             id={dropdownId}
             class={dropdownContentClasses()}
@@ -156,7 +212,38 @@
             aria-label={ariaLabel}
             tabindex="-1"
         >
-            {@render children?.()}
+            {#if options.length > 0}
+                <div class="px-2 py-2">
+                    {#each options as option (option.value)}
+                        {@const buttonRestProps = {
+                            "data-value": String(option.value),
+                        } as any}
+                        <div class="w-full my-0.5">
+                            <Button
+                                variant={selectedValue === option.value
+                                    ? "outline"
+                                    : "ghost"}
+                                size="sm"
+                                isFullWidth={true}
+                                disabled={option.disabled}
+                                onclick={() => onOptionClick?.(option.value)}
+                                {...buttonRestProps}
+                            >
+                                {option.label}
+                            </Button>
+                        </div>
+                    {/each}
+                </div>
+            {:else if children}
+                {@render children?.()}
+            {/if}
         </div>
     {/if}
 </div>
+
+<style>
+    :global([role="menu"] button) {
+        justify-content: flex-start;
+        text-align: left;
+    }
+</style>

@@ -21,10 +21,12 @@
         variant?: SemanticVariant;
         message?: string;
         oninput?: (event: Event) => void;
+        onblur?: (event: Event) => void;
+        "aria-label"?: string;
     }
 
     let {
-        value = "",
+        value = $bindable(""),
         type = "text",
         name = "",
         label = "",
@@ -34,6 +36,7 @@
         variant = "default",
         message = "",
         oninput,
+        onblur,
         ...restProps
     }: Props = $props();
 
@@ -74,7 +77,7 @@
     const inputClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "w-full bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
+            "w-full min-w-48 bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
 
         return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     });
@@ -102,9 +105,6 @@
     });
 
     function handleInput(event: Event) {
-        const target = event.target as HTMLInputElement;
-        value = target.value;
-
         if (oninput) {
             oninput(event);
         }
@@ -119,11 +119,12 @@
         id={inputId}
         {type}
         {name}
-        {value}
+        bind:value
         {placeholder}
         {disabled}
         class={inputClasses()}
         oninput={handleInput}
+        {onblur}
         aria-invalid={variant === "error" ? "true" : undefined}
         aria-describedby={message ? `${inputId}-message` : undefined}
         {...restProps}

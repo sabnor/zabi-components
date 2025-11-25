@@ -77,7 +77,11 @@
     onfocusout={handleBlur}
     {...restProps}
 >
-    <div bind:this={triggerElement} id={triggerId} aria-describedby={isVisible ? tooltipId : undefined}>
+    <div
+        bind:this={triggerElement}
+        id={triggerId}
+        aria-describedby={isVisible ? tooltipId : undefined}
+    >
         {@render children?.()}
     </div>
 
@@ -97,10 +101,10 @@
 
 <style>
     :root {
-        --tooltip-bg: #1f2937;
-        --tooltip-color: white;
+        --tooltip-bg: var(--color-base-800);
+        --tooltip-color: var(--color-base-50);
         --tooltip-padding: 0.5rem 0.75rem;
-        --tooltip-radius: 0.375rem;
+        --tooltip-radius: 0.5rem;
         --tooltip-font-size: 0.875rem;
         --tooltip-line-height: 1.25rem;
         --tooltip-max-width: 200px;
@@ -243,16 +247,6 @@
         }
     }
 
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --tooltip-bg: #374151;
-        }
-    }
-
-    .dark :root {
-        --tooltip-bg: #374151;
-    }
-
     @media (prefers-contrast: high) {
         :root {
             --tooltip-bg: #000000;
@@ -263,16 +257,20 @@
 
     @media (prefers-reduced-motion: reduce) {
         .tooltip {
-            transition: opacity 0.1s ease-in-out, visibility 0.1s ease-in-out;
+            transition:
+                opacity 0.1s ease-in-out,
+                visibility 0.1s ease-in-out;
         }
 
         .tooltip-container[data-placement="top"] .tooltip[data-visible="true"],
-        .tooltip-container[data-placement="bottom"] .tooltip[data-visible="true"] {
+        .tooltip-container[data-placement="bottom"]
+            .tooltip[data-visible="true"] {
             transform: translateX(-50%) !important;
         }
 
         .tooltip-container[data-placement="left"] .tooltip[data-visible="true"],
-        .tooltip-container[data-placement="right"] .tooltip[data-visible="true"] {
+        .tooltip-container[data-placement="right"]
+            .tooltip[data-visible="true"] {
             transform: translateY(-50%) !important;
         }
     }

@@ -10,7 +10,9 @@ interface Props {
     variant?: SemanticVariant;
     message?: string;
     oninput?: (event: Event) => void;
+    onblur?: (event: Event) => void;
+    "aria-label"?: string;
 }
-declare const Input: import("svelte").Component<Props, {}, "">;
+declare const Input: import("svelte").Component<Props, {}, "value">;
 type Input = ReturnType<typeof Input>;
 export default Input;

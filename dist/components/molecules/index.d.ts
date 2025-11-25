@@ -5,6 +5,13 @@ export { default as Dropdown } from './Dropdown.svelte';
 export { default as Form } from './Form.svelte';
 export { default as ImageUpload } from './ImageUpload.svelte';
 export { default as Modal } from './Modal.svelte';
+export { default as NavigationMenu } from './NavigationMenu.svelte';
+export { default as NavigationMenuList } from './NavigationMenuList.svelte';
+export { default as NavigationMenuItem } from './NavigationMenuItem.svelte';
+export { default as NavigationMenuTrigger } from './NavigationMenuTrigger.svelte';
+export { default as NavigationMenuContent } from './NavigationMenuContent.svelte';
+export { default as NavigationMenuLink } from './NavigationMenuLink.svelte';
+export { default as Sidebar } from './Sidebar.svelte';
 export { default as SlideUp } from './SlideUp.svelte';
 export { default as Tabs } from './Tabs.svelte';
 //# sourceMappingURL=index.d.ts.map
