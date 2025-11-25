@@ -45,6 +45,7 @@
     }: Props = $props();
 
     let isOpen = $state(false);
+    let selectContainer: HTMLDivElement;
 
     const sizeClass = $derived(() => {
         if (size === "sm") {
@@ -146,9 +147,15 @@
     }
 
     function handleClickOutside(event: MouseEvent) {
+        if (!isOpen) return;
+
+        const target = event.target as HTMLElement;
+        const clickedSelectContainer = target.closest(".select-container");
+
+        // Close if clicking outside any select container, or clicking on a different select
         if (
-            isOpen &&
-            !(event.target as HTMLElement).closest(".select-container")
+            !clickedSelectContainer ||
+            clickedSelectContainer !== selectContainer
         ) {
             isOpen = false;
         }
@@ -163,12 +170,18 @@
 
 <svelte:window onclick={handleClickOutside} onkeydown={handleKeydown} />
 
-<div class="w-full select-container">
+<div bind:this={selectContainer} class="w-full select-container">
     {#if label}
         <label for={selectId} class={labelClasses()}>{label}</label>
     {/if}
 
-    <Dropdown {isOpen} placement="bottom-start">
+    <Dropdown
+        {isOpen}
+        placement="bottom-start"
+        selectedValue={value}
+        {options}
+        onOptionClick={handleOptionClick}
+    >
         {#snippet trigger()}
             <button
                 type="button"
@@ -197,24 +210,6 @@
                         : ''}"
                 />
             </button>
-        {/snippet}
-        {#snippet children()}
-            <div class="px-2 py-2">
-                {#each options as option (option.value)}
-                    <button
-                        type="button"
-                        class="w-full text-left px-4 py-2 text-body hover:bg-base-100 transition-colors rounded-md my-0.5 {option.disabled
-                            ? 'opacity-50 cursor-not-allowed'
-                            : 'cursor-pointer'} {value === option.value
-                            ? 'bg-base-100'
-                            : ''}"
-                        onclick={() => handleOptionClick(option.value)}
-                        disabled={option.disabled}
-                    >
-                        {option.label}
-                    </button>
-                {/each}
-            </div>
         {/snippet}
     </Dropdown>
     {#if message && variant !== "default"}

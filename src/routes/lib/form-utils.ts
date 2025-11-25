@@ -186,7 +186,7 @@ export function getHelperTextClasses(hasError: boolean, hasSuccess: boolean, siz
     return [
         "mt-2",
         formSizeClasses[size].helper,
-        hasError ? "text-error" : hasSuccess ? "text-success" : "text-text-secondary",
+        hasError ? "text-error" : hasSuccess ? "text-success" : "text-secondary",
     ].join(" ");
 }
 

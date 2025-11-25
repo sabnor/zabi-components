@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.19] - 2025-01-27
+
+### 🐛 **Bug Fixes**
+
+#### **Modal Component**
+- **Fixed SSR Import Error**: Resolved issue where Modal component was trying to import `focus-utils.js` from a relative path that didn't exist in consuming projects
+- **Internal Focus Utilities**: Moved focus management utilities (`focus-utils.ts`) to be properly included in the build output
+- **Build Process**: Added post-build script to fix import paths in built components
+- This fixes the "Failed to load url ../../routes/lib/focus-utils.js" error that occurred during SSR
+
 ## [5.0.18] - 2025-01-27
 
 ### ✨ **Component Enhancements & Documentation**
