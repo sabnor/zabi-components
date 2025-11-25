@@ -3,8 +3,6 @@
     import CardHeader from '../../components/atoms/CardHeader.svelte';
     import CardContent from '../../components/atoms/CardContent.svelte';
     import CardFooter from '../../components/atoms/CardFooter.svelte';
-    import CardTitle from '../../components/atoms/CardTitle.svelte';
-    import CardDescription from '../../components/atoms/CardDescription.svelte';
     import Button from '../../components/atoms/Button.svelte';
 
     interface Props {
@@ -15,12 +13,10 @@
 </script>
 
 <Card {variant}>
-    <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>
-            Card description goes here. This is using the compound component API.
-        </CardDescription>
-    </CardHeader>
+    <CardHeader
+        title="Card Title"
+        description="Card description goes here. This is using the compound component API."
+    />
     <CardContent>
         <p class="text-body">
             This is the main content area of the card. You can put any content here.

@@ -61,7 +61,7 @@ let name = $state("");
         <!-- Header -->
         <div class="mb-12 text-center">
             <h1 class="text-4xl font-bold text-text mb-4">Documentation</h1>
-            <p class="text-lg text-text-secondary">
+            <p class="text-lg text-secondary">
                 Get started with Zabi Components in minutes
             </p>
         </div>
@@ -70,7 +70,7 @@ let name = $state("");
         <section class="mb-16">
             <div class="text-center mb-8">
                 <h2 class="text-3xl font-bold text-text mb-4">Quick Start</h2>
-                <p class="text-text-secondary">
+                <p class="text-secondary">
                     Install and start using components right away
                 </p>
             </div>
@@ -78,7 +78,7 @@ let name = $state("");
             <div class="space-y-8">
                 <!-- Installation -->
                 <Card title="Installation">
-                    <p class="text-text-secondary mb-4">
+                    <p class="text-secondary mb-4">
                         Install Zabi Components using npm:
                     </p>
                     <CodeBlock code={installCode} language="bash" />
@@ -86,7 +86,7 @@ let name = $state("");
 
                 <!-- Usage -->
                 <Card title="Basic Usage">
-                    <p class="text-text-secondary mb-4">
+                    <p class="text-secondary mb-4">
                         Import and use components in your Svelte 5 app:
                     </p>
                     <CodeBlock code={quickStartCode} language="svelte" />
@@ -104,38 +104,38 @@ let name = $state("");
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Card title="Svelte 5 Ready">
-                    <p class="text-text-secondary">
+                    <p class="text-secondary">
                         Built with Svelte 5 runes and modern patterns
                     </p>
                 </Card>
 
                 <Card title="TypeScript First">
-                    <p class="text-text-secondary">
+                    <p class="text-secondary">
                         Full TypeScript support with proper type definitions
                     </p>
                 </Card>
 
                 <Card title="Accessible">
-                    <p class="text-text-secondary">
+                    <p class="text-secondary">
                         WCAG compliant with keyboard navigation and screen
                         reader support
                     </p>
                 </Card>
 
                 <Card title="Customizable">
-                    <p class="text-text-secondary">
+                    <p class="text-secondary">
                         Easy theming with CSS custom properties
                     </p>
                 </Card>
 
                 <Card title="Lightweight">
-                    <p class="text-text-secondary">
+                    <p class="text-secondary">
                         Tree-shakeable with minimal bundle impact
                     </p>
                 </Card>
 
                 <Card title="Modern">
-                    <p class="text-text-secondary">
+                    <p class="text-secondary">
                         Clean, minimal design that just works
                     </p>
                 </Card>
@@ -148,13 +148,13 @@ let name = $state("");
                 <h2 class="text-3xl font-bold text-text mb-4">
                     Button Variants
                 </h2>
-                <p class="text-text-secondary">
+                <p class="text-secondary">
                     Explore different button styles and variants
                 </p>
             </div>
 
             <Card title="Available Variants">
-                <p class="text-text-secondary mb-6">
+                <p class="text-secondary mb-6">
                     Zabi Components provides multiple button variants for
                     different use cases:
                 </p>
@@ -190,7 +190,7 @@ let name = $state("");
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card title="Explore Components">
-                    <p class="text-text-secondary mb-4">
+                    <p class="text-secondary mb-4">
                         Browse our interactive component showcase
                     </p>
                     <Button
@@ -202,7 +202,7 @@ let name = $state("");
                 </Card>
 
                 <Card title="Get Support">
-                    <p class="text-text-secondary mb-4">
+                    <p class="text-secondary mb-4">
                         Check out our GitHub repository for help
                     </p>
                     <Button
@@ -219,10 +219,10 @@ let name = $state("");
     <!-- Footer -->
     <div class="bg-base-100 border-t border-border py-8">
         <div class="container mx-auto px-6 text-center">
-            <p class="text-text-secondary mb-2">
+            <p class="text-secondary mb-2">
                 Clean components that just work. Less is more.
             </p>
-            <p class="text-sm text-text-secondary/80">
+            <p class="text-sm text-secondary/80">
                 © 2024 Zabi Components. MIT License.
             </p>
         </div>

@@ -41,9 +41,7 @@
 
     <div
         id={progressId}
-        class="w-full bg-base-200 rounded-full overflow-hidden {sizeClasses[
-            size
-        ]}"
+        class="w-full bg-input rounded-full overflow-hidden {sizeClasses[size]}"
         role="progressbar"
         aria-valuenow={value}
         aria-valuemin="0"

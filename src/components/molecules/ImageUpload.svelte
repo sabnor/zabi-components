@@ -57,10 +57,10 @@
             <img
                 src={value}
                 alt=""
-                class="w-full h-32 object-cover rounded-lg border-0"
+                class="w-full h-32 min-w-64 object-cover rounded-2xl border-0"
             />
             <div
-                class="absolute inset-0 bg-black/50 dark:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"
+                class="absolute inset-0 bg-input min-w-64 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center"
             >
                 <div class="flex gap-2">
                     <Button
@@ -84,7 +84,7 @@
         </div>
     {:else}
         <div
-            class="border-2 border-dashed border-base-200 rounded-lg p-6 text-center hover:border-brand-500 transition-colors {disabled
+            class="border-2 border-dashed border-input rounded-2xl min-w-64 p-6 text-center hover:border-brand-500 transition-colors {disabled
                 ? 'cursor-not-allowed opacity-50'
                 : 'cursor-pointer'}"
             onclick={triggerFileSelect}
@@ -96,7 +96,7 @@
         >
             <div class="space-y-3">
                 <div
-                    class="w-12 h-12 mx-auto bg-base-100 rounded-lg flex items-center justify-center"
+                    class="w-12 h-12 mx-auto bg-action-secondary rounded-lg flex items-center justify-center"
                 >
                     <Image size={24} class="text-description" />
                 </div>

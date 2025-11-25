@@ -27,7 +27,15 @@
     import Form from "../../components/molecules/Form.svelte";
     import ImageUpload from "../../components/molecules/ImageUpload.svelte";
     import SlideUp from "../../components/molecules/SlideUp.svelte";
+    import Sidebar from "../../components/molecules/Sidebar.svelte";
+    import NavigationMenu from "../../components/molecules/NavigationMenu.svelte";
+    import NavigationMenuList from "../../components/molecules/NavigationMenuList.svelte";
+    import NavigationMenuItem from "../../components/molecules/NavigationMenuItem.svelte";
+    import NavigationMenuTrigger from "../../components/molecules/NavigationMenuTrigger.svelte";
+    import NavigationMenuContent from "../../components/molecules/NavigationMenuContent.svelte";
+    import NavigationMenuLink from "../../components/molecules/NavigationMenuLink.svelte";
     import Navbar from "../../components/organisms/Navbar.svelte";
+    import { CircleCheck, CircleHelp, Circle } from "@lucide/svelte";
     import type { NavItem, ComponentMetadata } from "../../types/page.types";
 
     const navItems: NavItem[] = [
@@ -56,6 +64,7 @@
     let modalOpen = $state(false);
     let slideUpOpen = $state(false);
     let activeTab = $state("tab1");
+    let sidebarOpen = $state(false);
 
     const sampleCode = `function greet(name) {
   return \`Hello, \${name}!\`;
@@ -572,15 +581,8 @@ console.log(greet('World'));`;
                         defaultValue: "1rem",
                         description: "Skeleton height",
                     },
-                    {
-                        name: "variant",
-                        type: "string",
-                        required: false,
-                        defaultValue: "text",
-                        description: "Skeleton variant",
-                    },
                 ],
-                variants: ["text", "rectangular", "circular"],
+                variants: [],
                 examples: [
                     {
                         title: "Basic Skeleton",
@@ -1045,6 +1047,62 @@ console.log(greet('World'));`;
                     },
                 ],
             },
+            {
+                name: "NavigationMenu",
+                category: "molecules",
+                description:
+                    "Navigation menu component with dropdowns, rich content, and keyboard navigation. Supports both data-driven and compound component APIs.",
+                props: [
+                    {
+                        name: "items",
+                        type: "NavigationMenuItemData[]",
+                        required: false,
+                        defaultValue: "[]",
+                        description: "Array of menu items (data-driven API)",
+                    },
+                    {
+                        name: "viewport",
+                        type: "boolean | string",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Enable viewport for mobile responsiveness",
+                    },
+                    {
+                        name: "className",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Additional CSS classes",
+                    },
+                    {
+                        name: "listClassName",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Additional CSS classes for the menu list",
+                    },
+                ],
+                variants: [
+                    "default",
+                    "simple",
+                    "with-icons",
+                    "with-descriptions",
+                ],
+                examples: [
+                    {
+                        title: "Data-Driven API",
+                        description: "Simple navigation menu using items prop",
+                        code: '&lt;NavigationMenu items={[\n  { value: "home", label: "Home", content: [{ href: "/docs", label: "Introduction" }] },\n  { value: "docs", label: "Docs", href: "/docs" }\n]} /&gt;',
+                    },
+                    {
+                        title: "Compound Component API",
+                        description:
+                            "Navigation menu using sub-components for maximum flexibility",
+                        code: '&lt;NavigationMenu&gt;\n  &lt;NavigationMenuList&gt;\n    &lt;NavigationMenuItem value="home"&gt;\n      &lt;NavigationMenuTrigger value="home"&gt;Home&lt;/NavigationMenuTrigger&gt;\n      &lt;NavigationMenuContent value="home"&gt;\n        &lt;NavigationMenuLink href="/docs"&gt;Introduction&lt;/NavigationMenuLink&gt;\n      &lt;/NavigationMenuContent&gt;\n    &lt;/NavigationMenuItem&gt;\n  &lt;/NavigationMenuList&gt;\n&lt;/NavigationMenu&gt;',
+                    },
+                ],
+            },
         ],
         organisms: [
             {
@@ -1135,6 +1193,41 @@ console.log(greet('World'));`;
     };
 
     let currentComponents = $derived(components[selectedCategory] || []);
+
+    // Prepare sidebar sections
+    const sidebarSections = $derived(() => {
+        const categorySection = {
+            title: "Categories",
+            items: categories.map((category) => ({
+                id: `category-${category.id}`,
+                label: category.label,
+                description: category.description,
+                onClick: () => {
+                    selectedCategory = category.id;
+                    // Reset to first component in category
+                    const firstComponent = components[category.id]?.[0];
+                    if (firstComponent) {
+                        selectedComponent = firstComponent.name.toLowerCase();
+                    } else {
+                        selectedComponent = "";
+                    }
+                },
+            })),
+        };
+
+        const componentsSection = {
+            title: "Components",
+            items: currentComponents.map((component) => ({
+                id: component.name.toLowerCase(),
+                label: component.name,
+                onClick: () => {
+                    selectedComponent = component.name.toLowerCase();
+                },
+            })),
+        };
+
+        return [categorySection, componentsSection];
+    });
 </script>
 
 <svelte:head>
@@ -1149,7 +1242,17 @@ console.log(greet('World'));`;
     <header
         class="flex items-center justify-between p-4 bg-base-50 border-b border-border"
     >
-        <h1 class="text-xl font-bold text-headline">Zabi Components</h1>
+        <div class="flex items-center gap-4">
+            <button
+                type="button"
+                onclick={() => (sidebarOpen = !sidebarOpen)}
+                class="md:hidden text-description hover:text-headline text-2xl cursor-pointer transition-colors"
+                aria-label="Toggle sidebar"
+            >
+                ☰
+            </button>
+            <h1 class="text-xl font-bold text-headline">Zabi Components</h1>
+        </div>
         <div class="flex items-center gap-4">
             <Navigation variant="header" items={navItems} />
             <ThemeToggle />
@@ -1158,43 +1261,18 @@ console.log(greet('World'));`;
 
     <main class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-base-100 border-r border-border p-6">
-            <h2 class="text-lg font-semibold text-headline mb-4">Components</h2>
-
-            <!-- Category Navigation -->
-            <nav class="space-y-2 mb-8">
-                {#each categories as category}
-                    <button
-                        onclick={() => (selectedCategory = category.id)}
-                        class="w-full text-left px-3 py-2 rounded-md transition-colors duration-200 {selectedCategory ===
-                        category.id
-                            ? 'bg-action-primary text-action-primary'
-                            : 'text-text-secondary hover:text-headline hover:bg-base-50'}"
-                    >
-                        <div class="font-medium">{category.label}</div>
-                        <div class="text-xs text-description">
-                            {category.description}
-                        </div>
-                    </button>
-                {/each}
-            </nav>
-
-            <!-- Component List -->
-            <div class="space-y-1">
-                {#each currentComponents as component}
-                    <button
-                        onclick={() =>
-                            (selectedComponent = component.name.toLowerCase())}
-                        class="w-full text-left px-3 py-2 rounded-md transition-colors duration-200 {selectedComponent ===
-                        component.name.toLowerCase()
-                            ? 'bg-action-primary-subtle text-headline border-l-2 border-action-primary'
-                            : 'text-text-secondary hover:text-headline hover:bg-base-50'}"
-                    >
-                        {component.name}
-                    </button>
-                {/each}
-            </div>
-        </aside>
+        <Sidebar
+            title="Components"
+            sections={sidebarSections()}
+            selectedItemId={selectedComponent || `category-${selectedCategory}`}
+            isOpen={sidebarOpen}
+            onClose={() => (sidebarOpen = false)}
+            onItemClick={(item) => {
+                if (item.onClick) {
+                    item.onClick();
+                }
+            }}
+        />
 
         <!-- Main Content -->
         <div class="flex-1 p-8">
@@ -1560,6 +1638,338 @@ console.log(greet('World'));`;
                                                     </p>
                                                 {/if}
                                             </Tabs>
+                                        </div>
+                                    {:else if component.name === "NavigationMenu"}
+                                        <div class="space-y-6">
+                                            <div>
+                                                <h4
+                                                    class="text-sm font-medium text-headline mb-4"
+                                                >
+                                                    Data-Driven API
+                                                </h4>
+                                                <NavigationMenu
+                                                    items={[
+                                                        {
+                                                            value: "home",
+                                                            label: "Home",
+                                                            content: [
+                                                                {
+                                                                    href: "/docs",
+                                                                    label: "Introduction",
+                                                                    description:
+                                                                        "Re-usable components built using Svelte and Tailwind CSS.",
+                                                                },
+                                                                {
+                                                                    href: "/docs/installation",
+                                                                    label: "Installation",
+                                                                    description:
+                                                                        "How to install dependencies and structure your app.",
+                                                                },
+                                                            ],
+                                                        },
+                                                        {
+                                                            value: "components",
+                                                            label: "Components",
+                                                            content: [
+                                                                {
+                                                                    href: "/components/button",
+                                                                    label: "Button",
+                                                                    description:
+                                                                        "A clickable button component with multiple variants.",
+                                                                },
+                                                                {
+                                                                    href: "/components/input",
+                                                                    label: "Input",
+                                                                    description:
+                                                                        "A form input component with validation support.",
+                                                                },
+                                                            ],
+                                                        },
+                                                        {
+                                                            value: "docs",
+                                                            label: "Docs",
+                                                            href: "/docs",
+                                                        },
+                                                    ]}
+                                                />
+                                            </div>
+                                            <div>
+                                                <h4
+                                                    class="text-sm font-medium text-headline mb-4"
+                                                >
+                                                    Compound Component API
+                                                </h4>
+                                                <NavigationMenu>
+                                                    <NavigationMenuList>
+                                                        <NavigationMenuItem
+                                                            value="home"
+                                                        >
+                                                            <NavigationMenuTrigger
+                                                                value="home"
+                                                                >Home</NavigationMenuTrigger
+                                                            >
+                                                            <NavigationMenuContent
+                                                                value="home"
+                                                            >
+                                                                <ul
+                                                                    class="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]"
+                                                                >
+                                                                    <li
+                                                                        class="row-span-3"
+                                                                    >
+                                                                        <NavigationMenuLink
+                                                                            asChild
+                                                                        >
+                                                                            <a
+                                                                                class="flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md md:p-6"
+                                                                                href="/"
+                                                                            >
+                                                                                <div
+                                                                                    class="mb-2 text-lg font-medium"
+                                                                                >
+                                                                                    zabi-components
+                                                                                </div>
+                                                                                <p
+                                                                                    class="text-sm leading-tight text-description"
+                                                                                >
+                                                                                    Beautifully
+                                                                                    designed
+                                                                                    components
+                                                                                    built
+                                                                                    with
+                                                                                    Tailwind
+                                                                                    CSS.
+                                                                                </p>
+                                                                            </a>
+                                                                        </NavigationMenuLink>
+                                                                    </li>
+                                                                    <NavigationMenuLink
+                                                                        href="/docs"
+                                                                    >
+                                                                        <div
+                                                                            class="text-sm font-medium leading-none"
+                                                                        >
+                                                                            Introduction
+                                                                        </div>
+                                                                        <p
+                                                                            class="line-clamp-2 text-sm leading-snug text-description"
+                                                                        >
+                                                                            Re-usable
+                                                                            components
+                                                                            built
+                                                                            using
+                                                                            Svelte
+                                                                            and
+                                                                            Tailwind
+                                                                            CSS.
+                                                                        </p>
+                                                                    </NavigationMenuLink>
+                                                                    <NavigationMenuLink
+                                                                        href="/docs/installation"
+                                                                    >
+                                                                        <div
+                                                                            class="text-sm font-medium leading-none"
+                                                                        >
+                                                                            Installation
+                                                                        </div>
+                                                                        <p
+                                                                            class="line-clamp-2 text-sm leading-snug text-description"
+                                                                        >
+                                                                            How
+                                                                            to
+                                                                            install
+                                                                            dependencies
+                                                                            and
+                                                                            structure
+                                                                            your
+                                                                            app.
+                                                                        </p>
+                                                                    </NavigationMenuLink>
+                                                                    <NavigationMenuLink
+                                                                        href="/docs/primitives/typography"
+                                                                    >
+                                                                        <div
+                                                                            class="text-sm font-medium leading-none"
+                                                                        >
+                                                                            Typography
+                                                                        </div>
+                                                                        <p
+                                                                            class="line-clamp-2 text-sm leading-snug text-description"
+                                                                        >
+                                                                            Styles
+                                                                            for
+                                                                            headings,
+                                                                            paragraphs,
+                                                                            lists...etc
+                                                                        </p>
+                                                                    </NavigationMenuLink>
+                                                                </ul>
+                                                            </NavigationMenuContent>
+                                                        </NavigationMenuItem>
+                                                        <NavigationMenuItem
+                                                            value="components"
+                                                        >
+                                                            <NavigationMenuTrigger
+                                                                value="components"
+                                                                >Components</NavigationMenuTrigger
+                                                            >
+                                                            <NavigationMenuContent
+                                                                value="components"
+                                                            >
+                                                                <ul
+                                                                    class="grid gap-2 sm:w-[400px] md:w-[500px] md:grid-cols-2 lg:w-[600px]"
+                                                                >
+                                                                    <NavigationMenuLink
+                                                                        href="/components/button"
+                                                                    >
+                                                                        <div
+                                                                            class="text-sm font-medium leading-none"
+                                                                        >
+                                                                            Button
+                                                                        </div>
+                                                                        <p
+                                                                            class="line-clamp-2 text-sm leading-snug text-description"
+                                                                        >
+                                                                            A
+                                                                            clickable
+                                                                            button
+                                                                            component
+                                                                            with
+                                                                            multiple
+                                                                            variants.
+                                                                        </p>
+                                                                    </NavigationMenuLink>
+                                                                    <NavigationMenuLink
+                                                                        href="/components/input"
+                                                                    >
+                                                                        <div
+                                                                            class="text-sm font-medium leading-none"
+                                                                        >
+                                                                            Input
+                                                                        </div>
+                                                                        <p
+                                                                            class="line-clamp-2 text-sm leading-snug text-description"
+                                                                        >
+                                                                            A
+                                                                            form
+                                                                            input
+                                                                            component
+                                                                            with
+                                                                            validation
+                                                                            support.
+                                                                        </p>
+                                                                    </NavigationMenuLink>
+                                                                    <NavigationMenuLink
+                                                                        href="/components/card"
+                                                                    >
+                                                                        <div
+                                                                            class="text-sm font-medium leading-none"
+                                                                        >
+                                                                            Card
+                                                                        </div>
+                                                                        <p
+                                                                            class="line-clamp-2 text-sm leading-snug text-description"
+                                                                        >
+                                                                            A
+                                                                            flexible
+                                                                            card
+                                                                            container
+                                                                            with
+                                                                            semantic
+                                                                            variants.
+                                                                        </p>
+                                                                    </NavigationMenuLink>
+                                                                    <NavigationMenuLink
+                                                                        href="/components/modal"
+                                                                    >
+                                                                        <div
+                                                                            class="text-sm font-medium leading-none"
+                                                                        >
+                                                                            Modal
+                                                                        </div>
+                                                                        <p
+                                                                            class="line-clamp-2 text-sm leading-snug text-description"
+                                                                        >
+                                                                            A
+                                                                            modal
+                                                                            dialog
+                                                                            with
+                                                                            backdrop
+                                                                            and
+                                                                            customizable
+                                                                            content.
+                                                                        </p>
+                                                                    </NavigationMenuLink>
+                                                                </ul>
+                                                            </NavigationMenuContent>
+                                                        </NavigationMenuItem>
+                                                        <NavigationMenuItem
+                                                            value="docs"
+                                                        >
+                                                            <NavigationMenuLink
+                                                                href="/docs"
+                                                                >Docs</NavigationMenuLink
+                                                            >
+                                                        </NavigationMenuItem>
+                                                    </NavigationMenuList>
+                                                </NavigationMenu>
+                                            </div>
+                                            <div>
+                                                <h4
+                                                    class="text-sm font-medium text-headline mb-4"
+                                                >
+                                                    With Icons
+                                                </h4>
+                                                <NavigationMenu>
+                                                    <NavigationMenuList>
+                                                        <NavigationMenuItem
+                                                            value="status"
+                                                        >
+                                                            <NavigationMenuTrigger
+                                                                value="status"
+                                                                >Status</NavigationMenuTrigger
+                                                            >
+                                                            <NavigationMenuContent
+                                                                value="status"
+                                                            >
+                                                                <ul
+                                                                    class="grid w-[200px] gap-4"
+                                                                >
+                                                                    <li>
+                                                                        <NavigationMenuLink
+                                                                            href="#"
+                                                                            className="flex flex-row items-center gap-2"
+                                                                        >
+                                                                            <CircleHelp
+                                                                                class="h-4 w-4"
+                                                                            />
+                                                                            Backlog
+                                                                        </NavigationMenuLink>
+                                                                        <NavigationMenuLink
+                                                                            href="#"
+                                                                            className="flex flex-row items-center gap-2"
+                                                                        >
+                                                                            <Circle
+                                                                                class="h-4 w-4"
+                                                                            />
+                                                                            To Do
+                                                                        </NavigationMenuLink>
+                                                                        <NavigationMenuLink
+                                                                            href="#"
+                                                                            className="flex flex-row items-center gap-2"
+                                                                        >
+                                                                            <CircleCheck
+                                                                                class="h-4 w-4"
+                                                                            />
+                                                                            Done
+                                                                        </NavigationMenuLink>
+                                                                    </li>
+                                                                </ul>
+                                                            </NavigationMenuContent>
+                                                        </NavigationMenuItem>
+                                                    </NavigationMenuList>
+                                                </NavigationMenu>
+                                            </div>
                                         </div>
                                     {:else if component.name === "Navbar"}
                                         <div class="space-y-4">

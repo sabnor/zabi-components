@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { trapFocus, saveFocus, returnFocus, focusFirstElement } from "../../routes/lib/focus-utils.js";
+    import { trapFocus, saveFocus, returnFocus, focusFirstElement } from "../routes/lib/focus-utils.js";
 
     type Size = "sm" | "md" | "lg";
 
