@@ -4,6 +4,8 @@
     import ThemeToggle from "../../components/atoms/ThemeToggle.svelte";
     import CodeBlock from "../../components/atoms/CodeBlock.svelte";
     import Button from "../../components/atoms/Button.svelte";
+    import IconButton from "../../components/atoms/IconButton.svelte";
+    import { Heart } from "@lucide/svelte";
     import Card from "../../components/atoms/Card.svelte";
 
     interface NavItem {
@@ -175,6 +177,42 @@ let name = $state("");
 <Button variant="ghost">Ghost</Button>
 <Button variant="link">Link</Button>
 <Button variant="danger">Danger</Button>`}
+                    language="svelte"
+                />
+            </Card>
+        </section>
+
+        <!-- Icon Buttons -->
+        <section class="mb-16">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-text mb-4">Icon Buttons</h2>
+                <p class="text-secondary">
+                    Use icon-only buttons for compact actions and toolbars
+                </p>
+            </div>
+
+            <Card title="IconButton">
+                <p class="text-secondary mb-6">
+                    Provide an accessible label for icon-only buttons.
+                </p>
+                <div class="flex flex-wrap gap-4 items-center justify-center mb-6">
+                    <IconButton variant="primary" label="Favorite">
+                        <Heart />
+                    </IconButton>
+                    <IconButton variant="secondary" label="Favorite">
+                        <Heart />
+                    </IconButton>
+                    <IconButton variant="ghost" label="Favorite">
+                        <Heart />
+                    </IconButton>
+                    <IconButton variant="outline" label="Favorite">
+                        <Heart />
+                    </IconButton>
+                </div>
+                <CodeBlock
+                    code={`<IconButton label="Favorite">
+  <Heart />
+</IconButton>`}
                     language="svelte"
                 />
             </Card>

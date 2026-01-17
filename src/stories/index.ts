@@ -4,6 +4,7 @@
 // Atoms
 export { default as BadgeStories } from './atoms/Badge.stories';
 export { default as ButtonStories } from './atoms/Button.stories';
+export { default as IconButtonStories } from './atoms/IconButton.stories';
 export { default as CardStories } from './atoms/Card.stories';
 export { default as CheckboxStories } from './atoms/Checkbox.stories';
 export { default as ColorPickerStories } from './atoms/ColorPicker.stories';
@@ -34,6 +35,7 @@ export const storyCategories = {
     atoms: [
         'Badge',
         'Button',
+        'IconButton',
         'Card',
         'Checkbox',
         'ColorPicker',

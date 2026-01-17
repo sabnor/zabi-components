@@ -110,13 +110,13 @@
 
     const messageClasses = $derived(() => {
         if (variant === "error") {
-            return "text-error text-sm mt-1 flex items-center gap-1.5";
+            return "text-error text-sm mt-1 flex items-center gap-1.5 w-full";
         } else if (variant === "success") {
-            return "text-success text-sm mt-1 flex items-center gap-1.5";
+            return "text-success text-sm mt-1 flex items-center gap-1.5 w-full";
         } else if (variant === "warning") {
-            return "text-warning text-sm mt-1 flex items-center gap-1.5";
+            return "text-warning text-sm mt-1 flex items-center gap-1.5 w-full";
         }
-        return "text-description text-sm mt-1 flex items-center gap-1.5";
+        return "text-description text-sm mt-1 flex items-center gap-1.5 w-full";
     });
 
     const getIcon = $derived(() => {
@@ -238,7 +238,7 @@
                 aria-describedby={message ? `${selectId}-message` : undefined}
             >
                 <span
-                    class="text-left flex-1 {isEmpty()
+                    class="text-left flex-1 truncate {isEmpty()
                         ? 'text-description'
                         : 'text-body'}"
                 >
