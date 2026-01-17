@@ -11,6 +11,7 @@ export { default as NavigationMenuItem } from './NavigationMenuItem.svelte';
 export { default as NavigationMenuTrigger } from './NavigationMenuTrigger.svelte';
 export { default as NavigationMenuContent } from './NavigationMenuContent.svelte';
 export { default as NavigationMenuLink } from './NavigationMenuLink.svelte';
+export { default as Section } from './Section.svelte';
 export { default as Sidebar } from './Sidebar.svelte';
 export { default as SlideUp } from './SlideUp.svelte';
 export { default as Tabs } from './Tabs.svelte';

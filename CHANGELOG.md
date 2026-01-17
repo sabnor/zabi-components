@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.21] - 2026-01-17
+
+### ✨ **Features**
+
+- **IconButton**: Added a new icon-only button with variants, sizes, and accessible labels
+- **Exports & Storybook**: Included IconButton in atom exports and Storybook registry
+- **Docs**: Added IconButton examples to the docs and components showcase
+
+### 🔧 **Improvements**
+
+- **Navigation**: Header navigation now stacks for mobile-friendly layouts
+- **Select**: Improved selected label truncation and helper message layout
+- **Button**: Standardized disabled behavior without pointer-events override
+
+### ✅ **No Breaking Changes**
+
+This is a backward-compatible update.
+
+---
+
 ## [5.0.20] - 2025-01-27
 
 ### 🔧 **Patch Release**

@@ -35,11 +35,11 @@
     const ulClasses = $derived(() => {
         return variant === "sidebar"
             ? "flex flex-col gap-1"
-            : "flex items-center justify-between gap-1";
+            : "flex flex-col gap-1 md:flex-row md:items-center md:justify-between";
     });
 
     function getNavItemClasses(itemHref: string): string {
-        const baseClasses = "flex flex-col gap-1 grow h-full items-center justify-center min-h-0 min-w-0 relative shrink-0 cursor-pointer";
+        const baseClasses = "flex flex-col gap-1 grow h-full items-center justify-center min-h-0 min-w-0 relative shrink-0 cursor-pointer w-full md:w-auto";
 
         return baseClasses;
     }
