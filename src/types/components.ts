@@ -71,6 +71,11 @@ export interface CheckboxEvents {
 export interface SelectProps {
     options: Array<{ value: string; label: string }>;
     value?: string;
+    searchable?: boolean;
+    searchPlaceholder?: string;
+    maxMenuHeight?: string;
+    menuWidth?: string;
+    noResultsText?: string;
     disabled?: boolean;
     className?: string;
 }

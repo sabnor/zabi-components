@@ -122,3 +122,17 @@ export const WithDisabledOption: Story = {
         ]
     }
 };
+
+export const SearchableWithScroll: Story = {
+    args: {
+        label: 'Searchable Select',
+        placeholder: 'Choose an option',
+        searchable: true,
+        searchPlaceholder: 'Search options',
+        maxMenuHeight: '50vh',
+        options: Array.from({ length: 20 }, (_, index) => ({
+            value: `option-${index + 1}`,
+            label: `Option ${index + 1}`
+        }))
+    }
+};
