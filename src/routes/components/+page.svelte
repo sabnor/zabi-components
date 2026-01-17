@@ -65,12 +65,18 @@
     let slideUpOpen = $state(false);
     let activeTab = $state("tab1");
     let sidebarOpen = $state(false);
+    let selectValue = $state<string | number | undefined>(undefined);
 
     const sampleCode = `function greet(name) {
   return \`Hello, \${name}!\`;
 }
 
 console.log(greet('World'));`;
+
+    const selectOptions = Array.from({ length: 16 }, (_, index) => ({
+        value: `option-${index + 1}`,
+        label: `Option ${index + 1}`,
+    }));
 
     const components: Record<string, ComponentMetadata[]> = {
         atoms: [
@@ -368,6 +374,65 @@ console.log(greet('World'));`;
                         title: "Variants",
                         description: "Checkbox with different variants",
                         code: '&lt;Checkbox variant="success" label="Verified" checked={true} /&gt;\n&lt;Checkbox variant="warning" label="Review needed" /&gt;',
+                    },
+                ],
+            },
+            {
+                name: "Select",
+                category: "atoms",
+                description:
+                    "Select dropdown with search, scrollable options, and variants",
+                props: [
+                    {
+                        name: "options",
+                        type: "array",
+                        required: true,
+                        defaultValue: "[]",
+                        description: "Select options",
+                    },
+                    {
+                        name: "value",
+                        type: "string | number",
+                        required: false,
+                        defaultValue: "",
+                        description: "Selected value",
+                    },
+                    {
+                        name: "placeholder",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Select an option",
+                        description: "Placeholder text",
+                    },
+                    {
+                        name: "searchable",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "Enable search input",
+                    },
+                    {
+                        name: "searchPlaceholder",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Search options",
+                        description: "Search input placeholder",
+                    },
+                    {
+                        name: "maxMenuHeight",
+                        type: "string",
+                        required: false,
+                        defaultValue: "60vh",
+                        description: "Max height for the options list",
+                    },
+                ],
+                variants: ["default", "success", "warning", "error"],
+                examples: [
+                    {
+                        title: "Searchable Select",
+                        description:
+                            "Select with search and scrollable options list",
+                        code: '&lt;Select label="Select a value" searchable={true} maxMenuHeight="50vh" options={options} /&gt;',
                     },
                 ],
             },
@@ -2105,6 +2170,60 @@ console.log(greet('World'));`;
                                             <Checkbox
                                                 disabled={true}
                                                 label="Disabled option"
+                                            />
+                                        </div>
+                                    {:else if component.name === "Select"}
+                                        <div class="space-y-6 w-full max-w-md">
+                                            <Select
+                                                label="Default (Searchable)"
+                                                placeholder="Choose an option"
+                                                searchable={true}
+                                                searchPlaceholder="Search options"
+                                                maxMenuHeight="50vh"
+                                                menuWidth="100%"
+                                                options={selectOptions}
+                                                bind:value={selectValue}
+                                            />
+                                            <Select
+                                                label="Default (No Search)"
+                                                placeholder="Choose an option"
+                                                searchable={false}
+                                                maxMenuHeight="50vh"
+                                                menuWidth="100%"
+                                                options={selectOptions}
+                                            />
+                                            <Select
+                                                label="Success"
+                                                placeholder="Choose an option"
+                                                variant="success"
+                                                message="Selection looks good"
+                                                searchable={true}
+                                                searchPlaceholder="Search options"
+                                                maxMenuHeight="50vh"
+                                                menuWidth="100%"
+                                                options={selectOptions}
+                                            />
+                                            <Select
+                                                label="Warning"
+                                                placeholder="Choose an option"
+                                                variant="warning"
+                                                message="Double-check your choice"
+                                                searchable={true}
+                                                searchPlaceholder="Search options"
+                                                maxMenuHeight="50vh"
+                                                menuWidth="100%"
+                                                options={selectOptions}
+                                            />
+                                            <Select
+                                                label="Error"
+                                                placeholder="Choose an option"
+                                                variant="error"
+                                                message="Please select a valid option"
+                                                searchable={true}
+                                                searchPlaceholder="Search options"
+                                                maxMenuHeight="50vh"
+                                                menuWidth="100%"
+                                                options={selectOptions}
                                             />
                                         </div>
                                     {:else if component.name === "CodeBlock"}
