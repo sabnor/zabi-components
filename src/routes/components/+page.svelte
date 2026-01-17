@@ -3,6 +3,7 @@
     import ThemeToggle from "../../components/atoms/ThemeToggle.svelte";
     import ComponentDemo from "../../components/molecules/ComponentDemo.svelte";
     import Button from "../../components/atoms/Button.svelte";
+    import IconButton from "../../components/atoms/IconButton.svelte";
     import Card from "../../components/atoms/Card.svelte";
     import Input from "../../components/atoms/Input.svelte";
     import Textarea from "../../components/atoms/Textarea.svelte";
@@ -35,7 +36,7 @@
     import NavigationMenuContent from "../../components/molecules/NavigationMenuContent.svelte";
     import NavigationMenuLink from "../../components/molecules/NavigationMenuLink.svelte";
     import Navbar from "../../components/organisms/Navbar.svelte";
-    import { CircleCheck, CircleHelp, Circle } from "@lucide/svelte";
+    import { CircleCheck, CircleHelp, Circle, Heart } from "@lucide/svelte";
     import type { NavItem, ComponentMetadata } from "../../types/page.types";
 
     const navItems: NavItem[] = [
@@ -65,6 +66,7 @@
     let slideUpOpen = $state(false);
     let activeTab = $state("tab1");
     let sidebarOpen = $state(false);
+    let navMenuOpen = $state(false);
     let selectValue = $state<string | number | undefined>(undefined);
 
     const sampleCode = `function greet(name) {
@@ -133,6 +135,68 @@ console.log(greet('World'));`;
                         title: "Variants",
                         description: "Different button variants",
                         code: '&lt;Button variant="primary"&gt;Primary&lt;/Button&gt;\n&lt;Button variant="secondary"&gt;Secondary&lt;/Button&gt;\n&lt;Button variant="outline"&gt;Outline&lt;/Button&gt;\n&lt;Button variant="ghost"&gt;Ghost&lt;/Button&gt;\n&lt;Button variant="link"&gt;Link&lt;/Button&gt;\n&lt;Button variant="danger"&gt;Danger&lt;/Button&gt;',
+                    },
+                ],
+            },
+            {
+                name: "IconButton",
+                category: "atoms",
+                description: "Icon-only button for compact actions and toolbars",
+                props: [
+                    {
+                        name: "variant",
+                        type: "string",
+                        required: false,
+                        defaultValue: "primary",
+                        description: "Icon button style variant",
+                    },
+                    {
+                        name: "size",
+                        type: "string",
+                        required: false,
+                        defaultValue: "md",
+                        description: "Icon button size",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Disable the icon button",
+                    },
+                    {
+                        name: "type",
+                        type: "string",
+                        required: false,
+                        defaultValue: "button",
+                        description: "HTML button type",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Accessible label for icon-only buttons",
+                    },
+                ],
+                variants: [
+                    "primary",
+                    "secondary",
+                    "danger",
+                    "ghost",
+                    "outline",
+                    "link",
+                ],
+                examples: [
+                    {
+                        title: "Basic Usage",
+                        description: "Icon-only button with accessible label",
+                        code: "&lt;IconButton label=&quot;Favorite&quot;&gt;\n  &lt;Heart /&gt;\n&lt;/IconButton&gt;",
+                    },
+                    {
+                        title: "Variants",
+                        description: "Different icon button variants",
+                        code: '&lt;IconButton variant="primary" label="Favorite"&gt;\n  &lt;Heart /&gt;\n&lt;/IconButton&gt;\n&lt;IconButton variant="ghost" label="Favorite"&gt;\n  &lt;Heart /&gt;\n&lt;/IconButton&gt;',
                     },
                 ],
             },
@@ -1318,11 +1382,32 @@ console.log(greet('World'));`;
             </button>
             <h1 class="text-xl font-bold text-headline">Zabi Components</h1>
         </div>
-        <div class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-4">
             <Navigation variant="header" items={navItems} />
             <ThemeToggle />
         </div>
+        <button
+            type="button"
+            class="md:hidden text-description hover:text-headline text-2xl cursor-pointer transition-colors"
+            onclick={() => (navMenuOpen = !navMenuOpen)}
+            aria-label="Toggle navigation"
+            aria-controls="mobile-navigation"
+            aria-expanded={navMenuOpen}
+        >
+            ☰
+        </button>
     </header>
+    {#if navMenuOpen}
+        <div
+            id="mobile-navigation"
+            class="md:hidden border-b border-border bg-base-50 px-4 py-3"
+        >
+            <Navigation variant="header" items={navItems} />
+            <div class="pt-3">
+                <ThemeToggle />
+            </div>
+        </div>
+    {/if}
 
     <main class="flex min-h-screen">
         <!-- Sidebar -->
@@ -1365,6 +1450,24 @@ console.log(greet('World'));`;
                                     />
                                 {/if}
                             </div>
+                            {#if component.variants?.length}
+                                <div
+                                    class="mt-3 flex flex-wrap items-center gap-2"
+                                >
+                                    <span
+                                        class="text-sm font-medium text-headline"
+                                    >
+                                        Variants:
+                                    </span>
+                                    {#each component.variants as variant}
+                                        <span
+                                            class="rounded-md bg-base-100 px-2 py-1 text-xs text-headline"
+                                        >
+                                            {variant}
+                                        </span>
+                                    {/each}
+                                </div>
+                            {/if}
                         </div>
 
                         <!-- Examples -->
@@ -1378,8 +1481,22 @@ console.log(greet('World'));`;
                                 >
                                     {#if component.name === "Button"}
                                         <div class="space-y-4">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <span
+                                                    class="text-sm font-medium text-headline"
+                                                >
+                                                    Variants:
+                                                </span>
+                                                {#each component.variants as variant}
+                                                    <span
+                                                        class="rounded-md bg-base-100 px-2 py-1 text-xs text-headline"
+                                                    >
+                                                        {variant}
+                                                    </span>
+                                                {/each}
+                                            </div>
                                             <div
-                                                class="flex flex-wrap gap-4 items-center"
+                                                class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5"
                                             >
                                                 <Button
                                                     variant="primary"
@@ -1424,6 +1541,113 @@ console.log(greet('World'));`;
                                                     disabled
                                                     text="Disabled Danger"
                                                 />
+                                            </div>
+                                        </div>
+                                    {:else if component.name === "IconButton"}
+                                        <div class="space-y-4">
+                                            <div
+                                                class="flex flex-wrap gap-4 items-center"
+                                            >
+                                                <div
+                                                    class="flex flex-col items-center gap-1"
+                                                >
+                                                    <span
+                                                        class="text-xs font-medium text-headline"
+                                                    >
+                                                        primary
+                                                    </span>
+                                                    <IconButton
+                                                        variant="primary"
+                                                        label="Favorite"
+                                                    >
+                                                        <Heart />
+                                                    </IconButton>
+                                                </div>
+                                                <div
+                                                    class="flex flex-col items-center gap-1"
+                                                >
+                                                    <span
+                                                        class="text-xs font-medium text-headline"
+                                                    >
+                                                        secondary
+                                                    </span>
+                                                    <IconButton
+                                                        variant="secondary"
+                                                        label="Favorite"
+                                                    >
+                                                        <Heart />
+                                                    </IconButton>
+                                                </div>
+                                                <div
+                                                    class="flex flex-col items-center gap-1"
+                                                >
+                                                    <span
+                                                        class="text-xs font-medium text-headline"
+                                                    >
+                                                        ghost
+                                                    </span>
+                                                    <IconButton
+                                                        variant="ghost"
+                                                        label="Favorite"
+                                                    >
+                                                        <Heart />
+                                                    </IconButton>
+                                                </div>
+                                                <div
+                                                    class="flex flex-col items-center gap-1"
+                                                >
+                                                    <span
+                                                        class="text-xs font-medium text-headline"
+                                                    >
+                                                        outline
+                                                    </span>
+                                                    <IconButton
+                                                        variant="outline"
+                                                        label="Favorite"
+                                                    >
+                                                        <Heart />
+                                                    </IconButton>
+                                                </div>
+                                                <div
+                                                    class="flex flex-col items-center gap-1"
+                                                >
+                                                    <span
+                                                        class="text-xs font-medium text-headline"
+                                                    >
+                                                        danger
+                                                    </span>
+                                                    <IconButton
+                                                        variant="danger"
+                                                        label="Remove"
+                                                    >
+                                                        <Heart />
+                                                    </IconButton>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="flex flex-wrap gap-4 items-center"
+                                            >
+                                                <IconButton
+                                                    variant="primary"
+                                                    disabled
+                                                    label="Favorite"
+                                                >
+                                                    <Heart />
+                                                </IconButton>
+                                                <IconButton
+                                                    variant="secondary"
+                                                    disabled
+                                                    label="Favorite"
+                                                >
+                                                    <Heart />
+                                                </IconButton>
+                                                <IconButton
+                                                    variant="danger"
+                                                    disabled
+                                                    label="Remove"
+                                                >
+                                                    <Heart />
+                                                </IconButton>
                                             </div>
                                         </div>
                                     {:else if component.name === "Input"}

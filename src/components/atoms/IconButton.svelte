@@ -3,13 +3,19 @@
     import type { ButtonVariant, SizeVariant } from "../../types/variants.js";
 
     interface Props {
+        /** Visual style variant. */
         variant?: ButtonVariant;
+        /** Size variant controlling padding and radius. */
         size?: SizeVariant;
+        /** Whether the button is disabled. */
         disabled?: boolean;
+        /** Button type attribute. */
         type?: "button" | "submit" | "reset";
-        text?: string;
-        isFullWidth?: boolean;
+        /** Accessible label for icon-only buttons. */
+        label?: string;
+        /** Click handler for native click events. */
         onclick?: (event: MouseEvent) => void;
+        /** Icon content. */
         children?: Snippet;
     }
 
@@ -18,8 +24,7 @@
         size = "md",
         disabled = false,
         type = "button",
-        text = "",
-        isFullWidth = false,
+        label = "",
         onclick,
         children,
         ...restProps
@@ -28,33 +33,18 @@
     const sizeClass = $derived(() => {
         if (size === "sm") {
             return {
-                padding: "px-4 py-2.5",
-                text: "text-sm",
-                font: "font-medium",
-                leading: "leading-5",
-                tracking: "tracking-[0.1px]",
-                radius: "rounded-lg",
-                gap: "gap-2",
+                padding: "p-2",
+                radius: "rounded-md",
             };
         } else if (size === "lg") {
             return {
-                padding: "px-8 py-4",
-                text: "text-lg",
-                font: "font-normal",
-                leading: "leading-8",
-                tracking: "tracking-normal",
+                padding: "p-3",
                 radius: "rounded-xl",
-                gap: "gap-3",
             };
         } else {
             return {
-                padding: "px-5 py-3",
-                text: "text-base",
-                font: "font-medium",
-                leading: "leading-6",
-                tracking: "tracking-[0.15px]",
+                padding: "p-2.5",
                 radius: "rounded-lg",
-                gap: "gap-2",
             };
         }
     });
@@ -77,18 +67,22 @@
 
     const buttonClasses = $derived(() => {
         const sizeStyles = sizeClass();
-        const flexClass = isFullWidth ? "flex" : "inline-flex";
-        const widthClass = isFullWidth ? "w-full" : "";
-        const baseClasses = `${flexClass} items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none`;
+        const baseClasses =
+            "inline-flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none";
 
-        return `${baseClasses} ${widthClass} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.font} ${sizeStyles.leading} ${sizeStyles.tracking} ${sizeStyles.radius} ${sizeStyles.gap} ${variantClass()}`.trim();
+        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.radius} ${variantClass()}`.trim();
     });
 </script>
 
-<button {type} class={buttonClasses()} {disabled} {onclick} {...restProps}>
-    {#if text}
-        {text}
-    {:else if children}
+<button
+    {type}
+    class={buttonClasses()}
+    {disabled}
+    {onclick}
+    aria-label={label || undefined}
+    {...restProps}
+>
+    {#if children}
         {@render children()}
     {/if}
 </button>
