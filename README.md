@@ -2,7 +2,7 @@
 
 A clean, minimal Svelte 5 component library built with TypeScript and Tailwind CSS. **Less is more** - focused on essential components that just work.
 
-> **⚠️ Svelte 5 Required**: This library uses Svelte 5 runes syntax (`$props`, `$derived`, `$state`). Make sure you're using Svelte 5.38.10 or later.
+> **⚠️ Svelte 5 Required**: This library uses Svelte 5 runes syntax (`$props`, `$derived`, `$state`). Make sure you're using Svelte 5.43.8 or later.
 
 ## Philosophy
 
@@ -36,7 +36,7 @@ npm install zabi-components
 Make sure you have the required peer dependencies installed:
 
 ```bash
-npm install svelte@^5.38.10
+npm install svelte@^5.43.8
 npm install @sveltejs/kit@^2.0.0  # Optional, for SvelteKit projects
 ```
 
@@ -97,18 +97,65 @@ Zabi Components supports multiple import patterns:
 
 ### Main Import (All Components)
 ```typescript
-import { Button, Input, Card, Alert, Badge, Modal } from 'zabi-components';
+import { 
+  Button, 
+  IconButton,
+  Input, 
+  Card, 
+  CardHeader,
+  CardContent,
+  CardFooter,
+  Alert, 
+  Badge, 
+  Modal,
+  NavigationMenu,
+  Section
+} from 'zabi-components';
 ```
 
 ### Subpath Imports (Recommended for Tree Shaking)
 ```typescript
 // Import from specific categories
-import { Button, Input, Badge } from 'zabi-components/atoms';
-import { Alert, Modal, Dropdown } from 'zabi-components/molecules';
-import { Navbar, ToastManager } from 'zabi-components/organisms';
+import { 
+  Button, 
+  IconButton, 
+  Input, 
+  Badge,
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter
+} from 'zabi-components/atoms';
+import { 
+  Alert, 
+  Modal, 
+  Dropdown,
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuLink,
+  Section,
+  Tabs
+} from 'zabi-components/molecules';
+import { 
+  Navbar, 
+  Navigation 
+} from 'zabi-components/organisms';
 
 // Import types separately
 import type { ButtonEvents, InputEvents } from 'zabi-components/types';
+
+// Import utility functions
+import { 
+  createId, 
+  cn, 
+  getFormData, 
+  validateEmail,
+  safeLocalStorage,
+  safeDocument 
+} from 'zabi-components';
 ```
 
 ## Quick Start
@@ -116,7 +163,20 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
 ```svelte
 <script lang="ts">
   // Clean Components - Less is More
-  import { Card, Form, Layout, Navigation, Button, Input, Textarea } from 'zabi-components';
+  import { 
+    Card, 
+    CardHeader, 
+    CardContent, 
+    CardFooter,
+    Form, 
+    Navigation, 
+    Button, 
+    IconButton,
+    Input, 
+    Textarea,
+    Badge,
+    Alert
+  } from 'zabi-components';
   
   let formData = $state({
     name: '',
@@ -141,76 +201,115 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
   ];
 </script>
 
-<Layout variant="main" className="min-h-screen bg-gray-50">
-  <div slot="header" class="flex items-center justify-between p-4 bg-white border-b">
+<div class="min-h-screen bg-gray-50">
+  <header class="flex items-center justify-between p-4 bg-white border-b">
     <h1 class="text-xl font-bold">My App</h1>
     <Navigation variant="header" items={navItems} />
-  </div>
+  </header>
 
   <main class="container mx-auto p-6">
-    <!-- Semantic Color Variants -->
+    <!-- Card with Compound Components -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-      <Card title="Default Card" variant="default" on:click={handleCardClick}>
-        This is a default card with semantic colors.
+      <Card variant="elevated" onclick={handleCardClick}>
+        <CardHeader>
+          <h3 class="text-lg font-semibold">Default Card</h3>
+        </CardHeader>
+        <CardContent>
+          <p>This is a card using compound components.</p>
+        </CardContent>
+        <CardFooter>
+          <Button variant="primary" size="sm">Learn More</Button>
+        </CardFooter>
       </Card>
-      <Card title="Success Card" variant="success" on:click={handleCardClick}>
-        This card indicates a successful action.
+      
+      <Card variant="success" onclick={handleCardClick}>
+        <CardHeader>
+          <h3 class="text-lg font-semibold">Success Card</h3>
+        </CardHeader>
+        <CardContent>
+          <p>This card indicates a successful action.</p>
+        </CardContent>
       </Card>
-      <Card title="Warning Card" variant="warning" on:click={handleCardClick}>
-        This card shows a warning state.
-      </Card>
-      <Card title="Error Card" variant="error" on:click={handleCardClick}>
-        This card indicates an error state.
-      </Card>
-      <Card title="Info Card" variant="info" on:click={handleCardClick}>
-        This card provides informational content.
+      
+      <Card variant="warning" onclick={handleCardClick}>
+        <CardHeader>
+          <h3 class="text-lg font-semibold">Warning Card</h3>
+        </CardHeader>
+        <CardContent>
+          <p>This card shows a warning state.</p>
+        </CardContent>
       </Card>
     </div>
     
-    <Form on:submit={handleFormSubmit}>
-      <div class="form-field">
-        <Input 
-          id="name" 
-          name="name" 
-          value={formData.name}
-          oninput={(e) => formData.name = e.target.value}
-          label="Name"
-          placeholder="Enter your name" 
-          variant="default"
-        />
-      </div>
-      
-      <div class="form-field">
-        <Input 
-          id="email" 
-          name="email" 
-          type="email" 
-          value={formData.email}
-          oninput={(e) => formData.email = e.target.value}
-          label="Email"
-          placeholder="Enter your email" 
-          variant="success"
-        />
-      </div>
+    <!-- Form with Semantic Variants -->
+    <Card variant="outlined">
+      <CardHeader>
+        <h2 class="text-xl font-bold">Contact Form</h2>
+      </CardHeader>
+      <CardContent>
+        <Form onsubmit={handleFormSubmit}>
+          <div class="form-field">
+            <Input 
+              id="name" 
+              name="name" 
+              value={formData.name}
+              oninput={(e) => formData.name = (e.target as HTMLInputElement).value}
+              label="Name"
+              placeholder="Enter your name" 
+              variant="default"
+            />
+          </div>
+          
+          <div class="form-field">
+            <Input 
+              id="email" 
+              name="email" 
+              type="email" 
+              value={formData.email}
+              oninput={(e) => formData.email = (e.target as HTMLInputElement).value}
+              label="Email"
+              placeholder="Enter your email" 
+              variant="success"
+            />
+          </div>
 
-      <div class="form-field">
-        <Textarea 
-          id="message" 
-          name="message" 
-          value={formData.message}
-          oninput={(e) => formData.message = e.target.value}
-          label="Message"
-          placeholder="Enter your message" 
-          variant="default"
-        />
+          <div class="form-field">
+            <Textarea 
+              id="message" 
+              name="message" 
+              value={formData.message}
+              oninput={(e) => formData.message = (e.target as HTMLTextAreaElement).value}
+              label="Message"
+              placeholder="Enter your message" 
+              variant="default"
+            />
+          </div>
+          
+          <div class="form-actions flex gap-2">
+            <Button type="submit" variant="primary" className="flex-1">
+              Submit
+            </Button>
+            <IconButton variant="outline" label="Help">
+              ❓
+            </IconButton>
+          </div>
+        </Form>
+      </CardContent>
+    </Card>
+    
+    <!-- Badges and Alerts -->
+    <div class="mt-6 space-y-4">
+      <div class="flex gap-2">
+        <Badge variant="success">Success</Badge>
+        <Badge variant="warning">Warning</Badge>
+        <Badge variant="error">Error</Badge>
+        <Badge variant="info">Info</Badge>
       </div>
       
-      <div class="form-actions">
-        <Button type="submit" variant="primary" className="flex-1">Submit</Button>
-      </div>
-    </Form>
+      <Alert variant="info" title="Information" message="This is an informational alert." />
+    </div>
   </main>
-</Layout>
+</div>
 ```
 
 ## Component Overview
@@ -220,25 +319,31 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
 | Component | Category | Description | Key Features |
 |-----------|----------|-------------|--------------|
 | **Card** | Atom | Clean card container | Simple, interactive, image support, compound components, 4 variants |
+| **CardHeader** | Atom | Card header section | Compound component for card structure |
+| **CardContent** | Atom | Card content section | Compound component for card structure |
+| **CardFooter** | Atom | Card footer section | Compound component for card structure |
 | **Form** | Molecule | Simple form wrapper | FormData handling, clean API |
-| **Layout** | Molecule | Page layout system | Header, main, footer slots |
 | **Navigation** | Organism | Clean navigation | Header/sidebar variants, active state |
 | **Button** | Atom | Action button | 6 variants (primary, secondary, danger, ghost, outline, link) |
-| **Input** | Atom | Form input | Essential props, accessibility |
-| **Badge** | Atom | Status indicator | 5 color variants, closable |
+| **IconButton** | Atom | Icon-only button | Icon-only, variants, sizes, accessible label |
+| **Input** | Atom | Form input | Essential props, accessibility, semantic variants |
+| **Badge** | Atom | Status indicator | 5 color variants, closable, icon support |
 | **Modal** | Molecule | Overlay dialog | Focus trap, keyboard navigation, focus return |
 | **Tabs** | Molecule | Tab navigation | Keyboard navigation, 2 variants |
 | **Dropdown** | Molecule | Dropdown menu | CSS-only positioning, keyboard navigation, ARIA support |
 | **ImageUpload** | Molecule | File upload | Direct selection, preview |
 | **Navbar** | Organism | Navigation bar | Mobile menu, responsive |
+| **NavigationMenu** | Molecule | Advanced navigation menu | Compound components, keyboard navigation |
+| **Section** | Molecule | Content section wrapper | Responsive layout, variant support |
+| **Sidebar** | Molecule | Sidebar navigation | Collapsible, responsive |
 
 ### Simplified Components
 
 | Component | Category | Description | Key Features |
 |-----------|----------|-------------|--------------|
-| **Checkbox** | Atom | Checkbox input | Simple on/off state |
-| **Select** | Atom | Dropdown select | Basic options support |
-| **Textarea** | Atom | Multi-line input | Essential configuration |
+| **Checkbox** | Atom | Checkbox input | Simple on/off state, semantic variants |
+| **Select** | Atom | Dropdown select | Basic options support, semantic variants |
+| **Textarea** | Atom | Multi-line input | Essential configuration, semantic variants |
 | **Toggle** | Atom | Toggle switch | Fixed size, simple state |
 | **Progress** | Atom | Progress bar | Percentage display |
 | **Heading** | Atom | Text headings | 6 levels, clean styling |
@@ -248,6 +353,12 @@ import type { ButtonEvents, InputEvents } from 'zabi-components/types';
 | **Skeleton** | Atom | Loading placeholder | Simple animation |
 | **ColorPicker** | Atom | Color selection | Simple color grid |
 | **SlideUp** | Molecule | Slide-up panel | CSS-only animations |
+| **CodeBlock** | Atom | Code display | Syntax highlighting support |
+| **FeatureCard** | Atom | Feature showcase card | Image, title, description |
+| **OptimizedImage** | Atom | Optimized image | Lazy loading, responsive |
+| **Alert** | Molecule | Alert notification | Variants, closable, custom content |
+| **ContactForm** | Molecule | Contact form | Pre-built form with validation |
+| **ComponentDemo** | Molecule | Component showcase | Demo wrapper for examples |
 
 ## Semantic Color System
 
@@ -286,14 +397,68 @@ All components support these semantic color variants:
 
 ### Utility Functions
 
-For custom components or advanced usage, you can use the built-in utility functions:
+Zabi Components exports several utility functions for common tasks:
+
+```typescript
+// Main exports (most utilities)
+import { 
+  createId,
+  cn,
+  getFormData,
+  validateEmail,
+  validateRequired,
+  isBrowser,
+  safeWindow,
+  safeDocument,
+  safeLocalStorage,
+  generateId
+} from 'zabi-components';
+
+// Or import SSR-safe utilities directly
+import { 
+  safeLocalStorage, 
+  safeDocument, 
+  safeWindow,
+  isBrowser,
+  generateId
+} from 'zabi-components/lib/ssr-safe';
+
+// ID Generation (SSR-safe)
+const uniqueId = createId('input'); // Returns "input-abc123xyz" (client) or "input-ssr-1234567890" (server)
+
+// Class Name Utility
+const className = cn('base-class', condition && 'conditional-class', undefined); 
+// Returns "base-class conditional-class" (filters out falsy values)
+
+// Form Utilities
+const form = document.querySelector('form') as HTMLFormElement;
+const data = getFormData(form); // Returns object with form data
+
+// Validation
+const isValidEmail = validateEmail('user@example.com'); // Returns true/false
+const isRequired = validateRequired('value'); // Returns true/false
+
+// Browser Detection (SSR-safe)
+if (isBrowser()) {
+  // Safe to use window, document, localStorage, etc.
+}
+
+// Safe Browser APIs
+const window = safeWindow(); // Returns Window | undefined
+const document = safeDocument(); // Returns Document | undefined
+const storage = safeLocalStorage(); // Returns Storage | undefined
+```
+
+### Variant Utility Functions
+
+For custom components or advanced usage, you can use the built-in variant utility functions:
 
 ```typescript
 import { 
   getInputVariantClasses, 
   getCardVariantClasses, 
   getVariantClasses 
-} from 'zabi-components';
+} from 'zabi-components/lib/variant-utils';
 
 // For input components (Input, Textarea)
 const inputClass = getInputVariantClasses('success'); // Returns "input-variant-success"
@@ -423,11 +588,74 @@ All components will automatically switch to their dark mode variants without any
 **Events:**
 - `click`: Native click event on navigation items
 
+### NavigationMenu Component
+
+Advanced navigation menu system with compound components:
+
+```svelte
+<script lang="ts">
+  import { 
+    NavigationMenu, 
+    NavigationMenuList, 
+    NavigationMenuItem, 
+    NavigationMenuTrigger, 
+    NavigationMenuContent, 
+    NavigationMenuLink 
+  } from 'zabi-components';
+</script>
+
+<NavigationMenu>
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <NavigationMenuLink href="/products/web">Web</NavigationMenuLink>
+        <NavigationMenuLink href="/products/mobile">Mobile</NavigationMenuLink>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuLink href="/about">About</NavigationMenuLink>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>
+```
+
+**Compound Components:**
+- `NavigationMenu`: Root container
+- `NavigationMenuList`: List wrapper
+- `NavigationMenuItem`: Individual menu item
+- `NavigationMenuTrigger`: Trigger for dropdown items
+- `NavigationMenuContent`: Dropdown content container
+- `NavigationMenuLink`: Navigation link component
+
+**Features:**
+- Keyboard navigation support
+- ARIA compliant
+- CSS-only positioning
+- Responsive design
+
+### Section Component
+
+```svelte
+<Section
+  variant="default" | "primary" | "secondary"
+  size="sm" | "md" | "lg" | "xl"
+  className={string}
+>
+  Section content
+</Section>
+```
+
+**Props:**
+- `variant`: Section style variant (default: "default")
+- `size`: Section size (default: "md")
+- `className`: Additional CSS classes
+
 ### Button Component
 
 ```svelte
 <Button
-  variant="primary" | "secondary" | "danger" | "success" | "ghost" | "brand"
+  variant="primary" | "secondary" | "danger" | "ghost" | "outline" | "link"
   size="sm" | "md" | "lg"
   disabled={boolean}
   type="button" | "submit" | "reset"
@@ -440,10 +668,41 @@ All components will automatically switch to their dark mode variants without any
 
 **Props:**
 - `variant`: Button style variant (default: "primary")
+  - `primary`: Primary action button with solid background
+  - `secondary`: Secondary action button
+  - `danger`: Destructive action button (red)
+  - `ghost`: Transparent button with hover effect
+  - `outline`: Outlined button with border
+  - `link`: Text button styled as a link
 - `size`: Button size (default: "md")
 - `disabled`: Disable the button (default: false)
 - `type`: HTML button type (default: "button")
 - `className`: Additional CSS classes
+
+**Events:**
+- `onclick`: Native click event - `MouseEvent`
+
+### IconButton Component
+
+```svelte
+<IconButton
+  variant="primary" | "secondary" | "danger" | "ghost" | "outline" | "link"
+  size="sm" | "md" | "lg"
+  disabled={boolean}
+  type="button" | "submit" | "reset"
+  label={string}
+  onclick={(e) => console.log('Icon clicked', e)}
+>
+  <!-- Icon content -->
+</IconButton>
+```
+
+**Props:**
+- `variant`: Icon button style (default: "primary")
+- `size`: Icon button size (default: "md")
+- `disabled`: Disable the button (default: false)
+- `type`: HTML button type (default: "button")
+- `label`: Accessible label for screen readers
 
 **Events:**
 - `onclick`: Native click event - `MouseEvent`
@@ -812,7 +1071,7 @@ All components have proper prop typing with event forwarding:
 ```typescript
 // All components support event forwarding
 interface ButtonProps {
-  variant?: "primary" | "secondary" | "danger";
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "outline" | "link";
   size?: "sm" | "md" | "lg";
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
@@ -853,7 +1112,7 @@ Components use consistent SSR-safe patterns:
 ```svelte
 <script lang="ts">
   import { onMount } from "svelte";
-  import { safeLocalStorage, safeDocument } from "zabi-components/ssr-safe";
+  import { safeLocalStorage, safeDocument } from "zabi-components/lib/ssr-safe";
   
   let mounted = $state(false);
   
@@ -1016,7 +1275,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
-### v4.0.0 (Latest) - "Svelte 5 Runes" Edition
+### v5.0.21 (Latest) - Current Version
+
+See [CHANGELOG.md](./CHANGELOG.md) for the complete changelog.
+
+### v5.0.18 - "Enhanced Components" Edition
+
+#### ✨ **Component Enhancements**
+- **Card Compound Components**: Added CardHeader, CardContent, CardFooter, CardTitle, and CardDescription
+- **Button Variants**: Added ghost, outline, and link variants
+- **Badge Updates**: Added icon support and enhanced size variants
+- **NavigationMenu**: Complete navigation menu system with compound components
+- **Section Component**: New responsive section wrapper component
+- **Accessibility**: Enhanced focus management and keyboard navigation across all components
+
+### v4.0.0 - "Svelte 5 Runes" Edition
 
 #### 🚀 **MAJOR UPDATE** - Svelte 5 Migration
 
@@ -1029,12 +1302,12 @@ This version migrates to Svelte 5 with runes syntax for better performance and d
 - **Modern Syntax**: Cleaner, more intuitive component APIs
 
 #### 🔄 **Migration Required**
-- **Svelte Version**: Requires Svelte 5.38.10 or later
+- **Svelte Version**: Requires Svelte 5.43.8 or later
 - **Syntax Updates**: Components now use runes syntax
 - **Event Handling**: Updated to use `oninput`, `onclick` instead of `on:input`, `on:click`
 
 #### 📋 **Breaking Changes**
-1. **Svelte Version**: Must upgrade to Svelte 5.38.10+
+1. **Svelte Version**: Must upgrade to Svelte 5.43.8+
 2. **Event Syntax**: Use `oninput`, `onclick` instead of `on:input`, `on:click`
 3. **Component Props**: All components use Svelte 5 runes syntax
 
@@ -1070,12 +1343,12 @@ See the [Migration Guide](#migration-from-previous-versions) above for detailed 
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
-- Svelte 5.38.10+ or SvelteKit 2+
+- Svelte 5.43.8+ or SvelteKit 2+
 
 ### Local Development
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/zabi-components.git
+git clone https://github.com/sabnor/zabi-components.git
 cd zabi-components
 
 # Install dependencies
@@ -1157,7 +1430,7 @@ npm install zabi-components@latest
 If you encounter runtime errors, ensure you have the correct peer dependencies:
 
 ```bash
-npm install svelte@^5.38.10 @sveltejs/kit@^2.0.0
+npm install svelte@^5.43.8 @sveltejs/kit@^2.0.0
 ```
 
 ### Migration from Previous Versions

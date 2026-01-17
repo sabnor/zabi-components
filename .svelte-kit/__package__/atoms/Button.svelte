@@ -79,7 +79,7 @@
         const sizeStyles = sizeClass();
         const flexClass = isFullWidth ? "flex" : "inline-flex";
         const widthClass = isFullWidth ? "w-full" : "";
-        const baseClasses = `${flexClass} items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus:outline-none`;
+        const baseClasses = `${flexClass} items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none`;
 
         return `${baseClasses} ${widthClass} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.font} ${sizeStyles.leading} ${sizeStyles.tracking} ${sizeStyles.radius} ${sizeStyles.gap} ${variantClass()}`.trim();
     });

@@ -1,5 +1,6 @@
 <script lang="ts">
     import Dropdown from "../molecules/Dropdown.svelte";
+    import Button from "./Button.svelte";
     import {
         ChevronDown,
         CheckCircle,
@@ -22,6 +23,16 @@
             label: string;
             disabled?: boolean;
         }>;
+        /** Enables the search input inside the dropdown. */
+        searchable?: boolean;
+        /** Placeholder for the search input. */
+        searchPlaceholder?: string;
+        /** Max height for the options list (supports any valid CSS length). */
+        maxMenuHeight?: string;
+        /** Width for the dropdown menu (supports any valid CSS length). */
+        menuWidth?: string;
+        /** Message shown when no options match the search. */
+        noResultsText?: string;
         placeholder?: string;
         label?: string;
         disabled?: boolean;
@@ -34,6 +45,11 @@
     let {
         value = undefined,
         options = [],
+        searchable = true,
+        searchPlaceholder = "Search options",
+        maxMenuHeight = "60vh",
+        menuWidth = "100%",
+        noResultsText = "No results found",
         placeholder = "Select an option",
         label = "",
         disabled = false,
@@ -46,6 +62,7 @@
 
     let isOpen = $state(false);
     let selectContainer: HTMLDivElement;
+    let searchQuery = $state("");
 
     const sizeClass = $derived(() => {
         if (size === "sm") {
@@ -93,13 +110,13 @@
 
     const messageClasses = $derived(() => {
         if (variant === "error") {
-            return "text-error text-sm mt-1 flex items-center gap-1.5";
+            return "text-error text-sm mt-1 flex items-center gap-1.5 w-full";
         } else if (variant === "success") {
-            return "text-success text-sm mt-1 flex items-center gap-1.5";
+            return "text-success text-sm mt-1 flex items-center gap-1.5 w-full";
         } else if (variant === "warning") {
-            return "text-warning text-sm mt-1 flex items-center gap-1.5";
+            return "text-warning text-sm mt-1 flex items-center gap-1.5 w-full";
         }
-        return "text-description text-sm mt-1 flex items-center gap-1.5";
+        return "text-description text-sm mt-1 flex items-center gap-1.5 w-full";
     });
 
     const getIcon = $derived(() => {
@@ -123,6 +140,33 @@
 
     const isEmpty = $derived(() => {
         return value === undefined || value === null || value === "";
+    });
+
+    const normalizedOptions = $derived(() => {
+        const fallbackOptions = (restProps as { options?: Props["options"] })
+            .options;
+        return Array.from(options ?? fallbackOptions ?? []);
+    });
+
+    const hasSearchQuery = $derived(() => {
+        return searchQuery.trim().length > 0;
+    });
+
+    const filteredOptions = $derived(() => {
+        const query = searchQuery.trim().toLowerCase();
+        const availableOptions = normalizedOptions();
+        if (!searchable || query.length === 0) {
+            return availableOptions;
+        }
+        return availableOptions.filter((option) =>
+            option.label.toLowerCase().includes(query),
+        );
+    });
+
+    $effect(() => {
+        if (!isOpen && searchQuery.length > 0) {
+            searchQuery = "";
+        }
     });
 
     function handleOptionClick(optionValue: string | number) {
@@ -179,8 +223,8 @@
         {isOpen}
         placement="bottom-start"
         selectedValue={value}
-        {options}
         onOptionClick={handleOptionClick}
+        ariaLabel="Select options"
     >
         {#snippet trigger()}
             <button
@@ -194,7 +238,7 @@
                 aria-describedby={message ? `${selectId}-message` : undefined}
             >
                 <span
-                    class="text-left flex-1 {isEmpty()
+                    class="text-left flex-1 truncate {isEmpty()
                         ? 'text-description'
                         : 'text-body'}"
                 >
@@ -210,6 +254,52 @@
                         : ''}"
                 />
             </button>
+        {/snippet}
+        {#snippet children()}
+            <div class="px-2 pb-2 pt-1" style:width={menuWidth}>
+                {#if searchable}
+                    <div class="px-1 pb-2">
+                        <input
+                            type="text"
+                            class="w-full rounded-md bg-input hover:bg-input-hover focus:bg-input-focus text-body placeholder:text-description px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            placeholder={searchPlaceholder}
+                            bind:value={searchQuery}
+                            aria-label={searchPlaceholder}
+                            {disabled}
+                        />
+                    </div>
+                {/if}
+                <div
+                    class="overflow-y-auto px-1"
+                    style:max-height={maxMenuHeight}
+                >
+                    {#if filteredOptions().length > 0}
+                        {#each filteredOptions() as option (option.value)}
+                            {@const buttonRestProps = {
+                                "data-value": String(option.value),
+                            } as Record<string, string>}
+                            <div class="w-full my-0.5">
+                                <Button
+                                    variant={value === option.value
+                                        ? "outline"
+                                        : "ghost"}
+                                    size="sm"
+                                    isFullWidth={true}
+                                    disabled={option.disabled}
+                                    onclick={() => handleOptionClick(option.value)}
+                                    {...buttonRestProps}
+                                >
+                                    {option.label}
+                                </Button>
+                            </div>
+                        {/each}
+                    {:else if hasSearchQuery()}
+                        <div class="px-3 py-2 text-sm text-description">
+                            {noResultsText}
+                        </div>
+                    {/if}
+                </div>
+            </div>
         {/snippet}
     </Dropdown>
     {#if message && variant !== "default"}
