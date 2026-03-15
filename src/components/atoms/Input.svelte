@@ -7,6 +7,7 @@
         value?: string;
         type?: string;
         name?: string;
+        class?: string;
         label?: string;
         placeholder?: string;
         required?: boolean;
@@ -23,6 +24,7 @@
         value = $bindable(""),
         type = "text",
         name = "",
+        class: className = "",
         label = "",
         placeholder = "",
         required = false,
@@ -74,7 +76,7 @@
         const baseClasses =
             "w-full min-w-48 bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
 
-        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
+        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()} ${className}`.trim();
     });
 
     const labelClasses = $derived(

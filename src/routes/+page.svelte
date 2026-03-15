@@ -19,6 +19,15 @@
     import Dropdown from "../components/molecules/Dropdown.svelte";
     import Tooltip from "../components/atoms/Tooltip.svelte";
     import Skeleton from "../components/atoms/Skeleton.svelte";
+    import SidebarNavigation from "../components/organisms/SidebarNavigation.svelte";
+    import {
+        House,
+        BarChart3,
+        Bell,
+        PieChart,
+        Package,
+        Settings,
+    } from "@lucide/svelte";
 
     // Define types inline to avoid module resolution issues
     interface NavItem {
@@ -39,6 +48,27 @@
         { label: "Components", href: "/components" },
         { label: "Docs", href: "/docs" },
         { label: "GitHub", href: "https://github.com" },
+    ];
+
+    const sidebarNavItems = [
+        { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: House },
+        { id: "revenue", label: "Revenue", href: "/revenue", icon: BarChart3 },
+        {
+            id: "notifications",
+            label: "Notifications",
+            href: "/notifications",
+            icon: Bell,
+            badgeCount: 2,
+        },
+        { id: "analytics", label: "Analytics", href: "/analytics", icon: PieChart },
+        { id: "inventory", label: "Inventory", href: "/inventory", icon: Package },
+        {
+            id: "settings",
+            label: "Settings",
+            href: "/settings",
+            icon: Settings,
+            group: "secondary" as const,
+        },
     ];
 
     // Features data
@@ -90,6 +120,9 @@
     let modalOpen = $state(false);
     let dropdownOpen = $state(false);
     let activeTab = $state("tab1");
+    let sidebarCurrentPath = $state("/revenue");
+    let sidebarLightMode = $state(false);
+    let sidebarSearchValue = $state("Revenue");
 
     // Select options
     const selectOptions = [
@@ -119,6 +152,14 @@
 
     function closeModal() {
         modalOpen = false;
+    }
+
+    function handleSidebarNavigate(
+        item: { href: string; label: string },
+        event: MouseEvent,
+    ) {
+        event.preventDefault();
+        sidebarCurrentPath = item.href;
     }
 </script>
 
@@ -230,7 +271,7 @@
                 <div
                     class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
                 >
-                    {#each features as feature}
+                    {#each features as feature (feature.title)}
                         <Card variant="flat" size="md" fullWidth={true}>
                             <div class="flex items-start gap-4">
                                 <div
@@ -791,31 +832,26 @@
                                         text="Open Dropdown"
                                     />
                                 {/snippet}
-                                {#snippet children()}
-                                    <div class="px-2 py-2">
-                                        <button
-                                            class="w-full text-left px-4 py-2 text-body hover:bg-base-100 rounded-md transition-colors"
-                                            onclick={() =>
-                                                (dropdownOpen = false)}
-                                        >
-                                            Option 1
-                                        </button>
-                                        <button
-                                            class="w-full text-left px-4 py-2 text-body hover:bg-base-100 rounded-md transition-colors"
-                                            onclick={() =>
-                                                (dropdownOpen = false)}
-                                        >
-                                            Option 2
-                                        </button>
-                                        <button
-                                            class="w-full text-left px-4 py-2 text-body hover:bg-base-100 rounded-md transition-colors"
-                                            onclick={() =>
-                                                (dropdownOpen = false)}
-                                        >
-                                            Option 3
-                                        </button>
-                                    </div>
-                                {/snippet}
+                                <div class="px-2 py-2">
+                                    <button
+                                        class="w-full text-left px-4 py-2 text-body hover:bg-base-100 rounded-md transition-colors"
+                                        onclick={() => (dropdownOpen = false)}
+                                    >
+                                        Option 1
+                                    </button>
+                                    <button
+                                        class="w-full text-left px-4 py-2 text-body hover:bg-base-100 rounded-md transition-colors"
+                                        onclick={() => (dropdownOpen = false)}
+                                    >
+                                        Option 2
+                                    </button>
+                                    <button
+                                        class="w-full text-left px-4 py-2 text-body hover:bg-base-100 rounded-md transition-colors"
+                                        onclick={() => (dropdownOpen = false)}
+                                    >
+                                        Option 3
+                                    </button>
+                                </div>
                             </Dropdown>
                         </div>
                     </ComponentDemo>
@@ -888,6 +924,34 @@
                                     <Skeleton width="70%" height="1rem" />
                                 </div>
                             </Card>
+                        </div>
+                    </ComponentDemo>
+
+                    <!-- Sidebar Navigation Example -->
+                    <ComponentDemo
+                        title="Sidebar Navigation Component"
+                        description="Dashboard-style sidebar navigation with expanded/collapsed layouts and dark/light themes"
+                        code={`<SidebarNavigation
+  mode="expanded"
+  items={sidebarNavItems}
+  currentPath={sidebarCurrentPath}
+  bind:isLightMode={sidebarLightMode}
+  bind:searchValue={sidebarSearchValue}
+  onNavigate={handleSidebarNavigate}
+/>`}
+                    >
+                        <div class="w-full overflow-x-auto">
+                            <div class="min-w-[280px]">
+                                <SidebarNavigation
+                                    mode="expanded"
+                                    items={sidebarNavItems}
+                                    currentPath={sidebarCurrentPath}
+                                    bind:isLightMode={sidebarLightMode}
+                                    bind:searchValue={sidebarSearchValue}
+                                    onNavigate={handleSidebarNavigate}
+                                    className="rounded-2xl"
+                                />
+                            </div>
                         </div>
                     </ComponentDemo>
                 </div>
