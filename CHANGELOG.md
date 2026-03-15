@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.22] - 2026-03-16
+
+### ✨ **Features**
+
+- **List Components**: Added new `List` and `ListItem` components with documentation and usage examples
+- **Sidebar**: Added `SidebarNavigation` and `SidebarProjectPanel` with improved navigation behaviors
+
+### 🔧 **Improvements**
+
+- **Card Components**: Refactored `Card`, `CardHeader`, and `CardContent` and simplified composition patterns
+- **Documentation**: Updated Storybook setup and improved component documentation quality
+- **Config & Environment**: Refined environment variable definitions and release metadata handling
+
+### ✅ **No Breaking Changes**
+
+This is a backward-compatible update.
+
+---
+
 ## [5.0.21] - 2026-01-17
 
 ### ✨ **Features**
