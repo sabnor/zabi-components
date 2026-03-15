@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
-    import { getContext, setContext } from "svelte";
+    import { setContext } from "svelte";
     import { onMount } from "svelte";
     import NavigationMenuList from "./NavigationMenuList.svelte";
     import NavigationMenuItem from "./NavigationMenuItem.svelte";
@@ -8,13 +8,10 @@
     import NavigationMenuContent from "./NavigationMenuContent.svelte";
     import NavigationMenuLink from "./NavigationMenuLink.svelte";
 
-    interface NavigationMenuContext {
-        activeItem: string | null;
-        setActiveItem: (item: string | null) => void;
-        isMobile: boolean;
-    }
-
-    const NAVIGATION_MENU_CONTEXT = Symbol("navigation-menu");
+    import {
+        NAVIGATION_MENU_CONTEXT_KEY,
+        type NavigationMenuContextValue,
+    } from "./navigation-menu-context.js";
 
     export interface NavigationMenuItemData {
         value: string;
@@ -76,7 +73,7 @@
         }
     });
 
-    const context: NavigationMenuContext = {
+    const context: NavigationMenuContextValue = {
         get activeItem() {
             return activeItem;
         },
@@ -86,7 +83,7 @@
         },
     };
 
-    setContext(NAVIGATION_MENU_CONTEXT, context);
+    setContext(NAVIGATION_MENU_CONTEXT_KEY, context);
 </script>
 
 <nav

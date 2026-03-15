@@ -12,6 +12,7 @@
         variant?: "header" | "sidebar";
         items?: NavigationItem[];
         currentPath?: string;
+        preventNavigation?: boolean;
         onclick?: (event: Event) => void;
         className?: string;
     }
@@ -20,13 +21,16 @@
         variant = "header",
         items = [],
         currentPath = "",
+        preventNavigation = false,
         onclick,
         className = "",
         ...restProps
     }: Props & { children?: any } = $props();
 
-    function handleClick(item: NavigationItem, event: MouseEvent) {
-        event.preventDefault();
+    function handleClick(event: MouseEvent) {
+        if (preventNavigation) {
+            event.preventDefault();
+        }
         if (onclick) {
             onclick(event as any);
         }
@@ -88,8 +92,7 @@
             <a
                 href={item.href}
                 class={iconContainerClasses}
-                onclick={(e) => handleClick(item, e)}
-                role="button"
+                onclick={handleClick}
                 aria-current={isActive ? "page" : undefined}
             >
                 <div class={getStateLayerClasses()}>

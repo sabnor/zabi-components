@@ -1,5 +1,6 @@
 <script lang="ts">
     import Button from "../atoms/Button.svelte";
+    import { generateId } from "../../routes/lib/ssr-safe.js";
 
     interface Props {
         isOpen?: boolean;
@@ -26,7 +27,7 @@
         ...restProps
     }: Props & { children?: any; trigger?: any } = $props();
 
-    let dropdownId = `dropdown-${Math.random().toString(36).substr(2, 9)}`;
+    const dropdownId = generateId("dropdown");
     let triggerElement = $state<HTMLElement | null>(null);
     let menuElement = $state<HTMLElement | null>(null);
     let openedViaKeyboard = $state(false);

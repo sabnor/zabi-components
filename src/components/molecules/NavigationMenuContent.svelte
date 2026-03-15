@@ -1,9 +1,11 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { getContext } from "svelte";
-    import { onMount, onDestroy } from "svelte";
-
-    const NAVIGATION_MENU_CONTEXT = Symbol("navigation-menu");
+    import { onMount } from "svelte";
+    import {
+        NAVIGATION_MENU_CONTEXT_KEY,
+        type NavigationMenuContextValue,
+    } from "./navigation-menu-context.js";
 
     interface Props {
         value?: string;
@@ -21,11 +23,9 @@
     let contentElement = $state<HTMLElement | null>(null);
     let parentItem = $state<HTMLElement | null>(null);
 
-    const context = getContext<{
-        activeItem: string | null;
-        setActiveItem: (item: string | null) => void;
-        isMobile: boolean;
-    }>(NAVIGATION_MENU_CONTEXT);
+    const context = getContext<NavigationMenuContextValue>(
+        NAVIGATION_MENU_CONTEXT_KEY,
+    );
 
     const isActive = $derived(context?.activeItem === value);
 

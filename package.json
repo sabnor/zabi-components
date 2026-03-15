@@ -84,6 +84,7 @@
     "build:fix-imports": "node scripts/fix-modal-import.js",
     "build:lib": "npm run build:css && npm run build:components && npm run build:lib-files && npm run build:fix-imports && npm run build:types && npm run build:css && node scripts/verify-build.js",
     "build:css": "node scripts/build-css.js && node scripts/validate-theme.js && node scripts/cleanup-css.js",
+    "check:tokens": "node scripts/check-token-violations.js",
     "build:types": "tsc --project tsconfig.lib.json",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
@@ -92,8 +93,8 @@
     "prepublishOnly": "npm run build:lib"
   },
   "devDependencies": {
-    "@storybook/addon-docs": "^10.0.7",
-    "@storybook/sveltekit": "^10.0.7",
+    "@storybook/addon-docs": "^10.2.19",
+    "@storybook/sveltekit": "^10.2.19",
     "@sveltejs/adapter-auto": "^7.0.0",
     "@sveltejs/kit": "^2.47.2",
     "@sveltejs/package": "^2.5.4",
@@ -104,7 +105,7 @@
     "@types/react": "^19.2.2",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.35",
-    "storybook": "^10.0.7",
+    "storybook": "^10.2.19",
     "svelte": "^5.43.8",
     "svelte-check": "^4.3.1",
     "tailwindcss": "^4.1.13",

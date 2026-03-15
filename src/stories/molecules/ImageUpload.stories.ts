@@ -49,3 +49,13 @@ export const CustomAccept: Story = {
         placeholder: 'Select PNG or JPEG image'
     }
 };
+
+export const ErrorState: Story = {
+    args: {
+        value: null,
+        disabled: false,
+        accept: 'image/*',
+        placeholder: 'No image selected',
+        errorMessage: 'We could not process this file. Please upload a valid image and try again.'
+    }
+};

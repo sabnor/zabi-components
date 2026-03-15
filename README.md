@@ -1556,6 +1556,7 @@ Zabi Components is built with accessibility in mind:
 - Logical tab order
 
 See [ACCESSIBILITY.md](./docs/ACCESSIBILITY.md) and [KEYBOARD_NAVIGATION.md](./docs/KEYBOARD_NAVIGATION.md) for detailed documentation.
+See [DESIGN_SYSTEM_REMEDIATION_TRACKER.md](./docs/DESIGN_SYSTEM_REMEDIATION_TRACKER.md), [AUDIT_RUNBOOK.md](./docs/AUDIT_RUNBOOK.md), and [AUDIT_SCORECARD_TEMPLATE.md](./docs/AUDIT_SCORECARD_TEMPLATE.md) for audit and remediation workflows.
 
 ## Variant System
 

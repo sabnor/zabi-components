@@ -1,7 +1,7 @@
 import { v as head } from "../../../chunks/index.js";
 import { g as goto } from "../../../chunks/client.js";
-import { N as Navigation, T as ThemeToggle, C as Card, B as Button } from "../../../chunks/Card.js";
-import { C as CodeBlock } from "../../../chunks/CodeBlock.js";
+import { N as Navigation, T as ThemeToggle, C as Card, B as Button } from "../../../chunks/CodeBlock.svelte_svelte_type_style_lang.js";
+import { C as CodeBlock, I as IconButton, H as Heart } from "../../../chunks/IconButton.js";
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     const navItems = [
@@ -31,15 +31,15 @@ let name = $state("");
       });
       $$renderer3.push(`<meta name="description" content="Getting started guide and API reference for Zabi Components"/>`);
     });
-    $$renderer2.push(`<div class="min-h-screen bg-background"><div class="flex items-center justify-between p-4 bg-surface-level-0 border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
+    $$renderer2.push(`<div class="min-h-screen bg-background"><div class="flex items-center justify-between p-4 bg-base-50 border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
     Navigation($$renderer2, { variant: "header", items: navItems });
     $$renderer2.push(`<!----> `);
     ThemeToggle($$renderer2, {});
-    $$renderer2.push(`<!----></div></div> <div class="container mx-auto p-6 max-w-4xl"><div class="mb-12 text-center"><h1 class="text-4xl font-bold text-text mb-4">Documentation</h1> <p class="text-lg text-text-secondary">Get started with Zabi Components in minutes</p></div> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Quick Start</h2> <p class="text-text-secondary">Install and start using components right away</p></div> <div class="space-y-8">`);
+    $$renderer2.push(`<!----></div></div> <div class="container mx-auto p-6 max-w-4xl"><div class="mb-12 text-center"><h1 class="text-4xl font-bold text-text mb-4">Documentation</h1> <p class="text-lg text-secondary">Get started with Zabi Components in minutes</p></div> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Quick Start</h2> <p class="text-secondary">Install and start using components right away</p></div> <div class="space-y-8">`);
     Card($$renderer2, {
       title: "Installation",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary mb-4">Install Zabi Components using npm:</p> `);
+        $$renderer3.push(`<p class="text-secondary mb-4">Install Zabi Components using npm:</p> `);
         CodeBlock($$renderer3, { code: installCode, language: "bash" });
         $$renderer3.push(`<!---->`);
       },
@@ -49,7 +49,7 @@ let name = $state("");
     Card($$renderer2, {
       title: "Basic Usage",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary mb-4">Import and use components in your Svelte 5 app:</p> `);
+        $$renderer3.push(`<p class="text-secondary mb-4">Import and use components in your Svelte 5 app:</p> `);
         CodeBlock($$renderer3, { code: quickStartCode, language: "svelte" });
         $$renderer3.push(`<!---->`);
       },
@@ -59,7 +59,7 @@ let name = $state("");
     Card($$renderer2, {
       title: "Svelte 5 Ready",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary">Built with Svelte 5 runes and modern patterns</p>`);
+        $$renderer3.push(`<p class="text-secondary">Built with Svelte 5 runes and modern patterns</p>`);
       },
       $$slots: { default: true }
     });
@@ -67,7 +67,7 @@ let name = $state("");
     Card($$renderer2, {
       title: "TypeScript First",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary">Full TypeScript support with proper type definitions</p>`);
+        $$renderer3.push(`<p class="text-secondary">Full TypeScript support with proper type definitions</p>`);
       },
       $$slots: { default: true }
     });
@@ -75,7 +75,7 @@ let name = $state("");
     Card($$renderer2, {
       title: "Accessible",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary">WCAG compliant with keyboard navigation and screen
+        $$renderer3.push(`<p class="text-secondary">WCAG compliant with keyboard navigation and screen
                         reader support</p>`);
       },
       $$slots: { default: true }
@@ -84,7 +84,7 @@ let name = $state("");
     Card($$renderer2, {
       title: "Customizable",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary">Easy theming with CSS custom properties</p>`);
+        $$renderer3.push(`<p class="text-secondary">Easy theming with CSS custom properties</p>`);
       },
       $$slots: { default: true }
     });
@@ -92,7 +92,7 @@ let name = $state("");
     Card($$renderer2, {
       title: "Lightweight",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary">Tree-shakeable with minimal bundle impact</p>`);
+        $$renderer3.push(`<p class="text-secondary">Tree-shakeable with minimal bundle impact</p>`);
       },
       $$slots: { default: true }
     });
@@ -100,15 +100,97 @@ let name = $state("");
     Card($$renderer2, {
       title: "Modern",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary">Clean, minimal design that just works</p>`);
+        $$renderer3.push(`<p class="text-secondary">Clean, minimal design that just works</p>`);
       },
       $$slots: { default: true }
     });
-    $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Ready to Start?</h2></div> <div class="grid grid-cols-1 md:grid-cols-2 gap-6">`);
+    $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Button Variants</h2> <p class="text-secondary">Explore different button styles and variants</p></div> `);
+    Card($$renderer2, {
+      title: "Available Variants",
+      children: ($$renderer3) => {
+        $$renderer3.push(`<p class="text-secondary mb-6">Zabi Components provides multiple button variants for
+                    different use cases:</p> <div class="flex flex-wrap gap-4 items-center justify-center mb-6">`);
+        Button($$renderer3, { variant: "primary", text: "Primary" });
+        $$renderer3.push(`<!----> `);
+        Button($$renderer3, { variant: "secondary", text: "Secondary" });
+        $$renderer3.push(`<!----> `);
+        Button($$renderer3, { variant: "outline", text: "Outline" });
+        $$renderer3.push(`<!----> `);
+        Button($$renderer3, { variant: "ghost", text: "Ghost" });
+        $$renderer3.push(`<!----> `);
+        Button($$renderer3, { variant: "link", text: "Link" });
+        $$renderer3.push(`<!----> `);
+        Button($$renderer3, { variant: "danger", text: "Danger" });
+        $$renderer3.push(`<!----></div> `);
+        CodeBlock($$renderer3, {
+          code: `<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+<Button variant="danger">Danger</Button>`,
+          language: "svelte"
+        });
+        $$renderer3.push(`<!---->`);
+      },
+      $$slots: { default: true }
+    });
+    $$renderer2.push(`<!----></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Icon Buttons</h2> <p class="text-secondary">Use icon-only buttons for compact actions and toolbars</p></div> `);
+    Card($$renderer2, {
+      title: "IconButton",
+      children: ($$renderer3) => {
+        $$renderer3.push(`<p class="text-secondary mb-6">Provide an accessible label for icon-only buttons.</p> <div class="flex flex-wrap gap-4 items-center justify-center mb-6">`);
+        IconButton($$renderer3, {
+          variant: "primary",
+          label: "Favorite",
+          children: ($$renderer4) => {
+            Heart($$renderer4, {});
+          },
+          $$slots: { default: true }
+        });
+        $$renderer3.push(`<!----> `);
+        IconButton($$renderer3, {
+          variant: "secondary",
+          label: "Favorite",
+          children: ($$renderer4) => {
+            Heart($$renderer4, {});
+          },
+          $$slots: { default: true }
+        });
+        $$renderer3.push(`<!----> `);
+        IconButton($$renderer3, {
+          variant: "ghost",
+          label: "Favorite",
+          children: ($$renderer4) => {
+            Heart($$renderer4, {});
+          },
+          $$slots: { default: true }
+        });
+        $$renderer3.push(`<!----> `);
+        IconButton($$renderer3, {
+          variant: "outline",
+          label: "Favorite",
+          children: ($$renderer4) => {
+            Heart($$renderer4, {});
+          },
+          $$slots: { default: true }
+        });
+        $$renderer3.push(`<!----></div> `);
+        CodeBlock($$renderer3, {
+          code: `<IconButton label="Favorite">
+  <Heart />
+</IconButton>`,
+          language: "svelte"
+        });
+        $$renderer3.push(`<!---->`);
+      },
+      $$slots: { default: true }
+    });
+    $$renderer2.push(`<!----></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Ready to Start?</h2></div> <div class="grid grid-cols-1 md:grid-cols-2 gap-6">`);
     Card($$renderer2, {
       title: "Explore Components",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary mb-4">Browse our interactive component showcase</p> `);
+        $$renderer3.push(`<p class="text-secondary mb-4">Browse our interactive component showcase</p> `);
         Button($$renderer3, {
           onclick: () => goto(),
           variant: "primary",
@@ -125,10 +207,10 @@ let name = $state("");
     Card($$renderer2, {
       title: "Get Support",
       children: ($$renderer3) => {
-        $$renderer3.push(`<p class="text-text-secondary mb-4">Check out our GitHub repository for help</p> `);
+        $$renderer3.push(`<p class="text-secondary mb-4">Check out our GitHub repository for help</p> `);
         Button($$renderer3, {
           onclick: () => goto(),
-          variant: "secondary",
+          variant: "outline",
           children: ($$renderer4) => {
             $$renderer4.push(`<!---->Visit GitHub`);
           },
@@ -138,7 +220,7 @@ let name = $state("");
       },
       $$slots: { default: true }
     });
-    $$renderer2.push(`<!----></div></section></div> <div class="bg-surface-level-1 border-t border-border py-8"><div class="container mx-auto px-6 text-center"><p class="text-text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-text-secondary/80">© 2024 Zabi Components. MIT License.</p></div></div></div>`);
+    $$renderer2.push(`<!----></div></section></div> <div class="bg-base-100 border-t border-border py-8"><div class="container mx-auto px-6 text-center"><p class="text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-secondary/80">© 2024 Zabi Components. MIT License.</p></div></div></div>`);
   });
 }
 export {

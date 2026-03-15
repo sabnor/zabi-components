@@ -1,4 +1,11 @@
 <script lang="ts">
+    import {
+        focusFirstElement,
+        returnFocus,
+        saveFocus,
+        trapFocus,
+    } from "../../routes/lib/focus-utils.js";
+
     interface Props {
         isOpen?: boolean;
         title?: string;
@@ -13,12 +20,34 @@
         ...restProps
     } = $props<Props & { children?: any }>();
 
+    let slideUpContainer = $state<HTMLDivElement>();
+    let cleanupFocusTrap: (() => void) | null = null;
+
     function closeSlideUp(event?: Event) {
         isOpen = false;
+        if (cleanupFocusTrap) {
+            cleanupFocusTrap();
+            cleanupFocusTrap = null;
+        }
+        returnFocus();
         if (onclick && event) {
             (onclick as (event: Event) => void)(event);
         }
     }
+
+    $effect(() => {
+        const container = slideUpContainer;
+        if (isOpen && container) {
+            saveFocus();
+            cleanupFocusTrap = trapFocus(container);
+            setTimeout(() => {
+                focusFirstElement(container);
+            }, 0);
+        } else if (!isOpen && cleanupFocusTrap) {
+            cleanupFocusTrap();
+            cleanupFocusTrap = null;
+        }
+    });
 
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) {
@@ -48,6 +77,7 @@
         tabindex="-1"
     >
         <div
+            bind:this={slideUpContainer}
             class="fixed bottom-0 left-0 right-0 bg-card rounded-t-3xl shadow-xl z-modal max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] flex flex-col"
         >
             {#if title}

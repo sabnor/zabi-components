@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { generateId } from "../../routes/lib/ssr-safe.js";
+
     interface Props {
         value?: number;
         max?: number;
@@ -14,11 +16,7 @@
         ...restProps
     }: Props = $props();
 
-    let progressId = $state(
-        typeof window !== "undefined"
-            ? `progress-${Math.random().toString(36).substr(2, 9)}`
-            : `progress-ssr-${Date.now()}`,
-    );
+    const progressId = generateId("progress");
 
     let percentage = $derived(Math.min(Math.max((value / max) * 100, 0), 100));
 

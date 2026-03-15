@@ -38,7 +38,7 @@
     // Override props based on variant
     const title = $derived(variant === "notitle" ? "" : titleProp);
     const description = $derived(variant === "notitle" ? "" : descriptionProp);
-    const maxWidth = $derived(() => {
+    const maxWidth = $derived.by(() => {
         if (variant === "centered") return "2xl";
         if (variant === "muted") return "xl";
         if (variant === "minimal") return "lg";
@@ -46,17 +46,17 @@
         if (variant === "notitle") return "xl";
         return maxWidthProp;
     });
-    const background = $derived(() => {
+    const background = $derived.by(() => {
         if (variant === "muted") return "muted";
         if (variant === "accent") return "accent";
         if (variant === "fullwidth") return "muted";
         return backgroundProp;
     });
-    const padding = $derived(() => {
+    const padding = $derived.by(() => {
         if (variant === "minimal") return "sm";
         return paddingProp;
     });
-    const centered = $derived(() => {
+    const centered = $derived.by(() => {
         if (variant === "centered" || variant === "accent") return true;
         return centeredProp;
     });

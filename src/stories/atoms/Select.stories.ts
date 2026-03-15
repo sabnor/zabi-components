@@ -136,3 +136,27 @@ export const SearchableWithScroll: Story = {
         }))
     }
 };
+
+export const LoadingState: Story = {
+    args: {
+        label: 'Loading Select',
+        placeholder: 'Choose an option',
+        isLoading: true,
+        loadingText: 'Loading options...',
+        options: []
+    }
+};
+
+export const EmptyState: Story = {
+    args: {
+        label: 'Empty Select',
+        placeholder: 'Choose an option',
+        emptyStateTitle: 'Create your first option',
+        emptyStateDescription: 'Add an option to start organizing and selecting values.',
+        emptyStateActionLabel: 'Add Option',
+        onEmptyStateAction: () => {
+            console.log('Empty state primary action clicked');
+        },
+        options: []
+    }
+};
