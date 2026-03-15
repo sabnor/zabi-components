@@ -1,14 +1,7 @@
 <script lang="ts">
     import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
     import type { SemanticVariant, SizeVariant } from "../../types/variants.js";
-
-    function generateId(prefix: string = "id"): string {
-        if (typeof window !== "undefined") {
-            return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
-        } else {
-            return `${prefix}-ssr-${Date.now()}`;
-        }
-    }
+    import { generateId } from "../../routes/lib/ssr-safe.js";
 
     interface Props {
         value?: string;
@@ -16,6 +9,7 @@
         name?: string;
         label?: string;
         placeholder?: string;
+        required?: boolean;
         disabled?: boolean;
         size?: SizeVariant;
         variant?: SemanticVariant;
@@ -31,6 +25,7 @@
         name = "",
         label = "",
         placeholder = "",
+        required = false,
         disabled = false,
         size = "md",
         variant = "default",
@@ -121,16 +116,23 @@
         {name}
         bind:value
         {placeholder}
+        {required}
         {disabled}
         class={inputClasses()}
         oninput={handleInput}
         {onblur}
         aria-invalid={variant === "error" ? "true" : undefined}
+        aria-required={required ? "true" : undefined}
         aria-describedby={message ? `${inputId}-message` : undefined}
         {...restProps}
     />
     {#if message && variant !== "default"}
-        <p id={`${inputId}-message`} class={messageClasses()} role="alert">
+        <p
+            id={`${inputId}-message`}
+            class={messageClasses()}
+            role={variant === "error" ? "alert" : "status"}
+            aria-live={variant === "error" ? "assertive" : "polite"}
+        >
             {#if getIcon()}
                 {@const Icon = getIcon()}
                 <Icon size={14} class="shrink-0" />

@@ -20,10 +20,10 @@
     }: Props = $props();
 
     let isOpen = $state(false);
-    let pickerContainer: HTMLDivElement;
-    let colorMap: HTMLCanvasElement;
-    let colorMapContainer: HTMLDivElement;
-    let hueSlider: HTMLInputElement;
+    let pickerContainer = $state<HTMLDivElement>();
+    let colorMap = $state<HTMLCanvasElement>();
+    let colorMapContainer = $state<HTMLDivElement>();
+    let hueSlider = $state<HTMLInputElement>();
     let isDragging = $state(false);
 
     // HSL values (0-360, 0-100, 0-100)
@@ -178,6 +178,10 @@
         }
     }
 
+    function handleMouseUp() {
+        isDragging = false;
+    }
+
     function handleHueChange(event: Event) {
         const target = event.target as HTMLInputElement;
         hue = parseInt(target.value);
@@ -223,15 +227,13 @@
             updateFromHex(value);
         }
         window.addEventListener("mousedown", handleClickOutside);
-        window.addEventListener("mouseup", () => {
-            isDragging = false;
-        });
+        window.addEventListener("mouseup", handleMouseUp);
         window.addEventListener("mousemove", handleColorMapDrag);
     });
 
     onDestroy(() => {
         window.removeEventListener("mousedown", handleClickOutside);
-        window.removeEventListener("mouseup", () => {});
+        window.removeEventListener("mouseup", handleMouseUp);
         window.removeEventListener("mousemove", handleColorMapDrag);
     });
 

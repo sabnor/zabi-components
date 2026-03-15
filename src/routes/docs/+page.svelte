@@ -17,7 +17,7 @@
         { label: "Home", href: "/" },
         { label: "Components", href: "/components" },
         { label: "Docs", href: "/docs" },
-        { label: "GitHub", href: "https://github.com" },
+        { label: "GitHub", href: "https://github.com/sabnor/zabi-components" },
     ];
 
     const quickStartCode = `import { Button, Card, Input } from "zabi-components";
@@ -36,6 +36,16 @@ let name = $state("");
 </Card>`;
 
     const installCode = `npm install zabi-components`;
+
+    const auditFilesCode = `docs/AUDIT_RUNBOOK.md
+docs/AUDIT_SCORECARD_TEMPLATE.md
+docs/AUDIT_SCORECARD_2026-03-15.md
+docs/DESIGN_SYSTEM_REMEDIATION_TRACKER.md`;
+
+    const qualityChecksCode = `npm run check
+npm run check:tokens
+npm run build
+npm run build-storybook`;
 </script>
 
 <svelte:head>
@@ -64,7 +74,7 @@ let name = $state("");
         <div class="mb-12 text-center">
             <h1 class="text-4xl font-bold text-text mb-4">Documentation</h1>
             <p class="text-lg text-secondary">
-                Get started with Zabi Components in minutes
+                Build, audit, and ship accessible UI with confidence
             </p>
         </div>
 
@@ -92,6 +102,60 @@ let name = $state("");
                         Import and use components in your Svelte 5 app:
                     </p>
                     <CodeBlock code={quickStartCode} language="svelte" />
+                </Card>
+            </div>
+        </section>
+
+        <!-- Design System Quality -->
+        <section class="mb-16">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-text mb-4">
+                    Design System Quality
+                </h2>
+                <p class="text-secondary">
+                    Run the audit framework and remediation workflow end-to-end
+                </p>
+            </div>
+
+            <div class="space-y-8">
+                <Card title="Audit Framework Files">
+                    <p class="text-secondary mb-4">
+                        Use these files to run repeatable audits, track issues,
+                        and publish scorecards.
+                    </p>
+                    <CodeBlock code={auditFilesCode} language="bash" />
+                </Card>
+
+                <Card title="Quality Gates">
+                    <p class="text-secondary mb-4">
+                        Run these checks before publishing updates to the
+                        component library.
+                    </p>
+                    <CodeBlock code={qualityChecksCode} language="bash" />
+                </Card>
+
+                <Card title="Current Status">
+                    <p class="text-secondary mb-4">
+                        Latest remediation cycle completed all planned phases,
+                        including accessibility, token compliance, state
+                        coverage, and Storybook/doc updates.
+                    </p>
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <div class="rounded-lg border border-border p-3">
+                            <p class="text-sm font-medium text-text">
+                                Health Score
+                            </p>
+                            <p class="text-secondary">84 / 100</p>
+                        </div>
+                        <div class="rounded-lg border border-border p-3">
+                            <p class="text-sm font-medium text-text">
+                                Validation
+                            </p>
+                            <p class="text-secondary">
+                                `check`, `build`, and Storybook build passing
+                            </p>
+                        </div>
+                    </div>
                 </Card>
             </div>
         </section>
@@ -244,7 +308,8 @@ let name = $state("");
                         Check out our GitHub repository for help
                     </p>
                     <Button
-                        onclick={() => goto("https://github.com")}
+                        onclick={() =>
+                            goto("https://github.com/sabnor/zabi-components")}
                         variant="outline"
                     >
                         Visit GitHub

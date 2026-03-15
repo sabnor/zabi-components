@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Dropdown from '../../components/molecules/Dropdown.svelte';
-import Button from '../../components/atoms/Button.svelte';
 import DropdownWithContent from './DropdownWithContent.svelte';
+import DropdownEmptyState from './DropdownEmptyState.svelte';
 
 const meta = {
     title: 'Design System/Molecules/Dropdown',
@@ -88,6 +88,17 @@ export const Closed: Story = {
     },
     render: (args) => ({
         Component: DropdownWithContent,
+        props: args
+    })
+};
+
+export const EmptyState: Story = {
+    args: {
+        isOpen: true,
+        placement: 'bottom-start'
+    },
+    render: (args) => ({
+        Component: DropdownEmptyState,
         props: args
     })
 };

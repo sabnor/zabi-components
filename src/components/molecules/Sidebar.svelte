@@ -117,7 +117,6 @@
             <aside
                 bind:this={sidebarElement}
                 class="fixed left-0 top-0 bottom-0 w-64 bg-base-100 border-r border-border p-6 h-full overflow-y-auto transform transition-transform duration-300 ease-in-out {isOpen ? 'translate-x-0' : '-translate-x-full'} {className}"
-                role="complementary"
                 aria-label="Sidebar navigation"
                 onclick={(e) => e.stopPropagation()}
                 {...restProps}
@@ -170,7 +169,7 @@
                                     <div class="flex items-center gap-2">
                                         {#if item.icon}
                                             <div class="shrink-0">
-                                                <svelte:component this={item.icon} class="h-4 w-4" />
+                                                <item.icon class="h-4 w-4" />
                                             </div>
                                         {/if}
                                         <div class="flex-1">
@@ -201,7 +200,7 @@
                                 <div class="flex items-center gap-2">
                                     {#if item.icon}
                                         <div class="shrink-0">
-                                            <svelte:component this={item.icon} class="h-4 w-4" />
+                                            <item.icon class="h-4 w-4" />
                                         </div>
                                     {/if}
                                     <div class="flex-1">
@@ -231,7 +230,6 @@
     <aside
         bind:this={sidebarElement}
         class="w-64 bg-base-100 border-r border-border p-6 h-full overflow-y-auto {className}"
-        role="complementary"
         aria-label="Sidebar navigation"
         {...restProps}
     >
@@ -267,7 +265,7 @@
                         <div class="flex items-center gap-2">
                             {#if item.icon}
                                 <div class="shrink-0">
-                                    <svelte:component this={item.icon} class="h-4 w-4" />
+                                    <item.icon class="h-4 w-4" />
                                 </div>
                             {/if}
                             <div class="flex-1">
@@ -298,7 +296,7 @@
                     <div class="flex items-center gap-2">
                         {#if item.icon}
                             <div class="shrink-0">
-                                <svelte:component this={item.icon} class="h-4 w-4" />
+                                <item.icon class="h-4 w-4" />
                             </div>
                         {/if}
                         <div class="flex-1">

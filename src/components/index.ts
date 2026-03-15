@@ -22,13 +22,7 @@ export { default as Tabs } from './molecules/Tabs.svelte';
 export { default as Navbar } from './organisms/Navbar.svelte';
 export { default as Navigation } from './organisms/Navigation.svelte';
 
-export const createId = (prefix: string = 'id'): string => {
-    if (typeof window !== 'undefined') {
-        return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
-    } else {
-        return `${prefix}-ssr-${Date.now()}`;
-    }
-};
+export const createId = (prefix: string = 'id'): string => generateId(prefix);
 
 export const cn = (...classes: (string | undefined | null | false)[]): string =>
     classes.filter(Boolean).join(' ');
