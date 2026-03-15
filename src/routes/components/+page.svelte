@@ -1,5 +1,7 @@
 <script lang="ts">
     import Navigation from "../../components/organisms/Navigation.svelte";
+    import SidebarNavigation from "../../components/organisms/SidebarNavigation.svelte";
+    import SidebarProjectPanel from "../../components/organisms/SidebarProjectPanel.svelte";
     import ThemeToggle from "../../components/atoms/ThemeToggle.svelte";
     import ComponentDemo from "../../components/molecules/ComponentDemo.svelte";
     import Button from "../../components/atoms/Button.svelte";
@@ -28,7 +30,6 @@
     import Form from "../../components/molecules/Form.svelte";
     import ImageUpload from "../../components/molecules/ImageUpload.svelte";
     import SlideUp from "../../components/molecules/SlideUp.svelte";
-    import Sidebar from "../../components/molecules/Sidebar.svelte";
     import NavigationMenu from "../../components/molecules/NavigationMenu.svelte";
     import NavigationMenuList from "../../components/molecules/NavigationMenuList.svelte";
     import NavigationMenuItem from "../../components/molecules/NavigationMenuItem.svelte";
@@ -36,8 +37,20 @@
     import NavigationMenuContent from "../../components/molecules/NavigationMenuContent.svelte";
     import NavigationMenuLink from "../../components/molecules/NavigationMenuLink.svelte";
     import Navbar from "../../components/organisms/Navbar.svelte";
-    import { CircleCheck, CircleHelp, Circle, Heart } from "@lucide/svelte";
+    import {
+        CircleCheck,
+        CircleHelp,
+        Circle,
+        Heart,
+        House,
+        BarChart3,
+        Bell,
+        PieChart,
+        Package,
+        Settings,
+    } from "@lucide/svelte";
     import type { NavItem, ComponentMetadata } from "../../types/page.types";
+    import type { SidebarNavigationItem } from "../../components/organisms/SidebarNavigation.svelte";
 
     const navItems: NavItem[] = [
         { label: "Home", href: "/" },
@@ -47,6 +60,11 @@
     ];
 
     const categories = [
+        {
+            id: "all",
+            label: "All",
+            description: "All component categories",
+        },
         { id: "atoms", label: "Atoms", description: "Basic building blocks" },
         {
             id: "molecules",
@@ -68,6 +86,12 @@
     let sidebarOpen = $state(false);
     let navMenuOpen = $state(false);
     let selectValue = $state<string | number | undefined>(undefined);
+    let sidebarPath = $state("/revenue");
+    let sidebarSearchValue = $state("Revenue");
+    let sidebarSearchPanelOpen = $state(false);
+    let sidebarProjectSearch = $state("");
+    let selectedProjectId = $state("proj-zabi-web");
+    let componentsNavSearch = $state("");
 
     const sampleCode = `function greet(name) {
   return \`Hello, \${name}!\`;
@@ -79,6 +103,51 @@ console.log(greet('World'));`;
         value: `option-${index + 1}`,
         label: `Option ${index + 1}`,
     }));
+
+    const sidebarNavItems = [
+        { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: House },
+        { id: "revenue", label: "Revenue", href: "/revenue", icon: BarChart3 },
+        {
+            id: "notifications",
+            label: "Notifications",
+            href: "/notifications",
+            icon: Bell,
+            badgeCount: 2,
+        },
+        { id: "analytics", label: "Analytics", href: "/analytics", icon: PieChart },
+        { id: "inventory", label: "Inventory", href: "/inventory", icon: Package },
+        {
+            id: "settings",
+            label: "Settings",
+            href: "/settings",
+            icon: Settings,
+            group: "secondary" as const,
+        },
+    ];
+    const sidebarProjectItems = [
+        {
+            id: "proj-zabi-web",
+            label: "Zabi Web App",
+            description: "Production workspace",
+            badgeText: "Active",
+        },
+        {
+            id: "proj-design-system",
+            label: "Design System",
+            description: "Component library",
+            badgeText: "New",
+        },
+        {
+            id: "proj-marketing",
+            label: "Marketing Site",
+            description: "Landing and docs",
+        },
+        {
+            id: "proj-analytics",
+            label: "Analytics Dashboard",
+            description: "Internal reports",
+        },
+    ];
 
     const components: Record<string, ComponentMetadata[]> = {
         atoms: [
@@ -1318,45 +1387,194 @@ console.log(greet('World'));`;
                     },
                 ],
             },
+            {
+                name: "SidebarNavigation",
+                category: "organisms",
+                description:
+                    "Sidebar navigation with collapsed and expanded modes, grouped links, badges, and utility controls.",
+                props: [
+                    {
+                        name: "mode",
+                        type: '"expanded" | "collapsed"',
+                        required: false,
+                        defaultValue: '"expanded"',
+                        description: "Sidebar display mode",
+                    },
+                    {
+                        name: "items",
+                        type: "SidebarNavigationItem[]",
+                        required: false,
+                        defaultValue: "[]",
+                        description: "Primary and secondary sidebar items",
+                    },
+                    {
+                        name: "currentPath",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Active route path used for selected styling",
+                    },
+                ],
+                variants: ["expanded", "collapsed"],
+                examples: [
+                    {
+                        title: "Searchable Input Mode",
+                        description:
+                            "Search input filters visible navigation items while preserving grouped structure.",
+                        code: "&lt;SidebarNavigation mode=&quot;expanded&quot; searchMode=&quot;input&quot; items={sidebarNavItems} currentPath=&quot;/revenue&quot; /&gt;",
+                    },
+                    {
+                        title: "Trigger Button Mode",
+                        description:
+                            "Use a search trigger button to open an adjacent picker panel.",
+                        code: "&lt;SidebarNavigation mode=&quot;expanded&quot; searchMode=&quot;button&quot; onSearchClick={() =&gt; (panelOpen = true)} /&gt;",
+                    },
+                ],
+            },
+            {
+                name: "SidebarProjectPanel",
+                category: "organisms",
+                description:
+                    "Companion panel for sidebar search-trigger flows, designed for project picking and quick context switching.",
+                props: [
+                    {
+                        name: "items",
+                        type: "SidebarProjectPanelItem[]",
+                        required: false,
+                        defaultValue: "[]",
+                        description: "Selectable panel items with optional descriptions and badges",
+                    },
+                    {
+                        name: "searchValue",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Controlled search value for filtering panel items",
+                    },
+                    {
+                        name: "selectedItemId",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Currently selected item id",
+                    },
+                ],
+                variants: ["default", "empty state"],
+                examples: [
+                    {
+                        title: "Project Picker",
+                        description:
+                            "Search and select a project from a dedicated side panel.",
+                        code: "&lt;SidebarProjectPanel items={projectItems} bind:selectedItemId bind:searchValue /&gt;",
+                    },
+                ],
+            },
         ],
     };
 
-    let currentComponents = $derived(components[selectedCategory] || []);
-
-    // Prepare sidebar sections
-    const sidebarSections = $derived(() => {
-        const categorySection = {
-            title: "Categories",
-            items: categories.map((category) => ({
-                id: `category-${category.id}`,
-                label: category.label,
-                description: category.description,
-                onClick: () => {
-                    selectedCategory = category.id;
-                    // Reset to first component in category
-                    const firstComponent = components[category.id]?.[0];
-                    if (firstComponent) {
-                        selectedComponent = firstComponent.name.toLowerCase();
-                    } else {
-                        selectedComponent = "";
-                    }
-                },
-            })),
-        };
-
-        const componentsSection = {
-            title: "Components",
-            items: currentComponents.map((component) => ({
-                id: component.name.toLowerCase(),
-                label: component.name,
-                onClick: () => {
-                    selectedComponent = component.name.toLowerCase();
-                },
-            })),
-        };
-
-        return [categorySection, componentsSection];
+    let currentComponents = $derived.by(() => {
+        if (selectedCategory === "all") {
+            return [
+                ...components.atoms,
+                ...components.molecules,
+                ...components.organisms,
+            ];
+        }
+        return components[selectedCategory] || [];
     });
+
+    const docsSidebarCurrentPath = $derived(
+        selectedComponent
+            ? `component:${selectedComponent}`
+            : `category:${selectedCategory}`,
+    );
+
+    function getDocsCategoryIcon(categoryId: string) {
+        if (categoryId === "all") return House;
+        if (categoryId === "molecules") return PieChart;
+        if (categoryId === "organisms") return Package;
+        return Circle;
+    }
+
+    function getDocsComponentIcon(
+        componentName: string,
+        componentCategory: string,
+    ) {
+        if (componentName.includes("Navigation")) return House;
+        if (
+            componentName.includes("Form") ||
+            componentName === "Input" ||
+            componentName === "Textarea" ||
+            componentName === "Select" ||
+            componentName === "Checkbox" ||
+            componentName === "Toggle"
+        ) {
+            return CircleCheck;
+        }
+        if (componentName === "Alert" || componentName === "Toast") return Bell;
+        if (componentCategory === "molecules") return PieChart;
+        if (componentCategory === "organisms") return Package;
+        return Circle;
+    }
+
+    const docsSidebarItems = $derived.by((): SidebarNavigationItem[] => {
+        const categoryItems: SidebarNavigationItem[] = categories.map((category) => ({
+            id: `category-${category.id}`,
+            label: category.label,
+            href: `category:${category.id}`,
+            icon: getDocsCategoryIcon(category.id),
+            badgeText:
+                category.id === "all"
+                    ? components.atoms.length +
+                      components.molecules.length +
+                      components.organisms.length
+                    : components[category.id]?.length,
+            group: "primary",
+        }));
+
+        const componentItems: SidebarNavigationItem[] = currentComponents.map(
+            (component) => ({
+                id: `component-${component.name.toLowerCase()}`,
+                label: component.name,
+                href: `component:${component.name.toLowerCase()}`,
+                icon: getDocsComponentIcon(component.name, component.category),
+                group: "secondary",
+            }),
+        );
+
+        return [...categoryItems, ...componentItems];
+    });
+
+    function handleDocsSidebarNavigate(
+        item: SidebarNavigationItem,
+        event: MouseEvent,
+    ): void {
+        event.preventDefault();
+
+        const [targetType, targetValue] = item.href.split(":");
+        if (!targetValue) {
+            return;
+        }
+
+        if (targetType === "category") {
+            selectedCategory = targetValue;
+            const firstComponent =
+                targetValue === "all"
+                    ? [
+                          ...components.atoms,
+                          ...components.molecules,
+                          ...components.organisms,
+                      ][0]
+                    : components[targetValue]?.[0];
+            selectedComponent = firstComponent
+                ? firstComponent.name.toLowerCase()
+                : "";
+        } else if (targetType === "component") {
+            selectedComponent = targetValue;
+        }
+
+        sidebarOpen = false;
+    }
 </script>
 
 <svelte:head>
@@ -1410,19 +1628,32 @@ console.log(greet('World'));`;
     {/if}
 
     <main class="flex min-h-screen">
-        <!-- Sidebar -->
-        <Sidebar
-            title="Components"
-            sections={sidebarSections()}
-            selectedItemId={selectedComponent || `category-${selectedCategory}`}
-            isOpen={sidebarOpen}
-            onClose={() => (sidebarOpen = false)}
-            onItemClick={(item) => {
-                if (item.onClick) {
-                    item.onClick();
-                }
-            }}
-        />
+        {#if sidebarOpen}
+            <button
+                type="button"
+                class="fixed inset-0 z-20 bg-black/30 md:hidden"
+                onclick={() => (sidebarOpen = false)}
+                aria-label="Close components sidebar"
+            ></button>
+        {/if}
+
+        <div
+            class="fixed left-0 top-0 z-30 h-screen transform bg-background transition-transform duration-200 md:static md:z-0 md:h-auto {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0"
+        >
+            <SidebarNavigation
+                mode="expanded"
+                items={docsSidebarItems}
+                currentPath={docsSidebarCurrentPath}
+                bind:searchValue={componentsNavSearch}
+                searchMode="input"
+                showProfile={false}
+                showThemeToggle={false}
+                showLogout={false}
+                emptyStateTitle="No navigation matches"
+                emptyStateDescription="Try another term to find categories or components."
+                onNavigate={handleDocsSidebarNavigate}
+            />
+        </div>
 
         <!-- Main Content -->
         <div class="flex-1 p-8">
@@ -2347,6 +2578,88 @@ console.log(greet('World'));`;
                                                     ]}
                                                 />
                                             </div>
+                                        </div>
+                                    {:else if component.name === "SidebarNavigation"}
+                                        <div class="space-y-6">
+                                            <div>
+                                                <h4
+                                                    class="text-sm font-medium text-headline mb-2"
+                                                >
+                                                    Searchable Input Mode
+                                                </h4>
+                                                <div
+                                                    class="inline-block overflow-hidden rounded-2xl border border-border"
+                                                >
+                                                    <SidebarNavigation
+                                                        mode="expanded"
+                                                        searchMode="input"
+                                                        items={sidebarNavItems}
+                                                        currentPath={sidebarPath}
+                                                        bind:searchValue={sidebarSearchValue}
+                                                        onNavigate={(item, event) => {
+                                                            event.preventDefault();
+                                                            sidebarPath = item.href;
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h4
+                                                    class="text-sm font-medium text-headline mb-2"
+                                                >
+                                                    Trigger Button + Project Panel
+                                                </h4>
+                                                <div
+                                                    class="flex flex-wrap items-start gap-4"
+                                                >
+                                                    <SidebarNavigation
+                                                        mode="expanded"
+                                                        searchMode="button"
+                                                        items={sidebarNavItems}
+                                                        currentPath={sidebarPath}
+                                                        searchValue={selectedProjectId
+                                                            ? sidebarProjectItems.find((item) => item.id === selectedProjectId)?.label || "Search projects"
+                                                            : "Search projects"}
+                                                        onSearchClick={() => {
+                                                            sidebarSearchPanelOpen =
+                                                                !sidebarSearchPanelOpen;
+                                                        }}
+                                                        onNavigate={(item, event) => {
+                                                            event.preventDefault();
+                                                            sidebarPath = item.href;
+                                                        }}
+                                                    />
+                                                    {#if sidebarSearchPanelOpen}
+                                                        <SidebarProjectPanel
+                                                            title="Project picker"
+                                                            subtitle="Search and switch projects"
+                                                            items={sidebarProjectItems}
+                                                            bind:searchValue={sidebarProjectSearch}
+                                                            bind:selectedItemId={selectedProjectId}
+                                                            onClose={() => {
+                                                                sidebarSearchPanelOpen = false;
+                                                            }}
+                                                        />
+                                                    {/if}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {:else if component.name === "SidebarProjectPanel"}
+                                        <div class="space-y-6">
+                                            <SidebarProjectPanel
+                                                title="Project picker"
+                                                subtitle="Search and switch projects"
+                                                items={sidebarProjectItems}
+                                                bind:searchValue={sidebarProjectSearch}
+                                                bind:selectedItemId={selectedProjectId}
+                                            />
+                                            <SidebarProjectPanel
+                                                title="Empty projects"
+                                                subtitle="First-time setup state"
+                                                items={[]}
+                                                emptyStateTitle="No projects yet"
+                                                emptyStateDescription="Create your first project to get started."
+                                            />
                                         </div>
                                     {:else if component.name === "ColorPicker"}
                                         <div class="space-y-6 max-w-md">
