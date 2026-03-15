@@ -17,6 +17,8 @@ export { default as Input } from '../../components/atoms/Input.svelte';
 export { default as Textarea } from '../../components/atoms/Textarea.svelte';
 export { default as Select } from '../../components/atoms/Select.svelte';
 export { default as ColorPicker } from '../../components/atoms/ColorPicker.svelte';
+export { default as List } from '../../components/atoms/List.svelte';
+export { default as ListItem } from '../../components/atoms/ListItem.svelte';
 export { default as Heading } from '../../components/atoms/Heading.svelte';
 
 // ============================================================================

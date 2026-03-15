@@ -12,6 +12,8 @@ export { default as ColorPickerStories } from './atoms/ColorPicker.stories';
 export { default as FeatureCardStories } from './atoms/FeatureCard.stories';
 export { default as HeadingStories } from './atoms/Heading.stories';
 export { default as InputStories } from './atoms/Input.stories';
+export { default as ListStories } from './atoms/List.stories';
+export { default as ListItemStories } from './atoms/ListItem.stories';
 export { default as OptimizedImageStories } from './atoms/OptimizedImage.stories';
 export { default as ProgressStories } from './atoms/Progress.stories';
 export { default as SelectStories } from './atoms/Select.stories';
@@ -49,6 +51,8 @@ export const storyCategories = {
         'FeatureCard',
         'Heading',
         'Input',
+        'List',
+        'ListItem',
         'OptimizedImage',
         'Progress',
         'Select',

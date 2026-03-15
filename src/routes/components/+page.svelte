@@ -22,6 +22,7 @@
     import ColorPicker from "../../components/atoms/ColorPicker.svelte";
     import CodeBlock from "../../components/atoms/CodeBlock.svelte";
     import FeatureCard from "../../components/atoms/FeatureCard.svelte";
+    import List from "../../components/atoms/List.svelte";
     import OptimizedImage from "../../components/atoms/OptimizedImage.svelte";
     import Skeleton from "../../components/atoms/Skeleton.svelte";
     import Toast from "../../components/atoms/Toast.svelte";
@@ -103,6 +104,32 @@ console.log(greet('World'));`;
         value: `option-${index + 1}`,
         label: `Option ${index + 1}`,
     }));
+    const docsListItems = [
+        {
+            id: "profile",
+            label: "Profile",
+            description: "Manage your account preferences",
+            href: "/profile",
+        },
+        {
+            id: "billing",
+            label: "Billing",
+            description: "Update payment methods and invoices",
+            href: "/billing",
+        },
+        {
+            id: "team",
+            label: "Team members",
+            description: "Invite teammates and assign roles",
+        },
+        {
+            id: "security",
+            label: "Security settings",
+            description: "Configure login and access policies",
+            href: "/security",
+            disabled: true,
+        },
+    ];
 
     const sidebarNavItems = [
         { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: House },
@@ -417,6 +444,71 @@ console.log(greet('World'));`;
                         title: "Disabled State",
                         description: "Disabled color picker",
                         code: '&lt;ColorPicker disabled={true} label="Disabled Picker" /&gt;',
+                    },
+                ],
+            },
+            {
+                name: "List",
+                category: "atoms",
+                description:
+                    "Interactive list rows with hover states and right-arrow affordances",
+                props: [
+                    {
+                        name: "items",
+                        type: "ListItem[]",
+                        required: true,
+                        defaultValue: "[]",
+                        description:
+                            "Array of list items with label, id, and optional link metadata",
+                    },
+                    {
+                        name: "ariaLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "List items",
+                        description: "Accessible label for the list container",
+                    },
+                    {
+                        name: "selectedId",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Current selected item id for active styling",
+                    },
+                    {
+                        name: "showArrow",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "Toggle the right arrow icon visibility",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(item, event) => void",
+                        required: false,
+                        defaultValue: "undefined",
+                        description: "Callback fired when an item is clicked",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "List with links",
+                        description:
+                            "Hoverable rows with optional descriptions and right-arrow affordance",
+                        code: `<List
+  items={items}
+  selectedId="billing"
+  ariaLabel="Account navigation"
+/>`,
+                    },
+                    {
+                        title: "Arrow hidden",
+                        description: "Use a cleaner list style without right-arrow icons",
+                        code: `<List
+  items={items}
+  showArrow={false}
+/>`,
                     },
                 ],
             },
@@ -1945,6 +2037,19 @@ console.log(greet('World'));`;
                                                     informational content.
                                                 </p>
                                             </Card>
+                                        </div>
+                                    {:else if component.name === "List"}
+                                        <div class="max-w-xl space-y-4">
+                                            <List
+                                                items={docsListItems}
+                                                selectedId="billing"
+                                                ariaLabel="Account navigation"
+                                            />
+                                            <List
+                                                items={docsListItems}
+                                                showArrow={false}
+                                                ariaLabel="Account navigation without arrows"
+                                            />
                                         </div>
                                     {:else if component.name === "Alert"}
                                         <div class="space-y-4">
