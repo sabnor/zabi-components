@@ -1,6 +1,6 @@
 # Publishes when a version tag is pushed (requires GitHub Actions billing on file for some accounts).
 # If Actions do not run, publish from your machine instead:
-#   npm login
+#   npm login --registry https://registry.npmjs.org/
 #   npm run publish:npm
 # (Local publish omits --provenance, which is intended for OIDC from CI.)
 name: Publish to npm
