@@ -1,6 +1,7 @@
 <script lang="ts">
     import Section from "../../components/molecules/Section.svelte";
     import Card from "../../components/atoms/Card.svelte";
+    import CardHeader from "../../components/atoms/CardHeader.svelte";
     import Button from "../../components/atoms/Button.svelte";
 
     interface Props {
@@ -75,9 +76,15 @@
 >
     {#if variant === "default" || variant === "muted" || variant === "notitle"}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card title="Feature 1" description="First feature description" />
-            <Card title="Feature 2" description="Second feature description" />
-            <Card title="Feature 3" description="Third feature description" />
+            <Card>
+                <CardHeader title="Feature 1" description="First feature description" />
+            </Card>
+            <Card>
+                <CardHeader title="Feature 2" description="Second feature description" />
+            </Card>
+            <Card>
+                <CardHeader title="Feature 3" description="Third feature description" />
+            </Card>
         </div>
     {:else if variant === "centered" || variant === "accent"}
         <div class="flex flex-col gap-4 items-center">
@@ -90,10 +97,18 @@
         </div>
     {:else if variant === "fullwidth"}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card title="Card 1" description="Description 1" />
-            <Card title="Card 2" description="Description 2" />
-            <Card title="Card 3" description="Description 3" />
-            <Card title="Card 4" description="Description 4" />
+            <Card>
+                <CardHeader title="Card 1" description="Description 1" />
+            </Card>
+            <Card>
+                <CardHeader title="Card 2" description="Description 2" />
+            </Card>
+            <Card>
+                <CardHeader title="Card 3" description="Description 3" />
+            </Card>
+            <Card>
+                <CardHeader title="Card 4" description="Description 4" />
+            </Card>
         </div>
     {/if}
 </Section>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import Input from "./Input.svelte";
-    import { onMount, onDestroy } from "svelte";
+    import { onMount, onDestroy, tick } from "svelte";
 
     interface Props {
         value?: string;
@@ -20,11 +20,10 @@
     }: Props = $props();
 
     let isOpen = $state(false);
-    let pickerContainer: HTMLDivElement;
-    let colorMap: HTMLCanvasElement;
-    let colorMapContainer: HTMLDivElement;
-    let hueSlider: HTMLInputElement;
     let isDragging = $state(false);
+    let pickerContainer: HTMLDivElement | undefined;
+    let colorMap: HTMLCanvasElement | undefined;
+    let colorMapContainer: HTMLDivElement | undefined;
 
     // HSL values (0-360, 0-100, 0-100)
     let hue = $state(0);
@@ -96,45 +95,55 @@
         }
     }
 
-    const variant = $derived(() => {
-        if (value && !isValidHex(value)) {
-            return "error";
-        }
-        return "default";
-    });
+    const variant = $derived(value && !isValidHex(value) ? "error" : "default");
 
-    const message = $derived(() => {
-        if (value && !isValidHex(value)) {
-            return "Please enter a valid hex color (e.g., #ff0000 or #f00)";
-        }
-        return "";
-    });
+    const message = $derived(
+        value && !isValidHex(value)
+            ? "Please enter a valid hex color (e.g., #ff0000 or #f00)"
+            : "",
+    );
 
     function handleInput(event: Event) {
         if (onchange) onchange(event);
         updateFromHex(value);
     }
 
-    function handleBlur(event: Event) {
-        const target = event.target as HTMLInputElement;
-        let hexValue = target.value.trim();
+    function normalizeHexValue(rawValue: string): string {
+        let hexValue = rawValue.trim();
 
         if (hexValue && !hexValue.startsWith("#")) {
             hexValue = "#" + hexValue;
         }
 
-        if (hexValue === "" || isValidHex(hexValue)) {
-            value = hexValue;
-            updateFromHex(hexValue);
+        return hexValue;
+    }
+
+    function commitCurrentValue(event: Event) {
+        const normalizedHex = normalizeHexValue(value);
+
+        if (normalizedHex === "" || isValidHex(normalizedHex)) {
+            value = normalizedHex;
+            updateFromHex(normalizedHex);
             if (onchange) onchange(event);
         }
     }
 
-    function togglePicker() {
+    function handleBlur(event: Event) {
+        commitCurrentValue(event);
+    }
+
+    async function togglePicker() {
         if (!disabled) {
+            if (isOpen) {
+                commitCurrentValue(new Event("change"));
+            }
             isOpen = !isOpen;
             if (isOpen && value && isValidHex(value)) {
                 updateFromHex(value);
+            }
+            if (isOpen) {
+                await tick();
+                drawColorMap();
             }
         }
     }
@@ -178,6 +187,10 @@
         }
     }
 
+    function handleMouseUp() {
+        isDragging = false;
+    }
+
     function handleHueChange(event: Event) {
         const target = event.target as HTMLInputElement;
         hue = parseInt(target.value);
@@ -185,26 +198,38 @@
         drawColorMap();
     }
 
-    $effect(() => {
-        if (isOpen && colorMap) {
-            // Use setTimeout to ensure canvas is rendered
-            setTimeout(() => {
-                drawColorMap();
-            }, 0);
-        }
-    });
+    function setPickerContainer(node: HTMLDivElement) {
+        pickerContainer = node;
+        return {
+            destroy() {
+                if (pickerContainer === node) {
+                    pickerContainer = undefined;
+                }
+            },
+        };
+    }
 
-    $effect(() => {
-        if (hue !== undefined && colorMap && isOpen) {
-            drawColorMap();
-        }
-    });
+    function setColorMap(node: HTMLCanvasElement) {
+        colorMap = node;
+        return {
+            destroy() {
+                if (colorMap === node) {
+                    colorMap = undefined;
+                }
+            },
+        };
+    }
 
-    $effect(() => {
-        if (value && isValidHex(value) && !isDragging) {
-            updateFromHex(value);
-        }
-    });
+    function setColorMapContainer(node: HTMLDivElement) {
+        colorMapContainer = node;
+        return {
+            destroy() {
+                if (colorMapContainer === node) {
+                    colorMapContainer = undefined;
+                }
+            },
+        };
+    }
 
     function handleClickOutside(event: MouseEvent) {
         if (
@@ -214,6 +239,7 @@
                 '[aria-label="Open color picker"]',
             )
         ) {
+            commitCurrentValue(new Event("change"));
             isOpen = false;
         }
     }
@@ -223,36 +249,19 @@
             updateFromHex(value);
         }
         window.addEventListener("mousedown", handleClickOutside);
-        window.addEventListener("mouseup", () => {
-            isDragging = false;
-        });
+        window.addEventListener("mouseup", handleMouseUp);
         window.addEventListener("mousemove", handleColorMapDrag);
     });
 
     onDestroy(() => {
         window.removeEventListener("mousedown", handleClickOutside);
-        window.removeEventListener("mouseup", () => {});
+        window.removeEventListener("mouseup", handleMouseUp);
         window.removeEventListener("mousemove", handleColorMapDrag);
     });
 
-    const displayColor = $derived(() => {
-        if (value && isValidHex(value)) {
-            return value;
-        }
-        return placeholder;
-    });
-
-    const currentHslColor = $derived(() => {
-        return `hsl(${hue}, 100%, 50%)`;
-    });
-
-    const pickerIndicatorX = $derived(() => {
-        return `${(saturation / 100) * 100}%`;
-    });
-
-    const pickerIndicatorY = $derived(() => {
-        return `${100 - (lightness / 100) * 100}%`;
-    });
+    const displayColor = $derived(value && isValidHex(value) ? value : placeholder);
+    const pickerIndicatorX = $derived(`${saturation}%`);
+    const pickerIndicatorY = $derived(`${100 - lightness}%`);
 </script>
 
 <div {...restProps}>
@@ -263,8 +272,8 @@
                 {label}
                 {placeholder}
                 {disabled}
-                variant={variant()}
-                message={message()}
+                {variant}
+                {message}
                 oninput={handleInput}
                 onblur={handleBlur}
                 aria-label="Hex color input"
@@ -276,14 +285,14 @@
                 onclick={togglePicker}
                 {disabled}
                 class="w-11 h-11 rounded-lg border-2 border-card shrink-0 cursor-pointer hover:ring-2 hover:ring-brand-500 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                style="background-color: {displayColor()};"
+                style="background-color: {displayColor};"
                 aria-label="Open color picker"
                 aria-expanded={isOpen}
             ></button>
 
             {#if isOpen}
                 <div
-                    bind:this={pickerContainer}
+                    use:setPickerContainer
                     class="absolute top-12 right-0 z-50 bg-input rounded-2xl shadow-lg p-4 w-80"
                     role="dialog"
                     aria-label="Color picker"
@@ -291,7 +300,7 @@
                     <div class="space-y-4">
                         <!-- Color Map -->
                         <div
-                            bind:this={colorMapContainer}
+                            use:setColorMapContainer
                             class="relative w-full h-48 rounded-xl overflow-hidden cursor-crosshair"
                             onmousedown={(e) => {
                                 isDragging = true;
@@ -301,7 +310,7 @@
                             tabindex="0"
                         >
                             <canvas
-                                bind:this={colorMap}
+                                use:setColorMap
                                 width={256}
                                 height={192}
                                 class="w-full h-full"
@@ -309,7 +318,7 @@
                             <!-- Color indicator -->
                             <div
                                 class="absolute w-4 h-4 border-2 border-white rounded-full shadow-lg pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
-                                style="left: {pickerIndicatorX()}; top: {pickerIndicatorY()};"
+                                style="left: {pickerIndicatorX}; top: {pickerIndicatorY};"
                             ></div>
                         </div>
 
@@ -323,7 +332,6 @@
                                     style="background: linear-gradient(to right, hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%));"
                                 ></div>
                                 <input
-                                    bind:this={hueSlider}
                                     type="range"
                                     min="0"
                                     max="360"

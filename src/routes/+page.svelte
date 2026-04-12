@@ -6,6 +6,8 @@
     import ComponentDemo from "../components/molecules/ComponentDemo.svelte";
     import Button from "../components/atoms/Button.svelte";
     import Card from "../components/atoms/Card.svelte";
+    import CardHeader from "../components/atoms/CardHeader.svelte";
+    import CardContent from "../components/atoms/CardContent.svelte";
     import Input from "../components/atoms/Input.svelte";
     import Alert from "../components/molecules/Alert.svelte";
     import Badge from "../components/atoms/Badge.svelte";
@@ -77,37 +79,37 @@
             icon: "⚡",
             title: "Svelte & Tailwind",
             description:
-                "Built with Svelte 5 runes and Tailwind CSS. Modern, fast, and easy to customize.",
+                "Svelte 5 runes and Tailwind styling. Customize without fighting the defaults.",
         },
         {
             icon: "🎯",
-            title: "Easy to Use",
+            title: "Simple APIs",
             description:
-                "Simple APIs with minimal props. Get started in minutes, not hours.",
+                "Straightforward props so you can ship UI without digging through docs all day.",
         },
         {
             icon: "🎨",
-            title: "Beautiful Design",
+            title: "Looks good everywhere",
             description:
-                "Carefully crafted components with semantic colors and automatic dark mode support.",
+                "Semantic colors and dark mode that stay consistent across components.",
         },
         {
             icon: "♿",
             title: "Accessible",
             description:
-                "WCAG 2.1 AA compliant with full keyboard navigation and screen reader support.",
+                "Keyboard-friendly with labels and roles where they matter.",
         },
         {
             icon: "📦",
-            title: "Lightweight",
+            title: "Import what you need",
             description:
-                "60-80% less code than traditional libraries. Import only what you need.",
+                "Atoms, molecules, or organisms—pull in only the pieces your app uses.",
         },
         {
             icon: "🛡️",
-            title: "SSR Safe",
+            title: "SSR-friendly",
             description:
-                "100% server-side rendering compatible with zero runtime errors.",
+                "Designed to render cleanly on the server and hydrate on the client.",
         },
     ];
 
@@ -164,10 +166,10 @@
 </script>
 
 <svelte:head>
-    <title>Zabi Components - Easy-to-Use Design System</title>
+    <title>Zabi Components</title>
     <meta
         name="description"
-        content="An easy-to-use design system built with Svelte and Tailwind CSS. Beautiful, accessible components that just work."
+        content="Svelte 5 components with TypeScript and Tailwind—forms, navigation, feedback, and dark mode."
     />
 </svelte:head>
 
@@ -199,16 +201,15 @@
                 <h1
                     class="text-5xl font-bold tracking-tight text-headline sm:text-6xl md:text-7xl mb-6"
                 >
-                    Your Easy-to-Use
-                    <span class="text-brand-700">Design System</span>
+                    Build faster with
+                    <span class="text-brand-700">ready-made UI</span>
                 </h1>
-                <p class="text-xl text-description mb-8 sm:text-2xl">
-                    Beautifully designed components built with Svelte and
-                    Tailwind CSS. Simple, accessible, and ready to use.
+                <p class="text-xl text-description mb-8 sm:text-2xl mx-auto">
+                    Buttons, forms, navigation, and more—typed, accessible, and
+                    easy to restyle.
                 </p>
-                <p class="text-lg text-description/80 mb-12">
-                    Get started in minutes with clean, minimal components that
-                    just work. Less is more.
+                <p class="text-lg text-description/80 mb-12 mx-auto">
+                    Works with SvelteKit and SSR out of the box.
                 </p>
 
                 <!-- CTA Buttons -->
@@ -260,11 +261,11 @@
                     <h2
                         class="text-3xl font-bold text-headline mb-4 sm:text-4xl"
                     >
-                        Why Choose Zabi Components?
+                        What you get
                     </h2>
                     <p class="text-lg text-description">
-                        An easy-to-use design system built with Svelte and
-                        Tailwind CSS
+                        A practical set of pieces for product UI—nothing fancy,
+                        just useful.
                     </p>
                 </div>
 
@@ -345,44 +346,68 @@
                     <ComponentDemo
                         title="Card Component"
                         description="Flexible card containers with semantic color variants"
-                        code={`<Card title="Default Card" variant="default">
-  This is a default card with clean styling.
+                        code={`<Card variant="default">
+  <CardHeader title="Default Card" />
+  <CardContent>
+    This is a default card with clean styling.
+  </CardContent>
 </Card>
 
-<Card title="Success Card" variant="success">
-  This card indicates a successful action.
+<Card variant="elevated">
+  <CardHeader title="Elevated Card" />
+  <CardContent>
+    This card indicates a successful action.
+  </CardContent>
 </Card>
 
-<Card title="Warning Card" variant="warning">
-  This card shows a warning state.
+<Card variant="outlined">
+  <CardHeader title="Outlined Card" />
+  <CardContent>
+    This card shows a warning state.
+  </CardContent>
 </Card>
 
-<Card title="Error Card" variant="error">
-  This card indicates an error state.
+<Card variant="flat">
+  <CardHeader title="Flat Card" />
+  <CardContent>
+    This card indicates an error state.
+  </CardContent>
 </Card>`}
                     >
                         <div
                             class="w-full grid grid-cols-1 md:grid-cols-2 gap-4"
                         >
-                            <Card title="Default Card" fullWidth={true}>
-                                <p class="text-description">
-                                    This is a default card with clean styling.
-                                </p>
+                            <Card fullWidth={true}>
+                                <CardHeader title="Default Card" />
+                                <CardContent>
+                                    <p class="text-description">
+                                        This is a default card with clean styling.
+                                    </p>
+                                </CardContent>
                             </Card>
-                            <Card title="Success Card" fullWidth={true}>
-                                <p class="text-description">
-                                    This card indicates a successful action.
-                                </p>
+                            <Card variant="elevated" fullWidth={true}>
+                                <CardHeader title="Elevated Card" />
+                                <CardContent>
+                                    <p class="text-description">
+                                        This card indicates a successful action.
+                                    </p>
+                                </CardContent>
                             </Card>
-                            <Card title="Warning Card" fullWidth={true}>
-                                <p class="text-description">
-                                    This card shows a warning state.
-                                </p>
+                            <Card variant="outlined" fullWidth={true}>
+                                <CardHeader title="Outlined Card" />
+                                <CardContent>
+                                    <p class="text-description">
+                                        This card shows a warning state.
+                                    </p>
+                                </CardContent>
                             </Card>
-                            <Card title="Error Card" fullWidth={true}>
-                                <p class="text-description">
-                                    This card indicates an error state.
-                                </p>
+                            <Card variant="flat" fullWidth={true}>
+                                <CardHeader title="Flat Card" />
+                                <CardContent>
+                                    <p class="text-description">
+                                        This card indicates an error state.
+                                    </p>
+                                </CardContent>
                             </Card>
                         </div>
                     </ComponentDemo>
@@ -411,7 +436,7 @@
   variant="warning"
 />`}
                     >
-                        <div class="space-y-4 max-w-md min-w-[250px]">
+                        <div class="w-full space-y-4 min-w-[250px]">
                             <Input
                                 label="Name"
                                 placeholder="Enter your name"
@@ -569,7 +594,7 @@
   message="Please select an option"
 />`}
                     >
-                        <div class="space-y-4 max-w-md min-w-[250px]">
+                        <div class="w-full space-y-4 min-w-[250px]">
                             <Select
                                 label="Choose an option"
                                 options={selectOptions}
@@ -619,7 +644,7 @@
   rows={4}
 />`}
                     >
-                        <div class="space-y-4 max-w-md min-w-[250px]">
+                        <div class="w-full space-y-4 min-w-[250px]">
                             <Textarea
                                 label="Message"
                                 placeholder="Enter your message..."
@@ -657,7 +682,7 @@
 
 <Progress value={90} max={100} size="lg" label="Upload Progress" />`}
                     >
-                        <div class="w-full space-y-6 max-w-md min-w-[250px]">
+                        <div class="w-full space-y-6 min-w-[250px]">
                             <Progress
                                 value={progressValue}
                                 max={100}
@@ -998,10 +1023,10 @@
                         Zabi Components
                     </p>
                     <p class="text-sm text-description/80">
-                        Clean components that just work. Less is more.
+                        Open source. MIT license.
                     </p>
                     <p class="text-sm text-description/60 mt-2">
-                        © 2024 Zabi Components. MIT License.
+                        © 2026 Zabi Components. MIT License.
                     </p>
                 </div>
                 <div class="flex gap-6">

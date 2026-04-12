@@ -25,7 +25,7 @@ export const Default: Story = {
 
 export const WithImage: Story = {
     args: {
-        value: 'https://via.placeholder.com/300x200',
+        value: 'https://placehold.co/300x200',
         disabled: false,
         accept: 'image/*',
         placeholder: 'No image selected'

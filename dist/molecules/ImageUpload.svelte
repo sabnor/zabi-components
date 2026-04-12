@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onDestroy } from "svelte";
     import Button from "../atoms/Button.svelte";
     import { Image } from "@lucide/svelte";
 
@@ -7,6 +8,7 @@
         disabled?: boolean;
         accept?: string;
         placeholder?: string;
+        errorMessage?: string;
         onchange?: (event: Event) => void;
         onclick?: (event: Event) => void;
     }
@@ -16,11 +18,20 @@
         disabled = false,
         accept = "image/*",
         placeholder = "No image selected",
+        errorMessage = "",
         children,
         ...restProps
     } = $props<Props & { children?: any }>();
 
     let fileInput = $state<HTMLInputElement>();
+    let currentObjectUrl = $state<string | null>(null);
+
+    function revokeCurrentObjectUrl() {
+        if (currentObjectUrl && typeof URL !== "undefined" && URL.revokeObjectURL) {
+            URL.revokeObjectURL(currentObjectUrl);
+            currentObjectUrl = null;
+        }
+    }
 
     function handleFileSelect(event: Event) {
         if (disabled) return;
@@ -31,17 +42,17 @@
         const file = input.files[0];
 
         if (typeof URL !== "undefined" && URL.createObjectURL) {
+            revokeCurrentObjectUrl();
             const url = URL.createObjectURL(file);
             value = url;
+            currentObjectUrl = url;
         }
     }
 
     function removeImage() {
         if (disabled) return;
 
-        if (value && typeof URL !== "undefined" && URL.revokeObjectURL) {
-            URL.revokeObjectURL(value);
-        }
+        revokeCurrentObjectUrl();
         value = null;
     }
 
@@ -49,6 +60,10 @@
         if (disabled) return;
         fileInput?.click();
     }
+
+    onDestroy(() => {
+        revokeCurrentObjectUrl();
+    });
 </script>
 
 <div class="space-y-3">
@@ -118,4 +133,12 @@
         {disabled}
         class="hidden"
     />
+
+    {#if errorMessage}
+        <div class="rounded-lg border border-error px-3 py-2 text-sm text-error" role="alert">
+            <p class="font-medium">Image upload failed</p>
+            <p>{errorMessage}</p>
+            <p class="mt-1">Recovery action: try another file or retry upload.</p>
+        </div>
+    {/if}
 </div>

@@ -4,6 +4,7 @@ interface Props {
     name?: string;
     label?: string;
     placeholder?: string;
+    required?: boolean;
     disabled?: boolean;
     rows?: number;
     size?: SizeVariant;

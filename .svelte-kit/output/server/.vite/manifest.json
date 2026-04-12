@@ -32,21 +32,21 @@
       "_CodeBlock.svelte_svelte_type_style_lang.js"
     ]
   },
-  "_Skeleton.js": {
-    "file": "chunks/Skeleton.js",
-    "name": "Skeleton",
+  "_SidebarNavigation.js": {
+    "file": "chunks/SidebarNavigation.js",
+    "name": "SidebarNavigation",
     "imports": [
       "_index.js",
-      "_context.js",
-      "_CodeBlock.svelte_svelte_type_style_lang.js"
+      "_CodeBlock.svelte_svelte_type_style_lang.js",
+      "_context.js"
     ],
     "css": [
-      "_app/immutable/assets/Skeleton.yrdFD0aY.css"
+      "_app/immutable/assets/SidebarNavigation.yrdFD0aY.css"
     ]
   },
-  "_Skeleton.yrdFD0aY.css": {
-    "file": "_app/immutable/assets/Skeleton.yrdFD0aY.css",
-    "src": "_Skeleton.yrdFD0aY.css"
+  "_SidebarNavigation.yrdFD0aY.css": {
+    "file": "_app/immutable/assets/SidebarNavigation.yrdFD0aY.css",
+    "src": "_SidebarNavigation.yrdFD0aY.css"
   },
   "_client.js": {
     "file": "chunks/client.js",
@@ -154,7 +154,7 @@
       "_index.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.DJc4drlW.css"
+      "_app/immutable/assets/_layout.Dpn4tQU3.css"
     ]
   },
   "src/routes/+page.svelte": {
@@ -166,7 +166,7 @@
       "_index.js",
       "_client.js",
       "_CodeBlock.svelte_svelte_type_style_lang.js",
-      "_Skeleton.js",
+      "_SidebarNavigation.js",
       "_context.js"
     ]
   },
@@ -178,9 +178,9 @@
     "imports": [
       "_index.js",
       "_CodeBlock.svelte_svelte_type_style_lang.js",
-      "_Skeleton.js",
-      "_IconButton.js",
-      "_context.js"
+      "_SidebarNavigation.js",
+      "_context.js",
+      "_IconButton.js"
     ],
     "css": [
       "_app/immutable/assets/_page.D3qRg6pB.css"

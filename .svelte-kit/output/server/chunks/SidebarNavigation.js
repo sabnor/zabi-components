@@ -1,6 +1,246 @@
-import { K as spread_props, x as attributes, z as stringify, w as attr, F as attr_class, G as clsx, O as bind_props, J as ensure_array_like, y as attr_style } from "./index.js";
+import { K as spread_props, x as attributes, z as stringify, w as attr, F as attr_class, G as clsx, N as bind_props, J as ensure_array_like, y as attr_style } from "./index.js";
+import { I as Icon, C as Card, a as CardHeader, b as CardContent, B as Button, h as html, S as Sun } from "./CodeBlock.svelte_svelte_type_style_lang.js";
 import { e as escape_html } from "./context.js";
-import { I as Icon, C as Card, B as Button, h as html, a as CardHeader, b as CardContent } from "./CodeBlock.svelte_svelte_type_style_lang.js";
+function Bell($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      ["path", { "d": "M10.268 21a2 2 0 0 0 3.464 0" }],
+      [
+        "path",
+        {
+          "d": "M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"
+        }
+      ]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "bell" },
+      /**
+       * @component @name Bell
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAuMjY4IDIxYTIgMiAwIDAgMCAzLjQ2NCAwIiAvPgogIDxwYXRoIGQ9Ik0zLjI2MiAxNS4zMjZBMSAxIDAgMCAwIDQgMTdoMTZhMSAxIDAgMCAwIC43NC0xLjY3M0MxOS40MSAxMy45NTYgMTggMTIuNDk5IDE4IDhBNiA2IDAgMCAwIDYgOGMwIDQuNDk5LTEuNDExIDUuOTU2LTIuNzM4IDcuMzI2IiAvPgo8L3N2Zz4K) - https://lucide.dev/icons/bell
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Chart_column($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      ["path", { "d": "M3 3v16a2 2 0 0 0 2 2h16" }],
+      ["path", { "d": "M18 17V9" }],
+      ["path", { "d": "M13 17V5" }],
+      ["path", { "d": "M8 17v-3" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "chart-column" },
+      /**
+       * @component @name ChartColumn
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMyAzdjE2YTIgMiAwIDAgMCAyIDJoMTYiIC8+CiAgPHBhdGggZD0iTTE4IDE3VjkiIC8+CiAgPHBhdGggZD0iTTEzIDE3VjUiIC8+CiAgPHBhdGggZD0iTTggMTd2LTMiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/chart-column
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Chart_pie($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      [
+        "path",
+        {
+          "d": "M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"
+        }
+      ],
+      ["path", { "d": "M21.21 15.89A10 10 0 1 1 8 2.83" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "chart-pie" },
+      /**
+       * @component @name ChartPie
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjEgMTJjLjU1MiAwIDEuMDA1LS40NDkuOTUtLjk5OGExMCAxMCAwIDAgMC04Ljk1My04Ljk1MWMtLjU1LS4wNTUtLjk5OC4zOTgtLjk5OC45NXY4YTEgMSAwIDAgMCAxIDF6IiAvPgogIDxwYXRoIGQ9Ik0yMS4yMSAxNS44OUExMCAxMCAwIDEgMSA4IDIuODMiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/chart-pie
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
 function Check($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     /**
@@ -303,6 +543,90 @@ function Circle_check_big($$renderer, $$props) {
     ]));
   });
 }
+function House($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      [
+        "path",
+        { "d": "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" }
+      ],
+      [
+        "path",
+        {
+          "d": "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+        }
+      ]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "house" },
+      /**
+       * @component @name House
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTUgMjF2LThhMSAxIDAgMCAwLTEtMWgtNGExIDEgMCAwIDAtMSAxdjgiIC8+CiAgPHBhdGggZD0iTTMgMTBhMiAyIDAgMCAxIC43MDktMS41MjhsNy02YTIgMiAwIDAgMSAyLjU4MiAwbDcgNkEyIDIgMCAwIDEgMjEgMTB2OWEyIDIgMCAwIDEtMiAySDVhMiAyIDAgMCAxLTItMnoiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/house
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
 function Info($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     /**
@@ -362,6 +686,403 @@ function Info($$renderer, $$props) {
        * @description Lucide SVG icon component, renders SVG Element with children.
        *
        * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgLz4KICA8cGF0aCBkPSJNMTIgMTZ2LTQiIC8+CiAgPHBhdGggZD0iTTEyIDhoLjAxIiAvPgo8L3N2Zz4K) - https://lucide.dev/icons/info
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Log_out($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      ["path", { "d": "m16 17 5-5-5-5" }],
+      ["path", { "d": "M21 12H9" }],
+      ["path", { "d": "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "log-out" },
+      /**
+       * @component @name LogOut
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJtMTYgMTcgNS01LTUtNSIgLz4KICA8cGF0aCBkPSJNMjEgMTJIOSIgLz4KICA8cGF0aCBkPSJNOSAyMUg1YTIgMiAwIDAgMS0yLTJWNWEyIDIgMCAwIDEgMi0yaDQiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/log-out
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Moon($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      [
+        "path",
+        {
+          "d": "M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+        }
+      ]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "moon" },
+      /**
+       * @component @name Moon
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjAuOTg1IDEyLjQ4NmE5IDkgMCAxIDEtOS40NzMtOS40NzJjLjQwNS0uMDIyLjYxNy40Ni40MDIuODAzYTYgNiAwIDAgMCA4LjI2OCA4LjI2OGMuMzQ0LS4yMTUuODI1LS4wMDQuODAzLjQwMSIgLz4KPC9zdmc+Cg==) - https://lucide.dev/icons/moon
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Package($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      [
+        "path",
+        {
+          "d": "M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+        }
+      ],
+      ["path", { "d": "M12 22V12" }],
+      ["polyline", { "points": "3.29 7 12 12 20.71 7" }],
+      ["path", { "d": "m7.5 4.27 9 5.15" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "package" },
+      /**
+       * @component @name Package
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTEgMjEuNzNhMiAyIDAgMCAwIDIgMGw3LTRBMiAyIDAgMCAwIDIxIDE2VjhhMiAyIDAgMCAwLTEtMS43M2wtNy00YTIgMiAwIDAgMC0yIDBsLTcgNEEyIDIgMCAwIDAgMyA4djhhMiAyIDAgMCAwIDEgMS43M3oiIC8+CiAgPHBhdGggZD0iTTEyIDIyVjEyIiAvPgogIDxwb2x5bGluZSBwb2ludHM9IjMuMjkgNyAxMiAxMiAyMC43MSA3IiAvPgogIDxwYXRoIGQ9Im03LjUgNC4yNyA5IDUuMTUiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/package
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Search($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      ["path", { "d": "m21 21-4.34-4.34" }],
+      ["circle", { "cx": "11", "cy": "11", "r": "8" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "search" },
+      /**
+       * @component @name Search
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJtMjEgMjEtNC4zNC00LjM0IiAvPgogIDxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjgiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/search
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Settings($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      [
+        "path",
+        {
+          "d": "M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"
+        }
+      ],
+      ["circle", { "cx": "12", "cy": "12", "r": "3" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "settings" },
+      /**
+       * @component @name Settings
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNOS42NzEgNC4xMzZhMi4zNCAyLjM0IDAgMCAxIDQuNjU5IDAgMi4zNCAyLjM0IDAgMCAwIDMuMzE5IDEuOTE1IDIuMzQgMi4zNCAwIDAgMSAyLjMzIDQuMDMzIDIuMzQgMi4zNCAwIDAgMCAwIDMuODMxIDIuMzQgMi4zNCAwIDAgMS0yLjMzIDQuMDMzIDIuMzQgMi4zNCAwIDAgMC0zLjMxOSAxLjkxNSAyLjM0IDIuMzQgMCAwIDEtNC42NTkgMCAyLjM0IDIuMzQgMCAwIDAtMy4zMi0xLjkxNSAyLjM0IDIuMzQgMCAwIDEtMi4zMy00LjAzMyAyLjM0IDIuMzQgMCAwIDAgMC0zLjgzMUEyLjM0IDIuMzQgMCAwIDEgNi4zNSA2LjA1MWEyLjM0IDIuMzQgMCAwIDAgMy4zMTktMS45MTUiIC8+CiAgPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMyIgLz4KPC9zdmc+Cg==) - https://lucide.dev/icons/settings
        * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
        *
        * @param {Object} props - Lucide icons props and any valid SVG attribute
@@ -577,6 +1298,7 @@ function Input($$renderer, $$props) {
       value = "",
       type = "text",
       name = "",
+      class: className = "",
       label = "",
       placeholder = "",
       required = false,
@@ -614,7 +1336,7 @@ function Input($$renderer, $$props) {
     const inputClasses = () => {
       const sizeStyles = sizeClass();
       const baseClasses = "w-full min-w-48 bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
-      return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
+      return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()} ${className}`.trim();
     };
     const labelClasses = () => "block text-sm font-medium text-label mb-1";
     const messageClasses = () => {
@@ -866,72 +1588,79 @@ function ContactForm($$renderer, $$props) {
     Card($$renderer2, {
       size: "md",
       fullWidth: true,
-      title: "Get in Touch",
       children: ($$renderer3) => {
-        Form($$renderer3, {
-          onsubmit: handleFormSubmit,
-          className: "space-y-4",
+        CardHeader($$renderer3, { title: "Get in Touch" });
+        $$renderer3.push(`<!----> `);
+        CardContent($$renderer3, {
           children: ($$renderer4) => {
-            if (formErrorMessage) {
-              $$renderer4.push("<!--[-->");
-              $$renderer4.push(`<div class="rounded-lg border border-error px-4 py-3 text-sm text-error" role="alert"><p class="font-medium">Something went wrong</p> <p>${escape_html(formErrorMessage)}</p> <p class="mt-1">Recovery action: review your inputs and resubmit.</p></div>`);
-            } else {
-              $$renderer4.push("<!--[!-->");
-            }
-            $$renderer4.push(`<!--]--> <div class="space-y-4">`);
-            Input($$renderer4, {
-              type: "text",
-              name: "name",
-              label: "Name",
-              placeholder: "Enter your name",
-              value: formData.name,
-              oninput: (e) => formData.name = e.target.value,
-              variant: fieldErrors.name ? "error" : "default",
-              message: fieldErrors.name || ""
-            });
-            $$renderer4.push(`<!----> `);
-            Input($$renderer4, {
-              type: "email",
-              name: "email",
-              label: "Email",
-              placeholder: "Enter your email",
-              value: formData.email,
-              oninput: (e) => formData.email = e.target.value,
-              variant: fieldErrors.email ? "error" : "default",
-              message: fieldErrors.email || ""
-            });
-            $$renderer4.push(`<!----> `);
-            Textarea($$renderer4, {
-              name: "message",
-              label: "Message",
-              placeholder: "Enter your message",
-              rows: 4,
-              value: formData.message,
-              oninput: (e) => formData.message = e.target.value,
-              variant: fieldErrors.message ? "error" : "default",
-              message: fieldErrors.message || ""
-            });
-            $$renderer4.push(`<!----> `);
-            Checkbox($$renderer4, {
-              name: "subscribe",
-              label: "Subscribe to updates",
-              checked: formData.subscribe,
-              onchange: (e) => formData.subscribe = e.target.checked
-            });
-            $$renderer4.push(`<!----></div> <div class="pt-4">`);
-            Button($$renderer4, {
-              type: "submit",
-              variant: "primary",
-              size: "md",
+            Form($$renderer4, {
+              onsubmit: handleFormSubmit,
+              className: "space-y-4",
               children: ($$renderer5) => {
-                $$renderer5.push(`<!---->Send Message`);
+                if (formErrorMessage) {
+                  $$renderer5.push("<!--[-->");
+                  $$renderer5.push(`<div class="rounded-lg border border-error px-4 py-3 text-sm text-error" role="alert"><p class="font-medium">Something went wrong</p> <p>${escape_html(formErrorMessage)}</p> <p class="mt-1">Recovery action: review your inputs and resubmit.</p></div>`);
+                } else {
+                  $$renderer5.push("<!--[!-->");
+                }
+                $$renderer5.push(`<!--]--> <div class="space-y-4">`);
+                Input($$renderer5, {
+                  type: "text",
+                  name: "name",
+                  label: "Name",
+                  placeholder: "Enter your name",
+                  value: formData.name,
+                  oninput: (e) => formData.name = e.target.value,
+                  variant: fieldErrors.name ? "error" : "default",
+                  message: fieldErrors.name || ""
+                });
+                $$renderer5.push(`<!----> `);
+                Input($$renderer5, {
+                  type: "email",
+                  name: "email",
+                  label: "Email",
+                  placeholder: "Enter your email",
+                  value: formData.email,
+                  oninput: (e) => formData.email = e.target.value,
+                  variant: fieldErrors.email ? "error" : "default",
+                  message: fieldErrors.email || ""
+                });
+                $$renderer5.push(`<!----> `);
+                Textarea($$renderer5, {
+                  name: "message",
+                  label: "Message",
+                  placeholder: "Enter your message",
+                  rows: 4,
+                  value: formData.message,
+                  oninput: (e) => formData.message = e.target.value,
+                  variant: fieldErrors.message ? "error" : "default",
+                  message: fieldErrors.message || ""
+                });
+                $$renderer5.push(`<!----> `);
+                Checkbox($$renderer5, {
+                  name: "subscribe",
+                  label: "Subscribe to updates",
+                  checked: formData.subscribe,
+                  onchange: (e) => formData.subscribe = e.target.checked
+                });
+                $$renderer5.push(`<!----></div> <div class="pt-4">`);
+                Button($$renderer5, {
+                  type: "submit",
+                  variant: "primary",
+                  size: "md",
+                  children: ($$renderer6) => {
+                    $$renderer6.push(`<!---->Send Message`);
+                  },
+                  $$slots: { default: true }
+                });
+                $$renderer5.push(`<!----></div>`);
               },
               $$slots: { default: true }
             });
-            $$renderer4.push(`<!----></div>`);
           },
           $$slots: { default: true }
         });
+        $$renderer3.push(`<!---->`);
       },
       $$slots: { default: true }
     });
@@ -955,26 +1684,32 @@ function ComponentDemo($$renderer, $$props) {
     {
       size: "lg",
       fullWidth: true,
-      title,
-      description,
       className: `overflow-hidden ${stringify(className)}`
     },
     restProps,
     {
       children: ($$renderer2) => {
-        $$renderer2.push(`<button class="absolute top-8 right-8 flex items-center gap-2 px-3 py-1.5 text-sm text-description hover:text-body hover:bg-base-50 rounded-md transition-colors duration-200 z-10"${attr("aria-label", "Show code")}>`);
-        {
-          $$renderer2.push("<!--[!-->");
-          $$renderer2.push(`<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg> Code`);
-        }
-        $$renderer2.push(`<!--]--></button> `);
-        {
-          $$renderer2.push("<!--[!-->");
-          $$renderer2.push(`<div class="min-h-[100px] flex items-center justify-center w-full">`);
-          children?.($$renderer2);
-          $$renderer2.push(`<!----></div>`);
-        }
-        $$renderer2.push(`<!--]-->`);
+        CardHeader($$renderer2, { title, description });
+        $$renderer2.push(`<!----> `);
+        CardContent($$renderer2, {
+          children: ($$renderer3) => {
+            $$renderer3.push(`<button class="absolute top-8 right-8 flex items-center gap-2 px-3 py-1.5 text-sm text-description hover:text-body hover:bg-base-50 rounded-md transition-colors duration-200 z-10"${attr("aria-label", "Show code")}>`);
+            {
+              $$renderer3.push("<!--[!-->");
+              $$renderer3.push(`<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg> Code`);
+            }
+            $$renderer3.push(`<!--]--></button> `);
+            {
+              $$renderer3.push("<!--[!-->");
+              $$renderer3.push(`<div class="min-h-[100px] flex items-center justify-center w-full">`);
+              children?.($$renderer3);
+              $$renderer3.push(`<!----></div>`);
+            }
+            $$renderer3.push(`<!--]-->`);
+          },
+          $$slots: { default: true }
+        });
+        $$renderer2.push(`<!---->`);
       },
       $$slots: { default: true }
     }
@@ -995,6 +1730,7 @@ function Alert($$renderer, $$props) {
       $$events,
       ...restProps
     } = $$props;
+    const visualVariant = variant === "default" ? "info" : variant;
     let alertClasses = {
       info: "text-info border border-info",
       success: "text-success border border-success",
@@ -1025,9 +1761,9 @@ function Alert($$renderer, $$props) {
         </svg>`
     };
     $$renderer2.push(`<div${attributes({
-      class: `relative rounded-md p-4 border ${stringify(alertClasses[variant])} transition-all duration-200 motion-reduce:transition-none ${stringify(className)}`,
+      class: `relative rounded-md p-4 border ${stringify(alertClasses[visualVariant])} transition-all duration-200 motion-reduce:transition-none ${stringify(className)}`,
       role: alertRole,
-      "aria-live": variant === "success" || variant === "info" ? "polite" : "assertive",
+      "aria-live": visualVariant === "success" || visualVariant === "info" ? "polite" : "assertive",
       "aria-atomic": "true",
       ...restProps
     })}>`);
@@ -1037,7 +1773,7 @@ function Alert($$renderer, $$props) {
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <div${attr_class(`flex items-start gap-3 ${stringify(closable ? "pr-8" : "")}`)}><div class="shrink-0 mt-0.5">${html(iconSvg[variant])}</div> <div class="flex-1 min-w-0">`);
+    $$renderer2.push(`<!--]--> <div${attr_class(`flex items-start gap-3 ${stringify(closable ? "pr-8" : "")}`)}><div class="shrink-0 mt-0.5">${html(iconSvg[visualVariant])}</div> <div class="flex-1 min-w-0">`);
     if (title) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<h4 class="font-semibold text-sm mb-1 text-headline">${escape_html(title)}</h4>`);
@@ -1548,11 +2284,10 @@ function Modal($$renderer, $$props) {
     }[size] || "w-full md:w-[28rem]";
     if (isOpen) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="fixed inset-0 bg-overlay flex items-end md:items-center justify-center p-0 md:p-4 z-modal" role="dialog" aria-modal="true"${attr("aria-labelledby", title ? "modal-title" : void 0)} tabindex="-1">`);
+      $$renderer2.push(`<div class="fixed inset-0 bg-overlay flex items-end md:items-center justify-center p-0 md:p-4 z-modal" role="dialog" aria-modal="true"${attr("aria-labelledby", title ? "modal-title" : void 0)} tabindex="-1"><div${attr_class(`bg-card rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] ${stringify(sizeClasses)} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col p-0`)}>`);
       Card($$renderer2, {
         variant: "default",
         fullWidth: false,
-        class: `bg-card rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] ${stringify(sizeClasses)} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col p-0`,
         children: ($$renderer3) => {
           if (title || description) {
             $$renderer3.push("<!--[-->");
@@ -1605,7 +2340,7 @@ function Modal($$renderer, $$props) {
         },
         $$slots: { default: true }
       });
-      $$renderer2.push(`<!----></div>`);
+      $$renderer2.push(`<!----></div></div>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -1668,20 +2403,283 @@ function Skeleton($$renderer, $$props) {
     ...restProps
   })}></div>`);
 }
+function SidebarNavigation($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let {
+      mode = "expanded",
+      items = [],
+      currentPath = "",
+      ariaLabel = "Sidebar navigation",
+      className = "",
+      showProfile = true,
+      profileName = "Zabi",
+      profileEmail = "hello@zabi.dev",
+      profileInitials = "ZA",
+      showSearch = true,
+      searchMode = "input",
+      searchPlaceholder = "Search...",
+      searchValue = "",
+      showLogout = true,
+      logoutLabel = "Logout",
+      showThemeToggle = true,
+      lightModeLabel = "Light mode",
+      isLightMode = false,
+      emptyStateTitle = "Create your first navigation item",
+      emptyStateDescription = "Add your first sidebar item so users can start navigating your product.",
+      emptyStateActionLabel = "Add navigation item",
+      onNavigate,
+      onSearchClick,
+      onLogout,
+      onThemeToggle,
+      onEmptyStateAction,
+      $$slots,
+      $$events,
+      ...restProps
+    } = $$props;
+    const isCollapsed = mode === "collapsed";
+    const normalizedSearchTerm = searchValue.trim().toLowerCase();
+    const primaryItems = items.filter((item) => item.group !== "secondary");
+    const secondaryItems = items.filter((item) => item.group === "secondary");
+    const filteredPrimaryItems = searchMode === "input" && normalizedSearchTerm ? primaryItems.filter((item) => item.label.toLowerCase().includes(normalizedSearchTerm)) : primaryItems;
+    const filteredSecondaryItems = searchMode === "input" && normalizedSearchTerm ? secondaryItems.filter((item) => item.label.toLowerCase().includes(normalizedSearchTerm)) : secondaryItems;
+    const hasFilteredItems = filteredPrimaryItems.length + filteredSecondaryItems.length > 0;
+    const containerClasses = (() => {
+      const widthClass = isCollapsed ? "w-[104px]" : "w-[266px]";
+      const surfaceClasses = "bg-background border-border text-headline";
+      const baseClasses = "h-full min-h-[640px] border-r flex flex-col justify-between px-6 py-6";
+      return `${baseClasses} ${widthClass} ${surfaceClasses} ${className}`.trim();
+    })();
+    const avatarClasses = "size-14 rounded-2xl bg-action-primary text-action-primary flex items-center justify-center font-semibold text-base shrink-0";
+    const searchButtonClasses = "w-full rounded-2xl bg-input transition-colors duration-150 flex min-h-11 items-center justify-center px-0 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
+    const searchTriggerClasses = /* @__PURE__ */ (() => {
+      return isCollapsed ? searchButtonClasses : "w-full rounded-2xl bg-input transition-colors duration-150 flex min-h-11 items-center gap-3 px-4 py-2.5 text-left focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
+    })();
+    const iconContainerClasses = "flex size-6 shrink-0 items-center justify-center leading-none";
+    const shouldRenderSearchButton = isCollapsed || searchMode === "button" || Boolean(onSearchClick);
+    function getTextToneClass(isMuted = false) {
+      return isMuted ? "text-description" : "text-headline";
+    }
+    function getNavItemClasses(item) {
+      const isActive = currentPath === item.href;
+      const baseClasses = "w-full rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
+      const layoutClasses = isCollapsed ? "flex min-h-11 items-center justify-center px-0 py-2.5" : "flex min-h-11 items-center gap-3 px-4 py-2.5";
+      if (isActive) {
+        return `${baseClasses} ${layoutClasses} bg-action-primary-subtle text-headline`;
+      }
+      return `${baseClasses} ${layoutClasses} text-description hover:bg-base-50 hover:text-headline`;
+    }
+    function getControlButtonClasses() {
+      const baseClasses = "w-full rounded-lg text-description hover:text-headline hover:bg-base-50 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
+      const layoutClasses = isCollapsed ? "flex min-h-11 items-center justify-center px-0 py-2.5" : "flex min-h-11 items-center gap-3 px-4 py-2.5";
+      return `${baseClasses} ${layoutClasses}`;
+    }
+    const themeToggleContainerClasses = isCollapsed ? "flex w-full justify-center py-1" : "flex w-full justify-start py-1";
+    function getItemBadgeText(item) {
+      if (item.badgeText !== void 0) {
+        return String(item.badgeText);
+      }
+      if (item.badgeCount !== void 0) {
+        return String(item.badgeCount);
+      }
+      return null;
+    }
+    let $$settled = true;
+    let $$inner_renderer;
+    function $$render_inner($$renderer3) {
+      $$renderer3.push(`<nav${attributes({
+        class: clsx(containerClasses),
+        "aria-label": ariaLabel,
+        ...restProps
+      })}><div class="flex w-full flex-col gap-11">`);
+      if (showProfile) {
+        $$renderer3.push("<!--[-->");
+        $$renderer3.push(`<div class="flex w-full items-center gap-3"><div${attr_class(clsx(avatarClasses))} aria-hidden="true">${escape_html(profileInitials)}</div> `);
+        if (!isCollapsed) {
+          $$renderer3.push("<!--[-->");
+          $$renderer3.push(`<div class="min-w-0"><p${attr_class(`truncate text-base font-bold ${stringify(getTextToneClass())}`)}>${escape_html(profileName)}</p> <p${attr_class(`truncate text-sm ${stringify(getTextToneClass(true))}`)}>${escape_html(profileEmail)}</p></div>`);
+        } else {
+          $$renderer3.push("<!--[!-->");
+        }
+        $$renderer3.push(`<!--]--></div>`);
+      } else {
+        $$renderer3.push("<!--[!-->");
+      }
+      $$renderer3.push(`<!--]--> <div class="flex w-full flex-col gap-6">`);
+      if (showSearch) {
+        $$renderer3.push("<!--[-->");
+        if (shouldRenderSearchButton) {
+          $$renderer3.push("<!--[-->");
+          $$renderer3.push(`<button type="button"${attr_class(clsx(searchTriggerClasses))}${attr("aria-label", searchPlaceholder)}><span${attr_class(`truncate text-base ${stringify(getTextToneClass(true))}`)}>${escape_html(searchValue || searchPlaceholder)}</span></button>`);
+        } else {
+          $$renderer3.push("<!--[!-->");
+          $$renderer3.push(`<div class="relative w-full"><span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 z-10" aria-hidden="true">`);
+          Search($$renderer3, { size: 20, class: getTextToneClass(true) });
+          $$renderer3.push(`<!----></span> `);
+          Input($$renderer3, {
+            type: "search",
+            placeholder: searchPlaceholder,
+            "aria-label": searchPlaceholder,
+            class: "w-full min-w-0 rounded-2xl pl-12",
+            get value() {
+              return searchValue;
+            },
+            set value($$value) {
+              searchValue = $$value;
+              $$settled = false;
+            }
+          });
+          $$renderer3.push(`<!----></div>`);
+        }
+        $$renderer3.push(`<!--]-->`);
+      } else {
+        $$renderer3.push("<!--[!-->");
+      }
+      $$renderer3.push(`<!--]--> `);
+      if (hasFilteredItems) {
+        $$renderer3.push("<!--[-->");
+        $$renderer3.push(`<ul class="flex w-full flex-col gap-2" aria-label="Primary navigation"><!--[-->`);
+        const each_array = ensure_array_like(filteredPrimaryItems);
+        for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+          let item = each_array[$$index];
+          const Icon2 = item.icon;
+          $$renderer3.push(`<li><a${attr("href", item.href)}${attr_class(clsx(getNavItemClasses(item)))}${attr("aria-current", currentPath === item.href ? "page" : void 0)}${attr("aria-label", isCollapsed ? item.label : void 0)}>`);
+          if (Icon2) {
+            $$renderer3.push("<!--[-->");
+            $$renderer3.push(`<span${attr_class(clsx(iconContainerClasses))} aria-hidden="true"><!---->`);
+            Icon2($$renderer3, { size: 20 });
+            $$renderer3.push(`<!----></span>`);
+          } else {
+            $$renderer3.push("<!--[!-->");
+          }
+          $$renderer3.push(`<!--]--> `);
+          if (!isCollapsed) {
+            $$renderer3.push("<!--[-->");
+            $$renderer3.push(`<span class="text-base leading-snug">${escape_html(item.label)}</span>`);
+          } else {
+            $$renderer3.push("<!--[!-->");
+          }
+          $$renderer3.push(`<!--]--> `);
+          if (!isCollapsed && getItemBadgeText(item) !== null) {
+            $$renderer3.push("<!--[-->");
+            $$renderer3.push(`<span class="ml-auto">`);
+            Badge($$renderer3, {
+              variant: "default",
+              size: "sm",
+              text: getItemBadgeText(item) ?? ""
+            });
+            $$renderer3.push(`<!----></span>`);
+          } else {
+            $$renderer3.push("<!--[!-->");
+          }
+          $$renderer3.push(`<!--]--></a></li>`);
+        }
+        $$renderer3.push(`<!--]--></ul> `);
+        if (filteredSecondaryItems.length > 0) {
+          $$renderer3.push("<!--[-->");
+          $$renderer3.push(`<ul class="flex w-full flex-col gap-3" aria-label="Secondary navigation"><!--[-->`);
+          const each_array_1 = ensure_array_like(filteredSecondaryItems);
+          for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
+            let item = each_array_1[$$index_1];
+            const Icon2 = item.icon;
+            $$renderer3.push(`<li><a${attr("href", item.href)}${attr_class(clsx(getNavItemClasses(item)))}${attr("aria-current", currentPath === item.href ? "page" : void 0)}${attr("aria-label", isCollapsed ? item.label : void 0)}>`);
+            if (Icon2) {
+              $$renderer3.push("<!--[-->");
+              $$renderer3.push(`<span${attr_class(clsx(iconContainerClasses))} aria-hidden="true"><!---->`);
+              Icon2($$renderer3, { size: 20 });
+              $$renderer3.push(`<!----></span>`);
+            } else {
+              $$renderer3.push("<!--[!-->");
+            }
+            $$renderer3.push(`<!--]--> `);
+            if (!isCollapsed) {
+              $$renderer3.push("<!--[-->");
+              $$renderer3.push(`<span class="text-base leading-snug">${escape_html(item.label)}</span>`);
+            } else {
+              $$renderer3.push("<!--[!-->");
+            }
+            $$renderer3.push(`<!--]--></a></li>`);
+          }
+          $$renderer3.push(`<!--]--></ul>`);
+        } else {
+          $$renderer3.push("<!--[!-->");
+        }
+        $$renderer3.push(`<!--]-->`);
+      } else {
+        $$renderer3.push("<!--[!-->");
+        $$renderer3.push(`<div class="rounded-2xl border border-border border-dashed bg-base-50 px-4 py-5"><h3${attr_class(`text-base font-semibold ${stringify(getTextToneClass())}`)}>${escape_html(normalizedSearchTerm && searchMode === "input" ? "No matching navigation items" : emptyStateTitle)}</h3> <p${attr_class(`mt-1 text-sm ${stringify(getTextToneClass(true))}`)}>${escape_html(normalizedSearchTerm && searchMode === "input" ? `No results found for "${searchValue}". Try another keyword.` : emptyStateDescription)}</p> `);
+        if (!(normalizedSearchTerm && searchMode === "input")) {
+          $$renderer3.push("<!--[-->");
+          $$renderer3.push(`<button type="button" class="mt-4 inline-flex min-h-11 items-center rounded-lg bg-action-primary px-3 py-2 text-sm text-action-primary hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0">${escape_html(emptyStateActionLabel)}</button>`);
+        } else {
+          $$renderer3.push("<!--[!-->");
+        }
+        $$renderer3.push(`<!--]--></div>`);
+      }
+      $$renderer3.push(`<!--]--></div></div> <div class="flex w-full flex-col gap-2">`);
+      if (showLogout) {
+        $$renderer3.push("<!--[-->");
+        $$renderer3.push(`<button type="button"${attr_class(clsx(getControlButtonClasses()))}><span${attr_class(clsx(iconContainerClasses))} aria-hidden="true">`);
+        Log_out($$renderer3, { size: 20 });
+        $$renderer3.push(`<!----></span> `);
+        if (!isCollapsed) {
+          $$renderer3.push("<!--[-->");
+          $$renderer3.push(`<span class="text-base">${escape_html(logoutLabel)}</span>`);
+        } else {
+          $$renderer3.push("<!--[!-->");
+        }
+        $$renderer3.push(`<!--]--></button>`);
+      } else {
+        $$renderer3.push("<!--[!-->");
+      }
+      $$renderer3.push(`<!--]--> `);
+      if (showThemeToggle) {
+        $$renderer3.push("<!--[-->");
+        $$renderer3.push(`<div${attr_class(clsx(themeToggleContainerClasses))}><button type="button"${attr_class(`inline-flex h-8 w-14 items-center rounded-2xl p-1 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0 ${stringify(isLightMode ? "bg-action-primary" : "bg-base-200")}`)} role="switch"${attr("aria-checked", isLightMode)}${attr("aria-label", isLightMode ? "Switch to dark mode" : "Switch to light mode")}><span${attr_class(`flex h-6 w-6 items-center justify-center rounded-xl leading-none shadow-sm transition-transform duration-150 ${stringify(isLightMode ? "translate-x-6 bg-base-900 text-action-primary" : "translate-x-0 bg-base-900 text-base-50")}`)}>`);
+        if (isLightMode) {
+          $$renderer3.push("<!--[-->");
+          Sun($$renderer3, { size: 14 });
+        } else {
+          $$renderer3.push("<!--[!-->");
+          Moon($$renderer3, { size: 14 });
+        }
+        $$renderer3.push(`<!--]--></span></button></div>`);
+      } else {
+        $$renderer3.push("<!--[!-->");
+      }
+      $$renderer3.push(`<!--]--></div></nav>`);
+    }
+    do {
+      $$settled = true;
+      $$inner_renderer = $$renderer2.copy();
+      $$render_inner($$inner_renderer);
+    } while (!$$settled);
+    $$renderer2.subsume($$inner_renderer);
+    bind_props($$props, { searchValue, isLightMode });
+  });
+}
 export {
   Alert as A,
   Badge as B,
   ComponentDemo as C,
   Dropdown as D,
   Form as F,
+  House as H,
   Input as I,
   Modal as M,
+  Package as P,
   Select as S,
   Textarea as T,
+  X,
   Checkbox as a,
   Tabs as b,
   Tooltip as c,
   Skeleton as d,
-  ContactForm as e,
-  generateId as g
+  SidebarNavigation as e,
+  Chart_column as f,
+  generateId as g,
+  Bell as h,
+  Chart_pie as i,
+  Settings as j,
+  ContactForm as k,
+  Search as l
 };

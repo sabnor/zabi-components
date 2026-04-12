@@ -68,7 +68,7 @@
     function getItemClasses(itemId: string): string {
         const isActive = selectedItemId === itemId;
         const baseClasses =
-            "w-full rounded-xl px-3 py-3 text-left transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
+            "w-full cursor-pointer rounded-xl px-3 py-3 text-left transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
         if (isActive) {
             return `${baseClasses} bg-action-primary-subtle text-headline`;
         }
@@ -97,7 +97,7 @@
         </div>
         <button
             type="button"
-            class="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-description hover:bg-base-50 hover:text-headline focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0"
+            class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-description hover:bg-base-50 hover:text-headline focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0"
             aria-label={closeLabel}
             onclick={handleClose}
         >

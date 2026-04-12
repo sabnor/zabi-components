@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { generateId } from "../../routes/lib/ssr-safe.js";
 
     interface Props {
         content?: string;
@@ -17,8 +17,8 @@
         ...restProps
     }: Props & { children?: any } = $props();
 
-    let triggerId = `tooltip-trigger-${Math.random().toString(36).substr(2, 9)}`;
-    let tooltipId = `tooltip-${Math.random().toString(36).substr(2, 9)}`;
+    const triggerId = generateId("tooltip-trigger");
+    const tooltipId = generateId("tooltip");
     let isVisible = $state(false);
     let triggerElement: HTMLElement | null = $state(null);
 
@@ -56,16 +56,9 @@
     function handleMouseLeave() {
         isVisible = false;
     }
-
-    onMount(() => {
-        if (typeof window !== "undefined") {
-            window.addEventListener("keydown", handleKeydown);
-            return () => {
-                window.removeEventListener("keydown", handleKeydown);
-            };
-        }
-    });
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <div
     class="tooltip-container relative inline-block"
@@ -249,8 +242,8 @@
 
     @media (prefers-contrast: high) {
         :root {
-            --tooltip-bg: #000000;
-            --tooltip-color: #ffffff;
+            --tooltip-bg: CanvasText;
+            --tooltip-color: Canvas;
             --tooltip-padding: 0.75rem 1rem;
         }
     }
@@ -276,7 +269,7 @@
     }
 
     .tooltip-container:focus-visible {
-        outline: 2px solid var(--color-focus, #8fa8ff);
+        outline: 2px solid var(--color-focus);
         outline-offset: 2px;
         border-radius: var(--tooltip-radius);
     }

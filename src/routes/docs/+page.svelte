@@ -7,6 +7,8 @@
     import IconButton from "../../components/atoms/IconButton.svelte";
     import { Heart } from "@lucide/svelte";
     import Card from "../../components/atoms/Card.svelte";
+    import CardHeader from "../../components/atoms/CardHeader.svelte";
+    import CardContent from "../../components/atoms/CardContent.svelte";
 
     interface NavItem {
         label: string;
@@ -20,19 +22,22 @@
         { label: "GitHub", href: "https://github.com/sabnor/zabi-components" },
     ];
 
-    const quickStartCode = `import { Button, Card, Input } from "zabi-components";
+    const quickStartCode = `import { Button, Card, CardHeader, CardContent, Input } from "zabi-components";
 
 let name = $state("");
 
-<Card title="Welcome">
-  <Input 
-    label="Your Name" 
-    value={name} 
-    oninput={(e) => name = e.target.value}
-  />
-  <Button onclick={() => console.log("Hello!")}>
-    Say Hello
-  </Button>
+<Card>
+  <CardHeader title="Welcome" />
+  <CardContent>
+    <Input 
+      label="Your Name" 
+      value={name} 
+      oninput={(e) => name = e.target.value}
+    />
+    <Button onclick={() => console.log("Hello!")}>
+      Say Hello
+    </Button>
+  </CardContent>
 </Card>`;
 
     const installCode = `npm install zabi-components`;
@@ -89,19 +94,25 @@ npm run build-storybook`;
 
             <div class="space-y-8">
                 <!-- Installation -->
-                <Card title="Installation">
-                    <p class="text-secondary mb-4">
-                        Install Zabi Components using npm:
-                    </p>
-                    <CodeBlock code={installCode} language="bash" />
+                <Card>
+                    <CardHeader title="Installation" />
+                    <CardContent>
+                        <p class="text-secondary mb-4">
+                            Install Zabi Components using npm:
+                        </p>
+                        <CodeBlock code={installCode} language="bash" />
+                    </CardContent>
                 </Card>
 
                 <!-- Usage -->
-                <Card title="Basic Usage">
-                    <p class="text-secondary mb-4">
-                        Import and use components in your Svelte 5 app:
-                    </p>
-                    <CodeBlock code={quickStartCode} language="svelte" />
+                <Card>
+                    <CardHeader title="Basic Usage" />
+                    <CardContent>
+                        <p class="text-secondary mb-4">
+                            Import and use components in your Svelte 5 app:
+                        </p>
+                        <CodeBlock code={quickStartCode} language="svelte" />
+                    </CardContent>
                 </Card>
             </div>
         </section>
@@ -118,23 +129,31 @@ npm run build-storybook`;
             </div>
 
             <div class="space-y-8">
-                <Card title="Audit Framework Files">
-                    <p class="text-secondary mb-4">
-                        Use these files to run repeatable audits, track issues,
-                        and publish scorecards.
-                    </p>
-                    <CodeBlock code={auditFilesCode} language="bash" />
+                <Card>
+                    <CardHeader title="Audit Framework Files" />
+                    <CardContent>
+                        <p class="text-secondary mb-4">
+                            Use these files to run repeatable audits, track issues,
+                            and publish scorecards.
+                        </p>
+                        <CodeBlock code={auditFilesCode} language="bash" />
+                    </CardContent>
                 </Card>
 
-                <Card title="Quality Gates">
-                    <p class="text-secondary mb-4">
-                        Run these checks before publishing updates to the
-                        component library.
-                    </p>
-                    <CodeBlock code={qualityChecksCode} language="bash" />
+                <Card>
+                    <CardHeader title="Quality Gates" />
+                    <CardContent>
+                        <p class="text-secondary mb-4">
+                            Run these checks before publishing updates to the
+                            component library.
+                        </p>
+                        <CodeBlock code={qualityChecksCode} language="bash" />
+                    </CardContent>
                 </Card>
 
-                <Card title="Current Status">
+                <Card>
+                    <CardHeader title="Current Status" />
+                    <CardContent>
                     <p class="text-secondary mb-4">
                         Latest remediation cycle completed all planned phases,
                         including accessibility, token compliance, state
@@ -156,6 +175,7 @@ npm run build-storybook`;
                             </p>
                         </div>
                     </div>
+                    </CardContent>
                 </Card>
             </div>
         </section>
@@ -169,41 +189,60 @@ npm run build-storybook`;
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card title="Svelte 5 Ready">
-                    <p class="text-secondary">
-                        Built with Svelte 5 runes and modern patterns
-                    </p>
+                <Card>
+                    <CardHeader title="Svelte 5 Ready" />
+                    <CardContent>
+                        <p class="text-secondary">
+                            Built with Svelte 5 runes and modern patterns
+                        </p>
+                    </CardContent>
                 </Card>
 
-                <Card title="TypeScript First">
-                    <p class="text-secondary">
-                        Full TypeScript support with proper type definitions
-                    </p>
+                <Card>
+                    <CardHeader title="TypeScript First" />
+                    <CardContent>
+                        <p class="text-secondary">
+                            Full TypeScript support with proper type definitions
+                        </p>
+                    </CardContent>
                 </Card>
 
-                <Card title="Accessible">
-                    <p class="text-secondary">
-                        WCAG compliant with keyboard navigation and screen
-                        reader support
-                    </p>
+                <Card>
+                    <CardHeader title="Accessible" />
+                    <CardContent>
+                        <p class="text-secondary">
+                            WCAG compliant with keyboard navigation and screen
+                            reader support
+                        </p>
+                    </CardContent>
                 </Card>
 
-                <Card title="Customizable">
-                    <p class="text-secondary">
-                        Easy theming with CSS custom properties
-                    </p>
+                <Card>
+                    <CardHeader title="Customizable" />
+                    <CardContent>
+                        <p class="text-secondary">
+                            Easy theming with CSS custom properties
+                        </p>
+                    </CardContent>
                 </Card>
 
-                <Card title="Lightweight">
-                    <p class="text-secondary">
-                        Tree-shakeable with minimal bundle impact
-                    </p>
+                <Card>
+                    <CardHeader title="Lightweight" />
+                    <CardContent>
+                        <p class="text-secondary">
+                            Tree-shakeable with minimal bundle impact
+                        </p>
+                    </CardContent>
                 </Card>
 
-                <Card title="Modern">
-                    <p class="text-secondary">
-                        Clean, minimal design that just works
-                    </p>
+                <Card>
+                    <CardHeader title="Easy to theme" />
+                    <CardContent>
+                        <p class="text-secondary">
+                            Tweak colors and type with CSS variables—no need to
+                            fork everything
+                        </p>
+                    </CardContent>
                 </Card>
             </div>
         </section>
@@ -219,7 +258,9 @@ npm run build-storybook`;
                 </p>
             </div>
 
-            <Card title="Available Variants">
+            <Card>
+                <CardHeader title="Available Variants" />
+                <CardContent>
                 <p class="text-secondary mb-6">
                     Zabi Components provides multiple button variants for
                     different use cases:
@@ -243,6 +284,7 @@ npm run build-storybook`;
 <Button variant="danger">Danger</Button>`}
                     language="svelte"
                 />
+                </CardContent>
             </Card>
         </section>
 
@@ -255,7 +297,9 @@ npm run build-storybook`;
                 </p>
             </div>
 
-            <Card title="IconButton">
+            <Card>
+                <CardHeader title="IconButton" />
+                <CardContent>
                 <p class="text-secondary mb-6">
                     Provide an accessible label for icon-only buttons.
                 </p>
@@ -279,6 +323,7 @@ npm run build-storybook`;
 </IconButton>`}
                     language="svelte"
                 />
+                </CardContent>
             </Card>
         </section>
 
@@ -291,29 +336,35 @@ npm run build-storybook`;
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card title="Explore Components">
-                    <p class="text-secondary mb-4">
-                        Browse our interactive component showcase
-                    </p>
-                    <Button
-                        onclick={() => goto("/components")}
-                        variant="primary"
-                    >
-                        View Components
-                    </Button>
+                <Card>
+                    <CardHeader title="Explore Components" />
+                    <CardContent>
+                        <p class="text-secondary mb-4">
+                            Browse our interactive component showcase
+                        </p>
+                        <Button
+                            onclick={() => goto("/components")}
+                            variant="primary"
+                        >
+                            View Components
+                        </Button>
+                    </CardContent>
                 </Card>
 
-                <Card title="Get Support">
-                    <p class="text-secondary mb-4">
-                        Check out our GitHub repository for help
-                    </p>
-                    <Button
-                        onclick={() =>
-                            goto("https://github.com/sabnor/zabi-components")}
-                        variant="outline"
-                    >
-                        Visit GitHub
-                    </Button>
+                <Card>
+                    <CardHeader title="Get Support" />
+                    <CardContent>
+                        <p class="text-secondary mb-4">
+                            Check out our GitHub repository for help
+                        </p>
+                        <Button
+                            onclick={() =>
+                                goto("https://github.com/sabnor/zabi-components")}
+                            variant="outline"
+                        >
+                            Visit GitHub
+                        </Button>
+                    </CardContent>
                 </Card>
             </div>
         </section>
@@ -323,10 +374,10 @@ npm run build-storybook`;
     <div class="bg-base-100 border-t border-border py-8">
         <div class="container mx-auto px-6 text-center">
             <p class="text-secondary mb-2">
-                Clean components that just work. Less is more.
+                Questions? Ask on GitHub — we're happy to help.
             </p>
             <p class="text-sm text-secondary/80">
-                © 2024 Zabi Components. MIT License.
+                © 2026 Zabi Components. MIT License.
             </p>
         </div>
     </div>

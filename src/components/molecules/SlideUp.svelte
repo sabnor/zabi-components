@@ -68,7 +68,7 @@
 
 {#if isOpen}
     <div
-        class="fixed inset-0 bg-overlay z-modal"
+        class="fixed inset-0 z-modal cursor-pointer bg-overlay"
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
         role="dialog"
@@ -78,7 +78,7 @@
     >
         <div
             bind:this={slideUpContainer}
-            class="fixed bottom-0 left-0 right-0 bg-card rounded-t-3xl shadow-xl z-modal max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] flex flex-col"
+            class="fixed bottom-0 left-0 right-0 z-modal flex max-h-[90vh] cursor-default flex-col overflow-y-auto rounded-t-3xl bg-card shadow-xl animate-[slideUp_0.3s_ease-out]"
         >
             {#if title}
                 <div class="flex items-center justify-between px-6 pt-6 pb-4">

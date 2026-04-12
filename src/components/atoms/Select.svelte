@@ -111,7 +111,7 @@
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "w-full bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between";
+            "flex w-full cursor-pointer items-center justify-between rounded-lg bg-input text-body transition-all duration-200 hover:bg-input-hover focus:bg-input-focus focus:outline-none focus:ring-offset-0 disabled:cursor-not-allowed disabled:bg-input-disabled disabled:opacity-50";
 
         return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     });
@@ -328,7 +328,7 @@
                             {#if emptyStateActionLabel && onEmptyStateAction}
                                 <button
                                     type="button"
-                                    class="mt-3 inline-flex min-h-11 items-center rounded-lg bg-action-primary px-3 py-2 text-sm text-action-primary"
+                                    class="mt-3 inline-flex min-h-11 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm text-action-primary"
                                     onclick={onEmptyStateAction}
                                 >
                                     {emptyStateActionLabel}

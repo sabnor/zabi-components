@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { ExtendedSemanticVariant } from "../../types/variants.js";
+    type AlertVisualVariant = Exclude<ExtendedSemanticVariant, "default">;
 
     interface Props {
         variant?: ExtendedSemanticVariant;
@@ -26,6 +27,10 @@
             onclick(event);
         }
     }
+
+    const visualVariant = $derived<AlertVisualVariant>(
+        variant === "default" ? "info" : variant,
+    );
 
     let alertClasses = $derived({
         info: "text-info border border-info",
@@ -64,10 +69,10 @@
 
 <div
     class="relative rounded-md p-4 border {alertClasses[
-        variant
+        visualVariant
     ]} transition-all duration-200 motion-reduce:transition-none {className}"
     role={alertRole}
-    aria-live={variant === "success" || variant === "info"
+    aria-live={visualVariant === "success" || visualVariant === "info"
         ? "polite"
         : "assertive"}
     aria-atomic="true"
@@ -98,7 +103,7 @@
 
     <div class="flex items-start gap-3 {closable ? 'pr-8' : ''}">
         <div class="shrink-0 mt-0.5">
-            {@html iconSvg[variant]}
+            {@html iconSvg[visualVariant]}
         </div>
 
         <div class="flex-1 min-w-0">
