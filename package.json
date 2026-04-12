@@ -97,7 +97,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:themes": "node --test tests/theme-output.test.js",
-    "prepublishOnly": "npm run build:lib"
+    "prepublishOnly": "npm run build:lib",
+    "publish:npm": "npm publish --access public"
   },
   "devDependencies": {
     "@storybook/addon-docs": "^10.2.19",
