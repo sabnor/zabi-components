@@ -1,6 +1,8 @@
 <script lang="ts">
     import CodeBlock from "../atoms/CodeBlock.svelte";
     import Card from "../atoms/Card.svelte";
+    import CardHeader from "../atoms/CardHeader.svelte";
+    import CardContent from "../atoms/CardContent.svelte";
 
     interface Props {
         title: string;
@@ -27,61 +29,62 @@
     <Card
         size="lg"
         fullWidth={true}
-        {title}
-        {description}
         className="overflow-hidden {className}"
         {...restProps}
     >
-        <button
-            onclick={() => (showCode = !showCode)}
-            class="absolute top-8 right-8 flex items-center gap-2 px-3 py-1.5 text-sm text-description hover:text-body hover:bg-base-50 rounded-md transition-colors duration-200 z-10"
-            aria-label={showCode ? "Show preview" : "Show code"}
-        >
-            {#if showCode}
-                <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                </svg>
-                Preview
-            {:else}
-                <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                    />
-                </svg>
-                Code
-            {/if}
-        </button>
+        <CardHeader {title} {description} />
+        <CardContent>
+            <button
+                onclick={() => (showCode = !showCode)}
+                class="absolute top-8 right-8 z-10 flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-sm text-description transition-colors duration-200 hover:bg-base-50 hover:text-body"
+                aria-label={showCode ? "Show preview" : "Show code"}
+            >
+                {#if showCode}
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                    </svg>
+                    Preview
+                {:else}
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                        />
+                    </svg>
+                    Code
+                {/if}
+            </button>
 
-        {#if showCode}
-            <CodeBlock {code} {language} />
-        {:else}
-            <div class="min-h-[100px] flex items-center justify-center w-full">
-                {@render children?.()}
-            </div>
-        {/if}
+            {#if showCode}
+                <CodeBlock {code} {language} />
+            {:else}
+                <div class="min-h-[100px] flex items-center justify-center w-full">
+                    {@render children?.()}
+                </div>
+            {/if}
+        </CardContent>
     </Card>
 </div>

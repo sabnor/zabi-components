@@ -293,7 +293,7 @@
             {#if isOpen}
                 <div
                     use:setPickerContainer
-                    class="absolute top-12 right-0 z-50 bg-input rounded-2xl shadow-lg p-4 w-80"
+                    class="absolute top-12 right-0 z-50 border border-input-border bg-input rounded-2xl shadow-lg p-4 w-80"
                     role="dialog"
                     aria-label="Color picker"
                 >

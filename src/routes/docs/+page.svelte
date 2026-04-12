@@ -1,7 +1,5 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import Navigation from "../../components/organisms/Navigation.svelte";
-    import ThemeToggle from "../../components/atoms/ThemeToggle.svelte";
     import CodeBlock from "../../components/atoms/CodeBlock.svelte";
     import Button from "../../components/atoms/Button.svelte";
     import IconButton from "../../components/atoms/IconButton.svelte";
@@ -9,18 +7,7 @@
     import Card from "../../components/atoms/Card.svelte";
     import CardHeader from "../../components/atoms/CardHeader.svelte";
     import CardContent from "../../components/atoms/CardContent.svelte";
-
-    interface NavItem {
-        label: string;
-        href: string;
-    }
-
-    const navItems: NavItem[] = [
-        { label: "Home", href: "/" },
-        { label: "Components", href: "/components" },
-        { label: "Docs", href: "/docs" },
-        { label: "GitHub", href: "https://github.com/sabnor/zabi-components" },
-    ];
+    import Heading from "../../components/atoms/Heading.svelte";
 
     const quickStartCode = `import { Button, Card, CardHeader, CardContent, Input } from "zabi-components";
 
@@ -62,22 +49,12 @@ npm run build-storybook`;
 </svelte:head>
 
 <div class="min-h-screen bg-background">
-    <!-- Header -->
-    <div
-        class="flex items-center justify-between p-4 bg-base-50 border-b border-border"
-    >
-        <h1 class="text-xl font-bold text-text">Zabi Components</h1>
-        <div class="flex items-center gap-4">
-            <Navigation variant="header" items={navItems} />
-            <ThemeToggle />
-        </div>
-    </div>
-
-    <!-- Main Content -->
     <div class="container mx-auto p-6 max-w-4xl">
         <!-- Header -->
         <div class="mb-12 text-center">
-            <h1 class="text-4xl font-bold text-text mb-4">Documentation</h1>
+            <div class="mb-4">
+                <Heading level={1} text="Documentation" />
+            </div>
             <p class="text-lg text-secondary">
                 Build, audit, and ship accessible UI with confidence
             </p>
@@ -86,7 +63,9 @@ npm run build-storybook`;
         <!-- Quick Start -->
         <section class="mb-16">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-text mb-4">Quick Start</h2>
+                <div class="mb-4">
+                    <Heading level={2} text="Quick Start" />
+                </div>
                 <p class="text-secondary">
                     Install and start using components right away
                 </p>
@@ -120,9 +99,9 @@ npm run build-storybook`;
         <!-- Design System Quality -->
         <section class="mb-16">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-text mb-4">
-                    Design System Quality
-                </h2>
+                <div class="mb-4">
+                    <Heading level={2} text="Design System Quality" />
+                </div>
                 <p class="text-secondary">
                     Run the audit framework and remediation workflow end-to-end
                 </p>
@@ -183,9 +162,9 @@ npm run build-storybook`;
         <!-- Features -->
         <section class="mb-16">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-text mb-4">
-                    Why Zabi Components?
-                </h2>
+                <div class="mb-4">
+                    <Heading level={2} text="Why Zabi Components?" />
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -250,9 +229,9 @@ npm run build-storybook`;
         <!-- Button Variants -->
         <section class="mb-16">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-text mb-4">
-                    Button Variants
-                </h2>
+                <div class="mb-4">
+                    <Heading level={2} text="Button Variants" />
+                </div>
                 <p class="text-secondary">
                     Explore different button styles and variants
                 </p>
@@ -291,7 +270,9 @@ npm run build-storybook`;
         <!-- Icon Buttons -->
         <section class="mb-16">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-text mb-4">Icon Buttons</h2>
+                <div class="mb-4">
+                    <Heading level={2} text="Icon Buttons" />
+                </div>
                 <p class="text-secondary">
                     Use icon-only buttons for compact actions and toolbars
                 </p>
@@ -330,9 +311,9 @@ npm run build-storybook`;
         <!-- Next Steps -->
         <section class="mb-16">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-text mb-4">
-                    Ready to Start?
-                </h2>
+                <div class="mb-4">
+                    <Heading level={2} text="Ready to Start?" />
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,6 +1,7 @@
 <script lang="ts">
     import Dropdown from "../molecules/Dropdown.svelte";
     import Button from "./Button.svelte";
+    import Input from "./Input.svelte";
     import {
         ChevronDown,
         CheckCircle,
@@ -105,13 +106,13 @@
               ? "border-warning focus:border-warning focus:ring-warning"
               : variant === "error"
                 ? "border-error focus:border-error focus:ring-error"
-                : "border-0 focus:ring-2 focus:ring-brand-500"; // default - no border
+                : "border-input-border focus:ring-2 focus:ring-brand-500";
     });
 
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "w-full bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between";
+            "flex w-full cursor-pointer items-center justify-between rounded-lg border bg-input text-body transition-all duration-200 hover:bg-input-hover focus:bg-input-focus focus:outline-none focus:ring-offset-0 disabled:cursor-not-allowed disabled:bg-input-disabled disabled:opacity-50";
 
         return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     });
@@ -277,9 +278,10 @@
             <div class="px-2 pb-2 pt-1" style:width={menuWidth}>
                 {#if searchable && !isLoading}
                     <div class="px-1 pb-2">
-                        <input
+                        <Input
                             type="text"
-                            class="w-full rounded-md bg-input hover:bg-input-hover focus:bg-input-focus text-body placeholder:text-description px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            size="sm"
+                            class="min-w-0"
                             placeholder={searchPlaceholder}
                             bind:value={searchQuery}
                             aria-label={searchPlaceholder}
@@ -328,7 +330,7 @@
                             {#if emptyStateActionLabel && onEmptyStateAction}
                                 <button
                                     type="button"
-                                    class="mt-3 inline-flex min-h-11 items-center rounded-lg bg-action-primary px-3 py-2 text-sm text-action-primary"
+                                    class="mt-3 inline-flex min-h-11 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm text-action-primary"
                                     onclick={onEmptyStateAction}
                                 >
                                     {emptyStateActionLabel}

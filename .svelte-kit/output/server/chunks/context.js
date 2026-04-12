@@ -1,3 +1,12 @@
+function equals(value) {
+  return value === this.v;
+}
+function safe_not_equal(a, b) {
+  return a != a ? b == b : a !== b || a !== null && typeof a === "object" || typeof a === "function";
+}
+function safe_equals(value) {
+  return !safe_not_equal(value, this.v);
+}
 function lifecycle_outside_component(name) {
   {
     throw new Error(`https://svelte.dev/e/lifecycle_outside_component`);
@@ -61,10 +70,13 @@ function get_parent_context(ssr_context2) {
 }
 export {
   ssr_context as a,
-  set_ssr_context as b,
-  pop as c,
+  safe_not_equal as b,
+  safe_equals as c,
+  equals as d,
   escape_html as e,
+  set_ssr_context as f,
   getContext as g,
+  pop as h,
   push as p,
   setContext as s
 };

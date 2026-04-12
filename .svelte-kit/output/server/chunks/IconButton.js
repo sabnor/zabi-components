@@ -1,5 +1,10 @@
-import { K as spread_props, x as attributes, F as attr_class, z as stringify, G as clsx } from "./index.js";
-import { I as Icon, h as html } from "./CodeBlock.svelte_svelte_type_style_lang.js";
+import { Y as spread_props, a0 as attributes, _ as attr_class, a2 as stringify, $ as clsx } from "./index2.js";
+import { I as Icon } from "./Icon.js";
+function html(value) {
+  var html2 = String(value ?? "");
+  var open = "<!---->";
+  return open + html2 + "<!---->";
+}
 function Heart($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     /**
@@ -99,7 +104,7 @@ function CodeBlock($$renderer, $$props) {
   )}><div class="flex items-center justify-between px-4 py-2 bg-base-800 border-b border-base-700"><div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-500"></div> <div class="w-3 h-3 rounded-full bg-yellow-500"></div> <div class="w-3 h-3 rounded-full bg-green-500"></div></div> `);
   if (showCopyButton) {
     $$renderer.push("<!--[-->");
-    $$renderer.push(`<button class="flex items-center gap-2 px-3 py-1 text-xs text-base-300 hover:text-white hover:bg-base-700 rounded transition-colors duration-200" aria-label="Copy code to clipboard">`);
+    $$renderer.push(`<button class="flex cursor-pointer items-center gap-2 rounded px-3 py-1 text-xs text-base-300 transition-colors duration-200 hover:bg-base-700 hover:text-white" aria-label="Copy code to clipboard">`);
     {
       $$renderer.push("<!--[!-->");
       $$renderer.push(`<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> Copy`);
@@ -161,5 +166,6 @@ function IconButton($$renderer, $$props) {
 export {
   CodeBlock as C,
   Heart as H,
-  IconButton as I
+  IconButton as I,
+  html as h
 };

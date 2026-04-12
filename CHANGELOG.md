@@ -10,6 +10,13 @@ Whenever token or CSS import API surface changes, include:
 - mapping rule updates (for example dark semantic mapping)
 - migration guidance when compatibility aliases remain temporarily
 
+## [Unreleased]
+
+### Breaking changes
+
+- Removed the `Navigation` organism; use `Navbar` with `items`, optional `embedded`, or a `nav` snippet instead.
+- Renamed `SidebarProjectPanel` to `SidebarPanel` (including the `SidebarPanelItem` type).
+
 ## Pending deprecations
 
 - Legacy deep CSS import paths under `zabi-components/dist/*.css` are still supported for compatibility but documented as legacy. Prefer short exports such as `zabi-components/theme-only`, `zabi-components/theme-dark-only`, `zabi-components/colors`, and `zabi-components/css`.
@@ -19,7 +26,7 @@ Whenever token or CSS import API surface changes, include:
 ### ✨ **Features**
 
 - **List Components**: Added new `List` and `ListItem` components with documentation and usage examples
-- **Sidebar**: Added `SidebarNavigation` and `SidebarProjectPanel` with improved navigation behaviors
+- **Sidebar**: Added `SidebarNavigation` and `SidebarPanel` with improved navigation behaviors
 
 ### 🔧 **Improvements**
 

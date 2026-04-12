@@ -68,13 +68,13 @@
               ? "border-warning focus:border-warning focus:ring-warning"
               : variant === "error"
                 ? "border-error focus:border-error focus:ring-error"
-                : "border-0 focus:ring-2 focus:ring-brand-500"; // default - no border
+                : "border-input-border focus:border-input-border focus:ring-2 focus:ring-brand-500";
     });
 
     const inputClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "w-full min-w-48 bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
+            "w-full min-w-48 border bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
 
         return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()} ${className}`.trim();
     });

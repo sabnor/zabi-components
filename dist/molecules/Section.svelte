@@ -40,7 +40,7 @@
         ...restProps
     }: Props = $props();
 
-    const sizeClasses = $derived(() => {
+    const sizeClasses = $derived.by(() => {
         switch (size) {
             case "sm":
                 return "text-sm";
@@ -51,7 +51,7 @@
         }
     });
 
-    const maxWidthClasses = $derived(() => {
+    const maxWidthClasses = $derived.by(() => {
         switch (maxWidth) {
             case "sm":
                 return "max-w-screen-sm";
@@ -72,7 +72,7 @@
         }
     });
 
-    const backgroundClasses = $derived(() => {
+    const backgroundClasses = $derived.by(() => {
         switch (background) {
             case "muted":
                 return "bg-base-50";
@@ -85,7 +85,7 @@
         }
     });
 
-    const paddingClasses = $derived(() => {
+    const paddingClasses = $derived.by(() => {
         switch (padding) {
             case "none":
                 return "";
@@ -102,14 +102,14 @@
         }
     });
 
-    const containerClasses = $derived(() => {
+    const containerClasses = $derived.by(() => {
         const base = "w-full";
-        const maxWidthClass = maxWidthClasses();
+        const maxWidthClass = maxWidthClasses;
         const centeredClass = centered ? "mx-auto" : "";
         return `${base} ${maxWidthClass} ${centeredClass}`.trim();
     });
 
-    const contentClasses = $derived(() => {
+    const contentClasses = $derived.by(() => {
         const base = "px-4 sm:px-6 lg:px-8";
         const centeredClass = centered ? "text-center" : "";
         return `${base} ${centeredClass}`.trim();
@@ -117,18 +117,18 @@
 </script>
 
 <section
-    class="section {backgroundClasses()} {paddingClasses()} {className}"
+    class="section {backgroundClasses} {paddingClasses} {className}"
     {...restProps}
 >
-    <div class={containerClasses()}>
-        <div class={contentClasses()}>
+    <div class={containerClasses}>
+        <div class={contentClasses}>
             {#if title}
                 <div class="mb-6 {centered ? 'mx-auto' : ''}">
                     <Heading level={headingLevel} text={title} />
                     {#if description}
                         <p
-                            class="mt-4 {sizeClasses()} text-description {centered
-                                ? 'mx-auto max-w-2xl'
+                            class="mt-4 {sizeClasses} text-description {centered
+                                ? 'mx-auto'
                                 : ''}"
                         >
                             {description}

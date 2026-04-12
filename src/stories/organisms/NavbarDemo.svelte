@@ -1,6 +1,5 @@
 <script lang="ts">
     import Navbar from "../../components/organisms/Navbar.svelte";
-    import Navigation from "../../components/organisms/Navigation.svelte";
     import Button from "../../components/atoms/Button.svelte";
 
     interface Props {
@@ -31,11 +30,14 @@
     }
 </script>
 
-<Navbar {brand} {showThemeToggle} onclick={handleNavClick}>
-    {#snippet nav()}
-        <Navigation items={navItems} currentPath="/" onclick={handleNavClick} />
-    {/snippet}
-
+<Navbar
+    {brand}
+    {showThemeToggle}
+    items={navItems}
+    currentPath="/"
+    navVariant="header"
+    onclick={handleNavClick}
+>
     {#snippet actions()}
         {#if customActions}
             <Button

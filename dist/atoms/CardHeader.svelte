@@ -3,6 +3,9 @@
 
     interface Props {
         title?: string;
+        /** Short secondary text displayed directly under the title */
+        subtitle?: string;
+        /** Longer supporting text displayed below the subtitle */
         description?: string;
         level?: 1 | 2 | 3 | 4 | 5 | 6;
         className?: string;
@@ -11,6 +14,7 @@
 
     let {
         title = "",
+        subtitle = "",
         description = "",
         level = 3,
         className = "",
@@ -24,7 +28,7 @@
     });
 </script>
 
-<header class="flex flex-col space-y-1.5 pb-4{className}" {...restProps}>
+<header class={`flex flex-col space-y-1.5 pb-4 ${className}`.trim()} {...restProps}>
     {#if title}
         <svelte:element this={headingTag} class={headingClasses()}>
             {title}
@@ -32,6 +36,11 @@
     {/if}
     {#if children}
         {@render children()}
+    {/if}
+    {#if subtitle}
+        <p class="text-sm text-description">
+            {subtitle}
+        </p>
     {/if}
     {#if description}
         <p class="text-sm text-description">

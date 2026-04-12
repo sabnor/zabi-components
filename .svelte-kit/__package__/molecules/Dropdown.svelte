@@ -182,7 +182,8 @@
             bg-input
             rounded-lg
             shadow-lg
-            border-0
+            border
+            border-input-border
             py-2
             transition-all
             duration-200
