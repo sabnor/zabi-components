@@ -12,10 +12,27 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [6.0.0] - 2026-04-12
+
 ### Breaking changes
 
 - Removed the `Navigation` organism; use `Navbar` with `items`, optional `embedded`, or a `nav` snippet instead.
 - Renamed `SidebarProjectPanel` to `SidebarPanel` (including the `SidebarPanelItem` type).
+
+### Added
+
+- Package subpath exports `zabi-components/colors` and `zabi-components/css` for theme and full bundle CSS.
+- Published theme documentation files in the package (`THEME.md`, `THEMING.md`, `docs/theme-imports.md`).
+
+### Changed
+
+- Theme build runs `sync:tokens` before CSS generation; added theme output tests (`test:themes`).
+- Refined default border styling on several components.
+
+### Migration
+
+- Replace `import { Navigation } from 'zabi-components'` (or organisms path) with `Navbar` and the documented props/snippets.
+- Replace `SidebarProjectPanel` imports with `SidebarPanel` and align prop/type names to `SidebarPanelItem` where applicable.
 
 ## Pending deprecations
 
