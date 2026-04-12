@@ -92,31 +92,31 @@
 
     :global(.language-svelte .token.tag),
     :global(.language-html .token.tag) {
-        color: #f92672;
+        color: var(--color-error-text);
     }
 
     :global(.language-svelte .token.attr-name),
     :global(.language-html .token.attr-name) {
-        color: #a6e22e;
+        color: var(--color-success-text);
     }
 
     :global(.language-svelte .token.attr-value),
     :global(.language-html .token.attr-value) {
-        color: #e6db74;
+        color: var(--color-warning-text);
     }
 
     :global(.language-javascript .token.keyword),
     :global(.language-typescript .token.keyword) {
-        color: #66d9ef;
+        color: var(--color-info-text);
     }
 
     :global(.language-javascript .token.string),
     :global(.language-typescript .token.string) {
-        color: #e6db74;
+        color: var(--color-warning-text);
     }
 
     :global(.language-javascript .token.function),
     :global(.language-typescript .token.function) {
-        color: #a6e22e;
+        color: var(--color-success-text);
     }
 </style>

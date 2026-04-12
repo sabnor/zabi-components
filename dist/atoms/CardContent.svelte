@@ -17,7 +17,7 @@
     }: Props = $props();
 </script>
 
-<div class="p-6 pt-0 {className}" {...restProps}>
+<div class={className} {...restProps}>
     {#if image}
         <img
             src={image}

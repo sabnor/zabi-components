@@ -1,8 +1,5 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
-    import { getContext } from "svelte";
-
-    const NAVIGATION_MENU_CONTEXT = Symbol("navigation-menu");
 
     interface Props {
         className?: string;
@@ -14,10 +11,6 @@
         children,
         ...restProps
     }: Props = $props();
-
-    const context = getContext<{
-        isMobile: boolean;
-    }>(NAVIGATION_MENU_CONTEXT);
 </script>
 
 <ul

@@ -3,8 +3,10 @@ interface Props {
     value?: string;
     type?: string;
     name?: string;
+    class?: string;
     label?: string;
     placeholder?: string;
+    required?: boolean;
     disabled?: boolean;
     size?: SizeVariant;
     variant?: SemanticVariant;

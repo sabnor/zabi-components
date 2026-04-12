@@ -113,12 +113,12 @@
     );
 
     const searchButtonClasses = $derived(
-        "w-full rounded-2xl bg-input transition-colors duration-150 flex min-h-11 items-center justify-center px-0 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0",
+        "flex min-h-11 w-full cursor-pointer items-center justify-center rounded-2xl bg-input px-0 py-2.5 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0",
     );
     const searchTriggerClasses = $derived.by(() => {
         return isCollapsed
             ? searchButtonClasses
-            : "w-full rounded-2xl bg-input transition-colors duration-150 flex min-h-11 items-center gap-3 px-4 py-2.5 text-left focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
+            : "flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-2xl bg-input px-4 py-2.5 text-left transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
     });
     const iconContainerClasses = $derived(
         "flex size-6 shrink-0 items-center justify-center leading-none",
@@ -134,7 +134,7 @@
     function getNavItemClasses(item: SidebarNavigationItem): string {
         const isActive = currentPath === item.href;
         const baseClasses =
-            "w-full rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
+            "w-full cursor-pointer rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
         const layoutClasses = isCollapsed
             ? "flex min-h-11 items-center justify-center px-0 py-2.5"
             : "flex min-h-11 items-center gap-3 px-4 py-2.5";
@@ -148,7 +148,7 @@
 
     function getControlButtonClasses(): string {
         const baseClasses =
-            "w-full rounded-lg text-description hover:text-headline hover:bg-base-50 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
+            "w-full cursor-pointer rounded-lg text-description transition-colors duration-150 hover:bg-base-50 hover:text-headline focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
         const layoutClasses = isCollapsed
             ? "flex min-h-11 items-center justify-center px-0 py-2.5"
             : "flex min-h-11 items-center gap-3 px-4 py-2.5";
@@ -361,7 +361,7 @@
                     {#if !(normalizedSearchTerm && searchMode === "input")}
                         <button
                             type="button"
-                            class="mt-4 inline-flex min-h-11 items-center rounded-lg bg-action-primary px-3 py-2 text-sm text-action-primary hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0"
+                            class="mt-4 inline-flex min-h-11 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm text-action-primary hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0"
                             onclick={handleEmptyStateAction}
                         >
                             {emptyStateActionLabel}
@@ -392,7 +392,7 @@
             <div class={themeToggleContainerClasses}>
                 <button
                     type="button"
-                    class="inline-flex h-8 w-14 items-center rounded-2xl p-1 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0 {isLightMode
+                    class="inline-flex h-8 w-14 cursor-pointer items-center rounded-2xl p-1 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0 {isLightMode
                         ? 'bg-action-primary'
                         : 'bg-base-200'}"
                     onclick={handleThemeToggle}

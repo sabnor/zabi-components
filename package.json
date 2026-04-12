@@ -1,7 +1,7 @@
 {
   "name": "zabi-components",
   "version": "5.0.22",
-  "description": "A modern Svelte 5 component library with TypeScript, Tailwind CSS v4, and 100% SSR-safe components",
+  "description": "Svelte 5 UI components with TypeScript and Tailwind CSS v4. Accessible, easy to theme, works with SSR.",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -104,6 +104,7 @@
     "@types/node": "^24.5.2",
     "@types/react": "^19.2.2",
     "autoprefixer": "^10.4.17",
+    "baseline-browser-mapping": "^2.10.18",
     "postcss": "^8.4.35",
     "storybook": "^10.2.19",
     "svelte": "^5.43.8",

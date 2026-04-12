@@ -16,7 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        src: 'https://via.placeholder.com/300x200',
+        src: 'https://placehold.co/300x200',
         alt: 'Placeholder image',
         width: '300px',
         height: '200px'
@@ -25,7 +25,7 @@ export const Default: Story = {
 
 export const Square: Story = {
     args: {
-        src: 'https://via.placeholder.com/200x200',
+        src: 'https://placehold.co/200x200',
         alt: 'Square image',
         width: '200px',
         height: '200px'
@@ -34,7 +34,7 @@ export const Square: Story = {
 
 export const Wide: Story = {
     args: {
-        src: 'https://via.placeholder.com/400x200',
+        src: 'https://placehold.co/400x200',
         alt: 'Wide image',
         width: '400px',
         height: '200px'
@@ -43,7 +43,7 @@ export const Wide: Story = {
 
 export const WithClassName: Story = {
     args: {
-        src: 'https://via.placeholder.com/300x200',
+        src: 'https://placehold.co/300x200',
         alt: 'Image with custom class',
         width: '300px',
         height: '200px',

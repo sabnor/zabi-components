@@ -1,11 +1,5 @@
 <script lang="ts">
-    function generateId(prefix: string = "id"): string {
-        if (typeof window !== "undefined") {
-            return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
-        } else {
-            return `${prefix}-ssr-${Date.now()}`;
-        }
-    }
+    import { generateId } from "../../routes/lib/ssr-safe.js";
 
     interface Props {
         checked?: boolean;

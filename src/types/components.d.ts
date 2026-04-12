@@ -39,8 +39,13 @@ export interface HeadingProps {
 
 // Card component props
 export interface CardProps {
-    variant?: 'default' | 'elevated' | 'outlined';
+    variant?: 'default' | 'elevated' | 'outlined' | 'flat';
+    size?: 'sm' | 'md' | 'lg';
+    fullWidth?: boolean;
     className?: string;
+    onclick?: (event: MouseEvent) => void | Promise<void>;
+    /** Required when card is interactive (has onclick) for accessibility */
+    ariaLabel?: string;
 }
 
 // Input component props and events

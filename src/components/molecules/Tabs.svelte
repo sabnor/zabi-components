@@ -105,12 +105,12 @@
                 type="button"
                 role="tab"
                 id={getTabId(tab.id)}
-                class="px-4 py-2 text-sm font-medium border-b-2 transition-colors {activeTab ===
+                class="cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed {activeTab ===
                 tab.id
                     ? variant === 'pills'
-                        ? 'bg-brand-100 text-brand-700 border-brand-500'
+                        ? 'border-brand-500 bg-brand-100 text-brand-700'
                         : 'border-brand-500 text-body'
-                    : 'border-transparent text-description hover:text-body hover:border-base-300'}"
+                    : 'border-transparent text-description hover:border-base-300 hover:text-body'}"
                 onclick={() => selectTab(tab.id)}
                 disabled={tab.disabled}
                 aria-selected={activeTab === tab.id}

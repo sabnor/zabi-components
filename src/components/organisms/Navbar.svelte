@@ -37,7 +37,7 @@
             <div class="shrink-0">
                 <button
                     type="button"
-                    class="text-xl font-bold text-headline"
+                    class="cursor-pointer text-xl font-bold text-headline"
                     onclick={handleBrandClick}
                 >
                     {brand}
@@ -62,7 +62,7 @@
             <div class="md:hidden">
                 <button
                     type="button"
-                    class="text-description hover:text-body"
+                    class="cursor-pointer text-description hover:text-body"
                     onclick={toggleMenu}
                     aria-label="Toggle menu"
                 >

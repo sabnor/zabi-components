@@ -9,6 +9,7 @@ interface Props {
     variant?: "header" | "sidebar";
     items?: NavigationItem[];
     currentPath?: string;
+    preventNavigation?: boolean;
     onclick?: (event: Event) => void;
     className?: string;
 }

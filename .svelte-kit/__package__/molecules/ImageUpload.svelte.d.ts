@@ -3,6 +3,7 @@ interface Props {
     disabled?: boolean;
     accept?: string;
     placeholder?: string;
+    errorMessage?: string;
     onchange?: (event: Event) => void;
     onclick?: (event: Event) => void;
 }

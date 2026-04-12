@@ -1,12 +1,12 @@
 # Zabi Components
 
-A clean, minimal Svelte 5 component library built with TypeScript and Tailwind CSS. **Less is more** - focused on essential components that just work.
+Svelte 5 UI components with TypeScript and Tailwind. Same behavior in the browser and on the server.
 
-> **⚠️ Svelte 5 Required**: This library uses Svelte 5 runes syntax (`$props`, `$derived`, `$state`). Make sure you're using Svelte 5.43.8 or later.
+> **Svelte 5** — Uses runes (`$props`, `$derived`, `$state`). Requires **Svelte 5.43.8** or newer.
 
-## Philosophy
+## Approach
 
-**Clean & Simple**: No unnecessary complexity, just clean components that focus on what matters most. Every component is designed to be intuitive, accessible, and performant. We've simplified everything to use modern CSS and minimal JavaScript.
+Semantic HTML, sensible defaults, and props that stay predictable—especially when you use SSR.
 
 ## Features
 
@@ -162,7 +162,6 @@ import {
 
 ```svelte
 <script lang="ts">
-  // Clean Components - Less is More
   import { 
     Card, 
     CardHeader, 
@@ -314,7 +313,7 @@ import {
 
 ## Component Overview
 
-### Core Components (Clean & Simple)
+### Core components
 
 | Component | Category | Description | Key Features |
 |-----------|----------|-------------|--------------|
@@ -1336,7 +1335,7 @@ This is a **major breaking change** that affects how all components handle event
 
 See the [Migration Guide](#migration-from-previous-versions) above for detailed examples.
 
-### v2.0.2 - "Less is More" Edition
+### v2.0.2 — streamlined components
 
 ## Development Setup
 
@@ -1575,9 +1574,8 @@ See [VARIANTS.md](./docs/VARIANTS.md) for complete variant documentation.
 
 ## Support
 
-For support, please open an issue on GitHub or contact the maintainers.
+Questions or bugs? [Open an issue on GitHub](https://github.com/sabnor/zabi-components/issues).
 
 ---
 
-Built with ❤️ using Svelte, TypeScript, and Tailwind CSS.  
-**Less is more** - Clean components that just work.
+MIT license · Svelte, TypeScript, and Tailwind CSS

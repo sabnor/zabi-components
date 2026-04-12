@@ -7,6 +7,8 @@
     import Button from "../../components/atoms/Button.svelte";
     import IconButton from "../../components/atoms/IconButton.svelte";
     import Card from "../../components/atoms/Card.svelte";
+    import CardHeader from "../../components/atoms/CardHeader.svelte";
+    import CardContent from "../../components/atoms/CardContent.svelte";
     import Input from "../../components/atoms/Input.svelte";
     import Textarea from "../../components/atoms/Textarea.svelte";
     import Alert from "../../components/molecules/Alert.svelte";
@@ -1974,7 +1976,7 @@ console.log(greet('World'));`;
                                             </div>
                                         </div>
                                     {:else if component.name === "Input"}
-                                        <div class="space-y-4 max-w-md">
+                                        <div class="w-full space-y-4">
                                             <Input
                                                 label="Name"
                                                 placeholder="Enter your name"
@@ -2007,39 +2009,54 @@ console.log(greet('World'));`;
                                         <div
                                             class="grid grid-cols-1 md:grid-cols-2 gap-4"
                                         >
-                                            <Card title="Default Card">
-                                                <p class="text-description">
-                                                    This is a default card with
-                                                    clean styling.
-                                                </p>
+                                            <Card>
+                                                <CardHeader title="Default Card" />
+                                                <CardContent>
+                                                    <p class="text-description">
+                                                        This is a default card with
+                                                        clean styling.
+                                                    </p>
+                                                </CardContent>
                                             </Card>
-                                            <Card title="Success Card">
-                                                <p class="text-description">
-                                                    This card indicates a
-                                                    successful action.
-                                                </p>
+                                            <Card variant="elevated">
+                                                <CardHeader title="Elevated Card" />
+                                                <CardContent>
+                                                    <p class="text-description">
+                                                        This card indicates a
+                                                        successful action.
+                                                    </p>
+                                                </CardContent>
                                             </Card>
-                                            <Card title="Warning Card">
-                                                <p class="text-description">
-                                                    This card shows a warning
-                                                    state.
-                                                </p>
+                                            <Card variant="outlined">
+                                                <CardHeader title="Outlined Card" />
+                                                <CardContent>
+                                                    <p class="text-description">
+                                                        This card shows a warning
+                                                        state.
+                                                    </p>
+                                                </CardContent>
                                             </Card>
-                                            <Card title="Error Card">
-                                                <p class="text-description">
-                                                    This card indicates an error
-                                                    state.
-                                                </p>
+                                            <Card variant="flat">
+                                                <CardHeader title="Flat Card" />
+                                                <CardContent>
+                                                    <p class="text-description">
+                                                        This card indicates an error
+                                                        state.
+                                                    </p>
+                                                </CardContent>
                                             </Card>
-                                            <Card title="Info Card">
-                                                <p class="text-description">
-                                                    This card provides
-                                                    informational content.
-                                                </p>
+                                            <Card>
+                                                <CardHeader title="Info Card" />
+                                                <CardContent>
+                                                    <p class="text-description">
+                                                        This card provides
+                                                        informational content.
+                                                    </p>
+                                                </CardContent>
                                             </Card>
                                         </div>
                                     {:else if component.name === "List"}
-                                        <div class="max-w-xl space-y-4">
+                                        <div class="w-full space-y-4">
                                             <List
                                                 items={docsListItems}
                                                 selectedId="billing"
@@ -2075,11 +2092,11 @@ console.log(greet('World'));`;
                                             />
                                         </div>
                                     {:else if component.name === "ContactForm"}
-                                        <div class="max-w-md">
+                                        <div class="w-full">
                                             <ContactForm />
                                         </div>
                                     {:else if component.name === "Dropdown"}
-                                        <div class="space-y-4 max-w-md">
+                                        <div class="w-full space-y-4">
                                             <Dropdown>
                                                 {#snippet trigger()}
                                                     <Button
@@ -2128,7 +2145,7 @@ console.log(greet('World'));`;
                                             </Dropdown>
                                         </div>
                                     {:else if component.name === "Form"}
-                                        <div class="max-w-md">
+                                        <div class="w-full">
                                             <Form>
                                                 <div class="space-y-4">
                                                     <Input
@@ -2152,7 +2169,7 @@ console.log(greet('World'));`;
                                             </Form>
                                         </div>
                                     {:else if component.name === "ImageUpload"}
-                                        <div class="max-w-md">
+                                        <div class="w-full">
                                             <ImageUpload
                                                 accept="image/jpeg,image/png,image/gif"
                                                 placeholder="Choose an image"
@@ -2228,7 +2245,7 @@ console.log(greet('World'));`;
                                             </SlideUp>
                                         </div>
                                     {:else if component.name === "Tabs"}
-                                        <div class="max-w-2xl">
+                                        <div class="w-full">
                                             <Tabs
                                                 tabs={[
                                                     {
@@ -2767,7 +2784,7 @@ console.log(greet('World'));`;
                                             />
                                         </div>
                                     {:else if component.name === "ColorPicker"}
-                                        <div class="space-y-6 max-w-md">
+                                        <div class="w-full space-y-6">
                                             <ColorPicker
                                                 label="Choose a color"
                                             />
@@ -2800,7 +2817,7 @@ console.log(greet('World'));`;
                                             <Badge variant="info" text="Info" />
                                         </div>
                                     {:else if component.name === "Checkbox"}
-                                        <div class="space-y-4 max-w-md">
+                                        <div class="w-full space-y-4">
                                             <Checkbox
                                                 label="Accept terms and conditions"
                                             />
@@ -2815,7 +2832,7 @@ console.log(greet('World'));`;
                                             />
                                         </div>
                                     {:else if component.name === "Select"}
-                                        <div class="space-y-6 w-full max-w-md">
+                                        <div class="w-full space-y-6">
                                             <Select
                                                 label="Default (Searchable)"
                                                 placeholder="Choose an option"
@@ -2869,7 +2886,7 @@ console.log(greet('World'));`;
                                             />
                                         </div>
                                     {:else if component.name === "CodeBlock"}
-                                        <div class="max-w-2xl">
+                                        <div class="w-full">
                                             <CodeBlock
                                                 code={sampleCode}
                                                 language="javascript"
@@ -2915,7 +2932,7 @@ console.log(greet('World'));`;
                                             />
                                         </div>
                                     {:else if component.name === "OptimizedImage"}
-                                        <div class="space-y-4 max-w-md">
+                                        <div class="w-full space-y-4">
                                             <OptimizedImage
                                                 src="/vite.svg"
                                                 alt="Vite Logo"
@@ -2930,7 +2947,7 @@ console.log(greet('World'));`;
                                             />
                                         </div>
                                     {:else if component.name === "Skeleton"}
-                                        <div class="space-y-4 max-w-md">
+                                        <div class="w-full space-y-4">
                                             <Skeleton />
                                             <Skeleton
                                                 width="200px"
@@ -2952,7 +2969,7 @@ console.log(greet('World'));`;
                                             </div>
                                         </div>
                                     {:else if component.name === "Toast"}
-                                        <div class="space-y-4 max-w-md">
+                                        <div class="w-full space-y-4">
                                             <Toast
                                                 message="This is an info toast"
                                             />
@@ -3075,10 +3092,10 @@ console.log(greet('World'));`;
             >
                 <div class="text-center md:text-left">
                     <p class="text-description mb-2">
-                        Clean components that just work. Less is more.
+                        Open source · MIT license · Code on GitHub
                     </p>
                     <p class="text-sm text-caption">
-                        © 2024 Zabi Components. MIT License.
+                        © 2026 Zabi Components. MIT License.
                     </p>
                 </div>
                 <div class="flex gap-6">

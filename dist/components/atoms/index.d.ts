@@ -10,6 +10,8 @@ export { default as Input } from './Input.svelte';
 export { default as Textarea } from './Textarea.svelte';
 export { default as Select } from './Select.svelte';
 export { default as ColorPicker } from './ColorPicker.svelte';
+export { default as List } from './List.svelte';
+export { default as ListItem } from './ListItem.svelte';
 export { default as Heading } from './Heading.svelte';
 export { default as ThemeToggle } from './ThemeToggle.svelte';
 //# sourceMappingURL=index.d.ts.map
