@@ -5,6 +5,8 @@
     import Checkbox from "../atoms/Checkbox.svelte";
     import Button from "../atoms/Button.svelte";
     import Card from "../atoms/Card.svelte";
+    import CardHeader from "../atoms/CardHeader.svelte";
+    import CardContent from "../atoms/CardContent.svelte";
     import type { ContactFormData } from "../../types/page.types";
 
     interface Props {
@@ -71,69 +73,72 @@
 </script>
 
 <div class={className}>
-    <Card size="md" fullWidth={true} title="Get in Touch">
-        <Form onsubmit={handleFormSubmit} className="space-y-4">
-        {#if formErrorMessage}
-            <div
-                class="rounded-lg border border-error px-4 py-3 text-sm text-error"
-                role="alert"
-            >
-                <p class="font-medium">Something went wrong</p>
-                <p>{formErrorMessage}</p>
-                <p class="mt-1">Recovery action: review your inputs and resubmit.</p>
-            </div>
-        {/if}
-        <div class="space-y-4">
-            <Input
-                type="text"
-                name="name"
-                label="Name"
-                placeholder="Enter your name"
-                value={formData.name}
-                oninput={(e) =>
-                    (formData.name = (e.target as HTMLInputElement).value)}
-                variant={fieldErrors.name ? "error" : "default"}
-                message={fieldErrors.name || ""}
-            />
-            <Input
-                type="email"
-                name="email"
-                label="Email"
-                placeholder="Enter your email"
-                value={formData.email}
-                oninput={(e) =>
-                    (formData.email = (e.target as HTMLInputElement).value)}
-                variant={fieldErrors.email ? "error" : "default"}
-                message={fieldErrors.email || ""}
-            />
-            <Textarea
-                name="message"
-                label="Message"
-                placeholder="Enter your message"
-                rows={4}
-                value={formData.message}
-                oninput={(e) =>
-                    (formData.message = (
-                        e.target as HTMLTextAreaElement
-                    ).value)}
-                variant={fieldErrors.message ? "error" : "default"}
-                message={fieldErrors.message || ""}
-            />
-            <Checkbox
-                name="subscribe"
-                label="Subscribe to updates"
-                checked={formData.subscribe}
-                onchange={(e) =>
-                    (formData.subscribe = (
-                        e.target as HTMLInputElement
-                    ).checked)}
-            />
-        </div>
-        <div class="pt-4">
-            <Button type="submit" variant="primary" size="md">
-                Send Message
-            </Button>
-        </div>
-        </Form>
+    <Card size="md" fullWidth={true}>
+        <CardHeader title="Get in Touch" />
+        <CardContent>
+            <Form onsubmit={handleFormSubmit} className="space-y-4">
+                {#if formErrorMessage}
+                <div
+                    class="rounded-lg border border-error px-4 py-3 text-sm text-error"
+                    role="alert"
+                >
+                    <p class="font-medium">Something went wrong</p>
+                    <p>{formErrorMessage}</p>
+                    <p class="mt-1">Recovery action: review your inputs and resubmit.</p>
+                </div>
+                {/if}
+                <div class="space-y-4">
+                    <Input
+                        type="text"
+                        name="name"
+                        label="Name"
+                        placeholder="Enter your name"
+                        value={formData.name}
+                        oninput={(e) =>
+                            (formData.name = (e.target as HTMLInputElement).value)}
+                        variant={fieldErrors.name ? "error" : "default"}
+                        message={fieldErrors.name || ""}
+                    />
+                    <Input
+                        type="email"
+                        name="email"
+                        label="Email"
+                        placeholder="Enter your email"
+                        value={formData.email}
+                        oninput={(e) =>
+                            (formData.email = (e.target as HTMLInputElement).value)}
+                        variant={fieldErrors.email ? "error" : "default"}
+                        message={fieldErrors.email || ""}
+                    />
+                    <Textarea
+                        name="message"
+                        label="Message"
+                        placeholder="Enter your message"
+                        rows={4}
+                        value={formData.message}
+                        oninput={(e) =>
+                            (formData.message = (
+                                e.target as HTMLTextAreaElement
+                            ).value)}
+                        variant={fieldErrors.message ? "error" : "default"}
+                        message={fieldErrors.message || ""}
+                    />
+                    <Checkbox
+                        name="subscribe"
+                        label="Subscribe to updates"
+                        checked={formData.subscribe}
+                        onchange={(e) =>
+                            (formData.subscribe = (
+                                e.target as HTMLInputElement
+                            ).checked)}
+                    />
+                </div>
+                <div class="pt-4">
+                    <Button type="submit" variant="primary" size="md">
+                        Send Message
+                    </Button>
+                </div>
+            </Form>
+        </CardContent>
     </Card>
 </div>

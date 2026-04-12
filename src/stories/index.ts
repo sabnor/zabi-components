@@ -36,7 +36,8 @@ export { default as TabsStories } from './molecules/Tabs.stories';
 
 // Organisms
 export { default as NavbarStories } from './organisms/Navbar.stories';
-export { default as NavigationStories } from './organisms/Navigation.stories';
+export { default as NavbarInlineNavStories } from './organisms/NavbarInlineNav.stories';
+export { default as SidebarPanelStories } from './organisms/SidebarPanel.stories';
 
 // Story Categories
 export const storyCategories = {
@@ -73,10 +74,7 @@ export const storyCategories = {
         'SlideUp',
         'Tabs'
     ],
-    organisms: [
-        'Navbar',
-        'Navigation'
-    ]
+    organisms: ['Navbar', 'SidebarNavigation', 'SidebarPanel']
 } as const;
 
 // Component count

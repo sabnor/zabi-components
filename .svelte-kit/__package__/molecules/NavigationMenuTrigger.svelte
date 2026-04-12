@@ -19,8 +19,6 @@
         ...restProps
     }: Props = $props();
 
-    let triggerElement = $state<HTMLElement | null>(null);
-
     const context = getContext<NavigationMenuContextValue>(
         NAVIGATION_MENU_CONTEXT_KEY,
     );
@@ -52,9 +50,8 @@
 </script>
 
 <button
-    bind:this={triggerElement}
     type="button"
-    class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-headline bg-transparent hover:bg-base-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 {className}"
+    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover data-[active=true]:bg-nav-menu-active data-[active=true]:text-nav-menu-item-active focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus {className}"
     aria-expanded={isActive ? 'true' : 'false'}
     aria-haspopup="true"
     onclick={handleClick}

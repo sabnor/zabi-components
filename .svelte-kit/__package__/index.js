@@ -20,9 +20,8 @@ export { default as Modal } from './molecules/Modal.svelte';
 export { default as SlideUp } from './molecules/SlideUp.svelte';
 export { default as Tabs } from './molecules/Tabs.svelte';
 export { default as Navbar } from './organisms/Navbar.svelte';
-export { default as Navigation } from './organisms/Navigation.svelte';
 export { default as SidebarNavigation } from './organisms/SidebarNavigation.svelte';
-export { default as SidebarProjectPanel } from './organisms/SidebarProjectPanel.svelte';
+export { default as SidebarPanel } from './organisms/SidebarPanel.svelte';
 export const createId = (prefix = 'id') => generateId(prefix);
 export const cn = (...classes) => classes.filter(Boolean).join(' ');
 export const getFormData = (form) => {

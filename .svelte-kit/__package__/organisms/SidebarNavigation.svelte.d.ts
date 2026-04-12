@@ -38,6 +38,11 @@ interface Props {
     onLogout?: () => void;
     onThemeToggle?: (nextIsLightMode: boolean) => void;
     onEmptyStateAction?: () => void;
+    /**
+     * Highlights a primary (e.g. category) row when the current route is a child
+     * of that section, while `currentPath` points at the leaf (e.g. a component).
+     */
+    activePrimaryHref?: string;
 }
 declare const SidebarNavigation: Component<Props, {}, "searchValue" | "isLightMode">;
 type SidebarNavigation = ReturnType<typeof SidebarNavigation>;

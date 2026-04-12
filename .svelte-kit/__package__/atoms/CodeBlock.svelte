@@ -44,7 +44,7 @@
         {#if showCopyButton}
             <button
                 onclick={copyToClipboard}
-                class="flex items-center gap-2 px-3 py-1 text-xs text-base-300 hover:text-white hover:bg-base-700 rounded transition-colors duration-200"
+                class="flex cursor-pointer items-center gap-2 rounded px-3 py-1 text-xs text-base-300 transition-colors duration-200 hover:bg-base-700 hover:text-white"
                 aria-label="Copy code to clipboard"
             >
                 {#if copied}

@@ -1,13 +1,13 @@
 import type { Snippet } from "svelte";
 import type { CardVariant, SizeVariant } from "../../types/variants.js";
 interface Props {
-    title?: string;
-    description?: string;
-    image?: string;
     onclick?: (event: MouseEvent) => void | Promise<void>;
     size?: SizeVariant;
     variant?: CardVariant;
     fullWidth?: boolean;
+    className?: string;
+    /** Required when card is interactive (has onclick) for accessibility */
+    ariaLabel?: string;
     children?: Snippet;
 }
 declare const Card: import("svelte").Component<Props, {}, "">;

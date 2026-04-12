@@ -30,7 +30,7 @@
     }
 
     const linkClasses =
-        "block cursor-pointer rounded-md px-4 py-2 text-sm text-headline no-underline transition-colors hover:bg-base-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 {className}";
+        "block cursor-pointer rounded-md px-4 py-2 text-sm text-nav-menu-item no-underline transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus {className}";
 </script>
 
 {#if asChild}

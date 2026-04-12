@@ -51,7 +51,7 @@
 
 <button
     type="button"
-    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-headline transition-colors hover:bg-base-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 {className}"
+    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover data-[active=true]:bg-nav-menu-active data-[active=true]:text-nav-menu-item-active focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus {className}"
     aria-expanded={isActive ? 'true' : 'false'}
     aria-haspopup="true"
     onclick={handleClick}

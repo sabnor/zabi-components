@@ -1,18 +1,9 @@
-import { v as head } from "../../../chunks/index.js";
+import { U as head } from "../../../chunks/index2.js";
 import { g as goto } from "../../../chunks/client.js";
-import { N as Navigation, T as ThemeToggle, C as Card, a as CardHeader, b as CardContent, B as Button } from "../../../chunks/CodeBlock.svelte_svelte_type_style_lang.js";
 import { C as CodeBlock, I as IconButton, H as Heart } from "../../../chunks/IconButton.js";
+import { C as Card, a as CardHeader, b as CardContent, B as Button } from "../../../chunks/CardHeader.js";
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
-    const navItems = [
-      { label: "Home", href: "/" },
-      { label: "Components", href: "/components" },
-      { label: "Docs", href: "/docs" },
-      {
-        label: "GitHub",
-        href: "https://github.com/sabnor/zabi-components"
-      }
-    ];
     const quickStartCode = `import { Button, Card, CardHeader, CardContent, Input } from "zabi-components";
 
 let name = $state("");
@@ -45,11 +36,7 @@ npm run build-storybook`;
       });
       $$renderer3.push(`<meta name="description" content="Getting started guide and API reference for Zabi Components"/>`);
     });
-    $$renderer2.push(`<div class="min-h-screen bg-background"><div class="flex items-center justify-between p-4 bg-base-50 border-b border-border"><h1 class="text-xl font-bold text-text">Zabi Components</h1> <div class="flex items-center gap-4">`);
-    Navigation($$renderer2, { variant: "header", items: navItems });
-    $$renderer2.push(`<!----> `);
-    ThemeToggle($$renderer2, {});
-    $$renderer2.push(`<!----></div></div> <div class="container mx-auto p-6 max-w-4xl"><div class="mb-12 text-center"><h1 class="text-4xl font-bold text-text mb-4">Documentation</h1> <p class="text-lg text-secondary">Build, audit, and ship accessible UI with confidence</p></div> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Quick Start</h2> <p class="text-secondary">Install and start using components right away</p></div> <div class="space-y-8">`);
+    $$renderer2.push(`<div class="min-h-screen bg-background"><div class="container mx-auto p-6 max-w-4xl"><div class="mb-12 text-center"><h1 class="text-4xl font-bold text-text mb-4">Documentation</h1> <p class="text-lg text-secondary">Build, audit, and ship accessible UI with confidence</p></div> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Quick Start</h2> <p class="text-secondary">Install and start using components right away</p></div> <div class="space-y-8">`);
     Card($$renderer2, {
       children: ($$renderer3) => {
         CardHeader($$renderer3, { title: "Installation" });
@@ -215,11 +202,12 @@ npm run build-storybook`;
     $$renderer2.push(`<!----> `);
     Card($$renderer2, {
       children: ($$renderer3) => {
-        CardHeader($$renderer3, { title: "Modern" });
+        CardHeader($$renderer3, { title: "Easy to theme" });
         $$renderer3.push(`<!----> `);
         CardContent($$renderer3, {
           children: ($$renderer4) => {
-            $$renderer4.push(`<p class="text-secondary">Clean, minimal design that just works</p>`);
+            $$renderer4.push(`<p class="text-secondary">Tweak colors and type with CSS variables—no need to
+                            fork everything</p>`);
           },
           $$slots: { default: true }
         });
@@ -371,7 +359,7 @@ npm run build-storybook`;
       },
       $$slots: { default: true }
     });
-    $$renderer2.push(`<!----></div></section></div> <div class="bg-base-100 border-t border-border py-8"><div class="container mx-auto px-6 text-center"><p class="text-secondary mb-2">Clean components that just work. Less is more.</p> <p class="text-sm text-secondary/80">© 2024 Zabi Components. MIT License.</p></div></div></div>`);
+    $$renderer2.push(`<!----></div></section></div> <div class="bg-base-100 border-t border-border py-8"><div class="container mx-auto px-6 text-center"><p class="text-secondary mb-2">Questions? Ask on GitHub — we're happy to help.</p> <p class="text-sm text-secondary/80">© 2026 Zabi Components. MIT License.</p></div></div></div>`);
   });
 }
 export {

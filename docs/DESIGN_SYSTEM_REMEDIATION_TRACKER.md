@@ -35,7 +35,7 @@ Source of truth:
 | --- | --- | --- | --- | --- | --- |
 | R-001 | NavigationMenu context key mismatch | critical | fixed | AI agent | `src/components/molecules/navigation-menu-context.ts` |
 | R-002 | ContactForm duplicated email fields | high | fixed | AI agent | `src/components/molecules/ContactForm.svelte` |
-| R-003 | Navigation link semantics (`preventDefault` + `role="button"`) | high | fixed | AI agent | `src/components/organisms/Navigation.svelte` |
+| R-003 | Navigation link semantics (`preventDefault` + `role="button"`) | high | fixed | AI agent | `src/components/organisms/Navbar.svelte` |
 | R-004 | Tabs incomplete ARIA linkage | medium | fixed | AI agent | `src/components/molecules/Tabs.svelte` |
 | R-005 | Hardcoded hex colors in components | high | fixed | AI agent | `src/components/atoms/CodeBlock.svelte`, `src/components/atoms/Tooltip.svelte`, `scripts/check-token-violations.js` |
 | R-006 | Missing loading/empty/error state coverage | medium | fixed | AI agent | `Select`, `ImageUpload`, and related stories |

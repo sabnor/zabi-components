@@ -138,10 +138,7 @@ import {
   Section,
   Tabs
 } from 'zabi-components/molecules';
-import { 
-  Navbar, 
-  Navigation 
-} from 'zabi-components/organisms';
+import { Navbar, SidebarNavigation, SidebarPanel } from 'zabi-components/organisms';
 
 // Import types separately
 import type { ButtonEvents, InputEvents } from 'zabi-components/types';
@@ -167,7 +164,7 @@ import {
     CardContent, 
     CardFooter,
     Form, 
-    Navigation, 
+    Navbar, 
     Button, 
     IconButton,
     Input, 
@@ -202,7 +199,7 @@ import {
 <div class="min-h-screen bg-gray-50">
   <header class="flex items-center justify-between p-4 bg-white border-b">
     <h1 class="text-xl font-bold">My App</h1>
-    <Navigation variant="header" items={navItems} />
+    <Navbar embedded ariaLabel="Primary" navVariant="header" items={navItems} />
   </header>
 
   <main class="container mx-auto p-6">
@@ -321,7 +318,6 @@ import {
 | **CardContent** | Atom | Card content section | Compound component for card structure |
 | **CardFooter** | Atom | Card footer section | Compound component for card structure |
 | **Form** | Molecule | Simple form wrapper | FormData handling, clean API |
-| **Navigation** | Organism | Clean navigation | Header/sidebar variants, active state |
 | **Button** | Atom | Action button | 6 variants (primary, secondary, danger, ghost, outline, link) |
 | **IconButton** | Atom | Icon-only button | Icon-only, variants, sizes, accessible label |
 | **Input** | Atom | Form input | Essential props, accessibility, semantic variants |
@@ -330,7 +326,7 @@ import {
 | **Tabs** | Molecule | Tab navigation | Keyboard navigation, 2 variants |
 | **Dropdown** | Molecule | Dropdown menu | CSS-only positioning, keyboard navigation, ARIA support |
 | **ImageUpload** | Molecule | File upload | Direct selection, preview |
-| **Navbar** | Organism | Navigation bar | Mobile menu, responsive |
+| **Navbar** | Organism | Navigation bar | Built-in links or snippets, `embedded` link strip, mobile menu |
 | **NavigationMenu** | Molecule | Advanced navigation menu | Compound components, keyboard navigation |
 | **Section** | Molecule | Content section wrapper | Responsive layout, variant support |
 | **Sidebar** | Molecule | Sidebar navigation | Collapsible, responsive |
@@ -565,26 +561,30 @@ All components will automatically switch to their dark mode variants without any
 - `default`: Main content
 - `footer`: Footer content
 
-### Navigation Component
+### Navbar (built-in links)
+
+Use `items` for a typed link list, or pass a `nav` snippet for custom markup. Set `embedded` when you only need the link row inside your own header.
 
 ```svelte
-<Navigation
-  variant="header" | "sidebar"
-  items={Array<{label: string, href: string, icon?: any}>}
-  currentPath={string}
-  className={string}
-  on:click={(e) => console.log('Navigation clicked')}
+<Navbar
+  brand="My App"
+  brandHref="/"
+  items={navItems}
+  navVariant="header"
+  currentPath="/about"
+  onclick={(e) => console.log('Nav link', e)}
 />
+
+<Navbar embedded ariaLabel="Primary" navVariant="header" items={navItems} />
 ```
 
-**Props:**
-- `variant`: Navigation type (default: "header")
-- `items`: Navigation items array
-- `currentPath`: Current active path
-- `className`: Additional CSS classes
-
-**Events:**
-- `click`: Native click event on navigation items
+**Props (selected):**
+- `items`: `NavbarNavItem[]` — `label`, `href`, optional `icon` / `iconFilled`
+- `navVariant`: `"header"` | `"sidebar"` — layout for built-in links
+- `embedded`: render link list (or `nav` snippet) without full chrome
+- `currentPath`: active item for built-in links
+- `preventNavigation`: call `preventDefault` on link clicks
+- `onclick`: invoked when a built-in link is clicked
 
 ### NavigationMenu Component
 

@@ -86,7 +86,7 @@
 
 {#if isOpen}
     <div
-        class="fixed inset-0 bg-overlay flex items-end md:items-center justify-center p-0 md:p-4 z-modal"
+        class="fixed inset-0 z-modal flex cursor-pointer items-end justify-center bg-overlay p-0 md:items-center md:p-4"
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
         role="dialog"
@@ -96,7 +96,7 @@
     >
         <div
             bind:this={modalContainer}
-            class="bg-card rounded-t-3xl md:rounded-3xl shadow-xl min-w-[320px] {sizeClasses} max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out] md:animate-none flex flex-col p-0"
+            class="flex max-h-[90vh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-3xl bg-card p-0 shadow-xl animate-[slideUp_0.3s_ease-out] md:animate-none md:rounded-3xl {sizeClasses}"
         >
             <Card variant="default" fullWidth={false}>
                 {#if title || description}
