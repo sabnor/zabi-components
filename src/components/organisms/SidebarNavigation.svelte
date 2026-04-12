@@ -113,12 +113,12 @@
     );
 
     const searchButtonClasses = $derived(
-        "flex min-h-11 w-full cursor-pointer items-center justify-center rounded-2xl bg-input px-0 py-2.5 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0",
+        "flex min-h-11 w-full cursor-pointer items-center justify-center rounded-2xl border border-input-border bg-input px-0 py-2.5 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0",
     );
     const searchTriggerClasses = $derived.by(() => {
         return isCollapsed
             ? searchButtonClasses
-            : "flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-2xl bg-input px-4 py-2.5 text-left transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
+            : "flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-2xl border border-input-border bg-input px-4 py-2.5 text-left transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-0";
     });
     const iconContainerClasses = $derived(
         "flex size-6 shrink-0 items-center justify-center leading-none",
