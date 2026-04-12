@@ -46,30 +46,28 @@ Zabi Components includes a comprehensive theme system with Tailwind CSS v4. You 
 
 ### Quick Setup
 
-**For projects with existing Tailwind CSS:**
+**Canonical (recommended for Tailwind v4 apps):**
 
 ```css
 /* app.css */
 @import "tailwindcss";
-@import 'zabi-components/theme-only';
-@import 'zabi-components/dist/zabi-components.css';
+@import "zabi-components/theme-only";
+@import "zabi-components/theme-dark-only";
 ```
 
-**For standalone projects (no Tailwind setup):**
+**Alternative (no Tailwind setup):**
 
 ```css
 /* app.css */
-@import 'zabi-components/theme';
-@import 'zabi-components/dist/zabi-components.css';
+@import "zabi-components/colors";
 ```
 
 ### With Dark Mode
 
 ```css
 @import "tailwindcss";
-@import 'zabi-components/theme-only';
-@import 'zabi-components/theme-dark-only'; /* Add dark mode support */
-@import 'zabi-components/dist/zabi-components.css';
+@import "zabi-components/theme-only";
+@import "zabi-components/theme-dark-only"; /* Add dark mode support */
 ```
 
 ### Extending the Theme
@@ -86,10 +84,11 @@ You can extend the theme with custom colors and fonts:
   --color-custom-primary: #ff0000;
 }
 
-@import 'zabi-components/dist/zabi-components.css';
+@import "zabi-components/theme-only";
 ```
 
-> 📖 **Complete Theme Guide**: See [THEME.md](./THEME.md) for comprehensive documentation on theme usage, customization, dark mode, and advanced patterns.
+> 📖 **Complete Theme Guide**: See [THEME.md](./THEME.md) for comprehensive documentation on theme usage, customization, dark mode, and advanced patterns.  
+> **Which CSS file to import** (`theme`, `theme-only`, `colors`, etc.): [docs/theme-imports.md](./docs/theme-imports.md)
 
 ## Import Methods
 

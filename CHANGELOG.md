@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## Changelog policy (theme/token surface)
+
+Whenever token or CSS import API surface changes, include:
+- exported path additions/removals/deprecations (`package.json` `exports`)
+- token rename/add/remove (for `--color-*` and `--zabi-*`)
+- mapping rule updates (for example dark semantic mapping)
+- migration guidance when compatibility aliases remain temporarily
+
+## Pending deprecations
+
+- Legacy deep CSS import paths under `zabi-components/dist/*.css` are still supported for compatibility but documented as legacy. Prefer short exports such as `zabi-components/theme-only`, `zabi-components/theme-dark-only`, `zabi-components/colors`, and `zabi-components/css`.
+
 ## [5.0.22] - 2026-03-16
 
 ### ✨ **Features**

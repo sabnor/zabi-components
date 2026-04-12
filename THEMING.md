@@ -15,10 +15,10 @@ This file contains:
 ## 📍 Where to Make Changes
 
 ### Main Theme (Light Mode)
-Edit the `@theme` block in `src/app.css` (lines 7-236)
+Edit the `@theme` block in `src/app.css`.
 
 ### Dark Mode Theme
-Edit the `.dark` block in `src/app.css` (lines 248-398)
+Edit the `.dark` block in `src/app.css`.
 
 ## ⚠️ Important: Don't Edit These Files
 
@@ -43,40 +43,55 @@ These files are **automatically generated** from `src/app.css` by the build scri
 
 ## 📦 What Are the Dist Files For?
 
-The `dist/` files are **for consumers** of your library who want to import the theme separately:
+The `dist/` files are **for consumers** of your library who want to import the theme separately.
+
+**Full import matrix, export paths, and examples:** [docs/theme-imports.md](./docs/theme-imports.md)
 
 ### For Library Developers (You)
 - **Edit**: `src/app.css` only
-- **Build**: Run `npm run build:css` to regenerate all dist files
+- **Build**: Run `npm run build:css` to regenerate all dist files (or `npm run build:lib` before publish)
+- **After token edits**: run `node scripts/verify-build.js` to confirm outputs (also runs as part of `build:lib`)
+- **Base scale source**: use `tokens/base-scale.js`; run `npm run sync:tokens` (or `npm run build:css`) to render token blocks back into `src/app.css`
 
 ### For Library Consumers
-They can import different files depending on their needs:
 
-1. **`zabi-components-theme.css`** - Theme with Tailwind import (standalone use)
-   ```css
-   @import 'zabi-components/theme';
-   ```
+Use **package exports** (preferred):
 
-2. **`zabi-components-theme-only.css`** - Theme only (if they already have Tailwind)
-   ```css
-   @import 'zabi-components/theme-only';
-   ```
+| Need | Import |
+|------|--------|
+| Tailwind + full `@theme` (app has no Tailwind yet) | `zabi-components/theme` |
+| Tailwind already in app — merge `@theme` only | `zabi-components/theme-only` |
+| Dark overrides (+ Tailwind import in file) | `zabi-components/theme-dark` |
+| Dark overrides only (Tailwind already loaded) | `zabi-components/theme-dark-only` |
+| CSS variables only, no Tailwind | `zabi-components/colors` |
+| Full compiled CSS (utilities + everything) | `zabi-components/css` |
 
-3. **`zabi-components-theme-dark.css`** - Dark mode theme (import after main theme)
-   ```css
-   @import 'zabi-components/theme';
-   @import 'zabi-components/theme-dark';
-   ```
+Examples:
 
-4. **`zabi-components.css`** - Full CSS with all utilities (includes dark mode)
-   ```css
-   @import 'zabi-components/dist/zabi-components.css';
-   ```
+```css
+@import "zabi-components/theme-only";
+@import "zabi-components/theme-dark-only";
+```
 
-5. **`zabi-components-colors.css`** - Standalone CSS custom properties (no Tailwind needed)
-   ```css
-   @import 'zabi-components/dist/zabi-components-colors.css';
-   ```
+```css
+@import "zabi-components/colors";
+```
+
+```css
+@import "zabi-components/css";
+```
+
+Canonical recommendation for most apps remains:
+
+```css
+@import "tailwindcss";
+@import "zabi-components/theme-only";
+@import "zabi-components/theme-dark-only";
+```
+
+Dark mapping rule reference:
+- Physical ramp tokens are `--zabi-base-50 ... --zabi-base-950`.
+- Semantic dark mapping is generated with `S -> 1000 - S` (for example `50 <-> 950`, `75 <-> 925`, `500` unchanged).
 
 ## 🎯 Common Customizations
 
@@ -216,3 +231,18 @@ If you're building the library for distribution:
 ```bash
 npm run build:css  # Regenerates all dist CSS files from src/app.css
 ```
+
+## Optional perceptual midpoint generation (OKLCH)
+
+Base midpoints are frozen hex by default (`fixed` mode).  
+For experimentation, you can generate midpoint steps in OKLCH interpolation and commit the resulting frozen values:
+
+```bash
+ZABI_BASE_SCALE_MODE=oklch npm run sync:tokens
+npm run build:css
+```
+
+Notes:
+- Primary anchors (`50, 100, 200 ... 950`) stay fixed.
+- Midpoints (`75, 150, 250 ... 925`) are generated from adjacent anchors.
+- Commit updated `src/app.css` and regenerated `dist/` outputs together.

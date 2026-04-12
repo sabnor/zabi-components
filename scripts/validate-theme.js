@@ -4,34 +4,59 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const distDir = path.join(__dirname, '../dist');
 
-// Required color scales that should be present in the theme
-const requiredColorScales = [
-  'brand',
-  'citron',
-  'pine',
-  'iris'
+const BASE_STEPS = [
+  50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500,
+  550, 600, 650, 700, 750, 800, 850, 900, 925, 950,
 ];
+const SCALE_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+const REQUIRED_COLOR_SCALES = ['brand', 'citron', 'pine', 'iris'];
+const REQUIRED_LIGHT_SEMANTICS = [
+  'color-background',
+  'color-headline',
+  'color-body',
+  'color-description',
+  'color-caption',
+  'color-border',
+  'color-primary',
+  'color-secondary',
+  'color-success',
+  'color-warning',
+  'color-error',
+  'color-input',
+  'color-card',
+  'color-overlay',
+];
+const REQUIRED_DARK_OVERRIDES = [
+  'color-input',
+  'color-input-border',
+  'color-card',
+  'color-overlay',
+  'color-action-danger',
+  ...BASE_STEPS.map((step) => `color-base-${step}`),
+  ...BASE_STEPS.map((step) => `zabi-base-${step}`),
+];
+const ALLOWED_DARK_ONLY_VARIABLES = new Set([
+  'color-info-active',
+]);
 
-// Required semantic color variables
-const requiredSemanticColors = [
-  'background',
-  'headline',
-  'body',
-  'description',
-  'caption',
-  'border',
-  'surface-elevated',
-  'surface-level-0',
-  'surface-level-1',
-  'primary',
-  'secondary',
-  'success',
-  'warning',
-  'error'
-];
+function extractCssVariables(content) {
+  const variables = new Set();
+  const regex = /--([\w-]+)\s*:/g;
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    variables.add(match[1]);
+  }
+  return variables;
+}
+
+function requireVariables(variables, expected, errors, context) {
+  const missing = expected.filter((name) => !variables.has(name));
+  if (missing.length > 0) {
+    errors.push(`${context} is missing required variables:\n   - ${missing.join('\n   - ')}`);
+  }
+}
 
 function validateThemeFile(filePath, fileName) {
   if (!fs.existsSync(filePath)) {
@@ -41,106 +66,98 @@ function validateThemeFile(filePath, fileName) {
 
   const content = fs.readFileSync(filePath, 'utf8');
   const errors = [];
-  const warnings = [];
   const isDarkTheme = fileName.includes('dark');
+  const variables = extractCssVariables(content);
 
-  // Check for @theme block (not required for dark theme files which use .dark class)
   if (!isDarkTheme && !content.includes('@theme')) {
     errors.push(`Missing @theme block in ${fileName}`);
   }
-
-  // Dark theme files should have .dark class
   if (isDarkTheme && !content.includes('.dark')) {
     errors.push(`Missing .dark class in ${fileName}`);
   }
 
-  // Check for required color scales (only for light theme, dark theme uses semantic colors)
   if (!isDarkTheme) {
-    for (const scale of requiredColorScales) {
-      const scalePattern = new RegExp(`--color-${scale}-(50|100|200|300|400|500|600|700|800|900|950)`);
-      if (!scalePattern.test(content)) {
-        warnings.push(`Missing some ${scale} color scale values in ${fileName}`);
-      }
+    for (const scale of REQUIRED_COLOR_SCALES) {
+      requireVariables(
+        variables,
+        SCALE_STEPS.map((step) => `color-${scale}-${step}`),
+        errors,
+        fileName,
+      );
     }
+    requireVariables(
+      variables,
+      BASE_STEPS.map((step) => `zabi-base-${step}`),
+      errors,
+      fileName,
+    );
+    requireVariables(
+      variables,
+      BASE_STEPS.map((step) => `color-base-${step}`),
+      errors,
+      fileName,
+    );
+    requireVariables(variables, REQUIRED_LIGHT_SEMANTICS, errors, fileName);
+  } else {
+    requireVariables(variables, REQUIRED_DARK_OVERRIDES, errors, fileName);
   }
 
-  // Check for required semantic colors (warnings only, not errors)
-  // Some theme files may intentionally omit certain semantic colors
-  for (const color of requiredSemanticColors) {
-    const colorPattern = new RegExp(`--color-${color.replace(/-/g, '-')}`);
-    if (!colorPattern.test(content)) {
-      warnings.push(`Missing semantic color: --color-${color} in ${fileName}`);
-    }
-  }
-
-  // Check for duplicate variable names
-  const variableRegex = /--color-([\w-]+):/g;
-  const variables = new Set();
+  const variableRegex = /--([\w-]+)\s*:/g;
+  const seen = new Set();
   let match;
   const duplicates = [];
-
   while ((match = variableRegex.exec(content)) !== null) {
-    const varName = match[1];
-    if (variables.has(varName)) {
-      duplicates.push(varName);
+    const variableName = match[1];
+    if (seen.has(variableName)) {
+      duplicates.push(variableName);
     }
-    variables.add(varName);
+    seen.add(variableName);
   }
-
   if (duplicates.length > 0) {
-    errors.push(`Duplicate variable names found in ${fileName}: ${duplicates.join(', ')}`);
+    errors.push(`Duplicate variable names found in ${fileName}:\n   - ${duplicates.join('\n   - ')}`);
   }
 
-  // Check for proper CSS custom property syntax (skip - too many false positives with theme() functions)
-  // The PostCSS/Tailwind build process will catch actual syntax errors
-
-  // Report results
   if (errors.length > 0) {
     console.error(`❌ Validation failed for ${fileName}:`);
-    errors.forEach(err => console.error(`   - ${err}`));
+    errors.forEach((error) => console.error(`   - ${error}`));
     return false;
   }
 
-  if (warnings.length > 0) {
-    console.warn(`⚠️  Warnings for ${fileName}:`);
-    warnings.forEach(warn => console.warn(`   - ${warn}`));
-  } else {
-    console.log(`✓ ${fileName} validated successfully`);
-  }
-
+  console.log(`✓ ${fileName} validated successfully`);
   return true;
 }
 
 function validateDarkThemeStructure(lightThemePath, darkThemePath) {
   if (!fs.existsSync(lightThemePath) || !fs.existsSync(darkThemePath)) {
-    return true; // Skip if files don't exist
+    return true;
   }
 
   const lightContent = fs.readFileSync(lightThemePath, 'utf8');
   const darkContent = fs.readFileSync(darkThemePath, 'utf8');
+  const lightVars = extractCssVariables(lightContent);
+  const darkVars = extractCssVariables(darkContent);
 
-  // Extract variable names from both themes
-  const extractVariables = (content) => {
-    const vars = new Set();
-    const regex = /--color-([\w-]+):/g;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      vars.add(match[1]);
-    }
-    return vars;
-  };
-
-  const lightVars = extractVariables(lightContent);
-  const darkVars = extractVariables(darkContent);
-
-  // Check if dark theme has corresponding variables (not all need to match, but structure should be similar)
-  const missingInDark = Array.from(lightVars).filter(v => !darkVars.has(v));
-  if (missingInDark.length > 50) { // Allow some differences, but not too many
-    console.warn(`⚠️  Dark theme is missing many variables from light theme (${missingInDark.length} missing)`);
-    // Don't fail build for this - dark theme structure can differ intentionally
-    return true;
+  const requiredParity = [
+    ...BASE_STEPS.map((step) => `zabi-base-${step}`),
+    ...BASE_STEPS.map((step) => `color-base-${step}`),
+  ];
+  const missingParity = requiredParity.filter((name) => !darkVars.has(name));
+  if (missingParity.length > 0) {
+    console.error('❌ Dark theme parity check failed. Missing required base variables:\n' +
+      `   - ${missingParity.join('\n   - ')}`);
+    return false;
   }
 
+  const unknownDarkVariables = Array.from(darkVars)
+    .filter((name) => !lightVars.has(name))
+    .filter((name) => !ALLOWED_DARK_ONLY_VARIABLES.has(name));
+  if (unknownDarkVariables.length > 0) {
+    console.error('❌ Dark theme declares variables missing from light theme source:\n' +
+      `   - ${unknownDarkVariables.join('\n   - ')}`);
+    return false;
+  }
+
+  console.log('✓ Dark theme parity validated');
   return true;
 }
 
@@ -151,46 +168,42 @@ async function validateThemes() {
     { path: path.join(distDir, 'zabi-components-theme.css'), name: 'zabi-components-theme.css' },
     { path: path.join(distDir, 'zabi-components-theme-only.css'), name: 'zabi-components-theme-only.css' },
     { path: path.join(distDir, 'zabi-components-theme-dark.css'), name: 'zabi-components-theme-dark.css' },
-    { path: path.join(distDir, 'zabi-components-theme-dark-only.css'), name: 'zabi-components-theme-dark-only.css' }
+    { path: path.join(distDir, 'zabi-components-theme-dark-only.css'), name: 'zabi-components-theme-dark-only.css' },
   ];
 
   let allValid = true;
-
   for (const file of themeFiles) {
-    if (fs.existsSync(file.path)) {
-      const isValid = validateThemeFile(file.path, file.name);
-      if (!isValid) {
-        allValid = false;
-      }
-    } else {
+    if (!fs.existsSync(file.path)) {
       console.warn(`⚠️  ${file.name} not found (may be optional)`);
+      continue;
+    }
+    const isValid = validateThemeFile(file.path, file.name);
+    if (!isValid) {
+      allValid = false;
     }
   }
 
-  // Validate dark theme structure matches light theme
   console.log('\n🔍 Validating dark theme structure...');
   const structureValid = validateDarkThemeStructure(
     path.join(distDir, 'zabi-components-theme.css'),
-    path.join(distDir, 'zabi-components-theme-dark.css')
+    path.join(distDir, 'zabi-components-theme-dark.css'),
   );
-
   if (!structureValid) {
     allValid = false;
   }
 
   console.log('');
-  if (allValid && structureValid) {
+  if (allValid) {
     console.log('✅ All theme files validated successfully!');
     return 0;
-  } else {
-    console.error('❌ Theme validation failed!');
-    return 1;
   }
+  console.error('❌ Theme validation failed!');
+  return 1;
 }
 
-validateThemes().then(exitCode => {
+validateThemes().then((exitCode) => {
   process.exit(exitCode);
-}).catch(error => {
+}).catch((error) => {
   console.error('❌ Validation error:', error);
   process.exit(1);
 });
