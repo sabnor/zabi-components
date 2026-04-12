@@ -8,22 +8,64 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * CSS build: reads src/app.css and writes dist theme bundles for different consumers.
+ *
+ * Outputs (all under dist/):
+ * - zabi-components.css — PostCSS/Tailwind full build (utilities + tokens + .dark)
+ * - zabi-components-theme.css — @import tailwind + @theme (greenfield Tailwind)
+ * - zabi-components-theme-only.css — @theme only (Tailwind already in app)
+ * - zabi-components-theme-dark.css — @import tailwind + .dark
+ * - zabi-components-theme-dark-only.css — .dark only (import after theme-only)
+ * - zabi-components-colors.css — :root + .dark custom properties (no @theme; vanilla CSS)
+ *
+ * Package exports: zabi-components/theme, theme-only, theme-dark, theme-dark-only, colors, css
+ * See docs/theme-imports.md for which file to use.
+ */
+
 const inputFile = path.join(__dirname, '../src/app.css');
 const outputFile = path.join(__dirname, '../dist/zabi-components.css');
 
+/**
+ * Get raw children text for an at-rule/rule block.
+ */
+function stringifyChildNodes(node) {
+  if (!node.nodes || node.nodes.length === 0) return '';
+  return node.nodes.map((child) => child.toString()).join('\n').trim();
+}
+
+/**
+ * Extract @theme and .dark block bodies using PostCSS AST.
+ * This avoids fragile regex/string parsing around comments or braces.
+ */
+function extractThemeAndDarkBlocks(css, fromPath) {
+  const root = postcss.parse(css, { from: fromPath });
+  const themeBlocks = [];
+  const darkBlocks = [];
+
+  root.walkAtRules('theme', (atRule) => {
+    const content = stringifyChildNodes(atRule);
+    if (content) themeBlocks.push(content);
+  });
+
+  root.walkRules((rule) => {
+    const selectors = (rule.selectors ?? [rule.selector]).map((s) => s.trim());
+    if (!selectors.includes('.dark')) return;
+    const content = stringifyChildNodes(rule);
+    if (content) darkBlocks.push(content);
+  });
+
+  return {
+    themeBlocks,
+    darkModeContent: darkBlocks.length > 0 ? darkBlocks.join('\n\n') : null,
+  };
+}
 
 async function buildCSS() {
   let css = fs.readFileSync(inputFile, 'utf8');
 
-  // Extract @theme block(s) for consumers to import
-  // Use global regex to find all @theme blocks and merge them
-  const themeBlocks = [];
-  const themeRegex = /@theme\s*\{([\s\S]*?)\}/g;
-  let match;
-  
-  while ((match = themeRegex.exec(css)) !== null) {
-    themeBlocks.push(match[1].trim());
-  }
+  // Extract @theme and .dark block(s) for generated bundles using AST parsing.
+  const { themeBlocks, darkModeContent } = extractThemeAndDarkBlocks(css, inputFile);
   
   if (themeBlocks.length > 0) {
     // Merge all theme blocks (they should be at root level, not nested)
@@ -52,45 +94,6 @@ async function buildCSS() {
     console.warn('⚠️  No @theme blocks found in source CSS');
   }
 
-  // Extract dark mode CSS custom properties from .dark class
-  // Note: In Tailwind v4, dark mode is handled via CSS custom properties in .dark selector
-  // We extract these to a separate file that consumers can import
-  // Match .dark { ... } block - need to find matching closing brace
-  const darkModeRegex = /\.dark\s*\{([\s\S]*?)\n\}/;
-  const darkModeMatch = css.match(darkModeRegex);
-  
-  // If simple match doesn't work, try to find the block manually
-  let darkModeContent = null;
-  if (darkModeMatch) {
-    darkModeContent = darkModeMatch[1].trim();
-  } else {
-    // Fallback: find .dark { and match until the closing brace
-    const darkStart = css.indexOf('.dark {');
-    if (darkStart !== -1) {
-      let braceCount = 0;
-      let inBlock = false;
-      let contentStart = darkStart + 7; // length of '.dark {'
-      let contentEnd = contentStart;
-      
-      for (let i = darkStart; i < css.length; i++) {
-        if (css[i] === '{') {
-          braceCount++;
-          inBlock = true;
-        } else if (css[i] === '}') {
-          braceCount--;
-          if (braceCount === 0 && inBlock) {
-            contentEnd = i;
-            break;
-          }
-        }
-      }
-      
-      if (contentEnd > contentStart) {
-        darkModeContent = css.substring(contentStart, contentEnd).trim();
-      }
-    }
-  }
-  
   if (darkModeContent) {
     // Create dark mode theme file with Tailwind import
     // This file contains the .dark class with all dark mode CSS custom properties

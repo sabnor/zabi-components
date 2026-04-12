@@ -117,20 +117,28 @@ function verifyFile(fileName, isRequired = true) {
 
 function verifyPackageExports() {
   const packageJsonPath = path.join(__dirname, '../package.json');
+  const docsPath = path.join(__dirname, '../docs/theme-imports.md');
   if (!fs.existsSync(packageJsonPath)) {
     console.error('❌ package.json not found');
+    return false;
+  }
+  if (!fs.existsSync(docsPath)) {
+    console.error('❌ docs/theme-imports.md not found');
     return false;
   }
 
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   const exports = packageJson.exports || {};
+  const docsContent = fs.readFileSync(docsPath, 'utf8');
 
-  // Check that theme exports exist
+  // Canonical export paths that must exist.
   const requiredExports = [
     './theme',
     './theme-only',
     './theme-dark',
-    './theme-dark-only'
+    './theme-dark-only',
+    './colors',
+    './css'
   ];
 
   let allExportsValid = true;
@@ -144,6 +152,31 @@ function verifyPackageExports() {
         console.error(`❌ Export points to non-existent file: ${exportPath} -> ${exports[exportPath]}`);
         allExportsValid = false;
       }
+    }
+  }
+
+  // Validate every exported CSS path exists and is documented.
+  const cssExportEntries = Object.entries(exports).filter(([, target]) =>
+    typeof target === 'string' && target.endsWith('.css'),
+  );
+  if (cssExportEntries.length === 0) {
+    console.error('❌ No CSS exports found in package.json');
+    allExportsValid = false;
+  }
+  for (const [exportPath, targetPath] of cssExportEntries) {
+    const distRelative = targetPath.replace('./dist/', '');
+    const outputPath = path.join(distDir, distRelative);
+    if (!fs.existsSync(outputPath)) {
+      console.error(`❌ CSS export points to missing file: ${exportPath} -> ${targetPath}`);
+      allExportsValid = false;
+    }
+    const documented =
+      docsContent.includes(`\`${exportPath.replace('./', 'zabi-components/')}\``) ||
+      docsContent.includes(`\`${targetPath}\``) ||
+      docsContent.includes(`\`${distRelative}\``);
+    if (!documented) {
+      console.error(`❌ CSS export is not documented in docs/theme-imports.md: ${exportPath}`);
+      allExportsValid = false;
     }
   }
 
