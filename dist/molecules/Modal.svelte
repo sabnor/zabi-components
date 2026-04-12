@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { trapFocus, saveFocus, returnFocus, focusFirstElement } from "../../routes/lib/focus-utils.js";
+    import { trapFocus, saveFocus, returnFocus, focusFirstElement } from "../routes/lib/focus-utils.js";
     import Card from "../atoms/Card.svelte";
     import CardHeader from "../atoms/CardHeader.svelte";
     import CardContent from "../atoms/CardContent.svelte";
