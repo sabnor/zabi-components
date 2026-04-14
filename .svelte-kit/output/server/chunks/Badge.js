@@ -1,4 +1,4 @@
-import { Y as spread_props, _ as attr_class, $ as clsx, a2 as stringify } from "./index2.js";
+import { $ as spread_props, X as attr_class, a0 as clsx, Z as stringify } from "./index2.js";
 import { I as Icon } from "./Icon.js";
 import { e as escape_html } from "./context.js";
 function Check($$renderer, $$props) {

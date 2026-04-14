@@ -1,4 +1,4 @@
-import { U as head, X as ensure_array_like } from "../../chunks/index2.js";
+import { U as head, _ as ensure_array_like } from "../../chunks/index2.js";
 import { g as goto } from "../../chunks/client.js";
 import { B as Badge } from "../../chunks/Badge.js";
 import { B as Button, C as Card, a as CardHeader, b as CardContent } from "../../chunks/CardHeader.js";
@@ -19,7 +19,7 @@ function _page($$renderer, $$props) {
         description: "Components render on the server and in the browser, with light and dark styles you can rely on."
       }
     ];
-    const highlightedComponents = ["Button", "Input", "Card", "Navbar", "Modal", "Tabs"];
+    const highlightedComponents = ["Button", "Input", "Card", "TopNavbar", "Modal", "Tabs"];
     head("1uha8ag", $$renderer2, ($$renderer3) => {
       $$renderer3.title(($$renderer4) => {
         $$renderer4.push(`<title>Zabi Components | Svelte UI components</title>`);

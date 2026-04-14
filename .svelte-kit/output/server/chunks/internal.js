@@ -830,7 +830,8 @@ function Root($$renderer, $$props) {
       components = [],
       form,
       data_0 = null,
-      data_1 = null
+      data_1 = null,
+      data_2 = null
     } = $$props;
     {
       setContext("__svelte__", stores);
@@ -838,7 +839,7 @@ function Root($$renderer, $$props) {
     {
       stores.page.set(page);
     }
-    const Pyramid_1 = constructors[1];
+    const Pyramid_2 = constructors[2];
     if (constructors[1]) {
       $$renderer2.push("<!--[-->");
       const Pyramid_0 = constructors[0];
@@ -848,9 +849,30 @@ function Root($$renderer, $$props) {
         form,
         params: page.params,
         children: ($$renderer3) => {
-          $$renderer3.push(`<!---->`);
-          Pyramid_1($$renderer3, { data: data_1, form, params: page.params });
-          $$renderer3.push(`<!---->`);
+          if (constructors[2]) {
+            $$renderer3.push("<!--[-->");
+            const Pyramid_1 = constructors[1];
+            $$renderer3.push(`<!---->`);
+            Pyramid_1($$renderer3, {
+              data: data_1,
+              form,
+              params: page.params,
+              children: ($$renderer4) => {
+                $$renderer4.push(`<!---->`);
+                Pyramid_2($$renderer4, { data: data_2, form, params: page.params });
+                $$renderer4.push(`<!---->`);
+              },
+              $$slots: { default: true }
+            });
+            $$renderer3.push(`<!---->`);
+          } else {
+            $$renderer3.push("<!--[!-->");
+            const Pyramid_1 = constructors[1];
+            $$renderer3.push(`<!---->`);
+            Pyramid_1($$renderer3, { data: data_1, form, params: page.params });
+            $$renderer3.push(`<!---->`);
+          }
+          $$renderer3.push(`<!--]-->`);
         },
         $$slots: { default: true }
       });
@@ -959,7 +981,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "1w43lf5"
+  version_hash: "iuafzq"
 };
 async function get_hooks() {
   let handle;

@@ -10,13 +10,21 @@ export interface SidebarNavigationItem {
     badgeText?: string | number;
     badgeCount?: number;
     group?: "primary" | "secondary";
+    /** Optional heading group (Daybridge-style section labels). */
+    section?: string;
 }
 interface Props {
     mode?: "expanded" | "collapsed";
+    /** Flush rail (default) or floating card surface inspired by Daybridge. */
+    layout?: "rail" | "card";
     items?: SidebarNavigationItem[];
     currentPath?: string;
     ariaLabel?: string;
     className?: string;
+    /** Optional logo URL — shown with `brandName` when provided. */
+    logoSrc?: string;
+    logoAlt?: string;
+    brandName?: string;
     showProfile?: boolean;
     profileName?: string;
     profileEmail?: string;

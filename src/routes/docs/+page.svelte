@@ -321,7 +321,7 @@ npm run build-storybook`;
                     <CardHeader title="Explore Components" />
                     <CardContent>
                         <p class="text-secondary mb-4">
-                            Browse our interactive component showcase
+                            Browse the interactive showcase: category sidebar, live demos, props tables, and shareable URLs such as <code class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs">/components/SidebarNavigation</code>.
                         </p>
                         <Button
                             onclick={() => goto("/components")}

@@ -85,8 +85,8 @@ export interface NavigationProps extends BaseComponentProps {
     currentPath?: string;
 }
 
-// Navbar types
-export interface NavbarProps extends BaseComponentProps {
+// TopNavbar types
+export interface TopNavbarProps extends BaseComponentProps {
     brand?: string;
     showThemeToggle?: boolean;
 }
@@ -144,7 +144,7 @@ export interface NavigationEvents {
     navigate: { item: any; href: string };
 }
 
-export interface NavbarEvents {
+export interface TopNavbarEvents {
     brandClick: { event: MouseEvent };
 }
 

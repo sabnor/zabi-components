@@ -36,7 +36,7 @@ Combinations of atoms that form more complex UI elements:
 ### Organisms
 Complex components that manage state and combine multiple molecules:
 
-- **Navbar** - Sticky navigation bar with brand, menu items, and actions
+- **TopNavbar** - Sticky top navigation bar with brand, menu items, and actions
 - **Navigation** - Navigation component with header and sidebar variants
 
 ## Usage

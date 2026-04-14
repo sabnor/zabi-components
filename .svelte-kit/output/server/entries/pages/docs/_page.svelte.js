@@ -1,6 +1,6 @@
 import { U as head } from "../../../chunks/index2.js";
 import { g as goto } from "../../../chunks/client.js";
-import { C as CodeBlock, I as IconButton, H as Heart } from "../../../chunks/IconButton.js";
+import { a as Heading, C as CodeBlock, I as IconButton, H as Heart } from "../../../chunks/Heading.js";
 import { C as Card, a as CardHeader, b as CardContent, B as Button } from "../../../chunks/CardHeader.js";
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
@@ -36,7 +36,11 @@ npm run build-storybook`;
       });
       $$renderer3.push(`<meta name="description" content="Getting started guide and API reference for Zabi Components"/>`);
     });
-    $$renderer2.push(`<div class="min-h-screen bg-background"><div class="container mx-auto p-6 max-w-4xl"><div class="mb-12 text-center"><h1 class="text-4xl font-bold text-text mb-4">Documentation</h1> <p class="text-lg text-secondary">Build, audit, and ship accessible UI with confidence</p></div> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Quick Start</h2> <p class="text-secondary">Install and start using components right away</p></div> <div class="space-y-8">`);
+    $$renderer2.push(`<div class="min-h-screen bg-background"><div class="container mx-auto p-6 max-w-4xl"><div class="mb-12 text-center"><div class="mb-4">`);
+    Heading($$renderer2, { level: 1, text: "Documentation" });
+    $$renderer2.push(`<!----></div> <p class="text-lg text-secondary">Build, audit, and ship accessible UI with confidence</p></div> <section class="mb-16"><div class="text-center mb-8"><div class="mb-4">`);
+    Heading($$renderer2, { level: 2, text: "Quick Start" });
+    $$renderer2.push(`<!----></div> <p class="text-secondary">Install and start using components right away</p></div> <div class="space-y-8">`);
     Card($$renderer2, {
       children: ($$renderer3) => {
         CardHeader($$renderer3, { title: "Installation" });
@@ -70,7 +74,9 @@ npm run build-storybook`;
       },
       $$slots: { default: true }
     });
-    $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Design System Quality</h2> <p class="text-secondary">Run the audit framework and remediation workflow end-to-end</p></div> <div class="space-y-8">`);
+    $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><div class="mb-4">`);
+    Heading($$renderer2, { level: 2, text: "Design System Quality" });
+    $$renderer2.push(`<!----></div> <p class="text-secondary">Run the audit framework and remediation workflow end-to-end</p></div> <div class="space-y-8">`);
     Card($$renderer2, {
       children: ($$renderer3) => {
         CardHeader($$renderer3, { title: "Audit Framework Files" });
@@ -123,7 +129,9 @@ npm run build-storybook`;
       },
       $$slots: { default: true }
     });
-    $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Why Zabi Components?</h2></div> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`);
+    $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><div class="mb-4">`);
+    Heading($$renderer2, { level: 2, text: "Why Zabi Components?" });
+    $$renderer2.push(`<!----></div></div> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`);
     Card($$renderer2, {
       children: ($$renderer3) => {
         CardHeader($$renderer3, { title: "Svelte 5 Ready" });
@@ -215,7 +223,9 @@ npm run build-storybook`;
       },
       $$slots: { default: true }
     });
-    $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Button Variants</h2> <p class="text-secondary">Explore different button styles and variants</p></div> `);
+    $$renderer2.push(`<!----></div></section> <section class="mb-16"><div class="text-center mb-8"><div class="mb-4">`);
+    Heading($$renderer2, { level: 2, text: "Button Variants" });
+    $$renderer2.push(`<!----></div> <p class="text-secondary">Explore different button styles and variants</p></div> `);
     Card($$renderer2, {
       children: ($$renderer3) => {
         CardHeader($$renderer3, { title: "Available Variants" });
@@ -253,7 +263,9 @@ npm run build-storybook`;
       },
       $$slots: { default: true }
     });
-    $$renderer2.push(`<!----></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Icon Buttons</h2> <p class="text-secondary">Use icon-only buttons for compact actions and toolbars</p></div> `);
+    $$renderer2.push(`<!----></section> <section class="mb-16"><div class="text-center mb-8"><div class="mb-4">`);
+    Heading($$renderer2, { level: 2, text: "Icon Buttons" });
+    $$renderer2.push(`<!----></div> <p class="text-secondary">Use icon-only buttons for compact actions and toolbars</p></div> `);
     Card($$renderer2, {
       children: ($$renderer3) => {
         CardHeader($$renderer3, { title: "IconButton" });
@@ -311,14 +323,16 @@ npm run build-storybook`;
       },
       $$slots: { default: true }
     });
-    $$renderer2.push(`<!----></section> <section class="mb-16"><div class="text-center mb-8"><h2 class="text-3xl font-bold text-text mb-4">Ready to Start?</h2></div> <div class="grid grid-cols-1 md:grid-cols-2 gap-6">`);
+    $$renderer2.push(`<!----></section> <section class="mb-16"><div class="text-center mb-8"><div class="mb-4">`);
+    Heading($$renderer2, { level: 2, text: "Ready to Start?" });
+    $$renderer2.push(`<!----></div></div> <div class="grid grid-cols-1 md:grid-cols-2 gap-6">`);
     Card($$renderer2, {
       children: ($$renderer3) => {
         CardHeader($$renderer3, { title: "Explore Components" });
         $$renderer3.push(`<!----> `);
         CardContent($$renderer3, {
           children: ($$renderer4) => {
-            $$renderer4.push(`<p class="text-secondary mb-4">Browse our interactive component showcase</p> `);
+            $$renderer4.push(`<p class="text-secondary mb-4">Browse the interactive showcase: category sidebar, live demos, props tables, and a short guide on the components page.</p> `);
             Button($$renderer4, {
               onclick: () => goto(),
               variant: "primary",

@@ -1,4 +1,4 @@
-import { a0 as attributes, $ as clsx, Z as attr, a4 as element, _ as attr_class } from "./index2.js";
+import { a1 as attributes, a0 as clsx, Y as attr, a4 as element, X as attr_class } from "./index2.js";
 import { e as escape_html } from "./context.js";
 function Button($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {

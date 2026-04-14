@@ -138,7 +138,7 @@ import {
   Section,
   Tabs
 } from 'zabi-components/molecules';
-import { Navbar, SidebarNavigation, SidebarPanel } from 'zabi-components/organisms';
+import { TopNavbar, SidebarNavigation, SidebarPanel } from 'zabi-components/organisms';
 
 // Import types separately
 import type { ButtonEvents, InputEvents } from 'zabi-components/types';
@@ -164,7 +164,7 @@ import {
     CardContent, 
     CardFooter,
     Form, 
-    Navbar, 
+    TopNavbar, 
     Button, 
     IconButton,
     Input, 
@@ -199,7 +199,7 @@ import {
 <div class="min-h-screen bg-gray-50">
   <header class="flex items-center justify-between p-4 bg-white border-b">
     <h1 class="text-xl font-bold">My App</h1>
-    <Navbar embedded ariaLabel="Primary" navVariant="header" items={navItems} />
+    <TopNavbar embedded ariaLabel="Primary" navVariant="header" items={navItems} />
   </header>
 
   <main class="container mx-auto p-6">
@@ -326,7 +326,7 @@ import {
 | **Tabs** | Molecule | Tab navigation | Keyboard navigation, 2 variants |
 | **Dropdown** | Molecule | Dropdown menu | CSS-only positioning, keyboard navigation, ARIA support |
 | **ImageUpload** | Molecule | File upload | Direct selection, preview |
-| **Navbar** | Organism | Navigation bar | Built-in links or snippets, `embedded` link strip, mobile menu |
+| **TopNavbar** | Organism | Top navigation bar | Built-in links or snippets, `embedded` link strip, mobile menu |
 | **NavigationMenu** | Molecule | Advanced navigation menu | Compound components, keyboard navigation |
 | **Section** | Molecule | Content section wrapper | Responsive layout, variant support |
 | **Sidebar** | Molecule | Sidebar navigation | Collapsible, responsive |
@@ -561,12 +561,12 @@ All components will automatically switch to their dark mode variants without any
 - `default`: Main content
 - `footer`: Footer content
 
-### Navbar (built-in links)
+### TopNavbar (built-in links)
 
 Use `items` for a typed link list, or pass a `nav` snippet for custom markup. Set `embedded` when you only need the link row inside your own header.
 
 ```svelte
-<Navbar
+<TopNavbar
   brand="My App"
   brandHref="/"
   items={navItems}
@@ -575,11 +575,11 @@ Use `items` for a typed link list, or pass a `nav` snippet for custom markup. Se
   onclick={(e) => console.log('Nav link', e)}
 />
 
-<Navbar embedded ariaLabel="Primary" navVariant="header" items={navItems} />
+<TopNavbar embedded ariaLabel="Primary" navVariant="header" items={navItems} />
 ```
 
 **Props (selected):**
-- `items`: `NavbarNavItem[]` — `label`, `href`, optional `icon` / `iconFilled`
+- `items`: `TopNavbarNavItem[]` — `label`, `href`, optional `icon` / `iconFilled`
 - `navVariant`: `"header"` | `"sidebar"` — layout for built-in links
 - `embedded`: render link list (or `nav` snippet) without full chrome
 - `currentPath`: active item for built-in links

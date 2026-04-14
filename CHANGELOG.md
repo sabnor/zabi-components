@@ -12,11 +12,15 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Breaking changes
+
+- Renamed the `Navbar` organism to `TopNavbar` (and `NavbarNavItem` to `TopNavbarNavItem`) for clearer distinction from sidebar navigation.
+
 ## [6.0.0] - 2026-04-12
 
 ### Breaking changes
 
-- Removed the `Navigation` organism; use `Navbar` with `items`, optional `embedded`, or a `nav` snippet instead.
+- Removed the `Navigation` organism; use `TopNavbar` with `items`, optional `embedded`, or a `nav` snippet instead.
 - Renamed `SidebarProjectPanel` to `SidebarPanel` (including the `SidebarPanelItem` type).
 
 ### Added
@@ -31,7 +35,7 @@ Whenever token or CSS import API surface changes, include:
 
 ### Migration
 
-- Replace `import { Navigation } from 'zabi-components'` (or organisms path) with `Navbar` and the documented props/snippets.
+- Replace `import { Navigation } from 'zabi-components'` (or organisms path) with `TopNavbar` and the documented props/snippets.
 - Replace `SidebarProjectPanel` imports with `SidebarPanel` and align prop/type names to `SidebarPanelItem` where applicable.
 
 ## Pending deprecations
@@ -409,7 +413,7 @@ This is a **major breaking change** that affects how all components handle event
 - **Toast**: Removed `createEventDispatcher`, simplified close handling
 - **Badge**: Removed `createEventDispatcher`, added `{...$$restProps}`
 - **SlideUp**: Removed `createEventDispatcher`, simplified modal handling
-- **Navbar**: Removed `createEventDispatcher`, added `{...$$restProps}`
+- **TopNavbar**: Removed `createEventDispatcher`, added `{...$$restProps}`
 - **Navigation**: Removed `createEventDispatcher`, simplified navigation
 
 #### ✅ **Benefits Achieved**
@@ -506,7 +510,7 @@ See the updated README.md for detailed migration examples and new usage patterns
 - **Tabs**: Basic tab navigation with keyboard support, removed complex utilities
 
 #### 🏗️ Organism Components Simplified
-- **Navbar**: Responsive navbar with mobile menu, removed complex variants
+- **TopNavbar**: Responsive top navbar with mobile menu, removed complex variants
 - **Navigation**: Simple navigation list with active state
 - **Removed Complex Components**: Deleted NavigationItem, NotificationManager, ToastManager
 

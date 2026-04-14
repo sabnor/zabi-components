@@ -9,6 +9,7 @@
         type?: "button" | "submit" | "reset";
         text?: string;
         isFullWidth?: boolean;
+        class?: string;
         onclick?: (event: MouseEvent) => void;
         children?: Snippet;
     }

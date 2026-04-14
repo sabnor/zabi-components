@@ -35,7 +35,7 @@
     import NavigationMenuTrigger from "../../components/molecules/NavigationMenuTrigger.svelte";
     import NavigationMenuContent from "../../components/molecules/NavigationMenuContent.svelte";
     import NavigationMenuLink from "../../components/molecules/NavigationMenuLink.svelte";
-    import Navbar from "../../components/organisms/Navbar.svelte";
+    import TopNavbar from "../../components/organisms/TopNavbar.svelte";
     import SidebarNavigation from "../../components/organisms/SidebarNavigation.svelte";
     import SidebarPanel from "../../components/organisms/SidebarPanel.svelte";
     import {
@@ -49,6 +49,7 @@
         docsListItems,
         selectOptions,
         sampleCode,
+        sidebarAppShellDemoItems,
         sidebarNavItems,
         sidebarProjectItems,
     } from "$lib/showcase/components-showcase-constants";
@@ -78,6 +79,22 @@
         sidebarProjectSearch = $bindable(""),
         selectedProjectId = $bindable("proj-zabi-web"),
     }: Props = $props();
+
+    /** Local state for the SidebarNavigation “app shell” demo only. */
+    let appShellPath = $state("/workspace/overview");
+    let appShellLightMode = $state(false);
+    let appShellSearchValue = $state("");
+
+    function appShellLeafTitle(path: string): string {
+        const segments = path.split("/").filter(Boolean);
+        const leaf = segments[segments.length - 1] ?? "overview";
+        return leaf
+            .split("-")
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(" ");
+    }
+
+    const appShellMainTitle = $derived(appShellLeafTitle(appShellPath));
 </script>
 
 <div class="space-y-8">
@@ -897,7 +914,7 @@
                                                 </NavigationMenu>
                                             </div>
                                         </div>
-                                    {:else if component.name === "Navbar"}
+                                    {:else if component.name === "TopNavbar"}
                                         <div class="space-y-6">
                                             <div>
                                                 <h4
@@ -905,7 +922,7 @@
                                                 >
                                                     Full bar with inline links
                                                 </h4>
-                                                <Navbar
+                                                <TopNavbar
                                                     brand="Zabi Components"
                                                     brandHref="/"
                                                     showThemeToggle={false}
@@ -936,7 +953,7 @@
                                                 <div
                                                     class="rounded-lg border border-border bg-base-50 p-4"
                                                 >
-                                                    <Navbar
+                                                    <TopNavbar
                                                         embedded
                                                         ariaLabel="Demo navigation"
                                                         navVariant="header"
@@ -960,7 +977,162 @@
                                             </div>
                                         </div>
                                     {:else if component.name === "SidebarNavigation"}
-                                        <div class="space-y-6">
+                                        <div class="space-y-10">
+                                            <section
+                                                class="rounded-xl border border-border bg-base-50/70 p-5 ring-1 ring-border/40"
+                                                aria-labelledby="sn-built-from"
+                                            >
+                                                <h4
+                                                    id="sn-built-from"
+                                                    class="mb-2 text-sm font-semibold text-headline"
+                                                >
+                                                    What
+                                                    <code class="rounded bg-base-100 px-1 font-mono text-xs"
+                                                        >SidebarNavigation</code
+                                                    >
+                                                    is built from
+                                                </h4>
+                                                <p class="mb-3 text-sm leading-relaxed text-description">
+                                                    The organism composes smaller pieces from this library
+                                                    plus icons. Section headings and grouped lists come from
+                                                    <strong class="text-headline">SidebarNavSection</strong>;
+                                                    optional logo + wordmark from
+                                                    <strong class="text-headline">SidebarBrandHeader</strong>.
+                                                    Row badges use
+                                                    <a
+                                                        href="/components/Badge"
+                                                        class="text-link font-medium underline-offset-2 hover:underline"
+                                                        >Badge</a
+                                                    >, search uses
+                                                    <a
+                                                        href="/components/Input"
+                                                        class="text-link font-medium underline-offset-2 hover:underline"
+                                                        >Input</a
+                                                    >
+                                                    (or a search trigger button). For “pick a workspace” flows,
+                                                    pair the rail with
+                                                    <a
+                                                        href="/components/SidebarPanel"
+                                                        class="text-link font-medium underline-offset-2 hover:underline"
+                                                        >SidebarPanel</a
+                                                    >
+                                                    (see the second example below).
+                                                </p>
+                                                <ul
+                                                    class="list-disc space-y-1.5 pl-5 text-sm text-description"
+                                                >
+                                                    <li>
+                                                        <span class="font-medium text-headline">Molecules</span>
+                                                        — <code class="text-xs font-mono">SidebarBrandHeader</code>,
+                                                        <code class="text-xs font-mono">SidebarNavSection</code>
+                                                    </li>
+                                                    <li>
+                                                        <span class="font-medium text-headline">Atoms</span> —
+                                                        <code class="text-xs font-mono">Badge</code>,
+                                                        <code class="text-xs font-mono">Input</code>
+                                                    </li>
+                                                    <li>
+                                                        <span class="font-medium text-headline">Icons</span> —
+                                                        <code class="text-xs font-mono">@lucide/svelte</code> (e.g.
+                                                        Search, LogOut, Sun, Moon)
+                                                    </li>
+                                                </ul>
+                                            </section>
+
+                                            <div>
+                                                <h4
+                                                    class="mb-1 text-sm font-medium text-headline"
+                                                >
+                                                    Realistic app shell
+                                                </h4>
+                                                <p
+                                                    class="mb-4 max-w-3xl text-sm leading-relaxed text-description"
+                                                >
+                                                    A compact product layout: floating sidebar rail
+                                                    (<code class="font-mono text-xs">layout="card"</code>),
+                                                    brand row, grouped primary nav, footer profile + logout +
+                                                    theme, and a main column where your routed page content
+                                                    would render.
+                                                </p>
+                                                <div
+                                                    class="flex max-w-5xl flex-col overflow-hidden rounded-2xl border border-border bg-base-100 shadow-sm md:min-h-[min(520px,65vh)] md:flex-row"
+                                                >
+                                                    <SidebarNavigation
+                                                        layout="card"
+                                                        className="min-h-[min(480px,60vh)] shrink-0 md:min-h-0 md:max-w-[280px]"
+                                                        brandName="Northwind"
+                                                        logoSrc="/favicon.png"
+                                                        logoAlt="Northwind"
+                                                        items={sidebarAppShellDemoItems}
+                                                        currentPath={appShellPath}
+                                                        bind:searchValue={appShellSearchValue}
+                                                        searchMode="input"
+                                                        searchPlaceholder="Search workspace…"
+                                                        profileName="Alex Rivera"
+                                                        profileEmail="alex@northwind.app"
+                                                        profileInitials="AR"
+                                                        bind:isLightMode={appShellLightMode}
+                                                        onNavigate={(item, event) => {
+                                                            event.preventDefault();
+                                                            appShellPath = item.href;
+                                                        }}
+                                                    />
+                                                    <div
+                                                        class="flex min-h-0 min-w-0 flex-1 flex-col gap-4 border-t border-border p-5 md:border-l md:border-t-0"
+                                                    >
+                                                        <header
+                                                            class="flex flex-wrap items-end justify-between gap-2 border-b border-border pb-3"
+                                                        >
+                                                            <div>
+                                                                <p
+                                                                    class="text-xs font-medium uppercase tracking-wide text-description"
+                                                                >
+                                                                    Main content (your app route)
+                                                                </p>
+                                                                <h3
+                                                                    class="text-xl font-semibold text-headline"
+                                                                >
+                                                                    {appShellMainTitle}
+                                                                </h3>
+                                                            </div>
+                                                            <Badge
+                                                                variant="info"
+                                                                text="Demo preview"
+                                                            />
+                                                        </header>
+                                                        <div
+                                                            class="grid flex-1 gap-3 sm:grid-cols-2"
+                                                        >
+                                                            <Card>
+                                                                <CardHeader title="Pipeline" />
+                                                                <CardContent>
+                                                                    <p class="text-sm text-description">
+                                                                        Cards, tables, or charts would live
+                                                                        here—whatever the selected nav item
+                                                                        loads in a real SvelteKit
+                                                                        <code class="font-mono text-xs"
+                                                                            >+page.svelte</code
+                                                                        >.
+                                                                    </p>
+                                                                </CardContent>
+                                                            </Card>
+                                                            <Card>
+                                                                <CardHeader title="Activity" />
+                                                                <CardContent>
+                                                                    <ul
+                                                                        class="space-y-2 text-sm text-description"
+                                                                    >
+                                                                        <li>Design review · 2:00 PM</li>
+                                                                        <li>Deploy preview #412 · passed</li>
+                                                                        <li>New comment on PR #88</li>
+                                                                    </ul>
+                                                                </CardContent>
+                                                            </Card>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div>
                                                 <h4
                                                     class="text-sm font-medium text-headline mb-2"

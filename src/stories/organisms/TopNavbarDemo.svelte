@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Navbar from "../../components/organisms/Navbar.svelte";
+    import TopNavbar from "../../components/organisms/TopNavbar.svelte";
     import Button from "../../components/atoms/Button.svelte";
 
     interface Props {
@@ -30,7 +30,7 @@
     }
 </script>
 
-<Navbar
+<TopNavbar
     {brand}
     {showThemeToggle}
     items={navItems}
@@ -61,7 +61,7 @@
             />
         {/if}
     {/snippet}
-</Navbar>
+</TopNavbar>
 
 <div class="bg-base-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
