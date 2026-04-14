@@ -1,0 +1,1 @@
+import{r as e}from"../chunks/hUONLBj8.js";import{c as o}from"../chunks/C-icVN0W.js";const r=()=>{const t=(o.atoms[0]??o.molecules[0]??o.organisms[0])?.name??"Button";e(302,`/components/${t}`)},m=Object.freeze(Object.defineProperty({__proto__:null,load:r},Symbol.toStringTag,{value:"Module"}));export{m as universal};

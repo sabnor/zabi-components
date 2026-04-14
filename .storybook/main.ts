@@ -45,7 +45,7 @@ const config: StorybookConfig = {
         'Design System/Molecules/SlideUp',
         'Design System/Molecules/ImageUpload',
         'Design System/Organisms',
-        'Design System/Organisms/Navbar',
+        'Design System/Organisms/TopNavbar',
         'Design System/Organisms/Navigation',
         '*'
       ],

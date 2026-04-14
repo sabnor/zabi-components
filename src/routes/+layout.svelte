@@ -2,7 +2,7 @@
     import "../app.css";
     import type { Snippet } from "svelte";
     import { page } from "$app/stores";
-    import Navbar from "../components/organisms/Navbar.svelte";
+    import TopNavbar from "../components/organisms/TopNavbar.svelte";
     import type { NavItem } from "../types/page.types";
 
     interface Props {
@@ -26,7 +26,7 @@
     <meta name="theme-color" content="#ffffff" />
 </svelte:head>
 
-<Navbar
+<TopNavbar
     brand="Zabi Components"
     brandHref="/"
     ariaLabel="Main navigation"

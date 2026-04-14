@@ -1220,7 +1220,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
         ],
         organisms: [
             {
-                name: "Navbar",
+                name: "TopNavbar",
                 category: "organisms",
                 description:
                     "Top navigation bar with brand, optional built-in link list, theme toggle, and responsive mobile menu. Use `embedded` for a link-only strip inside a custom header.",
@@ -1241,7 +1241,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "items",
-                        type: "NavbarNavItem[]",
+                        type: "TopNavbarNavItem[]",
                         required: false,
                         defaultValue: "[]",
                         description: "Built-in nav links (ignored when a `nav` snippet is provided)",
@@ -1271,14 +1271,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 variants: ["chrome", "embedded"],
                 examples: [
                     {
-                        title: "Navbar with inline links",
+                        title: "TopNavbar with inline links",
                         description: "Full bar with items prop",
-                        code: '&lt;Navbar brand="App" brandHref="/" items={navItems} navVariant="header" currentPath="/" /&gt;',
+                        code: '&lt;TopNavbar brand="App" brandHref="/" items={navItems} navVariant="header" currentPath="/" /&gt;',
                     },
                     {
                         title: "Embedded link list",
                         description: "Link row inside your own header layout",
-                        code: '&lt;Navbar embedded ariaLabel="Primary" navVariant="header" items={navItems} /&gt;',
+                        code: '&lt;TopNavbar embedded ariaLabel="Primary" navVariant="header" items={navItems} /&gt;',
                     },
                 ],
             },
@@ -1286,7 +1286,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "SidebarNavigation",
                 category: "organisms",
                 description:
-                    "Sidebar navigation with collapsed and expanded modes, grouped links, badges, and utility controls.",
+                    "Sidebar navigation with optional Daybridge-style card layout, section labels, brand row, collapsed/expanded modes, grouped links, badges, and utility controls.",
                 props: [
                     {
                         name: "mode",
@@ -1296,11 +1296,20 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Sidebar display mode",
                     },
                     {
+                        name: "layout",
+                        type: '"rail" | "card"',
+                        required: false,
+                        defaultValue: '"rail"',
+                        description:
+                            "Rail attaches to the viewport edge; card is a rounded floating panel on a soft surface",
+                    },
+                    {
                         name: "items",
                         type: "SidebarNavigationItem[]",
                         required: false,
                         defaultValue: "[]",
-                        description: "Primary and secondary sidebar items",
+                        description:
+                            "Primary and secondary sidebar items; optional `section` groups primary rows under headings",
                     },
                     {
                         name: "currentPath",
@@ -1308,6 +1317,27 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: '""',
                         description: "Active route path used for selected styling",
+                    },
+                    {
+                        name: "brandName",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Optional product name beside the logo",
+                    },
+                    {
+                        name: "logoSrc",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Optional logo image URL",
+                    },
+                    {
+                        name: "logoAlt",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Accessible label for the logo image",
                     },
                 ],
                 variants: ["expanded", "collapsed"],
@@ -1330,8 +1360,15 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "SidebarPanel",
                 category: "organisms",
                 description:
-                    "Companion panel for sidebar search-trigger flows: searchable list, selection, badges, and close control.",
+                    "Companion panel for sidebar search-trigger flows: searchable list, selection, badges, and close control; elevated variant matches card sidebars.",
                 props: [
+                    {
+                        name: "variant",
+                        type: '"plain" | "elevated"',
+                        required: false,
+                        defaultValue: '"elevated"',
+                        description: "Visual weight of the panel shell",
+                    },
                     {
                         name: "items",
                         type: "SidebarPanelItem[]",

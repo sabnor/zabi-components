@@ -5,22 +5,49 @@ import {
     Bell,
     PieChart,
     Package,
-    Settings
+    Settings,
+    Calendar
 } from '@lucide/svelte';
 import SidebarNavigation from '../../components/organisms/SidebarNavigation.svelte';
 
 const sidebarItems = [
-    { id: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: House },
-    { id: 'revenue', label: 'Revenue', href: '/revenue', icon: BarChart3 },
+    {
+        id: 'dashboard',
+        label: 'Dashboard',
+        href: '/dashboard',
+        icon: House,
+        section: 'Workspace'
+    },
+    { id: 'revenue', label: 'Revenue', href: '/revenue', icon: BarChart3, section: 'Workspace' },
     {
         id: 'notifications',
         label: 'Notifications',
         href: '/notifications',
         icon: Bell,
-        badgeCount: 2
+        badgeCount: 2,
+        section: 'Workspace'
     },
-    { id: 'analytics', label: 'Analytics', href: '/analytics', icon: PieChart },
-    { id: 'inventory', label: 'Inventory', href: '/inventory', icon: Package },
+    {
+        id: 'calendar',
+        label: 'Calendar',
+        href: '/calendar',
+        icon: Calendar,
+        section: 'Views'
+    },
+    {
+        id: 'analytics',
+        label: 'Analytics',
+        href: '/analytics',
+        icon: PieChart,
+        section: 'Views'
+    },
+    {
+        id: 'inventory',
+        label: 'Inventory',
+        href: '/inventory',
+        icon: Package,
+        section: 'Views'
+    },
     {
         id: 'settings',
         label: 'Settings',
@@ -38,7 +65,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Sidebar navigation with input search mode and button-trigger mode for opening an adjacent picker panel.'
+                    'Sidebar navigation with Daybridge-inspired optional card layout, section labels, optional brand row, collapsed/expanded modes, and search that pairs with `SidebarPanel`.'
             }
         }
     },
@@ -49,12 +76,17 @@ const meta = {
         showProfile: true,
         showSearch: true,
         showThemeToggle: true,
-        showLogout: true
+        showLogout: true,
+        layout: 'rail'
     },
     argTypes: {
         mode: {
             control: 'radio',
             options: ['expanded', 'collapsed']
+        },
+        layout: {
+            control: 'radio',
+            options: ['rail', 'card']
         }
     }
 } satisfies Meta<typeof SidebarNavigation>;
@@ -83,6 +115,22 @@ export const Collapsed: Story = {
         mode: 'collapsed',
         searchMode: 'button',
         showThemeToggle: false
+    }
+};
+
+export const DaybridgeCard: Story = {
+    parameters: {
+        layout: 'fullscreen'
+    },
+    args: {
+        mode: 'expanded',
+        layout: 'card',
+        className: 'm-4 min-h-[min(520px,calc(100vh-2rem))]',
+        searchMode: 'input',
+        brandName: 'Daybridge',
+        logoSrc: '/favicon.png',
+        logoAlt: 'Product',
+        currentPath: '/calendar'
     }
 };
 

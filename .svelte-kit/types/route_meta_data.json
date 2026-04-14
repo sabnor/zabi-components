@@ -1,5 +1,10 @@
 {
 	"/": [],
-	"/components": [],
+	"/components": [
+		"src/routes/components/+page.ts"
+	],
+	"/components/[name]": [
+		"src/routes/components/[name]/+page.ts"
+	],
 	"/docs": []
 }

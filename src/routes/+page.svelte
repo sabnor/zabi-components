@@ -33,7 +33,7 @@
         "Button",
         "Input",
         "Card",
-        "Navbar",
+        "TopNavbar",
         "Modal",
         "Tabs",
     ];

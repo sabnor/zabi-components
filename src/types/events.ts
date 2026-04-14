@@ -142,7 +142,7 @@ export interface ModalEvents {
     // Modal now uses onclick prop instead of dispatching close events
 }
 
-export interface NavbarEvents {
+export interface TopNavbarEvents {
     click: ClickEventDetail;
     keydown: KeydownEventDetail;
 }

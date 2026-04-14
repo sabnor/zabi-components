@@ -19,7 +19,7 @@ export { default as ImageUpload } from './molecules/ImageUpload.svelte';
 export { default as Modal } from './molecules/Modal.svelte';
 export { default as SlideUp } from './molecules/SlideUp.svelte';
 export { default as Tabs } from './molecules/Tabs.svelte';
-export { default as Navbar } from './organisms/Navbar.svelte';
+export { default as TopNavbar } from './organisms/TopNavbar.svelte';
 export { default as SidebarNavigation } from './organisms/SidebarNavigation.svelte';
 export { default as SidebarPanel } from './organisms/SidebarPanel.svelte';
 export const createId = (prefix = 'id') => generateId(prefix);

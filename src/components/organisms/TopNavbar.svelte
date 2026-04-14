@@ -3,7 +3,7 @@
     import type { Component, Snippet } from "svelte";
 
     /** Link shown in the built-in nav list (when not using the `nav` snippet). */
-    export interface NavbarNavItem {
+    export interface TopNavbarNavItem {
         label: string;
         href: string;
         icon?: Component<{ size?: number; class?: string }>;
@@ -24,7 +24,7 @@
          */
         embedded?: boolean;
         /** Inline nav links; ignored when the `nav` snippet is provided. */
-        items?: NavbarNavItem[];
+        items?: TopNavbarNavItem[];
         navVariant?: "header" | "sidebar";
         currentPath?: string;
         preventNavigation?: boolean;
@@ -63,7 +63,18 @@
         }
     }
 
-    const ulClasses = $derived(() => {
+    /** Internal routes match exact path or nested paths (e.g. `/components` for `/components/Button`). */
+    function isNavItemActive(href: string): boolean {
+        if (href.startsWith("http://") || href.startsWith("https://")) {
+            return currentPath === href;
+        }
+        if (href === "/") {
+            return currentPath === "/";
+        }
+        return currentPath === href || currentPath.startsWith(`${href}/`);
+    }
+
+    const ulClasses = $derived.by(() => {
         return navVariant === "sidebar"
             ? "flex flex-col gap-1"
             : "flex flex-col gap-1 md:flex-row md:items-center md:justify-between";
@@ -91,9 +102,9 @@
 </script>
 
 {#snippet defaultNavList()}
-    <ul class="{ulClasses()} list-none m-0 p-0">
-        {#each items as item}
-            {@const isActive = currentPath === item.href}
+    <ul class="{ulClasses} list-none m-0 p-0">
+        {#each items as item (item.href)}
+            {@const isActive = isNavItemActive(item.href)}
             <li class={getNavItemClasses()}>
                 <a
                     href={item.href}
@@ -133,7 +144,7 @@
     </nav>
 {:else}
     <nav
-        class="bg-base-50 border-b border-border sticky top-0 z-50 {className}"
+        class="border-b border-border bg-background sticky top-0 z-50 {className}"
         aria-label={ariaLabel}
         {...restProps}
     >

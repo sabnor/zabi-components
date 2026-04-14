@@ -1,10 +1,14 @@
 import {
     BarChart3,
     Bell,
+    Calendar,
+    FileText,
     House,
+    LayoutDashboard,
     Package,
     PieChart,
     Settings,
+    Users,
 } from "@lucide/svelte";
 
 export const categories = [
@@ -80,6 +84,60 @@ export const sidebarNavItems = [
         id: "settings",
         label: "Settings",
         href: "/settings",
+        icon: Settings,
+        group: "secondary" as const,
+    },
+];
+
+/** Richer nav for the “app shell” demo on the SidebarNavigation showcase page. */
+export const sidebarAppShellDemoItems = [
+    {
+        id: "shell-overview",
+        label: "Overview",
+        href: "/workspace/overview",
+        icon: LayoutDashboard,
+        section: "Workspace",
+    },
+    {
+        id: "shell-projects",
+        label: "Projects",
+        href: "/workspace/projects",
+        icon: Package,
+        section: "Workspace",
+        badgeCount: 3,
+    },
+    {
+        id: "shell-calendar",
+        label: "Calendar",
+        href: "/workspace/calendar",
+        icon: Calendar,
+        section: "Workspace",
+    },
+    {
+        id: "shell-team",
+        label: "Team",
+        href: "/workspace/team",
+        icon: Users,
+        section: "Workspace",
+    },
+    {
+        id: "shell-docs",
+        label: "Documents",
+        href: "/library/docs",
+        icon: FileText,
+        section: "Library",
+    },
+    {
+        id: "shell-reports",
+        label: "Reports",
+        href: "/library/reports",
+        icon: PieChart,
+        section: "Library",
+    },
+    {
+        id: "shell-settings",
+        label: "Settings",
+        href: "/account/settings",
         icon: Settings,
         group: "secondary" as const,
     },

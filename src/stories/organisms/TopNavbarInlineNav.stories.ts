@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import Navbar from '../../components/organisms/Navbar.svelte';
+import TopNavbar from '../../components/organisms/TopNavbar.svelte';
 import { Star } from '@lucide/svelte';
 
 const meta = {
-    title: 'Design System/Organisms/Navbar/Inline nav',
-    component: Navbar,
+    title: 'Design System/Organisms/TopNavbar/Inline nav',
+    component: TopNavbar,
     parameters: {
         layout: 'padded'
     },
@@ -16,7 +16,7 @@ const meta = {
             description: 'Layout for built-in link list'
         }
     }
-} satisfies Meta<typeof Navbar>;
+} satisfies Meta<typeof TopNavbar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

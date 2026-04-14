@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import NavbarDemo from './NavbarDemo.svelte';
+import TopNavbarDemo from './TopNavbarDemo.svelte';
 
 const meta = {
-    title: 'Design System/Organisms/Navbar',
-    component: NavbarDemo,
+    title: 'Design System/Organisms/TopNavbar',
+    component: TopNavbarDemo,
     parameters: {
         layout: 'fullscreen'
     },
@@ -18,7 +18,7 @@ const meta = {
             description: 'Show theme toggle button'
         }
     }
-} satisfies Meta<typeof NavbarDemo>;
+} satisfies Meta<typeof TopNavbarDemo>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

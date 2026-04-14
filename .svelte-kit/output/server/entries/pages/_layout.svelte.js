@@ -1,33 +1,6 @@
 import { U as head, V as store_get, W as unsubscribe_stores } from "../../chunks/index2.js";
-import { g as getContext } from "../../chunks/context.js";
-import "@sveltejs/kit/internal";
-import "../../chunks/exports.js";
-import "../../chunks/utils.js";
-import "clsx";
-import "@sveltejs/kit/internal/server";
-import "../../chunks/state.svelte.js";
-import { N as Navbar } from "../../chunks/Navbar.js";
-const getStores = () => {
-  const stores$1 = getContext("__svelte__");
-  return {
-    /** @type {typeof page} */
-    page: {
-      subscribe: stores$1.page.subscribe
-    },
-    /** @type {typeof navigating} */
-    navigating: {
-      subscribe: stores$1.navigating.subscribe
-    },
-    /** @type {typeof updated} */
-    updated: stores$1.updated
-  };
-};
-const page = {
-  subscribe(fn) {
-    const store = getStores().page;
-    return store.subscribe(fn);
-  }
-};
+import { p as page } from "../../chunks/stores.js";
+import { T as TopNavbar } from "../../chunks/TopNavbar.js";
 function _layout($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     var $$store_subs;
@@ -44,7 +17,7 @@ function _layout($$renderer, $$props) {
     head("12qhfyh", $$renderer2, ($$renderer3) => {
       $$renderer3.push(`<meta charset="utf-8"/> <link rel="icon" href="/vite.svg"/> <meta name="viewport" content="width=device-width, initial-scale=1"/> <meta name="theme-color" content="#ffffff"/>`);
     });
-    Navbar($$renderer2, {
+    TopNavbar($$renderer2, {
       brand: "Zabi Components",
       brandHref: "/",
       ariaLabel: "Main navigation",

@@ -34,7 +34,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Adjacent picker panel for sidebar flows, with searchable items, selected state, and close action.'
+                    'Adjacent picker panel for sidebar flows, with searchable items, selected state, and close action. The elevated shell aligns with `SidebarNavigation` layout="card".'
             }
         }
     },
@@ -63,5 +63,11 @@ export const EmptyState: Story = {
         items: [],
         emptyStateTitle: 'No projects yet',
         emptyStateDescription: 'Create a project to start organizing your work.'
+    }
+};
+
+export const PlainShell: Story = {
+    args: {
+        variant: 'plain'
     }
 };
