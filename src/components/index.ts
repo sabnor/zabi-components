@@ -23,6 +23,7 @@ export { default as Tabs } from './molecules/Tabs.svelte';
 
 export { default as TopNavbar } from './organisms/TopNavbar.svelte';
 export { default as SidebarNavigation } from './organisms/SidebarNavigation.svelte';
+export { default as SidebarAccountPanel } from './organisms/SidebarAccountPanel.svelte';
 export { default as SidebarPanel } from './organisms/SidebarPanel.svelte';
 
 export const createId = (prefix: string = 'id'): string => generateId(prefix);

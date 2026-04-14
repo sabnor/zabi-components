@@ -5,17 +5,9 @@
     import Input from "../atoms/Input.svelte";
     import SidebarBrandHeader from "../molecules/SidebarBrandHeader.svelte";
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
-    import SidebarPanel, { type SidebarPanelItem } from "./SidebarPanel.svelte";
-    import { Search, LogOut, Sun, Moon, User } from "@lucide/svelte";
+    import { Search } from "@lucide/svelte";
     import type { Component } from "svelte";
     import type { ButtonVariant, SizeVariant } from "../types/variants";
-
-    function createId(prefix: string): string {
-        if (typeof window !== "undefined") {
-            return `${prefix}-${Math.random().toString(36).slice(2, 11)}`;
-        }
-        return `${prefix}-ssr-${Date.now()}`;
-    }
 
     export interface SidebarNavigationItem {
         id: string;
@@ -73,6 +65,12 @@
         onLogout?: () => void;
         onThemeToggle?: (nextIsLightMode: boolean) => void;
         onEmptyStateAction?: () => void;
+        /** Trigger for rendering an external account panel (project-picker pattern). */
+        onProfileClick?: () => void;
+        /** Whether the external account panel is open (for aria-expanded). */
+        profilePanelOpen?: boolean;
+        /** Optional external panel id for aria-controls. */
+        profilePanelControlsId?: string;
         /**
          * Highlights a primary (e.g. category) row when the current route is a child
          * of that section, while `currentPath` points at the leaf (e.g. a component).
@@ -115,6 +113,9 @@
         onLogout,
         onThemeToggle,
         onEmptyStateAction,
+        onProfileClick,
+        profilePanelOpen = false,
+        profilePanelControlsId = "",
         ...restProps
     }: Props = $props();
 
@@ -296,71 +297,8 @@
         }
     }
 
-    let isAccountPanelOpen = $state(false);
-    let selectedPanelItemId = $state("");
-    const accountPanelBaseId = createId("account-panel");
-    const accountPanelDialogId = `${accountPanelBaseId}-dialog`;
-    const accountPanelTitleId = `${accountPanelBaseId}-title`;
-    const accountPanelDescriptionId = `${accountPanelBaseId}-description`;
-
-    function openAccountPanel(): void {
-        isAccountPanelOpen = true;
-    }
-
-    function closeAccountPanel(): void {
-        isAccountPanelOpen = false;
-    }
-
-    function handleWindowKeydown(event: KeyboardEvent): void {
-        if (!isAccountPanelOpen) return;
-        if (event.key === "Escape") {
-            event.preventDefault();
-            closeAccountPanel();
-        }
-    }
-
-    const panelItems = $derived.by((): SidebarPanelItem[] => {
-        const items: SidebarPanelItem[] = [
-            {
-                id: "account",
-                label: "Account",
-                description: profileName,
-                icon: User,
-            },
-        ];
-
-        if (showThemeToggle) {
-            items.push({
-                id: "theme",
-                label: "Theme",
-                description: isLightMode ? "Light mode" : "Dark mode",
-                badgeText: isLightMode ? "Light" : "Dark",
-                icon: isLightMode ? Sun : Moon,
-            });
-        }
-
-        if (showLogout) {
-            items.push({
-                id: "logout",
-                label: logoutLabel,
-                description: "Sign out of this account",
-                icon: LogOut,
-            });
-        }
-
-        return items;
-    });
-
-    function handlePanelSelect(item: SidebarPanelItem): void {
-        if (item.id === "theme") {
-            handleThemeToggle();
-        }
-
-        if (item.id === "logout") {
-            handleLogout();
-        }
-
-        closeAccountPanel();
+    function handleProfileClick(): void {
+        onProfileClick?.();
     }
 
     function handleEmptyStateAction() {
@@ -391,8 +329,6 @@
         return undefined;
     }
 </script>
-
-<svelte:window onkeydown={handleWindowKeydown} />
 
 <nav class={`${containerClasses} relative`.trim()} aria-label={ariaLabel} {...restProps}>
     <div class={headerStackClasses}>
@@ -588,12 +524,14 @@
                 type="button"
                 class="w-full rounded-xl px-1 outline-none transition-colors hover:bg-nav-menu-hover active:bg-base-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus"
                 aria-haspopup="dialog"
-                aria-expanded={isAccountPanelOpen}
-                aria-controls={accountPanelDialogId}
+                aria-expanded={profilePanelOpen}
+                aria-controls={profilePanelControlsId.trim()
+                    ? profilePanelControlsId.trim()
+                    : undefined}
                 aria-label={isCollapsed
                     ? `Open account panel`
                     : `Open account panel for ${profileName}`}
-                onclick={openAccountPanel}
+                onclick={handleProfileClick}
             >
                 <span class="flex w-full items-center gap-3 text-left">
                     <span class={avatarClasses} aria-hidden="true">
@@ -618,32 +556,3 @@
         </div>
     {/if}
 </nav>
-
-{#if isAccountPanelOpen}
-    <div
-        id={accountPanelDialogId}
-        class="absolute bottom-3 left-full z-50 ml-4"
-        role="dialog"
-        aria-modal="false"
-        aria-labelledby={accountPanelTitleId}
-        aria-describedby={accountPanelDescriptionId}
-    >
-        <h2 id={accountPanelTitleId} class="sr-only">Account</h2>
-        <p id={accountPanelDescriptionId} class="sr-only">
-            Account actions and preferences.
-        </p>
-        <SidebarPanel
-            title="Account"
-            subtitle={profileEmail}
-            ariaLabel="Account panel"
-            closeLabel="Close account panel"
-            widthClass="w-[320px]"
-            variant="plain"
-            showSearch={false}
-            items={panelItems}
-            bind:selectedItemId={selectedPanelItemId}
-            onSelect={handlePanelSelect}
-            onClose={closeAccountPanel}
-        />
-    </div>
-{/if}

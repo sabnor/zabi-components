@@ -37,6 +37,7 @@
     import NavigationMenuLink from "../../components/molecules/NavigationMenuLink.svelte";
     import TopNavbar from "../../components/organisms/TopNavbar.svelte";
     import SidebarNavigation from "../../components/organisms/SidebarNavigation.svelte";
+    import SidebarAccountPanel from "../../components/organisms/SidebarAccountPanel.svelte";
     import SidebarPanel from "../../components/organisms/SidebarPanel.svelte";
     import {
         CircleCheck,
@@ -84,6 +85,24 @@
     let appShellPath = $state("/workspace/overview");
     let appShellLightMode = $state(false);
     let appShellSearchValue = $state("");
+
+
+    /** SidebarNavigation profile-panel demo (matches project picker behavior). */
+    const sidebarAccountPanelId = "sidebar-account-panel";
+    let sidebarAccountPanelOpen = $state(false);
+    let sidebarAccountLightMode = $state(false);
+    /** SidebarNavigation app-shell profile-panel demo. */
+    const appShellAccountPanelId = "app-shell-account-panel";
+    let appShellAccountPanelOpen = $state(false);
+    let appShellAccountLightMode = $state(false);
+
+    function toggleSidebarAccountPanel(): void {
+        sidebarAccountPanelOpen = !sidebarAccountPanelOpen;
+    }
+
+    function toggleAppShellAccountPanel(): void {
+        appShellAccountPanelOpen = !appShellAccountPanelOpen;
+    }
 
     function appShellLeafTitle(path: string): string {
         const segments = path.split("/").filter(Boolean);
@@ -1055,8 +1074,22 @@
                                                     would render.
                                                 </p>
                                                 <div
-                                                    class="flex max-w-5xl flex-col overflow-hidden rounded-2xl border border-border bg-base-100 shadow-sm md:min-h-[min(520px,65vh)] md:flex-row"
+                                                    class="flex max-w-5xl flex-col overflow-visible rounded-2xl border border-border bg-base-100 shadow-sm md:min-h-[min(520px,65vh)] md:flex-row"
                                                 >
+                                                    {#snippet appShellProfilePanel()}
+                                                        <SidebarAccountPanel
+                                                            panelId={appShellAccountPanelId}
+                                                            profileName="Alex Rivera"
+                                                            profileEmail="alex@northwind.app"
+                                                            bind:isLightMode={appShellAccountLightMode}
+                                                            onThemeToggle={(next) =>
+                                                                (appShellAccountLightMode = next)}
+                                                            onLogout={() => (appShellAccountPanelOpen = false)}
+                                                            onAccount={() => (appShellAccountPanelOpen = false)}
+                                                            onClose={() => (appShellAccountPanelOpen = false)}
+                                                            variant="elevated"
+                                                        />
+                                                    {/snippet}
                                                     <SidebarNavigation
                                                         layout="card"
                                                         className="min-h-[min(480px,60vh)] shrink-0 md:min-h-0 md:max-w-[280px]"
@@ -1072,6 +1105,10 @@
                                                         profileEmail="alex@northwind.app"
                                                         profileInitials="AR"
                                                         bind:isLightMode={appShellLightMode}
+                                                        onProfileClick={toggleAppShellAccountPanel}
+                                                        profilePanelOpen={appShellAccountPanelOpen}
+                                                        profilePanelControlsId={appShellAccountPanelId}
+                                                        profilePanel={appShellProfilePanel}
                                                         onNavigate={(item, event) => {
                                                             event.preventDefault();
                                                             appShellPath = item.href;
@@ -1140,7 +1177,7 @@
                                                     Searchable Input Mode
                                                 </h4>
                                                 <div
-                                                    class="inline-block overflow-hidden rounded-2xl border border-border"
+                                                    class="inline-block overflow-visible rounded-2xl border border-border"
                                                 >
                                                     <SidebarNavigation
                                                         mode="expanded"
@@ -1164,6 +1201,20 @@
                                                 <div
                                                     class="flex flex-wrap items-start gap-4"
                                                 >
+                                                    {#snippet sidebarProfilePanel()}
+                                                        <SidebarAccountPanel
+                                                            panelId={sidebarAccountPanelId}
+                                                            profileName="Jane Doe"
+                                                            profileEmail="jane@example.com"
+                                                            bind:isLightMode={sidebarAccountLightMode}
+                                                            onThemeToggle={(next) =>
+                                                                (sidebarAccountLightMode = next)}
+                                                            onLogout={() => (sidebarAccountPanelOpen = false)}
+                                                            onAccount={() => (sidebarAccountPanelOpen = false)}
+                                                            onClose={() => (sidebarAccountPanelOpen = false)}
+                                                            variant="plain"
+                                                        />
+                                                    {/snippet}
                                                     <SidebarNavigation
                                                         mode="expanded"
                                                         searchMode="button"
@@ -1180,6 +1231,10 @@
                                                             event.preventDefault();
                                                             sidebarPath = item.href;
                                                         }}
+                                                        onProfileClick={toggleSidebarAccountPanel}
+                                                        profilePanelOpen={sidebarAccountPanelOpen}
+                                                        profilePanelControlsId={sidebarAccountPanelId}
+                                                        profilePanel={sidebarProfilePanel}
                                                     />
                                                     {#if sidebarSearchPanelOpen}
                                                         <SidebarPanel
