@@ -7,6 +7,7 @@
     import SidebarFooter from "../molecules/SidebarFooter.svelte";
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
     import { Search } from "@lucide/svelte";
+    import type { Snippet } from "svelte";
     import type { Component } from "svelte";
     import type { ButtonVariant, SizeVariant } from "../../types/variants.js";
 
@@ -66,6 +67,14 @@
         onLogout?: () => void;
         onThemeToggle?: (nextIsLightMode: boolean) => void;
         onEmptyStateAction?: () => void;
+        /** Trigger for rendering an external account panel (project-picker pattern). */
+        onProfileClick?: (event?: MouseEvent) => void;
+        /** Whether the external account panel is open (for aria-expanded). */
+        profilePanelOpen?: boolean;
+        /** Optional external panel id for aria-controls. */
+        profilePanelControlsId?: string;
+        /** Optional profile panel snippet rendered by the footer (CSS overlay). */
+        profilePanel?: Snippet;
         /**
          * Highlights a primary (e.g. category) row when the current route is a child
          * of that section, while `currentPath` points at the leaf (e.g. a component).
@@ -108,6 +117,10 @@
         onLogout,
         onThemeToggle,
         onEmptyStateAction,
+        onProfileClick,
+        profilePanelOpen = false,
+        profilePanelControlsId = "",
+        profilePanel,
         ...restProps
     }: Props = $props();
 
@@ -200,7 +213,7 @@
 
     /** Same surface as the nav shell so header, list, and search read as one panel. */
     const searchShell =
-        "rounded-xl border border-border/85 bg-transparent ring-1 ring-border/60";
+        "rounded-xl border border-border bg-transparent ring-1 ring-border/60";
 
     const searchButtonClasses = $derived(
         `flex min-h-10 w-full cursor-pointer items-center justify-center rounded-xl px-0 py-2 ${searchShell} ${searchControlStates}`,
@@ -346,7 +359,7 @@
     >
         {#if hasFilteredItems}
             <div
-                class="flex w-full min-w-0 flex-col divide-y divide-border/85"
+                class="flex w-full min-w-0 flex-col divide-y divide-border"
             >
                 {#each primarySectionGroups as group, gi (`${gi}-${group.sectionLabel ?? "x"}`)}
                     <div class="py-4 first:pt-1 last:pb-1">
@@ -401,7 +414,7 @@
 
             {#if filteredSecondaryItems.length > 0}
                 <div
-                    class="mt-3 border-t border-border/85 pt-4"
+                    class="mt-3 border-t border-border pt-4"
                     role="presentation"
                 >
                     <SidebarNavSection
@@ -482,6 +495,10 @@
         bind:isLightMode
         {onLogout}
         {onThemeToggle}
+        {onProfileClick}
+        {profilePanelOpen}
+        {profilePanelControlsId}
+        {profilePanel}
         className={insetX}
     />
 </nav>

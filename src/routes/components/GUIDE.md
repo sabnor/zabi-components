@@ -34,8 +34,9 @@ Maintainer-oriented detail lives in this file; the showcase UI does not duplicat
 | Export | Role |
 |--------|------|
 | **`TopNavbar`** | Horizontal **top** bar: brand, links, theme toggle, mobile menu. Use `embedded` for a link-only strip inside your own header. Types: `TopNavbarNavItem`. |
-| **`SidebarNavigation`** | **Vertical** app rail: optional brand/logo, search, grouped items (`section`), primary vs `group: "secondary"`, profile, logout/theme. Props: `layout` (`rail` \| `card`), `mode` (`expanded` \| `collapsed`). |
+| **`SidebarNavigation`** | **Vertical** app rail: optional brand/logo, search, grouped items (`section`), primary vs `group: "secondary"`, profile launcher. Props: `layout` (`rail` \| `card`), `mode` (`expanded` \| `collapsed`). For side panels (account/project pickers), use `onProfileClick` + `profilePanelOpen` + `profilePanelControlsId` and render a panel next to the sidebar (same pattern as the project picker). |
 | **`SidebarPanel`** | Picker next to the sidebar when search is button-triggered; `variant` `plain` \| `elevated` aligns with `SidebarNavigation` `layout="card"`. |
+| **`SidebarAccountPanel`** | Prebuilt “account menu” panel built on `SidebarPanel` (Account, Theme toggle, Log out). Intended to be rendered **next to** `SidebarNavigation` when the profile launcher is clicked. |
 
 Do not confuse **TopNavbar** (header) with **SidebarNavigation** (side rail).
 
