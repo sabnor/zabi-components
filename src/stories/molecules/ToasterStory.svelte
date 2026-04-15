@@ -9,7 +9,12 @@
         <Button
             text="Success"
             onclick={() =>
-                pushToast({ message: 'Saved successfully.', type: 'success' })}
+                pushToast({
+                    title: 'Changes saved',
+                    message:
+                        'Some settings may take a few minutes to apply across your workspace.',
+                    type: 'success',
+                })}
         />
         <Button
             variant="secondary"

@@ -24,6 +24,8 @@
     import OptimizedImage from "../../components/atoms/OptimizedImage.svelte";
     import Skeleton from "../../components/atoms/Skeleton.svelte";
     import Toast from "../../components/atoms/Toast.svelte";
+    import Toaster from "../../components/molecules/Toaster.svelte";
+    import { pushToast } from "../../components/molecules/toast-store.js";
     import Tooltip from "../../components/atoms/Tooltip.svelte";
     import ContactForm from "../../components/molecules/ContactForm.svelte";
     import Form from "../../components/molecules/Form.svelte";
@@ -120,7 +122,7 @@
 </script>
 
 <div class="space-y-8">
-                            {#each component.examples as example}
+                            {#each component.examples as example, exampleIndex (example.title)}
                                 <ComponentDemo
                                     title={example.title}
                                     description={example.description}
@@ -1473,20 +1475,135 @@
                                             </div>
                                         </div>
                                     {:else if component.name === "Toast"}
-                                        <div class="w-full space-y-4">
-                                            <Toast
-                                                message="This is an info toast"
-                                            />
-                                            <Toast
-                                                message="Operation completed successfully!"
-                                            />
-                                            <Toast
-                                                message="Please review your input"
-                                            />
-                                            <Toast
-                                                message="An error occurred"
-                                            />
-                                        </div>
+                                        {#if exampleIndex === 0}
+                                            <div class="w-full space-y-4">
+                                                <p class="text-sm text-description">
+                                                    Triggers below call
+                                                    <code
+                                                        class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs"
+                                                        >pushToast()</code
+                                                    >. The live region is fixed bottom-right (same as a real app).
+                                                </p>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <Button
+                                                        text="Success"
+                                                        onclick={() =>
+                                                            pushToast({
+                                                                title:
+                                                                    'Changes saved',
+                                                                message:
+                                                                    'Some settings may take a few minutes to apply across your workspace.',
+                                                                type: 'success',
+                                                            })}
+                                                    />
+                                                    <Button
+                                                        variant="secondary"
+                                                        text="Error"
+                                                        onclick={() =>
+                                                            pushToast({
+                                                                title:
+                                                                    'Something went wrong',
+                                                                message:
+                                                                    'Try again or contact support if this persists.',
+                                                                type: 'error',
+                                                            })}
+                                                    />
+                                                    <Button
+                                                        variant="outline"
+                                                        text="Warning"
+                                                        onclick={() =>
+                                                            pushToast({
+                                                                title:
+                                                                    'Please review',
+                                                                message:
+                                                                    'Your draft has not been published yet.',
+                                                                type: 'warning',
+                                                            })}
+                                                    />
+                                                    <Button
+                                                        variant="ghost"
+                                                        text="Info"
+                                                        onclick={() =>
+                                                            pushToast({
+                                                                message:
+                                                                    'Tip: use keyboard shortcuts.',
+                                                                type: 'info',
+                                                            })}
+                                                    />
+                                                </div>
+                                                <Toaster />
+                                            </div>
+                                        {:else if exampleIndex === 1}
+                                            <div class="w-full space-y-4">
+                                                <p class="text-sm text-description">
+                                                    Same surface as viewport toasts, but
+                                                    <code
+                                                        class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs"
+                                                        >layout="inline"</code
+                                                    >
+                                                    keeps it in the document flow for docs and previews.
+                                                </p>
+                                                <div
+                                                    class="mx-auto flex w-full max-w-md flex-col gap-4"
+                                                >
+                                                    <Toast
+                                                        layout="inline"
+                                                        message="This is an info toast"
+                                                        type="info"
+                                                    />
+                                                    <Toast
+                                                        layout="inline"
+                                                        message="Operation completed successfully!"
+                                                        type="success"
+                                                    />
+                                                    <Toast
+                                                        layout="inline"
+                                                        message="Please review your input"
+                                                        type="warning"
+                                                    />
+                                                    <Toast
+                                                        layout="inline"
+                                                        message="An error occurred"
+                                                        type="error"
+                                                    />
+                                                </div>
+                                            </div>
+                                        {:else if exampleIndex === 2}
+                                            <div class="w-full space-y-4">
+                                                <p class="text-sm text-description">
+                                                    The
+                                                    <code
+                                                        class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs"
+                                                        >type</code
+                                                    >
+                                                    prop maps to semantic border and text colors.
+                                                </p>
+                                                <div
+                                                    class="grid w-full min-w-0 grid-cols-1 gap-3 md:grid-cols-2"
+                                                >
+                                                    <Toast
+                                                        layout="inline"
+                                                        message="Success"
+                                                        type="success"
+                                                    />
+                                                    <Toast
+                                                        layout="inline"
+                                                        message="Error"
+                                                        type="error"
+                                                    />
+                                                    <Toast
+                                                        layout="inline"
+                                                        message="Warning"
+                                                        type="warning"
+                                                    />
+                                                    <Toast
+                                                        layout="inline"
+                                                        message="Info"
+                                                        type="info"
+                                                    />
+                                                </div>
+                                            </div>
+                                        {/if}
                                     {:else if component.name === "Tooltip"}
                                         <div class="flex gap-4 items-center">
                                             <Tooltip
