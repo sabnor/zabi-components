@@ -144,7 +144,7 @@
     </nav>
 {:else}
     <nav
-        class="bg-base-50 border-b border-border sticky top-0 z-50 {className}"
+        class="border-b border-border bg-background sticky top-0 z-50 {className}"
         aria-label={ariaLabel}
         {...restProps}
     >

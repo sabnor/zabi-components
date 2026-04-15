@@ -1,4 +1,4 @@
-type Size = "sm" | "md" | "lg";
+type Size = 'sm' | 'md' | 'lg';
 interface Props {
     isOpen?: boolean;
     title?: string;
@@ -11,6 +11,6 @@ type $$ComponentProps = Props & {
     children?: any;
     footer?: any;
 };
-declare const Modal: import("svelte").Component<$$ComponentProps, {}, "">;
+declare const Modal: import("svelte").Component<$$ComponentProps, {}, "isOpen">;
 type Modal = ReturnType<typeof Modal>;
 export default Modal;

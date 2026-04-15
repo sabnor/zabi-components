@@ -71,7 +71,7 @@
 {#if isActive}
     <div
         bind:this={contentElement}
-        class="absolute left-0 top-full mt-2 bg-input rounded-lg shadow-lg border border-input-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out {className}"
+        class="absolute left-0 top-full mt-2 bg-card rounded-lg shadow-lg border border-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out {className}"
         role="menu"
         onkeydown={handleKeydown}
         data-navigation-menu-content

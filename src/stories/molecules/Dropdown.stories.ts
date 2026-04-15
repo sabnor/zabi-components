@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import Dropdown from '../../components/molecules/Dropdown.svelte';
 import DropdownWithContent from './DropdownWithContent.svelte';
 import DropdownEmptyState from './DropdownEmptyState.svelte';
 
 const meta = {
     title: 'Design System/Molecules/Dropdown',
-    component: Dropdown,
+    component: DropdownWithContent,
     parameters: {
         layout: 'centered'
     },
@@ -21,7 +20,7 @@ const meta = {
             description: 'Whether the dropdown is open'
         }
     }
-} satisfies Meta<typeof Dropdown>;
+} satisfies Meta<typeof DropdownWithContent>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

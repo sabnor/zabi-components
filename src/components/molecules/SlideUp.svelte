@@ -4,7 +4,8 @@
         returnFocus,
         saveFocus,
         trapFocus,
-    } from "../../routes/lib/focus-utils.js";
+    } from '../../routes/lib/focus-utils.js';
+    import { generateId } from '../../routes/lib/ssr-safe.js';
 
     interface Props {
         isOpen?: boolean;
@@ -14,11 +15,15 @@
     }
 
     let {
-        isOpen = false,
-        title = "",
+        isOpen = $bindable(false),
+        title = '',
+        onclick,
+        onkeydown,
         children,
         ...restProps
     } = $props<Props & { children?: any }>();
+
+    const slideTitleId = generateId('slideup-title');
 
     let slideUpContainer = $state<HTMLDivElement>();
     let cleanupFocusTrap: (() => void) | null = null;
@@ -31,7 +36,7 @@
         }
         returnFocus();
         if (onclick && event) {
-            (onclick as (event: Event) => void)(event);
+            onclick(event);
         }
     }
 
@@ -57,12 +62,10 @@
 
     function handleKeydown(event: Event) {
         const keyboardEvent = event as KeyboardEvent;
-        if (keyboardEvent.key === "Escape") {
+        if (keyboardEvent.key === 'Escape') {
             closeSlideUp(event);
         }
-        if (onkeydown) {
-            (onkeydown as (event: Event) => void)(event);
-        }
+        onkeydown?.(event);
     }
 </script>
 
@@ -73,25 +76,26 @@
         onkeydown={handleKeydown}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? "slideup-title" : undefined}
+        aria-labelledby={title ? slideTitleId : undefined}
         tabindex="-1"
+        {...restProps}
     >
         <div
             bind:this={slideUpContainer}
             class="fixed bottom-0 left-0 right-0 z-modal flex max-h-[90vh] cursor-default flex-col overflow-y-auto rounded-t-3xl bg-card shadow-xl animate-[slideUp_0.3s_ease-out]"
         >
             {#if title}
-                <div class="flex items-center justify-between px-6 pt-6 pb-4">
+                <div class="flex items-center justify-between px-6 pb-4 pt-6">
                     <h2
-                        id="slideup-title"
-                        class="text-2xl font-normal leading-8 text-headline tracking-normal"
+                        id={slideTitleId}
+                        class="text-2xl font-normal leading-8 tracking-normal text-headline"
                     >
                         {title}
                     </h2>
                     <button
                         type="button"
                         onclick={closeSlideUp}
-                        class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-100"
+                        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-2xl text-description transition-colors hover:bg-base-100 hover:text-headline"
                         aria-label="Close"
                     >
                         ×
@@ -99,7 +103,7 @@
                 </div>
             {/if}
 
-            <div class="px-6 pb-6 flex-1">
+            <div class="flex-1 px-6 pb-6">
                 {@render children?.()}
             </div>
         </div>

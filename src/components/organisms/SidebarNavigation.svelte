@@ -6,7 +6,7 @@
     import SidebarBrandHeader from "../molecules/SidebarBrandHeader.svelte";
     import SidebarFooter from "../molecules/SidebarFooter.svelte";
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
-    import { Search } from "@lucide/svelte";
+    import { Command, Search } from "@lucide/svelte";
     import type { Snippet } from "svelte";
     import type { Component } from "svelte";
     import type { ButtonVariant, SizeVariant } from "../../types/variants.js";
@@ -48,9 +48,9 @@
         searchMode?: "input" | "button";
         searchPlaceholder?: string;
         searchValue?: string;
-        /** Icon shown inside the search trigger button (defaults to `Search`). */
+        /** Icon inside the panel trigger (button mode / collapsed / `onSearchClick`). Defaults to `Command`. `searchMode: "input"` keeps the magnifier (`Search`) on the field. */
         searchTriggerIcon?: Component<{ size?: number; class?: string }>;
-        /** Button variant for the search trigger (defaults to `secondary`). */
+        /** Button variant for the panel/search trigger (defaults to `outline`). */
         searchTriggerVariant?: ButtonVariant;
         /** Button size for the search trigger (defaults to `sm`). */
         searchTriggerSize?: SizeVariant;
@@ -101,8 +101,8 @@
         searchMode = "input",
         searchPlaceholder = "Search...",
         searchValue = $bindable(""),
-        searchTriggerIcon = Search,
-        searchTriggerVariant = "secondary",
+        searchTriggerIcon = Command,
+        searchTriggerVariant = "outline",
         searchTriggerSize = "sm",
         showLogout = true,
         logoutLabel = "Logout",
@@ -196,7 +196,7 @@
         const widthClass = isCollapsed ? "w-[104px]" : "w-[266px]";
         const railSurface = "border-r border-border bg-background text-headline";
         const cardSurface =
-            "rounded-3xl border border-border bg-background text-headline shadow-sm";
+            "border-r border-border bg-background text-headline shadow-sm";
         const surfaceClasses = isCard ? cardSurface : railSurface;
         const verticalPad = isCard ? "py-4" : "py-5";
         const baseClasses = `flex h-full min-h-0 max-h-full flex-col overflow-visible ${verticalPad}`;
@@ -208,26 +208,14 @@
         `flex w-full shrink-0 flex-col gap-5 ${insetX}`,
     );
 
-    const searchControlStates =
-        "text-nav-menu-item outline-none transition-colors duration-150 hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
-
-    /** Same surface as the nav shell so header, list, and search read as one panel. */
-    const searchShell =
-        "rounded-xl border border-border bg-transparent ring-1 ring-border/60";
-
-    const searchButtonClasses = $derived(
-        `flex min-h-10 w-full cursor-pointer items-center justify-center rounded-xl px-0 py-2 ${searchShell} ${searchControlStates}`,
-    );
-    const searchTriggerClasses = $derived.by(() => {
-        return isCollapsed
-            ? searchButtonClasses
-            : `flex min-h-10 w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left ${searchShell} ${searchControlStates}`;
-    });
     const iconContainerClasses = $derived(
         "flex size-6 shrink-0 items-center justify-center leading-none text-current",
     );
+    /** In `searchMode: "input"`, keep the text field even when `onSearchClick` is defined (e.g. Storybook action spies). */
     const shouldRenderSearchButton = $derived(
-        isCollapsed || searchMode === "button" || Boolean(onSearchClick),
+        isCollapsed ||
+            searchMode === "button" ||
+            (Boolean(onSearchClick) && searchMode !== "input"),
     );
 
     function getTextToneClass(isMuted = false): string {
@@ -293,70 +281,77 @@
 </script>
 
 <nav class={containerClasses} aria-label={ariaLabel} {...restProps}>
-    <div class={`${headerStackClasses} pb-3`.trim()}>
-        {#if showBrandRow}
-            <SidebarBrandHeader
-                collapsed={isCollapsed}
-                {brandName}
-                logoSrc={logoSrc.trim()}
-                {logoAlt}
-            />
-        {/if}
-
-        {#if showSearch}
-            {#if shouldRenderSearchButton}
-                {@const TriggerIcon = searchTriggerIcon}
-                {#if isCollapsed}
-                    <IconButton
-                        variant={searchTriggerVariant}
-                        size={searchTriggerSize}
-                        label={searchPlaceholder}
-                        onclick={handleSearchClick}
-                    >
-                        <TriggerIcon size={18} />
-                    </IconButton>
-                {:else}
-                    <Button
-                        variant={searchTriggerVariant}
-                        size={searchTriggerSize}
-                        isFullWidth
-                        onclick={handleSearchClick}
-                    >
-                        <span class="flex w-full items-center justify-start gap-2.5">
-                            <span class={iconContainerClasses} aria-hidden="true">
-                                <TriggerIcon size={17} />
-                            </span>
-                            <span class="truncate text-sm text-inherit">
-                                {searchValue || searchPlaceholder}
-                            </span>
-                        </span>
-                    </Button>
-                {/if}
-            {:else}
-                <div class="relative w-full">
-                    <span
-                        class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2"
-                        aria-hidden="true"
-                    >
-                        <Search size={17} class={getTextToneClass(true)} />
-                    </span>
-                    <Input
-                        type="search"
-                        bind:value={searchValue}
-                        placeholder={searchPlaceholder}
-                        aria-label={searchPlaceholder}
-                        class="w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 ring-offset-0 hover:!bg-nav-menu-hover focus:!bg-transparent focus:ring-2 focus:ring-nav-menu-focus"
-                    />
-                </div>
-            {/if}
-        {/if}
-    </div>
-
+    <!--
+      Single flex column: header + scrollable links. Only the outer <nav> is the
+      “shell” (bg / border-r); this wrapper has no surface styling.
+    -->
     <div
-        class={`flex min-h-0 flex-1 w-full flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pt-4 pb-1.5 ${insetX}`}
-        role="region"
-        aria-label="Navigation links"
+        class="flex min-h-0 w-full min-w-0 flex-1 flex-col"
     >
+        <div class={`${headerStackClasses} pb-3`.trim()}>
+            {#if showBrandRow}
+                <SidebarBrandHeader
+                    collapsed={isCollapsed}
+                    {brandName}
+                    logoSrc={logoSrc.trim()}
+                    {logoAlt}
+                />
+            {/if}
+
+            {#if showSearch}
+                {#if shouldRenderSearchButton}
+                    {@const TriggerIcon = searchTriggerIcon}
+                    {#if isCollapsed}
+                        <IconButton
+                            variant={searchTriggerVariant}
+                            size={searchTriggerSize}
+                            label={searchPlaceholder}
+                            onclick={handleSearchClick}
+                        >
+                            <TriggerIcon size={18} />
+                        </IconButton>
+                    {:else}
+                        <Button
+                            variant={searchTriggerVariant}
+                            size={searchTriggerSize}
+                            isFullWidth
+                            onclick={handleSearchClick}
+                        >
+                            <span class="flex w-full items-center justify-start gap-2.5">
+                                <span class={iconContainerClasses} aria-hidden="true">
+                                    <TriggerIcon size={17} />
+                                </span>
+                                <span class="truncate text-sm text-inherit">
+                                    {searchValue || searchPlaceholder}
+                                </span>
+                            </span>
+                        </Button>
+                    {/if}
+                {:else}
+                    <div class="relative w-full">
+                        <span
+                            class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2"
+                            aria-hidden="true"
+                        >
+                            <Search size={17} class={getTextToneClass(true)} />
+                        </span>
+                        <Input
+                            type="search"
+                            bind:value={searchValue}
+                            placeholder={searchPlaceholder}
+                            aria-label={searchPlaceholder}
+                            class="w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 ring-offset-0 hover:!bg-nav-menu-hover focus:!bg-transparent focus:ring-2 focus:ring-nav-menu-focus"
+                        />
+                    </div>
+                {/if}
+            {/if}
+        </div>
+
+        <div
+            class={`flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pt-4 pb-1.5 ${insetX}`}
+            role="region"
+            aria-label="Navigation links"
+        >
         {#if hasFilteredItems}
             <div
                 class="flex w-full min-w-0 flex-col divide-y divide-border"
@@ -480,6 +475,7 @@
                 {/if}
             </div>
         {/if}
+        </div>
     </div>
 
     <SidebarFooter

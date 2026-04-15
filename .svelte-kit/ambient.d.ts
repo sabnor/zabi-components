@@ -80,7 +80,6 @@ declare module '$env/static/private' {
 	export const XPC_SERVICE_NAME: string;
 	export const SHLVL: string;
 	export const HOME: string;
-	export const npm_config_loglevel: string;
 	export const VSCODE_NLS_CONFIG: string;
 	export const HOMEBREW_PREFIX: string;
 	export const npm_config_cache: string;
@@ -181,7 +180,6 @@ declare module '$env/dynamic/private' {
 		XPC_SERVICE_NAME: string;
 		SHLVL: string;
 		HOME: string;
-		npm_config_loglevel: string;
 		VSCODE_NLS_CONFIG: string;
 		HOMEBREW_PREFIX: string;
 		npm_config_cache: string;

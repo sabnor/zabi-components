@@ -1,5 +1,5 @@
 /**
- * Utility functions for handling component variants with semantic colors
+ * Variant class helpers — semantic design tokens only (see src/app.css).
  */
 
 import type { SemanticVariant } from '../../types/variants.js';
@@ -7,73 +7,79 @@ import type { SemanticVariant } from '../../types/variants.js';
 export type Variant = SemanticVariant;
 
 /**
- * Get variant classes for input components (Input, Textarea)
+ * Border + focus ring classes for text inputs (Input, Textarea).
  */
 export function getInputVariantClasses(variant: Variant): string {
     const variantMap: Record<Variant, string> = {
-        default: 'border-base-300 focus:border-brand-500 focus:ring-brand-500',
-        success: 'border-green-300 focus:border-green-500 focus:ring-green-500',
-        warning: 'border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500',
-        error: 'border-red-300 focus:border-red-500 focus:ring-red-500',
-        info: 'border-iris-300 focus:border-iris-500 focus:ring-iris-500',
+        default:
+            'border-input-border focus:border-brand-500 focus:ring-2 focus:ring-brand-500',
+        success:
+            'border-success focus:border-success focus:ring-2 focus:ring-success',
+        warning:
+            'border-warning focus:border-warning focus:ring-2 focus:ring-warning',
+        error: 'border-error focus:border-error focus:ring-2 focus:ring-error',
+        info: 'border-info focus:border-info focus:ring-2 focus:ring-info',
     };
 
     return variantMap[variant] || variantMap.default;
 }
 
 /**
- * Get variant classes for card components
+ * Card surfaces — border + background using semantic tokens.
  */
 export function getCardVariantClasses(variant: Variant): string {
     const variantMap: Record<Variant, string> = {
-        default: 'border-base-200 bg-white',
-        success: 'border-green-200 bg-green-50',
-        warning: 'border-yellow-200 bg-yellow-50',
-        error: 'border-red-200 bg-red-50',
-        info: 'border-iris-200 bg-iris-50',
+        default: 'border-border bg-card',
+        success: 'border-success bg-card',
+        warning: 'border-warning bg-card',
+        error: 'border-error bg-card',
+        info: 'border-info bg-card',
     };
 
     return variantMap[variant] || variantMap.default;
 }
 
 /**
- * Get generic variant classes for any component
+ * Generic variant classes for borders, text, or backgrounds.
  */
-export function getVariantClasses(variant: Variant, type: 'border' | 'text' | 'bg'): string {
-    const variantMap: Record<Variant, Record<'border' | 'text' | 'bg', string>> = {
+export function getVariantClasses(
+    variant: Variant,
+    type: 'border' | 'text' | 'bg',
+): string {
+    const variantMap: Record<
+        Variant,
+        Record<'border' | 'text' | 'bg', string>
+    > = {
         default: {
-            border: 'border-base-300',
-            text: 'text-base-900',
-            bg: 'bg-white'
+            border: 'border-border',
+            text: 'text-body',
+            bg: 'bg-card',
         },
         success: {
-            border: 'border-green-300',
-            text: 'text-green-900',
-            bg: 'bg-green-50'
+            border: 'border-success',
+            text: 'text-success',
+            bg: 'bg-card',
         },
         warning: {
-            border: 'border-yellow-300',
-            text: 'text-yellow-900',
-            bg: 'bg-yellow-50'
+            border: 'border-warning',
+            text: 'text-warning',
+            bg: 'bg-card',
         },
         error: {
-            border: 'border-red-300',
-            text: 'text-red-900',
-            bg: 'bg-red-50'
+            border: 'border-error',
+            text: 'text-error',
+            bg: 'bg-card',
         },
         info: {
-            border: 'border-iris-300',
-            text: 'text-iris-900',
-            bg: 'bg-iris-50'
+            border: 'border-info',
+            text: 'text-info',
+            bg: 'bg-card',
         },
     };
 
     return variantMap[variant]?.[type] || variantMap.default[type];
 }
 
-/**
- * Get all variant classes for a component (border, text, background)
- */
 export function getAllVariantClasses(variant: Variant): {
     border: string;
     text: string;
@@ -91,10 +97,13 @@ export function getAllVariantClasses(variant: Variant): {
  */
 export function createVariantClassMap<T extends string>(
     variants: T[],
-    prefix: string
+    prefix: string,
 ): Record<T, string> {
-    return variants.reduce((acc, variant) => {
-        acc[variant] = `${prefix}-${variant}`;
-        return acc;
-    }, {} as Record<T, string>);
+    return variants.reduce(
+        (acc, variant) => {
+            acc[variant] = `${prefix}-${variant}`;
+            return acc;
+        },
+        {} as Record<T, string>,
+    );
 }

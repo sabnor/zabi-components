@@ -13,6 +13,7 @@
         type?: "button" | "submit" | "reset";
         /** Accessible label for icon-only buttons. */
         label?: string;
+        class?: string;
         /** Click handler for native click events. */
         onclick?: (event: MouseEvent) => void;
         /** Icon content. */

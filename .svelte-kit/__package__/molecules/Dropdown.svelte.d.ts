@@ -1,7 +1,15 @@
+import type { Snippet } from 'svelte';
+export type DropdownTriggerProps = {
+    'aria-expanded': boolean;
+    'aria-haspopup': 'menu' | 'listbox';
+    'aria-controls': string;
+};
 interface Props {
     isOpen?: boolean;
-    placement?: "bottom-start" | "bottom-end" | "top-start" | "top-end";
+    placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
     ariaLabel?: string;
+    /** Use `listbox` for Select; `menu` for action menus. */
+    menuRole?: 'menu' | 'listbox';
     selectedValue?: string | number | null;
     options?: Array<{
         value: string | number;
@@ -9,11 +17,10 @@ interface Props {
         disabled?: boolean;
     }>;
     onOptionClick?: (value: string | number) => void;
+    /** Receives ARIA props for the trigger control. */
+    trigger: Snippet<[DropdownTriggerProps]>;
+    children?: Snippet;
 }
-type $$ComponentProps = Props & {
-    children?: any;
-    trigger?: any;
-};
-declare const Dropdown: import("svelte").Component<$$ComponentProps, {}, "">;
+declare const Dropdown: import("svelte").Component<Props, {}, "isOpen">;
 type Dropdown = ReturnType<typeof Dropdown>;
 export default Dropdown;

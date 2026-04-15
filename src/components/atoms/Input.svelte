@@ -4,11 +4,15 @@
     import { generateId } from "../../routes/lib/ssr-safe.js";
 
     interface Props {
+        /** Stable id; generated when omitted (use with FormField `id`). */
+        id?: string;
         value?: string;
         type?: string;
         name?: string;
         class?: string;
         label?: string;
+        /** When using FormField, set true so the field provides the label. */
+        hideLabel?: boolean;
         placeholder?: string;
         required?: boolean;
         disabled?: boolean;
@@ -21,11 +25,13 @@
     }
 
     let {
+        id: idProp,
         value = $bindable(""),
         type = "text",
         name = "",
         class: className = "",
         label = "",
+        hideLabel = false,
         placeholder = "",
         required = false,
         disabled = false,
@@ -37,7 +43,8 @@
         ...restProps
     }: Props = $props();
 
-    const inputId = generateId("input");
+    const fallbackId = generateId("input");
+    const inputId = $derived(idProp ?? fallbackId);
 
     const sizeClass = $derived(() => {
         if (size === "sm") {
@@ -109,7 +116,7 @@
 </script>
 
 <div>
-    {#if label}
+    {#if label && !hideLabel}
         <label for={inputId} class={labelClasses()}>{label}</label>
     {/if}
     <input

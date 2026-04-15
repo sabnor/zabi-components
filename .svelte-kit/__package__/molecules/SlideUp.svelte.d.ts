@@ -7,6 +7,6 @@ interface Props {
 type $$ComponentProps = Props & {
     children?: any;
 };
-declare const SlideUp: import("svelte").Component<$$ComponentProps, {}, "">;
+declare const SlideUp: import("svelte").Component<$$ComponentProps, {}, "isOpen">;
 type SlideUp = ReturnType<typeof SlideUp>;
 export default SlideUp;

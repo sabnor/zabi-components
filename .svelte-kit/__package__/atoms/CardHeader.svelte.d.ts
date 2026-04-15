@@ -5,6 +5,10 @@ interface Props {
     subtitle?: string;
     /** Longer supporting text displayed below the subtitle */
     description?: string;
+    /** Element id for `subtitle` (e.g. `aria-describedby`). */
+    subtitleId?: string;
+    /** Element id for `description` (e.g. `aria-describedby`). */
+    descriptionId?: string;
     level?: 1 | 2 | 3 | 4 | 5 | 6;
     className?: string;
     children?: Snippet;
