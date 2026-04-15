@@ -1,5 +1,8 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { componentsCatalog } from "$lib/showcase/components-catalog";
+    import type { ComponentMetadata } from "../types/page.types";
+    import ActionPanel from "../components/atoms/ActionPanel.svelte";
     import Badge from "../components/atoms/Badge.svelte";
     import Button from "../components/atoms/Button.svelte";
     import Card from "../components/atoms/Card.svelte";
@@ -37,6 +40,17 @@
         "Modal",
         "Tabs",
     ];
+
+    const componentCategoryLabel: Record<ComponentMetadata["category"], string> = {
+        atoms: "Atoms",
+        molecules: "Molecules",
+        organisms: "Organisms",
+    };
+
+    const allComponents: ComponentMetadata[] = Object.values(componentsCatalog)
+        .flat()
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name));
 </script>
 
 <svelte:head>
@@ -125,6 +139,39 @@
                     text="Browse all components"
                     onclick={() => goto("/components")}
                 />
+            </div>
+        </section>
+
+        <section
+            class="border-t border-border py-32 sm:py-40"
+            aria-labelledby="all-components-title"
+        >
+            <div class="mx-auto max-w-6xl">
+                <div class="mx-auto max-w-3xl text-center">
+                    <h2
+                        id="all-components-title"
+                        class="text-3xl font-semibold text-headline sm:text-4xl"
+                    >
+                        All components
+                    </h2>
+                    <p class="mt-6 text-lg text-description sm:text-xl">
+                        Browse every component in the library. Each tile links to
+                        a full page with props, variants, and examples.
+                    </p>
+                </div>
+
+                <div class="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {#each allComponents as component (component.name)}
+                        <ActionPanel
+                            href={`/components/${component.name}`}
+                            title={component.name}
+                            description={component.description}
+                            badgeText={componentCategoryLabel[component.category]}
+                            badgeVariant="neutral"
+                            ariaLabel={`Open ${component.name} component docs`}
+                        />
+                    {/each}
+                </div>
             </div>
         </section>
     </main>
