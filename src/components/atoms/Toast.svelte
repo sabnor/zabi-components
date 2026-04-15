@@ -1,51 +1,51 @@
 <script lang="ts">
     interface Props {
         message?: string;
-        type?: "success" | "error" | "warning" | "info";
+        type?: 'success' | 'error' | 'warning' | 'info';
         closable?: boolean;
         onclick?: (event: Event) => void;
+        class?: string;
     }
 
     let {
-        message = "",
-        type = "info",
+        message = '',
+        type = 'info',
         closable = true,
         onclick,
+        class: className = '',
         ...restProps
     }: Props = $props();
 
     let isVisible = $state(true);
 
-    const typeClasses = {
-        success: "bg-green-100 border-green-300 text-success",
-        error: "bg-red-100 border-red-300 text-error",
-        warning: "bg-yellow-100 border-yellow-300 text-warning",
-        info: "bg-iris-100 border-iris-300 text-body",
+    const typeClasses: Record<NonNullable<Props['type']>, string> = {
+        success: 'border-success bg-card text-success',
+        error: 'border-error bg-card text-error',
+        warning: 'border-warning bg-card text-warning',
+        info: 'border-border bg-card text-body',
     };
 
     function closeToast(event: Event) {
         isVisible = false;
-        if (onclick) {
-            onclick(event);
-        }
+        onclick?.(event);
     }
 </script>
 
 {#if isVisible}
     <div
-        class="fixed top-4 right-4 max-w-sm w-full bg-white border rounded-lg shadow-lg p-4 z-50"
+        class="fixed top-4 right-4 z-toast min-w-0 w-[min(24rem,calc(100vw-2rem))] rounded-lg border p-4 shadow-lg {typeClasses[type]} {className}"
         role="alert"
         {...restProps}
     >
-        <div class="flex items-start">
-            <div class="flex-1">
-                <p class="text-sm {typeClasses[type]}">{message}</p>
+        <div class="flex items-start gap-3">
+            <div class="min-w-0 flex-1">
+                <p class="text-sm">{message}</p>
             </div>
 
             {#if closable}
                 <button
                     type="button"
-                    class="ml-3 cursor-pointer text-base-400 hover:text-base-600"
+                    class="shrink-0 cursor-pointer rounded-md text-description hover:text-headline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                     onclick={closeToast}
                     aria-label="Close notification"
                 >

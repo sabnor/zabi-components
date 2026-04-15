@@ -4,15 +4,24 @@
 
     interface Props {
         isOpen?: boolean;
-        placement?: "bottom-start" | "bottom-end" | "top-start" | "top-end";
+        placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
     }
 
-    let { isOpen = true, placement = "bottom-start" }: Props = $props();
+    let {
+        isOpen: initialOpen = true,
+        placement = 'bottom-start',
+    }: Props = $props();
+
+    let isOpen = $state(initialOpen);
+
+    $effect(() => {
+        isOpen = initialOpen;
+    });
 </script>
 
-<Dropdown {isOpen} {placement} ariaLabel="Empty dropdown">
-    {#snippet trigger()}
-        <Button text="Open menu" variant="secondary" />
+<Dropdown bind:isOpen {placement} ariaLabel="Empty dropdown">
+    {#snippet trigger(aria)}
+        <Button text="Open menu" variant="secondary" {...aria} />
     {/snippet}
     {#snippet children()}
         <div class="rounded-md border border-border bg-base-50 px-3 py-3 text-sm">

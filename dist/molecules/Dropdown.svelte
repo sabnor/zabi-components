@@ -1,11 +1,19 @@
 <script lang="ts">
-    import Button from "../atoms/Button.svelte";
-    import { generateId } from "../../routes/lib/ssr-safe.js";
+    import { generateId } from '../../routes/lib/ssr-safe.js';
+    import type { Snippet } from 'svelte';
+
+    export type DropdownTriggerProps = {
+        'aria-expanded': boolean;
+        'aria-haspopup': 'menu' | 'listbox';
+        'aria-controls': string;
+    };
 
     interface Props {
         isOpen?: boolean;
-        placement?: "bottom-start" | "bottom-end" | "top-start" | "top-end";
+        placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
         ariaLabel?: string;
+        /** Use `listbox` for Select; `menu` for action menus. */
+        menuRole?: 'menu' | 'listbox';
         selectedValue?: string | number | null;
         options?: Array<{
             value: string | number;
@@ -13,31 +21,41 @@
             disabled?: boolean;
         }>;
         onOptionClick?: (value: string | number) => void;
+        /** Receives ARIA props for the trigger control. */
+        trigger: Snippet<[DropdownTriggerProps]>;
+        children?: Snippet;
     }
 
     let {
-        isOpen = false,
-        placement = "bottom-start",
-        ariaLabel = "Menu",
+        isOpen = $bindable(false),
+        placement = 'bottom-start',
+        ariaLabel = 'Menu',
+        menuRole = 'menu',
         selectedValue = null,
         options = [],
         onOptionClick,
-        children,
         trigger,
+        children,
         ...restProps
-    }: Props & { children?: any; trigger?: any } = $props();
+    }: Props = $props();
 
-    const dropdownId = generateId("dropdown");
-    let triggerElement = $state<HTMLElement | null>(null);
-    let menuElement = $state<HTMLElement | null>(null);
+    const menuId = generateId('dropdown-menu');
+    let rootEl = $state<HTMLDivElement | null>(null);
+
     let openedViaKeyboard = $state(false);
+
+    const triggerAria = $derived({
+        'aria-expanded': isOpen,
+        'aria-haspopup': menuRole === 'listbox' ? 'listbox' as const : 'menu' as const,
+        'aria-controls': menuId,
+    } satisfies DropdownTriggerProps);
 
     function handleKeydown(event: KeyboardEvent) {
         if (!isOpen) {
             if (
-                event.key === "Enter" ||
-                event.key === " " ||
-                event.key === "ArrowDown"
+                event.key === 'Enter' ||
+                event.key === ' ' ||
+                event.key === 'ArrowDown'
             ) {
                 event.preventDefault();
                 openedViaKeyboard = true;
@@ -47,38 +65,39 @@
         }
 
         switch (event.key) {
-            case "Escape":
+            case 'Escape':
                 event.preventDefault();
                 isOpen = false;
-                triggerElement?.focus();
                 break;
-            case "ArrowDown":
+            case 'ArrowDown':
                 event.preventDefault();
                 focusNextItem();
                 break;
-            case "ArrowUp":
+            case 'ArrowUp':
                 event.preventDefault();
                 focusPreviousItem();
                 break;
-            case "Home":
+            case 'Home':
                 event.preventDefault();
                 focusFirstItem();
                 break;
-            case "End":
+            case 'End':
                 event.preventDefault();
                 focusLastItem();
                 break;
-            case "Tab":
+            case 'Tab':
                 isOpen = false;
                 break;
         }
     }
 
+    let menuElement = $state<HTMLElement | null>(null);
+
     function getMenuItems(): HTMLElement[] {
         if (!menuElement) return [];
         return Array.from(
             menuElement.querySelectorAll<HTMLElement>(
-                '[role="menuitem"], button, a',
+                '[role="menuitem"], [role="option"]',
             ),
         );
     }
@@ -104,8 +123,7 @@
     }
 
     function focusFirstItem() {
-        const items = getMenuItems();
-        items[0]?.focus();
+        getMenuItems()[0]?.focus();
     }
 
     function focusLastItem() {
@@ -113,127 +131,107 @@
         items[items.length - 1]?.focus();
     }
 
-    // Focus first item when dropdown opens via keyboard
     $effect(() => {
         if (isOpen && menuElement && openedViaKeyboard) {
-            setTimeout(() => {
+            const t = setTimeout(() => {
                 focusFirstItem();
                 openedViaKeyboard = false;
             }, 0);
-        } else if (!isOpen) {
+            return () => clearTimeout(t);
+        }
+        if (!isOpen) {
             openedViaKeyboard = false;
         }
     });
 
-    // Mark selected items
     $effect(() => {
-        if (isOpen && menuElement) {
-            // Small delay to ensure DOM is ready
-            setTimeout(() => {
-                const items = getMenuItems();
-                items.forEach((item) => {
-                    if (selectedValue !== null && selectedValue !== undefined) {
-                        const itemValue =
-                            item.getAttribute("data-value") ||
-                            item.textContent?.trim();
-                        if (String(itemValue) === String(selectedValue)) {
-                            item.setAttribute("data-selected", "true");
-                            item.setAttribute("aria-selected", "true");
-                        } else {
-                            item.removeAttribute("data-selected");
-                            item.removeAttribute("aria-selected");
-                        }
-                    } else {
-                        item.removeAttribute("data-selected");
-                        item.removeAttribute("aria-selected");
-                    }
-                });
-            }, 0);
+        if (!isOpen) return;
+        function onDocMouseDown(e: MouseEvent) {
+            const t = e.target as Node;
+            if (rootEl && !rootEl.contains(t)) {
+                isOpen = false;
+            }
         }
+        document.addEventListener('mousedown', onDocMouseDown);
+        return () => document.removeEventListener('mousedown', onDocMouseDown);
     });
 
     const placementClasses = $derived(() => {
-        const base = "absolute z-dropdown min-w-[12rem]";
-        const positioning = {
-            "bottom-start": "top-full left-0 mt-2",
-            "bottom-end": "top-full right-0 mt-2",
-            "top-start": "bottom-full left-0 mb-2",
-            "top-end": "bottom-full right-0 mb-2",
+        const base = 'absolute z-dropdown min-w-[12rem]';
+        const positioning: Record<typeof placement, string> = {
+            'bottom-start': 'top-full left-0 mt-2',
+            'bottom-end': 'top-full right-0 mt-2',
+            'top-start': 'bottom-full left-0 mb-2',
+            'top-end': 'bottom-full right-0 mb-2',
         };
         return `${base} ${positioning[placement]}`;
     });
 
     const transformClasses = $derived(() => {
         if (!isOpen) {
-            const hiddenTransform = {
-                "bottom-start": "translate-y-1",
-                "bottom-end": "translate-y-1",
-                "top-start": "-translate-y-1",
-                "top-end": "-translate-y-1",
+            const hiddenTransform: Record<typeof placement, string> = {
+                'bottom-start': 'translate-y-1',
+                'bottom-end': 'translate-y-1',
+                'top-start': '-translate-y-1',
+                'top-end': '-translate-y-1',
             };
-            return `opacity-0 invisible ${hiddenTransform[placement]}`;
+            return `invisible opacity-0 ${hiddenTransform[placement]}`;
         }
-        return "opacity-100 visible translate-y-0";
+        return 'visible translate-y-0 opacity-100';
     });
 
     const dropdownContentClasses = $derived(() => {
-        return `
-            ${placementClasses()}
-            bg-input
-            rounded-lg
-            shadow-lg
-            border
-            border-input-border
-            py-2
-            transition-all
-            duration-200
-            ease-in-out
-            ${transformClasses()}
-        `
-            .trim()
-            .replace(/\s+/g, " ");
+        return [
+            placementClasses(),
+            'rounded-lg border border-border bg-card py-2 shadow-lg transition-all duration-200 ease-in-out',
+            transformClasses(),
+        ]
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim();
     });
+
+    const itemRole = $derived(menuRole === 'listbox' ? 'option' : 'menuitem');
+
+    const optionClasses =
+        'flex w-full items-center justify-start rounded-md px-3 py-2 text-left text-sm text-body transition-colors hover:bg-base-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50';
 </script>
 
 <div
+    bind:this={rootEl}
     class="relative inline-block"
     data-placement={placement}
     onkeydown={handleKeydown}
     {...restProps}
 >
-    <div bind:this={triggerElement}>
-        {@render trigger?.()}
-    </div>
+    {@render trigger(triggerAria)}
 
     {#if isOpen}
         <div
             bind:this={menuElement}
-            id={dropdownId}
+            id={menuId}
             class={dropdownContentClasses()}
-            role="menu"
+            role={menuRole === 'listbox' ? 'listbox' : 'menu'}
             aria-label={ariaLabel}
-            tabindex="-1"
         >
             {#if options.length > 0}
-                <div class="px-2 py-2">
+                <div class="px-2 py-1">
                     {#each options as option (option.value)}
-                        {@const buttonRestProps = {
-                            "data-value": String(option.value),
-                        } as any}
-                        <div class="w-full my-0.5">
-                            <Button
-                                variant={selectedValue === option.value
-                                    ? "outline"
-                                    : "ghost"}
-                                size="sm"
-                                isFullWidth={true}
-                                disabled={option.disabled}
-                                onclick={() => onOptionClick?.(option.value)}
-                                {...buttonRestProps}
-                            >
-                                {option.label}
-                            </Button>
-                        </div>
+                        <button
+                            type="button"
+                            role={itemRole}
+                            aria-selected={menuRole === 'listbox' &&
+                            selectedValue !== null &&
+                            String(selectedValue) === String(option.value)
+                                ? true
+                                : undefined}
+                            data-value={String(option.value)}
+                            disabled={option.disabled}
+                            class={optionClasses}
+                            onclick={() => onOptionClick?.(option.value)}
+                        >
+                            {option.label}
+                        </button>
                     {/each}
                 </div>
             {:else if children}
@@ -242,10 +240,3 @@
         </div>
     {/if}
 </div>
-
-<style>
-    :global([role="menu"] button) {
-        justify-content: flex-start;
-        text-align: left;
-    }
-</style>

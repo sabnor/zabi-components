@@ -2,6 +2,7 @@
     import { generateId } from "../../routes/lib/ssr-safe.js";
 
     interface Props {
+        id?: string;
         checked?: boolean;
         name?: string;
         disabled?: boolean;
@@ -10,7 +11,8 @@
     }
 
     let {
-        checked = false,
+        id: idProp,
+        checked = $bindable(false),
         name = "",
         disabled = false,
         label = "",
@@ -18,7 +20,8 @@
         ...restProps
     }: Props = $props();
 
-    const checkboxId = generateId("checkbox");
+    const fallbackId = generateId("checkbox");
+    const checkboxId = $derived(idProp ?? fallbackId);
 
     const checkboxContainerClasses = $derived(() => {
         const baseClasses =

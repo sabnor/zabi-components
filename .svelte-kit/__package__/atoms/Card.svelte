@@ -28,6 +28,15 @@
         size === "sm" ? "p-4" : size === "lg" ? "p-8" : "p-6",
     );
 
+    /** Larger radius for larger cards (was single `rounded-lg` for all). */
+    const radiusClass = $derived(
+        size === "sm"
+            ? "rounded-xl"
+            : size === "lg"
+              ? "rounded-3xl"
+              : "rounded-2xl",
+    );
+
     const variantClasses = $derived(
         variant === "elevated"
             ? "bg-card shadow-lg"
@@ -40,7 +49,8 @@
 
     const cardClasses = $derived(
         [
-            "rounded-lg transition-all duration-200",
+            radiusClass,
+            "transition-all duration-200",
             variantClasses,
             onclick
                 ? variant === "elevated"

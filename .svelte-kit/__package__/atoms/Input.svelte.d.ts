@@ -1,10 +1,14 @@
 import type { SemanticVariant, SizeVariant } from "../../types/variants.js";
 interface Props {
+    /** Stable id; generated when omitted (use with FormField `id`). */
+    id?: string;
     value?: string;
     type?: string;
     name?: string;
     class?: string;
     label?: string;
+    /** When using FormField, set true so the field provides the label. */
+    hideLabel?: boolean;
     placeholder?: string;
     required?: boolean;
     disabled?: boolean;

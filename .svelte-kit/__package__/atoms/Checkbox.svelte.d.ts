@@ -1,10 +1,11 @@
 interface Props {
+    id?: string;
     checked?: boolean;
     name?: string;
     disabled?: boolean;
     label?: string;
     onchange?: (event: Event) => void;
 }
-declare const Checkbox: import("svelte").Component<Props, {}, "">;
+declare const Checkbox: import("svelte").Component<Props, {}, "checked">;
 type Checkbox = ReturnType<typeof Checkbox>;
 export default Checkbox;

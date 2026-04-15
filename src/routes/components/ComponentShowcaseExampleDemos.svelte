@@ -96,6 +96,9 @@
     let appShellAccountPanelOpen = $state(false);
     let appShellAccountLightMode = $state(false);
 
+    let dropdownDemoAOpen = $state(false);
+    let dropdownDemoBOpen = $state(false);
+
     function toggleSidebarAccountPanel(): void {
         sidebarAccountPanelOpen = !sidebarAccountPanelOpen;
     }
@@ -417,47 +420,61 @@
                                         </div>
                                     {:else if component.name === "Dropdown"}
                                         <div class="w-full space-y-4">
-                                            <Dropdown>
-                                                {#snippet trigger()}
+                                            <Dropdown bind:isOpen={dropdownDemoAOpen}>
+                                                {#snippet trigger(aria)}
                                                     <Button
                                                         text="Select an option"
+                                                        {...aria}
                                                     />
                                                 {/snippet}
                                                 {#snippet children()}
-                                                    <div class="p-2 space-y-1">
+                                                    <div class="space-y-1 p-2">
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
+                                                            type="button"
+                                                            role="menuitem"
+                                                            class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
                                                             >Option 1</button
                                                         >
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
+                                                            type="button"
+                                                            role="menuitem"
+                                                            class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
                                                             >Option 2</button
                                                         >
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
+                                                            type="button"
+                                                            role="menuitem"
+                                                            class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
                                                             >Option 3</button
                                                         >
                                                     </div>
                                                 {/snippet}
                                             </Dropdown>
-                                            <Dropdown>
-                                                {#snippet trigger()}
+                                            <Dropdown bind:isOpen={dropdownDemoBOpen}>
+                                                {#snippet trigger(aria)}
                                                     <Button
                                                         text="Choose a color"
+                                                        {...aria}
                                                     />
                                                 {/snippet}
                                                 {#snippet children()}
-                                                    <div class="p-2 space-y-1">
+                                                    <div class="space-y-1 p-2">
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
+                                                            type="button"
+                                                            role="menuitem"
+                                                            class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
                                                             >Red</button
                                                         >
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
+                                                            type="button"
+                                                            role="menuitem"
+                                                            class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
                                                             >Blue</button
                                                         >
                                                         <button
-                                                            class="w-full text-left px-3 py-2 hover:bg-base-100 rounded"
+                                                            type="button"
+                                                            role="menuitem"
+                                                            class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
                                                             >Green</button
                                                         >
                                                     </div>
@@ -503,9 +520,7 @@
                                                 text="Open Modal"
                                             />
                                             <Modal
-                                                isOpen={modalOpen}
-                                                onclick={() =>
-                                                    (modalOpen = false)}
+                                                bind:isOpen={modalOpen}
                                                 title="Example Modal"
                                             >
                                                 <p
@@ -539,9 +554,7 @@
                                                 text="Open Slide Up"
                                             />
                                             <SlideUp
-                                                isOpen={slideUpOpen}
-                                                onclick={() =>
-                                                    (slideUpOpen = false)}
+                                                bind:isOpen={slideUpOpen}
                                                 title="Slide Up Panel"
                                             >
                                                 <div class="p-6">

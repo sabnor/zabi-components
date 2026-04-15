@@ -29,7 +29,7 @@
     <Card
         size="lg"
         fullWidth={true}
-        className="overflow-hidden {className}"
+        className="overflow-visible {className}"
         {...restProps}
     >
         <CardHeader {title} {description} />

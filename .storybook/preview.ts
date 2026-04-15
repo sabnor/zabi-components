@@ -3,7 +3,7 @@ import '../src/app.css';
 
 const preview: Preview = {
   parameters: {
-    actions: { argTypesRegex: '^on[A-Z].<｜place▁holder▁no▁321｜>' },
+    actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -11,7 +11,25 @@ const preview: Preview = {
       }
     },
     backgrounds: {
-      disabled: true
+      default: 'app',
+      values: [
+        {
+          name: 'app',
+          value: '#f4f4f5'
+        },
+        {
+          name: 'white',
+          value: '#ffffff'
+        },
+        {
+          name: 'muted',
+          value: '#ececee'
+        },
+        {
+          name: 'dark canvas',
+          value: '#09090b'
+        }
+      ]
     },
     svelte: {
       options: {

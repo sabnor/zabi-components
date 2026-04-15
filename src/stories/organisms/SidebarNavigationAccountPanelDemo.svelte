@@ -19,6 +19,7 @@
         showThemeToggle?: boolean;
         showLogout?: boolean;
         searchMode?: "input" | "button";
+        searchPlaceholder?: string;
         searchValue?: string;
         emptyStateTitle?: string;
         emptyStateDescription?: string;
@@ -41,6 +42,7 @@
         showThemeToggle,
         showLogout,
         searchMode,
+        searchPlaceholder,
         searchValue,
         emptyStateTitle,
         emptyStateDescription,
@@ -77,6 +79,7 @@
         {showThemeToggle}
         {showLogout}
         {searchMode}
+        {searchPlaceholder}
         {searchValue}
         {emptyStateTitle}
         {emptyStateDescription}

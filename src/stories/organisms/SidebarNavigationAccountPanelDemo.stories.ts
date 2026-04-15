@@ -65,7 +65,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Consumer wiring example: `SidebarNavigation` profile launcher toggles a side panel (same pattern as the project picker).'
+                    'Consumer wiring example: `SidebarNavigation` profile launcher toggles a side panel (same pattern as the project picker). Search uses the same defaults as the main story: inline field shows the magnifying glass; button mode uses the outlined Command trigger.'
             }
         }
     },
@@ -84,7 +84,9 @@ const meta = {
         logoSrc: '/favicon.png',
         logoAlt: 'Product',
         profileName: 'Jane Doe',
-        profileEmail: 'jane@example.com'
+        profileEmail: 'jane@example.com',
+        searchMode: 'input',
+        searchPlaceholder: 'Search navigation…'
     }
 } satisfies Meta<typeof SidebarNavigationAccountPanelDemo>;
 

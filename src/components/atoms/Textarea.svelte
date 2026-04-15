@@ -1,12 +1,15 @@
 <script lang="ts">
-    import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
-    import type { SemanticVariant, SizeVariant } from "../../types/variants.js";
-    import { generateId } from "../../routes/lib/ssr-safe.js";
+    import { CheckCircle, AlertTriangle, AlertCircle } from '@lucide/svelte';
+    import type { SemanticVariant, SizeVariant } from '../../types/variants.js';
+    import { generateId } from '../../routes/lib/ssr-safe.js';
 
     interface Props {
+        id?: string;
         value?: string;
         name?: string;
+        class?: string;
         label?: string;
+        hideLabel?: boolean;
         placeholder?: string;
         required?: boolean;
         disabled?: boolean;
@@ -18,95 +21,97 @@
     }
 
     let {
-        value = "",
-        name = "",
-        label = "",
-        placeholder = "",
+        id: idProp,
+        value = $bindable(''),
+        name = '',
+        class: className = '',
+        label = '',
+        hideLabel = false,
+        placeholder = '',
         required = false,
         disabled = false,
         rows = 4,
-        variant = "default",
-        message = "",
+        size = 'md',
+        variant = 'default',
+        message = '',
         oninput,
         ...restProps
     }: Props = $props();
 
-    const textareaId = generateId("textarea");
+    const fallbackId = generateId('textarea');
+    const textareaId = $derived(idProp ?? fallbackId);
 
     const variantClass = $derived(() => {
-        return variant === "success"
-            ? "border-success focus:border-success focus:ring-success"
-            : variant === "warning"
-              ? "border-warning focus:border-warning focus:ring-warning"
-              : variant === "error"
-                ? "border-error focus:border-error focus:ring-error"
-                : "border-input-border focus:ring-2 focus:ring-brand-500";
+        return variant === 'success'
+            ? 'border-success focus:border-success focus:ring-success'
+            : variant === 'warning'
+              ? 'border-warning focus:border-warning focus:ring-warning'
+              : variant === 'error'
+                ? 'border-error focus:border-error focus:ring-error'
+                : 'border-input-border focus:ring-2 focus:ring-brand-500';
     });
 
     const textareaClasses = $derived(() => {
         const baseClasses =
-            "w-full border bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6";
+            'w-full border bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6';
 
-        return `${baseClasses} ${variantClass()}`.trim();
+        return `${baseClasses} ${variantClass()} ${className}`.trim();
     });
 
     const labelClasses = $derived(
-        () => "block text-sm font-medium text-label mb-1",
+        () => 'mb-1 block text-sm font-medium text-label',
     );
 
     const messageClasses = $derived(() => {
-        if (variant === "error") {
-            return "text-error text-sm mt-1 flex items-center gap-1.5";
-        } else if (variant === "success") {
-            return "text-success text-sm mt-1 flex items-center gap-1.5";
-        } else if (variant === "warning") {
-            return "text-warning text-sm mt-1 flex items-center gap-1.5";
+        if (variant === 'error') {
+            return 'mt-1 flex items-center gap-1.5 text-sm text-error';
+        } else if (variant === 'success') {
+            return 'mt-1 flex items-center gap-1.5 text-sm text-success';
+        } else if (variant === 'warning') {
+            return 'mt-1 flex items-center gap-1.5 text-sm text-warning';
         }
-        return "text-description text-sm mt-1 flex items-center gap-1.5";
+        return 'mt-1 flex items-center gap-1.5 text-sm text-description';
     });
 
     const getIcon = $derived(() => {
-        if (variant === "error") return AlertCircle;
-        if (variant === "success") return CheckCircle;
-        if (variant === "warning") return AlertTriangle;
+        if (variant === 'error') return AlertCircle;
+        if (variant === 'success') return CheckCircle;
+        if (variant === 'warning') return AlertTriangle;
         return null;
     });
 
     function handleInput(event: Event) {
         const target = event.target as HTMLTextAreaElement;
         value = target.value;
-
-        if (oninput) {
-            oninput(event);
-        }
+        oninput?.(event);
     }
 </script>
 
 <div>
-    {#if label}
+    {#if label && !hideLabel}
         <label for={textareaId} class={labelClasses()}>{label}</label>
     {/if}
     <textarea
         id={textareaId}
         {name}
-        {value}
+        bind:value
         {placeholder}
         {required}
         {disabled}
         {rows}
         class={textareaClasses()}
         oninput={handleInput}
-        aria-invalid={variant === "error" ? "true" : undefined}
-        aria-required={required ? "true" : undefined}
+        aria-invalid={variant === 'error' ? 'true' : undefined}
+        aria-required={required ? 'true' : undefined}
         aria-describedby={message ? `${textareaId}-message` : undefined}
         {...restProps}
     ></textarea>
-    {#if message && variant !== "default"}
+    {#if message && variant !== 'default'}
         <p
             id={`${textareaId}-message`}
             class={messageClasses()}
-            role={variant === "error" ? "alert" : "status"}
-            aria-live={variant === "error" ? "assertive" : "polite"}
+            role={variant === 'error' ? 'alert' : 'status'}
+            aria-live={variant === 'error' ? 'assertive' : 'polite'}
         >
             {#if getIcon()}
                 {@const Icon = getIcon()}

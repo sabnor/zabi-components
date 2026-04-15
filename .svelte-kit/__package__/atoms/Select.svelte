@@ -1,6 +1,5 @@
 <script lang="ts">
     import Dropdown from "../molecules/Dropdown.svelte";
-    import Button from "./Button.svelte";
     import Input from "./Input.svelte";
     import {
         ChevronDown,
@@ -233,21 +232,21 @@
     {/if}
 
     <Dropdown
-        {isOpen}
+        bind:isOpen={isOpen}
         placement="bottom-start"
         selectedValue={value}
         onOptionClick={handleOptionClick}
         ariaLabel="Select options"
+        menuRole="listbox"
     >
-        {#snippet trigger()}
+        {#snippet trigger(aria)}
             <button
                 type="button"
                 id={selectId}
                 class={triggerClasses()}
                 {disabled}
                 onclick={handleTriggerClick}
-                aria-haspopup="listbox"
-                aria-expanded={isOpen}
+                {...aria}
                 aria-describedby={message ? `${selectId}-message` : undefined}
             >
                 <span
@@ -305,18 +304,23 @@
                                 "data-value": String(option.value),
                             } as Record<string, string>}
                             <div class="w-full my-0.5">
-                                <Button
-                                    variant={value === option.value
-                                        ? "outline"
-                                        : "ghost"}
-                                    size="sm"
-                                    isFullWidth={true}
+                                <button
+                                    type="button"
+                                    role="option"
+                                    aria-selected={value === option.value
+                                        ? true
+                                        : undefined}
+                                    class="flex w-full items-center justify-start rounded-md border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 {value ===
+                                    option.value
+                                        ? 'border-action-primary bg-transparent text-headline'
+                                        : 'border-transparent bg-transparent text-body hover:bg-base-100'}"
                                     disabled={option.disabled}
-                                    onclick={() => handleOptionClick(option.value)}
                                     {...buttonRestProps}
+                                    onclick={() =>
+                                        handleOptionClick(option.value)}
                                 >
                                     {option.label}
-                                </Button>
+                                </button>
                             </div>
                         {/each}
                     {:else if hasSearchQuery()}

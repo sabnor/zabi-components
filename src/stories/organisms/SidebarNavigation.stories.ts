@@ -65,7 +65,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Sidebar navigation with Daybridge-inspired optional card layout, section labels, optional brand row, collapsed/expanded modes, and search that pairs with `SidebarPanel`.'
+                    'Sidebar navigation with Daybridge-inspired optional card layout, section labels, optional brand row, and collapsed/expanded modes. **Search:** `searchMode="input"` shows an inline field with a magnifying glass (`Search` icon). `searchMode="button"` (or collapsed / `onSearchClick`) uses an **outlined** trigger with the **Command** icon by default—pair with `SidebarPanel` or a command palette via `onSearchClick`. Override with `searchTriggerIcon` and `searchTriggerVariant`.'
             }
         }
     },
@@ -77,7 +77,11 @@ const meta = {
         showSearch: true,
         showThemeToggle: true,
         showLogout: true,
-        layout: 'rail'
+        layout: 'rail',
+        mode: 'expanded',
+        searchMode: 'input',
+        searchPlaceholder: 'Search navigation…',
+        searchValue: ''
     },
     argTypes: {
         mode: {
@@ -87,6 +91,32 @@ const meta = {
         layout: {
             control: 'radio',
             options: ['rail', 'card']
+        },
+        searchMode: {
+            control: 'inline-radio',
+            options: ['input', 'button'],
+            description:
+                'input: inline search field with Search icon. button: outlined Command trigger for opening a panel.'
+        },
+        searchPlaceholder: {
+            control: 'text'
+        },
+        searchValue: {
+            control: 'text'
+        },
+        searchTriggerVariant: {
+            control: 'select',
+            options: ['outline', 'secondary', 'ghost', 'primary', 'danger', 'link'],
+            description: 'Panel/search trigger style (default: outline).'
+        },
+        searchTriggerIcon: {
+            control: false,
+            description:
+                'Lucide icon component for the trigger (default: Command). Not shown in Controls; set in code. Input mode always uses Search beside the field.'
+        },
+        onSearchClick: {
+            description:
+                'Handler when the Command/outline trigger is pressed—open `SidebarPanel` or command UI. Ignored for UI when `searchMode` is `input` (inline field always shows).'
         }
     }
 } satisfies Meta<typeof SidebarNavigation>;
@@ -94,26 +124,67 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Primary story: inline search input (magnifying glass) and full nav—uses meta `searchMode: 'input'`. */
+export const Default: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'Default canvas: **search field** filters items as you type. Uses Controls for `searchValue` and `searchPlaceholder`.'
+            }
+        }
+    }
+};
+
 export const SearchableInput: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'Inline `type="search"` field with a magnifying glass—filter nav items as you type (`searchMode="input"`).'
+            }
+        }
+    },
     args: {
         mode: 'expanded',
         searchMode: 'input',
+        searchPlaceholder: 'Search navigation…',
         searchValue: 're'
     }
 };
 
-export const TriggerButtonMode: Story = {
+export const PanelSearchTrigger: Story = {
+    name: 'Panel search trigger',
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'Default **outline** button with **Command** icon; label shows `searchPlaceholder` or `searchValue`. Wire `onSearchClick` in your app to open `SidebarPanel` or a command palette.'
+            }
+        }
+    },
     args: {
         mode: 'expanded',
         searchMode: 'button',
-        searchValue: 'Search projects'
+        searchPlaceholder: 'Search projects',
+        searchValue: '',
+        searchTriggerVariant: 'outline'
     }
 };
 
 export const Collapsed: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'Icon-only **outline** trigger (Command) with the same width as collapsed nav icons.'
+            }
+        }
+    },
     args: {
         mode: 'collapsed',
         searchMode: 'button',
+        searchTriggerVariant: 'outline',
         showThemeToggle: false
     }
 };

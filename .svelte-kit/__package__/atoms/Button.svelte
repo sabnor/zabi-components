@@ -6,9 +6,12 @@
         variant?: ButtonVariant;
         size?: SizeVariant;
         disabled?: boolean;
+        /** Shows spinner and disables interaction while true */
+        loading?: boolean;
         type?: "button" | "submit" | "reset";
         text?: string;
         isFullWidth?: boolean;
+        class?: string;
         onclick?: (event: MouseEvent) => void;
         children?: Snippet;
     }
@@ -17,13 +20,17 @@
         variant = "primary",
         size = "md",
         disabled = false,
+        loading = false,
         type = "button",
         text = "",
         isFullWidth = false,
+        class: className = "",
         onclick,
         children,
         ...restProps
     }: Props = $props();
+
+    const isDisabled = $derived(disabled || loading);
 
     const sizeClass = $derived(() => {
         if (size === "sm") {
@@ -81,11 +88,24 @@
         const widthClass = isFullWidth ? "w-full" : "";
         const baseClasses = `${flexClass} items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none`;
 
-        return `${baseClasses} ${widthClass} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.font} ${sizeStyles.leading} ${sizeStyles.tracking} ${sizeStyles.radius} ${sizeStyles.gap} ${variantClass()}`.trim();
+        return `${baseClasses} ${widthClass} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.font} ${sizeStyles.leading} ${sizeStyles.tracking} ${sizeStyles.radius} ${sizeStyles.gap} ${variantClass()} ${className}`.trim();
     });
 </script>
 
-<button {type} class={buttonClasses()} {disabled} {onclick} {...restProps}>
+<button
+    {type}
+    class={buttonClasses()}
+    disabled={isDisabled}
+    aria-busy={loading ? "true" : undefined}
+    {onclick}
+    {...restProps}
+>
+    {#if loading}
+        <span
+            class="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80"
+            aria-hidden="true"
+        ></span>
+    {/if}
     {#if text}
         {text}
     {:else if children}

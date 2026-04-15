@@ -4,10 +4,12 @@
     import IconButton from "../atoms/IconButton.svelte";
     import Input from "../atoms/Input.svelte";
     import SidebarBrandHeader from "../molecules/SidebarBrandHeader.svelte";
+    import SidebarFooter from "../molecules/SidebarFooter.svelte";
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
-    import { Search } from "@lucide/svelte";
+    import { Command, Search } from "@lucide/svelte";
+    import type { Snippet } from "svelte";
     import type { Component } from "svelte";
-    import type { ButtonVariant, SizeVariant } from "../types/variants";
+    import type { ButtonVariant, SizeVariant } from "../../types/variants.js";
 
     export interface SidebarNavigationItem {
         id: string;
@@ -46,9 +48,9 @@
         searchMode?: "input" | "button";
         searchPlaceholder?: string;
         searchValue?: string;
-        /** Icon shown inside the search trigger button (defaults to `Search`). */
+        /** Icon inside the panel trigger (button mode / collapsed / `onSearchClick`). Defaults to `Command`. `searchMode: "input"` keeps the magnifier (`Search`) on the field. */
         searchTriggerIcon?: Component<{ size?: number; class?: string }>;
-        /** Button variant for the search trigger (defaults to `secondary`). */
+        /** Button variant for the panel/search trigger (defaults to `outline`). */
         searchTriggerVariant?: ButtonVariant;
         /** Button size for the search trigger (defaults to `sm`). */
         searchTriggerSize?: SizeVariant;
@@ -66,11 +68,13 @@
         onThemeToggle?: (nextIsLightMode: boolean) => void;
         onEmptyStateAction?: () => void;
         /** Trigger for rendering an external account panel (project-picker pattern). */
-        onProfileClick?: () => void;
+        onProfileClick?: (event?: MouseEvent) => void;
         /** Whether the external account panel is open (for aria-expanded). */
         profilePanelOpen?: boolean;
         /** Optional external panel id for aria-controls. */
         profilePanelControlsId?: string;
+        /** Optional profile panel snippet rendered by the footer (CSS overlay). */
+        profilePanel?: Snippet;
         /**
          * Highlights a primary (e.g. category) row when the current route is a child
          * of that section, while `currentPath` points at the leaf (e.g. a component).
@@ -97,8 +101,8 @@
         searchMode = "input",
         searchPlaceholder = "Search...",
         searchValue = $bindable(""),
-        searchTriggerIcon = Search,
-        searchTriggerVariant = "secondary",
+        searchTriggerIcon = Command,
+        searchTriggerVariant = "outline",
         searchTriggerSize = "sm",
         showLogout = true,
         logoutLabel = "Logout",
@@ -116,6 +120,7 @@
         onProfileClick,
         profilePanelOpen = false,
         profilePanelControlsId = "",
+        profilePanel,
         ...restProps
     }: Props = $props();
 
@@ -184,48 +189,33 @@
         partitionBySection(filteredPrimaryItems),
     );
 
+    /** Horizontal inset: aligned dashboard rail (16px expanded, compact collapsed). */
+    const insetX = $derived(isCollapsed ? "px-2.5" : "px-4");
+
     const containerClasses = $derived.by(() => {
         const widthClass = isCollapsed ? "w-[104px]" : "w-[266px]";
         const railSurface = "border-r border-border bg-background text-headline";
         const cardSurface =
-            "border border-border bg-base-50 text-headline shadow-sm";
+            "border-r border-border bg-background text-headline shadow-sm";
         const surfaceClasses = isCard ? cardSurface : railSurface;
-        const verticalPad = isCard ? "py-5" : "py-6";
+        const verticalPad = isCard ? "py-4" : "py-5";
         const baseClasses = `flex h-full min-h-0 max-h-full flex-col overflow-visible ${verticalPad}`;
 
         return `${baseClasses} ${widthClass} ${surfaceClasses} ${className}`.trim();
     });
 
     const headerStackClasses = $derived(
-        `flex w-full shrink-0 flex-col gap-5 px-2 ${isCard ? "pb-1" : ""}`,
+        `flex w-full shrink-0 flex-col gap-5 ${insetX}`,
     );
 
-    const avatarClasses = $derived(
-        "size-11 rounded-2xl bg-action-primary text-action-primary flex items-center justify-center font-semibold text-sm shrink-0 ring-1 ring-border-focus",
-    );
-
-    const searchControlStates =
-        "text-nav-menu-item outline-none transition-colors duration-150 hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
-
-    const searchShell = $derived(
-        isCard
-            ? "rounded-2xl border-0 bg-background/85 ring-1 ring-border-focus"
-            : "rounded-2xl border border-input-border bg-input",
-    );
-
-    const searchButtonClasses = $derived(
-        `flex min-h-11 w-full cursor-pointer items-center justify-center rounded-2xl px-0 py-2.5 ${searchShell} ${searchControlStates}`,
-    );
-    const searchTriggerClasses = $derived.by(() => {
-        return isCollapsed
-            ? searchButtonClasses
-            : `flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-2xl px-4 py-2.5 text-left ${searchShell} ${searchControlStates}`;
-    });
     const iconContainerClasses = $derived(
         "flex size-6 shrink-0 items-center justify-center leading-none text-current",
     );
+    /** In `searchMode: "input"`, keep the text field even when `onSearchClick` is defined (e.g. Storybook action spies). */
     const shouldRenderSearchButton = $derived(
-        isCollapsed || searchMode === "button" || Boolean(onSearchClick),
+        isCollapsed ||
+            searchMode === "button" ||
+            (Boolean(onSearchClick) && searchMode !== "input"),
     );
 
     function getTextToneClass(isMuted = false): string {
@@ -237,40 +227,17 @@
             currentPath === item.href ||
             (Boolean(activePrimaryHref) && item.href === activePrimaryHref);
         const layoutClasses = isCollapsed
-            ? "flex min-h-11 items-center justify-center px-0 py-2.5"
-            : "flex min-h-11 items-center gap-3 px-3 py-2.5";
+            ? "flex min-h-10 items-center justify-center px-0 py-2"
+            : "flex min-h-10 items-center gap-2.5 px-2.5 py-2";
         const structural =
-            "w-full cursor-pointer rounded-xl no-underline transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
+            "w-full cursor-pointer rounded-lg no-underline transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
 
         if (isActive) {
-            if (isCard) {
-                return `${structural} ${layoutClasses} bg-background text-headline shadow-sm ring-1 ring-border-focus hover:bg-background hover:text-headline active:opacity-95`;
-            }
             return `${structural} ${layoutClasses} bg-nav-menu-active text-inherit hover:bg-nav-menu-active hover:text-inherit active:opacity-90`;
-        }
-
-        if (isCard) {
-            return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-background/80 hover:text-nav-menu-item-hover active:bg-base-200/80`;
         }
 
         return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200`;
     }
-
-    function getControlButtonClasses(): string {
-        const baseClasses =
-            "w-full cursor-pointer rounded-xl text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
-        const layoutClasses = isCollapsed
-            ? "flex min-h-11 items-center justify-center px-0 py-2.5"
-            : "flex min-h-11 items-center gap-3 px-3 py-2.5";
-
-        return `${baseClasses} ${layoutClasses}`;
-    }
-
-    const themeToggleContainerClasses = $derived(
-        isCollapsed
-            ? "flex w-full justify-center py-1"
-            : "flex w-full justify-start py-1",
-    );
 
     function handleNavigate(item: SidebarNavigationItem, event: MouseEvent) {
         if (onNavigate) {
@@ -282,23 +249,6 @@
         if (onSearchClick) {
             onSearchClick();
         }
-    }
-
-    function handleLogout() {
-        if (onLogout) {
-            onLogout();
-        }
-    }
-
-    function handleThemeToggle() {
-        isLightMode = !isLightMode;
-        if (onThemeToggle) {
-            onThemeToggle(isLightMode);
-        }
-    }
-
-    function handleProfileClick(): void {
-        onProfileClick?.();
     }
 
     function handleEmptyStateAction() {
@@ -330,125 +280,136 @@
     }
 </script>
 
-<nav class={`${containerClasses} relative`.trim()} aria-label={ariaLabel} {...restProps}>
-    <div class={headerStackClasses}>
-        {#if showBrandRow}
-            <SidebarBrandHeader
-                collapsed={isCollapsed}
-                {brandName}
-                logoSrc={logoSrc.trim()}
-                {logoAlt}
-            />
-        {/if}
-
-        {#if showSearch}
-            {#if shouldRenderSearchButton}
-                {@const TriggerIcon = searchTriggerIcon}
-                {#if isCollapsed}
-                    <IconButton
-                        variant={searchTriggerVariant}
-                        size={searchTriggerSize}
-                        label={searchPlaceholder}
-                        onclick={handleSearchClick}
-                    >
-                        <TriggerIcon size={20} />
-                    </IconButton>
-                {:else}
-                    <Button
-                        variant={searchTriggerVariant}
-                        size={searchTriggerSize}
-                        isFullWidth
-                        onclick={handleSearchClick}
-                    >
-                        <span class="flex w-full items-center justify-start gap-3">
-                            <span class={iconContainerClasses} aria-hidden="true">
-                                <TriggerIcon size={18} />
-                            </span>
-                            <span class="truncate text-sm text-inherit">
-                                {searchValue || searchPlaceholder}
-                            </span>
-                        </span>
-                    </Button>
-                {/if}
-            {:else}
-                <div class="relative w-full">
-                    <span
-                        class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2"
-                        aria-hidden="true"
-                    >
-                        <Search size={18} class={getTextToneClass(true)} />
-                    </span>
-                    <Input
-                        type="search"
-                        bind:value={searchValue}
-                        placeholder={searchPlaceholder}
-                        aria-label={searchPlaceholder}
-                        class="w-full min-w-0 rounded-2xl py-2.5 pl-11 text-sm ring-1 ring-border-focus ring-offset-0 focus:ring-2 focus:ring-nav-menu-focus {isCard
-                            ? 'border-transparent bg-background/85'
-                            : ''}"
-                    />
-                </div>
-            {/if}
-        {/if}
-    </div>
-
+<nav class={containerClasses} aria-label={ariaLabel} {...restProps}>
+    <!--
+      Single flex column: header + scrollable links. Only the outer <nav> is the
+      “shell” (bg / border-r); this wrapper has no surface styling.
+    -->
     <div
-        class="flex min-h-0 flex-1 w-full flex-col gap-4 overflow-y-auto overflow-x-hidden overscroll-y-contain py-2"
-        role="region"
-        aria-label="Navigation links"
+        class="flex min-h-0 w-full min-w-0 flex-1 flex-col"
     >
-        {#if hasFilteredItems}
-            {#each primarySectionGroups as group, gi (`${gi}-${group.sectionLabel ?? "x"}`)}
-                <SidebarNavSection
-                    title={group.sectionLabel ?? ""}
-                    sectionKey={`p-${gi}`}
-                    listAriaLabel={group.sectionLabel
-                        ? `${group.sectionLabel} navigation`
-                        : "Primary navigation"}
+        <div class={`${headerStackClasses} pb-3`.trim()}>
+            {#if showBrandRow}
+                <SidebarBrandHeader
                     collapsed={isCollapsed}
-                >
-                    {#each group.items as item (item.id)}
-                        {@const Icon = item.icon}
-                        <li>
-                            <a
-                                href={item.href}
-                                class={getNavItemClasses(item)}
-                                onclick={(event) => handleNavigate(item, event)}
-                                aria-current={getAriaCurrent(item)}
-                                aria-label={isCollapsed ? item.label : undefined}
-                            >
-                                {#if Icon}
-                                    <span
-                                        class={iconContainerClasses}
-                                        aria-hidden="true"
+                    {brandName}
+                    logoSrc={logoSrc.trim()}
+                    {logoAlt}
+                />
+            {/if}
+
+            {#if showSearch}
+                {#if shouldRenderSearchButton}
+                    {@const TriggerIcon = searchTriggerIcon}
+                    {#if isCollapsed}
+                        <IconButton
+                            variant={searchTriggerVariant}
+                            size={searchTriggerSize}
+                            label={searchPlaceholder}
+                            onclick={handleSearchClick}
+                        >
+                            <TriggerIcon size={18} />
+                        </IconButton>
+                    {:else}
+                        <Button
+                            variant={searchTriggerVariant}
+                            size={searchTriggerSize}
+                            isFullWidth
+                            onclick={handleSearchClick}
+                        >
+                            <span class="flex w-full items-center justify-start gap-2.5">
+                                <span class={iconContainerClasses} aria-hidden="true">
+                                    <TriggerIcon size={17} />
+                                </span>
+                                <span class="truncate text-sm text-inherit">
+                                    {searchValue || searchPlaceholder}
+                                </span>
+                            </span>
+                        </Button>
+                    {/if}
+                {:else}
+                    <div class="relative w-full">
+                        <span
+                            class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2"
+                            aria-hidden="true"
+                        >
+                            <Search size={17} class={getTextToneClass(true)} />
+                        </span>
+                        <Input
+                            type="search"
+                            bind:value={searchValue}
+                            placeholder={searchPlaceholder}
+                            aria-label={searchPlaceholder}
+                            class="w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 ring-offset-0 hover:!bg-nav-menu-hover focus:!bg-transparent focus:ring-2 focus:ring-nav-menu-focus"
+                        />
+                    </div>
+                {/if}
+            {/if}
+        </div>
+
+        <div
+            class={`flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pt-4 pb-1.5 ${insetX}`}
+            role="region"
+            aria-label="Navigation links"
+        >
+        {#if hasFilteredItems}
+            <div
+                class="flex w-full min-w-0 flex-col divide-y divide-border"
+            >
+                {#each primarySectionGroups as group, gi (`${gi}-${group.sectionLabel ?? "x"}`)}
+                    <div class="py-4 first:pt-1 last:pb-1">
+                        <SidebarNavSection
+                            title={group.sectionLabel ?? ""}
+                            sectionKey={`p-${gi}`}
+                            listAriaLabel={group.sectionLabel
+                                ? `${group.sectionLabel} navigation`
+                                : "Primary navigation"}
+                            collapsed={isCollapsed}
+                        >
+                            {#each group.items as item (item.id)}
+                                {@const Icon = item.icon}
+                                <li>
+                                    <a
+                                        href={item.href}
+                                        class={getNavItemClasses(item)}
+                                        onclick={(event) => handleNavigate(item, event)}
+                                        aria-current={getAriaCurrent(item)}
+                                        aria-label={isCollapsed ? item.label : undefined}
                                     >
-                                        <Icon size={20} />
-                                    </span>
-                                {/if}
-                                {#if !isCollapsed}
-                                    <span
-                                        class="text-sm font-medium leading-snug text-inherit"
-                                        >{item.label}</span
-                                    >
-                                {/if}
-                                {#if !isCollapsed && getItemBadgeText(item) !== null}
-                                    <span class="ml-auto">
-                                        <Badge
-                                            variant="default"
-                                            size="sm"
-                                            text={getItemBadgeText(item) ?? ""}
-                                        />
-                                    </span>
-                                {/if}
-                            </a>
-                        </li>
-                    {/each}
-                </SidebarNavSection>
-            {/each}
+                                        {#if Icon}
+                                            <span
+                                                class={iconContainerClasses}
+                                                aria-hidden="true"
+                                            >
+                                                <Icon size={18} />
+                                            </span>
+                                        {/if}
+                                        {#if !isCollapsed}
+                                            <span
+                                                class="text-sm font-medium leading-snug text-inherit"
+                                                >{item.label}</span
+                                            >
+                                        {/if}
+                                        {#if !isCollapsed && getItemBadgeText(item) !== null}
+                                            <span class="ml-auto">
+                                                <Badge
+                                                    variant="default"
+                                                    size="sm"
+                                                    text={getItemBadgeText(item) ?? ""}
+                                                />
+                                            </span>
+                                        {/if}
+                                    </a>
+                                </li>
+                            {/each}
+                        </SidebarNavSection>
+                    </div>
+                {/each}
+            </div>
 
             {#if filteredSecondaryItems.length > 0}
                 <div
-                    class="mt-1 border-t border-border pt-4"
+                    class="mt-3 border-t border-border pt-4"
                     role="presentation"
                 >
                     <SidebarNavSection
@@ -474,7 +435,7 @@
                                             class={iconContainerClasses}
                                             aria-hidden="true"
                                         >
-                                            <Icon size={20} />
+                                            <Icon size={18} />
                                         </span>
                                     {/if}
                                     {#if !isCollapsed}
@@ -491,9 +452,7 @@
             {/if}
         {:else}
             <div
-                class="mx-2 rounded-2xl border border-border border-dashed bg-background/60 px-4 py-5 {isCard
-                    ? 'ring-1 ring-border-focus'
-                    : ''}"
+                class="rounded-xl border border-border border-dashed bg-transparent px-3.5 py-4 ring-1 ring-border/60"
             >
                 <h3 class="text-sm font-semibold {getTextToneClass()}">
                     {normalizedSearchTerm && searchMode === "input"
@@ -508,7 +467,7 @@
                 {#if !(normalizedSearchTerm && searchMode === "input")}
                     <button
                         type="button"
-                        class="mt-4 inline-flex min-h-11 cursor-pointer items-center rounded-xl bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus"
+                        class="mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus"
                         onclick={handleEmptyStateAction}
                     >
                         {emptyStateActionLabel}
@@ -516,43 +475,26 @@
                 {/if}
             </div>
         {/if}
+        </div>
     </div>
 
-    {#if showProfile}
-        <div class="w-full shrink-0 border-t border-border px-2 pt-4">
-            <button
-                type="button"
-                class="w-full rounded-xl px-1 outline-none transition-colors hover:bg-nav-menu-hover active:bg-base-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus"
-                aria-haspopup="dialog"
-                aria-expanded={profilePanelOpen}
-                aria-controls={profilePanelControlsId.trim()
-                    ? profilePanelControlsId.trim()
-                    : undefined}
-                aria-label={isCollapsed
-                    ? `Open account panel`
-                    : `Open account panel for ${profileName}`}
-                onclick={handleProfileClick}
-            >
-                <span class="flex w-full items-center gap-3 text-left">
-                    <span class={avatarClasses} aria-hidden="true">
-                        {profileInitials}
-                    </span>
-                    {#if !isCollapsed}
-                        <span class="min-w-0">
-                            <span
-                                class="block truncate text-sm font-semibold {getTextToneClass()}"
-                            >
-                                {profileName}
-                            </span>
-                            <span
-                                class="block truncate text-xs {getTextToneClass(true)}"
-                            >
-                                {profileEmail}
-                            </span>
-                        </span>
-                    {/if}
-                </span>
-            </button>
-        </div>
-    {/if}
+    <SidebarFooter
+        collapsed={isCollapsed}
+        {showProfile}
+        {profileName}
+        {profileEmail}
+        {profileInitials}
+        {showLogout}
+        {logoutLabel}
+        {showThemeToggle}
+        {lightModeLabel}
+        bind:isLightMode
+        {onLogout}
+        {onThemeToggle}
+        {onProfileClick}
+        {profilePanelOpen}
+        {profilePanelControlsId}
+        {profilePanel}
+        className={insetX}
+    />
 </nav>

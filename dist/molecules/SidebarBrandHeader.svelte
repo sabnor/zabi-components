@@ -42,23 +42,23 @@
 
 {#if showLogo || trimmedName}
     <div
-        class={`flex w-full min-w-0 items-center gap-3 px-2 ${className}`.trim()}
+        class={`flex w-full min-w-0 items-center gap-2.5 ${className}`.trim()}
     >
         {#if showLogo}
             <span
-                class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-background ring-1 ring-border"
+                class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background ring-1 ring-border"
             >
                 <img
                     src={logoSrc}
                     alt={logoAlt || trimmedName || "Brand"}
                     class="size-full object-cover"
-                    width="40"
-                    height="40"
+                    width="36"
+                    height="36"
                 />
             </span>
         {:else if showMonogram}
             <span
-                class="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-action-primary-subtle text-sm font-bold text-headline ring-1 ring-border"
+                class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-action-primary-subtle text-xs font-bold text-headline ring-1 ring-border"
                 aria-hidden="true"
             >
                 {monogram}
@@ -66,7 +66,7 @@
         {/if}
         {#if showWordmark}
             <span
-                class="truncate text-lg font-semibold tracking-tight text-headline"
+                class="truncate text-base font-semibold tracking-tight text-headline"
             >
                 {trimmedName}
             </span>

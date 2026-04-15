@@ -1,11 +1,17 @@
 <script lang="ts">
-    import { trapFocus, saveFocus, returnFocus, focusFirstElement } from "../../routes/lib/focus-utils.js";
-    import Card from "../atoms/Card.svelte";
-    import CardHeader from "../atoms/CardHeader.svelte";
-    import CardContent from "../atoms/CardContent.svelte";
-    import CardFooter from "../atoms/CardFooter.svelte";
+    import {
+        trapFocus,
+        saveFocus,
+        returnFocus,
+        focusFirstElement,
+    } from '../../routes/lib/focus-utils.js';
+    import { generateId } from '../../routes/lib/ssr-safe.js';
+    import Card from '../atoms/Card.svelte';
+    import CardHeader from '../atoms/CardHeader.svelte';
+    import CardContent from '../atoms/CardContent.svelte';
+    import CardFooter from '../atoms/CardFooter.svelte';
 
-    type Size = "sm" | "md" | "lg";
+    type Size = 'sm' | 'md' | 'lg';
 
     interface Props {
         isOpen?: boolean;
@@ -17,10 +23,10 @@
     }
 
     let {
-        isOpen = false,
-        title = "",
-        description = "",
-        size = "md",
+        isOpen = $bindable(false),
+        title = '',
+        description = '',
+        size = 'md',
         onclick,
         onkeydown,
         children,
@@ -28,15 +34,18 @@
         ...restProps
     }: Props & { children?: any; footer?: any } = $props();
 
+    const modalTitleId = generateId('modal-title');
+    const modalDescriptionId = generateId('modal-description');
+
     let modalContainer = $state<HTMLDivElement>();
     let cleanupFocusTrap: (() => void) | null = null;
 
     const sizeClasses = $derived(
         {
-            sm: "w-full md:w-[24rem]",
-            md: "w-full md:w-[28rem]",
-            lg: "w-full md:w-[42rem]",
-        }[size] || "w-full md:w-[28rem]",
+            sm: 'w-full md:w-[24rem]',
+            md: 'w-full md:w-[28rem]',
+            lg: 'w-full md:w-[42rem]',
+        }[size] || 'w-full md:w-[28rem]',
     );
 
     function closeModal(event?: Event) {
@@ -51,13 +60,11 @@
         }
     }
 
-    // Handle focus trap when modal opens
     $effect(() => {
         const container = modalContainer;
         if (isOpen && container) {
             saveFocus();
             cleanupFocusTrap = trapFocus(container);
-            // Small delay to ensure modal is rendered
             setTimeout(() => {
                 focusFirstElement(container);
             }, 0);
@@ -75,12 +82,10 @@
 
     function handleKeydown(event: Event) {
         const keyboardEvent = event as KeyboardEvent;
-        if (keyboardEvent.key === "Escape") {
+        if (keyboardEvent.key === 'Escape') {
             closeModal(event);
         }
-        if (onkeydown) {
-            onkeydown(event);
-        }
+        onkeydown?.(event);
     }
 </script>
 
@@ -91,8 +96,10 @@
         onkeydown={handleKeydown}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
+        aria-labelledby={title ? modalTitleId : undefined}
+        aria-describedby={description ? modalDescriptionId : undefined}
         tabindex="-1"
+        {...restProps}
     >
         <div
             bind:this={modalContainer}
@@ -102,20 +109,21 @@
                 {#if title || description}
                     <CardHeader
                         {description}
+                        descriptionId={description ? modalDescriptionId : undefined}
                         className="px-6 pt-6 pb-4"
                     >
                         {#if title}
                             <div class="flex items-center justify-between">
                                 <h2
-                                    id="modal-title"
-                                    class="text-2xl font-normal leading-8 text-headline tracking-normal"
+                                    id={modalTitleId}
+                                    class="text-2xl font-normal leading-8 tracking-normal text-headline"
                                 >
                                     {title}
                                 </h2>
                                 <button
                                     type="button"
                                     onclick={closeModal}
-                                    class="text-description hover:text-headline text-2xl cursor-pointer transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-100"
+                                    class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-2xl text-description transition-colors hover:bg-base-100 hover:text-headline"
                                     aria-label="Close"
                                 >
                                     ×
