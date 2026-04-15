@@ -4,9 +4,17 @@ export type ToastLevel = 'success' | 'error' | 'warning' | 'info';
 
 export interface ToastItem {
     id: string;
+    /** Shown in the expandable section when `detail` is omitted */
     message: string;
     type: ToastLevel;
-    /** ms; 0 = no auto-dismiss */
+    /** Header title (defaults by toast type) */
+    title?: string;
+    /** Expandable warning / detail text (falls back to `message`) */
+    detail?: string;
+    /**
+     * Reserved for future use. Auto-dismiss is handled inside `Toaster` via the
+     * countdown timer.
+     */
     duration?: number;
 }
 
@@ -24,20 +32,20 @@ function createToastStore() {
             type?: ToastLevel;
             duration?: number;
             id?: string;
+            title?: string;
+            detail?: string;
         }): string {
             const id =
                 options.id ?? `toast-${Math.random().toString(36).slice(2, 11)}`;
-            const duration = options.duration ?? 5000;
             const item: ToastItem = {
                 id,
                 message: options.message,
                 type: options.type ?? 'info',
-                duration,
+                duration: options.duration,
+                title: options.title,
+                detail: options.detail,
             };
             update((list) => [...list, item]);
-            if (duration > 0) {
-                setTimeout(() => dismiss(id), duration);
-            }
             return id;
         },
         dismiss,
@@ -54,6 +62,8 @@ export function pushToast(options: {
     message: string;
     type?: ToastLevel;
     duration?: number;
+    title?: string;
+    detail?: string;
 }): string {
     return toastStore.push(options);
 }

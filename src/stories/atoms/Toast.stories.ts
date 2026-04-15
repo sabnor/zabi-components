@@ -33,3 +33,16 @@ export const Error: Story = {
         closable: true
     }
 };
+
+/** Block layout — fills parent width up to max; place inside a container in docs if needed */
+export const Inline: Story = {
+    parameters: {
+        layout: 'centered'
+    },
+    args: {
+        message: 'Saved in an in-flow layout (layout="inline").',
+        type: 'success',
+        closable: true,
+        layout: 'inline'
+    }
+};

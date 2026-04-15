@@ -714,28 +714,21 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Toast",
                 category: "atoms",
                 description:
-                    "Notification toast with auto-dismiss functionality",
+                    "Toast atom for a single surface; use the Toaster molecule plus pushToast() for stacked app notifications with countdown and expandable detail.",
                 props: [
                     {
                         name: "message",
                         type: "string",
-                        required: true,
+                        required: false,
                         defaultValue: "",
                         description: "Toast message",
                     },
                     {
-                        name: "variant",
-                        type: "string",
+                        name: "type",
+                        type: "'success' | 'error' | 'warning' | 'info'",
                         required: false,
                         defaultValue: "info",
-                        description: "Toast variant",
-                    },
-                    {
-                        name: "duration",
-                        type: "number",
-                        required: false,
-                        defaultValue: "5000",
-                        description: "Auto-dismiss duration in ms",
+                        description: "Semantic style",
                     },
                     {
                         name: "closable",
@@ -744,18 +737,48 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "true",
                         description: "Show close button",
                     },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Extra classes on the toast container",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(event: Event) => void",
+                        required: false,
+                        defaultValue: "",
+                        description: "Called when the toast is closed",
+                    },
+                    {
+                        name: "layout",
+                        type: "'viewport' | 'inline'",
+                        required: false,
+                        defaultValue: "viewport",
+                        description:
+                            "viewport: fixed corner toast; inline: block width up to max (for demos inside a sized parent)",
+                    },
                 ],
                 variants: ["info", "success", "warning", "error"],
                 examples: [
                     {
-                        title: "Basic Toast",
-                        description: "Simple notification toast",
-                        code: '&lt;Toast message="Operation completed" /&gt;',
+                        title: "Toaster (recommended)",
+                        description:
+                            "Mount once in the app shell; pushToast() queues notifications shown here (bottom-right).",
+                        code: "import { Toaster, pushToast } from 'zabi-components';\n\npushToast({ title: 'Changes saved', message: '…', type: 'success' });\n&lt;Toaster /&gt;",
                     },
                     {
-                        title: "Variants",
-                        description: "Different toast variants",
-                        code: '&lt;Toast variant="success" message="Success!" /&gt;\n&lt;Toast variant="error" message="Error occurred" /&gt;',
+                        title: "Toast atom — inline",
+                        description:
+                            "Use layout=\"inline\" for docs and embedded UI; default layout=\"viewport\" pins a single toast to the corner.",
+                        code: '&lt;div class="max-w-md"&gt;\n  &lt;Toast layout="inline" type="success" message="Operation completed" /&gt;\n&lt;/div&gt;',
+                    },
+                    {
+                        title: "Semantic types",
+                        description:
+                            "type sets border and text: success, error, warning, or info.",
+                        code: '&lt;Toast type="success" message="Success!" /&gt;\n&lt;Toast type="error" message="Error occurred" /&gt;',
                     },
                 ],
             },
