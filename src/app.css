@@ -182,7 +182,7 @@
   --color-disabled: var(--color-base-400);
 
   /* Border Colors */
-  --color-border: var(--color-base-200);
+  --color-border: var(--color-base-300);
   --color-border-weak: var(--color-base-300);
   --color-border-medium: var(--color-base-400);
   --color-border-strong: var(--color-base-500);
