@@ -13,13 +13,15 @@
     interface Props {
         size?: "sm" | "md" | "lg";
         variant?: "default" | "ghost" | "outline";
+        disabled?: boolean;
         onclick?: (event: Event) => void;
     }
 
-    let { 
+    let {
         size = "md",
         variant = "default",
-        ...restProps 
+        disabled = false,
+        ...restProps
     }: Props = $props();
 
     let isDark = $state(false);
@@ -47,6 +49,7 @@
     });
 
     function toggleTheme(event: Event) {
+        if (disabled) return;
         isDark = !isDark;
         updateTheme();
         const storage = safeLocalStorage();
@@ -93,11 +96,11 @@
 
     const variantClass = $derived(() => {
         if (variant === "ghost") {
-            return "bg-transparent hover:bg-base-100 border-0";
+            return "bg-transparent hover:bg-base-100 active:bg-base-200 border-0";
         } else if (variant === "outline") {
-            return "bg-base-50 hover:bg-base-100 border border-border";
+            return "bg-base-50 hover:bg-base-100 active:bg-base-200 border border-border";
         } else {
-            return "bg-base-50 hover:bg-base-100 border-0";
+            return "bg-base-50 hover:bg-base-100 active:bg-base-200 border-0";
         }
     });
 
@@ -114,11 +117,17 @@
             cursor-pointer
             transition-colors
             duration-200
+            active:scale-[0.96]
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+            disabled:active:scale-100
+            disabled:hover:bg-base-50
             focus:outline-none
-            focus:ring-2
-            focus:ring-brand-500
-            focus:ring-offset-2
-            focus:ring-offset-base-50
+            focus-visible:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-brand-500
+            focus-visible:ring-offset-2
+            focus-visible:ring-offset-base-50
         `.trim().replace(/\s+/g, " ");
     });
 </script>
@@ -128,7 +137,9 @@
         onclick={toggleTheme}
         class={buttonClasses()}
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        aria-pressed={isDark}
         type="button"
+        {disabled}
         {...restProps}
     >
         {#if isDark}
@@ -139,9 +150,10 @@
     </button>
 {:else}
     <button
-        class="w-10 h-10 bg-base-50 rounded-lg flex items-center justify-center text-label cursor-pointer"
+        class="w-10 h-10 bg-base-50 rounded-lg flex items-center justify-center text-label cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Theme toggle"
         type="button"
+        {disabled}
         {...restProps}
     >
         <Sun size={20} class="text-label" />

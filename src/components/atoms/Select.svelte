@@ -100,18 +100,18 @@
 
     const variantClass = $derived(() => {
         return variant === "success"
-            ? "border-success focus:border-success focus:ring-success"
+            ? "border-success focus-visible:border-success focus-visible:ring-2 focus-visible:ring-success"
             : variant === "warning"
-              ? "border-warning focus:border-warning focus:ring-warning"
+              ? "border-warning focus-visible:border-warning focus-visible:ring-2 focus-visible:ring-warning"
               : variant === "error"
-                ? "border-error focus:border-error focus:ring-error"
-                : "border-input-border focus:ring-2 focus:ring-brand-500";
+                ? "border-error focus-visible:border-error focus-visible:ring-2 focus-visible:ring-error"
+                : "border-input-border focus-visible:ring-2 focus-visible:ring-brand-500";
     });
 
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "flex w-full cursor-pointer items-center justify-between rounded-lg border bg-input text-body transition-all duration-200 hover:bg-input-hover focus:bg-input-focus focus:outline-none focus:ring-offset-0 disabled:cursor-not-allowed disabled:bg-input-disabled disabled:opacity-50";
+            "flex w-full cursor-pointer items-center justify-between rounded-lg border bg-input text-body transition-all duration-200 hover:bg-input-hover active:bg-input-focus focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:bg-input-disabled disabled:opacity-50";
 
         return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     });
