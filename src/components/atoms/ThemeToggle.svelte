@@ -27,22 +27,23 @@
 
     onMount(() => {
         mounted = true;
-        const storage = safeLocalStorage();
-        if (storage) {
-            const savedTheme = storage.getItem("theme");
-            let prefersDark = false;
-
-            if (window.matchMedia) {
-                try {
-                    prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-                } catch (e) {
-                    prefersDark = false;
-                }
-            }
-
-            isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
-            updateTheme();
+        const doc = safeDocument();
+        if (doc) {
+            isDark = doc.documentElement.classList.contains("dark");
         }
+
+        if (!window.matchMedia) return;
+
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+        const handleSystemChange = (event: MediaQueryListEvent) => {
+            const storage = safeLocalStorage();
+            if (storage && storage.getItem("theme")) return;
+            isDark = event.matches;
+            updateTheme();
+        };
+
+        media.addEventListener("change", handleSystemChange);
+        return () => media.removeEventListener("change", handleSystemChange);
     });
 
     function toggleTheme(event: Event) {
@@ -63,8 +64,10 @@
         if (mounted && doc) {
             if (isDark) {
                 doc.documentElement.classList.add("dark");
+                doc.documentElement.style.colorScheme = "dark";
             } else {
                 doc.documentElement.classList.remove("dark");
+                doc.documentElement.style.colorScheme = "light";
             }
         }
     }
