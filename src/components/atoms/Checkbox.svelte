@@ -6,6 +6,8 @@
         checked?: boolean;
         name?: string;
         disabled?: boolean;
+        /** Shows a spinner in place of the check mark and disables interaction. */
+        loading?: boolean;
         label?: string;
         onchange?: (event: Event) => void;
     }
@@ -15,6 +17,7 @@
         checked = $bindable(false),
         name = "",
         disabled = false,
+        loading = false,
         label = "",
         onchange,
         ...restProps
@@ -22,30 +25,37 @@
 
     const fallbackId = generateId("checkbox");
     const checkboxId = $derived(idProp ?? fallbackId);
-
-    const checkboxContainerClasses = $derived(() => {
-        const baseClasses =
-            "relative inline-flex items-center justify-center w-5 h-5 rounded transition-all duration-200";
-
-        if (disabled) {
-            return `${baseClasses} opacity-50 cursor-not-allowed`;
-        }
-        return `${baseClasses} cursor-pointer`;
-    });
+    const isDisabled = $derived(disabled || loading);
 
     const checkboxBoxClasses = $derived(() => {
+        const base =
+            "absolute inset-0 rounded transition-all duration-200 border-2";
         if (checked) {
-            return disabled
-                ? "border-0 opacity-50 bg-brand-500"
-                : "border-0 bg-brand-500";
+            return `${base} border-brand-500 bg-brand-500 group-hover:bg-brand-600 group-hover:border-brand-600 group-active:scale-95`;
         }
-        return disabled
-            ? "border-2 border-base-400 bg-transparent"
-            : "border-2 border-base-400 bg-transparent";
+        return `${base} border-base-400 bg-transparent group-hover:border-brand-500 group-hover:bg-brand-50 group-active:scale-95`;
+    });
+
+    const checkboxContainerClasses = $derived(() => {
+        const base =
+            "relative inline-flex items-center justify-center w-5 h-5 rounded transition-all duration-200";
+        if (isDisabled) {
+            return `${base} opacity-50 cursor-not-allowed`;
+        }
+        return `${base} cursor-pointer`;
+    });
+
+    const labelWrapperClasses = $derived(() => {
+        const base =
+            "flex items-center gap-2 p-1.5 -m-1.5 rounded-md transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-500 focus-within:ring-offset-2";
+        if (isDisabled) {
+            return `${base} opacity-50 cursor-not-allowed`;
+        }
+        return `${base} group cursor-pointer hover:bg-base-100 active:bg-base-200`;
     });
 
     function handleChange(event: Event) {
-        if (disabled) return;
+        if (isDisabled) return;
         const target = event.target as HTMLInputElement;
         checked = target.checked;
         if (onchange) {
@@ -55,30 +65,34 @@
 </script>
 
 <div class="flex items-center gap-2">
-    <label
-        for={checkboxId}
-        class="flex items-center gap-2 cursor-pointer {disabled
-            ? 'opacity-50 cursor-not-allowed'
-            : ''}"
-    >
+    <label for={checkboxId} class={labelWrapperClasses()}>
         <div class={checkboxContainerClasses()}>
             <input
                 type="checkbox"
                 id={checkboxId}
                 {name}
                 {checked}
-                {disabled}
+                disabled={isDisabled}
                 class="sr-only"
+                aria-busy={loading ? "true" : undefined}
                 onchange={handleChange}
                 {...restProps}
             />
-            <div class="absolute inset-0 {checkboxBoxClasses()} rounded"></div>
-            {#if checked}
+            <div class={checkboxBoxClasses()}></div>
+            {#if loading}
+                <span
+                    class="pointer-events-none absolute inline-block size-3 shrink-0 animate-spin rounded-full border-2 {checked
+                        ? 'border-base-50'
+                        : 'border-brand-500'} border-t-transparent z-10"
+                    aria-hidden="true"
+                ></span>
+            {:else if checked}
                 <svg
                     class="absolute w-3 h-3 text-base-50 pointer-events-none z-10"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                 >
                     <path
                         stroke-linecap="round"

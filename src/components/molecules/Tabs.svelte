@@ -105,7 +105,7 @@
                 type="button"
                 role="tab"
                 id={getTabId(tab.id)}
-                class="cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed {activeTab ===
+                class="cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 active:bg-base-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description {activeTab ===
                 tab.id
                     ? variant === 'pills'
                         ? 'border-brand-500 bg-brand-100 text-brand-700'
