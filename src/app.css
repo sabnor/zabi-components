@@ -1161,3 +1161,66 @@ body {
     transform: translateY(0);
   }
 }
+
+/* ========================================
+   SCROLLBAR - Semantic colors (adapts to theme)
+   ======================================== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-base-400) var(--color-base-100);
+}
+
+/* WebKit / Blink (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: var(--color-base-100);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-base-400);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-base-100);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-base-500);
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background-color: var(--color-base-600);
+}
+
+*::-webkit-scrollbar-corner {
+  background-color: var(--color-base-100);
+}
+
+/* Utility for opting-in explicitly (e.g. scoped containers) */
+.scrollbar-semantic {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-base-400) var(--color-base-100);
+}
+
+.scrollbar-semantic::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.scrollbar-semantic::-webkit-scrollbar-track {
+  background-color: var(--color-base-100);
+}
+
+.scrollbar-semantic::-webkit-scrollbar-thumb {
+  background-color: var(--color-base-400);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-base-100);
+}
+
+.scrollbar-semantic::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-base-500);
+}
