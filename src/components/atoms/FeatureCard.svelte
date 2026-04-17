@@ -1,64 +1,54 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import type { Component, Snippet } from "svelte";
 
     interface Props {
-        icon?: string;
+        /** Feature title. Kept intentionally short — one line at most. */
         title: string;
-        description: string;
-        className?: string;
+        /** Supporting copy. Optional; omit for a title-only card. */
+        description?: string;
+        /** Lucide (or any) icon component rendered in the top-left slot. */
+        icon?: Component<{ size?: number; class?: string }>;
+        /** Optional footer content (e.g. a link or CTA). */
+        children?: Snippet;
+        /** Extra classes forwarded to the root element. */
+        class?: string;
     }
 
     let {
-        icon = "✨",
         title,
         description,
-        className = "",
-        ...restProps
+        icon: Icon,
+        children,
+        class: className = "",
     }: Props = $props();
-
-    let mounted = $state(false);
-
-    onMount(() => {
-        mounted = true;
-    });
 </script>
 
-{#if mounted}
-    <div
-        class="p-6 rounded-lg bg-base-50 border border-border hover:border-primary/20 hover:shadow-sm transition-colors duration-200 {className}"
-        {...restProps}
-    >
-        <div class="flex items-start gap-4">
-            <div class="shrink-0 text-2xl" aria-hidden="true">
-                {icon}
-            </div>
-            <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-semibold text-headline mb-2">
-                    {title}
-                </h3>
-                <p class="text-description leading-relaxed">
-                    {description}
-                </p>
-            </div>
-        </div>
+<article
+    class="flex flex-col gap-3 p-6 rounded-2xl bg-surface-1 border border-base-200 transition-colors duration-200 hover:border-base-300 {className}"
+>
+    {#if Icon}
+        <span
+            class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-brand-50 text-brand-600"
+            aria-hidden="true"
+        >
+            <Icon size={20} />
+        </span>
+    {/if}
+
+    <div class="flex flex-col gap-1.5">
+        <h3 class="text-base font-semibold leading-snug text-headline">
+            {title}
+        </h3>
+        {#if description}
+            <p class="text-sm leading-relaxed text-description">
+                {description}
+            </p>
+        {/if}
     </div>
-{:else}
-    <div
-        class="p-6 rounded-lg bg-base-100 border border-base-300 hover:border-base-400 hover:shadow-sm transition-colors duration-200 {className}"
-        {...restProps}
-    >
-        <div class="flex items-start gap-4">
-            <div class="shrink-0 text-2xl" aria-hidden="true">
-                {icon}
-            </div>
-            <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-semibold text-headline mb-2">
-                    {title}
-                </h3>
-                <p class="text-description leading-relaxed">
-                    {description}
-                </p>
-            </div>
+
+    {#if children}
+        <div class="mt-2">
+            {@render children()}
         </div>
-    </div>
-{/if}
+    {/if}
+</article>
