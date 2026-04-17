@@ -141,9 +141,11 @@ export interface ProgressProps {
 
 // Skeleton component props
 export interface SkeletonProps {
-    width?: string;
-    height?: string;
-    className?: string;
+    variant?: 'text' | 'circle' | 'block';
+    width?: string | number;
+    height?: string | number;
+    class?: string;
+    'aria-label'?: string;
 }
 
 // Toggle component props and events

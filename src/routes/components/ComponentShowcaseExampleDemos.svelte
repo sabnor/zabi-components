@@ -1457,24 +1457,34 @@
                                             />
                                         </div>
                                     {:else if component.name === "Skeleton"}
-                                        <div class="w-full space-y-4">
-                                            <Skeleton />
-                                            <Skeleton
-                                                width="200px"
-                                                height="100px"
-                                            />
-                                            <Skeleton
-                                                width="40px"
-                                                height="40px"
-                                            />
-                                            <div class="flex space-x-2">
+                                        <div class="w-full space-y-6">
+                                            <div class="space-y-2">
                                                 <Skeleton
-                                                    width="32px"
-                                                    height="32px"
+                                                    variant="text"
+                                                    width="40%"
                                                 />
-                                                <div class="space-y-2 flex-1">
-                                                    <Skeleton width="80%" />
-                                                    <Skeleton width="60%" />
+                                                <Skeleton variant="text" />
+                                                <Skeleton
+                                                    variant="text"
+                                                    width="80%"
+                                                />
+                                            </div>
+
+                                            <Skeleton variant="block" />
+
+                                            <div class="flex items-center gap-3">
+                                                <Skeleton variant="circle" />
+                                                <div
+                                                    class="flex-1 space-y-2"
+                                                >
+                                                    <Skeleton
+                                                        variant="text"
+                                                        width="60%"
+                                                    />
+                                                    <Skeleton
+                                                        variant="text"
+                                                        width="40%"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
