@@ -1,6 +1,10 @@
 /**
  * Focus management utilities for accessibility
  */
+/** Global `.focus-brand` ring (see app.css). */
+export declare const FOCUS_BRAND_CLASS: string;
+/** Global `.focus-nav` ring using nav focus token (see app.css). */
+export declare const FOCUS_NAV_CLASS: string;
 /**
  * Get all focusable elements within a container
  */

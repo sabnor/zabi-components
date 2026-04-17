@@ -34,7 +34,7 @@
 
     const toggleButtonClasses = $derived(() => {
         const base =
-            "relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2";
+            "focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:outline-none";
         const colorClass = checked
             ? "bg-action-primary hover:bg-action-primary-hover active:bg-action-primary-active"
             : "bg-base-400 hover:bg-base-500 active:bg-base-500";

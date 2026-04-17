@@ -37,7 +37,7 @@
 
     const isDisabled = $derived(disabled || loading);
 
-    const sizeClass = $derived(() => {
+    const sizeClass = $derived.by(() => {
         if (size === "sm") {
             return {
                 padding: "p-2",
@@ -59,34 +59,34 @@
         }
     });
 
-    const variantClass = $derived(() => {
+    const variantClass = $derived.by(() => {
         return variant === "primary"
-            ? "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            ? "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98]"
             : variant === "secondary"
-              ? "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+              ? "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active active:scale-[0.98]"
               : variant === "danger"
-                ? "bg-action-danger text-inverse hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                ? "bg-action-danger text-inverse hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] focus-ring--danger"
                 : variant === "ghost"
-                  ? "bg-transparent text-headline hover:bg-base-100 active:bg-base-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-base-500 focus-visible:ring-offset-2 disabled:text-disabled"
+                  ? "bg-transparent text-headline hover:bg-base-100 active:bg-base-200 active:scale-[0.98] focus-ring--muted disabled:text-disabled"
                   : variant === "outline"
-                    ? "bg-transparent border-2 border-action-primary text-headline hover:bg-action-secondary hover:text-action-primary active:bg-action-primary-active active:text-action-primary active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:border-disabled disabled:text-disabled"
+                    ? "bg-transparent border-2 border-action-primary text-headline hover:bg-action-secondary hover:text-action-primary active:bg-action-primary-active active:text-action-primary active:scale-[0.98] disabled:border-disabled disabled:text-disabled"
                     : variant === "link"
-                      ? "text-brand-700 active:text-brand-700 hover:underline focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:text-disabled disabled:no-underline"
-                      : "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2";
+                      ? "text-brand-700 active:text-brand-700 hover:underline disabled:text-disabled disabled:no-underline"
+                      : "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98]";
     });
 
-    const buttonClasses = $derived(() => {
-        const sizeStyles = sizeClass();
+    const buttonClasses = $derived.by(() => {
+        const sizeStyles = sizeClass;
         const baseClasses =
-            "inline-flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus:outline-none focus-visible:outline-none";
+            "inline-flex focus-ring items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100";
 
-        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.radius} ${variantClass()} ${className}`.trim();
+        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.radius} ${variantClass} ${className}`.trim();
     });
 </script>
 
 <button
     {type}
-    class={buttonClasses()}
+    class={buttonClasses}
     disabled={isDisabled}
     aria-busy={loading ? "true" : undefined}
     {onclick}
@@ -95,8 +95,7 @@
 >
     {#if loading}
         <span
-            class="inline-block {sizeClass()
-                .spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80"
+            class="inline-block {sizeClass.spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80"
             aria-hidden="true"
         ></span>
     {:else if children}

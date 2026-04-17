@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { Sun, Moon } from "@lucide/svelte";
+    import { FOCUS_BRAND_CLASS } from "../../routes/lib/focus-utils.js";
     
     function safeLocalStorage(): Storage | undefined {
         return typeof window !== "undefined" ? localStorage : undefined;
@@ -122,12 +123,7 @@
             disabled:cursor-not-allowed
             disabled:active:scale-100
             disabled:hover:bg-base-50
-            focus:outline-none
-            focus-visible:outline-none
-            focus-visible:ring-2
-            focus-visible:ring-brand-500
-            focus-visible:ring-offset-2
-            focus-visible:ring-offset-base-50
+            ${FOCUS_BRAND_CLASS}
         `.trim().replace(/\s+/g, " ");
     });
 </script>

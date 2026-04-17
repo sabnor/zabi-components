@@ -381,14 +381,30 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
             {
                 name: "Checkbox",
                 category: "atoms",
-                description: "Form checkbox with label and validation states",
+                description:
+                    "Checkbox input with label, focus ring, and controlled/uncontrolled checked state.",
                 props: [
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        defaultValue: "generated",
+                        description: "Stable id; generated when omitted",
+                    },
                     {
                         name: "checked",
                         type: "boolean",
                         required: false,
                         defaultValue: "false",
-                        description: "Checkbox checked state",
+                        description:
+                            "Controlled checked state (supports `bind:checked`)",
+                    },
+                    {
+                        name: "defaultChecked",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Initial checked state for uncontrolled usage",
                     },
                     {
                         name: "label",
@@ -398,6 +414,20 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Checkbox label",
                     },
                     {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Input name submitted with forms",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Input value submitted with forms",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,
@@ -405,14 +435,29 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Disable the checkbox",
                     },
                     {
-                        name: "variant",
-                        type: "string",
+                        name: "loading",
+                        type: "boolean",
                         required: false,
-                        defaultValue: "default",
-                        description: "Checkbox variant",
+                        defaultValue: "false",
+                        description:
+                            "Shows a spinner and disables interaction while true",
+                    },
+                    {
+                        name: "onChange",
+                        type: "(event: Event) => void",
+                        required: false,
+                        defaultValue: "undefined",
+                        description: "Change handler (alias: `onchange`)",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(event: Event) => void",
+                        required: false,
+                        defaultValue: "undefined",
+                        description: "Alias for `onChange`",
                     },
                 ],
-                variants: ["default", "success", "warning", "error"],
+                variants: [],
                 examples: [
                     {
                         title: "Basic Checkbox",
@@ -420,9 +465,94 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         code: '&lt;Checkbox label="Accept terms" /&gt;',
                     },
                     {
-                        title: "Variants",
-                        description: "Checkbox with different variants",
-                        code: '&lt;Checkbox variant="success" label="Verified" checked={true} /&gt;\n&lt;Checkbox variant="warning" label="Review needed" /&gt;',
+                        title: "Loading state",
+                        description: "Disable and show a spinner while submitting.",
+                        code: '&lt;Checkbox loading label="Saving…" checked={true} /&gt;',
+                    },
+                ],
+            },
+            {
+                name: "Radio",
+                category: "atoms",
+                description:
+                    "Single radio input with label, focus ring, and controlled/uncontrolled checked state",
+                props: [
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        defaultValue: "generated",
+                        description: "Stable id; generated when omitted",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Radio group name (native HTML grouping)",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Radio value submitted with forms",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description: "Visible label text",
+                    },
+                    {
+                        name: "checked",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Controlled checked state (supports `bind:checked`)",
+                    },
+                    {
+                        name: "defaultChecked",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Initial checked state for uncontrolled usage",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Disable the radio",
+                    },
+                    {
+                        name: "onChange",
+                        type: "(event: Event) => void",
+                        required: false,
+                        defaultValue: "undefined",
+                        description: "Change handler (alias: `onchange`)",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(event: Event) => void",
+                        required: false,
+                        defaultValue: "undefined",
+                        description: "Alias for `onChange`",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Basic Radio",
+                        description: "Simple radio with label",
+                        code: '&lt;Radio name="plan" value="basic" label="Basic" /&gt;',
+                    },
+                    {
+                        title: "Controlled",
+                        description: "Bind checked state from parent",
+                        code: '&lt;Radio name="plan" value="pro" label="Pro" bind:checked /&gt;',
                     },
                 ],
             },

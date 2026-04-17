@@ -284,7 +284,7 @@
                 type="button"
                 onclick={togglePicker}
                 {disabled}
-                class="w-11 h-11 rounded-lg border-2 border-card shrink-0 cursor-pointer hover:ring-2 hover:ring-brand-500 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                class="focus-ring w-11 h-11 rounded-lg border-2 border-card shrink-0 cursor-pointer hover:ring-2 hover:ring-border transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 style="background-color: {displayColor};"
                 aria-label="Open color picker"
                 aria-expanded={isOpen}

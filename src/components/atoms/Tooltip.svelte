@@ -268,9 +268,11 @@
         }
     }
 
-    .tooltip-container:focus-visible {
-        outline: 2px solid var(--color-focus);
-        outline-offset: 2px;
+    .tooltip-container:has(:focus-visible) {
+        outline: none;
+        box-shadow:
+            0 0 0 2px var(--color-focus-ring-offset),
+            0 0 0 4px var(--color-focus-ring);
         border-radius: var(--tooltip-radius);
     }
 </style>

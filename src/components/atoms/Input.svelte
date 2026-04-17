@@ -77,12 +77,12 @@
 
     const variantClass = $derived(() => {
         return variant === "success"
-            ? "border-success focus-visible:border-success focus-visible:ring-2 focus-visible:ring-success"
+            ? "border-success focus-visible:border-success"
             : variant === "warning"
-              ? "border-warning focus-visible:border-warning focus-visible:ring-2 focus-visible:ring-warning"
+              ? "border-warning focus-visible:border-warning"
               : variant === "error"
-                ? "border-error focus-visible:border-error focus-visible:ring-2 focus-visible:ring-error"
-                : "border-input-border focus-visible:border-input-border focus-visible:ring-2 focus-visible:ring-brand-500";
+                ? "border-error focus-visible:border-error"
+                : "border-input-border focus-visible:border-input-border";
     });
 
     const inputClasses = $derived(() => {
@@ -93,7 +93,7 @@
                 : "pr-10"
             : "";
         const baseClasses =
-            "w-full min-w-48 border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus-visible:outline-none focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
+            "focus-ring w-full min-w-48 border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
 
         return `${baseClasses} ${sizeStyles.padding} ${trailingPad} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()} ${className}`.trim();
     });
