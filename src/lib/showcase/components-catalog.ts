@@ -532,49 +532,60 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
             {
                 name: "FeatureCard",
                 category: "atoms",
-                description: "Card component optimized for feature showcases",
+                description:
+                    "Minimal, Stripe-inspired card for marketing and overview sections. Composable via snippets.",
                 props: [
                     {
                         name: "title",
                         type: "string",
                         required: true,
                         defaultValue: "",
-                        description: "Feature card title",
+                        description: "Feature title (kept short — one line).",
                     },
                     {
                         name: "description",
                         type: "string",
                         required: false,
                         defaultValue: "",
-                        description: "Feature description",
+                        description: "Supporting copy. Optional.",
                     },
                     {
                         name: "icon",
+                        type: "Component<{ size?: number; class?: string }>",
+                        required: false,
+                        defaultValue: "",
+                        description:
+                            "Icon component rendered in the top slot. Pass a Lucide icon directly, e.g. `icon={ShieldCheck}`.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "",
+                        description:
+                            "Optional footer content, e.g. a learn-more link or CTA.",
+                    },
+                    {
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: "",
-                        description: "Icon name or URL",
-                    },
-                    {
-                        name: "variant",
-                        type: "string",
-                        required: false,
-                        defaultValue: "default",
-                        description: "Card variant",
+                        description: "Extra classes forwarded to the root element.",
                     },
                 ],
-                variants: ["default", "highlighted", "minimal"],
+                variants: [],
                 examples: [
                     {
                         title: "Basic Feature Card",
                         description:
                             "Simple feature card with title and description",
-                        code: '&lt;FeatureCard title="Fast Performance" description="Lightning fast loading times" /&gt;',
+                        code: '&lt;FeatureCard title="Fast performance" description="Lightning fast loading times." /&gt;',
                     },
                     {
-                        title: "With Icon",
-                        description: "Feature card with icon",
-                        code: '&lt;FeatureCard title="Secure" description="End-to-end encryption" icon="shield" /&gt;',
+                        title: "With Lucide Icon",
+                        description:
+                            "Pass a Lucide icon component directly via the `icon` prop",
+                        code: 'import { ShieldCheck } from "@lucide/svelte";\n\n&lt;FeatureCard icon={ShieldCheck} title="Secure" description="End-to-end encryption." /&gt;',
                     },
                 ],
             },

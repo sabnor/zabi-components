@@ -46,6 +46,9 @@
         CircleHelp,
         Circle,
         Heart,
+        Zap,
+        ShieldCheck,
+        Sparkles,
     } from "@lucide/svelte";
     import type { ComponentMetadata } from "../../types/page.types";
     import {
@@ -1404,18 +1407,19 @@
                                             class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl"
                                         >
                                             <FeatureCard
-                                                title="Fast Performance"
-                                                description="Lightning fast loading times with optimized code"
+                                                icon={Zap}
+                                                title="Fast performance"
+                                                description="Lightning fast loading times with optimised code."
                                             />
                                             <FeatureCard
-                                                title="Secure by Default"
-                                                description="End-to-end encryption and security best practices"
-                                                icon="shield"
+                                                icon={ShieldCheck}
+                                                title="Secure by default"
+                                                description="End-to-end encryption and security best practices."
                                             />
                                             <FeatureCard
-                                                title="Easy to Use"
-                                                description="Intuitive interface designed for productivity"
-                                                icon="star"
+                                                icon={Sparkles}
+                                                title="Easy to use"
+                                                description="Intuitive interface designed for productivity."
                                             />
                                         </div>
                                     {:else if component.name === "Heading"}
