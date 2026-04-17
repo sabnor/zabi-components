@@ -81,7 +81,7 @@
     </div>
 
     <pre class="p-4 overflow-x-auto text-sm text-base-100 leading-relaxed"><code
-            class="language-{language}">{@html code}</code
+            class="language-{language}">{code}</code
         ></pre>
 </div>
 
