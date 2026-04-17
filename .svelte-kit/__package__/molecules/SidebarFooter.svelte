@@ -71,7 +71,7 @@
             <div class="relative">
                 <button
                     type="button"
-                    class="w-full cursor-pointer rounded-xl px-2 py-2 outline-none transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover hover:ring-1 hover:ring-border/60 active:bg-base-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus"
+                    class="w-full cursor-pointer rounded-xl px-2 py-2 outline-none transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover hover:ring-1 hover:ring-border/60 active:bg-base-200 focus-ring focus-ring--nav"
                     aria-haspopup="dialog"
                     aria-expanded={profilePanelOpen}
                     aria-controls={profilePanelControlsId.trim()

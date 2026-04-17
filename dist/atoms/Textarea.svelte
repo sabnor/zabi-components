@@ -13,6 +13,8 @@
         placeholder?: string;
         required?: boolean;
         disabled?: boolean;
+        /** Shows a spinner overlay and disables interaction while true. */
+        loading?: boolean;
         rows?: number;
         size?: SizeVariant;
         variant?: SemanticVariant;
@@ -30,6 +32,7 @@
         placeholder = '',
         required = false,
         disabled = false,
+        loading = false,
         rows = 4,
         size = 'md',
         variant = 'default',
@@ -40,20 +43,21 @@
 
     const fallbackId = generateId('textarea');
     const textareaId = $derived(idProp ?? fallbackId);
+    const isDisabled = $derived(disabled || loading);
 
     const variantClass = $derived(() => {
         return variant === 'success'
-            ? 'border-success focus:border-success focus:ring-success'
+            ? 'border-success focus-visible:border-success'
             : variant === 'warning'
-              ? 'border-warning focus:border-warning focus:ring-warning'
+              ? 'border-warning focus-visible:border-warning'
               : variant === 'error'
-                ? 'border-error focus:border-error focus:ring-error'
-                : 'border-input-border focus:ring-2 focus:ring-brand-500';
+                ? 'border-error focus-visible:border-error'
+                : 'border-input-border';
     });
 
     const textareaClasses = $derived(() => {
         const baseClasses =
-            'w-full border bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6';
+            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6';
 
         return `${baseClasses} ${variantClass()} ${className}`.trim();
     });
@@ -91,21 +95,34 @@
     {#if label && !hideLabel}
         <label for={textareaId} class={labelClasses()}>{label}</label>
     {/if}
-    <textarea
-        id={textareaId}
-        {name}
-        bind:value
-        {placeholder}
-        {required}
-        {disabled}
-        {rows}
-        class={textareaClasses()}
-        oninput={handleInput}
-        aria-invalid={variant === 'error' ? 'true' : undefined}
-        aria-required={required ? 'true' : undefined}
-        aria-describedby={message ? `${textareaId}-message` : undefined}
-        {...restProps}
-    ></textarea>
+    <div class="relative">
+        <textarea
+            id={textareaId}
+            {name}
+            bind:value
+            {placeholder}
+            {required}
+            disabled={isDisabled}
+            {rows}
+            class={textareaClasses()}
+            oninput={handleInput}
+            aria-invalid={variant === 'error' ? 'true' : undefined}
+            aria-required={required ? 'true' : undefined}
+            aria-busy={loading ? 'true' : undefined}
+            aria-describedby={message ? `${textareaId}-message` : undefined}
+            {...restProps}
+        ></textarea>
+        {#if loading}
+            <span
+                class="pointer-events-none absolute top-3 right-3 flex items-center text-description"
+                aria-hidden="true"
+            >
+                <span
+                    class="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70"
+                ></span>
+            </span>
+        {/if}
+    </div>
     {#if message && variant !== 'default'}
         <p
             id={`${textareaId}-message`}

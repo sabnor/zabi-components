@@ -1,10 +1,12 @@
 /**
  * Focus management utilities for accessibility
  */
-/** Global `.focus-brand` ring (see app.css). */
-export declare const FOCUS_BRAND_CLASS: string;
-/** Global `.focus-nav` ring using nav focus token (see app.css). */
-export declare const FOCUS_NAV_CLASS: string;
+/**
+ * Global CSS classes from `app.css` (`@layer components`) for keyboard focus rings.
+ * Import the app / `zabi-components` stylesheet so these classes exist.
+ */
+export declare const FOCUS_BRAND_CLASS = "focus-brand";
+export declare const FOCUS_NAV_CLASS = "focus-nav";
 /**
  * Get all focusable elements within a container
  */

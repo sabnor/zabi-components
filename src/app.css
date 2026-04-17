@@ -1078,6 +1078,15 @@ body {
   }
 
   /**
+   * Bordered surface shell for a block of list rows (iOS-style “list group”).
+   * Use on a wrapper around `<List />` or on a manual `<ul role="list">`.
+   */
+  .list-group {
+    @apply space-y-1 overflow-hidden rounded-xl border border-border p-1;
+    background-color: var(--color-surface-1);
+  }
+
+  /**
    * Legacy aliases (keep stable public API while refactoring components).
    * Prefer `focus-ring` / `focus-ring--nav` going forward.
    */

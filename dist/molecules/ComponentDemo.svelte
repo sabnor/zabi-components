@@ -81,7 +81,7 @@
             {#if showCode}
                 <CodeBlock {code} {language} />
             {:else}
-                <div class="min-h-[100px] flex items-center justify-center w-full">
+                <div class="min-h-[100px] w-full min-w-0 py-4">
                     {@render children?.()}
                 </div>
             {/if}

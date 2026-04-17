@@ -1,7 +1,7 @@
 <script lang="ts">
     import ComponentShowcaseExampleDemos from "../ComponentShowcaseExampleDemos.svelte";
-    import DocHeader from "../../../components/molecules/DocHeader.svelte";
-    import DocPage from "../../../components/molecules/DocPage.svelte";
+    import Header from "../../../components/molecules/Header.svelte";
+    import Page from "../../../components/molecules/Page.svelte";
     import PropsTable from "../../../components/molecules/PropsTable.svelte";
     import Section from "../../../components/molecules/Section.svelte";
     import type { PageData } from "./$types";
@@ -29,8 +29,8 @@
     />
 </svelte:head>
 
-<DocPage>
-    <DocHeader
+<Page>
+    <Header
         title={component.name}
         description={component.description}
         category={component.category}
@@ -68,7 +68,7 @@
     >
         <PropsTable props={component.props} />
     </Section>
-</DocPage>
+</Page>
 
 <footer
     class="mt-16 -mx-8 border-t border-border bg-base-100 px-8 py-8"

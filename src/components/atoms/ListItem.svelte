@@ -1,6 +1,7 @@
 <script lang="ts">
     import { ArrowRight } from "@lucide/svelte";
-    import type { Component } from "svelte";
+    import type { Component, Snippet } from "svelte";
+    import ListItemLeading from "./ListItemLeading.svelte";
 
     export interface ListItemData {
         /** Unique identifier for stable rendering and active-state tracking. */
@@ -11,8 +12,12 @@
         description?: string;
         /** Optional URL; when set, the item renders as an anchor. */
         href?: string;
-        /** Optional leading icon rendered before text. */
+        /** Optional Lucide-style icon rendered in the leading column. If both `avatar` and `icon` are set, `avatar` is shown. */
         icon?: Component<{ size?: number; class?: string }>;
+        /** Optional avatar image URL for the leading column (takes precedence over `icon`). */
+        avatar?: string;
+        /** Accessible label for `avatar`; use `""` when the image is decorative. */
+        avatarAlt?: string;
         /** Link target, only used when href is provided. */
         target?: "_self" | "_blank" | "_parent" | "_top";
         /** Link rel attribute, only used when href is provided. */
@@ -28,6 +33,8 @@
         selected?: boolean;
         /** Whether to show the right-arrow icon. */
         showArrow?: boolean;
+        /** Optional trailing region (badges, metadata, auxiliary actions). Renders before the arrow when `showArrow` is true. */
+        trailing?: Snippet;
         /** Item click callback. */
         onclick?: (item: ListItemData, event: MouseEvent) => void;
     }
@@ -36,13 +43,14 @@
         item,
         selected = false,
         showArrow = true,
+        trailing,
         onclick,
         ...restProps
     }: Props = $props();
 
     const itemClasses = $derived.by(() => {
         const baseClasses =
-            "group focus-ring flex w-full items-center gap-3 rounded-xl border border-border px-4 py-3 text-left transition-all duration-150";
+            "group focus-ring flex w-full items-center gap-3 rounded-xl border border-border px-4 py-3 pr-5 text-left transition-all duration-150";
         const interactiveClasses = item.disabled
             ? "cursor-not-allowed opacity-50"
             : "cursor-pointer focus-visible:bg-base-100";
@@ -73,6 +81,47 @@
     };
 </script>
 
+{#snippet rowContent()}
+    {#if item.avatar}
+        <ListItemLeading class="rounded-full">
+            <img
+                src={item.avatar}
+                alt={item.avatarAlt ?? ""}
+                class="block size-full min-h-0 min-w-0 object-cover"
+                loading="lazy"
+                decoding="async"
+            />
+        </ListItemLeading>
+    {:else if item.icon}
+        <ListItemLeading>
+            <span aria-hidden="true">
+                <item.icon size={16} />
+            </span>
+        </ListItemLeading>
+    {/if}
+    <span class="min-w-0 flex-1">
+        <span class="block text-sm font-medium text-headline">{item.label}</span
+        >
+        {#if item.description}
+            <span class="mt-0.5 block text-sm text-description"
+                >{item.description}</span
+            >
+        {/if}
+    </span>
+    {#if trailing}
+        <span class="flex shrink-0 items-center gap-2 text-sm text-description">
+            {@render trailing()}
+        </span>
+    {/if}
+    {#if showArrow}
+        <ArrowRight
+            size={16}
+            class="shrink-0 text-description transition-transform duration-150 group-hover:translate-x-1 group-focus-visible:translate-x-1"
+            aria-hidden="true"
+        />
+    {/if}
+{/snippet}
+
 {#if item.href}
     <a
         href={item.href}
@@ -85,31 +134,7 @@
         onclick={handleItemClick}
         {...restProps}
     >
-        {#if item.icon}
-            <span
-                class="flex size-5 shrink-0 items-center justify-center text-description"
-                aria-hidden="true"
-            >
-                <item.icon size={16} />
-            </span>
-        {/if}
-        <span class="min-w-0 flex-1">
-            <span class="block text-sm font-medium text-headline"
-                >{item.label}</span
-            >
-            {#if item.description}
-                <span class="mt-0.5 block text-sm text-description"
-                    >{item.description}</span
-                >
-            {/if}
-        </span>
-        {#if showArrow}
-            <ArrowRight
-                size={16}
-                class="shrink-0 text-description transition-transform duration-150 group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5"
-                aria-hidden="true"
-            />
-        {/if}
+        {@render rowContent()}
     </a>
 {:else}
     <button
@@ -119,30 +144,6 @@
         onclick={handleItemClick}
         {...restProps}
     >
-        {#if item.icon}
-            <span
-                class="flex size-5 shrink-0 items-center justify-center text-description"
-                aria-hidden="true"
-            >
-                <item.icon size={16} />
-            </span>
-        {/if}
-        <span class="min-w-0 flex-1">
-            <span class="block text-sm font-medium text-headline"
-                >{item.label}</span
-            >
-            {#if item.description}
-                <span class="mt-0.5 block text-sm text-description"
-                    >{item.description}</span
-                >
-            {/if}
-        </span>
-        {#if showArrow}
-            <ArrowRight
-                size={16}
-                class="shrink-0 text-description transition-transform duration-150 group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5"
-                aria-hidden="true"
-            />
-        {/if}
+        {@render rowContent()}
     </button>
 {/if}

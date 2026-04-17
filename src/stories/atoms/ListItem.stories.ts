@@ -1,13 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import ListItem from '../../components/atoms/ListItem.svelte';
-import { CreditCard } from '@lucide/svelte';
+import ListItemCompositionDemo from './ListItemCompositionDemo.svelte';
 
 const baseItem = {
     id: 'billing',
     label: 'Billing',
     description: 'Update payment methods and invoices',
-    href: '/billing',
-    icon: CreditCard
+    href: '/billing'
 };
 
 const meta = {
@@ -18,7 +17,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Standalone list item row with hover state and optional right-arrow icon.'
+                    'Standalone list row. Set `icon`, `avatar`, and `avatarAlt` on `item` for leading visuals without snippets. Use the `trailing` snippet for badges or meta on the right.'
             }
         }
     },
@@ -48,3 +47,10 @@ export const StandaloneItemWithoutArrow: Story = {
         showArrow: false
     }
 };
+
+/** Icon, avatar, and text-only rows via `item` fields. */
+export const WithIconAvatarAndPlain = {
+    render: () => ({
+        Component: ListItemCompositionDemo
+    })
+} as StoryObj<Meta>;

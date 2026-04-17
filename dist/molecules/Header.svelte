@@ -16,7 +16,7 @@
 <header class="space-y-4">
     <div class="space-y-2">
         <Heading level={1} text={title} />
-        <p class="text-lg text-description">{description}</p>
+        <p class="text-lg whitespace-pre-line text-description">{description}</p>
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
@@ -31,7 +31,7 @@
             <span class="text-sm font-medium text-headline">
                 Variants / states:
             </span>
-            {#each variantsStates as v}
+            {#each variantsStates as v (v)}
                 <span class="rounded-md bg-base-100 px-2 py-1 text-xs text-headline">
                     {v}
                 </span>
@@ -39,4 +39,3 @@
         </div>
     {/if}
 </header>
-

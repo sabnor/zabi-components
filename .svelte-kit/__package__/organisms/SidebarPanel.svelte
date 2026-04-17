@@ -80,7 +80,7 @@
     function getItemClasses(itemId: string): string {
         const isActive = selectedItemId === itemId;
         const baseClasses =
-            "w-full cursor-pointer rounded-lg px-3 py-2.5 text-left transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
+            "focus-ring focus-ring--nav w-full cursor-pointer rounded-lg px-3 py-2.5 text-left transition-colors duration-150";
         if (isActive) {
             return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border/80`;
         }
@@ -117,7 +117,7 @@
         </div>
         <button
             type="button"
-            class="-mr-0.5 -mt-0.5 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-nav-menu-item transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nav-menu-focus focus-visible:ring-offset-0"
+            class="-mr-0.5 -mt-0.5 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-nav-menu-item transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover focus-ring focus-ring--nav"
             aria-label={closeLabel}
             onclick={handleClose}
         >
@@ -138,7 +138,7 @@
                 bind:value={searchValue}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                class="w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 ring-offset-0 hover:!bg-nav-menu-hover focus:!bg-transparent focus:ring-2 focus:ring-nav-menu-focus"
+                class="w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
             />
         </div>
     {/if}
@@ -197,7 +197,7 @@
             {#if emptyStateActionLabel.trim() && onEmptyStateAction}
                 <button
                     type="button"
-                    class="mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus"
+                    class="mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary transition-colors hover:bg-action-primary-hover focus-ring focus-ring--nav"
                     onclick={handleEmptyStateAction}
                 >
                     {emptyStateActionLabel.trim()}

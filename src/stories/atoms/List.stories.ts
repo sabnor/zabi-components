@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
+import { CreditCard, Shield, User } from '@lucide/svelte';
 import List from '../../components/atoms/List.svelte';
-import { CreditCard, Settings, User } from '@lucide/svelte';
 
-const baseItems = [
+const itemsWithLeadingVisuals = [
     {
         id: 'profile',
         label: 'Profile',
@@ -21,7 +21,46 @@ const baseItems = [
         id: 'team',
         label: 'Team members',
         description: 'Invite teammates and assign roles',
-        icon: Settings
+        icon: Shield
+    }
+];
+
+const avatarItems = [
+    {
+        id: 'alex',
+        label: 'Alex Rivera',
+        description: 'Product · Berlin',
+        href: '/people/alex',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
+        avatarAlt: ''
+    },
+    {
+        id: 'sam',
+        label: 'Sam Lee',
+        description: 'Engineering · Remote',
+        href: '/people/sam',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sam',
+        avatarAlt: ''
+    }
+];
+
+const baseItems = [
+    {
+        id: 'profile',
+        label: 'Profile',
+        description: 'Manage your account preferences',
+        href: '/profile'
+    },
+    {
+        id: 'billing',
+        label: 'Billing',
+        description: 'Update payment methods and invoices',
+        href: '/billing'
+    },
+    {
+        id: 'team',
+        label: 'Team members',
+        description: 'Invite teammates and assign roles'
     }
 ];
 
@@ -33,7 +72,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Accessible list rows with hover feedback and optional right-arrow icons.'
+                    'Pass `items` as `ListItemData[]`. Optional `icon` or `avatar`/`avatarAlt` per item render an aligned leading visual. Use `ListItem` with a `trailing` snippet for badges or meta when needed.'
             }
         }
     },
@@ -64,5 +103,20 @@ export const ListExampleWithoutArrows: Story = {
         items: baseItems,
         showArrow: false,
         ariaLabel: 'Account navigation'
+    }
+};
+
+export const WithIconsPerItem: Story = {
+    args: {
+        items: itemsWithLeadingVisuals,
+        selectedId: 'billing',
+        ariaLabel: 'Account navigation with icons'
+    }
+};
+
+export const WithAvatars: Story = {
+    args: {
+        items: avatarItems,
+        ariaLabel: 'People directory'
     }
 };

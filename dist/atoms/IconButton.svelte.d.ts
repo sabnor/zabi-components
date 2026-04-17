@@ -7,6 +7,8 @@ interface Props {
     size?: SizeVariant;
     /** Whether the button is disabled. */
     disabled?: boolean;
+    /** Shows a spinner and disables interaction while true. */
+    loading?: boolean;
     /** Button type attribute. */
     type?: "button" | "submit" | "reset";
     /** Accessible label for icon-only buttons. */

@@ -1,6 +1,8 @@
 interface Props {
     checked?: boolean;
     disabled?: boolean;
+    /** Shows a spinner on the thumb and disables interaction while true. */
+    loading?: boolean;
     label?: string;
     onclick?: (event: MouseEvent) => void;
     onchange?: (event: {

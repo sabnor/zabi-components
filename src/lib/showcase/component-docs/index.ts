@@ -1,6 +1,7 @@
 import type { ComponentDoc } from "../../../types/page.types";
 import { doc as Button } from "./Button";
 import { doc as Input } from "./Input";
+import { doc as List } from "./List";
 import { doc as Modal } from "./Modal";
 import { doc as Radio } from "./Radio";
 import { doc as SidebarNavigation } from "./SidebarNavigation";
@@ -14,6 +15,7 @@ const docs: ComponentDoc[] = [
     Skeleton,
     Modal,
     SidebarNavigation,
+    List,
 ];
 
 export function allComponentDocs(): ComponentDoc[] {

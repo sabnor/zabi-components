@@ -230,7 +230,7 @@
             ? "flex min-h-10 items-center justify-center px-0 py-2"
             : "flex min-h-10 items-center gap-2.5 px-2.5 py-2";
         const structural =
-            "w-full cursor-pointer rounded-lg no-underline transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
+            "focus-ring focus-ring--nav w-full cursor-pointer rounded-lg no-underline transition-colors duration-150 outline-none";
 
         if (isActive) {
             return `${structural} ${layoutClasses} bg-nav-menu-active text-inherit hover:bg-nav-menu-active hover:text-inherit active:opacity-90`;
@@ -340,7 +340,7 @@
                             bind:value={searchValue}
                             placeholder={searchPlaceholder}
                             aria-label={searchPlaceholder}
-                            class="w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 ring-offset-0 hover:!bg-nav-menu-hover focus:!bg-transparent focus:ring-2 focus:ring-nav-menu-focus"
+                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent"
                         />
                     </div>
                 {/if}
@@ -467,7 +467,7 @@
                 {#if !(normalizedSearchTerm && searchMode === "input")}
                     <button
                         type="button"
-                        class="mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus"
+                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
                         onclick={handleEmptyStateAction}
                     >
                         {emptyStateActionLabel}
