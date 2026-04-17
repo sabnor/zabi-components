@@ -691,78 +691,86 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Skeleton",
                 category: "atoms",
                 description:
-                    "Lightweight loading placeholder primitive with `text`, `circle`, and `block` variants. Fills its parent width by default (except `circle`, which stays square). Override width/height with the `width`/`height` props (CSS length or pixel number) or a fixed Tailwind utility via `class` (e.g. `w-64`, `h-24`). Uses `bg-surface-2` so it sits subtly above `surface-1` backgrounds.",
+                    "Neutral placeholder that mirrors the shape of content while it loads. Reach for it whenever a view depends on data fetching and the layout is predictable — it preserves the eventual structure and reduces perceived latency compared with a spinner. Compose the three variants (`text`, `circle`, `block`) to match the real UI: text lines for paragraphs and labels, circles for avatars or icon buttons, blocks for media, cards, and hero regions.",
                 props: [
                     {
                         name: "variant",
                         type: "'text' | 'circle' | 'block'",
                         required: false,
-                        defaultValue: "text",
+                        defaultValue: "'text'",
                         description:
-                            "Shape of the placeholder. `text` is a short rounded bar, `circle` is a square with full rounding, `block` is a tall card-sized box.",
+                            "Shape preset. `text` is a short rounded bar for lines of copy, `circle` is a square with full rounding for avatars and icon placeholders, `block` is a taller rectangle for media, cards, and hero regions.",
                     },
                     {
                         name: "width",
                         type: "string | number",
                         required: false,
-                        defaultValue: "100% (circle: 2.5rem)",
+                        defaultValue: "fills parent (circle: 2.5rem)",
                         description:
-                            "Explicit width — CSS length (e.g. `'80%'`, `'12rem'`) or pixel number. Omit to fill the parent, or use a fixed Tailwind `w-*` utility via `class` (e.g. `w-64`).",
+                            "Explicit width as a CSS length (e.g. `'50%'`, `'12rem'`) or pixel number. Omit to fill the parent, or pass a fixed Tailwind width via `class` (e.g. `w-64`).",
                     },
                     {
                         name: "height",
                         type: "string | number",
                         required: false,
-                        defaultValue: "variant-dependent",
+                        defaultValue: "preset per variant",
                         description:
-                            "Explicit height — CSS length or pixel number. Defaults via utilities: text=`h-3`, circle=`aspect-square`, block=`h-32`.",
+                            "Explicit height as a CSS length or pixel number. Defaults: text ≈ 0.75rem, circle matches width, block ≈ 8rem.",
                     },
                     {
                         name: "class",
                         type: "string",
                         required: false,
-                        defaultValue: "",
+                        defaultValue: "''",
                         description:
-                            "Extra classes forwarded to the root element.",
+                            "Extra classes forwarded to the root element. Useful for fixed Tailwind widths, rounding overrides, or margins.",
                     },
                     {
                         name: "aria-label",
                         type: "string",
                         required: false,
-                        defaultValue: "Loading…",
+                        defaultValue: "'Loading…'",
                         description:
-                            "Accessible label announced by assistive tech.",
+                            "Label announced by assistive tech. Keep the default for generic loading, or set to something more specific (e.g. `'Loading profile'`) when the skeleton stands in for a named region.",
                     },
                 ],
                 variants: ["text", "circle", "block"],
                 examples: [
                     {
                         title: "Text line",
-                        description: "Default variant — a rounded text-height bar.",
+                        description:
+                            "Default variant. Fills the parent width and stands in for a single line of copy.",
                         code: "&lt;Skeleton /&gt;",
                     },
                     {
-                        title: "Avatar (circle)",
-                        description: "Square placeholder with full rounding.",
+                        title: "Avatar",
+                        description:
+                            "Circle variant — a perfect square with full rounding, sized for avatars and icon buttons.",
                         code: '&lt;Skeleton variant="circle" /&gt;',
                     },
                     {
-                        title: "Card block",
+                        title: "Media block",
                         description:
-                            "Larger placeholder for images, cards or media. Fills the parent by default.",
+                            "Block variant for images, video thumbnails, cover art, and card headers. Fills the parent by default.",
                         code: '&lt;Skeleton variant="block" /&gt;',
                     },
                     {
-                        title: "Width override",
+                        title: "Custom size",
                         description:
-                            "Use the `width` prop for a CSS length or pixel number, or a fixed Tailwind `w-*` utility via `class`.",
-                        code: '&lt;Skeleton variant="text" width="50%" /&gt;\n&lt;Skeleton variant="block" class="w-64" /&gt;',
+                            "Use the `width` / `height` props for CSS lengths or pixel values, or `class` for a fixed Tailwind utility.",
+                        code: '&lt;Skeleton width="50%" /&gt;\n&lt;Skeleton width={240} height={8} /&gt;\n&lt;Skeleton variant="block" class="w-64" /&gt;',
                     },
                     {
-                        title: "Composed row",
+                        title: "User row",
                         description:
-                            "Combine variants to model final layouts — avatar next to two text lines of varying length.",
+                            "Classic list-row pattern: avatar beside two stacked text lines of varying length. Wrap the text column in `flex-1` so it adapts to the row width.",
                         code: '&lt;div class="flex items-center gap-3"&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;div class="flex-1 space-y-2"&gt;\n    &lt;Skeleton variant="text" width="60%" /&gt;\n    &lt;Skeleton variant="text" width="40%" /&gt;\n  &lt;/div&gt;\n&lt;/div&gt;',
+                    },
+                    {
+                        title: "Article card",
+                        description:
+                            "Media block above a title and description — a drop-in placeholder for feed cards, blog previews, and product tiles.",
+                        code: '&lt;article class="space-y-3"&gt;\n  &lt;Skeleton variant="block" /&gt;\n  &lt;Skeleton variant="text" width="70%" height={16} /&gt;\n  &lt;div class="space-y-2"&gt;\n    &lt;Skeleton variant="text" /&gt;\n    &lt;Skeleton variant="text" width="85%" /&gt;\n  &lt;/div&gt;\n&lt;/article&gt;',
                     },
                 ],
             },
