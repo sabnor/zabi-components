@@ -1457,22 +1457,34 @@
                                             />
                                         </div>
                                     {:else if component.name === "Skeleton"}
-                                        <div class="w-full space-y-6">
-                                            <div class="space-y-2">
+                                        {#if exampleIndex === 0}
+                                            <div class="w-full">
+                                                <Skeleton />
+                                            </div>
+                                        {:else if exampleIndex === 1}
+                                            <div class="w-full">
+                                                <Skeleton variant="circle" />
+                                            </div>
+                                        {:else if exampleIndex === 2}
+                                            <div class="w-full">
+                                                <Skeleton variant="block" />
+                                            </div>
+                                        {:else if exampleIndex === 3}
+                                            <div class="w-full space-y-3">
+                                                <Skeleton width="50%" />
                                                 <Skeleton
-                                                    variant="text"
-                                                    width="40%"
+                                                    width={240}
+                                                    height={8}
                                                 />
-                                                <Skeleton variant="text" />
                                                 <Skeleton
-                                                    variant="text"
-                                                    width="80%"
+                                                    variant="block"
+                                                    class="w-64"
                                                 />
                                             </div>
-
-                                            <Skeleton variant="block" />
-
-                                            <div class="flex items-center gap-3">
+                                        {:else if exampleIndex === 4}
+                                            <div
+                                                class="flex w-full items-center gap-3"
+                                            >
                                                 <Skeleton variant="circle" />
                                                 <div
                                                     class="flex-1 space-y-2"
@@ -1487,7 +1499,23 @@
                                                     />
                                                 </div>
                                             </div>
-                                        </div>
+                                        {:else if exampleIndex === 5}
+                                            <article class="w-full space-y-3">
+                                                <Skeleton variant="block" />
+                                                <Skeleton
+                                                    variant="text"
+                                                    width="70%"
+                                                    height={16}
+                                                />
+                                                <div class="space-y-2">
+                                                    <Skeleton variant="text" />
+                                                    <Skeleton
+                                                        variant="text"
+                                                        width="85%"
+                                                    />
+                                                </div>
+                                            </article>
+                                        {/if}
                                     {:else if component.name === "Toast"}
                                         {#if exampleIndex === 0}
                                             <div class="w-full space-y-4">
