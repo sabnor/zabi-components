@@ -5,70 +5,65 @@ const meta = {
     title: 'Design System/Atoms/Skeleton',
     component: Skeleton,
     parameters: {
-        layout: 'centered'
+        layout: 'centered',
+        docs: {
+            description: {
+                component:
+                    'Lightweight loading placeholder primitive. Fills its parent width by default (except `circle`, which stays square). Override width with the `width` prop (CSS length or pixel number, e.g. `"50%"` or `200`) or a fixed Tailwind utility via `class` (e.g. `w-64`). Uses the `bg-surface-2` token so it sits subtly above `surface-1` cards and pages in both light and dark modes.'
+            }
+        }
     },
-    tags: ['autodocs'],
-    argTypes: {}
+    argTypes: {
+        variant: {
+            control: 'inline-radio',
+            options: ['text', 'circle', 'block']
+        },
+        width: { control: 'text' },
+        height: { control: 'text' },
+        class: { control: 'text' }
+    },
+    tags: ['autodocs']
 } satisfies Meta<typeof Skeleton>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-    args: {
-        width: '200px',
-        height: '1rem'
-    }
-};
-
 export const Text: Story = {
     args: {
-        width: '100%',
-        height: '1rem'
+        variant: 'text'
     }
 };
 
-export const Avatar: Story = {
-    args: {
-        width: '40px',
-        height: '40px',
-        className: 'rounded-full'
-    }
-};
-
-export const Card: Story = {
-    args: {
-        width: '300px',
-        height: '200px',
-        className: 'rounded-lg'
-    }
+export const ShorterTextLine: Story = {
+	args: {
+		variant: 'text',
+		width: '50%'
+	}
 };
 
 export const Circle: Story = {
     args: {
-        width: '40px',
-        height: '40px',
-        className: 'rounded-full'
+        variant: 'circle'
     }
 };
 
-export const MultipleText: Story = {
+export const Block: Story = {
     args: {
-        width: '100%',
-        height: '1rem'
+        variant: 'block'
     }
 };
 
-export const CardSkeleton: Story = {
+export const UtilityWidthOverride: Story = {
     args: {
-        width: '100%',
-        height: '1rem'
+        variant: 'block',
+        class: 'w-64'
     }
 };
 
-export const LoadingStates: Story = {
+export const ExplicitSize: Story = {
     args: {
-        width: '100%',
-        height: '1rem'
+        variant: 'block',
+        width: 200,
+        height: 120
     }
 };

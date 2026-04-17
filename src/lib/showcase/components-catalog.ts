@@ -690,34 +690,79 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
             {
                 name: "Skeleton",
                 category: "atoms",
-                description: "Loading skeleton placeholder component",
+                description:
+                    "Lightweight loading placeholder primitive with `text`, `circle`, and `block` variants. Fills its parent width by default (except `circle`, which stays square). Override width/height with the `width`/`height` props (CSS length or pixel number) or a fixed Tailwind utility via `class` (e.g. `w-64`, `h-24`). Uses `bg-surface-2` so it sits subtly above `surface-1` backgrounds.",
                 props: [
                     {
-                        name: "width",
-                        type: "string",
+                        name: "variant",
+                        type: "'text' | 'circle' | 'block'",
                         required: false,
-                        defaultValue: "100%",
-                        description: "Skeleton width",
+                        defaultValue: "text",
+                        description:
+                            "Shape of the placeholder. `text` is a short rounded bar, `circle` is a square with full rounding, `block` is a tall card-sized box.",
+                    },
+                    {
+                        name: "width",
+                        type: "string | number",
+                        required: false,
+                        defaultValue: "100% (circle: 2.5rem)",
+                        description:
+                            "Explicit width — CSS length (e.g. `'80%'`, `'12rem'`) or pixel number. Omit to fill the parent, or use a fixed Tailwind `w-*` utility via `class` (e.g. `w-64`).",
                     },
                     {
                         name: "height",
+                        type: "string | number",
+                        required: false,
+                        defaultValue: "variant-dependent",
+                        description:
+                            "Explicit height — CSS length or pixel number. Defaults via utilities: text=`h-3`, circle=`aspect-square`, block=`h-32`.",
+                    },
+                    {
+                        name: "class",
                         type: "string",
                         required: false,
-                        defaultValue: "1rem",
-                        description: "Skeleton height",
+                        defaultValue: "",
+                        description:
+                            "Extra classes forwarded to the root element.",
+                    },
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Loading…",
+                        description:
+                            "Accessible label announced by assistive tech.",
                     },
                 ],
-                variants: [],
+                variants: ["text", "circle", "block"],
                 examples: [
                     {
-                        title: "Basic Skeleton",
-                        description: "Simple text skeleton",
+                        title: "Text line",
+                        description: "Default variant — a rounded text-height bar.",
                         code: "&lt;Skeleton /&gt;",
                     },
                     {
-                        title: "Variants",
-                        description: "Different skeleton shapes",
-                        code: '&lt;Skeleton variant="rectangular" width="200px" height="100px" /&gt;\n&lt;Skeleton variant="circular" width="40px" height="40px" /&gt;',
+                        title: "Avatar (circle)",
+                        description: "Square placeholder with full rounding.",
+                        code: '&lt;Skeleton variant="circle" /&gt;',
+                    },
+                    {
+                        title: "Card block",
+                        description:
+                            "Larger placeholder for images, cards or media. Fills the parent by default.",
+                        code: '&lt;Skeleton variant="block" /&gt;',
+                    },
+                    {
+                        title: "Width override",
+                        description:
+                            "Use the `width` prop for a CSS length or pixel number, or a fixed Tailwind `w-*` utility via `class`.",
+                        code: '&lt;Skeleton variant="text" width="50%" /&gt;\n&lt;Skeleton variant="block" class="w-64" /&gt;',
+                    },
+                    {
+                        title: "Composed row",
+                        description:
+                            "Combine variants to model final layouts — avatar next to two text lines of varying length.",
+                        code: '&lt;div class="flex items-center gap-3"&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;div class="flex-1 space-y-2"&gt;\n    &lt;Skeleton variant="text" width="60%" /&gt;\n    &lt;Skeleton variant="text" width="40%" /&gt;\n  &lt;/div&gt;\n&lt;/div&gt;',
                     },
                 ],
             },
