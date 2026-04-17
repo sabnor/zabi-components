@@ -8,6 +8,10 @@ interface Props {
     href?: string;
     /** Click handler (used when `href` is not set) */
     onclick?: (event: MouseEvent) => void | Promise<void>;
+    /** Whether the panel is disabled and non-interactive */
+    disabled?: boolean;
+    /** Shows a trailing spinner and disables interaction while true */
+    loading?: boolean;
     /** Optional badge shown on the right */
     badgeText?: string;
     /** Badge variant */

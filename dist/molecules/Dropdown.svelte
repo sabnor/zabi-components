@@ -194,7 +194,7 @@
     const itemRole = $derived(menuRole === 'listbox' ? 'option' : 'menuitem');
 
     const optionClasses =
-        'flex w-full items-center justify-start rounded-md px-3 py-2 text-left text-sm text-body transition-colors hover:bg-base-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50';
+        'focus-ring flex w-full items-center justify-start rounded-md px-3 py-2 text-left text-sm text-body transition-colors hover:bg-base-100 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50';
 </script>
 
 <div

@@ -1,9 +1,15 @@
 <script lang="ts">
     interface Props {
+        /** Source string. Plain text unless `trustHtml` is true (e.g. Prism/Shiki output with `<span class="token">`). */
         code: string;
         language?: string;
         className?: string;
         showCopyButton?: boolean;
+        /**
+         * When true, `code` is rendered as HTML so highlighter markup applies.
+         * When false, `code` is escaped (required for snippets that contain `<` characters).
+         */
+        trustHtml?: boolean;
     }
 
     let {
@@ -11,6 +17,7 @@
         language = "svelte",
         className = "",
         showCopyButton = true,
+        trustHtml = false,
         ...restProps
     } = $props();
 
@@ -81,7 +88,8 @@
     </div>
 
     <pre class="p-4 overflow-x-auto text-sm text-base-100 leading-relaxed"><code
-            class="language-{language}">{@html code}</code
+            class="language-{language}"
+            >{#if trustHtml}{@html code}{:else}{code}{/if}</code
         ></pre>
 </div>
 

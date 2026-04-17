@@ -100,18 +100,18 @@
 
     const variantClass = $derived(() => {
         return variant === "success"
-            ? "border-success focus:border-success focus:ring-success"
+            ? "border-success focus-visible:border-success"
             : variant === "warning"
-              ? "border-warning focus:border-warning focus:ring-warning"
+              ? "border-warning focus-visible:border-warning"
               : variant === "error"
-                ? "border-error focus:border-error focus:ring-error"
-                : "border-input-border focus:ring-2 focus:ring-brand-500";
+                ? "border-error focus-visible:border-error"
+                : "border-input-border";
     });
 
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "flex w-full cursor-pointer items-center justify-between rounded-lg border bg-input text-body transition-all duration-200 hover:bg-input-hover focus:bg-input-focus focus:outline-none focus:ring-offset-0 disabled:cursor-not-allowed disabled:bg-input-disabled disabled:opacity-50";
+            "focus-ring flex w-full cursor-pointer items-center justify-between rounded-lg border bg-input text-body transition-all duration-200 hover:bg-input-hover active:bg-input-focus focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:opacity-50";
 
         return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
     });
@@ -310,7 +310,7 @@
                                     aria-selected={value === option.value
                                         ? true
                                         : undefined}
-                                    class="flex w-full items-center justify-start rounded-md border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 {value ===
+                                    class="focus-ring flex w-full items-center justify-start rounded-md border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {value ===
                                     option.value
                                         ? 'border-action-primary bg-transparent text-headline'
                                         : 'border-transparent bg-transparent text-body hover:bg-base-100'}"

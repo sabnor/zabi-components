@@ -16,6 +16,8 @@
         placeholder?: string;
         required?: boolean;
         disabled?: boolean;
+        /** Shows a spinner at the trailing edge and disables interaction while true. */
+        loading?: boolean;
         size?: SizeVariant;
         variant?: SemanticVariant;
         message?: string;
@@ -35,6 +37,7 @@
         placeholder = "",
         required = false,
         disabled = false,
+        loading = false,
         size = "md",
         variant = "default",
         message = "",
@@ -45,6 +48,7 @@
 
     const fallbackId = generateId("input");
     const inputId = $derived(idProp ?? fallbackId);
+    const isDisabled = $derived(disabled || loading);
 
     const sizeClass = $derived(() => {
         if (size === "sm") {
@@ -52,38 +56,46 @@
                 padding: "px-4 py-2",
                 text: "text-sm",
                 leading: "leading-5",
+                spinner: "size-4",
             };
         } else if (size === "lg") {
             return {
                 padding: "px-4 py-3",
                 text: "text-base",
                 leading: "leading-6",
+                spinner: "size-5",
             };
         } else {
             return {
                 padding: "px-4 py-2.5",
                 text: "text-base",
                 leading: "leading-6",
+                spinner: "size-5",
             };
         }
     });
 
     const variantClass = $derived(() => {
         return variant === "success"
-            ? "border-success focus:border-success focus:ring-success"
+            ? "border-success focus-visible:border-success"
             : variant === "warning"
-              ? "border-warning focus:border-warning focus:ring-warning"
+              ? "border-warning focus-visible:border-warning"
               : variant === "error"
-                ? "border-error focus:border-error focus:ring-error"
-                : "border-input-border focus:border-input-border focus:ring-2 focus:ring-brand-500";
+                ? "border-error focus-visible:border-error"
+                : "border-input-border focus-visible:border-input-border";
     });
 
     const inputClasses = $derived(() => {
         const sizeStyles = sizeClass();
+        const trailingPad = loading
+            ? size === "sm"
+                ? "pr-9"
+                : "pr-10"
+            : "";
         const baseClasses =
-            "w-full min-w-48 border bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
+            "focus-ring w-full min-w-48 border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
 
-        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()} ${className}`.trim();
+        return `${baseClasses} ${sizeStyles.padding} ${trailingPad} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()} ${className}`.trim();
     });
 
     const labelClasses = $derived(
@@ -119,22 +131,36 @@
     {#if label && !hideLabel}
         <label for={inputId} class={labelClasses()}>{label}</label>
     {/if}
-    <input
-        id={inputId}
-        {type}
-        {name}
-        bind:value
-        {placeholder}
-        {required}
-        {disabled}
-        class={inputClasses()}
-        oninput={handleInput}
-        {onblur}
-        aria-invalid={variant === "error" ? "true" : undefined}
-        aria-required={required ? "true" : undefined}
-        aria-describedby={message ? `${inputId}-message` : undefined}
-        {...restProps}
-    />
+    <div class="relative">
+        <input
+            id={inputId}
+            {type}
+            {name}
+            bind:value
+            {placeholder}
+            {required}
+            disabled={isDisabled}
+            class={inputClasses()}
+            oninput={handleInput}
+            {onblur}
+            aria-invalid={variant === "error" ? "true" : undefined}
+            aria-required={required ? "true" : undefined}
+            aria-busy={loading ? "true" : undefined}
+            aria-describedby={message ? `${inputId}-message` : undefined}
+            {...restProps}
+        />
+        {#if loading}
+            <span
+                class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-description"
+                aria-hidden="true"
+            >
+                <span
+                    class="inline-block {sizeClass()
+                        .spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70"
+                ></span>
+            </span>
+        {/if}
+    </div>
     {#if message && variant !== "default"}
         <p
             id={`${inputId}-message`}

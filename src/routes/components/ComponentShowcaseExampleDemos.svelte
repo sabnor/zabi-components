@@ -21,7 +21,6 @@
     import ColorPicker from "../../components/atoms/ColorPicker.svelte";
     import CodeBlock from "../../components/atoms/CodeBlock.svelte";
     import FeatureCard from "../../components/atoms/FeatureCard.svelte";
-    import List from "../../components/atoms/List.svelte";
     import OptimizedImage from "../../components/atoms/OptimizedImage.svelte";
     import Skeleton from "../../components/atoms/Skeleton.svelte";
     import Toast from "../../components/atoms/Toast.svelte";
@@ -53,7 +52,6 @@
     } from "@lucide/svelte";
     import type { ComponentMetadata } from "../../types/page.types";
     import {
-        docsListItems,
         selectOptions,
         sampleCode,
         sidebarAppShellDemoItems,
@@ -398,19 +396,6 @@
                                                     </p>
                                                 </CardContent>
                                             </Card>
-                                        </div>
-                                    {:else if component.name === "List"}
-                                        <div class="w-full space-y-4">
-                                            <List
-                                                items={docsListItems}
-                                                selectedId="billing"
-                                                ariaLabel="Account navigation"
-                                            />
-                                            <List
-                                                items={docsListItems}
-                                                showArrow={false}
-                                                ariaLabel="Account navigation without arrows"
-                                            />
                                         </div>
                                     {:else if component.name === "Alert"}
                                         <div class="space-y-4">

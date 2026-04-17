@@ -8,17 +8,15 @@ function createToastStore() {
         subscribe,
         push(options) {
             const id = options.id ?? `toast-${Math.random().toString(36).slice(2, 11)}`;
-            const duration = options.duration ?? 5000;
             const item = {
                 id,
                 message: options.message,
                 type: options.type ?? 'info',
-                duration,
+                duration: options.duration,
+                title: options.title,
+                detail: options.detail,
             };
             update((list) => [...list, item]);
-            if (duration > 0) {
-                setTimeout(() => dismiss(id), duration);
-            }
             return id;
         },
         dismiss,

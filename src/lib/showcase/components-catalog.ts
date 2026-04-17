@@ -275,7 +275,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "List",
                 category: "atoms",
                 description:
-                    "Interactive list rows with hover states and right-arrow affordances",
+                    "Semantic `<ul>` built from `items` (`ListItemData`). Optional `icon`, `avatar`, `description`, `href`, `selectedId`, `showArrow`, and `className` on the container. For trailing badges or amounts, use `ListItem` with a `trailing` snippet (see `/components/List`).",
                 props: [
                     {
                         name: "items",
@@ -283,7 +283,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: true,
                         defaultValue: "[]",
                         description:
-                            "Array of list items with label, id, and optional link metadata",
+                            "Array of `ListItemData`: `id`, `label`, optional `description`, `href`, `icon`, `avatar`, `avatarAlt`, `disabled`, link `target` / `rel`",
                     },
                     {
                         name: "ariaLabel",
@@ -307,6 +307,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Toggle the right arrow icon visibility",
                     },
                     {
+                        name: "className",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description:
+                            "Additional Tailwind classes on the `<ul>` (e.g. border, padding, background)",
+                    },
+                    {
                         name: "onclick",
                         type: "(item, event) => void",
                         required: false,
@@ -317,9 +325,9 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 variants: [],
                 examples: [
                     {
-                        title: "List with links",
+                        title: "List with links and selection",
                         description:
-                            "Hoverable rows with optional descriptions and right-arrow affordance",
+                            "Pass `selectedId` to highlight the active row (e.g. current settings section)",
                         code: `<List
   items={items}
   selectedId="billing"
@@ -327,11 +335,27 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 />`,
                     },
                     {
+                        title: "Icons on items",
+                        description:
+                            "Optional `icon` per `ListItemData` entry (Lucide or compatible component)",
+                        code: `<script lang="ts">
+  import { User, CreditCard } from "@lucide/svelte";
+  const items = [
+    { id: "profile", label: "Profile", icon: User, href: "/profile" },
+    { id: "billing", label: "Billing", icon: CreditCard, href: "/billing" },
+  ];
+</script>
+
+<List items={items} ariaLabel="Account" />`,
+                    },
+                    {
                         title: "Arrow hidden",
-                        description: "Use a cleaner list style without right-arrow icons",
+                        description:
+                            "Set `showArrow={false}` for compact rows without a chevron",
                         code: `<List
   items={items}
   showArrow={false}
+  ariaLabel="Options"
 />`,
                     },
                 ],
@@ -629,6 +653,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Code content to display",
                     },
                     {
+                        name: "trustHtml",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "When true, `code` is trusted highlighter HTML (e.g. `<span class=\"token\">`). When false, `code` is escaped plain source.",
+                    },
+                    {
                         name: "language",
                         type: "string",
                         required: false,
@@ -656,6 +688,12 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "With Line Numbers",
                         description: "Code block with line numbers",
                         code: '&lt;CodeBlock code="function example() {\n  return \'Hello\';\n}" language="javascript" showLineNumbers={true} /&gt;',
+                    },
+                    {
+                        title: "Pre-highlighted HTML",
+                        description:
+                            "Pass `trustHtml` when `code` contains markup from your highlighter",
+                        code: '&lt;CodeBlock trustHtml code={highlightedHtml} language="typescript" /&gt;',
                     },
                 ],
             },

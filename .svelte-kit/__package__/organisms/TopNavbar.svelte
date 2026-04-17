@@ -85,7 +85,7 @@
     }
 
     function getIconContainerClasses(): string {
-        return "group/nav-item flex flex-col items-center justify-center overflow-clip relative rounded-[20px] shrink-0 text-nav-menu-item transition-colors duration-200 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover aria-[current=page]:bg-nav-menu-active aria-[current=page]:text-nav-menu-item-active focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
+        return "focus-ring focus-ring--nav group/nav-item flex flex-col items-center justify-center overflow-clip relative rounded-[20px] shrink-0 text-nav-menu-item transition-colors duration-200 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover aria-[current=page]:bg-nav-menu-active aria-[current=page]:text-nav-menu-item-active";
     }
 
     function getStateLayerClasses(): string {
@@ -154,7 +154,7 @@
                     {#if brandHref}
                         <a
                             href={brandHref}
-                            class="text-xl font-bold text-headline hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                            class="focus-ring text-xl font-bold text-headline hover:opacity-90"
                         >
                             {brand}
                         </a>

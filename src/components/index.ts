@@ -35,6 +35,7 @@ export { default as ContactForm } from './molecules/ContactForm.svelte';
 export { default as Dropdown } from './molecules/Dropdown.svelte';
 export { default as Form } from './molecules/Form.svelte';
 export { default as FormField } from './molecules/FormField.svelte';
+export { default as Header } from './molecules/Header.svelte';
 export { default as EmptyState } from './molecules/EmptyState.svelte';
 export { default as Toaster } from './molecules/Toaster.svelte';
 export { default as ImageUpload } from './molecules/ImageUpload.svelte';
@@ -48,6 +49,7 @@ export { default as NavigationMenuItem } from './molecules/NavigationMenuItem.sv
 export { default as NavigationMenuTrigger } from './molecules/NavigationMenuTrigger.svelte';
 export { default as NavigationMenuContent } from './molecules/NavigationMenuContent.svelte';
 export { default as NavigationMenuLink } from './molecules/NavigationMenuLink.svelte';
+export { default as Page } from './molecules/Page.svelte';
 export { default as Section } from './molecules/Section.svelte';
 export { default as SidebarBrandHeader } from './molecules/SidebarBrandHeader.svelte';
 export { default as SidebarFooter } from './molecules/SidebarFooter.svelte';

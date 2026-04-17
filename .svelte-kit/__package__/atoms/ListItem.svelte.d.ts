@@ -1,4 +1,4 @@
-import type { Component } from "svelte";
+import type { Component, Snippet } from "svelte";
 export interface ListItemData {
     /** Unique identifier for stable rendering and active-state tracking. */
     id: string;
@@ -8,11 +8,15 @@ export interface ListItemData {
     description?: string;
     /** Optional URL; when set, the item renders as an anchor. */
     href?: string;
-    /** Optional leading icon rendered before text. */
+    /** Optional Lucide-style icon rendered in the leading column. If both `avatar` and `icon` are set, `avatar` is shown. */
     icon?: Component<{
         size?: number;
         class?: string;
     }>;
+    /** Optional avatar image URL for the leading column (takes precedence over `icon`). */
+    avatar?: string;
+    /** Accessible label for `avatar`; use `""` when the image is decorative. */
+    avatarAlt?: string;
     /** Link target, only used when href is provided. */
     target?: "_self" | "_blank" | "_parent" | "_top";
     /** Link rel attribute, only used when href is provided. */
@@ -27,6 +31,8 @@ interface Props {
     selected?: boolean;
     /** Whether to show the right-arrow icon. */
     showArrow?: boolean;
+    /** Optional trailing region (badges, metadata, auxiliary actions). Renders before the arrow when `showArrow` is true. */
+    trailing?: Snippet;
     /** Item click callback. */
     onclick?: (item: ListItemData, event: MouseEvent) => void;
 }

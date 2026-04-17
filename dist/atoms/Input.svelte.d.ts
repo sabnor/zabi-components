@@ -12,6 +12,8 @@ interface Props {
     placeholder?: string;
     required?: boolean;
     disabled?: boolean;
+    /** Shows a spinner at the trailing edge and disables interaction while true. */
+    loading?: boolean;
     size?: SizeVariant;
     variant?: SemanticVariant;
     message?: string;

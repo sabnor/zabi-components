@@ -9,6 +9,8 @@ interface Props {
     placeholder?: string;
     required?: boolean;
     disabled?: boolean;
+    /** Shows a spinner overlay and disables interaction while true. */
+    loading?: boolean;
     rows?: number;
     size?: SizeVariant;
     variant?: SemanticVariant;

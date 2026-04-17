@@ -29,7 +29,7 @@
     }: Props = $props();
 
     const listClasses = $derived(
-        `space-y-1 overflow-hidden rounded-xl border border-border bg-surface p-1 ${className}`.trim(),
+        `space-y-1 overflow-hidden rounded-xl ${className}`.trim(),
     );
 </script>
 

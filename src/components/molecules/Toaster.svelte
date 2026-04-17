@@ -1,23 +1,12 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { get } from 'svelte/store';
     import ToasterToast from './ToasterToast.svelte';
-    import { toastStore, type ToastItem } from './toast-store.js';
+    import { toastStore } from './toast-store.js';
 
     interface Props {
         class?: string;
     }
 
     let { class: className = '' }: Props = $props();
-
-    let items = $state<ToastItem[]>(get(toastStore));
-
-    onMount(() => {
-        const unsub = toastStore.subscribe((v) => {
-            items = v;
-        });
-        return unsub;
-    });
 </script>
 
 <div
@@ -26,7 +15,7 @@
     aria-label="Notifications"
     aria-live="polite"
 >
-    {#each items as toast (toast.id)}
+    {#each $toastStore as toast (toast.id)}
         <ToasterToast {toast} />
     {/each}
 </div>
