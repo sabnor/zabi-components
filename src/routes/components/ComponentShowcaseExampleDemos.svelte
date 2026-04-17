@@ -1,5 +1,6 @@
 <script lang="ts">
     import ComponentDemo from "../../components/molecules/ComponentDemo.svelte";
+    import { getComponentDemo } from "./demos/registry";
     import Button from "../../components/atoms/Button.svelte";
     import IconButton from "../../components/atoms/IconButton.svelte";
     import Card from "../../components/atoms/Card.svelte";
@@ -132,6 +133,21 @@
                                     code={example.code}
                                     language={example.language || "svelte"}
                                 >
+                                    {@const Demo = getComponentDemo(component.name)}
+                                    {#if Demo}
+                                        <Demo
+                                            exampleIndex={exampleIndex}
+                                            modalOpen={modalOpen}
+                                            slideUpOpen={slideUpOpen}
+                                            activeTab={activeTab}
+                                            selectValue={selectValue}
+                                            sidebarPath={sidebarPath}
+                                            sidebarSearchValue={sidebarSearchValue}
+                                            sidebarSearchPanelOpen={sidebarSearchPanelOpen}
+                                            sidebarProjectSearch={sidebarProjectSearch}
+                                            selectedProjectId={selectedProjectId}
+                                        />
+                                    {:else}
                                     {#if component.name === "Button"}
                                         <div class="space-y-4">
                                             <div class="flex flex-wrap items-center gap-2">
@@ -701,7 +717,7 @@
                                                                             asChild
                                                                         >
                                                                             <a
-                                                                                class="flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md md:p-6"
+                                                                                class="flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md md:p-6"
                                                                                 href="/"
                                                                             >
                                                                                 <div
@@ -1672,6 +1688,7 @@
                                                 />
                                             </Tooltip>
                                         </div>
+                                    {/if}
                                     {/if}
                                 </ComponentDemo>
                             {/each}

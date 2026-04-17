@@ -1,6 +1,9 @@
 <script lang="ts">
     import ComponentShowcaseExampleDemos from "../ComponentShowcaseExampleDemos.svelte";
-    import Badge from "../../../components/atoms/Badge.svelte";
+    import DocHeader from "../../../components/molecules/DocHeader.svelte";
+    import DocPage from "../../../components/molecules/DocPage.svelte";
+    import PropsTable from "../../../components/molecules/PropsTable.svelte";
+    import Section from "../../../components/molecules/Section.svelte";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
@@ -26,105 +29,46 @@
     />
 </svelte:head>
 
-<div class="max-w-4xl">
-    <div class="mb-8">
-        <h1 class="mb-2 text-3xl font-bold text-headline">
-            {component.name}
-        </h1>
-        <p class="mb-4 text-lg text-description">
-            {component.description}
-        </p>
-        <div class="flex gap-2">
-            <Badge variant="info" text={component.category} />
-            {#if component.variants}
-                <Badge
-                    variant="info"
-                    text="{component.variants.length} variants"
-                />
-            {/if}
-        </div>
-        {#if component.variants?.length}
-            <div class="mt-3 flex flex-wrap items-center gap-2">
-                <span class="text-sm font-medium text-headline">Variants:</span>
-                {#each component.variants as variant}
-                    <span
-                        class="rounded-md bg-base-100 px-2 py-1 text-xs text-headline"
-                    >
-                        {variant}
-                    </span>
-                {/each}
-            </div>
-        {/if}
-    </div>
-
-    <ComponentShowcaseExampleDemos
-        {component}
-        bind:modalOpen
-        bind:slideUpOpen
-        bind:activeTab
-        bind:selectValue
-        bind:sidebarPath
-        bind:sidebarSearchValue
-        bind:sidebarSearchPanelOpen
-        bind:sidebarProjectSearch
-        bind:selectedProjectId
+<DocPage>
+    <DocHeader
+        title={component.name}
+        description={component.description}
+        category={component.category}
+        variantsStates={component.variants}
     />
 
-    <div class="mt-12">
-        <h2 class="mb-6 text-2xl font-bold text-headline">Props</h2>
-        <div class="overflow-x-auto">
-            <table class="w-full border-collapse border border-border">
-                <thead>
-                    <tr class="bg-base-100">
-                        <th
-                            class="border border-border px-4 py-2 text-left font-semibold text-headline"
-                            >Name</th
-                        >
-                        <th
-                            class="border border-border px-4 py-2 text-left font-semibold text-headline"
-                            >Type</th
-                        >
-                        <th
-                            class="border border-border px-4 py-2 text-left font-semibold text-headline"
-                            >Required</th
-                        >
-                        <th
-                            class="border border-border px-4 py-2 text-left font-semibold text-headline"
-                            >Default</th
-                        >
-                        <th
-                            class="border border-border px-4 py-2 text-left font-semibold text-headline"
-                            >Description</th
-                        >
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each component.props as prop}
-                        <tr>
-                            <td
-                                class="border border-border px-4 py-2 font-mono text-body"
-                                >{prop.name}</td
-                            >
-                            <td
-                                class="border border-border px-4 py-2 text-description"
-                                >{prop.type}</td
-                            >
-                            <td class="border border-border px-4 py-2 text-description">
-                                {prop.required ? "Yes" : "No"}
-                            </td>
-                            <td class="border border-border px-4 py-2 text-description">
-                                {prop.defaultValue || "-"}
-                            </td>
-                            <td class="border border-border px-4 py-2 text-description">
-                                {prop.description}
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+    <Section
+        title="Live example"
+        description="Default usage you can copy and adapt."
+        padding="none"
+        background="transparent"
+        maxWidth="none"
+        className="pt-2"
+    >
+        <ComponentShowcaseExampleDemos
+            {component}
+            bind:modalOpen
+            bind:slideUpOpen
+            bind:activeTab
+            bind:selectValue
+            bind:sidebarPath
+            bind:sidebarSearchValue
+            bind:sidebarSearchPanelOpen
+            bind:sidebarProjectSearch
+            bind:selectedProjectId
+        />
+    </Section>
+
+    <Section
+        title="Props / API"
+        description="Minimal API reference for the exported component."
+        padding="none"
+        background="transparent"
+        maxWidth="none"
+    >
+        <PropsTable props={component.props} />
+    </Section>
+</DocPage>
 
 <footer
     class="mt-16 -mx-8 border-t border-border bg-base-100 px-8 py-8"
