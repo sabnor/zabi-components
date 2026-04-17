@@ -12,13 +12,13 @@ export type Variant = SemanticVariant;
 export function getInputVariantClasses(variant: Variant): string {
     const variantMap: Record<Variant, string> = {
         default:
-            'border-input-border focus:border-brand-500 focus:ring-2 focus:ring-brand-500',
+            'focus-ring border-input-border focus-visible:border-input-border',
         success:
-            'border-success focus:border-success focus:ring-2 focus:ring-success',
+            'focus-ring border-success focus-visible:border-success',
         warning:
-            'border-warning focus:border-warning focus:ring-2 focus:ring-warning',
-        error: 'border-error focus:border-error focus:ring-2 focus:ring-error',
-        info: 'border-info focus:border-info focus:ring-2 focus:ring-info',
+            'focus-ring border-warning focus-visible:border-warning',
+        error: 'focus-ring border-error focus-visible:border-error',
+        info: 'focus-ring border-info focus-visible:border-info',
     };
 
     return variantMap[variant] || variantMap.default;

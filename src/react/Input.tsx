@@ -43,19 +43,18 @@ export const Input: React.FC<InputProps> = ({
     const getVariantClasses = () => {
         switch (variant) {
             case 'success':
-                return 'border-green-300 focus:border-green-500 focus:ring-green-500';
+                return 'border-success focus-visible:border-success';
             case 'warning':
-                return 'border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500';
+                return 'border-warning focus-visible:border-warning';
             case 'error':
-                return 'border-red-300 focus:border-red-500 focus:ring-red-500';
+                return 'border-error focus-visible:border-error';
             default:
-                return 'border-base-300 focus:border-blue-500 focus:ring-blue-500';
+                return 'border-input-border focus-visible:border-input-border';
         }
     };
 
     const inputClasses = [
-        'w-full rounded-md transition-colors duration-200',
-        'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-base-50',
+        'focus-ring w-full rounded-md transition-colors duration-200',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-base-200',
         getSizeClasses(),
         getVariantClasses(),

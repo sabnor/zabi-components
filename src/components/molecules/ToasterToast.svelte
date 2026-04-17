@@ -130,7 +130,7 @@
                 {#if hasExpandable}
                     <button
                         type="button"
-                        class="cursor-pointer rounded-md p-1 text-description transition-colors hover:bg-base-100 hover:text-headline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                        class="focus-ring cursor-pointer rounded-md p-1 text-description transition-colors hover:bg-base-100 hover:text-headline focus:outline-none"
                         aria-expanded={isExpanded}
                         aria-controls="toaster-expand-{toast.id}"
                         aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
@@ -146,7 +146,7 @@
                 {/if}
                 <button
                     type="button"
-                    class="cursor-pointer rounded-md p-1 text-description transition-colors hover:bg-base-100 hover:text-headline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    class="focus-ring cursor-pointer rounded-md p-1 text-description transition-colors hover:bg-base-100 hover:text-headline focus:outline-none"
                     onclick={handleDismiss}
                     aria-label="Dismiss notification"
                 >
@@ -180,7 +180,7 @@
                 This message will close in {count} seconds.
                 <button
                     type="button"
-                    class="cursor-pointer rounded-sm text-link underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    class="focus-ring cursor-pointer rounded-sm text-link underline-offset-2 hover:underline focus:outline-none"
                     onclick={stopTimer}
                 >
                     Click to stop

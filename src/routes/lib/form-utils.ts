@@ -132,10 +132,7 @@ export const baseInputClasses = [
     "transition-all",
     "duration-200",
     "ease-in-out",
-    "focus:outline-none",
-    "focus:ring-2",
-    "focus:ring-focus-ring",
-    "focus:ring-offset-2",
+    "focus-ring",
     "disabled:opacity-50",
     "disabled:cursor-not-allowed",
     "read-only:cursor-default",
@@ -147,12 +144,12 @@ export const baseInputClasses = [
  */
 export function getStateClasses(hasError: boolean, hasSuccess: boolean): string {
     if (hasError) {
-        return "border-error text-text placeholder-text-placeholder focus:ring-error focus:border-error";
+        return "border-error text-text placeholder-text-placeholder focus-visible:border-error";
     }
     if (hasSuccess) {
-        return "border-success text-text placeholder-text-placeholder focus:ring-success focus:border-success";
+        return "border-success text-text placeholder-text-placeholder focus-visible:border-success";
     }
-    return "border-border text-text placeholder-text-placeholder focus:ring-focus-ring focus:border-border-focus";
+    return "border-border text-text placeholder-text-placeholder focus-visible:border-border-focus";
 }
 
 /**

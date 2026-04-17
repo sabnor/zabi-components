@@ -52,7 +52,7 @@
     );
 
     const baseClasses =
-        "group block rounded-2xl border border-base-200 bg-base-0 p-6 text-left transition-all duration-200 hover:border-headline/30 hover:bg-base-50 active:scale-[0.99] active:bg-base-100 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-headline/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+        "group focus-ring focus-ring--muted block rounded-2xl border border-base-200 bg-base-0 p-6 text-left transition-all duration-200 hover:border-headline/30 hover:bg-base-50 active:scale-[0.99] active:bg-base-100";
 
     const disabledClasses =
         "opacity-50 cursor-not-allowed pointer-events-none hover:border-base-200 hover:bg-base-0 active:scale-100";

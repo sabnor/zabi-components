@@ -33,26 +33,25 @@ export const Button: React.FC<ButtonProps> = ({
     const getVariantClasses = () => {
         switch (variant) {
             case 'primary':
-                return 'bg-base-100 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400';
+                return 'bg-base-100 text-white hover:bg-blue-700 active:bg-blue-800 focus-ring';
             case 'secondary':
-                return 'bg-base-600 text-white hover:bg-base-700 active:bg-base-800 focus:ring-2 focus:ring-base-500 focus:ring-offset-2 disabled:bg-base-400';
+                return 'bg-base-600 text-white hover:bg-base-700 active:bg-base-800 focus-ring';
             case 'danger':
-                return 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:bg-red-400';
+                return 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus-ring';
             case 'success':
-                return 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-green-400';
+                return 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 focus-ring';
             case 'ghost':
-                return 'bg-transparent text-base-700 hover:bg-base-100 active:bg-base-200 focus:ring-2 focus:ring-base-500 focus:ring-offset-2 disabled:text-base-400';
+                return 'bg-transparent text-base-700 hover:bg-base-100 active:bg-base-200 focus-ring';
             case 'brand':
-                return 'bg-purple-600 text-white hover:bg-purple-700 active:bg-purple-800 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-purple-400';
+                return 'bg-purple-600 text-white hover:bg-purple-700 active:bg-purple-800 focus-ring';
             default:
-                return 'bg-base-100 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400';
+                return 'bg-base-100 text-white hover:bg-blue-700 active:bg-blue-800 focus-ring';
         }
     };
 
     const classes = [
         'inline-flex items-center justify-center rounded-md transition-all duration-200',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
-        'focus:outline-none focus:ring-2 focus:ring-offset-2',
         'active:scale-95 transform-gpu',
         'shadow-sm hover:shadow-md',
         getSizeClasses(),

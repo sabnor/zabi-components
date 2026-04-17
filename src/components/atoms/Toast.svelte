@@ -50,7 +50,7 @@
         {#if closable}
             <button
                 type="button"
-                class="shrink-0 cursor-pointer rounded-md text-description hover:text-headline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                class="focus-ring shrink-0 cursor-pointer rounded-md text-description hover:text-headline focus:outline-none"
                 onclick={closeToast}
                 aria-label="Close notification"
             >

@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Default ring offset was white; keep separation via ring-offset-width only. */
+@layer base {
+    :root {
+        --tw-ring-offset-color: transparent;
+    }
+}
+
 /* ========================================
    🎨 THEME CONFIGURATION - SINGLE SOURCE OF TRUTH
    ========================================
@@ -198,6 +205,9 @@
   --color-focus-weak: theme(colors.brand.600);
   --color-focus-medium: theme(colors.brand.700);
   --color-focus-strong: theme(colors.brand.800);
+  /* Aliases for `ring-focus-ring`, `.focus-ring`, and form utils */
+  --color-focus-ring: var(--color-focus);
+  --color-focus-ring-offset: var(--color-card);
 
   /* Primary Colors */
   --color-primary: theme(colors.brand.600);
@@ -733,10 +743,6 @@ body {
   background-color: var(--color-input-hover);
 }
 
-.focus\:bg-input-focus:focus {
-  background-color: var(--color-input-focus);
-}
-
 .disabled\:bg-input-disabled:disabled {
   background-color: var(--color-input-disabled);
 }
@@ -862,16 +868,6 @@ body {
   border-color: var(--color-brand-600);
 }
 
-.focus\:ring-brand-500:focus {
-  --tw-ring-color: var(--color-brand-500);
-  box-shadow: 0 0 0 2px var(--tw-ring-color);
-}
-
-.focus\:ring-brand-600:focus {
-  --tw-ring-color: var(--color-brand-600);
-  box-shadow: 0 0 0 2px var(--tw-ring-color);
-}
-
 /* Text utilities */
 .text-headline {
   color: var(--color-headline);
@@ -923,11 +919,6 @@ body {
 
 .bg-nav-menu-active {
   background-color: var(--color-nav-menu-active);
-}
-
-.focus-visible\:ring-nav-menu-focus:focus-visible {
-  --tw-ring-color: var(--color-nav-menu-focus);
-  box-shadow: 0 0 0 2px var(--tw-ring-color);
 }
 
 .text-success {
@@ -982,10 +973,6 @@ body {
 
 .border-hover:hover {
   border-color: var(--color-border-hover);
-}
-
-.border-focus:focus {
-  border-color: var(--color-border-focus);
 }
 
 .border-disabled:disabled {
@@ -1050,14 +1037,102 @@ body {
   border-color: var(--color-secondary);
 }
 
-/* Focus utilities */
-.focus-ring {
-  box-shadow: 0 0 0 2px var(--color-focus-ring-offset), 0 0 0 4px var(--color-focus-ring);
-}
+/**
+ * Focus rings + selection-control label shells live in `@layer components` so Tailwind
+ * orders them with other component utilities (`@apply`, theme tokens).
+ */
+@layer components {
+  /**
+   * Unified keyboard-only focus ring.
+   *
+   * Usage: add `focus-ring` to any interactive element.
+   * Override ring/offset tokens by setting:
+   * - `--zabi-focus-ring-color`
+   * - `--zabi-focus-ring-offset-color`
+   */
+  .focus-ring {
+    --zabi-focus-ring-color: var(--color-focus-ring);
+    --zabi-focus-ring-offset-color: var(--color-focus-ring-offset);
+    outline: none;
+  }
 
-.focus-outline {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--zabi-focus-ring-offset-color),
+      0 0 0 4px var(--zabi-focus-ring-color);
+  }
+
+  /** Nav variant: same geometry, different token. */
+  .focus-ring--nav {
+    --zabi-focus-ring-color: var(--color-nav-menu-focus);
+  }
+
+  /** Semantic variants (optional): keep one geometry, swap token. */
+  .focus-ring--danger {
+    --zabi-focus-ring-color: var(--color-error);
+  }
+
+  .focus-ring--muted {
+    --zabi-focus-ring-color: var(--color-base-500);
+  }
+
+  /**
+   * Legacy aliases (keep stable public API while refactoring components).
+   * Prefer `focus-ring` / `focus-ring--nav` going forward.
+   */
+  .focus-brand {
+    --zabi-focus-ring-color: var(--color-focus-ring);
+    --zabi-focus-ring-offset-color: var(--color-focus-ring-offset);
+    outline: none;
+  }
+
+  .focus-brand:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--zabi-focus-ring-offset-color),
+      0 0 0 4px var(--zabi-focus-ring-color);
+  }
+
+  .focus-nav {
+    --zabi-focus-ring-color: var(--color-nav-menu-focus);
+    --zabi-focus-ring-offset-color: var(--color-focus-ring-offset);
+    outline: none;
+  }
+
+  .focus-nav:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--zabi-focus-ring-offset-color),
+      0 0 0 4px var(--zabi-focus-ring-color);
+  }
+
+  /**
+   * Checkbox / radio label row: hover, disabled, ring when inner control is `:focus-visible`.
+   * Compose with layout utilities in `selection-control.styles.ts` (`p-2`, `flex`, etc.).
+   */
+  .selection-control-label-row-interaction {
+    @apply rounded-md transition-colors outline-none cursor-pointer hover:bg-base-100 active:bg-base-200 has-disabled:opacity-50 has-disabled:cursor-not-allowed has-disabled:hover:bg-transparent;
+    /* Mirror `.focus-ring` geometry on the label row when the control is keyboard-focused. */
+    box-shadow: none;
+  }
+
+  .selection-control-label-row-interaction:has(:focus-visible) {
+    box-shadow:
+      0 0 0 2px var(--color-focus-ring-offset),
+      0 0 0 4px var(--color-focus-ring);
+  }
+
+  /** Stacked radio options: same ring when the row’s control is `:checked`. */
+  .selection-control-option-row {
+    box-shadow: none;
+  }
+
+  .selection-control-option-row:has(:checked) {
+    box-shadow:
+      0 0 0 2px var(--color-focus-ring-offset),
+      0 0 0 4px var(--color-focus-ring);
+  }
 }
 
 /* ========================================

@@ -20,4 +20,5 @@ export { default as Tabs } from './Tabs.svelte';
 export { default as FormField } from './FormField.svelte';
 export { default as EmptyState } from './EmptyState.svelte';
 export { default as Toaster } from './Toaster.svelte';
+export { default as RadioGroup } from './RadioGroup.svelte';
 export * from './toast-store.js';

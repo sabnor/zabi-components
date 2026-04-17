@@ -3,6 +3,13 @@
  */
 
 /**
+ * Global CSS classes from `app.css` (`@layer components`) for keyboard focus rings.
+ * Import the app / `zabi-components` stylesheet so these classes exist.
+ */
+export const FOCUS_BRAND_CLASS = "focus-brand";
+export const FOCUS_NAV_CLASS = "focus-nav";
+
+/**
  * Get all focusable elements within a container
  */
 export function getFocusableElements(container: HTMLElement): HTMLElement[] {
