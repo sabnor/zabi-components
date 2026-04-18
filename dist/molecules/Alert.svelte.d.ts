@@ -1,4 +1,4 @@
-import type { ExtendedSemanticVariant } from "../../types/variants.js";
+import type { ExtendedSemanticVariant } from "../types/variants.js";
 interface Props {
     variant?: ExtendedSemanticVariant;
     title?: string;

@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * Post-build: rewrite imports to `dist/routes/lib/*` using a depth derived from each
- * file's path under `dist/` (not a fixed `../../` → `../` string), so nested folders
- * like `dist/atoms/foo/bar/X.svelte` resolve with the correct number of `../`.
+ * Post-build: normalize any stray `from '.../routes/lib/...'` in packaged **.svelte**
+ * under dist/{atoms,molecules,organisms}. Source components import shared helpers from
+ * `../util/*` (resolved to dist/util); this script only fixes legacy or mis-emitted
+ * `routes/lib` specifiers so they match the correct depth to `dist/routes/lib/`.
+ *
+ * If the script reports "already normalized", no action was needed. Do not reintroduce
+ * `routes/lib` imports in src/components—use `../util/` for SSR/focus helpers.
  */
 
 import fs from 'fs';

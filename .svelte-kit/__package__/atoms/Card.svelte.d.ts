@@ -1,5 +1,5 @@
 import type { Snippet } from "svelte";
-import type { CardVariant, SizeVariant } from "../../types/variants.js";
+import type { CardVariant, SizeVariant } from "../types/variants.js";
 interface Props {
     onclick?: (event: MouseEvent) => void | Promise<void>;
     size?: SizeVariant;

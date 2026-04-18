@@ -1,4 +1,4 @@
-import { a1 as attributes, a0 as clsx, _ as ensure_array_like, a4 as element } from "./index2.js";
+import { a0 as attributes, a1 as clsx, _ as ensure_array_like, a4 as element } from "./index2.js";
 /**
  * @license @lucide/svelte v0.544.0 - ISC
  *

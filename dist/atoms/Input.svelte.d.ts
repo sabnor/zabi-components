@@ -1,4 +1,4 @@
-import type { SemanticVariant, SizeVariant } from "../../types/variants.js";
+import type { SemanticVariant, SizeVariant } from "../types/variants.js";
 interface Props {
     /** Omit to auto-generate; pair with FormField `id` when used inside FormField. */
     id?: string;

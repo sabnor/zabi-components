@@ -1,7 +1,9 @@
 import { U as head } from "../../../chunks/index2.js";
 import { g as goto } from "../../../chunks/client.js";
-import { a as Heading, C as CodeBlock, I as IconButton, H as Heart } from "../../../chunks/Heading.js";
-import { C as Card, a as CardHeader, b as CardContent, B as Button } from "../../../chunks/CardHeader.js";
+import { H as Heading, C as CodeBlock, a as Heart } from "../../../chunks/Heading.js";
+import { B as Button } from "../../../chunks/Button.js";
+import { I as IconButton } from "../../../chunks/IconButton.js";
+import { C as Card, a as CardHeader, b as CardContent } from "../../../chunks/CardHeader.js";
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     const quickStartCode = `import { Button, Card, CardHeader, CardContent, Input } from "zabi-components";
@@ -332,7 +334,7 @@ npm run build-storybook`;
         $$renderer3.push(`<!----> `);
         CardContent($$renderer3, {
           children: ($$renderer4) => {
-            $$renderer4.push(`<p class="text-secondary mb-4">Browse the interactive showcase: category sidebar, live demos, props tables, and a short guide on the components page.</p> `);
+            $$renderer4.push(`<p class="text-secondary mb-4">Browse the interactive showcase: category sidebar, live demos, props tables, and shareable URLs such as <code class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs">/components/SidebarNavigation</code>.</p> `);
             Button($$renderer4, {
               onclick: () => goto(),
               variant: "primary",

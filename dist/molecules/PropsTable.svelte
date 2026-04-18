@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ComponentProp } from "../../types/page.types";
+    import type { ComponentProp } from "../types/page.types";
     import Table from "../atoms/Table.svelte";
 
     interface Props {

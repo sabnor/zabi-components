@@ -1,4 +1,4 @@
-import type { ComponentProp } from "../../types/page.types";
+import type { ComponentProp } from "../types/page.types";
 interface Props {
     props: ComponentProp[];
     caption?: string;

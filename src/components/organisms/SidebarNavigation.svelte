@@ -9,7 +9,7 @@
     import { Command, Search } from "@lucide/svelte";
     import type { Snippet } from "svelte";
     import type { Component } from "svelte";
-    import type { ButtonVariant, SizeVariant } from "../../types/variants.js";
+    import type { ButtonVariant, SizeVariant } from "../types/variants.js";
 
     export interface SidebarNavigationItem {
         id: string;

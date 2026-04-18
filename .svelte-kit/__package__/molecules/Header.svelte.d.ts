@@ -1,4 +1,4 @@
-import type { ComponentCategory } from "../../types/page.types";
+import type { ComponentCategory } from "../types/page.types";
 interface Props {
     title: string;
     description: string;

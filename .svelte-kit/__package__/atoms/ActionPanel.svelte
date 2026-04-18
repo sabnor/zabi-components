@@ -1,6 +1,6 @@
 <script lang="ts">
     import Badge from "./Badge.svelte";
-    import type { ExtendedSemanticVariant } from "../../types/variants.js";
+    import type { ExtendedSemanticVariant } from "../types/variants.js";
 
     interface Props {
         title: string;
