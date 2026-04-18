@@ -26,7 +26,6 @@ function createToastStore() {
     };
 }
 export const toastStore = createToastStore();
-/** Queue a toast (returns id). */
 export function pushToast(options) {
     return toastStore.push(options);
 }

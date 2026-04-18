@@ -4,8 +4,8 @@
         saveFocus,
         returnFocus,
         focusFirstElement,
-    } from '../../routes/lib/focus-utils.js';
-    import { generateId } from '../../routes/lib/ssr-safe.js';
+    } from '../util/focus-utils.js';
+    import { generateId } from "../util/ssr-safe.js";
     import Card from '../atoms/Card.svelte';
     import CardHeader from '../atoms/CardHeader.svelte';
     import CardContent from '../atoms/CardContent.svelte';
@@ -20,6 +20,8 @@
         size?: Size;
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
+        /** On the `role="dialog"` root (testing, analytics). */
+        "data-testid"?: string;
     }
 
     let {
@@ -29,6 +31,7 @@
         size = 'md',
         onclick,
         onkeydown,
+        "data-testid": dataTestId = undefined,
         children,
         footer,
         ...restProps
@@ -71,6 +74,7 @@
         } else if (!isOpen && cleanupFocusTrap) {
             cleanupFocusTrap();
             cleanupFocusTrap = null;
+            returnFocus();
         }
     });
 
@@ -99,6 +103,7 @@
         aria-labelledby={title ? modalTitleId : undefined}
         aria-describedby={description ? modalDescriptionId : undefined}
         tabindex="-1"
+        data-testid={dataTestId}
         {...restProps}
     >
         <div

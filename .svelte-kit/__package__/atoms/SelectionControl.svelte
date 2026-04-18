@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
-    import { generateId } from "../../routes/lib/ssr-safe.js";
+    import { generateId } from "../util/ssr-safe.js";
     import {
         SELECTION_CONTROL_LABEL_ROW,
         selectionControlRingOverlayClasses,
@@ -24,16 +24,11 @@
         value?: string;
         label?: string;
         disabled?: boolean;
-        /** Shows a spinner in the mark slot and disables interaction while true. */
         loading?: boolean;
-        /** Initial checked state for uncontrolled usage. */
         defaultChecked?: boolean;
-        /** Controlled checked state (also supports `bind:checked`). */
         checked?: boolean;
         onChange?: (event: Event) => void;
-        /** Alias for consistency with existing components. */
         onchange?: (event: Event) => void;
-        /** Optional slot for the inner mark (check icon, dot, spinner). */
         mark?: Snippet<[SelectionControlMarkProps]>;
     }
 
@@ -54,7 +49,7 @@
         ...restProps
     }: Props = $props();
 
-    /** Stable per instance — `generateId()` must not run inside `$derived` (new id each invalidation). */
+    /** Call once per mount — `generateId()` in `$derived` would churn ids every tick. */
     const fallbackId = generateId("selection-control");
     const controlId = $derived(idProp ?? fallbackId);
     const isDisabled = $derived(disabled || loading);

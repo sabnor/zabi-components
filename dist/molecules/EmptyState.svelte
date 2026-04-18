@@ -1,14 +1,12 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { generateId } from '../../routes/lib/ssr-safe.js';
+    import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
         title: string;
         description: string;
         class?: string;
-        /** Primary action (e.g. button). */
         action?: Snippet;
-        /** Optional illustration or icon slot. */
         media?: Snippet;
     }
 

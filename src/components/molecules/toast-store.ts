@@ -4,16 +4,15 @@ export type ToastLevel = 'success' | 'error' | 'warning' | 'info';
 
 export interface ToastItem {
     id: string;
-    /** Shown in the expandable section when `detail` is omitted */
+    /** Primary line (always shown). */
     message: string;
     type: ToastLevel;
-    /** Header title (defaults by toast type) */
     title?: string;
-    /** Expandable warning / detail text (falls back to `message`) */
+    /** Expandable body; UI can fall back to `message`. */
     detail?: string;
     /**
-     * Reserved for future use. Auto-dismiss is handled inside `Toaster` via the
-     * countdown timer.
+     * Auto-dismiss duration in milliseconds.
+     * When omitted, the toaster uses 14s. Use `0` to keep the toast until dismissed manually.
      */
     duration?: number;
 }
@@ -30,6 +29,7 @@ function createToastStore() {
         push(options: {
             message: string;
             type?: ToastLevel;
+            /** Same semantics as {@link ToastItem.duration}. */
             duration?: number;
             id?: string;
             title?: string;
@@ -57,10 +57,10 @@ function createToastStore() {
 
 export const toastStore = createToastStore();
 
-/** Queue a toast (returns id). */
 export function pushToast(options: {
     message: string;
     type?: ToastLevel;
+    /** Same semantics as {@link ToastItem.duration}. */
     duration?: number;
     title?: string;
     detail?: string;

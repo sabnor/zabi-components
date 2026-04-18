@@ -3,22 +3,15 @@
     import type { ButtonVariant, SizeVariant } from "../../types/variants.js";
 
     interface Props {
-        /** Visual style variant. */
         variant?: ButtonVariant;
-        /** Size variant controlling padding and radius. */
         size?: SizeVariant;
-        /** Whether the button is disabled. */
         disabled?: boolean;
-        /** Shows a spinner and disables interaction while true. */
         loading?: boolean;
-        /** Button type attribute. */
         type?: "button" | "submit" | "reset";
-        /** Accessible label for icon-only buttons. */
+        /** Required for icon-only usage (no visible text). */
         label?: string;
         class?: string;
-        /** Click handler for native click events. */
         onclick?: (event: MouseEvent) => void;
-        /** Icon content. */
         children?: Snippet;
     }
 

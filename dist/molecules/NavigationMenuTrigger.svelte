@@ -3,6 +3,7 @@
     import { getContext } from "svelte";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
+        navigationMenuPanelId,
         type NavigationMenuContextValue,
     } from "./navigation-menu-context.js";
 
@@ -24,6 +25,12 @@
     );
 
     const isActive = $derived(context?.activeItem === value);
+
+    const panelId = $derived(
+        context
+            ? navigationMenuPanelId(context.menuInstanceId, value)
+            : "",
+    );
 
     function handleClick() {
         if (context) {
@@ -53,6 +60,7 @@
     type="button"
     class="focus-ring focus-ring--nav inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover data-[active=true]:bg-nav-menu-active data-[active=true]:text-nav-menu-item-active {className}"
     aria-expanded={isActive ? 'true' : 'false'}
+    aria-controls={panelId || undefined}
     aria-haspopup="true"
     onclick={handleClick}
     onkeydown={handleKeydown}

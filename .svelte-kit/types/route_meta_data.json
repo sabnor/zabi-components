@@ -1,5 +1,6 @@
 {
 	"/": [],
+	"/chaos-lab": [],
 	"/components": [
 		"src/routes/components/+page.ts"
 	],

@@ -4,8 +4,8 @@
         returnFocus,
         saveFocus,
         trapFocus,
-    } from '../../routes/lib/focus-utils.js';
-    import { generateId } from '../../routes/lib/ssr-safe.js';
+    } from '../util/focus-utils.js';
+    import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
         isOpen?: boolean;
@@ -51,6 +51,7 @@
         } else if (!isOpen && cleanupFocusTrap) {
             cleanupFocusTrap();
             cleanupFocusTrap = null;
+            returnFocus();
         }
     });
 

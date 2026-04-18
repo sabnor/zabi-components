@@ -8,7 +8,7 @@
         variant?: CardVariant;
         fullWidth?: boolean;
         className?: string;
-        /** Required when card is interactive (has onclick) for accessibility */
+        /** Required when `onclick` is set (no visible label). */
         ariaLabel?: string;
         children?: Snippet;
     }
@@ -28,7 +28,6 @@
         size === "sm" ? "p-4" : size === "lg" ? "p-8" : "p-6",
     );
 
-    /** Larger radius for larger cards (was single `rounded-lg` for all). */
     const radiusClass = $derived(
         size === "sm"
             ? "rounded-xl"

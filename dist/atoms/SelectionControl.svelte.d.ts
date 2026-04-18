@@ -14,16 +14,11 @@ interface Props {
     value?: string;
     label?: string;
     disabled?: boolean;
-    /** Shows a spinner in the mark slot and disables interaction while true. */
     loading?: boolean;
-    /** Initial checked state for uncontrolled usage. */
     defaultChecked?: boolean;
-    /** Controlled checked state (also supports `bind:checked`). */
     checked?: boolean;
     onChange?: (event: Event) => void;
-    /** Alias for consistency with existing components. */
     onchange?: (event: Event) => void;
-    /** Optional slot for the inner mark (check icon, dot, spinner). */
     mark?: Snippet<[SelectionControlMarkProps]>;
 }
 declare const SelectionControl: import("svelte").Component<Props, {}, "checked">;

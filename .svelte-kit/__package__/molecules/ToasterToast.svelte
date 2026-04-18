@@ -19,10 +19,17 @@
 
     let { toast }: Props = $props();
 
-    const INITIAL_COUNT = 14;
+    /** Seconds until auto-dismiss; `0` means no countdown (manual dismiss only). */
+    function autoDismissSeconds(duration: number | undefined): number {
+        if (duration === undefined) return 14;
+        if (duration <= 0) return 0;
+        return Math.max(1, Math.ceil(duration / 1000));
+    }
 
-    let count = $state(INITIAL_COUNT);
-    let timerActive = $state(true);
+    const maxSeconds = $derived(autoDismissSeconds(toast.duration));
+
+    let count = $state(0);
+    let timerActive = $state(false);
     let isExpanded = $state(false);
 
     let intervalRef: ReturnType<typeof setInterval> | undefined;
@@ -75,6 +82,13 @@
     }
 
     onMount(() => {
+        const max = maxSeconds;
+        if (max <= 0) {
+            return () => {};
+        }
+        count = max;
+        timerActive = true;
+
         intervalRef = setInterval(() => {
             count -= 1;
             if (count <= 0) {
@@ -99,7 +113,6 @@
         isExpanded = false;
     }
 
-    /** Enter from slightly below with fade; exit drops slightly with fade (bottom-anchored stack). */
     const toastEnter = { y: 18, duration: 260, opacity: 0, easing: cubicOut };
     const toastLeave = { y: 14, duration: 300, opacity: 0, easing: cubicOut };
 </script>
@@ -197,7 +210,7 @@
         >
             <div
                 class="h-full {progressFillClass} transition-all duration-1000 ease-linear"
-                style="width: {(count / INITIAL_COUNT) * 100}%"
+                style="width: {(count / maxSeconds) * 100}%"
             ></div>
         </div>
     {/if}

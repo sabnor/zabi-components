@@ -5,10 +5,7 @@
         closable?: boolean;
         onclick?: (event: Event) => void;
         class?: string;
-        /**
-         * `viewport` — fixed corner toast for transient feedback.
-         * `inline` — block-level; `w-full` up to max width (use inside a sized parent for demos).
-         */
+        /** `viewport`: fixed corner; `inline`: block in flow (e.g. demos). */
         layout?: 'viewport' | 'inline';
     }
 
@@ -31,7 +28,6 @@
         info: 'border-border bg-card text-body',
     };
 
-    /** Readable floor (18rem / 288px); max width caps corner + inline toasts */
     const cardClasses =
         'box-border w-full min-w-[18rem] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-lg border p-4 shadow-lg';
 

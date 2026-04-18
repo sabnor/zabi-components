@@ -2,11 +2,10 @@
     import type { Snippet } from "svelte";
 
     interface Props {
-        /** Short section label above the list (hidden when collapsed). */
         title?: string;
-        /** Stable id fragment so duplicate titles stay unique in the DOM. */
+        /** Disambiguates generated ids when section titles repeat. */
         sectionKey?: string;
-        /** Accessible name for the list when no visible title is shown. */
+        /** `aria-label` on the `<ul>` (required when title is hidden in collapsed mode). */
         listAriaLabel: string;
         collapsed?: boolean;
         className?: string;

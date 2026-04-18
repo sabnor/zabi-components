@@ -1,5 +1,4 @@
 import type { Component, Snippet } from "svelte";
-/** Link shown in the built-in nav list (when not using the `nav` snippet). */
 export interface TopNavbarNavItem {
     label: string;
     href: string;
@@ -14,18 +13,13 @@ export interface TopNavbarNavItem {
 }
 interface Props {
     brand?: string;
-    /** When set, the brand is a link (use `""` to show text only). */
     brandHref?: string;
-    /** Accessible name for the landmark when you have more than one `nav`. */
+    /** `aria-label` on `<nav>` when multiple nav landmarks exist. */
     ariaLabel?: string;
     showThemeToggle?: boolean;
     className?: string;
-    /**
-     * When true, renders only the built-in link list (or `nav` snippet) inside a `nav` landmark.
-     * Use for headers that are not the full chrome bar.
-     */
+    /** Slim mode: only the `nav` region (no full chrome bar). */
     embedded?: boolean;
-    /** Inline nav links; ignored when the `nav` snippet is provided. */
     items?: TopNavbarNavItem[];
     navVariant?: "header" | "sidebar";
     currentPath?: string;

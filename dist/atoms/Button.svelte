@@ -6,7 +6,6 @@
         variant?: ButtonVariant;
         size?: SizeVariant;
         disabled?: boolean;
-        /** Shows spinner and disables interaction while true */
         loading?: boolean;
         type?: "button" | "submit" | "reset";
         text?: string;

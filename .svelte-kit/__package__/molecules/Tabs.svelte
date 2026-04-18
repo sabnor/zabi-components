@@ -1,10 +1,5 @@
 <script lang="ts">
-    function createId(prefix: string): string {
-        if (typeof window !== "undefined") {
-            return `${prefix}-${Math.random().toString(36).slice(2, 11)}`;
-        }
-        return `${prefix}-ssr-${Date.now()}`;
-    }
+    import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
         tabs?: Array<{
@@ -26,7 +21,7 @@
         ...restProps
     }: Props & { children?: any } = $props();
 
-    const tabsBaseId = createId("tabs");
+    const tabsBaseId = generateId("tabs");
 
     function selectTab(tabId: string) {
         activeTab = tabId;

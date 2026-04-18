@@ -1,3 +1,8 @@
+/**
+ * Browser-only guards and id generation for components that run under SSR.
+ * `generateId()` is non-deterministic on the client (random) vs counter on the server —
+ * use stable ids for ARIA pairs (e.g. `menuId` on NavigationMenu), not for persisted keys.
+ */
 export declare function isBrowser(): boolean;
 export declare function safeWindow(): Window | undefined;
 export declare function safeDocument(): Document | undefined;

@@ -2,19 +2,12 @@
     import SidebarPanel, {
         type SidebarPanelItem,
     } from "./SidebarPanel.svelte";
+    import { generateId } from "../util/ssr-safe.js";
     import { LogOut, Moon, Sun, User } from "@lucide/svelte";
 
-    function createId(prefix: string): string {
-        if (typeof window !== "undefined") {
-            return `${prefix}-${Math.random().toString(36).slice(2, 11)}`;
-        }
-        return `${prefix}-ssr-${Date.now()}`;
-    }
-
     interface Props {
-        /** Used to connect `SidebarFooter`/`SidebarNavigation` `aria-controls` to this panel wrapper. */
+        /** Target id for `aria-controls` from the sidebar footer/nav. */
         panelId?: string;
-        /** Optional inline style for anchoring/positioning. */
         style?: string;
         profileName?: string;
         profileEmail?: string;
@@ -24,18 +17,14 @@
         isLightMode?: boolean;
         onThemeToggle?: (nextIsLightMode: boolean) => void;
         onLogout?: () => void;
-        /** Optional hook for navigating to an account/settings page. */
         onAccount?: () => void;
-        /** Called when the panel should close (close button, or after selection). */
         onClose?: () => void;
-        /** Optional width override (defaults to 320px). */
         widthClass?: string;
-        /** Match `SidebarNavigation` card surfaces when desired. */
         variant?: "plain" | "elevated";
     }
 
     let {
-        panelId = createId("account-panel"),
+        panelId = generateId("account-panel"),
         style = "",
         profileName = "Account",
         profileEmail = "",

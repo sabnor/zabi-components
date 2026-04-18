@@ -1,17 +1,9 @@
-/**
- * Focus management utilities for accessibility
- */
+/** Focus helpers for overlays (modals, sheets). Requires `app.css` focus ring classes. */
 
-/**
- * Global CSS classes from `app.css` (`@layer components`) for keyboard focus rings.
- * Import the app / `zabi-components` stylesheet so these classes exist.
- */
+/** From `app.css` `@layer components` — import the library/app stylesheet. */
 export const FOCUS_BRAND_CLASS = "focus-brand";
 export const FOCUS_NAV_CLASS = "focus-nav";
 
-/**
- * Get all focusable elements within a container
- */
 export function getFocusableElements(container: HTMLElement): HTMLElement[] {
     const selector = [
         'button:not([disabled])',
@@ -24,27 +16,23 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
 
     return Array.from(container.querySelectorAll<HTMLElement>(selector)).filter(
         (el) => {
-            // Filter out elements that are not visible
             const style = window.getComputedStyle(el);
             return style.display !== 'none' && style.visibility !== 'hidden';
         }
     );
 }
 
-/**
- * Trap focus within a container element
- */
+/** Tab wraps first↔last inside `container`. Caller should pair with `saveFocus` / `returnFocus`. */
 export function trapFocus(container: HTMLElement): () => void {
     const focusableElements = getFocusableElements(container);
     
     if (focusableElements.length === 0) {
-        return () => {}; // No-op cleanup
+        return () => {};
     }
 
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
 
-    // Focus first element
     firstElement.focus();
 
     function handleKeydown(event: KeyboardEvent) {
@@ -61,13 +49,11 @@ export function trapFocus(container: HTMLElement): () => void {
         }
 
         if (event.shiftKey) {
-            // Shift + Tab
             if (currentFocus === firstElement) {
                 event.preventDefault();
                 lastElement.focus();
             }
         } else {
-            // Tab
             if (currentFocus === lastElement) {
                 event.preventDefault();
                 firstElement.focus();
@@ -77,43 +63,48 @@ export function trapFocus(container: HTMLElement): () => void {
 
     container.addEventListener('keydown', handleKeydown);
 
-    // Return cleanup function
     return () => {
         container.removeEventListener('keydown', handleKeydown);
     };
 }
 
-/**
- * Store the element that had focus before opening a modal/dialog
- */
-let previousFocus: HTMLElement | null = null;
+/** One entry per overlay open; `returnFocus` pops LIFO (nested modals). */
+const focusReturnStack: Array<HTMLElement | null> = [];
 
-/**
- * Save the currently focused element
- */
 export function saveFocus(): void {
-    if (typeof document !== 'undefined') {
-        previousFocus = document.activeElement as HTMLElement;
+    if (typeof document === 'undefined') {
+        return;
+    }
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && active !== document.body) {
+        focusReturnStack.push(active);
+    } else {
+        focusReturnStack.push(null);
     }
 }
 
-/**
- * Return focus to the previously focused element
- */
+/** Restores focus from the last `saveFocus`. Skips disconnected or unfocusable nodes. */
 export function returnFocus(): void {
-    if (previousFocus && typeof document !== 'undefined') {
-        previousFocus.focus();
-        previousFocus = null;
+    if (typeof document === 'undefined') {
+        return;
+    }
+    const el = focusReturnStack.pop();
+    if (!el) {
+        return;
+    }
+    if (typeof el.focus !== 'function' || !el.isConnected) {
+        return;
+    }
+    try {
+        el.focus({ preventScroll: true });
+    } catch {
+        /* embeds / shadow roots may reject programmatic focus */
     }
 }
 
-/**
- * Focus the first focusable element in a container
- */
 export function focusFirstElement(container: HTMLElement): void {
     const focusableElements = getFocusableElements(container);
     if (focusableElements.length > 0) {
         focusableElements[0].focus();
     }
 }
-
