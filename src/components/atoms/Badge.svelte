@@ -3,7 +3,7 @@
     import type {
         ExtendedSemanticVariant,
         SizeVariant,
-    } from "../../types/variants.js";
+    } from "../types/variants.js";
 
     interface Props {
         variant?: ExtendedSemanticVariant;

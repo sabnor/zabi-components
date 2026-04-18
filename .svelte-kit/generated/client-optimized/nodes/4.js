@@ -1,2 +1,1 @@
-import * as universal from "../../../../src/routes/components/+page.ts";
-export { universal };
+export { default as component } from "../../../../src/routes/chaos-lab/+page.svelte";

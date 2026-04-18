@@ -17,16 +17,21 @@ function _layout($$renderer, $$props) {
     head("12qhfyh", $$renderer2, ($$renderer3) => {
       $$renderer3.push(`<meta charset="utf-8"/> <link rel="icon" href="/vite.svg"/> <meta name="viewport" content="width=device-width, initial-scale=1"/> <meta name="theme-color" content="#ffffff"/>`);
     });
-    TopNavbar($$renderer2, {
-      brand: "Zabi Components",
-      brandHref: "/",
-      ariaLabel: "Main navigation",
-      className: "supports-[backdrop-filter]:bg-base-50/95 backdrop-blur",
-      items: navItems,
-      navVariant: "header",
-      currentPath: store_get($$store_subs ??= {}, "$page", page).url.pathname
-    });
-    $$renderer2.push(`<!----> `);
+    if (store_get($$store_subs ??= {}, "$page", page).url.pathname !== "/chaos-lab") {
+      $$renderer2.push("<!--[-->");
+      TopNavbar($$renderer2, {
+        brand: "Zabi Components",
+        brandHref: "/",
+        ariaLabel: "Main navigation",
+        className: "supports-[backdrop-filter]:bg-base-50/95 backdrop-blur",
+        items: navItems,
+        navVariant: "header",
+        currentPath: store_get($$store_subs ??= {}, "$page", page).url.pathname
+      });
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
     children($$renderer2);
     $$renderer2.push(`<!---->`);
     if ($$store_subs) unsubscribe_stores($$store_subs);

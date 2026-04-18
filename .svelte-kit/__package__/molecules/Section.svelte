@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
-    import type { SizeVariant } from "../../types/variants.js";
+    import type { SizeVariant } from "../types/variants.js";
     import Heading from "../atoms/Heading.svelte";
 
     interface Props {

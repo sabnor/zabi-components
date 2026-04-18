@@ -1,7 +1,10 @@
 import { U as head, _ as ensure_array_like } from "../../chunks/index2.js";
 import { g as goto } from "../../chunks/client.js";
+import { c as componentsCatalog } from "../../chunks/components-catalog.js";
+import { A as ActionPanel } from "../../chunks/ActionPanel.js";
 import { B as Badge } from "../../chunks/Badge.js";
-import { B as Button, C as Card, a as CardHeader, b as CardContent } from "../../chunks/CardHeader.js";
+import { B as Button } from "../../chunks/Button.js";
+import { C as Card, a as CardHeader, b as CardContent } from "../../chunks/CardHeader.js";
 import { e as escape_html } from "../../chunks/context.js";
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
@@ -20,6 +23,12 @@ function _page($$renderer, $$props) {
       }
     ];
     const highlightedComponents = ["Button", "Input", "Card", "TopNavbar", "Modal", "Tabs"];
+    const componentCategoryLabel = {
+      atoms: "Atoms",
+      molecules: "Molecules",
+      organisms: "Organisms"
+    };
+    const allComponents = Object.values(componentsCatalog).flat().slice().sort((a, b) => a.name.localeCompare(b.name));
     head("1uha8ag", $$renderer2, ($$renderer3) => {
       $$renderer3.title(($$renderer4) => {
         $$renderer4.push(`<title>Zabi Components | Svelte UI components</title>`);
@@ -77,7 +86,21 @@ function _page($$renderer, $$props) {
       text: "Browse all components",
       onclick: () => goto()
     });
-    $$renderer2.push(`<!----></div></section></main> <footer class="border-t border-border py-16 sm:py-20"><div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col items-center justify-between gap-6 text-sm text-description md:flex-row"><p>© 2026 Zabi Components. Open source MIT.</p> <div class="flex items-center gap-8"><a href="/docs" class="hover:text-headline transition-colors">Docs</a> <a href="/components" class="hover:text-headline transition-colors">Components</a> <a href="https://github.com" class="hover:text-headline transition-colors">GitHub</a></div></div></div></footer></div>`);
+    $$renderer2.push(`<!----></div></section> <section class="border-t border-border py-32 sm:py-40" aria-labelledby="all-components-title"><div class="mx-auto max-w-6xl"><div class="mx-auto max-w-3xl text-center"><h2 id="all-components-title" class="text-3xl font-semibold text-headline sm:text-4xl">All components</h2> <p class="mt-6 text-lg text-description sm:text-xl">Browse every component in the library. Each tile links to
+                        a full page with props, variants, and examples.</p></div> <div class="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"><!--[-->`);
+    const each_array_2 = ensure_array_like(allComponents);
+    for (let $$index_2 = 0, $$length = each_array_2.length; $$index_2 < $$length; $$index_2++) {
+      let component = each_array_2[$$index_2];
+      ActionPanel($$renderer2, {
+        href: `/components/${component.name}`,
+        title: component.name,
+        description: component.description,
+        badgeText: componentCategoryLabel[component.category],
+        badgeVariant: "neutral",
+        ariaLabel: `Open ${component.name} component docs`
+      });
+    }
+    $$renderer2.push(`<!--]--></div></div></section></main> <footer class="border-t border-border py-16 sm:py-20"><div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col items-center justify-between gap-6 text-sm text-description md:flex-row"><p>© 2026 Zabi Components. Open source MIT.</p> <div class="flex items-center gap-8"><a href="/docs" class="hover:text-headline transition-colors">Docs</a> <a href="/components" class="hover:text-headline transition-colors">Components</a> <a href="https://github.com" class="hover:text-headline transition-colors">GitHub</a></div></div></div></footer></div>`);
   });
 }
 export {

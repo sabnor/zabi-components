@@ -1,6 +1,6 @@
 <script lang="ts">
     import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
-    import type { SemanticVariant, SizeVariant } from "../../types/variants.js";
+    import type { SemanticVariant, SizeVariant } from "../types/variants.js";
     import { generateId } from "../util/ssr-safe.js";
 
     interface Props {

@@ -276,6 +276,103 @@ function verifyPackagedSvelteImports() {
   return true;
 }
 
+const typesLibRoot = path.join(distDir, 'types');
+
+/** Ensure types/ imports from packaged .svelte resolve under dist/types (never above dist/). */
+function verifyPackagedTypesImports() {
+  const roots = ['atoms', 'molecules', 'organisms'].map((sub) =>
+    path.join(distDir, sub),
+  );
+  const badParentTypes = [];
+  const brokenResolve = [];
+  /** `from '...'` with relative path containing types/ */
+  const typesImportRe =
+    /from\s+['"]((?:\.\.\/)+)(types\/[^'"]+)['"]/g;
+
+  function resolveSpec(filePath, spec) {
+    return path.normalize(path.join(path.dirname(filePath), spec));
+  }
+
+  function targetExists(resolved) {
+    if (fs.existsSync(resolved)) return true;
+    if (resolved.endsWith('.js')) {
+      const ts = resolved.slice(0, -3) + '.ts';
+      if (fs.existsSync(ts)) return true;
+    }
+    if (!resolved.match(/\.[jt]s$/)) {
+      if (fs.existsSync(resolved + '.ts')) return true;
+      if (fs.existsSync(resolved + '.js')) return true;
+    }
+    return false;
+  }
+
+  function walk(dir) {
+    if (!fs.existsSync(dir)) return;
+    for (const name of fs.readdirSync(dir)) {
+      const full = path.join(dir, name);
+      const st = fs.statSync(full);
+      if (st.isDirectory()) {
+        walk(full);
+      } else if (name.endsWith('.svelte')) {
+        const text = fs.readFileSync(full, 'utf8');
+        if (text.includes("../../types") || text.includes("../../types/")) {
+          badParentTypes.push(path.relative(distDir, full));
+        }
+        typesImportRe.lastIndex = 0;
+        let m;
+        while ((m = typesImportRe.exec(text)) !== null) {
+          const spec = m[1] + m[2];
+          const resolved = resolveSpec(full, spec);
+          if (
+            !resolved.startsWith(typesLibRoot + path.sep) &&
+            resolved !== typesLibRoot
+          ) {
+            brokenResolve.push({
+              file: path.relative(distDir, full),
+              spec,
+              resolved,
+            });
+          } else if (!targetExists(resolved)) {
+            brokenResolve.push({
+              file: path.relative(distDir, full),
+              spec,
+              resolved,
+              missing: true,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  for (const root of roots) {
+    walk(root);
+  }
+
+  if (badParentTypes.length > 0) {
+    console.error(
+      '❌ Packaged Svelte must not import shared types via "../../types" (escapes dist/):',
+    );
+    for (const f of badParentTypes) {
+      console.error(`   - ${f}`);
+    }
+  }
+  if (brokenResolve.length > 0) {
+    console.error('❌ types/ import does not resolve under dist/types:');
+    for (const row of brokenResolve) {
+      console.error(
+        `   - ${row.file}: "${row.spec}" -> ${row.resolved}${row.missing ? ' (missing file)' : ''}`,
+      );
+    }
+  }
+
+  if (badParentTypes.length > 0 || brokenResolve.length > 0) {
+    return false;
+  }
+  console.log('✓ Packaged Svelte types/ imports verified');
+  return true;
+}
+
 async function verifyBuild() {
   console.log('🔍 Verifying build output...\n');
 
@@ -310,6 +407,48 @@ async function verifyBuild() {
   const importsValid = verifyPackagedSvelteImports();
   if (!importsValid) {
     allValid = false;
+  }
+
+  const typesImportsValid = verifyPackagedTypesImports();
+  if (!typesImportsValid) {
+    allValid = false;
+  }
+
+  console.log('\n📦 Verifying dist/components/types runtime modules...');
+  const componentsTypesDir = path.join(distDir, 'components', 'types');
+  const requiredComponentsTypesJs = ['page.types.js', 'variants.js'];
+  for (const name of requiredComponentsTypesJs) {
+    const p = path.join(componentsTypesDir, name);
+    if (!fs.existsSync(p)) {
+      console.error(`❌ Missing ${path.relative(distDir, p)} (needed for zabi-components/types re-exports)`);
+      allValid = false;
+    } else {
+      const st = fs.statSync(p);
+      if (st.size === 0) {
+        console.error(`❌ Empty file: ${path.relative(distDir, p)}`);
+        allValid = false;
+      } else {
+        console.log(`✓ ${path.relative(distDir, p)} (${(st.size / 1024).toFixed(2)} KB)`);
+      }
+    }
+  }
+
+  const typesVariantsShim = path.join(distDir, 'types', 'variants.js');
+  if (!fs.existsSync(typesVariantsShim)) {
+    console.error(`❌ Missing ${path.relative(distDir, typesVariantsShim)} (must re-export ../components/types/variants.js)`);
+    allValid = false;
+  } else {
+    const shimText = fs.readFileSync(typesVariantsShim, 'utf8').replace(/\s+/g, ' ').trim();
+    const expected =
+      "export * from '../components/types/variants.js';".replace(/\s+/g, ' ').trim();
+    if (shimText !== expected) {
+      console.error(
+        `❌ dist/types/variants.js must be a single re-export matching dist/types/variants.d.ts, got: ${shimText.slice(0, 120)}`,
+      );
+      allValid = false;
+    } else {
+      console.log(`✓ ${path.relative(distDir, typesVariantsShim)} (re-export shim)`);
+    }
   }
 
   console.log('');

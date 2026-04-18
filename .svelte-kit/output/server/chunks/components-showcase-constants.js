@@ -1,8 +1,10 @@
-import { $ as spread_props, Y as attr, X as attr_class, a0 as clsx, a1 as attributes, a2 as bind_props, Z as stringify, _ as ensure_array_like } from "./index2.js";
+import { $ as spread_props, Y as attr, X as attr_class, a1 as clsx, a0 as attributes, Z as stringify, a2 as bind_props, _ as ensure_array_like } from "./index2.js";
 import { I as Icon } from "./Icon.js";
 import { T as Triangle_alert, B as Badge } from "./Badge.js";
+import { B as Button } from "./Button.js";
+import { I as IconButton } from "./IconButton.js";
+import { g as generateId } from "./ssr-safe.js";
 import { e as escape_html } from "./context.js";
-import { S as Sun } from "./sun.js";
 function Bell($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     /**
@@ -66,6 +68,87 @@ function Bell($$renderer, $$props) {
        * @description Lucide SVG icon component, renders SVG Element with children.
        *
        * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAuMjY4IDIxYTIgMiAwIDAgMCAzLjQ2NCAwIiAvPgogIDxwYXRoIGQ9Ik0zLjI2MiAxNS4zMjZBMSAxIDAgMCAwIDQgMTdoMTZhMSAxIDAgMCAwIC43NC0xLjY3M0MxOS40MSAxMy45NTYgMTggMTIuNDk5IDE4IDhBNiA2IDAgMCAwIDYgOGMwIDQuNDk5LTEuNDExIDUuOTU2LTIuNzM4IDcuMzI2IiAvPgo8L3N2Zz4K) - https://lucide.dev/icons/bell
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function Calendar($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      ["path", { "d": "M8 2v4" }],
+      ["path", { "d": "M16 2v4" }],
+      [
+        "rect",
+        { "width": "18", "height": "18", "x": "3", "y": "4", "rx": "2" }
+      ],
+      ["path", { "d": "M3 10h18" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "calendar" },
+      /**
+       * @component @name Calendar
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNOCAydjQiIC8+CiAgPHBhdGggZD0iTTE2IDJ2NCIgLz4KICA8cmVjdCB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHg9IjMiIHk9IjQiIHJ4PSIyIiAvPgogIDxwYXRoIGQ9Ik0zIDEwaDE4IiAvPgo8L3N2Zz4K) - https://lucide.dev/icons/calendar
        * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
        *
        * @param {Object} props - Lucide icons props and any valid SVG attribute
@@ -548,6 +631,170 @@ function Circle($$renderer, $$props) {
     ]));
   });
 }
+function Command($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      [
+        "path",
+        {
+          "d": "M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"
+        }
+      ]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "command" },
+      /**
+       * @component @name Command
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTUgNnYxMmEzIDMgMCAxIDAgMy0zSDZhMyAzIDAgMSAwIDMgM1Y2YTMgMyAwIDEgMC0zIDNoMTJhMyAzIDAgMSAwLTMtMyIgLz4KPC9zdmc+Cg==) - https://lucide.dev/icons/command
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
+function File_text($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      [
+        "path",
+        {
+          "d": "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+        }
+      ],
+      ["path", { "d": "M14 2v4a2 2 0 0 0 2 2h4" }],
+      ["path", { "d": "M10 9H8" }],
+      ["path", { "d": "M16 13H8" }],
+      ["path", { "d": "M16 17H8" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "file-text" },
+      /**
+       * @component @name FileText
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTUgMkg2YTIgMiAwIDAgMC0yIDJ2MTZhMiAyIDAgMCAwIDIgMmgxMmEyIDIgMCAwIDAgMi0yVjdaIiAvPgogIDxwYXRoIGQ9Ik0xNCAydjRhMiAyIDAgMCAwIDIgMmg0IiAvPgogIDxwYXRoIGQ9Ik0xMCA5SDgiIC8+CiAgPHBhdGggZD0iTTE2IDEzSDgiIC8+CiAgPHBhdGggZD0iTTE2IDE3SDgiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/file-text
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
+}
 function House($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     /**
@@ -632,84 +879,7 @@ function House($$renderer, $$props) {
     ]));
   });
 }
-function Log_out($$renderer, $$props) {
-  $$renderer.component(($$renderer2) => {
-    /**
-     * @license @lucide/svelte v0.544.0 - ISC
-     *
-     * ISC License
-     *
-     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
-     *
-     * Permission to use, copy, modify, and/or distribute this software for any
-     * purpose with or without fee is hereby granted, provided that the above
-     * copyright notice and this permission notice appear in all copies.
-     *
-     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-     *
-     * ---
-     *
-     * The MIT License (MIT) (for portions derived from Feather)
-     *
-     * Copyright (c) 2013-2023 Cole Bemis
-     *
-     * Permission is hereby granted, free of charge, to any person obtaining a copy
-     * of this software and associated documentation files (the "Software"), to deal
-     * in the Software without restriction, including without limitation the rights
-     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-     * copies of the Software, and to permit persons to whom the Software is
-     * furnished to do so, subject to the following conditions:
-     *
-     * The above copyright notice and this permission notice shall be included in all
-     * copies or substantial portions of the Software.
-     *
-     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-     * SOFTWARE.
-     *
-     */
-    let { $$slots, $$events, ...props } = $$props;
-    const iconNode = [
-      ["path", { "d": "m16 17 5-5-5-5" }],
-      ["path", { "d": "M21 12H9" }],
-      ["path", { "d": "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" }]
-    ];
-    Icon($$renderer2, spread_props([
-      { name: "log-out" },
-      /**
-       * @component @name LogOut
-       * @description Lucide SVG icon component, renders SVG Element with children.
-       *
-       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJtMTYgMTcgNS01LTUtNSIgLz4KICA8cGF0aCBkPSJNMjEgMTJIOSIgLz4KICA8cGF0aCBkPSJNOSAyMUg1YTIgMiAwIDAgMS0yLTJWNWEyIDIgMCAwIDEgMi0yaDQiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/log-out
-       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
-       *
-       * @param {Object} props - Lucide icons props and any valid SVG attribute
-       * @returns {FunctionalComponent} Svelte component
-       *
-       */
-      props,
-      {
-        iconNode,
-        children: ($$renderer3) => {
-          props.children?.($$renderer3);
-          $$renderer3.push(`<!---->`);
-        },
-        $$slots: { default: true }
-      }
-    ]));
-  });
-}
-function Moon($$renderer, $$props) {
+function Layout_dashboard($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     /**
      * @license @lucide/svelte v0.544.0 - ISC
@@ -758,19 +928,29 @@ function Moon($$renderer, $$props) {
     let { $$slots, $$events, ...props } = $$props;
     const iconNode = [
       [
-        "path",
-        {
-          "d": "M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
-        }
+        "rect",
+        { "width": "7", "height": "9", "x": "3", "y": "3", "rx": "1" }
+      ],
+      [
+        "rect",
+        { "width": "7", "height": "5", "x": "14", "y": "3", "rx": "1" }
+      ],
+      [
+        "rect",
+        { "width": "7", "height": "9", "x": "14", "y": "12", "rx": "1" }
+      ],
+      [
+        "rect",
+        { "width": "7", "height": "5", "x": "3", "y": "16", "rx": "1" }
       ]
     ];
     Icon($$renderer2, spread_props([
-      { name: "moon" },
+      { name: "layout-dashboard" },
       /**
-       * @component @name Moon
+       * @component @name LayoutDashboard
        * @description Lucide SVG icon component, renders SVG Element with children.
        *
-       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjAuOTg1IDEyLjQ4NmE5IDkgMCAxIDEtOS40NzMtOS40NzJjLjQwNS0uMDIyLjYxNy40Ni40MDIuODAzYTYgNiAwIDAgMCA4LjI2OCA4LjI2OGMuMzQ0LS4yMTUuODI1LS4wMDQuODAzLjQwMSIgLz4KPC9zdmc+Cg==) - https://lucide.dev/icons/moon
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI5IiB4PSIzIiB5PSIzIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI1IiB4PSIxNCIgeT0iMyIgcng9IjEiIC8+CiAgPHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iOSIgeD0iMTQiIHk9IjEyIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI1IiB4PSIzIiB5PSIxNiIgcng9IjEiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/layout-dashboard
        * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
        *
        * @param {Object} props - Lucide icons props and any valid SVG attribute
@@ -1029,28 +1209,98 @@ function Settings($$renderer, $$props) {
     ]));
   });
 }
-function isBrowser() {
-  return typeof window !== "undefined";
-}
-let idCounter = 0;
-function generateId(prefix = "id") {
-  if (isBrowser()) {
-    return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
-  } else {
-    return `${prefix}-ssr-${++idCounter}`;
-  }
+function Users($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    /**
+     * @license @lucide/svelte v0.544.0 - ISC
+     *
+     * ISC License
+     *
+     * Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     *
+     * ---
+     *
+     * The MIT License (MIT) (for portions derived from Feather)
+     *
+     * Copyright (c) 2013-2023 Cole Bemis
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     *
+     */
+    let { $$slots, $$events, ...props } = $$props;
+    const iconNode = [
+      ["path", { "d": "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" }],
+      ["path", { "d": "M16 3.128a4 4 0 0 1 0 7.744" }],
+      ["path", { "d": "M22 21v-2a4 4 0 0 0-3-3.87" }],
+      ["circle", { "cx": "9", "cy": "7", "r": "4" }]
+    ];
+    Icon($$renderer2, spread_props([
+      { name: "users" },
+      /**
+       * @component @name Users
+       * @description Lucide SVG icon component, renders SVG Element with children.
+       *
+       * @preview ![img](data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTYgMjF2LTJhNCA0IDAgMCAwLTQtNEg2YTQgNCAwIDAgMC00IDR2MiIgLz4KICA8cGF0aCBkPSJNMTYgMy4xMjhhNCA0IDAgMCAxIDAgNy43NDQiIC8+CiAgPHBhdGggZD0iTTIyIDIxdi0yYTQgNCAwIDAgMC0zLTMuODciIC8+CiAgPGNpcmNsZSBjeD0iOSIgY3k9IjciIHI9IjQiIC8+Cjwvc3ZnPgo=) - https://lucide.dev/icons/users
+       * @see https://lucide.dev/guide/packages/lucide-svelte - Documentation
+       *
+       * @param {Object} props - Lucide icons props and any valid SVG attribute
+       * @returns {FunctionalComponent} Svelte component
+       *
+       */
+      props,
+      {
+        iconNode,
+        children: ($$renderer3) => {
+          props.children?.($$renderer3);
+          $$renderer3.push(`<!---->`);
+        },
+        $$slots: { default: true }
+      }
+    ]));
+  });
 }
 function Input($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let {
+      id: idProp,
       value = "",
       type = "text",
       name = "",
       class: className = "",
       label = "",
+      hideLabel = false,
       placeholder = "",
       required = false,
       disabled = false,
+      loading = false,
       size = "md",
       variant = "default",
       message = "",
@@ -1060,31 +1310,41 @@ function Input($$renderer, $$props) {
       $$events,
       ...restProps
     } = $$props;
-    const inputId = generateId("input");
+    const fallbackId = generateId("input");
+    const inputId = idProp ?? fallbackId;
+    const isDisabled = disabled || loading;
     const sizeClass = () => {
       if (size === "sm") {
-        return { padding: "px-4 py-2", text: "text-sm", leading: "leading-5" };
+        return {
+          padding: "px-4 py-2",
+          text: "text-sm",
+          leading: "leading-5",
+          spinner: "size-4"
+        };
       } else if (size === "lg") {
         return {
           padding: "px-4 py-3",
           text: "text-base",
-          leading: "leading-6"
+          leading: "leading-6",
+          spinner: "size-5"
         };
       } else {
         return {
           padding: "px-4 py-2.5",
           text: "text-base",
-          leading: "leading-6"
+          leading: "leading-6",
+          spinner: "size-5"
         };
       }
     };
     const variantClass = () => {
-      return variant === "success" ? "border-success focus:border-success focus:ring-success" : variant === "warning" ? "border-warning focus:border-warning focus:ring-warning" : variant === "error" ? "border-error focus:border-error focus:ring-error" : "border-input-border focus:border-input-border focus:ring-2 focus:ring-brand-500";
+      return variant === "success" ? "border-success focus-visible:border-success" : variant === "warning" ? "border-warning focus-visible:border-warning" : variant === "error" ? "border-error focus-visible:border-error" : "border-input-border focus-visible:border-input-border";
     };
     const inputClasses = () => {
       const sizeStyles = sizeClass();
-      const baseClasses = "w-full min-w-48 border bg-input hover:bg-input-hover focus:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
-      return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()} ${className}`.trim();
+      const trailingPad = loading ? size === "sm" ? "pr-9" : "pr-10" : "";
+      const baseClasses = "focus-ring w-full min-w-48 border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
+      return `${baseClasses} ${sizeStyles.padding} ${trailingPad} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()} ${className}`.trim();
     };
     const labelClasses = () => "block text-sm font-medium text-label mb-1";
     const messageClasses = () => {
@@ -1104,13 +1364,13 @@ function Input($$renderer, $$props) {
       return null;
     };
     $$renderer2.push(`<div>`);
-    if (label) {
+    if (label && !hideLabel) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<label${attr("for", inputId)}${attr_class(clsx(labelClasses()))}>${escape_html(label)}</label>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--> <input${attributes(
+    $$renderer2.push(`<!--]--> <div class="relative"><input${attributes(
       {
         id: inputId,
         type,
@@ -1118,10 +1378,11 @@ function Input($$renderer, $$props) {
         value,
         placeholder,
         required,
-        disabled,
+        disabled: isDisabled,
         class: clsx(inputClasses()),
         "aria-invalid": variant === "error" ? "true" : void 0,
         "aria-required": required ? "true" : void 0,
+        "aria-busy": loading ? "true" : void 0,
         "aria-describedby": message ? `${inputId}-message` : void 0,
         ...restProps
       },
@@ -1130,6 +1391,13 @@ function Input($$renderer, $$props) {
       void 0,
       4
     )}/> `);
+    if (loading) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-description" aria-hidden="true"><span${attr_class(`inline-block ${stringify(sizeClass().spinner)} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70`)}></span></span>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></div> `);
     if (message && variant !== "default") {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<p${attr("id", `${inputId}-message`)}${attr_class(clsx(messageClasses()))}${attr("role", variant === "error" ? "alert" : "status")}${attr("aria-live", variant === "error" ? "assertive" : "polite")}>`);
@@ -1194,6 +1462,66 @@ function SidebarBrandHeader($$renderer, $$props) {
     $$renderer2.push(`<!--]-->`);
   });
 }
+function SidebarFooter($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let {
+      collapsed = false,
+      showProfile = true,
+      profileName = "Zabi",
+      profileEmail = "hello@zabi.dev",
+      profileInitials = "ZA",
+      showLogout = true,
+      logoutLabel = "Logout",
+      showThemeToggle = true,
+      lightModeLabel = "Light mode",
+      isLightMode = false,
+      onLogout,
+      onThemeToggle,
+      className = "",
+      profilePanelOpen = false,
+      profilePanelControlsId = "",
+      onProfileClick,
+      profilePanel
+    } = $$props;
+    const showFooter = showProfile || showLogout || showThemeToggle;
+    const showPanelLauncher = showProfile;
+    const avatarClasses = "size-10 rounded-xl bg-action-primary text-action-primary flex items-center justify-center text-sm font-semibold shrink-0 ring-1 ring-border-focus";
+    function getTextToneClass(isMuted = false) {
+      return isMuted ? "text-description" : "text-headline";
+    }
+    if (showFooter) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<footer${attr_class(clsx(`flex w-full shrink-0 flex-col gap-2.5 border-t border-border pt-3 pb-1 ${className}`.trim()))} aria-label="Account and settings">`);
+      if (showPanelLauncher) {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<div class="relative"><button type="button" class="w-full cursor-pointer rounded-xl px-2 py-2 outline-none transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover hover:ring-1 hover:ring-border/60 active:bg-base-200 focus-ring focus-ring--nav" aria-haspopup="dialog"${attr("aria-expanded", profilePanelOpen)}${attr("aria-controls", profilePanelControlsId.trim() ? profilePanelControlsId.trim() : void 0)}${attr("aria-label", collapsed ? `Open account panel` : `Open account panel for ${profileName}`)}><span class="flex w-full items-center gap-3 text-left"><span${attr_class(clsx(avatarClasses))} aria-hidden="true">${escape_html(profileInitials)}</span> `);
+        if (!collapsed) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`<span class="min-w-0"><span${attr_class(`block truncate text-sm font-semibold ${stringify(getTextToneClass())}`)}>${escape_html(profileName)}</span> <span${attr_class(`block truncate text-xs ${stringify(getTextToneClass(true))}`)}>${escape_html(profileEmail)}</span></span>`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+        }
+        $$renderer2.push(`<!--]--></span></button> `);
+        if (profilePanelOpen && profilePanel) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`<div class="absolute bottom-0 left-full ml-3 z-50" role="presentation">`);
+          profilePanel($$renderer2);
+          $$renderer2.push(`<!----></div>`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+        }
+        $$renderer2.push(`<!--]--></div>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]--></footer>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]-->`);
+    bind_props($$props, { isLightMode });
+  });
+}
 function SidebarNavSection($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let {
@@ -1240,6 +1568,9 @@ function SidebarNavigation($$renderer, $$props) {
       searchMode = "input",
       searchPlaceholder = "Search...",
       searchValue = "",
+      searchTriggerIcon = Command,
+      searchTriggerVariant = "outline",
+      searchTriggerSize = "sm",
       showLogout = true,
       logoutLabel = "Logout",
       showThemeToggle = true,
@@ -1253,6 +1584,10 @@ function SidebarNavigation($$renderer, $$props) {
       onLogout,
       onThemeToggle,
       onEmptyStateAction,
+      onProfileClick,
+      profilePanelOpen = false,
+      profilePanelControlsId = "",
+      profilePanel,
       $$slots,
       $$events,
       ...restProps
@@ -1293,46 +1628,32 @@ function SidebarNavigation($$renderer, $$props) {
     const containerClasses = (() => {
       const widthClass = isCollapsed ? "w-[104px]" : "w-[266px]";
       const railSurface = "border-r border-border bg-background text-headline";
-      const cardSurface = "rounded-3xl border border-border bg-base-50 text-headline shadow-sm";
+      const cardSurface = "border-r border-border bg-background text-headline shadow-sm";
       const surfaceClasses = isCard ? cardSurface : railSurface;
       const verticalPad = isCard ? "py-4" : "py-5";
-      const baseClasses = `flex h-full min-h-0 max-h-full flex-col overflow-hidden ${verticalPad}`;
+      const baseClasses = `flex h-full min-h-0 max-h-full flex-col overflow-visible ${verticalPad}`;
       return `${baseClasses} ${widthClass} ${surfaceClasses} ${className}`.trim();
     })();
-    const headerStackClasses = `flex w-full shrink-0 flex-col gap-3 ${insetX}`;
-    const avatarClasses = "size-10 rounded-xl bg-action-primary text-action-primary flex items-center justify-center text-sm font-semibold shrink-0 ring-1 ring-border/40";
-    const searchControlStates = "text-nav-menu-item outline-none transition-colors duration-150 hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
-    const searchShell = isCard ? "rounded-xl border-0 bg-background/85 ring-1 ring-border/60" : "rounded-xl border border-input-border bg-input";
-    const searchButtonClasses = `flex min-h-10 w-full cursor-pointer items-center justify-center rounded-xl px-0 py-2 ${searchShell} ${searchControlStates}`;
-    const searchTriggerClasses = (() => {
-      return isCollapsed ? searchButtonClasses : `flex min-h-10 w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left ${searchShell} ${searchControlStates}`;
-    })();
+    const headerStackClasses = `flex w-full shrink-0 flex-col gap-5 ${insetX}`;
     const iconContainerClasses = "flex size-6 shrink-0 items-center justify-center leading-none text-current";
-    const shouldRenderSearchButton = isCollapsed || searchMode === "button" || Boolean(onSearchClick);
+    const shouldRenderSearchButton = isCollapsed || searchMode === "button" || Boolean(onSearchClick) && searchMode !== "input";
     function getTextToneClass(isMuted = false) {
       return isMuted ? "text-description" : "text-headline";
     }
     function getNavItemClasses(item) {
       const isActive = currentPath === item.href || Boolean(activePrimaryHref) && item.href === activePrimaryHref;
       const layoutClasses = isCollapsed ? "flex min-h-10 items-center justify-center px-0 py-2" : "flex min-h-10 items-center gap-2.5 px-2.5 py-2";
-      const structural = "w-full cursor-pointer rounded-lg no-underline transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
+      const structural = "focus-ring focus-ring--nav w-full cursor-pointer rounded-lg no-underline transition-colors duration-150 outline-none";
       if (isActive) {
-        if (isCard) {
-          return `${structural} ${layoutClasses} bg-background text-headline shadow-sm ring-1 ring-border/80 hover:bg-background hover:text-headline active:opacity-95`;
-        }
         return `${structural} ${layoutClasses} bg-nav-menu-active text-inherit hover:bg-nav-menu-active hover:text-inherit active:opacity-90`;
-      }
-      if (isCard) {
-        return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-background/80 hover:text-nav-menu-item-hover active:bg-base-200/80`;
       }
       return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200`;
     }
-    function getControlButtonClasses() {
-      const baseClasses = "w-full cursor-pointer rounded-lg text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus";
-      const layoutClasses = isCollapsed ? "flex min-h-10 items-center justify-center px-0 py-2" : "flex min-h-10 items-center gap-2.5 px-2.5 py-2";
-      return `${baseClasses} ${layoutClasses}`;
+    function handleSearchClick() {
+      if (onSearchClick) {
+        onSearchClick();
+      }
     }
-    const themeToggleContainerClasses = isCollapsed ? "flex w-full justify-center py-0.5" : "flex w-full justify-start py-0.5";
     function getItemBadgeText(item) {
       if (item.badgeText !== void 0) {
         return String(item.badgeText);
@@ -1358,7 +1679,7 @@ function SidebarNavigation($$renderer, $$props) {
         class: clsx(containerClasses),
         "aria-label": ariaLabel,
         ...restProps
-      })}><div${attr_class(clsx(`${headerStackClasses} ${isCard ? "pb-0.5" : ""}`.trim()))}>`);
+      })}><div class="flex min-h-0 w-full min-w-0 flex-1 flex-col"><div${attr_class(clsx(`${headerStackClasses} pb-3`.trim()))}>`);
       if (showBrandRow) {
         $$renderer3.push("<!--[-->");
         SidebarBrandHeader($$renderer3, {
@@ -1375,19 +1696,37 @@ function SidebarNavigation($$renderer, $$props) {
         $$renderer3.push("<!--[-->");
         if (shouldRenderSearchButton) {
           $$renderer3.push("<!--[-->");
-          $$renderer3.push(`<button type="button"${attr_class(clsx(searchTriggerClasses))}${attr("aria-label", searchPlaceholder)}>`);
+          const TriggerIcon = searchTriggerIcon;
           if (isCollapsed) {
             $$renderer3.push("<!--[-->");
-            $$renderer3.push(`<span${attr_class(clsx(iconContainerClasses))} aria-hidden="true">`);
-            Search($$renderer3, { size: 18 });
-            $$renderer3.push(`<!----></span>`);
+            IconButton($$renderer3, {
+              variant: searchTriggerVariant,
+              size: searchTriggerSize,
+              label: searchPlaceholder,
+              onclick: handleSearchClick,
+              children: ($$renderer4) => {
+                $$renderer4.push(`<!---->`);
+                TriggerIcon($$renderer4, { size: 18 });
+                $$renderer4.push(`<!---->`);
+              },
+              $$slots: { default: true }
+            });
           } else {
             $$renderer3.push("<!--[!-->");
-            $$renderer3.push(`<span${attr_class(clsx(iconContainerClasses))} aria-hidden="true">`);
-            Search($$renderer3, { size: 17 });
-            $$renderer3.push(`<!----></span> <span class="truncate text-sm text-inherit transition-colors">${escape_html(searchValue || searchPlaceholder)}</span>`);
+            Button($$renderer3, {
+              variant: searchTriggerVariant,
+              size: searchTriggerSize,
+              isFullWidth: true,
+              onclick: handleSearchClick,
+              children: ($$renderer4) => {
+                $$renderer4.push(`<span class="flex w-full items-center justify-start gap-2.5"><span${attr_class(clsx(iconContainerClasses))} aria-hidden="true"><!---->`);
+                TriggerIcon($$renderer4, { size: 17 });
+                $$renderer4.push(`<!----></span> <span class="truncate text-sm text-inherit">${escape_html(searchValue || searchPlaceholder)}</span></span>`);
+              },
+              $$slots: { default: true }
+            });
           }
-          $$renderer3.push(`<!--]--></button>`);
+          $$renderer3.push(`<!--]-->`);
         } else {
           $$renderer3.push("<!--[!-->");
           $$renderer3.push(`<div class="relative w-full"><span class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2" aria-hidden="true">`);
@@ -1397,7 +1736,7 @@ function SidebarNavigation($$renderer, $$props) {
             type: "search",
             placeholder: searchPlaceholder,
             "aria-label": searchPlaceholder,
-            class: `w-full min-w-0 min-h-10 rounded-xl py-2 pl-10 text-sm ring-1 ring-border/60 ring-offset-0 focus:ring-2 focus:ring-nav-menu-focus ${stringify(isCard ? "border-transparent bg-background/85" : "")}`,
+            class: "focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent",
             get value() {
               return searchValue;
             },
@@ -1412,13 +1751,14 @@ function SidebarNavigation($$renderer, $$props) {
       } else {
         $$renderer3.push("<!--[!-->");
       }
-      $$renderer3.push(`<!--]--></div> <div${attr_class(`flex min-h-0 flex-1 w-full flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain py-1.5 ${insetX}`)} role="region" aria-label="Navigation links">`);
+      $$renderer3.push(`<!--]--></div> <div${attr_class(`flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pt-4 pb-1.5 ${insetX}`)} role="region" aria-label="Navigation links">`);
       if (hasFilteredItems) {
         $$renderer3.push("<!--[-->");
-        $$renderer3.push(`<!--[-->`);
+        $$renderer3.push(`<div class="flex w-full min-w-0 flex-col divide-y divide-border"><!--[-->`);
         const each_array = ensure_array_like(primarySectionGroups);
         for (let gi = 0, $$length = each_array.length; gi < $$length; gi++) {
           let group = each_array[gi];
+          $$renderer3.push(`<div class="py-4 first:pt-1 last:pb-1">`);
           SidebarNavSection($$renderer3, {
             title: group.sectionLabel ?? "",
             sectionKey: `p-${gi}`,
@@ -1464,11 +1804,12 @@ function SidebarNavigation($$renderer, $$props) {
               $$renderer4.push(`<!--]-->`);
             }
           });
+          $$renderer3.push(`<!----></div>`);
         }
-        $$renderer3.push(`<!--]--> `);
+        $$renderer3.push(`<!--]--></div> `);
         if (filteredSecondaryItems.length > 0) {
           $$renderer3.push("<!--[-->");
-          $$renderer3.push(`<div class="mt-2 border-t border-border/60 pt-3" role="presentation">`);
+          $$renderer3.push(`<div class="mt-3 border-t border-border pt-4" role="presentation">`);
           SidebarNavSection($$renderer3, {
             sectionKey: "secondary",
             listAriaLabel: "Secondary navigation",
@@ -1507,75 +1848,42 @@ function SidebarNavigation($$renderer, $$props) {
         $$renderer3.push(`<!--]-->`);
       } else {
         $$renderer3.push("<!--[!-->");
-        $$renderer3.push(`<div${attr_class(`rounded-xl border border-border border-dashed bg-background/60 px-3.5 py-4 ${stringify(isCard ? "ring-1 ring-border/40" : "")}`)}><h3${attr_class(`text-sm font-semibold ${stringify(getTextToneClass())}`)}>${escape_html(normalizedSearchTerm && searchMode === "input" ? "No matching navigation items" : emptyStateTitle)}</h3> <p${attr_class(`mt-1 text-sm ${stringify(getTextToneClass(true))}`)}>${escape_html(normalizedSearchTerm && searchMode === "input" ? `No results found for "${searchValue}". Try another keyword.` : emptyStateDescription)}</p> `);
+        $$renderer3.push(`<div class="rounded-xl border border-border border-dashed bg-transparent px-3.5 py-4 ring-1 ring-border/60"><h3${attr_class(`text-sm font-semibold ${stringify(getTextToneClass())}`)}>${escape_html(normalizedSearchTerm && searchMode === "input" ? "No matching navigation items" : emptyStateTitle)}</h3> <p${attr_class(`mt-1 text-sm ${stringify(getTextToneClass(true))}`)}>${escape_html(normalizedSearchTerm && searchMode === "input" ? `No results found for "${searchValue}". Try another keyword.` : emptyStateDescription)}</p> `);
         if (!(normalizedSearchTerm && searchMode === "input")) {
           $$renderer3.push("<!--[-->");
-          $$renderer3.push(`<button type="button" class="mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus">${escape_html(emptyStateActionLabel)}</button>`);
+          $$renderer3.push(`<button type="button" class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover">${escape_html(emptyStateActionLabel)}</button>`);
         } else {
           $$renderer3.push("<!--[!-->");
         }
         $$renderer3.push(`<!--]--></div>`);
       }
-      $$renderer3.push(`<!--]--></div> `);
-      if (showProfile || showLogout || showThemeToggle) {
-        $$renderer3.push("<!--[-->");
-        $$renderer3.push(`<div${attr_class(`flex w-full shrink-0 flex-col gap-2.5 border-t border-border/60 pt-3 pb-1 ${insetX}`)}>`);
-        if (showProfile) {
-          $$renderer3.push("<!--[-->");
-          $$renderer3.push(`<div class="flex w-full items-center gap-3"><div${attr_class(clsx(avatarClasses))} aria-hidden="true">${escape_html(profileInitials)}</div> `);
-          if (!isCollapsed) {
-            $$renderer3.push("<!--[-->");
-            $$renderer3.push(`<div class="min-w-0"><p${attr_class(`truncate text-sm font-semibold ${stringify(getTextToneClass())}`)}>${escape_html(profileName)}</p> <p${attr_class(`truncate text-xs ${stringify(getTextToneClass(true))}`)}>${escape_html(profileEmail)}</p></div>`);
-          } else {
-            $$renderer3.push("<!--[!-->");
-          }
-          $$renderer3.push(`<!--]--></div>`);
-        } else {
-          $$renderer3.push("<!--[!-->");
+      $$renderer3.push(`<!--]--></div></div> `);
+      SidebarFooter($$renderer3, {
+        collapsed: isCollapsed,
+        showProfile,
+        profileName,
+        profileEmail,
+        profileInitials,
+        showLogout,
+        logoutLabel,
+        showThemeToggle,
+        lightModeLabel,
+        onLogout,
+        onThemeToggle,
+        onProfileClick,
+        profilePanelOpen,
+        profilePanelControlsId,
+        profilePanel,
+        className: insetX,
+        get isLightMode() {
+          return isLightMode;
+        },
+        set isLightMode($$value) {
+          isLightMode = $$value;
+          $$settled = false;
         }
-        $$renderer3.push(`<!--]--> `);
-        if (showLogout || showThemeToggle) {
-          $$renderer3.push("<!--[-->");
-          $$renderer3.push(`<div class="flex flex-col gap-0.5">`);
-          if (showLogout) {
-            $$renderer3.push("<!--[-->");
-            $$renderer3.push(`<button type="button"${attr_class(clsx(getControlButtonClasses()))}><span${attr_class(clsx(iconContainerClasses))} aria-hidden="true">`);
-            Log_out($$renderer3, { size: 20 });
-            $$renderer3.push(`<!----></span> `);
-            if (!isCollapsed) {
-              $$renderer3.push("<!--[-->");
-              $$renderer3.push(`<span class="text-sm font-medium text-inherit">${escape_html(logoutLabel)}</span>`);
-            } else {
-              $$renderer3.push("<!--[!-->");
-            }
-            $$renderer3.push(`<!--]--></button>`);
-          } else {
-            $$renderer3.push("<!--[!-->");
-          }
-          $$renderer3.push(`<!--]--> `);
-          if (showThemeToggle) {
-            $$renderer3.push("<!--[-->");
-            $$renderer3.push(`<div${attr_class(clsx(themeToggleContainerClasses))}><button type="button"${attr_class(`inline-flex h-8 w-14 cursor-pointer items-center rounded-2xl p-1 outline-none transition-colors duration-150 hover:opacity-95 active:opacity-90 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-nav-menu-focus ${stringify(isLightMode ? "bg-action-primary" : "bg-base-200")}`)} role="switch"${attr("aria-checked", isLightMode)}${attr("title", lightModeLabel)}${attr("aria-label", isLightMode ? "Switch to dark mode" : "Switch to light mode")}><span${attr_class(`flex h-6 w-6 items-center justify-center rounded-xl leading-none shadow-sm transition-transform duration-150 active:scale-95 ${stringify(isLightMode ? "translate-x-6 bg-base-900 text-action-primary" : "translate-x-0 bg-base-900 text-base-50")}`)}>`);
-            if (isLightMode) {
-              $$renderer3.push("<!--[-->");
-              Sun($$renderer3, { size: 14 });
-            } else {
-              $$renderer3.push("<!--[!-->");
-              Moon($$renderer3, { size: 14 });
-            }
-            $$renderer3.push(`<!--]--></span></button></div>`);
-          } else {
-            $$renderer3.push("<!--[!-->");
-          }
-          $$renderer3.push(`<!--]--></div>`);
-        } else {
-          $$renderer3.push("<!--[!-->");
-        }
-        $$renderer3.push(`<!--]--></div>`);
-      } else {
-        $$renderer3.push("<!--[!-->");
-      }
-      $$renderer3.push(`<!--]--></nav>`);
+      });
+      $$renderer3.push(`<!----></nav>`);
     }
     do {
       $$settled = true;
@@ -1613,32 +1921,6 @@ const selectOptions = Array.from({ length: 16 }, (_, index) => ({
   value: `option-${index + 1}`,
   label: `Option ${index + 1}`
 }));
-const docsListItems = [
-  {
-    id: "profile",
-    label: "Profile",
-    description: "Manage your account preferences",
-    href: "/profile"
-  },
-  {
-    id: "billing",
-    label: "Billing",
-    description: "Update payment methods and invoices",
-    href: "/billing"
-  },
-  {
-    id: "team",
-    label: "Team members",
-    description: "Invite teammates and assign roles"
-  },
-  {
-    id: "security",
-    label: "Security settings",
-    description: "Configure login and access policies",
-    href: "/security",
-    disabled: true
-  }
-];
 const sidebarNavItems = [
   { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: House },
   { id: "revenue", label: "Revenue", href: "/revenue", icon: Chart_column },
@@ -1655,6 +1937,58 @@ const sidebarNavItems = [
     id: "settings",
     label: "Settings",
     href: "/settings",
+    icon: Settings,
+    group: "secondary"
+  }
+];
+const sidebarAppShellDemoItems = [
+  {
+    id: "shell-overview",
+    label: "Overview",
+    href: "/workspace/overview",
+    icon: Layout_dashboard,
+    section: "Workspace"
+  },
+  {
+    id: "shell-projects",
+    label: "Projects",
+    href: "/workspace/projects",
+    icon: Package,
+    section: "Workspace",
+    badgeCount: 3
+  },
+  {
+    id: "shell-calendar",
+    label: "Calendar",
+    href: "/workspace/calendar",
+    icon: Calendar,
+    section: "Workspace"
+  },
+  {
+    id: "shell-team",
+    label: "Team",
+    href: "/workspace/team",
+    icon: Users,
+    section: "Workspace"
+  },
+  {
+    id: "shell-docs",
+    label: "Documents",
+    href: "/library/docs",
+    icon: File_text,
+    section: "Library"
+  },
+  {
+    id: "shell-reports",
+    label: "Reports",
+    href: "/library/reports",
+    icon: Chart_pie,
+    section: "Library"
+  },
+  {
+    id: "shell-settings",
+    label: "Settings",
+    href: "/account/settings",
     icon: Settings,
     group: "secondary"
   }
@@ -1693,13 +2027,15 @@ export {
   Circle as a,
   Circle_check as b,
   categories as c,
-  Circle_alert as d,
-  Circle_check_big as e,
-  Search as f,
-  generateId as g,
-  docsListItems as h,
-  sidebarProjectItems as i,
-  selectOptions as j,
-  sampleCode as k,
+  Search as d,
+  sidebarProjectItems as e,
+  Circle_alert as f,
+  Circle_check_big as g,
+  sidebarAppShellDemoItems as h,
+  selectOptions as i,
+  sampleCode as j,
+  SidebarBrandHeader as k,
+  SidebarFooter as l,
+  SidebarNavSection as m,
   sidebarNavItems as s
 };

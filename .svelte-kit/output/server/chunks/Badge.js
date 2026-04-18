@@ -1,4 +1,4 @@
-import { $ as spread_props, X as attr_class, a0 as clsx, Z as stringify } from "./index2.js";
+import { $ as spread_props, X as attr_class, a1 as clsx, Z as stringify } from "./index2.js";
 import { I as Icon } from "./Icon.js";
 import { e as escape_html } from "./context.js";
 function Check($$renderer, $$props) {
@@ -404,6 +404,7 @@ function Badge($$renderer, $$props) {
 }
 export {
   Badge as B,
+  Info as I,
   Triangle_alert as T,
   X
 };

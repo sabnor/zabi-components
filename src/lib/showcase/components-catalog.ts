@@ -1055,6 +1055,444 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "Table",
+                category: "atoms",
+                description:
+                    "Scrollable `<table>` shell with optional caption; pass `<thead>` / `<tbody>` as children.",
+                props: [
+                    {
+                        name: "caption",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Visible table caption",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes on the wrapper",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Basic table",
+                        description: "Caption plus header and body rows",
+                        code: `<Table caption="Team">
+  <thead>…</thead>
+  <tbody>…</tbody>
+</Table>`,
+                    },
+                ],
+            },
+            {
+                name: "Toggle",
+                category: "atoms",
+                description:
+                    "Accessible switch-style toggle with optional label and loading state.",
+                props: [
+                    {
+                        name: "checked",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Controlled state (`bind:checked`)",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Visible label",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Disable interaction",
+                    },
+                    {
+                        name: "loading",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Show loading state",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Basic toggle",
+                        description: "Label and bindable checked state",
+                        code: '<Toggle label="Notifications" bind:checked />',
+                    },
+                ],
+            },
+            {
+                name: "Textarea",
+                category: "atoms",
+                description:
+                    "Multi-line field with label, semantic variants, and validation message slot.",
+                props: [
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Value (`bind:value`)",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Field label",
+                    },
+                    {
+                        name: "variant",
+                        type: "string",
+                        required: false,
+                        defaultValue: "default",
+                        description: "default | success | warning | error",
+                    },
+                    {
+                        name: "rows",
+                        type: "number",
+                        required: false,
+                        defaultValue: "4",
+                        description: "Visible rows",
+                    },
+                ],
+                variants: ["default", "success", "warning", "error"],
+                examples: [
+                    {
+                        title: "Basic textarea",
+                        description: "Label and placeholder",
+                        code: '<Textarea label="Notes" placeholder="…" />',
+                    },
+                ],
+            },
+            {
+                name: "Progress",
+                category: "atoms",
+                description:
+                    "Determinate progress bar with optional label and percentage readout.",
+                props: [
+                    {
+                        name: "value",
+                        type: "number",
+                        required: false,
+                        defaultValue: "0",
+                        description: "Current value",
+                    },
+                    {
+                        name: "max",
+                        type: "number",
+                        required: false,
+                        defaultValue: "100",
+                        description: "Maximum value",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description: "Bar height",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Optional label",
+                    },
+                ],
+                variants: ["sm", "md", "lg"],
+                examples: [
+                    {
+                        title: "Progress",
+                        description: "Value relative to max",
+                        code: '<Progress value={40} max={100} label="Upload" />',
+                    },
+                ],
+            },
+            {
+                name: "CardHeader",
+                category: "atoms",
+                description:
+                    "Card header with title, subtitle, description, and optional snippet content.",
+                props: [
+                    {
+                        name: "title",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Heading text",
+                    },
+                    {
+                        name: "subtitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Subtitle line",
+                    },
+                    {
+                        name: "level",
+                        type: "1 | … | 6",
+                        required: false,
+                        defaultValue: "3",
+                        description: "Heading level for title",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Card header",
+                        description: "Use inside Card",
+                        code: '<CardHeader title="Billing" subtitle="Manage payment methods" />',
+                    },
+                ],
+            },
+            {
+                name: "CardContent",
+                category: "atoms",
+                description: "Card body region; optional hero image above children.",
+                props: [
+                    {
+                        name: "image",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Optional image URL",
+                    },
+                    {
+                        name: "imageAlt",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Alt text for image",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Card content",
+                        description: "Wrap main card content",
+                        code: "<CardContent>…</CardContent>",
+                    },
+                ],
+            },
+            {
+                name: "CardFooter",
+                category: "atoms",
+                description: "Footer actions or metadata inside a Card.",
+                props: [
+                    {
+                        name: "className",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Card footer",
+                        description: "Place actions at the bottom of a card",
+                        code: "<CardFooter>…</CardFooter>",
+                    },
+                ],
+            },
+            {
+                name: "ThemeToggle",
+                category: "atoms",
+                description:
+                    "Sun/moon control that syncs with `document.documentElement` dark class and storage.",
+                props: [
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description: "Control size",
+                    },
+                    {
+                        name: "variant",
+                        type: "'default' | 'ghost' | 'outline'",
+                        required: false,
+                        defaultValue: "default",
+                        description: "Visual style",
+                    },
+                ],
+                variants: ["default", "ghost", "outline"],
+                examples: [
+                    {
+                        title: "Theme toggle",
+                        description: "Toggles light/dark theme",
+                        code: "<ThemeToggle />",
+                    },
+                ],
+            },
+            {
+                name: "Divider",
+                category: "atoms",
+                description:
+                    "Horizontal or vertical separator; optional inset and label.",
+                props: [
+                    {
+                        name: "orientation",
+                        type: "'horizontal' | 'vertical'",
+                        required: false,
+                        defaultValue: "horizontal",
+                        description: "Layout axis",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "undefined",
+                        description: "Centered text between lines",
+                    },
+                    {
+                        name: "decorative",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "When true, omit separator role",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Divider",
+                        description: "Separate sections",
+                        code: '<Divider label="Or" />',
+                    },
+                ],
+            },
+            {
+                name: "Container",
+                category: "atoms",
+                description:
+                    "Centered max-width wrapper with optional horizontal padding.",
+                props: [
+                    {
+                        name: "as",
+                        type: "'div' | 'section' | 'main' | 'article'",
+                        required: false,
+                        defaultValue: "div",
+                        description: "Root element",
+                    },
+                    {
+                        name: "maxWidth",
+                        type: "string",
+                        required: false,
+                        defaultValue: "xl",
+                        description: "sm | md | lg | xl | 2xl | full",
+                    },
+                    {
+                        name: "padded",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "Apply horizontal padding",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Container",
+                        description: "Page-level width constraint",
+                        code: '<Container maxWidth="lg">…</Container>',
+                    },
+                ],
+            },
+            {
+                name: "Text",
+                category: "atoms",
+                description:
+                    "Typography primitive with tone and size tokens (`p`, `span`, or `div`).",
+                props: [
+                    {
+                        name: "as",
+                        type: "'p' | 'span' | 'div'",
+                        required: false,
+                        defaultValue: "p",
+                        description: "Element tag",
+                    },
+                    {
+                        name: "tone",
+                        type: "string",
+                        required: false,
+                        defaultValue: "body",
+                        description: "body | description | caption | headline | label | error",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description: "Text size",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Text",
+                        description: "Semantic body copy",
+                        code: '<Text tone="description">Supporting copy.</Text>',
+                    },
+                ],
+            },
+            {
+                name: "ActionPanel",
+                category: "atoms",
+                description:
+                    "Clickable or link card for primary actions with optional badge.",
+                props: [
+                    {
+                        name: "title",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Panel title",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Supporting text",
+                    },
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        defaultValue: "undefined",
+                        description: "When set, renders as a link",
+                    },
+                    {
+                        name: "badgeText",
+                        type: "string",
+                        required: false,
+                        defaultValue: "undefined",
+                        description: "Optional badge",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Action panel",
+                        description: "Marketing or settings shortcut",
+                        code: '<ActionPanel title="API keys" description="Create and rotate keys." href="/keys" />',
+                    },
+                ],
+            },
         ],
         molecules: [
             {
@@ -1472,6 +1910,475 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "Toaster",
+                category: "molecules",
+                description:
+                    "Fixed notification region; pair with `pushToast()` from `toast-store`. Mount once near the app root.",
+                props: [
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes on the region",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Toaster",
+                        description: "Stacked toasts bottom-right",
+                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });",
+                    },
+                ],
+            },
+            {
+                name: "RadioGroup",
+                category: "molecules",
+                description:
+                    "Fieldset-based radio group with optional legend; uses native radios with shared `name`.",
+                props: [
+                    {
+                        name: "options",
+                        type: "RadioGroupOption[]",
+                        required: true,
+                        defaultValue: "[]",
+                        description: "value, label, optional description/disabled",
+                    },
+                    {
+                        name: "value",
+                        type: "string | undefined",
+                        required: false,
+                        defaultValue: "undefined",
+                        description: "Selected value (`bind:value`)",
+                    },
+                    {
+                        name: "legend",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Accessible group label",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Radio group",
+                        description: "Choose one option",
+                        code: `<RadioGroup
+  legend="Plan"
+  options={[{ value: 'a', label: 'Basic' }, { value: 'b', label: 'Pro' }]}
+  bind:value
+/>`,
+                    },
+                ],
+            },
+            {
+                name: "FormField",
+                category: "molecules",
+                description:
+                    "Accessible field wrapper: label, description, error, and a `control` snippet for the input.",
+                props: [
+                    {
+                        name: "label",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Visible label",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Validation message",
+                    },
+                    {
+                        name: "control",
+                        type: "Snippet",
+                        required: true,
+                        defaultValue: "",
+                        description: "Render prop for the control with id/aria props",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Form field",
+                        description: "Compose with Input or Select",
+                        code: `<FormField label="Email" error={err}>
+  {#snippet control(props)}
+    <Input {...props} bind:value />
+  {/snippet}
+</FormField>`,
+                    },
+                ],
+            },
+            {
+                name: "Header",
+                category: "molecules",
+                description:
+                    "Documentation-style page header: title, description, category badge, and variant chips.",
+                props: [
+                    {
+                        name: "title",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Page title",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Lead paragraph",
+                    },
+                    {
+                        name: "category",
+                        type: "string",
+                        required: true,
+                        defaultValue: "atoms",
+                        description: "atoms | molecules | organisms",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Header",
+                        description: "Use at the top of component docs",
+                        code: '<Header title="Button" description="…" category="atoms" />',
+                    },
+                ],
+            },
+            {
+                name: "EmptyState",
+                category: "molecules",
+                description:
+                    "Centered empty state with title, description, and optional action/media snippets.",
+                props: [
+                    {
+                        name: "title",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Heading",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Supporting copy",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Empty state",
+                        description: "Zero-results or onboarding",
+                        code: '<EmptyState title="No projects" description="Create one to get started." />',
+                    },
+                ],
+            },
+            {
+                name: "Page",
+                category: "molecules",
+                description: "Narrow content column wrapper for doc-style pages.",
+                props: [
+                    {
+                        name: "className",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Page",
+                        description: "Wrap main doc content",
+                        code: "<Page>…</Page>",
+                    },
+                ],
+            },
+            {
+                name: "Section",
+                category: "molecules",
+                description:
+                    "Section with optional title, background, padding, and max-width for marketing layouts.",
+                props: [
+                    {
+                        name: "title",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Section heading",
+                    },
+                    {
+                        name: "background",
+                        type: "string",
+                        required: false,
+                        defaultValue: "default",
+                        description: "default | muted | accent | transparent",
+                    },
+                    {
+                        name: "padding",
+                        type: "string",
+                        required: false,
+                        defaultValue: "lg",
+                        description: "none | sm | md | lg | xl",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Section",
+                        description: "Landing page band",
+                        code: '<Section title="Features" background="muted">…</Section>',
+                    },
+                ],
+            },
+            {
+                name: "NavigationMenuList",
+                category: "molecules",
+                description:
+                    "Horizontal menubar list; use inside `NavigationMenu` with items and triggers.",
+                props: [
+                    {
+                        name: "className",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes on the `<ul>`",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "NavigationMenuList",
+                        description: "Compound NavigationMenu API",
+                        code: "<NavigationMenuList>…</NavigationMenuList>",
+                    },
+                ],
+            },
+            {
+                name: "NavigationMenuItem",
+                category: "molecules",
+                description: "Wraps a trigger and optional dropdown content for one top-level nav item.",
+                props: [
+                    {
+                        name: "value",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Stable id for open state",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "NavigationMenuItem",
+                        description: "Child of NavigationMenuList",
+                        code: '<NavigationMenuItem value="docs">…</NavigationMenuItem>',
+                    },
+                ],
+            },
+            {
+                name: "NavigationMenuTrigger",
+                category: "molecules",
+                description: "Button that toggles the matching `NavigationMenuContent`.",
+                props: [
+                    {
+                        name: "value",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Matches parent item value",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "NavigationMenuTrigger",
+                        description: "Opens the panel for this item",
+                        code: '<NavigationMenuTrigger value="docs">Docs</NavigationMenuTrigger>',
+                    },
+                ],
+            },
+            {
+                name: "NavigationMenuContent",
+                category: "molecules",
+                description: "Dropdown panel for a menu item; contains links or custom content.",
+                props: [
+                    {
+                        name: "value",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Matches NavigationMenuItem value",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "NavigationMenuContent",
+                        description: "Panel body",
+                        code: '<NavigationMenuContent value="docs">…</NavigationMenuContent>',
+                    },
+                ],
+            },
+            {
+                name: "NavigationMenuLink",
+                category: "molecules",
+                description: "Link styled for inside navigation menu content.",
+                props: [
+                    {
+                        name: "href",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Destination URL",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "NavigationMenuLink",
+                        description: "In-content navigation link",
+                        code: '<NavigationMenuLink href="/guide">Guide</NavigationMenuLink>',
+                    },
+                ],
+            },
+            {
+                name: "SidebarBrandHeader",
+                category: "molecules",
+                description:
+                    "Brand row for sidebars: logo, wordmark, or collapsed monogram.",
+                props: [
+                    {
+                        name: "brandName",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Product name",
+                    },
+                    {
+                        name: "logoSrc",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Logo image URL",
+                    },
+                    {
+                        name: "collapsed",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Icon/monogram mode",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Sidebar brand",
+                        description: "Top of SidebarNavigation",
+                        code: '<SidebarBrandHeader brandName="Zabi" />',
+                    },
+                ],
+            },
+            {
+                name: "SidebarFooter",
+                category: "molecules",
+                description:
+                    "Sidebar footer with profile chip, theme toggle, and logout; wires optional account panel.",
+                props: [
+                    {
+                        name: "profileName",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Zabi",
+                        description: "Display name",
+                    },
+                    {
+                        name: "collapsed",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Compact layout",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Sidebar footer",
+                        description: "Bottom utilities on a rail",
+                        code: "<SidebarFooter />",
+                    },
+                ],
+            },
+            {
+                name: "SidebarNavSection",
+                category: "molecules",
+                description:
+                    "Grouped list section with optional heading and required list aria-label.",
+                props: [
+                    {
+                        name: "title",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Section heading",
+                    },
+                    {
+                        name: "listAriaLabel",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Accessible name for the `<ul>`",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Sidebar section",
+                        description: "Group primary nav links",
+                        code: '<SidebarNavSection title="Workspace" listAriaLabel="Workspace">…</SidebarNavSection>',
+                    },
+                ],
+            },
+            {
+                name: "ComponentDemo",
+                category: "molecules",
+                description:
+                    "Doc helper: Card with title, preview/code toggle, and syntax-highlighted snippet.",
+                props: [
+                    {
+                        name: "title",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Example title",
+                    },
+                    {
+                        name: "code",
+                        type: "string",
+                        required: true,
+                        defaultValue: "",
+                        description: "Source shown in code view",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Component demo",
+                        description: "Used throughout this docs site",
+                        code: "<ComponentDemo title=\"…\" code=\"…\">preview</ComponentDemo>",
+                    },
+                ],
+            },
         ],
         organisms: [
             {
@@ -1653,6 +2560,51 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Search and select from a dedicated side panel.",
                         code: "&lt;SidebarPanel items={panelItems} bind:selectedItemId bind:searchValue /&gt;",
+                    },
+                ],
+            },
+            {
+                name: "SidebarAccountPanel",
+                category: "organisms",
+                description:
+                    "Account picker panel: profile, theme row, and logout; composes `SidebarPanel` with fixed actions.",
+                props: [
+                    {
+                        name: "profileName",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Account",
+                        description: "Primary line in profile row",
+                    },
+                    {
+                        name: "profileEmail",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Subtitle / email",
+                    },
+                    {
+                        name: "panelId",
+                        type: "string",
+                        required: false,
+                        defaultValue: "generated",
+                        description: "Stable id for `aria-controls` from the sidebar",
+                    },
+                    {
+                        name: "variant",
+                        type: "'plain' | 'elevated'",
+                        required: false,
+                        defaultValue: "plain",
+                        description: "Panel chrome",
+                    },
+                ],
+                variants: ["plain", "elevated"],
+                examples: [
+                    {
+                        title: "Account panel",
+                        description:
+                            "Opens from SidebarNavigation profile control",
+                        code: "<SidebarAccountPanel profileName=\"Alex\" profileEmail=\"alex@example.com\" />",
                     },
                 ],
             },

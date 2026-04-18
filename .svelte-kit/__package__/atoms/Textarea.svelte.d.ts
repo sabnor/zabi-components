@@ -1,4 +1,4 @@
-import type { SemanticVariant, SizeVariant } from '../../types/variants.js';
+import type { SemanticVariant, SizeVariant } from '../types/variants.js';
 interface Props {
     id?: string;
     value?: string;

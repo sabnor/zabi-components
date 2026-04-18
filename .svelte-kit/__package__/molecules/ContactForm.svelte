@@ -7,7 +7,7 @@
     import Card from "../atoms/Card.svelte";
     import CardHeader from "../atoms/CardHeader.svelte";
     import CardContent from "../atoms/CardContent.svelte";
-    import type { ContactFormData } from "../../types/page.types";
+    import type { ContactFormData } from "../types/page.types";
 
     interface Props {
         className?: string;

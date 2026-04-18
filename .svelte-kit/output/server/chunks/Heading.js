@@ -1,4 +1,4 @@
-import { $ as spread_props, a1 as attributes, X as attr_class, Z as stringify, a0 as clsx, a4 as element, a3 as attr_style } from "./index2.js";
+import { $ as spread_props, a0 as attributes, X as attr_class, Z as stringify, a4 as element, a3 as attr_style } from "./index2.js";
 import { I as Icon } from "./Icon.js";
 import { e as escape_html } from "./context.js";
 function html(value) {
@@ -92,6 +92,7 @@ function CodeBlock($$renderer, $$props) {
     language = "svelte",
     className = "",
     showCopyButton = true,
+    trustHtml = false,
     $$slots,
     $$events,
     ...restProps
@@ -114,55 +115,15 @@ function CodeBlock($$renderer, $$props) {
   } else {
     $$renderer.push("<!--[!-->");
   }
-  $$renderer.push(`<!--]--></div> <pre class="p-4 overflow-x-auto text-sm text-base-100 leading-relaxed"><code${attr_class(`language-${stringify(language)}`, "svelte-1dmazsz")}>${html(code)}</code></pre></div>`);
-}
-function IconButton($$renderer, $$props) {
-  $$renderer.component(($$renderer2) => {
-    let {
-      variant = "primary",
-      size = "md",
-      disabled = false,
-      type = "button",
-      label = "",
-      onclick,
-      children,
-      $$slots,
-      $$events,
-      ...restProps
-    } = $$props;
-    const sizeClass = () => {
-      if (size === "sm") {
-        return { padding: "p-2", radius: "rounded-md" };
-      } else if (size === "lg") {
-        return { padding: "p-3", radius: "rounded-xl" };
-      } else {
-        return { padding: "p-2.5", radius: "rounded-lg" };
-      }
-    };
-    const variantClass = () => {
-      return variant === "primary" ? "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2" : variant === "secondary" ? "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2" : variant === "danger" ? "bg-action-danger text-inverse hover:bg-action-danger-hover active:bg-action-danger-active focus:ring-2 focus:ring-red-500 focus:ring-offset-2" : variant === "ghost" ? "bg-transparent text-headline hover:bg-base-100 active:bg-base-200 focus:ring-2 focus:ring-base-500 focus:ring-offset-2 disabled:text-disabled" : variant === "outline" ? "bg-transparent border-2 border-action-primary text-headline hover:bg-action-secondary hover:text-action-primary active:bg-action-primary-active active:text-action-primary focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:border-disabled disabled:text-disabled" : variant === "link" ? "text-brand-700 active:text-brand-700 underline-offset-4 hover:underline focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:text-disabled disabled:no-underline" : "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active focus:ring-2 focus:ring-brand-500 focus:ring-offset-2";
-    };
-    const buttonClasses = () => {
-      const sizeStyles = sizeClass();
-      const baseClasses = "inline-flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none";
-      return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.radius} ${variantClass()}`.trim();
-    };
-    $$renderer2.push(`<button${attributes({
-      type,
-      class: clsx(buttonClasses()),
-      disabled,
-      "aria-label": label || void 0,
-      ...restProps
-    })}>`);
-    if (children) {
-      $$renderer2.push("<!--[-->");
-      children($$renderer2);
-      $$renderer2.push(`<!---->`);
-    } else {
-      $$renderer2.push("<!--[!-->");
-    }
-    $$renderer2.push(`<!--]--></button>`);
-  });
+  $$renderer.push(`<!--]--></div> <pre class="p-4 overflow-x-auto text-sm text-base-100 leading-relaxed"><code${attr_class(`language-${stringify(language)}`, "svelte-1dmazsz")}>`);
+  if (trustHtml) {
+    $$renderer.push("<!--[-->");
+    $$renderer.push(`${html(code)}`);
+  } else {
+    $$renderer.push("<!--[!-->");
+    $$renderer.push(`${escape_html(code)}`);
+  }
+  $$renderer.push(`<!--]--></code></pre></div>`);
 }
 function Heading($$renderer, $$props) {
   let { level = 1, text } = $$props;
@@ -190,8 +151,6 @@ function Heading($$renderer, $$props) {
 }
 export {
   CodeBlock as C,
-  Heart as H,
-  IconButton as I,
-  Heading as a,
-  html as h
+  Heading as H,
+  Heart as a
 };

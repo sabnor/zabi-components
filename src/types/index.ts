@@ -2,6 +2,7 @@
 // Re-export all types for easy importing
 
 export * from './events.js';
+export * from './variants.js';
 export * from './page.types.js';
 
 // Component type definitions

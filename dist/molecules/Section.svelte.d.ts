@@ -1,5 +1,5 @@
 import type { Snippet } from "svelte";
-import type { SizeVariant } from "../../types/variants.js";
+import type { SizeVariant } from "../types/variants.js";
 interface Props {
     title?: string;
     description?: string;

@@ -1,7 +1,7 @@
 <script lang="ts">
     import Badge from "../atoms/Badge.svelte";
     import Heading from "../atoms/Heading.svelte";
-    import type { ComponentCategory } from "../../types/page.types";
+    import type { ComponentCategory } from "../types/page.types";
 
     interface Props {
         title: string;

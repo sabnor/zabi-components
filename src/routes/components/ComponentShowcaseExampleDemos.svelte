@@ -41,6 +41,22 @@
     import SidebarNavigation from "../../components/organisms/SidebarNavigation.svelte";
     import SidebarAccountPanel from "../../components/organisms/SidebarAccountPanel.svelte";
     import SidebarPanel from "../../components/organisms/SidebarPanel.svelte";
+    import Table from "../../components/atoms/Table.svelte";
+    import CardFooter from "../../components/atoms/CardFooter.svelte";
+    import ThemeToggle from "../../components/atoms/ThemeToggle.svelte";
+    import Divider from "../../components/atoms/Divider.svelte";
+    import Container from "../../components/atoms/Container.svelte";
+    import Text from "../../components/atoms/Text.svelte";
+    import ActionPanel from "../../components/atoms/ActionPanel.svelte";
+    import RadioGroup from "../../components/molecules/RadioGroup.svelte";
+    import FormField from "../../components/molecules/FormField.svelte";
+    import Header from "../../components/molecules/Header.svelte";
+    import EmptyState from "../../components/molecules/EmptyState.svelte";
+    import Page from "../../components/molecules/Page.svelte";
+    import Section from "../../components/molecules/Section.svelte";
+    import SidebarBrandHeader from "../../components/molecules/SidebarBrandHeader.svelte";
+    import SidebarFooter from "../../components/molecules/SidebarFooter.svelte";
+    import SidebarNavSection from "../../components/molecules/SidebarNavSection.svelte";
     import {
         CircleCheck,
         CircleHelp,
@@ -102,6 +118,22 @@
 
     let dropdownDemoAOpen = $state(false);
     let dropdownDemoBOpen = $state(false);
+
+    let formFieldDemoEmail = $state("");
+    let radioGroupDemoValue = $state("basic");
+
+    const radioGroupDemoOptions = [
+        {
+            value: "basic",
+            label: "Basic",
+            description: "Core features for small teams",
+        },
+        {
+            value: "pro",
+            label: "Pro",
+            description: "Advanced controls and support",
+        },
+    ];
 
     function toggleSidebarAccountPanel(): void {
         sidebarAccountPanelOpen = !sidebarAccountPanelOpen;
@@ -1647,6 +1679,310 @@
                                                 </div>
                                             </div>
                                         {/if}
+                                    {:else if component.name === "Table"}
+                                        <Table caption="Q1 results">
+                                            <thead
+                                                class="border-b border-border bg-base-50"
+                                            >
+                                                <tr>
+                                                    <th
+                                                        class="px-4 py-3 font-medium text-headline"
+                                                        >Region</th
+                                                    >
+                                                    <th
+                                                        class="px-4 py-3 font-medium text-headline"
+                                                        >Revenue</th
+                                                    >
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-border">
+                                                <tr>
+                                                    <td class="px-4 py-3 text-body"
+                                                        >North</td
+                                                    >
+                                                    <td class="px-4 py-3 text-body"
+                                                        >$12,400</td
+                                                    >
+                                                </tr>
+                                                <tr>
+                                                    <td class="px-4 py-3 text-body"
+                                                        >South</td
+                                                    >
+                                                    <td class="px-4 py-3 text-body"
+                                                        >$9,200</td
+                                                    >
+                                                </tr>
+                                            </tbody>
+                                        </Table>
+                                    {:else if component.name === "Toggle"}
+                                        <div class="flex flex-wrap items-center gap-6">
+                                            <Toggle label="Email alerts" />
+                                            <Toggle label="Disabled" disabled />
+                                        </div>
+                                    {:else if component.name === "Textarea"}
+                                        <div class="max-w-md space-y-3">
+                                            <Textarea
+                                                label="Project notes"
+                                                placeholder="Add context for your team…"
+                                                rows={4}
+                                            />
+                                        </div>
+                                    {:else if component.name === "Progress"}
+                                        <div class="max-w-md space-y-4">
+                                            <Progress
+                                                value={62}
+                                                max={100}
+                                                label="Storage used"
+                                            />
+                                            <Progress value={20} max={100} size="sm" />
+                                        </div>
+                                    {:else if component.name === "CardHeader" || component.name === "CardContent" || component.name === "CardFooter"}
+                                        <div class="max-w-lg">
+                                            <Card>
+                                                <CardHeader
+                                                    title="Team"
+                                                    subtitle="People and access"
+                                                />
+                                                <CardContent>
+                                                    <p class="text-sm text-description">
+                                                        Invite colleagues and assign
+                                                        roles.
+                                                    </p>
+                                                </CardContent>
+                                                <CardFooter>
+                                                    <Button
+                                                        variant="outline"
+                                                        text="Manage members"
+                                                    />
+                                                </CardFooter>
+                                            </Card>
+                                        </div>
+                                    {:else if component.name === "ThemeToggle"}
+                                        <div class="flex items-center gap-3">
+                                            <ThemeToggle />
+                                            <Text tone="description" size="sm"
+                                                >Syncs with the site theme.</Text
+                                            >
+                                        </div>
+                                    {:else if component.name === "Divider"}
+                                        <div class="max-w-md space-y-4">
+                                            <p class="text-sm text-body">Section A</p>
+                                            <Divider label="Or" />
+                                            <p class="text-sm text-body">Section B</p>
+                                        </div>
+                                    {:else if component.name === "Container"}
+                                        <Container maxWidth="md" class="rounded-lg border border-border bg-base-50 py-4 text-center">
+                                            <Text tone="caption"
+                                                >Centered max-width container</Text
+                                            >
+                                        </Container>
+                                    {:else if component.name === "Text"}
+                                        <div class="space-y-2">
+                                            <Text tone="headline" size="lg"
+                                                >Headline style</Text
+                                            >
+                                            <Text tone="description">
+                                                Supporting body copy uses the
+                                                description tone.
+                                            </Text>
+                                        </div>
+                                    {:else if component.name === "ActionPanel"}
+                                        <div class="max-w-md">
+                                            <ActionPanel
+                                                title="Webhooks"
+                                                description="Send events to your server when data changes."
+                                                href="/docs/webhooks"
+                                                badgeText="New"
+                                            />
+                                        </div>
+                                    {:else if component.name === "Toaster"}
+                                        <div class="space-y-4">
+                                            <Toaster />
+                                            <Button
+                                                text="Push sample toast"
+                                                onclick={() =>
+                                                    pushToast({
+                                                        message:
+                                                            "Your changes were saved.",
+                                                        type: "success",
+                                                        title: "Saved",
+                                                    })}
+                                            />
+                                        </div>
+                                    {:else if component.name === "RadioGroup"}
+                                        <div class="max-w-md">
+                                            <RadioGroup
+                                                legend="Billing plan"
+                                                name="showcase-plan"
+                                                options={radioGroupDemoOptions}
+                                                bind:value={radioGroupDemoValue}
+                                            />
+                                            <p class="mt-2 text-xs text-description">
+                                                Selected: {radioGroupDemoValue}
+                                            </p>
+                                        </div>
+                                    {:else if component.name === "FormField"}
+                                        <div class="max-w-md">
+                                            <FormField
+                                                label="Work email"
+                                                description="Used for invoices and alerts."
+                                                error={formFieldDemoEmail &&
+                                                !formFieldDemoEmail.includes("@")
+                                                    ? "Enter a valid email address."
+                                                    : ""}
+                                            >
+                                                {#snippet control(props)}
+                                                    <Input
+                                                        {...props}
+                                                        type="email"
+                                                        bind:value={
+                                                            formFieldDemoEmail
+                                                        }
+                                                        hideLabel
+                                                        label="Work email"
+                                                        placeholder="you@company.com"
+                                                    />
+                                                {/snippet}
+                                            </FormField>
+                                        </div>
+                                    {:else if component.name === "Header"}
+                                        <Header
+                                            title="Button"
+                                            description="Primary and secondary actions for forms and toolbars."
+                                            category="atoms"
+                                            variantsStates={[
+                                                "primary",
+                                                "secondary",
+                                                "outline",
+                                                "ghost",
+                                            ]}
+                                        />
+                                    {:else if component.name === "EmptyState"}
+                                        <EmptyState
+                                            title="No reports yet"
+                                            description="Create a report to see data here."
+                                        >
+                                            {#snippet action()}
+                                                <Button
+                                                    variant="primary"
+                                                    text="Create report"
+                                                />
+                                            {/snippet}
+                                        </EmptyState>
+                                    {:else if component.name === "Page"}
+                                        <Page>
+                                            <p class="text-sm text-description">
+                                                Page constrains width for long-form
+                                                documentation.
+                                            </p>
+                                        </Page>
+                                    {:else if component.name === "Section"}
+                                        <Section
+                                            title="Highlights"
+                                            background="muted"
+                                            padding="md"
+                                        >
+                                            <p class="text-sm text-body">
+                                                Section provides titled bands with
+                                                background and spacing presets.
+                                            </p>
+                                        </Section>
+                                    {:else if [
+                                        "NavigationMenuList",
+                                        "NavigationMenuItem",
+                                        "NavigationMenuTrigger",
+                                        "NavigationMenuContent",
+                                        "NavigationMenuLink",
+                                    ].includes(component.name)}
+                                        <div class="min-w-0 overflow-x-auto py-2">
+                                            <NavigationMenu
+                                                viewport={false}
+                                                menuId="showcase-compound-nav"
+                                            >
+                                                <NavigationMenuList>
+                                                    <NavigationMenuItem
+                                                        value="docs"
+                                                    >
+                                                        <NavigationMenuTrigger
+                                                            value="docs"
+                                                            >Docs</NavigationMenuTrigger
+                                                        >
+                                                        <NavigationMenuContent
+                                                            value="docs"
+                                                        >
+                                                            <ul
+                                                                class="grid min-w-[12rem] gap-2 p-3"
+                                                            >
+                                                                <li>
+                                                                    <NavigationMenuLink
+                                                                        href="/guide"
+                                                                        >Guide</NavigationMenuLink
+                                                                    >
+                                                                </li>
+                                                            </ul>
+                                                        </NavigationMenuContent>
+                                                    </NavigationMenuItem>
+                                                </NavigationMenuList>
+                                            </NavigationMenu>
+                                        </div>
+                                    {:else if component.name === "SidebarBrandHeader"}
+                                        <div
+                                            class="w-64 rounded-xl border border-border bg-card p-3"
+                                        >
+                                            <SidebarBrandHeader
+                                                brandName="Zabi"
+                                            />
+                                        </div>
+                                    {:else if component.name === "SidebarFooter"}
+                                        <div
+                                            class="w-64 rounded-xl border border-border bg-card"
+                                        >
+                                            <SidebarFooter
+                                                collapsed={false}
+                                                profileName="Alex Rivera"
+                                            />
+                                        </div>
+                                    {:else if component.name === "SidebarNavSection"}
+                                        <div
+                                            class="w-64 rounded-xl border border-border bg-card p-2"
+                                        >
+                                            <SidebarNavSection
+                                                title="Workspace"
+                                                listAriaLabel="Workspace navigation"
+                                            >
+                                                <li
+                                                    class="rounded-md px-2 py-1.5 text-sm text-body"
+                                                >
+                                                    Overview
+                                                </li>
+                                                <li
+                                                    class="rounded-md px-2 py-1.5 text-sm text-body"
+                                                >
+                                                    Settings
+                                                </li>
+                                            </SidebarNavSection>
+                                        </div>
+                                    {:else if component.name === "ComponentDemo"}
+                                        <div
+                                            class="rounded-lg border border-dashed border-border bg-base-50 p-4"
+                                        >
+                                            <p class="mb-3 text-sm text-description">
+                                                This site wraps each example in
+                                                ComponentDemo: title, preview, and
+                                                a code toggle.
+                                            </p>
+                                            <Badge text="Preview area" />
+                                        </div>
+                                    {:else if component.name === "SidebarAccountPanel"}
+                                        <div
+                                            class="max-h-[22rem] overflow-auto rounded-xl border border-border bg-card p-2"
+                                        >
+                                            <SidebarAccountPanel
+                                                profileName="Alex Rivera"
+                                                profileEmail="alex@example.com"
+                                                variant="elevated"
+                                            />
+                                        </div>
                                     {:else if component.name === "Tooltip"}
                                         <div class="flex gap-4 items-center">
                                             <Tooltip

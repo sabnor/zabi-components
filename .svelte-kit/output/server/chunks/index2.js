@@ -1,7 +1,7 @@
 import { c as safe_equals, d as equals, e as escape_html, f as set_ssr_context, a as ssr_context, p as push$1, h as pop$1 } from "./context.js";
 import { clsx as clsx$1 } from "clsx";
 import { b as run_all, c as deferred, o as object_prototype, e as array_prototype, g as get_descriptor, f as get_prototype_of, i as is_array, h as is_extensible, j as index_of, n as noop } from "./utils2.js";
-import { B as BROWSER } from "./false.js";
+import { D as DEV } from "./false.js";
 const DERIVED = 1 << 1;
 const EFFECT = 1 << 2;
 const RENDER_EFFECT = 1 << 3;
@@ -537,7 +537,7 @@ function flush_effects() {
       var batch = Batch.ensure();
       if (flush_count++ > 1e3) {
         var updates, entry;
-        if (BROWSER) ;
+        if (DEV) ;
         infinite_loop_guard();
       }
       batch.process(queued_root_effects);
@@ -1593,7 +1593,7 @@ function update_effect(effect) {
     effect.teardown = typeof teardown === "function" ? teardown : null;
     effect.wv = write_version;
     var dep;
-    if (BROWSER && tracing_mode_flag && (effect.f & DIRTY) !== 0 && effect.deps !== null) ;
+    if (DEV && tracing_mode_flag && (effect.f & DIRTY) !== 0 && effect.deps !== null) ;
   } finally {
     is_updating_effect = was_updating_effect;
     active_effect = previous_effect;
@@ -2633,8 +2633,8 @@ export {
   stringify as Z,
   ensure_array_like as _,
   HYDRATION_END as a,
-  clsx as a0,
-  attributes as a1,
+  attributes as a0,
+  clsx as a1,
   bind_props as a2,
   attr_style as a3,
   element as a4,

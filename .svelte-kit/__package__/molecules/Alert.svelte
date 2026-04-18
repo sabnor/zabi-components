@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ExtendedSemanticVariant } from "../../types/variants.js";
+    import type { ExtendedSemanticVariant } from "../types/variants.js";
     type AlertVisualVariant = Exclude<ExtendedSemanticVariant, "default">;
 
     interface Props {
