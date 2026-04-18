@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { Sun, Moon } from "@lucide/svelte";
-    import { FOCUS_BRAND_CLASS } from "../../routes/lib/focus-utils.js";
+    import { FOCUS_BRAND_CLASS } from "../util/focus-utils.js";
     
     function safeLocalStorage(): Storage | undefined {
         return typeof window !== "undefined" ? localStorage : undefined;

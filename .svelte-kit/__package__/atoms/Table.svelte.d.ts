@@ -1,6 +1,6 @@
 import type { Snippet } from 'svelte';
 interface Props {
-    /** Accessible name for the table (use with caption or aria-label). */
+    /** Visible `<caption>` when set. */
     caption?: string;
     class?: string;
     children?: Snippet;

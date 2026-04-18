@@ -1,22 +1,21 @@
 <script lang="ts">
     import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
     import type { SemanticVariant, SizeVariant } from "../../types/variants.js";
-    import { generateId } from "../../routes/lib/ssr-safe.js";
+    import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
-        /** Stable id; generated when omitted (use with FormField `id`). */
+        /** Omit to auto-generate; pair with FormField `id` when used inside FormField. */
         id?: string;
         value?: string;
         type?: string;
         name?: string;
         class?: string;
         label?: string;
-        /** When using FormField, set true so the field provides the label. */
+        /** True when FormField supplies the visible `<label>`. */
         hideLabel?: boolean;
         placeholder?: string;
         required?: boolean;
         disabled?: boolean;
-        /** Shows a spinner at the trailing edge and disables interaction while true. */
         loading?: boolean;
         size?: SizeVariant;
         variant?: SemanticVariant;

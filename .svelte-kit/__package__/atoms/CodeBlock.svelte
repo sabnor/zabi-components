@@ -1,14 +1,11 @@
 <script lang="ts">
     interface Props {
-        /** Source string. Plain text unless `trustHtml` is true (e.g. Prism/Shiki output with `<span class="token">`). */
+        /** Raw source; escaped unless `trustHtml` (e.g. highlighter HTML). */
         code: string;
         language?: string;
         className?: string;
         showCopyButton?: boolean;
-        /**
-         * When true, `code` is rendered as HTML so highlighter markup applies.
-         * When false, `code` is escaped (required for snippets that contain `<` characters).
-         */
+        /** If true, `{@html code}` — only trusted, sanitized input. */
         trustHtml?: boolean;
     }
 

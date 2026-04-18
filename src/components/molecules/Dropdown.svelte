@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { generateId } from '../../routes/lib/ssr-safe.js';
+    import { generateId } from "../util/ssr-safe.js";
     import type { Snippet } from 'svelte';
 
     export type DropdownTriggerProps = {
@@ -12,7 +12,7 @@
         isOpen?: boolean;
         placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
         ariaLabel?: string;
-        /** Use `listbox` for Select; `menu` for action menus. */
+        /** `listbox` for Select-style; `menu` for actions. */
         menuRole?: 'menu' | 'listbox';
         selectedValue?: string | number | null;
         options?: Array<{
@@ -21,7 +21,6 @@
             disabled?: boolean;
         }>;
         onOptionClick?: (value: string | number) => void;
-        /** Receives ARIA props for the trigger control. */
         trigger: Snippet<[DropdownTriggerProps]>;
         children?: Snippet;
     }

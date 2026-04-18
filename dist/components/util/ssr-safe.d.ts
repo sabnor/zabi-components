@@ -1,0 +1,17 @@
+/**
+ * Browser-only guards and id generation for components that run under SSR.
+ * `generateId()` is non-deterministic on the client (random) vs counter on the server —
+ * use stable ids for ARIA pairs (e.g. `menuId` on NavigationMenu), not for persisted keys.
+ */
+export declare function isBrowser(): boolean;
+export declare function safeWindow(): Window | undefined;
+export declare function safeDocument(): Document | undefined;
+export declare function safeLocalStorage(): Storage | undefined;
+export declare function safeSessionStorage(): Storage | undefined;
+export declare function safeRequestAnimationFrame(callback: FrameRequestCallback): number | undefined;
+export declare function safeSetTimeout(callback: () => void, delay: number): NodeJS.Timeout | undefined;
+export declare function safeClearTimeout(id: NodeJS.Timeout | undefined): void;
+export declare function safeSetInterval(callback: () => void, delay: number): NodeJS.Timeout | undefined;
+export declare function safeClearInterval(id: NodeJS.Timeout | undefined): void;
+export declare function generateId(prefix?: string): string;
+//# sourceMappingURL=ssr-safe.d.ts.map

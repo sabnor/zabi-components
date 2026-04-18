@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { generateId } from "../../routes/lib/ssr-safe.js";
+    import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
         checked?: boolean;
         disabled?: boolean;
-        /** Shows a spinner on the thumb and disables interaction while true. */
         loading?: boolean;
         label?: string;
         onclick?: (event: MouseEvent) => void;
@@ -66,7 +65,7 @@
         role="switch"
         id={toggleId}
         aria-checked={checked}
-        aria-label={label || "Toggle"}
+        aria-label={label ? undefined : "Toggle"}
         aria-busy={loading ? "true" : undefined}
         disabled={isDisabled}
         onclick={handleClick}

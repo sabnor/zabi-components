@@ -4,6 +4,7 @@
     import { onMount } from "svelte";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
+        navigationMenuPanelId,
         type NavigationMenuContextValue,
     } from "./navigation-menu-context.js";
 
@@ -28,6 +29,12 @@
     );
 
     const isActive = $derived(context?.activeItem === value);
+
+    const panelId = $derived(
+        context
+            ? navigationMenuPanelId(context.menuInstanceId, value)
+            : "",
+    );
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape") {
@@ -71,6 +78,7 @@
 {#if isActive}
     <div
         bind:this={contentElement}
+        id={panelId || undefined}
         class="absolute left-0 top-full mt-2 bg-card rounded-lg shadow-lg border border-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out {className}"
         role="menu"
         onkeydown={handleKeydown}

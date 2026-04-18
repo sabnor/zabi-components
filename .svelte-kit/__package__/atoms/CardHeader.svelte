@@ -3,13 +3,11 @@
 
     interface Props {
         title?: string;
-        /** Short secondary text displayed directly under the title */
         subtitle?: string;
-        /** Longer supporting text displayed below the subtitle */
         description?: string;
-        /** Element id for `subtitle` (e.g. `aria-describedby`). */
+        /** `id` on the subtitle `<p>` (e.g. `aria-describedby` on the title). */
         subtitleId?: string;
-        /** Element id for `description` (e.g. `aria-describedby`). */
+        /** `id` on the description `<p>`. */
         descriptionId?: string;
         level?: 1 | 2 | 3 | 4 | 5 | 6;
         className?: string;

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { CheckCircle, AlertTriangle, AlertCircle } from '@lucide/svelte';
     import type { SemanticVariant, SizeVariant } from '../../types/variants.js';
-    import { generateId } from '../../routes/lib/ssr-safe.js';
+    import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
         id?: string;
@@ -13,7 +13,6 @@
         placeholder?: string;
         required?: boolean;
         disabled?: boolean;
-        /** Shows a spinner overlay and disables interaction while true. */
         loading?: boolean;
         rows?: number;
         size?: SizeVariant;

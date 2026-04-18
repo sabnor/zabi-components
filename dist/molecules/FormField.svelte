@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { generateId } from '../../routes/lib/ssr-safe.js';
+    import { generateId } from "../util/ssr-safe.js";
 
     export type FormFieldControlProps = {
         id: string;

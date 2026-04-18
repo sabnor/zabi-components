@@ -8,8 +8,10 @@
     import NavigationMenuContent from "./NavigationMenuContent.svelte";
     import NavigationMenuLink from "./NavigationMenuLink.svelte";
 
+    import { generateId } from "../util/ssr-safe.js";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
+        navigationMenuStableInstanceId,
         type NavigationMenuContextValue,
     } from "./navigation-menu-context.js";
 
@@ -35,6 +37,8 @@
         items?: NavigationMenuItemData[];
         children?: Snippet;
         listClassName?: string;
+        /** Panel id / `aria-controls` prefix; pass for SSR or multiple menus. If omitted with non-empty `items`, a deterministic hash is used. */
+        menuId?: string;
     }
 
     let {
@@ -43,12 +47,21 @@
         items = [],
         children,
         listClassName = "",
+        menuId = "",
         ...restProps
     }: Props = $props();
 
     let activeItem = $state<string | null>(null);
     let isMobile = $state(false);
     let containerElement = $state<HTMLElement | null>(null);
+
+    const menuInstanceId = $derived(
+        menuId.trim() !== ""
+            ? menuId.trim()
+            : items.length > 0
+              ? navigationMenuStableInstanceId(items)
+              : generateId("nav-menu"),
+    );
 
     function setActiveItem(item: string | null) {
         activeItem = item;
@@ -80,6 +93,9 @@
         setActiveItem,
         get isMobile() {
             return isMobile;
+        },
+        get menuInstanceId() {
+            return menuInstanceId;
         },
     };
 

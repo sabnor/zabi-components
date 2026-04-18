@@ -19,7 +19,7 @@
         badgeText?: string | number;
         badgeCount?: number;
         group?: "primary" | "secondary";
-        /** Optional heading group (Daybridge-style section labels). */
+        /** Groups items under a section heading in the rail. */
         section?: string;
     }
 
@@ -30,13 +30,11 @@
 
     interface Props {
         mode?: "expanded" | "collapsed";
-        /** Flush rail (default) or floating card surface inspired by Daybridge. */
         layout?: "rail" | "card";
         items?: SidebarNavigationItem[];
         currentPath?: string;
         ariaLabel?: string;
         className?: string;
-        /** Optional logo URL — shown with `brandName` when provided. */
         logoSrc?: string;
         logoAlt?: string;
         brandName?: string;
@@ -48,11 +46,9 @@
         searchMode?: "input" | "button";
         searchPlaceholder?: string;
         searchValue?: string;
-        /** Icon inside the panel trigger (button mode / collapsed / `onSearchClick`). Defaults to `Command`. `searchMode: "input"` keeps the magnifier (`Search`) on the field. */
+        /** Trigger icon when search is a button or rail is collapsed; input mode keeps `Search` on the field. */
         searchTriggerIcon?: Component<{ size?: number; class?: string }>;
-        /** Button variant for the panel/search trigger (defaults to `outline`). */
         searchTriggerVariant?: ButtonVariant;
-        /** Button size for the search trigger (defaults to `sm`). */
         searchTriggerSize?: SizeVariant;
         showLogout?: boolean;
         logoutLabel?: string;
@@ -67,18 +63,11 @@
         onLogout?: () => void;
         onThemeToggle?: (nextIsLightMode: boolean) => void;
         onEmptyStateAction?: () => void;
-        /** Trigger for rendering an external account panel (project-picker pattern). */
         onProfileClick?: (event?: MouseEvent) => void;
-        /** Whether the external account panel is open (for aria-expanded). */
         profilePanelOpen?: boolean;
-        /** Optional external panel id for aria-controls. */
         profilePanelControlsId?: string;
-        /** Optional profile panel snippet rendered by the footer (CSS overlay). */
         profilePanel?: Snippet;
-        /**
-         * Highlights a primary (e.g. category) row when the current route is a child
-         * of that section, while `currentPath` points at the leaf (e.g. a component).
-         */
+        /** Parent nav href to highlight when `currentPath` is a deeper leaf (e.g. category row). */
         activePrimaryHref?: string;
     }
 
@@ -189,7 +178,6 @@
         partitionBySection(filteredPrimaryItems),
     );
 
-    /** Horizontal inset: aligned dashboard rail (16px expanded, compact collapsed). */
     const insetX = $derived(isCollapsed ? "px-2.5" : "px-4");
 
     const containerClasses = $derived.by(() => {
@@ -211,7 +199,7 @@
     const iconContainerClasses = $derived(
         "flex size-6 shrink-0 items-center justify-center leading-none text-current",
     );
-    /** In `searchMode: "input"`, keep the text field even when `onSearchClick` is defined (e.g. Storybook action spies). */
+    /** With `searchMode: "input"`, the field stays visible even if `onSearchClick` is set (e.g. Storybook). */
     const shouldRenderSearchButton = $derived(
         isCollapsed ||
             searchMode === "button" ||
@@ -281,10 +269,6 @@
 </script>
 
 <nav class={containerClasses} aria-label={ariaLabel} {...restProps}>
-    <!--
-      Single flex column: header + scrollable links. Only the outer <nav> is the
-      “shell” (bg / border-r); this wrapper has no surface styling.
-    -->
     <div
         class="flex min-h-0 w-full min-w-0 flex-1 flex-col"
     >

@@ -6,6 +6,8 @@ interface Props {
     size?: Size;
     onclick?: (event: Event) => void;
     onkeydown?: (event: Event) => void;
+    /** On the `role="dialog"` root (testing, analytics). */
+    "data-testid"?: string;
 }
 type $$ComponentProps = Props & {
     children?: any;

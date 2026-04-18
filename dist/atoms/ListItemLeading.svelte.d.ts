@@ -1,9 +1,6 @@
 import type { Snippet } from "svelte";
 interface Props {
-    /**
-     * Extra classes on the leading region (for example `rounded-full` when the
-     * visual is circular).
-     */
+    /** e.g. `rounded-full` for avatars; default is `rounded-md` for icons. */
     class?: string;
     children?: Snippet;
 }

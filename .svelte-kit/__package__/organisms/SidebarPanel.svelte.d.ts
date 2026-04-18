@@ -12,7 +12,6 @@ export interface SidebarPanelItem {
 interface Props {
     className?: string;
     widthClass?: string;
-    /** Match `SidebarNavigation` `layout="card"` surfaces. */
     variant?: "plain" | "elevated";
     ariaLabel?: string;
     title?: string;

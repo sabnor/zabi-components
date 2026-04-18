@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { generateId } from "../../routes/lib/ssr-safe.js";
+    import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
         value?: number;

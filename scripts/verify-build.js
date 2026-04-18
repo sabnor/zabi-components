@@ -187,6 +187,95 @@ function verifyPackageExports() {
   return allExportsValid;
 }
 
+/** Ensure shared util imports resolve under dist/util (not above dist/). */
+function verifyPackagedSvelteImports() {
+  const badRoutesLib = '../../routes/lib/';
+  const utilLibRoot = path.join(distDir, 'util');
+  const roots = ['atoms', 'molecules', 'organisms'].map((sub) =>
+    path.join(distDir, sub),
+  );
+  const staleRoutesLib = [];
+  const brokenResolve = [];
+
+  const utilImportRe = /from\s+['"]((?:\.\.\/)+)(util\/[^'"]+)['"]/g;
+
+  function resolveSpec(filePath, spec) {
+    return path.normalize(path.join(path.dirname(filePath), spec));
+  }
+
+  function targetExists(resolved) {
+    if (fs.existsSync(resolved)) return true;
+    if (resolved.endsWith('.js')) {
+      const ts = resolved.slice(0, -3) + '.ts';
+      if (fs.existsSync(ts)) return true;
+    }
+    return false;
+  }
+
+  function walk(dir) {
+    if (!fs.existsSync(dir)) return;
+    for (const name of fs.readdirSync(dir)) {
+      const full = path.join(dir, name);
+      const st = fs.statSync(full);
+      if (st.isDirectory()) {
+        walk(full);
+      } else if (name.endsWith('.svelte')) {
+        const text = fs.readFileSync(full, 'utf8');
+        if (text.includes(badRoutesLib)) {
+          staleRoutesLib.push(path.relative(distDir, full));
+        }
+        utilImportRe.lastIndex = 0;
+        let m;
+        while ((m = utilImportRe.exec(text)) !== null) {
+          const spec = m[1] + m[2];
+          const resolved = resolveSpec(full, spec);
+          if (!resolved.startsWith(utilLibRoot + path.sep) && resolved !== utilLibRoot) {
+            brokenResolve.push({
+              file: path.relative(distDir, full),
+              spec,
+              resolved,
+            });
+          } else if (!targetExists(resolved)) {
+            brokenResolve.push({
+              file: path.relative(distDir, full),
+              spec,
+              resolved,
+              missing: true,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  for (const root of roots) {
+    walk(root);
+  }
+
+  if (staleRoutesLib.length > 0) {
+    console.error(
+      `❌ Packaged Svelte still contains "${badRoutesLib}" (stale routes/lib import):`,
+    );
+    for (const f of staleRoutesLib) {
+      console.error(`   - ${f}`);
+    }
+  }
+  if (brokenResolve.length > 0) {
+    console.error('❌ util/ import does not resolve under dist/util:');
+    for (const row of brokenResolve) {
+      console.error(
+        `   - ${row.file}: "${row.spec}" -> ${row.resolved}${row.missing ? ' (missing file)' : ''}`,
+      );
+    }
+  }
+
+  if (staleRoutesLib.length > 0 || brokenResolve.length > 0) {
+    return false;
+  }
+  console.log('✓ Packaged Svelte util/ imports verified');
+  return true;
+}
+
 async function verifyBuild() {
   console.log('🔍 Verifying build output...\n');
 
@@ -214,6 +303,12 @@ async function verifyBuild() {
   console.log('\n📦 Verifying package exports...');
   const exportsValid = verifyPackageExports();
   if (!exportsValid) {
+    allValid = false;
+  }
+
+  console.log('\n📦 Verifying packaged component imports...');
+  const importsValid = verifyPackagedSvelteImports();
+  if (!importsValid) {
     allValid = false;
   }
 

@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { generateId } from "../../routes/lib/ssr-safe.js";
+    import { onDestroy } from "svelte";
+    import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
         content?: string;
@@ -7,6 +8,10 @@
         delay?: number;
         disabled?: boolean;
     }
+
+    /** First matching focusable inside the slot receives `aria-describedby` (wrapper div is skipped). */
+    const FOCUSABLE_SELECTOR =
+        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
     let {
         content = "",
@@ -21,30 +26,104 @@
     const tooltipId = generateId("tooltip");
     let isVisible = $state(false);
     let triggerElement: HTMLElement | null = $state(null);
+    let showDelayTimeout: ReturnType<typeof setTimeout> | null = null;
+    let hideBlurTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    function clearShowDelay(): void {
+        if (showDelayTimeout !== null) {
+            clearTimeout(showDelayTimeout);
+            showDelayTimeout = null;
+        }
+    }
+
+    function clearHideBlurTimeout(): void {
+        if (hideBlurTimeout !== null) {
+            clearTimeout(hideBlurTimeout);
+            hideBlurTimeout = null;
+        }
+    }
+
+    function findDescribedTarget(root: HTMLElement): HTMLElement | null {
+        const found = root.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+        if (found) {
+            return found;
+        }
+        try {
+            if (root.matches(FOCUSABLE_SELECTOR)) {
+                return root;
+            }
+        } catch {
+            /* `matches()` can throw on unusual roots */
+        }
+        return null;
+    }
+
+    $effect(() => {
+        const root = triggerElement;
+        const describe =
+            isVisible && content && !disabled ? tooltipId : null;
+        if (!root) {
+            return;
+        }
+        const target = findDescribedTarget(root);
+        if (!target) {
+            return;
+        }
+        if (describe) {
+            target.setAttribute("aria-describedby", describe);
+        } else {
+            target.removeAttribute("aria-describedby");
+        }
+        return () => {
+            target.removeAttribute("aria-describedby");
+        };
+    });
+
+    $effect(() => {
+        if (!content || disabled) {
+            clearShowDelay();
+            clearHideBlurTimeout();
+        }
+    });
+
+    onDestroy(() => {
+        clearShowDelay();
+        clearHideBlurTimeout();
+    });
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape" && isVisible) {
+            clearShowDelay();
+            clearHideBlurTimeout();
             isVisible = false;
             triggerElement?.focus();
         }
     }
 
     function handleFocus() {
+        clearShowDelay();
+        clearHideBlurTimeout();
         if (!disabled && content) {
             isVisible = true;
         }
     }
 
     function handleBlur() {
-        setTimeout(() => {
+        clearHideBlurTimeout();
+        // Defer hide so brief focus moves within the trigger subtree do not flash the tooltip off.
+        hideBlurTimeout = setTimeout(() => {
+            hideBlurTimeout = null;
             isVisible = false;
         }, 100);
     }
 
     function handleMouseEnter() {
+        clearShowDelay();
+        clearHideBlurTimeout();
         if (!disabled && content) {
             if (delay > 0) {
-                setTimeout(() => {
+                showDelayTimeout = setTimeout(() => {
+                    showDelayTimeout = null;
                     isVisible = true;
                 }, delay);
             } else {
@@ -54,6 +133,8 @@
     }
 
     function handleMouseLeave() {
+        clearShowDelay();
+        clearHideBlurTimeout();
         isVisible = false;
     }
 </script>
@@ -70,11 +151,7 @@
     onfocusout={handleBlur}
     {...restProps}
 >
-    <div
-        bind:this={triggerElement}
-        id={triggerId}
-        aria-describedby={isVisible ? tooltipId : undefined}
-    >
+    <div bind:this={triggerElement} id={triggerId}>
         {@render children?.()}
     </div>
 

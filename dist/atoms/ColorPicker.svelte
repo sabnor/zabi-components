@@ -25,7 +25,7 @@
     let colorMap: HTMLCanvasElement | undefined;
     let colorMapContainer: HTMLDivElement | undefined;
 
-    // HSL values (0-360, 0-100, 0-100)
+    // Working color in HSL (h: 0–360; s, l: 0–100).
     let hue = $state(0);
     let saturation = $state(100);
     let lightness = $state(50);
@@ -156,7 +156,6 @@
         const width = colorMap.width;
         const height = colorMap.height;
 
-        // Draw saturation/lightness gradient
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 const s = (x / width) * 100;
@@ -298,7 +297,6 @@
                     aria-label="Color picker"
                 >
                     <div class="space-y-4">
-                        <!-- Color Map -->
                         <div
                             use:setColorMapContainer
                             class="relative w-full h-48 rounded-xl overflow-hidden cursor-crosshair"
@@ -315,14 +313,12 @@
                                 height={192}
                                 class="w-full h-full"
                             ></canvas>
-                            <!-- Color indicator -->
                             <div
                                 class="absolute w-4 h-4 border-2 border-white rounded-full shadow-lg pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
                                 style="left: {pickerIndicatorX}; top: {pickerIndicatorY};"
                             ></div>
                         </div>
 
-                        <!-- Hue Slider -->
                         <div class="space-y-2">
                             <div
                                 class="relative h-6 rounded-lg overflow-hidden"

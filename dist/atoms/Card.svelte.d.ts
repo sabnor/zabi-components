@@ -6,7 +6,7 @@ interface Props {
     variant?: CardVariant;
     fullWidth?: boolean;
     className?: string;
-    /** Required when card is interactive (has onclick) for accessibility */
+    /** Required when `onclick` is set (no visible label). */
     ariaLabel?: string;
     children?: Snippet;
 }

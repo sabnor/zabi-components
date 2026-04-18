@@ -26,14 +26,16 @@
     <meta name="theme-color" content="#ffffff" />
 </svelte:head>
 
-<TopNavbar
-    brand="Zabi Components"
-    brandHref="/"
-    ariaLabel="Main navigation"
-    className="supports-[backdrop-filter]:bg-base-50/95 backdrop-blur"
-    items={navItems}
-    navVariant="header"
-    currentPath={$page.url.pathname}
-/>
+{#if $page.url.pathname !== "/chaos-lab"}
+    <TopNavbar
+        brand="Zabi Components"
+        brandHref="/"
+        ariaLabel="Main navigation"
+        className="supports-[backdrop-filter]:bg-base-50/95 backdrop-blur"
+        items={navItems}
+        navVariant="header"
+        currentPath={$page.url.pathname}
+    />
+{/if}
 
 {@render children()}

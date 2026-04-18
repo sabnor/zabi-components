@@ -12,18 +12,16 @@ export interface SidebarNavigationItem {
     badgeText?: string | number;
     badgeCount?: number;
     group?: "primary" | "secondary";
-    /** Optional heading group (Daybridge-style section labels). */
+    /** Groups items under a section heading in the rail. */
     section?: string;
 }
 interface Props {
     mode?: "expanded" | "collapsed";
-    /** Flush rail (default) or floating card surface inspired by Daybridge. */
     layout?: "rail" | "card";
     items?: SidebarNavigationItem[];
     currentPath?: string;
     ariaLabel?: string;
     className?: string;
-    /** Optional logo URL — shown with `brandName` when provided. */
     logoSrc?: string;
     logoAlt?: string;
     brandName?: string;
@@ -35,14 +33,12 @@ interface Props {
     searchMode?: "input" | "button";
     searchPlaceholder?: string;
     searchValue?: string;
-    /** Icon inside the panel trigger (button mode / collapsed / `onSearchClick`). Defaults to `Command`. `searchMode: "input"` keeps the magnifier (`Search`) on the field. */
+    /** Trigger icon when search is a button or rail is collapsed; input mode keeps `Search` on the field. */
     searchTriggerIcon?: Component<{
         size?: number;
         class?: string;
     }>;
-    /** Button variant for the panel/search trigger (defaults to `outline`). */
     searchTriggerVariant?: ButtonVariant;
-    /** Button size for the search trigger (defaults to `sm`). */
     searchTriggerSize?: SizeVariant;
     showLogout?: boolean;
     logoutLabel?: string;
@@ -57,18 +53,11 @@ interface Props {
     onLogout?: () => void;
     onThemeToggle?: (nextIsLightMode: boolean) => void;
     onEmptyStateAction?: () => void;
-    /** Trigger for rendering an external account panel (project-picker pattern). */
     onProfileClick?: (event?: MouseEvent) => void;
-    /** Whether the external account panel is open (for aria-expanded). */
     profilePanelOpen?: boolean;
-    /** Optional external panel id for aria-controls. */
     profilePanelControlsId?: string;
-    /** Optional profile panel snippet rendered by the footer (CSS overlay). */
     profilePanel?: Snippet;
-    /**
-     * Highlights a primary (e.g. category) row when the current route is a child
-     * of that section, while `currentPath` points at the leaf (e.g. a component).
-     */
+    /** Parent nav href to highlight when `currentPath` is a deeper leaf (e.g. category row). */
     activePrimaryHref?: string;
 }
 declare const SidebarNavigation: Component<Props, {}, "isLightMode" | "searchValue">;

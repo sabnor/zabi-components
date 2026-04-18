@@ -8,7 +8,7 @@ interface Props {
     isOpen?: boolean;
     placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
     ariaLabel?: string;
-    /** Use `listbox` for Select; `menu` for action menus. */
+    /** `listbox` for Select-style; `menu` for actions. */
     menuRole?: 'menu' | 'listbox';
     selectedValue?: string | number | null;
     options?: Array<{
@@ -17,7 +17,6 @@ interface Props {
         disabled?: boolean;
     }>;
     onOptionClick?: (value: string | number) => void;
-    /** Receives ARIA props for the trigger control. */
     trigger: Snippet<[DropdownTriggerProps]>;
     children?: Snippet;
 }

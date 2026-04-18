@@ -27,19 +27,22 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/components" | "/components/demos" | "/components/[name]" | "/docs" | "/lib";
+		RouteId(): "/(playwright)" | "/" | "/chaos-lab" | "/(playwright)/chaos-lab" | "/components" | "/components/demos" | "/components/[name]" | "/docs" | "/lib";
 		RouteParams(): {
 			"/components/[name]": { name: string }
 		};
 		LayoutParams(): {
+			"/(playwright)": Record<string, never>;
 			"/": { name?: string };
+			"/chaos-lab": Record<string, never>;
+			"/(playwright)/chaos-lab": Record<string, never>;
 			"/components": { name?: string };
 			"/components/demos": Record<string, never>;
 			"/components/[name]": { name: string };
 			"/docs": Record<string, never>;
 			"/lib": Record<string, never>
 		};
-		Pathname(): "/" | "/components" | "/components/" | "/components/demos" | "/components/demos/" | `/components/${string}` & {} | `/components/${string}/` & {} | "/docs" | "/docs/" | "/lib" | "/lib/";
+		Pathname(): "/" | "/chaos-lab" | "/chaos-lab/" | "/components" | "/components/" | "/components/demos" | "/components/demos/" | `/components/${string}` & {} | `/components/${string}/` & {} | "/docs" | "/docs/" | "/lib" | "/lib/";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): string & {};
 	}

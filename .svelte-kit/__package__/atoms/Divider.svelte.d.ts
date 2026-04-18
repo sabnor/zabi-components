@@ -5,7 +5,7 @@ interface Props {
     inset?: boolean;
     class?: string;
     labelClass?: string;
-    /** When true, separator is decorative only (no role=separator). */
+    /** Decorative: omit `role="separator"` so SR does not announce a split. */
     decorative?: boolean;
 }
 declare const Divider: import("svelte").Component<Props, {}, "">;

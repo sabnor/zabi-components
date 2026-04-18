@@ -5,7 +5,7 @@
         RADIO_GROUP_OPTION_LABEL_ROW,
         RADIO_GROUP_RING_OVERLAY,
     } from "../atoms/selection-control.styles";
-    import { generateId } from "../../routes/lib/ssr-safe.js";
+    import { generateId } from "../util/ssr-safe.js";
     import { SvelteMap } from "svelte/reactivity";
 
     export type RadioGroupOption = {
@@ -17,9 +17,9 @@
 
     interface Props {
         options: RadioGroupOption[];
-        /** Controlled selected value (also supports `bind:value`). Use `undefined` for no selection. */
+        /** Selected value; `bind:value`. Use `undefined` for no selection. */
         value?: string | undefined;
-        /** Initial selected value for uncontrolled usage. Omit for no initial selection. */
+        /** Uncontrolled initial value. */
         defaultValue?: string | undefined;
         name?: string;
         disabled?: boolean;
@@ -48,13 +48,24 @@
 
     const fallbackValue = $derived.by(() => enabledOptions[0]?.value ?? "");
 
+    /** False if controlled `value` is set but missing from `options` (stale); roving tabindex then follows first enabled instead. */
+    const valueMatchesOption = $derived(
+        value === undefined ||
+            value === "" ||
+            options.some((o: RadioGroupOption) => o.value === value),
+    );
+
     function isOptionDisabled(option: RadioGroupOption): boolean {
         return disabled || !!option.disabled;
     }
 
     function tabIndexFor(option: RadioGroupOption): number {
         if (isOptionDisabled(option)) return -1;
-        if (value !== undefined && value !== "") {
+        if (
+            value !== undefined &&
+            value !== "" &&
+            valueMatchesOption
+        ) {
             return option.value === value ? 0 : -1;
         }
         return option.value === fallbackValue ? 0 : -1;
@@ -86,7 +97,12 @@
         if (enabled.length === 0) return;
 
         const rawIndex = enabled.findIndex((o) => o.value === value);
-        const currentIndex = rawIndex === -1 ? 0 : rawIndex;
+        const currentIndex =
+            rawIndex === -1
+                ? delta > 0
+                    ? -1
+                    : enabled.length
+                : rawIndex;
         const nextIndex =
             (currentIndex + delta + enabled.length) % enabled.length;
         const next = enabled[nextIndex];
