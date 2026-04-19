@@ -58,15 +58,13 @@
     import SidebarFooter from "../../components/molecules/SidebarFooter.svelte";
     import SidebarNavSection from "../../components/molecules/SidebarNavSection.svelte";
     import { fixedSidebarFlyout } from "../../components/util/fixed-sidebar-flyout.js";
-    import {
-        CircleCheck,
-        CircleHelp,
-        Circle,
-        Heart,
-        Zap,
-        ShieldCheck,
-        Sparkles,
-    } from "@lucide/svelte";
+    import CircleCheck from "@lucide/svelte/icons/circle-check";
+    import CircleQuestionMark from "@lucide/svelte/icons/circle-question-mark";
+    import Circle from "@lucide/svelte/icons/circle";
+    import Heart from "@lucide/svelte/icons/heart";
+    import Zap from "@lucide/svelte/icons/zap";
+    import ShieldCheck from "@lucide/svelte/icons/shield-check";
+    import Sparkles from "@lucide/svelte/icons/sparkles";
     import type { ComponentMetadata } from "../../types/page.types";
     import {
         selectOptions,
@@ -765,7 +763,7 @@
                                                     href="#"
                                                     className="flex flex-row items-center gap-2"
                                                 >
-                                                    <CircleHelp
+                                                    <CircleQuestionMark
                                                         class="h-4 w-4"
                                                     />
                                                     Backlog
