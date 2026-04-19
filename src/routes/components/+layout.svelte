@@ -135,7 +135,7 @@
         {/if}
 
         <div
-            class="fixed left-0 top-16 z-30 flex h-[calc(100dvh-4rem)] min-h-0 w-[min(100vw-1rem,266px)] max-w-[266px] flex-col transform bg-background transition-transform duration-200 md:static md:z-0 md:h-full md:w-auto md:max-w-none md:min-h-0 md:shrink-0 md:translate-x-0 {sidebarOpen
+            class="fixed left-0 top-16 z-30 flex h-[calc(100dvh-4rem)] min-h-0 w-[min(100vw-1rem,266px)] max-w-[266px] flex-col transform bg-background transition-transform duration-200 md:static md:z-10 md:h-full md:w-auto md:max-w-none md:min-h-0 md:shrink-0 md:translate-x-0 {sidebarOpen
                 ? 'translate-x-0'
                 : '-translate-x-full'}"
         >
@@ -159,7 +159,7 @@
 
         <div class="flex min-h-0 min-w-0 flex-1 flex-col">
             <div
-                class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain p-8"
+                class="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8"
             >
                 <div class="mb-6 flex items-center gap-3 md:hidden">
                     <button

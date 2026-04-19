@@ -29,7 +29,7 @@
     />
 </svelte:head>
 
-<Page>
+<Page className="max-w-4xl">
     <Header
         title={component.name}
         description={component.description}

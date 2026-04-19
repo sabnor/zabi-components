@@ -1,0 +1,88 @@
+---
+description: "Layout width — policy in scripts/layout-width-policy.js; if unsure use Container/Section"
+globs:
+  - "src/components/**/*.svelte"
+  - "src/components/**/*.ts"
+  - "src/routes/**/*.svelte"
+  - "src/stories/**/*.svelte"
+  - "src/lib/**/*.ts"
+  - "scripts/check-layout-width.js"
+  - "scripts/layout-width-policy.js"
+alwaysApply: false
+---
+
+# Layout width (enforced + drift-resistant)
+
+## Default (removes ambiguity)
+
+**If unsure → use `<Container>` or `<Section>` with `maxWidth`.**  
+Do not add raw `max-w-*` until you know the column is not a standard screen token.
+
+`npm run check` runs `scripts/check-layout-width.js`, which imports **`scripts/layout-width-policy.js`** — the **only** place allowed utilities and arbitrary literals are enumerated.
+
+---
+
+## Two systems (do not duplicate on one node)
+
+| System | Where | Mechanism |
+|--------|--------|-----------|
+| **Tokens** | Reusable layout, marketing bands | `Container` / `Section` → `max-w-screen-*` / `full` |
+| **Fixed scale** | Routes, demos, stories, showcase | Approved `max-w-*` from policy, or `Page className` |
+
+---
+
+## Arbitrary `max-w-[…]` (frozen set)
+
+Each entry in **`ARBITRARY_MAX_WIDTH`** in `scripts/layout-width-policy.js` has:
+
+- **`id`** — stable name for review/PRs  
+- **`category`** — `app-shell` | `demo` | `intrinsic` | …  
+- **`purpose`** — one-line why it exists  
+
+Current literals:
+
+| Literal | ID | Category |
+|---------|-----|----------|
+| `max-w-[266px]` | DOCS_CATALOG_SIDEBAR_CAP | app-shell |
+| `max-w-[280px]` | SIDEBAR_APP_SHELL_RAIL | demo |
+| `max-w-[min(24rem,calc(100vw-2rem))]` | TOAST_INLINE_VIEWPORT | intrinsic (Toast only) |
+
+Optional **named aliases** (must stay in sync): `src/lib/layout-width-tokens.ts`.
+
+**No new arbitrary values** without updating the policy object **and** a PR that states use case + category.
+
+---
+
+## Packaged components
+
+Only these files may contain **any** `max-w-*`:
+
+- `atoms/Container.svelte`, `atoms/Toast.svelte`, `molecules/Section.svelte`, `organisms/TopNavbar.svelte`
+
+**Organism rule:** only **TopNavbar** may embed inner chrome width (`max-w-7xl` row). Other organisms: width from parent.
+
+---
+
+## Before expanding the allowlist (review checklist)
+
+1. **Use case** — docs | demo | marketing | app-shell | chrome | intrinsic  
+2. **Rejected alternative** — why not `Container`/`Section` or an existing fixed utility?  
+3. **Policy update** — edit **`layout-width-policy.js`** (`ALLOWED_GLOBAL_MAX_W` and/or `ARBITRARY_MAX_WIDTH`)  
+4. **Docs** — adjust this rule file if the mental model changes  
+5. **`npm run check`** must pass  
+
+Banned shortcuts: pasting new `max-w-*` in components to “fix” layout, or adding arbitrary literals without `ARBITRARY_MAX_WIDTH` metadata.
+
+---
+
+## Failure output
+
+Violations print **category**, **why**, and **exact replacement** (see `BANNED_UTILITY_REPLACEMENTS` in policy). Footer: default rule + policy path.
+
+---
+
+## References
+
+- `scripts/layout-width-policy.js` — allowlists, arbitrary metadata, expansion header  
+- `scripts/check-layout-width.js` — validation + messages  
+- `src/lib/layout-width-tokens.ts` — optional named aliases for arbitrary literals  

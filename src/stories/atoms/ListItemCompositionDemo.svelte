@@ -32,7 +32,7 @@
   Storybook helper: data-driven icon, avatar, and text-only rows.
 -->
 
-<div class="flex w-full max-w-md flex-col gap-2">
+<div class="flex w-full max-w-lg flex-col gap-2">
     <ListItem item={itemIcon} />
     <ListItem item={itemAvatar} />
     <ListItem item={itemPlain} showArrow={false} />
