@@ -12,9 +12,37 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [7.0.0] - 2026-04-19
+
 ### Breaking changes
 
-- Renamed the `Navbar` organism to `TopNavbar` (and `NavbarNavItem` to `TopNavbarNavItem`) for clearer distinction from sidebar navigation.
+- **`Page`**: Removed the built-in `max-w-4xl` cap. Width is now fully controlled by the parent, or pass e.g. `className="max-w-4xl"` (or use **`Container`** / **`Section`** with `maxWidth` per the layout-width policy).
+- **`EmptyState`**: Removed the built-in `max-w-lg` cap. Add `className="max-w-lg"` (or another token) if you still want a narrow empty state.
+
+### Added
+
+- **`postinstall`**: After `npm install`, runs `scripts/fix-lucide-svelte-icon-dts.js` to strip a duplicate `type X = ReturnType<typeof X>` line from each `@lucide/svelte` per-icon `dist/icons/*.svelte.d.ts` file. Some TypeScript language services treat the unpatched file as a non-module, which breaks types for deep icon imports and root re-exports.
+- **`fixedSidebarFlyout`**: New Svelte **action** in the built package (`util/fixed-sidebar-flyout.js`) used by **`SidebarFooter`**. It pins flyouts with `position: fixed` to `[data-sidebar-flyout-anchor]` inside `[data-sidebar-flyout-root]`, teleports the panel to `document.body` while open to avoid scroll clipping, and updates position on scroll/resize. Options: `open`, `align` (`"top"` | `"bottom"`), `gap`, `anchorRole` (`"search"` | `"profile"`).
+
+### Changed
+
+- **`CodeBlock`**: Replaced the ad-hoc copy **`<button>`** with **`IconButton`** (ghost, sm). Copy / copied states use Lucide **`Check`** and **`Copy`** from **`@lucide/svelte/icons/*`**. Wrapper uses **`bg-surface-1`**, **`border-border`**, header **`bg-surface-2`**; code uses **`text-base-900`** on light surfaces instead of **`bg-base-900`** / **`bg-base-*`** chrome with **`text-base-100`** body text.
+- **`SidebarFooter`**: Profile panel markup restructured with **`data-sidebar-flyout-root`** on the footer host; **`data-sidebar-flyout-anchor="profile"`** on the launcher; the profile snippet is positioned with **`fixedSidebarFlyout`** (`align: "bottom"`, viewport-limited **`max-height`**, **`overflow-y-auto`**, **`overscroll-contain`**). Drops the previous **`absolute bottom-0 left-full`** positioning that misbehaved beside fixed sidebars / scroll ancestors.
+- **`SidebarNavigation`**: Search trigger wrapped with **`data-sidebar-flyout-anchor="search"`** (collapsed and expanded) so flyouts share the same anchor protocol as the footer profile panel.
+- **Lucide usage in source**: Prefer **`import Icon from "@lucide/svelte/icons/name"`** over the package barrel for clearer tree-shaking and alignment with the postinstall typings fix. Showcase demos replace **`CircleHelp`** with **`CircleQuestionMark`** (current Lucide export name).
+- **`zabi-components.css` (generated bundle)**: Picks up additional theme utilities used by the showcase and organisms—e.g. **`--spacing-xs`**, **`text-base-900`**, **`max-h-[min(32rem,calc(100dvh-6rem))]`**, **`overscroll-contain`**, prose/fit/max/min width utilities, responsive **`md:z-10`**, **`md:w-80`**, **`md:flex-nowrap`**, **`md:items-stretch`**, **`overflow-auto`**, **`align-top`**. Some rarely-used utilities were dropped from the scanned set where no longer referenced (e.g. **`left-full`**, base **`items-stretch`** in favor of **`md:items-stretch`**, **`bg-gray-50`**).
+
+### Fixed
+
+- **Lucide + TypeScript**: Consumers importing per-icon modules get consistent typings after install thanks to the **`postinstall`** patch for **`@lucide/svelte`** ~**0.544.x** declaration output.
+
+### Migration (from 6.x)
+
+1. **`Page` / `EmptyState`**: If layout relied on the old max widths, add them explicitly:
+   - `<Page className="max-w-4xl">` or wrap content in **`Container`** / **`Section`**.
+   - `<EmptyState className="max-w-lg" …>` (or another **`max-w-*`** from your layout policy).
+2. **`npm install`**: Keep **`postinstall`** enabled so Lucide icon **`.d.ts`** files are patched; if you use **`npm install --ignore-scripts`**, run `node scripts/fix-lucide-svelte-icon-dts.js` manually or rely on root **`@lucide/svelte`** barrel imports only (may bundle more code).
+3. **Demos copying Lucide icon names**: Replace **`CircleHelp`** with **`CircleQuestionMark`** when upgrading Lucide past names that removed **`CircleHelp`**.
 
 ## [6.0.0] - 2026-04-12
 
