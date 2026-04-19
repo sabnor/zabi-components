@@ -1,13 +1,17 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
+    import type { HTMLAttributes } from "svelte/elements";
     import { onDestroy } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
 
-    interface Props {
+    type Props = Omit<HTMLAttributes<HTMLDivElement>, "class"> & {
         content?: string;
         placement?: "top" | "bottom" | "left" | "right";
         delay?: number;
         disabled?: boolean;
-    }
+        class?: string;
+        children?: Snippet;
+    };
 
     /** First matching focusable inside the slot receives `aria-describedby` (wrapper div is skipped). */
     const FOCUSABLE_SELECTOR =
@@ -20,7 +24,7 @@
         disabled = false,
         children,
         ...restProps
-    }: Props & { children?: any } = $props();
+    }: Props = $props();
 
     const triggerId = generateId("tooltip-trigger");
     const tooltipId = generateId("tooltip");

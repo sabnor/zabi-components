@@ -1,6 +1,6 @@
 {
   "name": "zabi-components",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "description": "Svelte 5 UI components with TypeScript and Tailwind CSS v4. Accessible, easy to theme, works with SSR.",
   "type": "module",
   "main": "dist/index.js",
@@ -62,7 +62,9 @@
     "README.md",
     "THEME.md",
     "THEMING.md",
-    "docs/theme-imports.md"
+    "docs/theme-imports.md",
+    "docs/lucide-icons.md",
+    "scripts/fix-lucide-svelte-icon-dts.js"
   ],
   "keywords": [
     "svelte",
@@ -122,7 +124,6 @@
     "@types/node": "^24.5.2",
     "@types/react": "^19.2.2",
     "autoprefixer": "^10.4.17",
-    "baseline-browser-mapping": "^2.10.18",
     "culori": "^4.0.2",
     "jsdom": "^29.0.2",
     "postcss": "^8.4.35",

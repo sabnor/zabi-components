@@ -12,6 +12,26 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [7.0.1] - 2026-04-19
+
+### Fixed
+
+- **`postinstall`**: The Lucide typings patch script is **included in the published package** (`scripts/fix-lucide-svelte-icon-dts.js` via `package.json` `files`), so `npm install zabi-components` no longer fails when lifecycle scripts run.
+- **Theme CSS (Tailwind v4)**: Replaced `theme(colors.*)` inside `@theme` / `.dark` with `var(--color-*)` for Zabi scales and stable hex literals for Tailwind default ramps (e.g. red/amber) and white, so consumers processing `theme-only` / `colors` bundles do not hit unresolved `theme()` during Tailwind passes.
+- **Props typings**: **`Button`**, **`IconButton`**, and **`Tooltip`** prop types now intersect native element attributes (`HTMLButtonAttributes` / `HTMLAttributes<HTMLDivElement>`) so passthrough attributes (`class`, ARIA, `data-*`, etc.) type-check when spread with `...restProps`.
+
+### Added
+
+- **`docs/lucide-icons.md`**: Lists Lucide icons imported by published components for teams using a custom `@lucide/svelte` barrel.
+
+### Changed
+
+- **`scripts/sync-theme-tokens.js`**: End marker after the mirrored base ramp now matches the **`Brand Color Scale - Dark mode variants`** comment (including the “no theme() forward refs” note).
+
+### Migration / discovery
+
+- **`Navbar` → `TopNavbar`**: The older **`Navbar`** export was removed in **6.0.0**; use **`TopNavbar`**. See the **6.0.0** migration notes in this file.
+
 ## [7.0.0] - 2026-04-19
 
 ### Breaking changes
