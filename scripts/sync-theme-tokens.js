@@ -72,7 +72,7 @@ async function syncThemeTokens() {
   css = replaceSection(
     css,
     '  /* Mirror @theme --zabi-base-* ramp (same physical hex; required for standalone dark import) */',
-    '  /* Brand Color Scale - Dark mode variants */',
+    '  /* Brand Color Scale - Dark mode variants (mirrored from light physical hex; no theme() forward refs) */',
     darkPhysicalBlock,
   );
   css = replaceSection(

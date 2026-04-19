@@ -1,19 +1,17 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import type { HTMLButtonAttributes } from "svelte/elements";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
 
-    interface Props {
+    type Props = Omit<HTMLButtonAttributes, "class"> & {
         variant?: ButtonVariant;
         size?: SizeVariant;
-        disabled?: boolean;
         loading?: boolean;
-        type?: "button" | "submit" | "reset";
         /** Required for icon-only usage (no visible text). */
         label?: string;
         class?: string;
-        onclick?: (event: MouseEvent) => void;
         children?: Snippet;
-    }
+    };
 
     let {
         variant = "primary",
