@@ -286,30 +286,40 @@
                 {#if shouldRenderSearchButton}
                     {@const TriggerIcon = searchTriggerIcon}
                     {#if isCollapsed}
-                        <IconButton
-                            variant={searchTriggerVariant}
-                            size={searchTriggerSize}
-                            label={searchPlaceholder}
-                            onclick={handleSearchClick}
+                        <span
+                            class="inline-flex"
+                            data-sidebar-flyout-anchor="search"
                         >
-                            <TriggerIcon size={18} />
-                        </IconButton>
+                            <IconButton
+                                variant={searchTriggerVariant}
+                                size={searchTriggerSize}
+                                label={searchPlaceholder}
+                                onclick={handleSearchClick}
+                            >
+                                <TriggerIcon size={18} />
+                            </IconButton>
+                        </span>
                     {:else}
-                        <Button
-                            variant={searchTriggerVariant}
-                            size={searchTriggerSize}
-                            isFullWidth
-                            onclick={handleSearchClick}
+                        <div
+                            class="w-full min-w-0"
+                            data-sidebar-flyout-anchor="search"
                         >
-                            <span class="flex w-full items-center justify-start gap-2.5">
-                                <span class={iconContainerClasses} aria-hidden="true">
-                                    <TriggerIcon size={17} />
+                            <Button
+                                variant={searchTriggerVariant}
+                                size={searchTriggerSize}
+                                isFullWidth
+                                onclick={handleSearchClick}
+                            >
+                                <span class="flex w-full items-center justify-start gap-2.5">
+                                    <span class={iconContainerClasses} aria-hidden="true">
+                                        <TriggerIcon size={17} />
+                                    </span>
+                                    <span class="truncate text-sm text-inherit">
+                                        {searchValue || searchPlaceholder}
+                                    </span>
                                 </span>
-                                <span class="truncate text-sm text-inherit">
-                                    {searchValue || searchPlaceholder}
-                                </span>
-                            </span>
-                        </Button>
+                            </Button>
+                        </div>
                     {/if}
                 {:else}
                     <div class="relative w-full">

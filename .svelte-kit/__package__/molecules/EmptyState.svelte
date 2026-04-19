@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Snippet } from 'svelte';
+    import type { Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
@@ -13,16 +13,16 @@
     let {
         title,
         description,
-        class: className = '',
+        class: className = "",
         action,
         media,
     }: Props = $props();
 
-    const titleId = generateId('empty-state-title');
+    const titleId = generateId("empty-state-title");
 </script>
 
 <section
-    class="mx-auto flex max-w-lg flex-col items-center justify-center gap-4 px-6 py-12 text-center {className}"
+    class="mx-auto flex flex-col items-center justify-center gap-4 px-6 py-12 text-center {className}"
     aria-labelledby={titleId}
 >
     {#if media}

@@ -9,7 +9,7 @@
     let { children, className = "" }: Props = $props();
 </script>
 
-<div class="mx-auto w-full max-w-4xl space-y-10 {className}">
+<div class="mx-auto w-full space-y-10 {className}">
     {#if children}
         {@render children()}
     {/if}
