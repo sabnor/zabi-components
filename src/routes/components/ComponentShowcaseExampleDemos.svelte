@@ -57,6 +57,7 @@
     import SidebarBrandHeader from "../../components/molecules/SidebarBrandHeader.svelte";
     import SidebarFooter from "../../components/molecules/SidebarFooter.svelte";
     import SidebarNavSection from "../../components/molecules/SidebarNavSection.svelte";
+    import { fixedSidebarFlyout } from "../../components/util/fixed-sidebar-flyout.js";
     import {
         CircleCheck,
         CircleHelp,
@@ -948,7 +949,7 @@
                             page content would render.
                         </p>
                         <div
-                            class="flex flex-col overflow-visible rounded-2xl border border-border bg-base-100 shadow-sm md:min-h-[min(520px,65vh)] md:flex-row"
+                            class="flex flex-col overflow-visible rounded-2xl border border-border bg-base-100 shadow-sm md:min-h-[min(520px,65vh)] md:flex-row md:items-stretch"
                         >
                             {#snippet appShellProfilePanel()}
                                 <SidebarAccountPanel
@@ -1069,7 +1070,10 @@
                         <h4 class="text-sm font-medium text-headline mb-2">
                             Trigger Button + sidebar panel
                         </h4>
-                        <div class="flex flex-wrap items-start gap-4">
+                        <div
+                            data-sidebar-flyout-root
+                            class="inline-flex max-w-full flex-col gap-4 align-top md:flex-row md:flex-nowrap"
+                        >
                             {#snippet sidebarProfilePanel()}
                                 <SidebarAccountPanel
                                     panelId={sidebarAccountPanelId}
@@ -1112,18 +1116,30 @@
                                 profilePanel={sidebarProfilePanel}
                             />
                             {#if sidebarSearchPanelOpen}
-                                <SidebarPanel
-                                    title="Project picker"
-                                    subtitle="Search and switch projects"
-                                    searchPlaceholder="Search projects..."
-                                    ariaLabel="Project picker panel"
-                                    items={sidebarProjectItems}
-                                    bind:searchValue={sidebarProjectSearch}
-                                    bind:selectedItemId={selectedProjectId}
-                                    onClose={() => {
-                                        sidebarSearchPanelOpen = false;
+                                <div
+                                    class="max-h-[min(32rem,calc(100dvh-6rem))] overflow-y-auto overscroll-contain outline-none"
+                                    role="presentation"
+                                    use:fixedSidebarFlyout={{
+                                        open: sidebarSearchPanelOpen,
+                                        align: "top",
+                                        gap: 12,
+                                        anchorRole: "search",
                                     }}
-                                />
+                                >
+                                    <SidebarPanel
+                                        title="Project picker"
+                                        subtitle="Search and switch projects"
+                                        searchPlaceholder="Search projects..."
+                                        ariaLabel="Project picker panel"
+                                        widthClass="w-full min-w-0 max-w-xs md:w-80"
+                                        items={sidebarProjectItems}
+                                        bind:searchValue={sidebarProjectSearch}
+                                        bind:selectedItemId={selectedProjectId}
+                                        onClose={() => {
+                                            sidebarSearchPanelOpen = false;
+                                        }}
+                                    />
+                                </div>
                             {/if}
                         </div>
                     </div>
@@ -1580,9 +1596,14 @@
                     {/snippet}
                 </EmptyState>
             {:else if component.name === "Page"}
-                <Page>
+                <Page className="max-w-lg">
                     <p class="text-sm text-description">
-                        Page constrains width for long-form documentation.
+                        Wrap <code class="font-mono text-xs">Page</code> or pass
+                        <code class="font-mono text-xs">className</code> so the route
+                        sets reading width (<code class="font-mono text-xs"
+                            >max-w-4xl</code
+                        >
+                        on docs pages).
                     </p>
                 </Page>
             {:else if component.name === "Section"}

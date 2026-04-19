@@ -1004,7 +1004,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Toast atom — inline",
                         description:
                             "Use layout=\"inline\" for docs and embedded UI; default layout=\"viewport\" pins a single toast to the corner.",
-                        code: '&lt;div class="max-w-md"&gt;\n  &lt;Toast layout="inline" type="success" message="Operation completed" /&gt;\n&lt;/div&gt;',
+                        code: '&lt;div class="max-w-lg"&gt;\n  &lt;Toast layout="inline" type="success" message="Operation completed" /&gt;\n&lt;/div&gt;',
                     },
                     {
                         title: "Semantic types",
@@ -2085,14 +2085,16 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
             {
                 name: "Page",
                 category: "molecules",
-                description: "Narrow content column wrapper for doc-style pages.",
+                description:
+                    "Vertical stack for doc-style pages. Apply reading width from the route via className (for example max-w-4xl).",
                 props: [
                     {
                         name: "className",
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Extra classes",
+                        description:
+                            "Extra classes — include max-w-* here; Page does not set a default width.",
                     },
                 ],
                 variants: [],
@@ -2100,7 +2102,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Page",
                         description: "Wrap main doc content",
-                        code: "<Page>…</Page>",
+                        code: '<Page className="max-w-4xl">…</Page>',
                     },
                 ],
             },

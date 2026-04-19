@@ -62,7 +62,21 @@
     }
 </script>
 
-<div class="flex items-stretch gap-4">
+{#snippet accountPanel()}
+    <SidebarAccountPanel
+        panelId={accountPanelId}
+        profileName={profileName}
+        profileEmail={profileEmail}
+        bind:isLightMode={isLightMode}
+        onThemeToggle={(nextIsLightMode) => (isLightMode = nextIsLightMode)}
+        onLogout={() => closeAccountPanel()}
+        onAccount={() => closeAccountPanel()}
+        onClose={closeAccountPanel}
+        variant={layout === "card" ? "elevated" : "plain"}
+    />
+{/snippet}
+
+<div class="w-full max-w-lg">
     <SidebarNavigation
         {items}
         {currentPath}
@@ -87,20 +101,7 @@
         onProfileClick={toggleAccountPanel}
         profilePanelOpen={isAccountPanelOpen}
         profilePanelControlsId={accountPanelId}
+        profilePanel={accountPanel}
     />
-
-    {#if isAccountPanelOpen}
-        <SidebarAccountPanel
-            panelId={accountPanelId}
-            profileName={profileName}
-            profileEmail={profileEmail}
-            bind:isLightMode={isLightMode}
-            onThemeToggle={(nextIsLightMode) => (isLightMode = nextIsLightMode)}
-            onLogout={() => closeAccountPanel()}
-            onAccount={() => closeAccountPanel()}
-            onClose={closeAccountPanel}
-            variant={layout === "card" ? "elevated" : "plain"}
-        />
-    {/if}
 </div>
 

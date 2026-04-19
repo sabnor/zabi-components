@@ -93,7 +93,7 @@
     "check:tokens": "node scripts/check-token-violations.js",
     "build:types": "tsc --project tsconfig.lib.json && cp dist/components/util/focus-utils.d.ts dist/routes/lib/ && node scripts/emit-components-types-runtime.js",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json && node scripts/check-component-imports.js",
+    "check": "svelte-check --tsconfig ./tsconfig.json && node scripts/check-component-imports.js && node scripts/check-layout-width.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest run",

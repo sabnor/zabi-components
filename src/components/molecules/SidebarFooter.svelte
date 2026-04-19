@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { fixedSidebarFlyout } from "../util/fixed-sidebar-flyout.js";
 
     interface Props {
         collapsed?: boolean;
@@ -57,14 +58,15 @@
 </script>
 
 {#if showFooter}
-    <footer
-        class={`flex w-full shrink-0 flex-col gap-2.5 border-t border-border pt-3 pb-1 ${className}`.trim()}
-        aria-label="Account and settings"
-    >
-        {#if showPanelLauncher}
-            <div class="relative">
+    <div class="w-full shrink-0" data-sidebar-flyout-root>
+        <footer
+            class={`flex w-full shrink-0 flex-col gap-2.5 border-t border-border pt-3 pb-1 ${className}`.trim()}
+            aria-label="Account and settings"
+        >
+            {#if showPanelLauncher}
                 <button
                     type="button"
+                    data-sidebar-flyout-anchor="profile"
                     class="w-full cursor-pointer rounded-xl px-2 py-2 outline-none transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover hover:ring-1 hover:ring-border/60 active:bg-base-200 focus-ring focus-ring--nav"
                     aria-haspopup="dialog"
                     aria-expanded={profilePanelOpen}
@@ -96,16 +98,22 @@
                         {/if}
                     </span>
                 </button>
+            {/if}
+        </footer>
 
-                {#if profilePanelOpen && profilePanel}
-                    <div
-                        class="absolute bottom-0 left-full ml-3 z-50"
-                        role="presentation"
-                    >
-                        {@render profilePanel()}
-                    </div>
-                {/if}
+        {#if showPanelLauncher && profilePanelOpen && profilePanel}
+            <div
+                class="max-h-[min(32rem,calc(100dvh-6rem))] overflow-y-auto overscroll-contain outline-none"
+                role="presentation"
+                use:fixedSidebarFlyout={{
+                    open: profilePanelOpen,
+                    align: "bottom",
+                    gap: 12,
+                    anchorRole: "profile",
+                }}
+            >
+                {@render profilePanel()}
             </div>
         {/if}
-    </footer>
+    </div>
 {/if}
