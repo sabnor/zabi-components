@@ -12,6 +12,14 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [7.0.2] - 2026-04-20
+
+### Changed
+
+- **`Tooltip`**: Tooltip surface styling now uses theme tokens **`--color-tooltip-bg`** / **`--color-tooltip-fg`** (with **`bg-tooltip-bg`** / **`text-tooltip-fg`** utilities) and **`z-tooltip`**, keeping layout/arrow logic in scoped CSS while aligning colors with the design system.
+- **`Tooltip` layout**: Tooltip panel uses **`width: max-content`** with a responsive **`max-width`** cap (`min(24rem, calc(100vw - 2rem))`) so typical copy stays on one line until the limit; arrow fill follows **`--color-tooltip-bg`**.
+- **Theme (`src/app.css`)**: Defines **`--color-tooltip-bg`** / **`--color-tooltip-fg`** (defaults to base-800 / base-50); **`prefers-contrast: high`** maps them to **`CanvasText`** / **`Canvas`** for stronger contrast. Regenerated **`zabi-components*.css`** picks up the new utilities.
+
 ## [7.0.1] - 2026-04-19
 
 ### Fixed

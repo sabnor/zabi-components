@@ -1,6 +1,6 @@
 {
   "name": "zabi-components",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "description": "Svelte 5 UI components with TypeScript and Tailwind CSS v4. Accessible, easy to theme, works with SSR.",
   "type": "module",
   "main": "dist/index.js",
