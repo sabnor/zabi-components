@@ -64,8 +64,7 @@
 
     $effect(() => {
         const root = triggerElement;
-        const describe =
-            isVisible && content && !disabled ? tooltipId : null;
+        const describe = isVisible && content && !disabled ? tooltipId : null;
         if (!root) {
             return;
         }
@@ -162,7 +161,7 @@
     {#if content && !disabled}
         <div
             id={tooltipId}
-            class="tooltip"
+            class="tooltip pointer-events-none invisible absolute z-tooltip whitespace-normal wrap-break-word rounded-lg bg-tooltip-bg px-3 py-2 text-sm leading-5 text-tooltip-fg opacity-0 transition-[opacity,visibility,transform] duration-200 ease-in-out"
             role="tooltip"
             aria-hidden={!isVisible}
             data-visible={isVisible}
@@ -175,40 +174,17 @@
 
 <style>
     :root {
-        --tooltip-bg: var(--color-base-800);
-        --tooltip-color: var(--color-base-50);
-        --tooltip-padding: 0.5rem 0.75rem;
-        --tooltip-radius: 0.5rem;
-        --tooltip-font-size: 0.875rem;
-        --tooltip-line-height: 1.25rem;
-        --tooltip-max-width: 200px;
+        /* Cap only very long copy; width:max-content keeps typical sentences on one line until this limit */
+        --tooltip-max-width: min(24rem, calc(100vw - 2rem));
         --tooltip-gap: 0.5rem;
         --tooltip-arrow-size: 4px;
-        --tooltip-transition: opacity 0.2s ease-in-out,
-            visibility 0.2s ease-in-out, transform 0.2s ease-in-out;
     }
 
-    .tooltip-container {
-        position: relative;
-        display: inline-block;
-    }
-
+    /* max-width: policy forbids max-w-* utilities on packaged atoms; variable used by sm: override */
     .tooltip {
-        position: absolute;
-        z-index: var(--z-tooltip, 1070);
-        padding: var(--tooltip-padding);
-        background-color: var(--tooltip-bg);
-        color: var(--tooltip-color);
-        border-radius: var(--tooltip-radius);
-        font-size: var(--tooltip-font-size);
-        line-height: var(--tooltip-line-height);
-        max-width: var(--tooltip-max-width);
-        white-space: normal;
-        word-wrap: break-word;
-        opacity: 0;
-        visibility: hidden;
-        transition: var(--tooltip-transition);
-        pointer-events: none;
+        width: -moz-max-content;
+        width: max-content;
+        max-width: var(--tooltip-max-width, min(24rem, calc(100vw - 2rem)));
     }
 
     .tooltip-container[data-placement="top"] .tooltip {
@@ -268,7 +244,7 @@
         position: absolute;
         width: calc(var(--tooltip-arrow-size) * 2);
         height: calc(var(--tooltip-arrow-size) * 2);
-        background-color: var(--tooltip-bg);
+        background-color: var(--color-tooltip-bg);
     }
 
     .tooltip-container[data-placement="top"] .tooltip::before {
@@ -322,10 +298,8 @@
     }
 
     @media (prefers-contrast: high) {
-        :root {
-            --tooltip-bg: CanvasText;
-            --tooltip-color: Canvas;
-            --tooltip-padding: 0.75rem 1rem;
+        .tooltip {
+            padding: 0.75rem 1rem;
         }
     }
 
@@ -354,6 +328,6 @@
         box-shadow:
             0 0 0 2px var(--color-focus-ring-offset),
             0 0 0 4px var(--color-focus-ring);
-        border-radius: var(--tooltip-radius);
+        border-radius: 0.5rem;
     }
 </style>
