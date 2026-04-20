@@ -348,4 +348,7 @@
 --z-popover: 1060
 --z-tooltip: 1070
 --z-toast: 1080
+/* Tooltip — elevated hint surface (Tooltip.svelte); arrow uses --color-tooltip-bg */
+--color-tooltip-bg: var(--color-base-800)
+--color-tooltip-fg: var(--color-base-50)
 }
