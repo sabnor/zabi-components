@@ -54,6 +54,7 @@ declare module '$env/static/private' {
 	export const __CF_USER_TEXT_ENCODING: string;
 	export const VSCODE_PROFILE_INITIALIZED: string;
 	export const npm_execpath: string;
+	export const npm_config_access: string;
 	export const PATH: string;
 	export const _: string;
 	export const npm_package_json: string;
@@ -150,6 +151,7 @@ declare module '$env/dynamic/private' {
 		__CF_USER_TEXT_ENCODING: string;
 		VSCODE_PROFILE_INITIALIZED: string;
 		npm_execpath: string;
+		npm_config_access: string;
 		PATH: string;
 		_: string;
 		npm_package_json: string;
