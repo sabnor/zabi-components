@@ -23,54 +23,150 @@
 --zabi-base-900: #18181b
 --zabi-base-925: #101013
 --zabi-base-950: #09090b
-/* Brand Color Scale - Dark mode variants (mirrored from light physical hex; no theme() forward refs) */
---color-brand-50: #1f2866
---color-brand-100: #2f3c99
---color-brand-200: #3f4fc0
---color-brand-300: #5366e2
---color-brand-400: #6e84fa
---color-brand-500: #8fa8ff
---color-brand-600: #abc4ff
---color-brand-700: #ccdbfd
---color-brand-800: #dfe7fb
---color-brand-900: #edf2fb
---color-brand-950: #f7faff
-/* Citron Color Scale - Dark mode variants */
---color-citron-50: #323518
---color-citron-100: #4d5229
---color-citron-200: #666c35
---color-citron-300: #848a43
---color-citron-400: #a3a852
---color-citron-500: #bbbe64
---color-citron-600: #c7d460
---color-citron-700: #d5e184
---color-citron-800: #e4ecaa
---color-citron-900: #f1f5cf
---color-citron-950: #f9faeb
-/* Pine Color Scale - Dark mode variants */
---color-pine-50: #02160f
---color-pine-100: #04231a
---color-pine-200: #063a2a
---color-pine-300: #084532
---color-pine-400: #0a513a
---color-pine-500: #0c5d43
---color-pine-600: #49ad91
---color-pine-700: #78c4ad
---color-pine-800: #a7d9c9
---color-pine-900: #d2ece4
---color-pine-950: #e9f6f2
-/* Iris Color Scale - Dark mode variants */
---color-iris-50: #1b1b37
---color-iris-100: #2a2a56
---color-iris-200: #38386f
---color-iris-300: #474788
---color-iris-400: #58589e
---color-iris-500: #6969b3
---color-iris-600: #a3a3d8
---color-iris-700: #bdbde6
---color-iris-800: #d6d6f0
---color-iris-900: #e9e9f7
---color-iris-950: #f4f4fa
+/* Mirror @theme --zabi-brand-* ramp (same physical hex; required for standalone dark import) */
+--zabi-brand-50: #f7faff
+--zabi-brand-100: #edf2fb
+--zabi-brand-200: #dfe7fb
+--zabi-brand-300: #ccdbfd
+--zabi-brand-400: #abc4ff
+--zabi-brand-500: #8fa8ff
+--zabi-brand-600: #6e84fa
+--zabi-brand-700: #5366e2
+--zabi-brand-800: #3f4fc0
+--zabi-brand-900: #2f3c99
+--zabi-brand-950: #1f2866
+/* Brand Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
+--color-brand-50: var(--zabi-brand-950)
+--color-brand-100: var(--zabi-brand-900)
+--color-brand-200: var(--zabi-brand-800)
+--color-brand-300: var(--zabi-brand-700)
+--color-brand-400: var(--zabi-brand-600)
+--color-brand-500: var(--zabi-brand-500)
+--color-brand-600: var(--zabi-brand-400)
+--color-brand-700: var(--zabi-brand-300)
+--color-brand-800: var(--zabi-brand-200)
+--color-brand-900: var(--zabi-brand-100)
+--color-brand-950: var(--zabi-brand-50)
+/* Mirror @theme --zabi-citron-* ramp (same physical hex; required for standalone dark import) */
+--zabi-citron-50: #f9faeb
+--zabi-citron-100: #f1f5cf
+--zabi-citron-200: #e4ecaa
+--zabi-citron-300: #d5e184
+--zabi-citron-400: #c7d460
+--zabi-citron-500: #bbbe64
+--zabi-citron-600: #a3a852
+--zabi-citron-700: #848a43
+--zabi-citron-800: #666c35
+--zabi-citron-900: #4d5229
+--zabi-citron-950: #323518
+/* Citron Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
+--color-citron-50: var(--zabi-citron-950)
+--color-citron-100: var(--zabi-citron-900)
+--color-citron-200: var(--zabi-citron-800)
+--color-citron-300: var(--zabi-citron-700)
+--color-citron-400: var(--zabi-citron-600)
+--color-citron-500: var(--zabi-citron-500)
+--color-citron-600: var(--zabi-citron-400)
+--color-citron-700: var(--zabi-citron-300)
+--color-citron-800: var(--zabi-citron-200)
+--color-citron-900: var(--zabi-citron-100)
+--color-citron-950: var(--zabi-citron-50)
+/* Mirror @theme --zabi-pine-* ramp (same physical hex; required for standalone dark import) */
+--zabi-pine-50: #e9f6f2
+--zabi-pine-100: #d2ece4
+--zabi-pine-200: #a7d9c9
+--zabi-pine-300: #78c4ad
+--zabi-pine-400: #49ad91
+--zabi-pine-500: #0c5d43
+--zabi-pine-600: #0a513a
+--zabi-pine-700: #084532
+--zabi-pine-800: #063a2a
+--zabi-pine-900: #04231a
+--zabi-pine-950: #02160f
+/* Pine Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
+--color-pine-50: var(--zabi-pine-950)
+--color-pine-100: var(--zabi-pine-900)
+--color-pine-200: var(--zabi-pine-800)
+--color-pine-300: var(--zabi-pine-700)
+--color-pine-400: var(--zabi-pine-600)
+--color-pine-500: var(--zabi-pine-500)
+--color-pine-600: var(--zabi-pine-400)
+--color-pine-700: var(--zabi-pine-300)
+--color-pine-800: var(--zabi-pine-200)
+--color-pine-900: var(--zabi-pine-100)
+--color-pine-950: var(--zabi-pine-50)
+/* Mirror @theme --zabi-iris-* ramp (same physical hex; required for standalone dark import) */
+--zabi-iris-50: #f4f4fa
+--zabi-iris-100: #e9e9f7
+--zabi-iris-200: #d6d6f0
+--zabi-iris-300: #bdbde6
+--zabi-iris-400: #a3a3d8
+--zabi-iris-500: #6969b3
+--zabi-iris-600: #58589e
+--zabi-iris-700: #474788
+--zabi-iris-800: #38386f
+--zabi-iris-900: #2a2a56
+--zabi-iris-950: #1b1b37
+/* Iris Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
+--color-iris-50: var(--zabi-iris-950)
+--color-iris-100: var(--zabi-iris-900)
+--color-iris-200: var(--zabi-iris-800)
+--color-iris-300: var(--zabi-iris-700)
+--color-iris-400: var(--zabi-iris-600)
+--color-iris-500: var(--zabi-iris-500)
+--color-iris-600: var(--zabi-iris-400)
+--color-iris-700: var(--zabi-iris-300)
+--color-iris-800: var(--zabi-iris-200)
+--color-iris-900: var(--zabi-iris-100)
+--color-iris-950: var(--zabi-iris-50)
+/* Mirror @theme --zabi-warning-* ramp (same physical hex; required for standalone dark import) */
+--zabi-warning-50: #fffbeb
+--zabi-warning-100: #fef3c7
+--zabi-warning-200: #fde68a
+--zabi-warning-300: #fcd34d
+--zabi-warning-400: #fbbf24
+--zabi-warning-500: #f59e0b
+--zabi-warning-600: #d97706
+--zabi-warning-700: #b45309
+--zabi-warning-800: #92400e
+--zabi-warning-900: #78350f
+--zabi-warning-950: #451a03
+/* Warning Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
+--color-warning-50: var(--zabi-warning-950)
+--color-warning-100: var(--zabi-warning-900)
+--color-warning-200: var(--zabi-warning-800)
+--color-warning-300: var(--zabi-warning-700)
+--color-warning-400: var(--zabi-warning-600)
+--color-warning-500: var(--zabi-warning-500)
+--color-warning-600: var(--zabi-warning-400)
+--color-warning-700: var(--zabi-warning-300)
+--color-warning-800: var(--zabi-warning-200)
+--color-warning-900: var(--zabi-warning-100)
+--color-warning-950: var(--zabi-warning-50)
+/* Mirror @theme --zabi-error-* ramp (same physical hex; required for standalone dark import) */
+--zabi-error-50: #fef2f2
+--zabi-error-100: #fee2e2
+--zabi-error-200: #fecaca
+--zabi-error-300: #fca5a5
+--zabi-error-400: #f87171
+--zabi-error-500: #ef4444
+--zabi-error-600: #dc2626
+--zabi-error-700: #b91c1c
+--zabi-error-800: #991b1b
+--zabi-error-900: #7f1d1d
+--zabi-error-950: #450a0a
+/* Error Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
+--color-error-50: var(--zabi-error-950)
+--color-error-100: var(--zabi-error-900)
+--color-error-200: var(--zabi-error-800)
+--color-error-300: var(--zabi-error-700)
+--color-error-400: var(--zabi-error-600)
+--color-error-500: var(--zabi-error-500)
+--color-error-600: var(--zabi-error-400)
+--color-error-700: var(--zabi-error-300)
+--color-error-800: var(--zabi-error-200)
+--color-error-900: var(--zabi-error-100)
+--color-error-950: var(--zabi-error-50)
 /* Base Color Scale — semantic → physical mirror (1000 − step); 500 is fixed point */
 --color-base-50: #09090b
 --color-base-75: #101013
@@ -118,41 +214,18 @@
 /* Focus Colors - No dark mode overrides needed, brand colors are already inverted */
 /* Primary Colors - No dark mode overrides needed, brand colors are already inverted */
 /* Secondary Colors - No dark mode overrides needed, base colors are already inverted */
-/* Success Colors */
---color-success: var(--color-pine-400)
---color-success-weak: var(--color-pine-500)
---color-success-medium: var(--color-pine-300)
---color-success-strong: var(--color-pine-200)
-/* Warning Colors */
---color-warning: #f59e0b
---color-warning-weak: #d97706
---color-warning-medium: #fbbf24
---color-warning-strong: #fcd34d
-/* Error Colors */
---color-error: #ef4444
---color-error-weak: #dc2626
---color-error-medium: #f87171
---color-error-strong: #fca5a5
-/* Energetic Colors (Citron) */
---color-energetic: var(--color-citron-400)
---color-energetic-weak: var(--color-citron-500)
---color-energetic-medium: var(--color-citron-300)
---color-energetic-strong: var(--color-citron-200)
+/* Success Colors — no overrides: @theme uses --color-pine-*; semantic pine resolves to mirrored physical ramp inside .dark */
+/* Warning Colors — no overrides: @theme uses --color-warning-* scale; it mirrors in .dark via --zabi-warning-* */
+/* Error Colors — no overrides: @theme uses --color-error-* scale; it mirrors in .dark via --zabi-error-* */
+/* Energetic Colors — no overrides: @theme uses --color-citron-*; citron mirrors in .dark via --zabi-citron-* */
 /* Neutral Colors - No dark mode overrides needed, base colors are already inverted */
-/* Info Colors */
---color-info: var(--color-iris-500)
---color-info-weak: var(--color-iris-600)
---color-info-active: var(--color-iris-400)
---color-info-medium: var(--color-iris-400)
---color-info-strong: var(--color-iris-300)
-/* Text alias */
---color-info-text: var(--color-info)
+/* Info Colors — no overrides: @theme uses --color-iris-* (incl. --color-info-active); iris mirrors in .dark via --zabi-iris-* */
 /* ========================================
      ACTION COLORS - Dark Mode Overrides
      ======================================== */
 /* Primary Actions - Background adapts automatically via brand color inversion */
-/* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit --color-brand-800 in .dark block (line ~275) */
-/* Text color - Use brand-50 (which maps to brand-950/darkest in dark mode) for proper contrast */
+/* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit --zabi-brand-* physical ramp above (semantic --color-brand-* follows mirror) */
+/* Text color - Use brand-50 (semantic; maps across light/dark via --zabi-brand-*) for proper contrast */
 --color-action-primary-text: var(--color-brand-50)
 /* Secondary Actions - No dark mode overrides needed, base colors are already inverted */
 /* Danger Actions */
