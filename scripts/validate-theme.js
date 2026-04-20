@@ -11,7 +11,7 @@ const BASE_STEPS = [
   550, 600, 650, 700, 750, 800, 850, 900, 925, 950,
 ];
 const SCALE_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
-const REQUIRED_COLOR_SCALES = ['brand', 'citron', 'pine', 'iris'];
+const REQUIRED_COLOR_SCALES = ['brand', 'citron', 'pine', 'iris', 'warning', 'error'];
 const REQUIRED_LIGHT_SEMANTICS = [
   'color-background',
   'color-headline',
@@ -36,10 +36,15 @@ const REQUIRED_DARK_OVERRIDES = [
   'color-action-danger',
   ...BASE_STEPS.map((step) => `color-base-${step}`),
   ...BASE_STEPS.map((step) => `zabi-base-${step}`),
+  ...SCALE_STEPS.map((step) => `zabi-brand-${step}`),
+  ...SCALE_STEPS.map((step) => `zabi-pine-${step}`),
+  ...SCALE_STEPS.map((step) => `zabi-citron-${step}`),
+  ...SCALE_STEPS.map((step) => `zabi-iris-${step}`),
+  ...SCALE_STEPS.map((step) => `zabi-warning-${step}`),
+  ...SCALE_STEPS.map((step) => `zabi-error-${step}`),
 ];
-const ALLOWED_DARK_ONLY_VARIABLES = new Set([
-  'color-info-active',
-]);
+/** Dark-only tokens not present in light @theme (prefer defining in @theme + mirror instead). */
+const ALLOWED_DARK_ONLY_VARIABLES = new Set();
 
 function extractCssVariables(content) {
   const variables = new Set();
@@ -93,6 +98,42 @@ function validateThemeFile(filePath, fileName) {
     );
     requireVariables(
       variables,
+      SCALE_STEPS.map((step) => `zabi-brand-${step}`),
+      errors,
+      fileName,
+    );
+    requireVariables(
+      variables,
+      SCALE_STEPS.map((step) => `zabi-pine-${step}`),
+      errors,
+      fileName,
+    );
+    requireVariables(
+      variables,
+      SCALE_STEPS.map((step) => `zabi-citron-${step}`),
+      errors,
+      fileName,
+    );
+    requireVariables(
+      variables,
+      SCALE_STEPS.map((step) => `zabi-iris-${step}`),
+      errors,
+      fileName,
+    );
+    requireVariables(
+      variables,
+      SCALE_STEPS.map((step) => `zabi-warning-${step}`),
+      errors,
+      fileName,
+    );
+    requireVariables(
+      variables,
+      SCALE_STEPS.map((step) => `zabi-error-${step}`),
+      errors,
+      fileName,
+    );
+    requireVariables(
+      variables,
       BASE_STEPS.map((step) => `color-base-${step}`),
       errors,
       fileName,
@@ -140,6 +181,18 @@ function validateDarkThemeStructure(lightThemePath, darkThemePath) {
   const requiredParity = [
     ...BASE_STEPS.map((step) => `zabi-base-${step}`),
     ...BASE_STEPS.map((step) => `color-base-${step}`),
+    ...SCALE_STEPS.map((step) => `zabi-brand-${step}`),
+    ...SCALE_STEPS.map((step) => `color-brand-${step}`),
+    ...SCALE_STEPS.map((step) => `zabi-pine-${step}`),
+    ...SCALE_STEPS.map((step) => `color-pine-${step}`),
+    ...SCALE_STEPS.map((step) => `zabi-citron-${step}`),
+    ...SCALE_STEPS.map((step) => `color-citron-${step}`),
+    ...SCALE_STEPS.map((step) => `zabi-iris-${step}`),
+    ...SCALE_STEPS.map((step) => `color-iris-${step}`),
+    ...SCALE_STEPS.map((step) => `zabi-warning-${step}`),
+    ...SCALE_STEPS.map((step) => `color-warning-${step}`),
+    ...SCALE_STEPS.map((step) => `zabi-error-${step}`),
+    ...SCALE_STEPS.map((step) => `color-error-${step}`),
   ];
   const missingParity = requiredParity.filter((name) => !darkVars.has(name));
   if (missingParity.length > 0) {
