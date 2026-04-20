@@ -61,6 +61,20 @@ function extractThemeAndDarkBlocks(css, fromPath) {
   };
 }
 
+/**
+ * Serialize declarations from an @theme at-rule or a rule (e.g. `.dark`) to one line:
+ * comments stripped, each decl ends with `;`. Must use the PostCSS AST — stringifying
+ * `@theme` children and re-parsing drops semicolons and merges declarations incorrectly.
+ */
+function minifyDeclarationsFromContainer(container) {
+  container.walkComments((c) => c.remove());
+  let out = '';
+  container.walkDecls((decl) => {
+    out += decl.prop + ':' + decl.value + ';';
+  });
+  return out;
+}
+
 async function buildCSS() {
   let css = fs.readFileSync(inputFile, 'utf8');
 
@@ -139,47 +153,27 @@ async function buildCSS() {
   fs.writeFileSync(outputFile, css);
   console.log(`✓ Built CSS: ${outputFile}`);
 
-  // Generate standalone colors.css file from app.css
-  // This extracts CSS custom properties from @theme and .dark blocks
-  // and converts them to :root and .dark format for standalone use
-  // Note: theme() functions will remain as-is (consumers need Tailwind or can override)
-  let colorsCss = '';
-  
-  // Extract @theme block and convert to :root
-  if (themeBlocks.length > 0) {
-    const themeContent = themeBlocks.join('\n\n');
-    colorsCss += `/* ========================================\n`;
-    colorsCss += `   ZABI COMPONENTS COLOR SYSTEM\n`;
-    colorsCss += `   Standalone CSS Custom Properties\n`;
-    colorsCss += `   Generated from src/app.css\n`;
-    colorsCss += `   ⚠️ DO NOT EDIT - This file is auto-generated\n`;
-    colorsCss += `   Edit src/app.css instead\n`;
-    colorsCss += `   ======================================== */\n\n`;
-    colorsCss += `:root {\n`;
-    // Add proper indentation
-    const indentedContent = themeContent.split('\n').map(line => {
-      // Preserve existing indentation but ensure at least 2 spaces
-      if (line.trim() === '') return '';
-      return '  ' + line.trim();
-    }).join('\n');
-    colorsCss += indentedContent + '\n';
-    colorsCss += `}\n\n`;
+  // Standalone colors: AST walk (same tokens as app.css), minified — no comment blocks, one line per selector
+  const appAst = postcss.parse(fs.readFileSync(inputFile, 'utf8'), { from: inputFile });
+  let colorsCss =
+    '/* zabi-components-colors — generated from src/app.css; edit app.css */\n';
+  const themeChunks = [];
+  appAst.walkAtRules('theme', (atRule) => {
+    themeChunks.push(minifyDeclarationsFromContainer(atRule));
+  });
+  if (themeChunks.length > 0) {
+    colorsCss += ':root{' + themeChunks.join('') + '}\n';
   }
-  
-  // Extract .dark block
-  if (darkModeContent) {
-    colorsCss += `/* Dark Mode */\n`;
-    colorsCss += `.dark {\n`;
-    // Add proper indentation
-    const indentedDarkContent = darkModeContent.split('\n').map(line => {
-      if (line.trim() === '') return '';
-      return '  ' + line.trim();
-    }).join('\n');
-    colorsCss += indentedDarkContent + '\n';
-    colorsCss += `}\n`;
+  const darkChunks = [];
+  appAst.walkRules((rule) => {
+    const selectors = (rule.selectors ?? [rule.selector]).map((s) => s.trim());
+    if (!selectors.includes('.dark')) return;
+    darkChunks.push(minifyDeclarationsFromContainer(rule));
+  });
+  if (darkChunks.length > 0) {
+    colorsCss += '.dark{' + darkChunks.join('') + '}\n';
   }
-  
-  // Write standalone colors.css file
+
   const colorsOutputFile = path.join(__dirname, '../dist/zabi-components-colors.css');
   fs.writeFileSync(colorsOutputFile, colorsCss);
   console.log(`✓ Built standalone colors CSS: ${colorsOutputFile}`);
