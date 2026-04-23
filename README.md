@@ -2,6 +2,8 @@
 
 Svelte **5** UI primitives (runes, `onclick` / `oninput`, …), Tailwind **v4** design tokens, SSR-safe. Requires **Svelte ≥ 5.43.8**.
 
+Docs: **[zabi-components.vercel.app](https://zabi-components.vercel.app/)**
+
 ---
 
 ## Quick start
