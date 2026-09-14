@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
@@ -7,32 +8,36 @@
             label: string;
             disabled?: boolean;
         }>;
+        /** Selected tab id; supports `bind:activeTab`. */
         activeTab?: string;
         variant?: "default" | "pills";
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
+        children?: Snippet<[{ activeTab: string }]>;
     }
 
     let {
         tabs = [],
-        activeTab = "",
+        activeTab = $bindable(""),
         variant = "default",
         children,
         ...restProps
-    }: Props & { children?: any } = $props();
+    }: Props = $props();
 
     const tabsBaseId = generateId("tabs");
 
-    function selectTab(tabId: string) {
+    /** Button refs keyed by tab id — roving tabindex needs focus to follow selection. */
+    const tabElements: Record<string, HTMLButtonElement | undefined> = {};
+
+    function selectTab(tabId: string, moveFocus = false) {
         activeTab = tabId;
+        if (moveFocus) {
+            tabElements[tabId]?.focus();
+        }
     }
 
     function getEnabledTabs() {
         return tabs.filter((tab) => !tab.disabled);
-    }
-
-    function getTabIndex(tabId: string) {
-        return tabs.findIndex((tab) => tab.id === tabId);
     }
 
     function getTabId(tabId: string) {
@@ -72,19 +77,15 @@
             const nextIndex =
                 (fallbackIndex + direction + enabledTabs.length) %
                 enabledTabs.length;
-            selectTab(enabledTabs[nextIndex].id);
+            selectTab(enabledTabs[nextIndex].id, true);
         } else if (event.key === "Home") {
             event.preventDefault();
-            selectTab(enabledTabs[0].id);
+            selectTab(enabledTabs[0].id, true);
         } else if (event.key === "End") {
             event.preventDefault();
-            selectTab(enabledTabs[enabledTabs.length - 1].id);
-        } else if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            if (currentIndex === -1) {
-                selectTab(enabledTabs[0].id);
-            }
+            selectTab(enabledTabs[enabledTabs.length - 1].id, true);
         }
+        // Enter/Space: native <button> click already selects the tab.
     }
 </script>
 
@@ -92,11 +93,12 @@
     <div
         class="flex border-b border-base-200"
         role="tablist"
-        tabindex="0"
+        tabindex="-1"
         onkeydown={handleKeydown}
     >
         {#each tabs as tab (tab.id)}
             <button
+                bind:this={tabElements[tab.id]}
                 type="button"
                 role="tab"
                 id={getTabId(tab.id)}

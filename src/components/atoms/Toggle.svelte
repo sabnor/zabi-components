@@ -2,6 +2,11 @@
     import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
+        /** Omit to auto-generate; pass to pair with an external `<label for>`. */
+        id?: string;
+        /** When set, a hidden input submits `value` with native forms while checked. */
+        name?: string;
+        value?: string;
         checked?: boolean;
         disabled?: boolean;
         loading?: boolean;
@@ -11,6 +16,9 @@
     }
 
     let {
+        id: idProp,
+        name = "",
+        value = "on",
         checked = $bindable(false),
         disabled = false,
         loading = false,
@@ -20,7 +28,8 @@
         ...restProps
     }: Props = $props();
 
-    const toggleId = generateId("toggle");
+    const fallbackId = generateId("toggle");
+    const toggleId = $derived(idProp ?? fallbackId);
     const isDisabled = $derived(disabled || loading);
 
     function handleClick(event: MouseEvent) {
@@ -49,14 +58,6 @@
         const positionClasses = checked ? "translate-x-4" : "translate-x-0";
         return `${base} ${positionClasses}`;
     });
-
-    function handleKeydown(event: KeyboardEvent) {
-        if (isDisabled) return;
-        if (event.key === " " || event.key === "Enter") {
-            event.preventDefault();
-            handleClick(event as unknown as MouseEvent);
-        }
-    }
 </script>
 
 <div class="flex items-center gap-3">
@@ -69,7 +70,6 @@
         aria-busy={loading ? "true" : undefined}
         disabled={isDisabled}
         onclick={handleClick}
-        onkeydown={handleKeydown}
         class={toggleButtonClasses()}
         {...restProps}
     >
@@ -82,6 +82,10 @@
             {/if}
         </span>
     </button>
+
+    {#if name && checked}
+        <input type="hidden" {name} {value} />
+    {/if}
 
     {#if label}
         <label

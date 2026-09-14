@@ -22,6 +22,7 @@
         size = "md",
         variant = "default",
         disabled = false,
+        onclick,
         ...restProps
     }: Props = $props();
 
@@ -57,10 +58,8 @@
         if (mounted && storage) {
             storage.setItem("theme", isDark ? "dark" : "light");
         }
-        
-        if (onclick) {
-            (onclick as (event: Event) => void)(event);
-        }
+
+        onclick?.(event);
     }
 
     function updateTheme() {
@@ -146,12 +145,12 @@
     </button>
 {:else}
     <button
-        class="w-10 h-10 bg-base-50 rounded-lg flex items-center justify-center text-label cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        class="{sizeClass().button} {variantClass()} rounded-lg flex items-center justify-center text-label cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Theme toggle"
         type="button"
         {disabled}
         {...restProps}
     >
-        <Sun size={20} class="text-label" />
+        <Sun size={sizeClass().icon} class="text-label" />
     </button>
 {/if}
