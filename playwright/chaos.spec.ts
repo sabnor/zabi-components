@@ -88,7 +88,7 @@ test.describe("Chaos lab — browser-only interaction risks", () => {
                 panel,
                 "Clicking the trigger should reveal the panel whose id matches aria-controls",
             ).toBeVisible();
-            await expect(panel).toHaveAttribute("role", "menu");
+            await expect(panel).not.toHaveAttribute("role", "menu");
         });
     });
 

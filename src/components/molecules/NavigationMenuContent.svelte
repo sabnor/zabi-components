@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { getContext } from "svelte";
-    import { onMount } from "svelte";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
         navigationMenuPanelId,
@@ -22,7 +21,6 @@
     }: Props = $props();
 
     let contentElement = $state<HTMLElement | null>(null);
-    let parentItem = $state<HTMLElement | null>(null);
 
     const context = getContext<NavigationMenuContextValue>(
         NAVIGATION_MENU_CONTEXT_KEY,
@@ -36,42 +34,37 @@
             : "",
     );
 
-    function handleKeydown(event: KeyboardEvent) {
-        if (event.key === "Escape") {
+    /** Disclosure panel: one document listener while open, removed on close/unmount. */
+    $effect(() => {
+        if (!isActive || !contentElement) return;
+        const panel: HTMLElement = contentElement;
+
+        const parentItem = panel.closest<HTMLElement>(
+            "[data-navigation-menu-item]",
+        );
+
+        function handleClickOutside(event: MouseEvent) {
+            const target = event.target as Node;
+            if (!panel.contains(target) && !parentItem?.contains(target)) {
+                context?.setActiveItem(null);
+            }
+        }
+
+        function handleKeydown(event: KeyboardEvent) {
+            if (event.key !== "Escape") return;
             event.preventDefault();
             context?.setActiveItem(null);
-            const trigger = parentItem?.querySelector('[data-navigation-menu-trigger]') as HTMLElement;
-            trigger?.focus();
+            parentItem
+                ?.querySelector<HTMLElement>("[data-navigation-menu-trigger]")
+                ?.focus();
         }
-    }
 
-    function handleClickOutside(event: MouseEvent) {
-        if (
-            contentElement &&
-            !contentElement.contains(event.target as Node) &&
-            parentItem &&
-            !parentItem.contains(event.target as Node)
-        ) {
-            context?.setActiveItem(null);
-        }
-    }
-
-    onMount(() => {
-        if (contentElement) {
-            parentItem = contentElement.closest('[data-navigation-menu-item]') as HTMLElement;
-        }
-        if (isActive) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-    });
-
-    $effect(() => {
-        if (isActive) {
-            document.addEventListener("mousedown", handleClickOutside);
-            return () => {
-                document.removeEventListener("mousedown", handleClickOutside);
-            };
-        }
+        document.addEventListener("mousedown", handleClickOutside);
+        panel.addEventListener("keydown", handleKeydown);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            panel.removeEventListener("keydown", handleKeydown);
+        };
     });
 </script>
 
@@ -79,11 +72,8 @@
     <div
         bind:this={contentElement}
         id={panelId || undefined}
-        class="absolute left-0 top-full mt-2 bg-card rounded-lg shadow-lg border border-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out {className}"
-        role="menu"
-        onkeydown={handleKeydown}
+        class="absolute left-0 top-full mt-2 bg-surface-overlay rounded-lg shadow-lg border border-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out {className}"
         data-navigation-menu-content
-        tabindex="-1"
         {...restProps}
     >
         {@render children?.()}
