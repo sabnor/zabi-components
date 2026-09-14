@@ -39,6 +39,8 @@
         listClassName?: string;
         /** Panel id / `aria-controls` prefix; pass for SSR or multiple menus. If omitted with non-empty `items`, a deterministic hash is used. */
         menuId?: string;
+        /** Accessible name for the `<nav>` landmark. */
+        ariaLabel?: string;
     }
 
     let {
@@ -48,6 +50,7 @@
         children,
         listClassName = "",
         menuId = "",
+        ariaLabel = "Main navigation",
         ...restProps
     }: Props = $props();
 
@@ -105,7 +108,7 @@
 <nav
     bind:this={containerElement}
     class="relative {className}"
-    aria-label="Main navigation"
+    aria-label={ariaLabel}
     {...restProps}
 >
     {#if items.length > 0}

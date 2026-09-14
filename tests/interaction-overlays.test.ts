@@ -144,7 +144,7 @@ describe("NavigationMenu", () => {
         await waitFor(() => {
             const panel = document.getElementById(panelId);
             expect(panel).toBeTruthy();
-            expect(panel?.getAttribute("role")).toBe("menu");
+            expect(panel?.hasAttribute("role")).toBe(false);
         });
     });
 

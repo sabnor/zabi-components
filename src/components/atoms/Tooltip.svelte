@@ -99,7 +99,11 @@
             clearShowDelay();
             clearHideBlurTimeout();
             isVisible = false;
-            triggerElement?.focus();
+            // Keep focus on the described control; never steal it when the tooltip was hover-only.
+            const target = triggerElement ? findDescribedTarget(triggerElement) : null;
+            if (target && triggerElement?.contains(document.activeElement)) {
+                target.focus();
+            }
         }
     }
 
@@ -173,13 +177,7 @@
 </div>
 
 <style>
-    :root {
-        /* Cap only very long copy; width:max-content keeps typical sentences on one line until this limit */
-        --tooltip-max-width: min(24rem, calc(100vw - 2rem));
-        --tooltip-gap: 0.5rem;
-        --tooltip-arrow-size: 4px;
-    }
-
+    /* Tunables (override on :root or any ancestor): --tooltip-max-width, --tooltip-gap, --tooltip-arrow-size. Defaults live in the var() fallbacks. */
     /* max-width: policy forbids max-w-* utilities on packaged atoms; variable used by sm: override */
     .tooltip {
         width: max-content;
@@ -190,7 +188,7 @@
         inset-block-end: 100%;
         inset-inline-start: 50%;
         transform: translateX(-50%) translateY(4px) scale(0.95);
-        margin-block-end: var(--tooltip-gap);
+        margin-block-end: var(--tooltip-gap, 0.5rem);
     }
 
     .tooltip-container[data-placement="top"] .tooltip[data-visible="true"] {
@@ -203,7 +201,7 @@
         inset-block-start: 100%;
         inset-inline-start: 50%;
         transform: translateX(-50%) translateY(-4px) scale(0.95);
-        margin-block-start: var(--tooltip-gap);
+        margin-block-start: var(--tooltip-gap, 0.5rem);
     }
 
     .tooltip-container[data-placement="bottom"] .tooltip[data-visible="true"] {
@@ -216,7 +214,7 @@
         inset-inline-end: 100%;
         inset-block-start: 50%;
         transform: translateY(-50%) translateX(4px) scale(0.95);
-        margin-inline-end: var(--tooltip-gap);
+        margin-inline-end: var(--tooltip-gap, 0.5rem);
     }
 
     .tooltip-container[data-placement="left"] .tooltip[data-visible="true"] {
@@ -229,7 +227,7 @@
         inset-inline-start: 100%;
         inset-block-start: 50%;
         transform: translateY(-50%) translateX(-4px) scale(0.95);
-        margin-inline-start: var(--tooltip-gap);
+        margin-inline-start: var(--tooltip-gap, 0.5rem);
     }
 
     .tooltip-container[data-placement="right"] .tooltip[data-visible="true"] {
@@ -241,8 +239,8 @@
     .tooltip::before {
         content: "";
         position: absolute;
-        width: calc(var(--tooltip-arrow-size) * 2);
-        height: calc(var(--tooltip-arrow-size) * 2);
+        width: calc(var(--tooltip-arrow-size, 4px) * 2);
+        height: calc(var(--tooltip-arrow-size, 4px) * 2);
         background-color: var(--color-tooltip-bg);
     }
 
@@ -274,17 +272,13 @@
         clip-path: polygon(0 50%, 100% 0, 100% 100%);
     }
 
-    .tooltip-container[data-delay] .tooltip {
-        transition-delay: calc(var(--tooltip-delay, 0) * 1ms);
-    }
-
     @media (max-width: 640px) {
         .tooltip {
             --tooltip-max-width: calc(100vw - 2rem);
             inset-inline-start: 50% !important;
             inset-inline-end: auto !important;
             transform: translateX(-50%) scale(0.95) !important;
-            margin: var(--tooltip-gap) 0 !important;
+            margin: var(--tooltip-gap, 0.5rem) 0 !important;
         }
 
         .tooltip[data-visible="true"] {
