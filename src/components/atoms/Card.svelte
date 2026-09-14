@@ -38,7 +38,7 @@
 
     const variantClasses = $derived(
         variant === "elevated"
-            ? "bg-card shadow-lg"
+            ? "bg-card-elevated shadow-lg"
             : variant === "outlined"
               ? "bg-card border-2 border-base-200 shadow-none"
               : variant === "flat"

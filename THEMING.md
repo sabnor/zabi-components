@@ -179,6 +179,38 @@ Dark mode action colors are handled in `src/app.css` in the `.dark` block (lines
 - **`dist/zabi-components-theme-only.css`**: Only has light mode (@theme block), no dark mode
 - **`dist/zabi-components-theme.css`**: Only has light mode (@theme block), no dark mode
 
+## 🧱 Surface Elevation Levels
+
+Every surface uses one of four semantic levels. Use these tokens instead of raw `base-*` steps for backgrounds:
+
+| Level | Token / utility | Use for | Light | Dark (OKLCH L) |
+|---|---|---|---|---|
+| Base | `--color-surface-base` · `bg-surface-base` | Page / app shell (the darkest level in dark mode) | `base-100` | `#18181b` · 21 |
+| Raised | `--color-surface-raised` · `bg-surface-raised` | Cards, panels, sidebars | `#ffffff` | `#262629` · 27 |
+| Elevated | `--color-surface-elevated` · `bg-surface-elevated` | Nested cards, hover and active fills | `base-50` | `#35353a` · 33 |
+| Overlay | `--color-surface-overlay` · `bg-surface-overlay` | Modals, sheets, dropdown/select menus, navigation panels, toasts | `#ffffff` | `#44444c` · 39 |
+
+Supporting tokens:
+- `--color-surface-overlay-hover` (`bg-surface-overlay-hover`): row and icon-button hover **inside** an overlay. It is lighter than the overlay in dark mode.
+- `--color-border-overlay` (`border-border-overlay`): 1px edge on overlays. Transparent in light mode, visible in dark mode.
+
+**Why dark mode steps lightness instead of using shadows:** a drop shadow simulates light blocked by a raised object, which reads on a light page. On a dark page the shadow is as dark as the background, so the signal disappears. In dark mode each level is therefore **lighter** than the one below it, by +6 OKLCH lightness points on the neutral base hue. Light mode keeps white surfaces and uses shadows for elevation.
+
+**Rules:**
+- Anything that floats above content must use a lighter level than what it floats over. Floating components (Modal, SlideUp, Dropdown/Select menu, NavigationMenu panel, Toaster/Toast) use `bg-surface-overlay`.
+- Hover fills on overlays use `bg-surface-overlay-hover`, not `bg-base-*`, which would go darker in dark mode.
+- Existing tokens remain as aliases: `background` → base, `card` / `surface-1` → raised, `surface-2` / `card-hover` → elevated, `surface-3` → overlay (dark), `card-elevated` → overlay (light) / elevated (dark).
+
+**Enforced by** `scripts/check-surface-elevation.js`, which `validate-theme.js` runs during `npm run build:css`. It fails when:
+- dark levels aren't strictly increasing;
+- any step is outside 5–8 OKLCH L points;
+- overlay hover or tooltip fills are darker than the overlay;
+- a floating component paints a surface class below overlay.
+
+To retune the dark levels, edit the four `--color-surface-*` values in the `.dark` block of `src/app.css` and run `node scripts/check-surface-elevation.js`.
+
+> The light surface tokens must stay **below** the `/* Background Colors */` marker in `@theme`. `scripts/sync-theme-tokens.js` regenerates everything between the base-scale aliases and that marker.
+
 ## 📁 File Structure
 
 ```

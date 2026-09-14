@@ -245,6 +245,17 @@ async function validateThemes() {
     allValid = false;
   }
 
+  console.log('\n🔍 Validating surface elevation levels...');
+  const { checkSurfaceElevation } = await import('./check-surface-elevation.js');
+  const surfaceErrors = checkSurfaceElevation();
+  if (surfaceErrors.length > 0) {
+    console.error('❌ Surface elevation check failed:');
+    surfaceErrors.forEach((error) => console.error(`   - ${error}`));
+    allValid = false;
+  } else {
+    console.log('✓ Surface elevation levels validated');
+  }
+
   console.log('');
   if (allValid) {
     console.log('✅ All theme files validated successfully!');
