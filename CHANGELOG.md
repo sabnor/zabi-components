@@ -10,7 +10,58 @@ Whenever token or CSS import API surface changes, include:
 - mapping rule updates (for example dark semantic mapping)
 - migration guidance when compatibility aliases remain temporarily
 
-## [Unreleased]
+## [Unreleased] - 7.1.0
+
+### Forms
+
+- **`ContactForm`**: invalid submissions no longer fall through to a native POST and page reload.
+- **`ImageUpload`**: `onchange` / `onclick` are now actually called; `value` supports `bind:value`; new `onfileselect({ file, url })` exposes the selected `File`. Change/Remove actions are visible on keyboard focus, and Space activates the drop zone.
+- **`ColorPicker`**: 3-digit hex (`#f00`) is parsed correctly; `value` supports `bind:value`.
+- **`Form`**: accepts standard form attributes and a `novalidate` prop; docs note that `onsubmit` handlers must call `preventDefault()` for client-side handling.
+
+### Widgets
+
+- **`Tabs`**: Arrow/Home/End move focus as well as selection; the tablist is no longer an extra tab stop; `activeTab` supports `bind:activeTab`.
+- **`Select`**: new `name` prop renders a hidden input for native form submission; the search field sits outside the `listbox`; string/number option values compare consistently.
+- **`Dropdown`**: new optional `header` snippet; Home/End/Space behave normally inside text inputs in the menu.
+- **`Toggle`**: new `id`, `name` and `value` props for label pairing and form submission.
+- **`ThemeToggle`**: a consumer `onclick` no longer overrides the toggle; pre-mount placeholder respects `size`/`variant` (no layout shift).
+
+### Overlays
+
+- **`Modal` / `SlideUp`**: `role="dialog"` moved from the backdrop to the panel; body scroll locked while open (nested-safe); focus trap picks up content added while open; Escape closes only the topmost dialog. `Modal` gains `showClose` (default `true`) so untitled modals still have a close button.
+- **`Toaster`**: countdown is no longer announced every second; it pauses on hover/focus; no double announcements from nested live regions.
+- **`NavigationMenu`**: fixed a leaked document `mousedown` listener; panels use the disclosure pattern (no `role="menu"` / `aria-haspopup`); new `ariaLabel` prop.
+- **`Alert`**: `closable` now hides the alert; new bindable `open` prop.
+- **`Tooltip`**: Escape no longer steals focus; CSS custom properties no longer leak onto `:root`.
+- **`util/ssr-safe`**: timer helpers typed with `ReturnType<typeof setTimeout/setInterval>` instead of `NodeJS.Timeout`, so consumers don't need `@types/node`.
+
+### Surfaces
+
+- **New semantic surface elevation tokens** (both themes), lowest → highest: `--color-surface-base` (page), `--color-surface-raised` (cards, panels, sidebars), `--color-surface-elevated` (nested cards, hover/active fills), `--color-surface-overlay` (modals, sheets, menus, toasts), plus `--color-surface-overlay-hover` (row/icon hover inside overlays) and `--color-border-overlay` (1px overlay edge: transparent in light, visible in dark). Utilities: `bg-surface-base`, `bg-surface-raised`, `bg-surface-elevated`, `bg-surface-overlay`, `bg-surface-overlay-hover`, `border-border-overlay`.
+- **Dark mode elevation no longer relies on shadows**: levels step up +6 OKLCH lightness each (L 21 → 27 → 33 → 39) on the neutral base hue. Light mode is visually unchanged.
+- **Existing tokens are now aliases** (no renames): `background` → `surface-base`; `card` → `surface-raised`; `surface-1` → `surface-raised`; `surface-2` → `surface-elevated`; `card-elevated` → `surface-overlay` (light) / `surface-elevated` (dark); in dark, `card-hover` → `surface-elevated`, `card-active` and `surface-3` → `surface-overlay`. Dark values of `card`, `card-hover`, `card-active`, `surface-1`–`surface-3` shift slightly to land on the new levels.
+- **Floating components use the overlay level**: `Modal`, `SlideUp`, `Dropdown` (and `Select`'s menu), `NavigationMenu` panels, `Toaster` toasts and the `Toast` atom now paint `bg-surface-overlay` (previously `bg-card` / `bg-surface-1`, which in dark matched or undercut the card they floated over). Hover fills inside them use `bg-surface-overlay-hover` so they read above the overlay. `Modal`/`SlideUp` get a `border-border-overlay` edge. `Card variant="elevated"` uses `bg-card-elevated`.
+- **Dark `--color-description`** moves one step lighter (`base-650`) so description text keeps ≥ 4.5:1 contrast on every surface level, including overlays.
+- **New guard**: `scripts/check-surface-elevation.js` (run by `validate-theme.js` during `build:css`) fails the build if dark levels aren't strictly increasing, any step is outside 5–8 OKLCH L points, overlay hover/tooltip fills are darker than the overlay, or a floating component paints a surface below overlay.
+
+### Theme fixes
+
+- **`max-w-*`, `w-*` and `min-w-*` with `xs`–`2xl` now use Tailwind's container sizes again** (`max-w-lg` = 32rem). Tailwind v4 resolves these utilities through `--spacing-*` before `--container-*`, so the theme's named spacing tokens made `max-w-lg` resolve to 1.5rem for anyone importing the theme. New `--max-width-*`, `--width-*` and `--min-width-*` tokens (xs 20rem … 2xl 42rem) are checked first. Spacing utilities such as `p-lg` / `gap-md` are unchanged.
+- **`--color-caption` meets WCAG AA on every surface level**: light `base-500` → `base-550` (was 4.40:1 on the page background, now ≥ 5.58:1); dark `base-500` → `base-650` (was 2.00:1 on overlays, now ≥ 5.00:1). To keep caption visibly softer than description in dark mode, dark `--color-description` moves from `base-650` to `base-700` (≥ 6.53:1).
+- **New guard**: `scripts/check-surface-elevation.js` also fails the build if `headline`, `body`, `label`, `description` or `caption` drop below 4.5:1 on any surface level in either theme.
+- **`Modal`**: the title and close button line up with the body and footer. The inner `Card`'s own padding stacked on the header's padding and indented the title 24px past the content.
+
+### Packaging
+
+- **Removed `zabi-components/react`**: the export pointed at `dist/react`, which was never built, and the wrappers were out of sync with the Svelte components. The optional `react` peer dependency and `@types/react` are gone too.
+- **No more `postinstall` in consumer installs**: `scripts/fix-lucide-svelte-icon-dts.js` only ever patched this repo's own `node_modules` (from a consumer install it resolved to a non-existent nested path and did nothing). It now runs as a dev-only `prepare` script and is no longer shipped in the tarball. Installs with `--ignore-scripts` (pnpm/Bun defaults) are unaffected.
+- **`zabi-components/lib/ssr-safe` and `zabi-components/lib/variant-utils` now resolve to compiled `.js` + `.d.ts`** (`dist/util/ssr-safe.*`, `dist/routes/lib/variant-utils.*`) instead of raw `.ts` sources. Import paths are unchanged.
+- **`generateId` / `createId` from the package root** now use the shared `util/ssr-safe` implementation; the previous root version used `Date.now()` on the server, so two ids created in the same millisecond collided.
+- **`CodeBlock`**: window-chrome dots use semantic tokens (`bg-error` / `bg-warning` / `bg-success`) instead of raw Tailwind palette classes; props are now typed.
+- **`check:tokens`** also flags raw Tailwind palette utilities (e.g. `bg-red-500`) in `src/components`.
+- **Repo**: `dist/`, `.svelte-kit/` and `storybook-static/` are no longer tracked in git; unused Storybook template assets and `src/_tmp-lucide-import.ts` removed.
+- **CI**: Node 24; the smoke workflow now also runs `check`, unit tests, theme tests and the token scan; publish runs `check` and unit tests before building.
 
 ## [7.0.2] - 2026-04-20
 
