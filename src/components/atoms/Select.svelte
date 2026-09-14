@@ -28,6 +28,8 @@
         emptyStateActionLabel?: string;
         placeholder?: string;
         label?: string;
+        /** When set, a hidden input submits the selected value with native forms. */
+        name?: string;
         required?: boolean;
         disabled?: boolean;
         size?: "sm" | "md" | "lg";
@@ -52,6 +54,7 @@
         emptyStateActionLabel = "",
         placeholder = "Select an option",
         label = "",
+        name = "",
         required = false,
         disabled = false,
         size = "md",
@@ -130,25 +133,24 @@
 
     const selectId = generateId("select");
 
-    const selectedLabel = $derived(() => {
-        if (isEmpty()) {
-            return String(placeholder || "Select an option");
-        }
-        const selected = options.find((opt) => opt.value === value);
-        return selected?.label
-            ? String(selected.label)
-            : String(placeholder || "Select an option");
-    });
-
     const isEmpty = $derived(() => {
         return value === undefined || value === null || value === "";
     });
 
-    const normalizedOptions = $derived(() => {
-        const fallbackOptions = (restProps as { options?: Props["options"] })
-            .options;
-        return Array.from(options ?? fallbackOptions ?? []);
-    });
+    /** String comparison so `"2"` and `2` match — same rule as Dropdown's `selectedValue`. */
+    function isSameValue(
+        a: string | number | null | undefined,
+        b: string | number | null | undefined,
+    ): boolean {
+        if (a === undefined || a === null || b === undefined || b === null) {
+            return false;
+        }
+        return String(a) === String(b);
+    }
+
+    const selectedOption = $derived.by(() =>
+        options.find((opt) => isSameValue(opt.value, value)),
+    );
 
     const hasSearchQuery = $derived(() => {
         return searchQuery.trim().length > 0;
@@ -156,7 +158,7 @@
 
     const filteredOptions = $derived(() => {
         const query = searchQuery.trim().toLowerCase();
-        const availableOptions = normalizedOptions();
+        const availableOptions = options;
         if (!searchable || query.length === 0) {
             return availableOptions;
         }
@@ -250,8 +252,7 @@
                     {:else}
                         {isEmpty()
                         ? placeholder
-                        : options.find((opt) => opt.value === value)?.label ||
-                          placeholder}
+                        : selectedOption?.label || placeholder}
                     {/if}
                 </span>
                 <ChevronDown
@@ -262,21 +263,24 @@
                 />
             </button>
         {/snippet}
+        {#snippet header()}
+            {#if searchable && !isLoading}
+                <!-- Outside role="listbox": a textbox is not a valid listbox child. -->
+                <div class="px-3 pb-2 pt-1" style:width={menuWidth}>
+                    <Input
+                        type="text"
+                        size="sm"
+                        class="min-w-0"
+                        placeholder={searchPlaceholder}
+                        bind:value={searchQuery}
+                        aria-label={searchPlaceholder}
+                        {disabled}
+                    />
+                </div>
+            {/if}
+        {/snippet}
         {#snippet children()}
             <div class="px-2 pb-2 pt-1" style:width={menuWidth}>
-                {#if searchable && !isLoading}
-                    <div class="px-1 pb-2">
-                        <Input
-                            type="text"
-                            size="sm"
-                            class="min-w-0"
-                            placeholder={searchPlaceholder}
-                            bind:value={searchQuery}
-                            aria-label={searchPlaceholder}
-                            {disabled}
-                        />
-                    </div>
-                {/if}
                 <div
                     class="overflow-y-auto px-1"
                     style:max-height={maxMenuHeight}
@@ -296,13 +300,15 @@
                                 <button
                                     type="button"
                                     role="option"
-                                    aria-selected={value === option.value
+                                    aria-selected={isSameValue(value, option.value)
                                         ? true
                                         : undefined}
-                                    class="focus-ring flex w-full items-center justify-start rounded-md border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {value ===
-                                    option.value
+                                    class="focus-ring flex w-full items-center justify-start rounded-md border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {isSameValue(
+                                        value,
+                                        option.value,
+                                    )
                                         ? 'border-action-primary bg-transparent text-headline'
-                                        : 'border-transparent bg-transparent text-body hover:bg-base-100'}"
+                                        : 'border-transparent bg-transparent text-body hover:bg-surface-overlay-hover'}"
                                     disabled={option.disabled}
                                     {...buttonRestProps}
                                     onclick={() =>
@@ -317,7 +323,7 @@
                             {noResultsText}
                         </div>
                     {:else}
-                        <div class="rounded-md border border-border bg-base-50 px-3 py-3 text-sm">
+                        <div class="rounded-md border border-border bg-surface-overlay-hover px-3 py-3 text-sm">
                             <p class="font-medium text-headline">{emptyStateTitle}</p>
                             <p class="mt-1 text-description">{emptyStateDescription}</p>
                             {#if emptyStateActionLabel && onEmptyStateAction}
@@ -335,6 +341,9 @@
             </div>
         {/snippet}
     </Dropdown>
+    {#if name}
+        <input type="hidden" {name} value={isEmpty() ? "" : String(value)} />
+    {/if}
     {#if message && variant !== "default"}
         <p
             id={`${selectId}-message`}
