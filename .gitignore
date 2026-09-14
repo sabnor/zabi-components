@@ -30,3 +30,9 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 .vercel
+
+# Generated build output (rebuilt by `npm run build:lib` / `npm run build-storybook`)
+/dist/
+/.svelte-kit/
+/storybook-static/
+/.lib-tmp/
