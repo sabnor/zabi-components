@@ -237,7 +237,23 @@
   --color-base-950: var(--zabi-base-950);
 
   /* Background Colors */
-  --color-background: var(--color-base-100);
+
+  /* Surface elevation — four semantic levels, lowest → highest.
+   * base: page/app shell · raised: cards, panels, sidebars · elevated: nested cards, hover/active fills
+   * overlay: modals, sheets, menus, popovers, toasts. Light mode keeps white surfaces + shadows;
+   * dark mode (see .dark) steps each level up in OKLCH lightness because shadows don't read on dark.
+   * Keep this block BELOW the "Background Colors" marker: scripts/sync-theme-tokens.js regenerates
+   * everything between the base-scale aliases and that marker. */
+  --color-surface-base: var(--color-base-100);
+  --color-surface-raised: #ffffff;
+  --color-surface-elevated: var(--color-base-50);
+  --color-surface-overlay: #ffffff;
+  /* Hover/active fill for rows and icon buttons inside an overlay (must read above the overlay) */
+  --color-surface-overlay-hover: var(--color-base-100);
+  /* 1px edge for overlays: invisible in light (shadow carries elevation), visible in dark */
+  --color-border-overlay: transparent;
+
+  --color-background: var(--color-surface-base);
   --color-background-secondary: var(--color-base-50);
   --color-background-tertiary: var(--color-base-100);
 
@@ -245,15 +261,15 @@
   --color-page: var(--color-base-100);
   --color-page-secondary: var(--color-base-200);
 
-  /* Card Colors */
-  --color-card: #ffffff;
+  /* Card Colors — aliases of the surface levels (kept for compatibility) */
+  --color-card: var(--color-surface-raised);
   --color-card-hover: var(--color-base-100);
   --color-card-active: var(--color-base-100);
-  --color-card-elevated: #ffffff;
+  --color-card-elevated: var(--color-surface-overlay);
 
-  /* Surfaces — layered UI (ascending number = higher layer / more contrast against page) */
-  --color-surface-1: #ffffff;
-  --color-surface-2: var(--color-base-50);
+  /* Surfaces — numbered aliases (kept for compatibility; prefer surface-base/raised/elevated/overlay) */
+  --color-surface-1: var(--color-surface-raised);
+  --color-surface-2: var(--color-surface-elevated);
   --color-surface-3: var(--color-base-75);
   --color-surface-4: var(--color-base-100);
 
@@ -271,7 +287,7 @@
   --color-headline: var(--color-base-900);
   --color-body: var(--color-base-800);
   --color-description: var(--color-base-600);
-  --color-caption: var(--color-base-500);
+  --color-caption: var(--color-base-550); /* ≥ 4.5:1 on every surface level (base-500 was 4.40 on surface-base) */
   --color-input-placeholder: var(--color-base-400);
   --color-label: var(--color-base-700);
   --color-link: var(--color-brand-600);
@@ -403,6 +419,32 @@
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
+
+  /*
+   * Sizing names for w-* / min-w-* / max-w-*.
+   * Tailwind v4 resolves these utilities as --max-width-* (or --width-* / --min-width-*) → --spacing-* → --container-*.
+   * Because the named --spacing-xs…2xl tokens above exist, `max-w-lg` would otherwise resolve to 1.5rem
+   * instead of Tailwind's 32rem container size. These keys are checked before --spacing-*, so they restore
+   * the standard container scale while `p-lg`, `gap-md`, etc. keep using the spacing tokens.
+   */
+  --max-width-xs: 20rem;
+  --max-width-sm: 24rem;
+  --max-width-md: 28rem;
+  --max-width-lg: 32rem;
+  --max-width-xl: 36rem;
+  --max-width-2xl: 42rem;
+  --width-xs: 20rem;
+  --width-sm: 24rem;
+  --width-md: 28rem;
+  --width-lg: 32rem;
+  --width-xl: 36rem;
+  --width-2xl: 42rem;
+  --min-width-xs: 20rem;
+  --min-width-sm: 24rem;
+  --min-width-md: 28rem;
+  --min-width-lg: 32rem;
+  --min-width-xl: 36rem;
+  --min-width-2xl: 42rem;
 
   /* Border Radius */
   --radius-sm: 0.25rem;
@@ -650,17 +692,38 @@ body {
 
   /* Page Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Card Colors */
-  --color-card: var(--color-base-200);
-  --color-card-hover: var(--color-base-300);
-  --color-card-active: var(--color-base-400);
-  --color-card-elevated: var(--color-base-200);
+  /* Surface elevation — shadows don't read on dark, so each level steps up +6 OKLCH lightness
+   * from the page background (L 21 → 27 → 33 → 39; neutral base hue). Enforced by
+   * scripts/check-surface-elevation.js (steps must be strictly increasing, 5–8 points). */
+  --color-surface-base: #18181b;
+  --color-surface-raised: #262629;
+  --color-surface-elevated: #35353a;
+  --color-surface-overlay: #44444c;
+  --color-surface-overlay-hover: #52525b;
+  --color-border-overlay: var(--color-base-450);
 
-  /* Surfaces — layered UI (each step is lighter than the previous to read as "elevated") */
-  --color-surface-1: var(--color-base-250);
-  --color-surface-2: var(--color-base-300);
-  --color-surface-3: var(--color-base-350);
+  /* Background Colors */
+  --color-background: var(--color-surface-base);
+
+  /* Card Colors — aliases of the surface levels */
+  --color-card: var(--color-surface-raised);
+  --color-card-hover: var(--color-surface-elevated);
+  --color-card-active: var(--color-surface-overlay);
+  --color-card-elevated: var(--color-surface-elevated);
+
+  /* Surfaces — numbered aliases of the surface levels */
+  --color-surface-1: var(--color-surface-raised);
+  --color-surface-2: var(--color-surface-elevated);
+  --color-surface-3: var(--color-surface-overlay);
   --color-surface-4: var(--color-base-400);
+
+  /*
+   * Secondary text keeps ≥ 4.5:1 on every surface level, including overlays (L39).
+   * Only base-650 and lighter pass on the overlay, so caption takes base-650 and description
+   * moves one step up to base-700 to stay visibly stronger than caption.
+   */
+  --color-description: var(--color-base-700);
+  --color-caption: var(--color-base-650);
 
   /* Overlay Colors */
   --color-overlay: rgba(0, 0, 0, 0.7);

@@ -22,10 +22,10 @@
     let isVisible = $state(true);
 
     const typeClasses: Record<NonNullable<Props['type']>, string> = {
-        success: 'border-success bg-card text-success',
-        error: 'border-error bg-card text-error',
-        warning: 'border-warning bg-card text-warning',
-        info: 'border-border bg-card text-body',
+        success: 'border-success bg-surface-overlay text-success',
+        error: 'border-error bg-surface-overlay text-error',
+        warning: 'border-warning bg-surface-overlay text-warning',
+        info: 'border-border bg-surface-overlay text-body',
     };
 
     const cardClasses =
