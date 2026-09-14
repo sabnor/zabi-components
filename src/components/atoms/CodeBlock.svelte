@@ -20,7 +20,7 @@
         showCopyButton = true,
         trustHtml = false,
         ...restProps
-    } = $props();
+    }: Props & Record<string, unknown> = $props();
 
     let copied = $state(false);
 
@@ -44,10 +44,10 @@
     <div
         class="flex items-center justify-between px-4 py-2 bg-surface-2 border-b border-border"
     >
-        <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full bg-red-500"></div>
-            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+        <div class="flex items-center gap-2" aria-hidden="true">
+            <div class="w-3 h-3 rounded-full bg-error"></div>
+            <div class="w-3 h-3 rounded-full bg-warning"></div>
+            <div class="w-3 h-3 rounded-full bg-success"></div>
         </div>
         {#if showCopyButton}
             <IconButton

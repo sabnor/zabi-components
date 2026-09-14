@@ -180,6 +180,22 @@ function verifyPackageExports() {
     }
   }
 
+  // Validate every non-CSS export condition resolves to a built file (never raw .ts sources).
+  for (const [exportPath, target] of Object.entries(exports)) {
+    if (typeof target !== 'object' || target === null) continue;
+    for (const [condition, targetPath] of Object.entries(target)) {
+      const resolved = path.join(__dirname, '..', targetPath);
+      if (!fs.existsSync(resolved)) {
+        console.error(`❌ Export points to missing file: ${exportPath} [${condition}] -> ${targetPath}`);
+        allExportsValid = false;
+      }
+      if (targetPath.endsWith('.ts') && !targetPath.endsWith('.d.ts')) {
+        console.error(`❌ Export points to raw TypeScript source: ${exportPath} [${condition}] -> ${targetPath}`);
+        allExportsValid = false;
+      }
+    }
+  }
+
   if (allExportsValid) {
     console.log('✓ Package exports verified');
   }

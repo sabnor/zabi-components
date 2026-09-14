@@ -21,4 +21,6 @@ Showcase and demo routes under this repo import additional icons (e.g. `CircleQu
 
 ## Typings for `@lucide/svelte/icons/*`
 
-Some versions of `@lucide/svelte` ship per-icon `.d.ts` files that confuse certain TypeScript setups. The published package runs **`postinstall`** → `scripts/fix-lucide-svelte-icon-dts.js` (the script is included in the npm tarball). Keep install scripts enabled, or run that script manually after install if you use `--ignore-scripts`.
+`@lucide/svelte` 0.544.x ships per-icon `.svelte.d.ts` files with a duplicate `type X = ReturnType<typeof X>` line that makes some TypeScript language services treat them as non-modules. This affects editor tooling only, not runtime or builds with `skipLibCheck`.
+
+Since 7.1.0 the package **does not run any install scripts** in your project. If your editor reports missing icon exports such as `Check` or `Copy`, prefer importing per-icon paths (`@lucide/svelte/icons/check`), enable `skipLibCheck`, or upgrade `@lucide/svelte`. Contributors to this repo get the patch automatically via the dev-only `prepare` script.

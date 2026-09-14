@@ -1,6 +1,6 @@
 {
   "name": "zabi-components",
-  "version": "7.0.2",
+  "version": "7.1.0",
   "description": "Svelte 5 UI components with TypeScript and Tailwind CSS v4. Accessible, easy to theme, works with SSR.",
   "type": "module",
   "main": "dist/index.js",
@@ -31,17 +31,13 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.js"
     },
-    "./react": {
-      "types": "./dist/react/index.d.ts",
-      "import": "./dist/react/index.js"
-    },
     "./lib/ssr-safe": {
-      "types": "./dist/routes/lib/ssr-safe.ts",
-      "import": "./dist/routes/lib/ssr-safe.ts"
+      "types": "./dist/util/ssr-safe.d.ts",
+      "import": "./dist/util/ssr-safe.js"
     },
     "./lib/variant-utils": {
-      "types": "./dist/routes/lib/variant-utils.ts",
-      "import": "./dist/routes/lib/variant-utils.ts"
+      "types": "./dist/routes/lib/variant-utils.d.ts",
+      "import": "./dist/routes/lib/variant-utils.js"
     },
     "./dist/zabi-components.css": "./dist/zabi-components.css",
     "./dist/zabi-components-colors.css": "./dist/zabi-components-colors.css",
@@ -63,8 +59,7 @@
     "THEME.md",
     "THEMING.md",
     "docs/theme-imports.md",
-    "docs/lucide-icons.md",
-    "scripts/fix-lucide-svelte-icon-dts.js"
+    "docs/lucide-icons.md"
   ],
   "keywords": [
     "svelte",
@@ -87,13 +82,13 @@
     "dev": "vite dev",
     "build": "vite build && npm run build:types",
     "build:components": "svelte-package -o dist --input src/components",
-    "build:lib-files": "mkdir -p dist/routes/lib dist/types && cp src/components/util/ssr-safe.ts dist/routes/lib/ && cp src/routes/lib/variant-utils.ts dist/routes/lib/ && cp src/components/util/focus-utils.ts dist/routes/lib/ && cp src/components/types/variants.ts dist/types/ && cp src/components/types/page.types.ts dist/types/",
+    "build:lib-files": "mkdir -p dist/routes/lib dist/types && cp src/components/types/variants.ts dist/types/ && cp src/components/types/page.types.ts dist/types/ && tsc src/routes/lib/variant-utils.ts --declaration --module esnext --target es2020 --moduleResolution bundler --skipLibCheck --rootDir src --outDir .lib-tmp && cp .lib-tmp/routes/lib/variant-utils.js .lib-tmp/routes/lib/variant-utils.d.ts dist/routes/lib/ && rm -rf .lib-tmp",
     "build:fix-imports": "node scripts/fix-package-imports.js",
     "build:lib": "npm run build:css && npm run build:components && npm run build:lib-files && npm run build:fix-imports && npm run build:types && npm run build:css && node scripts/verify-build.js",
     "sync:tokens": "node scripts/sync-theme-tokens.js",
     "build:css": "npm run sync:tokens && node scripts/build-css.js && node scripts/validate-theme.js",
     "check:tokens": "node scripts/check-token-violations.js",
-    "build:types": "tsc --project tsconfig.lib.json && cp dist/components/util/focus-utils.d.ts dist/routes/lib/ && node scripts/emit-components-types-runtime.js",
+    "build:types": "tsc --project tsconfig.lib.json && node scripts/emit-components-types-runtime.js",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json && node scripts/check-component-imports.js && node scripts/check-layout-width.js",
     "storybook": "storybook dev -p 6006",
@@ -104,9 +99,9 @@
     "test:e2e:smoke": "playwright test --grep @smoke",
     "test:playwright": "npm run test:e2e",
     "test:themes": "node --test tests/theme-output.test.js",
+    "prepare": "node scripts/fix-lucide-svelte-icon-dts.js",
     "prepublishOnly": "npm run build:lib",
-    "publish:npm": "npm publish --access public --registry https://registry.npmjs.org/",
-    "postinstall": "node scripts/fix-lucide-svelte-icon-dts.js"
+    "publish:npm": "npm publish --access public --registry https://registry.npmjs.org/"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",
@@ -122,7 +117,6 @@
     "@testing-library/user-event": "^14.6.1",
     "@tsconfig/svelte": "^5.0.5",
     "@types/node": "^24.5.2",
-    "@types/react": "^19.2.2",
     "autoprefixer": "^10.4.17",
     "culori": "^4.0.2",
     "jsdom": "^29.0.2",
@@ -140,7 +134,6 @@
   },
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
-    "react": "^18.0.0",
     "svelte": "^5.43.8"
   },
   "peerDependenciesMeta": {
@@ -148,9 +141,6 @@
       "optional": false
     },
     "@sveltejs/kit": {
-      "optional": true
-    },
-    "react": {
       "optional": true
     }
   },

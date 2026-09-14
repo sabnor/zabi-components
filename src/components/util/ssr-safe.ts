@@ -28,21 +28,21 @@ export function safeRequestAnimationFrame(callback: FrameRequestCallback): numbe
     return isBrowser() ? requestAnimationFrame(callback) : undefined;
 }
 
-export function safeSetTimeout(callback: () => void, delay: number): NodeJS.Timeout | undefined {
+export function safeSetTimeout(callback: () => void, delay: number): ReturnType<typeof setTimeout> | undefined {
     return isBrowser() ? setTimeout(callback, delay) : undefined;
 }
 
-export function safeClearTimeout(id: NodeJS.Timeout | undefined): void {
+export function safeClearTimeout(id: ReturnType<typeof setTimeout> | undefined): void {
     if (isBrowser() && id) {
         clearTimeout(id);
     }
 }
 
-export function safeSetInterval(callback: () => void, delay: number): NodeJS.Timeout | undefined {
+export function safeSetInterval(callback: () => void, delay: number): ReturnType<typeof setInterval> | undefined {
     return isBrowser() ? setInterval(callback, delay) : undefined;
 }
 
-export function safeClearInterval(id: NodeJS.Timeout | undefined): void {
+export function safeClearInterval(id: ReturnType<typeof setInterval> | undefined): void {
     if (isBrowser() && id) {
         clearInterval(id);
     }
