@@ -10,15 +10,11 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "strict": true,
-    "skipLibCheck": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx",
     "src/**/*.js",
-    "src/**/*.jsx",
     "src/**/*.svelte",
     "src/app.d.ts"
   ]

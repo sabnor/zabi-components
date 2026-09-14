@@ -6,10 +6,15 @@ const allowedHexPatterns = [
     // Documentation examples or user-input placeholders are allowed.
     /Please enter a valid hex color/i,
     /placeholder\s*=\s*["']#[0-9a-fA-F]{3,8}["']/i,
+    // Comment lines (JSDoc / `//`) may cite example values.
+    /^\s*(?:\/\/|\/\*|\*)/,
 ];
 
 const targetExtensions = new Set([".svelte", ".ts", ".js", ".css"]);
 const hexRegex = /#[0-9a-fA-F]{3,8}\b/g;
+/** Raw Tailwind default-palette utilities (e.g. `bg-red-500`) bypass semantic tokens. */
+const paletteClassRegex =
+    /(?<![\w-])(?:[a-z]+:)*(?:bg|text|border(?:-[trblxy])?|ring|ring-offset|outline|fill|stroke|from|via|to|divide|shadow|accent|caret|decoration|placeholder)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\d{2,3}\b/g;
 
 function readFilesRecursively(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -59,14 +64,28 @@ function scanForViolations() {
                 });
             }
         }
+        while ((match = paletteClassRegex.exec(content)) !== null) {
+            const lineNumber = getLineNumber(content, match.index);
+            const line = content.split("\n")[lineNumber - 1] || "";
+            violations.push({
+                file,
+                lineNumber,
+                value: match[0],
+                line: line.trim(),
+            });
+        }
     }
 
     if (violations.length === 0) {
-        console.log("✅ No token violations found (hardcoded hex colors).");
+        console.log(
+            "✅ No token violations found (hardcoded hex colors, raw Tailwind palette classes).",
+        );
         return;
     }
 
-    console.error("❌ Hardcoded hex colors detected in component source:");
+    console.error(
+        "❌ Hardcoded colors detected in component source (use semantic tokens):",
+    );
     for (const violation of violations) {
         console.error(
             `- ${path.relative(process.cwd(), violation.file)}:${violation.lineNumber} ${violation.value} -> ${violation.line}`,
