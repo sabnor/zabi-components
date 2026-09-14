@@ -1,27 +1,43 @@
 <script lang="ts">
     import { onDestroy } from "svelte";
+    import type { HTMLAttributes } from "svelte/elements";
     import Button from "../atoms/Button.svelte";
     import { Image } from "@lucide/svelte";
 
-    interface Props {
+    export type ImageUploadFileDetail = {
+        /** Selected file, or `null` when the image is removed. */
+        file: File | null;
+        /** Object URL used for the preview, or `null`. */
+        url: string | null;
+    };
+
+    type Props = Omit<HTMLAttributes<HTMLDivElement>, "onchange" | "onclick"> & {
+        /** Preview URL; `bind:value` to read it. */
         value?: string | null;
         disabled?: boolean;
         accept?: string;
         placeholder?: string;
         errorMessage?: string;
+        /** Native `change` event from the hidden file input. */
         onchange?: (event: Event) => void;
+        /** Fires when the file chooser is opened. */
         onclick?: (event: Event) => void;
-    }
+        /** Selected file and preview URL; `{ file: null, url: null }` on remove. */
+        onfileselect?: (detail: ImageUploadFileDetail) => void;
+    };
 
     let {
-        value = null,
+        value = $bindable(null),
         disabled = false,
         accept = "image/*",
         placeholder = "No image selected",
         errorMessage = "",
-        children,
+        onchange,
+        onclick,
+        onfileselect,
+        children: _children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props = $props();
 
     let fileInput = $state<HTMLInputElement>();
     let currentObjectUrl = $state<string | null>(null);
@@ -40,13 +56,17 @@
         if (!input.files || input.files.length === 0) return;
 
         const file = input.files[0];
+        let url: string | null = null;
 
         if (typeof URL !== "undefined" && URL.createObjectURL) {
             revokeCurrentObjectUrl();
-            const url = URL.createObjectURL(file);
+            url = URL.createObjectURL(file);
             value = url;
             currentObjectUrl = url;
         }
+
+        onchange?.(event);
+        onfileselect?.({ file, url });
     }
 
     function removeImage() {
@@ -54,11 +74,21 @@
 
         revokeCurrentObjectUrl();
         value = null;
+        if (fileInput) fileInput.value = "";
+        onfileselect?.({ file: null, url: null });
     }
 
-    function triggerFileSelect() {
+    function triggerFileSelect(event: Event) {
         if (disabled) return;
+        onclick?.(event);
         fileInput?.click();
+    }
+
+    function handleDropZoneKeydown(event: KeyboardEvent) {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            triggerFileSelect(event);
+        }
     }
 
     onDestroy(() => {
@@ -66,7 +96,7 @@
     });
 </script>
 
-<div class="space-y-3">
+<div class="space-y-3" {...restProps}>
     {#if value}
         <div class="relative group">
             <img
@@ -75,7 +105,7 @@
                 class="w-full h-32 min-w-64 object-cover rounded-2xl border-0"
             />
             <div
-                class="absolute inset-0 border border-input-border bg-input min-w-64 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center"
+                class="absolute inset-0 border border-input-border bg-input min-w-64 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity rounded-2xl flex items-center justify-center"
             >
                 <div class="flex gap-2">
                     <Button
@@ -105,8 +135,7 @@
             onclick={triggerFileSelect}
             role="button"
             tabindex={disabled ? -1 : 0}
-            onkeydown={(e) =>
-                e.key === "Enter" && !disabled && triggerFileSelect()}
+            onkeydown={handleDropZoneKeydown}
             aria-disabled={disabled}
         >
             <div class="space-y-3">
@@ -132,6 +161,7 @@
         onchange={handleFileSelect}
         {disabled}
         class="hidden"
+        data-testid="image-upload-input"
     />
 
     {#if errorMessage}

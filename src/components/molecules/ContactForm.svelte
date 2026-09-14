@@ -60,6 +60,8 @@
         };
 
         if (!validate(data)) {
+            // Block native submission so the page does not reload and wipe the errors.
+            event.preventDefault();
             formErrorMessage =
                 "We could not submit your request. Fix the highlighted fields and try again.";
             return;

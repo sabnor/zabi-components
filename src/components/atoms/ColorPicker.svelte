@@ -11,7 +11,7 @@
     }
 
     let {
-        value = "",
+        value = $bindable(""),
         label = "",
         disabled = false,
         placeholder = "#000000",
@@ -35,7 +35,14 @@
         return hexPattern.test(hex);
     }
 
-    function hexToHsl(hex: string): [number, number, number] {
+    /** `#f00` → `#ff0000`; 6-digit input is returned unchanged. */
+    function expandHex(hex: string): string {
+        if (hex.length !== 4) return hex;
+        return `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
+    }
+
+    function hexToHsl(rawHex: string): [number, number, number] {
+        const hex = expandHex(rawHex);
         const r = parseInt(hex.slice(1, 3), 16) / 255;
         const g = parseInt(hex.slice(3, 5), 16) / 255;
         const b = parseInt(hex.slice(5, 7), 16) / 255;
