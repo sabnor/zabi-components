@@ -2,6 +2,7 @@
     import CopyCommand from "$lib/marketing/CopyCommand.svelte";
     import InviteSpecimen from "$lib/marketing/InviteSpecimen.svelte";
     import RebrandDemo from "$lib/marketing/RebrandDemo.svelte";
+    import { ExternalLink } from "@lucide/svelte";
     import {
         GITHUB_URL,
         INSTALL_COMMAND,
@@ -238,9 +239,13 @@
                         </a>
                         <a
                             href={GITHUB_URL}
-                            class="cta-outline focus-ring inline-flex h-12 items-center justify-center rounded-xl border px-6 text-base font-semibold text-action-primary"
+                            class="cta-outline focus-ring inline-flex h-12 items-center justify-center gap-2 rounded-xl border px-6 text-base font-semibold text-action-primary"
+                            target="_blank"
+                            rel="noopener noreferrer"
                         >
                             View on GitHub
+                            <ExternalLink size={16} class="shrink-0 opacity-70" aria-hidden="true" />
+                            <span class="sr-only">(opens in a new tab)</span>
                         </a>
                     </div>
                 </div>
@@ -257,8 +262,20 @@
                 <ul class="flex flex-wrap gap-x-8 gap-y-3">
                     <li><a class="focus-ring rounded-sm hover:text-headline" href="/docs">Docs</a></li>
                     <li><a class="focus-ring rounded-sm hover:text-headline" href="/components">Components</a></li>
-                    <li><a class="focus-ring rounded-sm hover:text-headline" href={GITHUB_URL}>GitHub</a></li>
-                    <li><a class="focus-ring rounded-sm hover:text-headline" href={NPM_URL}>npm</a></li>
+                    <li>
+                        <a
+                            class="focus-ring inline-flex items-center rounded-sm hover:text-headline"
+                            href={GITHUB_URL}
+                            target="_blank"
+                            rel="noopener noreferrer">GitHub<ExternalLink size={12} class="ml-1 inline-block shrink-0 align-[-0.1em] opacity-70" aria-hidden="true" /><span class="sr-only">(opens in a new tab)</span></a>
+                    </li>
+                    <li>
+                        <a
+                            class="focus-ring inline-flex items-center rounded-sm hover:text-headline"
+                            href={NPM_URL}
+                            target="_blank"
+                            rel="noopener noreferrer">npm<ExternalLink size={12} class="ml-1 inline-block shrink-0 align-[-0.1em] opacity-70" aria-hidden="true" /><span class="sr-only">(opens in a new tab)</span></a>
+                    </li>
                 </ul>
             </nav>
         </div>

@@ -6,6 +6,7 @@
     import Section from "../../../components/molecules/Section.svelte";
     import type { PageData } from "./$types";
 
+    import { ExternalLink } from "@lucide/svelte";
     let { data }: { data: PageData } = $props();
 
     const component = $derived(data.component);
@@ -98,8 +99,14 @@
                 >
                 <a
                     href="https://github.com/sabnor/zabi-components"
-                    class="text-description transition-colors hover:text-headline"
-                    >GitHub</a
+                    class="inline-flex items-center text-description transition-colors hover:text-headline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >GitHub<ExternalLink
+                        size={12}
+                        class="ml-1 shrink-0 opacity-70"
+                        aria-hidden="true"
+                    /><span class="sr-only">(opens in a new tab)</span></a
                 >
             </div>
         </div>
