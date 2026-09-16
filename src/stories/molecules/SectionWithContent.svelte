@@ -7,7 +7,7 @@
     interface Props {
         title?: string;
         description?: string;
-        headingLevel?: number;
+        headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
         size?: "sm" | "md" | "lg";
         maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "full" | "none";
         background?: "default" | "muted" | "accent" | "transparent";
