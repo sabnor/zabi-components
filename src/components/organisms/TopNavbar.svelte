@@ -1,6 +1,9 @@
 <script lang="ts">
     import ThemeToggle from "../atoms/ThemeToggle.svelte";
+    import IconButton from "../atoms/IconButton.svelte";
+    import { Menu, X } from "@lucide/svelte";
     import type { Component, Snippet } from "svelte";
+    import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
 
     export interface TopNavbarNavItem {
@@ -50,10 +53,18 @@
      * Both are merged here so existing call sites keep working. */
     const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
+    const mobileMenuId = generateId("topnavbar-menu");
+
     let isMenuOpen = $state(false);
 
     function toggleMenu() {
         isMenuOpen = !isMenuOpen;
+    }
+
+    function handleWindowKeydown(event: KeyboardEvent) {
+        if (event.key === "Escape" && isMenuOpen) {
+            isMenuOpen = false;
+        }
     }
 
     function handleNavLinkClick(event: MouseEvent) {
@@ -86,8 +97,30 @@
         return "flex flex-col gap-1 grow h-full items-center justify-center min-h-0 min-w-0 relative shrink-0 cursor-pointer w-full md:w-auto";
     }
 
-    function getIconContainerClasses(): string {
-        return "focus-ring focus-ring--nav group/nav-item flex flex-col items-center justify-center overflow-clip relative rounded-[20px] shrink-0 text-nav-menu-item transition-colors duration-200 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover aria-[current=page]:bg-nav-menu-active aria-[current=page]:text-nav-menu-item-active";
+    /**
+     * The active state is resolved here rather than with
+     * `aria-[current=page]:text-nav-menu-item-active`.
+     *
+     * That variant was dead: the semantic utilities are hand-written in
+     * app.css and sit outside Tailwind's cascade layer, so an unlayered
+     * `.text-nav-menu-item` beats anything Tailwind generates for a variant of
+     * the same property. The fill happened to survive only because no plain
+     * `bg-*` class competed with it — so the selected tab painted its pill but
+     * kept the idle label colour (#27272a where #3c52ba was intended), which
+     * is exactly the "active state does almost nothing" failure the sidebar
+     * had.
+     *
+     * Plain classes chosen in JS cannot lose that way.
+     */
+    function getIconContainerClasses(isActive: boolean): string {
+        const base =
+            "focus-ring focus-ring--nav group/nav-item flex flex-col items-center justify-center overflow-clip relative rounded-pill shrink-0 transition-colors duration-200 outline-none";
+        return isActive
+            ? cn(base, "bg-nav-menu-active text-nav-menu-item-active")
+            : cn(
+                  base,
+                  "text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover",
+              );
     }
 
     function getStateLayerClasses(): string {
@@ -95,7 +128,9 @@
     }
 
     function getLabelClasses(): string {
-        return "font-medium leading-4 relative shrink-0 text-center text-nowrap tracking-[0.5px] whitespace-pre text-xs text-inherit";
+        // `whitespace-pre` used to sit beside `text-nowrap` — same property,
+        // and it preserved literal whitespace as a side effect.
+        return "font-medium leading-4 relative shrink-0 text-center text-nowrap tracking-wide text-xs text-inherit";
     }
 
     function getIconWrapperClasses(): string {
@@ -110,7 +145,7 @@
             <li class={getNavItemClasses()}>
                 <a
                     href={item.href}
-                    class={getIconContainerClasses()}
+                    class={getIconContainerClasses(isActive)}
                     onclick={handleNavLinkClick}
                     aria-current={isActive ? "page" : undefined}
                 >
@@ -126,15 +161,17 @@
                                 <Icon size={16} class="w-4 h-4" />
                             </div>
                         {/if}
-                        <p class={getLabelClasses()}>
+                        <span class={getLabelClasses()}>
                             {item.label}
-                        </p>
+                        </span>
                     </div>
                 </a>
             </li>
         {/each}
     </ul>
 {/snippet}
+
+<svelte:window onkeydown={handleWindowKeydown} />
 
 {#if embedded}
     <nav class={className} aria-label={ariaLabel} {...restProps}>
@@ -146,7 +183,7 @@
     </nav>
 {:else}
     <nav
-        class={cn("border-b border-border bg-background sticky top-0 z-50", className)}
+        class={cn("border-b border-border bg-background sticky top-0 z-sticky", className)}
         aria-label={ariaLabel}
         {...restProps}
     >
@@ -156,7 +193,7 @@
                     {#if brandHref}
                         <a
                             href={brandHref}
-                            class="focus-ring text-xl font-bold text-headline hover:opacity-90"
+                            class="focus-ring text-xl font-bold text-headline transition-colors hover:text-link"
                         >
                             {brand}
                         </a>
@@ -166,7 +203,7 @@
                 </div>
 
                 <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
+                    <div class="ml-10 flex items-center space-x-4">
                         {#if nav}
                             {@render nav()}
                         {:else if items.length > 0}
@@ -185,19 +222,29 @@
                 </div>
 
                 <div class="md:hidden">
-                    <button
-                        type="button"
-                        class="cursor-pointer text-description hover:text-body"
+                    <!--
+                      Was a bare ☰ glyph in a text-2xl span: font-dependent,
+                      off the icon scale, and with no disclosure semantics, so
+                      a screen reader could not tell the menu was open.
+                    -->
+                    <IconButton
+                        variant="ghost"
+                        label={isMenuOpen ? "Close menu" : "Open menu"}
                         onclick={toggleMenu}
-                        aria-label="Toggle menu"
+                        aria-expanded={isMenuOpen}
+                        aria-controls={mobileMenuId}
                     >
-                        <span class="text-2xl">☰</span>
-                    </button>
+                        {#if isMenuOpen}
+                            <X size={20} />
+                        {:else}
+                            <Menu size={20} />
+                        {/if}
+                    </IconButton>
                 </div>
             </div>
 
             {#if isMenuOpen}
-                <div class="md:hidden">
+                <div class="md:hidden" id={mobileMenuId}>
                     <div
                         class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-border"
                     >
