@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { getContext } from "svelte";
+    import { cn } from "../util/cn.js";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
         type NavigationMenuContextValue,
@@ -26,7 +27,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const context = getContext<NavigationMenuContextValue>(
         NAVIGATION_MENU_CONTEXT_KEY,

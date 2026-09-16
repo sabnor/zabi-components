@@ -1,6 +1,7 @@
 <script lang="ts">
     import { generateId } from "../util/ssr-safe.js";
     import type { Snippet } from 'svelte';
+    import { cn } from "../util/cn.js";
 
     export type DropdownTriggerProps = {
         'aria-expanded': boolean;
@@ -221,7 +222,7 @@
 
 <div
     bind:this={rootEl}
-    class="relative inline-block {className}"
+    class={cn("relative inline-block", className)}
     data-placement={placement}
     onkeydown={handleKeydown}
     {...restProps}

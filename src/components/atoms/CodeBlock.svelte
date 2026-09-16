@@ -2,6 +2,7 @@
     import Check from "@lucide/svelte/icons/check";
     import Copy from "@lucide/svelte/icons/copy";
     import IconButton from "./IconButton.svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         /** Raw source; escaped unless `trustHtml` (e.g. highlighter HTML). */
@@ -27,7 +28,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let copied = $state(false);
 
@@ -45,7 +46,7 @@
 </script>
 
 <div
-    class="code-block relative bg-surface-1 border border-border rounded-control overflow-hidden {className}"
+    class={cn("code-block relative bg-surface-1 border border-border rounded-control overflow-hidden", className)}
     {...restProps}
 >
     <div

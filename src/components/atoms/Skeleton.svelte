@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { cn } from "../util/cn.js";
+
     type Variant = "text" | "circle" | "block";
 
     interface Props {
@@ -46,7 +48,7 @@
 </script>
 
 <div
-    class="animate-pulse bg-surface-2 {defaultShape[variant]} {radius[variant]} {className}"
+    class={cn("animate-pulse bg-surface-2", defaultShape[variant], radius[variant], className)}
     style={inlineStyle || undefined}
     role="status"
     aria-busy="true"

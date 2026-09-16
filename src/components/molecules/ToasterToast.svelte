@@ -12,6 +12,7 @@
     } from '@lucide/svelte';
     import Button from '../atoms/Button.svelte';
     import { toastStore, type ToastItem } from './toast-store.js';
+    import { cn } from "../util/cn.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -132,7 +133,7 @@
 </script>
 
 <div
-    class="pointer-events-auto relative w-full min-w-[18rem] overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg {className}"
+    class={cn("pointer-events-auto relative w-full min-w-[18rem] overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg", className)}
     in:fly={toastEnter}
     out:fly={toastLeave}
     onmouseenter={() => (hovered = true)}

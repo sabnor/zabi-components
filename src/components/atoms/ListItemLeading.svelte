@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
 
+    import { cn } from "../util/cn.js";
     interface Props {
         /** e.g. `rounded-full` for avatars; default is `rounded-control` for icons. */
         class?: string;
@@ -9,7 +10,8 @@
 
     let { class: className = "", children }: Props = $props();
 
-    const roundingClass = $derived(className.trim() ? className.trim() : "rounded-control");
+    // cn lets a call-site radius win outright, instead of replacing the default wholesale.
+    const roundingClass = $derived(cn("rounded-control", className));
 </script>
 
 <span

@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         title?: string;
@@ -26,7 +27,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const trimmedTitle = $derived(title.trim());
     const headingId = $derived(
@@ -37,7 +38,7 @@
     const showHeading = $derived(Boolean(trimmedTitle) && !collapsed);
 </script>
 
-<div class={`flex w-full flex-col gap-2 ${className}`.trim()}>
+<div class={cn(`flex w-full flex-col gap-2 ${className}`)}>
     {#if showHeading && headingId}
         <h2
             class="px-0 text-xs font-semibold uppercase tracking-wider text-description"

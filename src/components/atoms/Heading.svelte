@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
+    import { cn } from "../util/cn.js";
 
     /** Semantic heading level — also the default visual size. */
     type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
@@ -47,7 +48,7 @@
     };
 
     const headingClasses = $derived(
-        `text-headline ${sizeClasses[visualSize] ?? sizeClasses[6]} ${className}`.trim(),
+        cn(`text-headline ${sizeClasses[visualSize] ?? sizeClasses[6]} ${className}`),
     );
 </script>
 

@@ -4,6 +4,7 @@
     import { onDestroy } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
 
+    import { cn } from "../util/cn.js";
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class"> & {
         content?: string;
         placement?: "top" | "bottom" | "left" | "right";
@@ -197,13 +198,11 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div
-    class={[
+    class={cn(
         "tooltip-container relative",
         block ? "block w-full" : "inline-block",
         className,
-    ]
-        .filter(Boolean)
-        .join(" ")}
+    )}
     data-placement={placement}
     data-strategy={fixed ? "fixed" : "absolute"}
     data-disabled={disabled}

@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { ComponentProp } from "../types/page.types";
     import Table from "../atoms/Table.svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -13,7 +14,7 @@
 </script>
 
 {#if props.length === 0}
-    <div class="rounded-control border border-border bg-base-50 px-4 py-4 text-sm text-description {className}">
+    <div class={cn("rounded-control border border-border bg-base-50 px-4 py-4 text-sm text-description", className)}>
         No documented props.
     </div>
 {:else}

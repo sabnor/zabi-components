@@ -3,6 +3,7 @@
     import type { HTMLAttributes } from "svelte/elements";
     import type { CardVariant, SizeVariant } from "../types/variants.js";
 
+    import { cn } from "../util/cn.js";
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class"> & {
         onclick?: (event: MouseEvent) => void | Promise<void>;
         size?: SizeVariant;
@@ -60,7 +61,7 @@
     });
 
     const cardClasses = $derived(
-        [
+        cn(
             "rounded-container transition-all duration-150",
             variantClasses,
             interactiveClasses,
@@ -68,10 +69,7 @@
             sizeClass,
             classProp,
             className,
-        ]
-            .filter(Boolean)
-            .join(" ")
-            .trim(),
+        ),
     );
 
     function handleKeydown(event: KeyboardEvent) {

@@ -3,6 +3,7 @@
     import Badge from "../atoms/Badge.svelte";
     import { Search, X } from "@lucide/svelte";
     import type { Component } from "svelte";
+    import { cn } from "../util/cn.js";
 
     export interface SidebarPanelItem {
         id: string;
@@ -62,7 +63,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const normalizedSearchTerm = $derived(searchValue.trim().toLowerCase());
     const filteredItems = $derived(
@@ -80,7 +81,7 @@
         const shell = isElevated
             ? "rounded-container border border-border bg-card text-headline shadow-sm ring-1 ring-border/50"
             : "rounded-container border border-border bg-card text-headline shadow-sm";
-        return `${resolvedWidthClass} shrink-0 p-5 ${shell} ${className}`.trim();
+        return cn(`${resolvedWidthClass} shrink-0 p-5 ${shell} ${className}`);
     });
 
     function getItemClasses(itemId: string): string {

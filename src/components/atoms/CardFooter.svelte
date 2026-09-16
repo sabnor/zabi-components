@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         class?: string;
@@ -17,11 +18,11 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 </script>
 
 <footer
-    class="flex items-center p-6 pt-0 {className}"
+    class={cn("flex items-center p-6 pt-0", className)}
     {...restProps}
 >
     {#if children}

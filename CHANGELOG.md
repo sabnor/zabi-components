@@ -114,6 +114,14 @@ the semantic families read as a single family instead of six unrelated colours.
 
 #### API consistency
 
+- **Class overrides actually win now.** `class` being "merged last" only held
+  for properties the component didn't already set: `rounded-control` and
+  `rounded-container` are equal-specificity utilities, so the winner was
+  whichever Tailwind emitted later. The sidebar's search field asked for
+  `rounded-container` and rendered at 8px. Every component now merges through
+  `cn()` (tailwind-merge, a new runtime dependency), with the role-based radii
+  declared explicitly since `control`/`container`/`overlay`/`pill` are role
+  names rather than scale values that tailwind-merge could recognise.
 - **`class` is now the public prop on every component.** 25 components exposed
   `className`, 15 exposed `class`, and 21 exposed neither. `className` is kept
   everywhere as a deprecated alias and both are merged, so existing call sites

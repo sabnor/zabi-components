@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { cn } from "../util/cn.js";
+
     interface Props {
         collapsed?: boolean;
         brandName?: string;
@@ -42,7 +44,7 @@
 
 {#if showLogo || trimmedName}
     <div
-        class={`flex w-full min-w-0 items-center gap-3 ${className}`.trim()}
+        class={cn("flex w-full min-w-0 items-center gap-3", className)}
     >
         {#if showLogo}
             <span

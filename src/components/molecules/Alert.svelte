@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Check, TriangleAlert, X, Info, Zap } from "@lucide/svelte";
     import type { ExtendedSemanticVariant } from "../types/variants.js";
+    import { cn } from "../util/cn.js";
     type AlertVisualVariant = Exclude<ExtendedSemanticVariant, "default">;
 
     interface Props {
@@ -82,9 +83,14 @@
 
 {#if open}
 <div
-    class="relative rounded-container p-4 border {inline ? 'inline-block' : 'block w-full'} {alertClasses[
-        visualVariant
-    ]} transition-colors duration-150 motion-reduce:transition-none {classProp} {className}"
+    class={cn(
+        'relative rounded-container p-4 border',
+        inline ? 'inline-block' : 'block w-full',
+        alertClasses[visualVariant],
+        'transition-colors duration-150 motion-reduce:transition-none',
+        classProp,
+        className,
+    )}
     role={alertRole}
     aria-atomic="true"
     {...restProps}

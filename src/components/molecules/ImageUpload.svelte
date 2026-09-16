@@ -3,6 +3,7 @@
     import type { HTMLAttributes } from "svelte/elements";
     import Button from "../atoms/Button.svelte";
     import { Image } from "@lucide/svelte";
+    import { cn } from "../util/cn.js";
 
     export type ImageUploadFileDetail = {
         /** Selected file, or `null` when the image is removed. */
@@ -99,7 +100,7 @@
     });
 </script>
 
-<div class="space-y-3 {className}" {...restProps}>
+<div class={cn("space-y-3", className)} {...restProps}>
     {#if value}
         <div class="relative group">
             <img

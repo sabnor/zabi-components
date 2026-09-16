@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { cn } from "../util/cn.js";
+
     type Orientation = 'horizontal' | 'vertical';
 
     interface Props {
@@ -34,13 +36,11 @@
 </script>
 
 <div
-    class={[
+    class={cn(
         'flex items-center text-description',
         isVertical ? 'h-full min-h-[1rem] flex-col' : 'w-full flex-row',
         className,
-    ]
-        .filter(Boolean)
-        .join(' ')}
+    )}
 >
     <div
         aria-hidden={decorative ? 'true' : undefined}

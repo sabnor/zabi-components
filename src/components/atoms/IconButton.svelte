@@ -2,6 +2,7 @@
     import type { Snippet } from "svelte";
     import type { HTMLButtonAttributes } from "svelte/elements";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
+    import { cn } from "../util/cn.js";
 
     type Props = Omit<HTMLButtonAttributes, "class"> & {
         variant?: ButtonVariant;
@@ -63,7 +64,7 @@
     const buttonClasses = $derived.by(() => {
         const base =
             "inline-flex focus-ring items-center justify-center rounded-control shrink-0 transition-colors duration-150 cursor-pointer select-none";
-        return `${base} ${sizeClass.box} ${variantClass} ${disabledClass} ${className}`.trim();
+        return cn(`${base} ${sizeClass.box} ${variantClass} ${disabledClass} ${className}`);
     });
 </script>
 

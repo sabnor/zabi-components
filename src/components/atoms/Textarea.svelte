@@ -2,6 +2,7 @@
     import { CheckCircle, AlertTriangle, AlertCircle } from '@lucide/svelte';
     import type { SemanticVariant, SizeVariant } from '../types/variants.js';
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         id?: string;
@@ -58,7 +59,7 @@
         const baseClasses =
             'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed resize-y px-3 py-2 text-sm leading-6';
 
-        return `${baseClasses} ${variantClass()} ${className}`.trim();
+        return cn(`${baseClasses} ${variantClass()} ${className}`);
     });
 
     const labelClasses = $derived(

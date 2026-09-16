@@ -2,6 +2,7 @@
     import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
     import type { SemanticVariant, SizeVariant } from "../types/variants.js";
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         /** Omit to auto-generate; pair with FormField `id` when used inside FormField. */
@@ -86,7 +87,7 @@
         const baseClasses =
             "focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed";
 
-        return `${baseClasses} ${sizeStyles.box} ${trailingPad} ${sizeStyles.text} ${variantClass()} ${className}`.trim();
+        return cn(`${baseClasses} ${sizeStyles.box} ${trailingPad} ${sizeStyles.text} ${variantClass()} ${className}`);
     });
 
     const labelClasses = $derived(

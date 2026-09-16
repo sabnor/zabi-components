@@ -11,6 +11,7 @@
     import type { Snippet } from "svelte";
     import type { Component } from "svelte";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
+    import { cn } from "../util/cn.js";
 
     export interface SidebarNavigationItem {
         id: string;
@@ -119,7 +120,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const isCollapsed = $derived(mode === "collapsed");
     const isCard = $derived(layout === "card");
@@ -197,7 +198,7 @@
         const verticalPad = isCard ? "py-4" : "py-5";
         const baseClasses = `flex h-full min-h-0 max-h-full flex-col overflow-visible ${verticalPad}`;
 
-        return `${baseClasses} ${widthClass} ${surfaceClasses} ${className}`.trim();
+        return cn(`${baseClasses} ${widthClass} ${surfaceClasses} ${className}`);
     });
 
     const headerStackClasses = $derived(
@@ -302,7 +303,7 @@
     <div
         class="flex min-h-0 w-full min-w-0 flex-1 flex-col"
     >
-        <div class={`${headerStackClasses} pb-3`.trim()}>
+        <div class={cn(`${headerStackClasses} pb-3`)}>
             {#if showBrandRow}
                 <SidebarBrandHeader
                     collapsed={isCollapsed}

@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { getContext } from "svelte";
+    import { cn } from "../util/cn.js";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
         navigationMenuPanelId,
@@ -25,7 +26,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const context = getContext<NavigationMenuContextValue>(
         NAVIGATION_MENU_CONTEXT_KEY,
@@ -65,7 +66,7 @@
 
 <button
     type="button"
-    class="focus-ring focus-ring--nav inline-flex cursor-pointer items-center justify-center gap-2 rounded-control bg-transparent px-4 py-2 text-sm font-medium text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover data-[active=true]:bg-nav-menu-active data-[active=true]:text-nav-menu-item-active {className}"
+    class={cn("focus-ring focus-ring--nav inline-flex cursor-pointer items-center justify-center gap-2 rounded-control bg-transparent px-4 py-2 text-sm font-medium text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover data-[active=true]:bg-nav-menu-active data-[active=true]:text-nav-menu-item-active", className)}
     aria-expanded={isActive ? 'true' : 'false'}
     aria-controls={panelId || undefined}
     onclick={handleClick}

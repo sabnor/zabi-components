@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         title: string;
@@ -22,7 +23,7 @@
 </script>
 
 <section
-    class="mx-auto flex flex-col items-center justify-center gap-4 px-6 py-12 text-center {className}"
+    class={cn("mx-auto flex flex-col items-center justify-center gap-4 px-6 py-12 text-center", className)}
     aria-labelledby={titleId}
 >
     {#if media}

@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         title?: string;
@@ -31,7 +32,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const headingTag = $derived(`h${level}`);
     const headingClasses = $derived(() => {
@@ -39,7 +40,7 @@
     });
 </script>
 
-<header class={`flex flex-col space-y-2 pb-4 ${className}`.trim()} {...restProps}>
+<header class={cn(`flex flex-col space-y-2 pb-4 ${className}`)} {...restProps}>
     {#if title}
         <svelte:element this={headingTag} class={headingClasses()}>
             {title}
