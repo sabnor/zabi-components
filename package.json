@@ -85,12 +85,12 @@
     "build:lib-files": "mkdir -p dist/routes/lib dist/types && cp src/components/types/variants.ts dist/types/ && cp src/components/types/page.types.ts dist/types/ && tsc src/routes/lib/variant-utils.ts --declaration --module esnext --target es2020 --moduleResolution bundler --skipLibCheck --rootDir src --outDir .lib-tmp && cp .lib-tmp/routes/lib/variant-utils.js .lib-tmp/routes/lib/variant-utils.d.ts dist/routes/lib/ && rm -rf .lib-tmp",
     "build:fix-imports": "node scripts/fix-package-imports.js",
     "build:lib": "npm run build:css && npm run build:components && npm run build:lib-files && npm run build:fix-imports && npm run build:types && npm run build:css && node scripts/verify-build.js",
-    "sync:tokens": "node scripts/sync-theme-tokens.js",
-    "build:css": "npm run sync:tokens && node scripts/build-css.js && node scripts/validate-theme.js",
+    "sync:tokens": "node scripts/sync-theme-tokens.js && node scripts/generate-ramps.js",
+    "build:css": "npm run sync:tokens && node scripts/build-css.js && node scripts/validate-theme.js && npm run check:design",
     "check:tokens": "node scripts/check-token-violations.js",
     "build:types": "tsc --project tsconfig.lib.json && node scripts/emit-components-types-runtime.js",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json && node scripts/check-component-imports.js && node scripts/check-layout-width.js",
+    "check": "svelte-check --tsconfig ./tsconfig.json && node scripts/check-component-imports.js && node scripts/check-layout-width.js && npm run check:design",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest run",
@@ -101,7 +101,11 @@
     "test:themes": "node --test tests/theme-output.test.js",
     "prepare": "node scripts/fix-lucide-svelte-icon-dts.js",
     "prepublishOnly": "npm run build:lib",
-    "publish:npm": "npm publish --access public --registry https://registry.npmjs.org/"
+    "publish:npm": "npm publish --access public --registry https://registry.npmjs.org/",
+    "check:ramps": "node scripts/check-ramp-lightness.js",
+    "check:contrast": "node scripts/check-contrast.js",
+    "check:geometry": "node scripts/check-control-geometry.js",
+    "check:design": "npm run check:ramps && npm run check:contrast && npm run check:geometry && npm run check:tokens"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",
