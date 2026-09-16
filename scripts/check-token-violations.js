@@ -12,6 +12,21 @@ const allowedHexPatterns = [
 
 const targetExtensions = new Set([".svelte", ".ts", ".js", ".css"]);
 const hexRegex = /#[0-9a-fA-F]{3,8}\b/g;
+/**
+ * Interaction states must not paint a FIXED step of our own ramp.
+ *
+ * `hover:bg-base-100` looks harmless, but --color-base-100 resolves to exactly
+ * --color-surface-base in dark mode, so the hover fill was byte-identical to
+ * the page behind it and ghost buttons had no hover feedback at all. An alpha
+ * tint (--color-surface-hover / --color-surface-active) is always one step
+ * away from whatever surface it lands on.
+ *
+ * Allowed: semantic interaction tokens (surface-hover, surface-active,
+ * action-*-hover, card-hover, nav-menu-hover, input-hover).
+ */
+const rawRampInteractionRegex =
+    /(?<![\w-])(?:hover|active|focus|focus-visible|group-hover|disabled):(?:bg|border|text)-base-\d{2,3}(?:\/\d+)?\b/g;
+
 /** Raw Tailwind default-palette utilities (e.g. `bg-red-500`) bypass semantic tokens. */
 const paletteClassRegex =
     /(?<![\w-])(?:[a-z]+:)*(?:bg|text|border(?:-[trblxy])?|ring|ring-offset|outline|fill|stroke|from|via|to|divide|shadow|accent|caret|decoration|placeholder)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\d{2,3}\b/g;
@@ -35,6 +50,7 @@ function readFilesRecursively(dir) {
 function isAllowedLine(line) {
     return allowedHexPatterns.some((pattern) => pattern.test(line));
 }
+
 
 function getLineNumber(content, matchIndex) {
     return content.slice(0, matchIndex).split("\n").length;
@@ -74,11 +90,22 @@ function scanForViolations() {
                 line: line.trim(),
             });
         }
+        while ((match = rawRampInteractionRegex.exec(content)) !== null) {
+            const lineNumber = getLineNumber(content, match.index);
+            const line = content.split("\n")[lineNumber - 1] || "";
+            violations.push({
+                file,
+                lineNumber,
+                value: match[0],
+                line: line.trim(),
+                hint: "use surface-hover / surface-active (or an action-*-hover token) — a fixed ramp step can equal the surface it sits on",
+            });
+        }
     }
 
     if (violations.length === 0) {
         console.log(
-            "✅ No token violations found (hardcoded hex colors, raw Tailwind palette classes).",
+            "✅ No token violations found (hardcoded hex, raw Tailwind palette classes, fixed ramp steps in interaction states).",
         );
         return;
     }
@@ -88,7 +115,8 @@ function scanForViolations() {
     );
     for (const violation of violations) {
         console.error(
-            `- ${path.relative(process.cwd(), violation.file)}:${violation.lineNumber} ${violation.value} -> ${violation.line}`,
+            `- ${path.relative(process.cwd(), violation.file)}:${violation.lineNumber} ${violation.value} -> ${violation.line}` +
+                (violation.hint ? `\n    ↳ ${violation.hint}` : ""),
         );
     }
     process.exit(1);
