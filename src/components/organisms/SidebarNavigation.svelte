@@ -7,11 +7,11 @@
     import SidebarFooter from "../molecules/SidebarFooter.svelte";
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
     import Tooltip from "../atoms/Tooltip.svelte";
+    import SidebarShell from "./SidebarShell.svelte";
     import { Command, Search } from "@lucide/svelte";
     import type { Snippet } from "svelte";
     import type { Component } from "svelte";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
-    import { cn } from "../util/cn.js";
 
     export interface SidebarNavigationItem {
         id: string;
@@ -120,10 +120,8 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const isCollapsed = $derived(mode === "collapsed");
-    const isCard = $derived(layout === "card");
     const showBrandRow = $derived(
         Boolean(logoSrc.trim() || brandName.trim()),
     );
@@ -185,24 +183,6 @@
 
     const primarySectionGroups = $derived(
         partitionBySection(filteredPrimaryItems),
-    );
-
-    const insetX = $derived(isCollapsed ? "px-2" : "px-4");
-
-    const containerClasses = $derived.by(() => {
-        const widthClass = isCollapsed ? "w-[72px]" : "w-[266px]";
-        const railSurface = "border-r border-border bg-background text-headline";
-        const cardSurface =
-            "border-r border-border bg-background text-headline shadow-sm";
-        const surfaceClasses = isCard ? cardSurface : railSurface;
-        const verticalPad = isCard ? "py-4" : "py-5";
-        const baseClasses = `flex h-full min-h-0 max-h-full flex-col overflow-visible ${verticalPad}`;
-
-        return cn(`${baseClasses} ${widthClass} ${surfaceClasses} ${className}`);
-    });
-
-    const headerStackClasses = $derived(
-        `flex w-full shrink-0 flex-col gap-5 ${insetX}`,
     );
 
     const iconContainerClasses = $derived(
@@ -299,11 +279,15 @@
     }
 </script>
 
-<nav class={containerClasses} aria-label={ariaLabel} {...restProps}>
-    <div
-        class="flex min-h-0 w-full min-w-0 flex-1 flex-col"
-    >
-        <div class={cn(`${headerStackClasses} pb-3`)}>
+<SidebarShell
+    {mode}
+    {layout}
+    {ariaLabel}
+    class={classAttr}
+    className={legacyClass}
+    {...restProps}
+>
+    {#snippet header()}
             {#if showBrandRow}
                 <SidebarBrandHeader
                     collapsed={isCollapsed}
@@ -370,13 +354,8 @@
                     </div>
                 {/if}
             {/if}
-        </div>
+    {/snippet}
 
-        <div
-            class={`flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pt-4 pb-2 ${insetX}`}
-            role="region"
-            aria-label="Navigation links"
-        >
         {#if hasFilteredItems}
             <div
                 class="flex w-full min-w-0 flex-col divide-y divide-border"
@@ -534,11 +513,9 @@
                 {/if}
             </div>
         {/if}
-        </div>
-    </div>
-
-    <SidebarFooter
-        collapsed={isCollapsed}
+    {#snippet footer({ insetX })}
+        <SidebarFooter
+            collapsed={isCollapsed}
         {showProfile}
         {profileName}
         {profileEmail}
@@ -554,6 +531,7 @@
         {profilePanelOpen}
         {profilePanelControlsId}
         {profilePanel}
-        className={insetX}
-    />
-</nav>
+            className={insetX}
+        />
+    {/snippet}
+</SidebarShell>
