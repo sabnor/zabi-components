@@ -1434,10 +1434,18 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "size",
-                        type: "'sm' | 'md' | 'lg'",
+                        type: "'xs' | 'sm' | 'md' | 'lg'",
                         required: false,
                         defaultValue: "md",
-                        description: "Text size",
+                        description:
+                            "Text size — the bottom of the scale Heading sits on (md matches h6, lg matches h5)",
+                    },
+                    {
+                        name: "weight",
+                        type: "'normal' | 'medium' | 'semibold' | 'bold'",
+                        required: false,
+                        defaultValue: "normal (medium for tone=\"label\")",
+                        description: "Font weight; overrides the weight the tone implies",
                     },
                 ],
                 variants: [],
