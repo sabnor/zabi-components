@@ -2,6 +2,20 @@ import fs from "fs";
 import path from "path";
 
 const componentsDir = path.resolve("src/components");
+
+/**
+ * App code that consumes the library. Only the ramp-interaction rule runs here.
+ *
+ * The rest of this file guards what ships in the package; the showcase site is
+ * an app, and app layout legitimately uses finer typographic spacing than the
+ * library's 4px grid. But the invisible-hover bug is not a library-only
+ * mistake — `hover:bg-base-100` had made it into two marketing specimens,
+ * where in dark mode it painted the hover DARKER than the card it sat on while
+ * every other hover in the system goes lighter.
+ */
+const appPaths = ["src/lib/marketing", "src/routes/+page.svelte"].map((p) =>
+    path.resolve(p),
+);
 const allowedHexPatterns = [
     // Documentation examples or user-input placeholders are allowed.
     /Please enter a valid hex color/i,
@@ -97,6 +111,12 @@ function scanForViolations() {
     }
 
     const files = readFilesRecursively(componentsDir);
+    const appFiles = appPaths.flatMap((target) => {
+        if (!fs.existsSync(target)) return [];
+        return fs.statSync(target).isDirectory()
+            ? readFilesRecursively(target)
+            : [target];
+    });
     const violations = [];
 
     for (const file of files) {
@@ -160,6 +180,23 @@ function scanForViolations() {
         }
     }
 
+    for (const file of appFiles) {
+        const content = fs.readFileSync(file, "utf8");
+        let match;
+        rawRampInteractionRegex.lastIndex = 0;
+        while ((match = rawRampInteractionRegex.exec(content)) !== null) {
+            const lineNumber = getLineNumber(content, match.index);
+            const line = content.split("\n")[lineNumber - 1] || "";
+            violations.push({
+                file,
+                lineNumber,
+                value: match[0],
+                line: line.trim(),
+                hint: "use surface-hover / surface-active — a fixed ramp step can equal the surface it sits on (base-100 IS surface-base in both themes)",
+            });
+        }
+    }
+
     if (violations.length === 0) {
         console.log(
             "✅ No token violations found (hardcoded hex, raw Tailwind palette classes, fixed ramp steps in interaction states, off-scale shadows, half-step spacing).",
@@ -168,7 +205,7 @@ function scanForViolations() {
     }
 
     console.error(
-        "❌ Design-token violations detected in component source:",
+        "❌ Design-token violations detected:",
     );
     for (const violation of violations) {
         console.error(
