@@ -1,7 +1,7 @@
 <script lang="ts">
     import ThemeToggle from "../atoms/ThemeToggle.svelte";
     import IconButton from "../atoms/IconButton.svelte";
-    import { Menu, X } from "@lucide/svelte";
+    import { ExternalLink, Menu, X } from "@lucide/svelte";
     import type { Component, Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
@@ -76,6 +76,11 @@
         }
     }
 
+    /** Absolute URLs leave the site, so they are marked and open in a new tab. */
+    function isExternal(href: string): boolean {
+        return href.startsWith("http://") || href.startsWith("https://");
+    }
+
     /** App routes: prefix match except `/` and absolute URLs (exact match). */
     function isNavItemActive(href: string): boolean {
         if (href.startsWith("http://") || href.startsWith("https://")) {
@@ -142,12 +147,15 @@
     <ul class="{ulClasses} list-none m-0 p-0">
         {#each items as item (item.href)}
             {@const isActive = isNavItemActive(item.href)}
+            {@const external = isExternal(item.href)}
             <li class={getNavItemClasses()}>
                 <a
                     href={item.href}
                     class={getIconContainerClasses(isActive)}
                     onclick={handleNavLinkClick}
                     aria-current={isActive ? "page" : undefined}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
                 >
                     <div class={getStateLayerClasses()}>
                         {#if item.iconFilled && isActive}
@@ -164,6 +172,14 @@
                         <span class={getLabelClasses()}>
                             {item.label}
                         </span>
+                        {#if external}
+                            <ExternalLink
+                                size={12}
+                                class="shrink-0 text-current opacity-70"
+                                aria-hidden="true"
+                            />
+                            <span class="sr-only">(opens in a new tab)</span>
+                        {/if}
                     </div>
                 </a>
             </li>
