@@ -202,6 +202,7 @@ the semantic families read as a single family instead of six unrelated colours.
 - **`Modal` / `SlideUp`**: `role="dialog"` moved from the backdrop to the panel; body scroll locked while open (nested-safe); focus trap picks up content added while open; Escape closes only the topmost dialog. `Modal` gains `showClose` (default `true`) so untitled modals still have a close button.
 - **`Toaster`**: countdown is no longer announced every second; it pauses on hover/focus; no double announcements from nested live regions.
 - **`NavigationMenu`**: fixed a leaked document `mousedown` listener; panels use the disclosure pattern (no `role="menu"` / `aria-haspopup`); new `ariaLabel` prop.
+- **`Dropdown`**: arrow keys, Home and End now reach `menuitemradio` and `menuitemcheckbox` items. The item query matched only `menuitem` and `option`, so a menu built from radio items had nothing to focus: opening it by keyboard focused nothing and Tab closed it, leaving the items unreachable.
 - **`Alert`**: `closable` now hides the alert; new bindable `open` prop.
 - **`Tooltip`**: Escape no longer steals focus; CSS custom properties no longer leak onto `:root`.
 - **`util/ssr-safe`**: timer helpers typed with `ReturnType<typeof setTimeout/setInterval>` instead of `NodeJS.Timeout`, so consumers don't need `@types/node`.

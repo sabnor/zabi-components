@@ -118,9 +118,13 @@
 
     function getMenuItems(): HTMLElement[] {
         if (!menuElement) return [];
+        // `menuitemradio` and `menuitemcheckbox` are menu items too. Matching
+        // only `menuitem` left a menu built from them with nothing to focus:
+        // arrows and Home/End did nothing, opening by keyboard focused nothing,
+        // and Tab closed the menu, so its items could not be reached at all.
         return Array.from(
             menuElement.querySelectorAll<HTMLElement>(
-                '[role="menuitem"], [role="option"]',
+                '[role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"]',
             ),
         );
     }
