@@ -66,7 +66,13 @@
 
 <button
     type="button"
-    class={cn("focus-ring focus-ring--nav inline-flex cursor-pointer items-center justify-center gap-2 rounded-control bg-transparent px-4 py-2 text-sm font-medium text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover data-[active=true]:bg-nav-menu-active data-[active=true]:text-nav-menu-item-active", className)}
+    class={cn(
+        "focus-ring focus-ring--nav inline-flex cursor-pointer items-center justify-center gap-2 rounded-control bg-transparent px-4 py-2 text-sm font-medium transition-colors duration-150 outline-none",
+        isActive
+            ? "bg-nav-menu-active text-nav-menu-item-active"
+            : "text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover",
+        className,
+    )}
     aria-expanded={isActive ? 'true' : 'false'}
     aria-controls={panelId || undefined}
     onclick={handleClick}
