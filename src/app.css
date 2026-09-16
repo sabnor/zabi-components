@@ -1640,6 +1640,10 @@ body {
  * generated bare utility of the same name. */
 
 /* Z-index utilities */
+.z-sticky {
+  z-index: var(--z-sticky);
+}
+
 .z-dropdown {
   z-index: var(--z-dropdown);
 }
