@@ -80,6 +80,14 @@ the semantic families read as a single family instead of six unrelated colours.
 
 #### Components
 
+- **Layout spacing snaps to the 4px grid.** 30 half-step utilities
+  (`gap-1.5`, `gap-2.5`, `px-2.5`, `px-3.5`, `py-2.5`, `space-y-1.5`, …) were
+  setting a second rhythm against the first across forms, sidebars and badges.
+  Margins are deliberately exempt: `mt-0.5` beside a first line of text is an
+  optical alignment nudge, not rhythm, and Alert, ListItem, ToasterToast and the
+  radio control still use it.
+- A one-row `Textarea` is now 40px like the `Input` beside it (was 44px, from
+  `py-2.5`).
 - **`Badge`**: rebuilt. New `emphasis` prop (`subtle` | `solid`, default
   `subtle`), plus `class`, `children` and `...restProps` — none of which existed,
   despite stories shipping for two of them. Pill radius instead of 2px. Renders

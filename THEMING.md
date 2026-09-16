@@ -348,6 +348,22 @@ Rules:
 
 Enforced by `scripts/check-token-violations.js`.
 
+## 📏 Spacing Rhythm
+
+Layout spacing rides a **4px grid**. Half-steps (`gap-1.5`, `px-2.5`, `py-2.5`)
+set up a second rhythm competing with the first: a 6px gap beside an 8px gap is
+a 2px wobble nobody chose, and it accumulates down a dense form.
+
+- `gap-*`, `space-x/y-*` and every padding utility must land on a whole step.
+- **Margins are exempt**, because they carry optical nudges. `mt-0.5` on an
+  icon sitting beside a first line of text is an alignment correction, not
+  rhythm — Alert, ListItem, ToasterToast and the radio control all rely on it.
+  Keep those to 0.5 and keep them on margins so the distinction stays visible.
+- Icon sizes are their own scale (`size-3.5` = 14px, `size-4`, `size-5`), not
+  spacing, and are unaffected.
+
+Enforced by `scripts/check-token-violations.js`.
+
 ## 🔠 Type Scale
 
 `Heading` and `Text` sit on **one** ramp rather than each carrying its own, so a

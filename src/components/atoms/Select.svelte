@@ -98,18 +98,18 @@
     });
 
     const labelClasses = $derived(
-        () => "block text-sm font-medium text-label mb-1.5",
+        () => "block text-sm font-medium text-label mb-2",
     );
 
     const messageClasses = $derived(() => {
         if (variant === "error") {
-            return "text-error text-sm mt-1 flex items-center gap-1.5 w-full";
+            return "text-error text-sm mt-1 flex items-center gap-2 w-full";
         } else if (variant === "success") {
-            return "text-success text-sm mt-1 flex items-center gap-1.5 w-full";
+            return "text-success text-sm mt-1 flex items-center gap-2 w-full";
         } else if (variant === "warning") {
-            return "text-warning text-sm mt-1 flex items-center gap-1.5 w-full";
+            return "text-warning text-sm mt-1 flex items-center gap-2 w-full";
         }
-        return "text-description text-sm mt-1 flex items-center gap-1.5 w-full";
+        return "text-description text-sm mt-1 flex items-center gap-2 w-full";
     });
 
     const getIcon = $derived(() => {
@@ -284,7 +284,7 @@
                             {@const buttonRestProps = {
                                 "data-value": String(option.value),
                             } as Record<string, string>}
-                            <div class="w-full my-0.5">
+                            <div class="w-full my-1">
                                 <button
                                     type="button"
                                     role="option"

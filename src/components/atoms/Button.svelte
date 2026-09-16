@@ -44,7 +44,7 @@
      */
     const sizeClass = $derived.by(() => {
         if (size === "sm") {
-            return { box: "h-8 px-3", text: "text-sm", gap: "gap-1.5", spinner: "size-3.5" };
+            return { box: "h-8 px-3", text: "text-sm", gap: "gap-2", spinner: "size-3.5" };
         }
         if (size === "lg") {
             return { box: "h-12 px-5", text: "text-base", gap: "gap-2", spinner: "size-4" };

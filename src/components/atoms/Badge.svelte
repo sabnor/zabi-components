@@ -38,8 +38,8 @@
 
     const sizeClass = $derived.by(() => {
         if (size === "sm") return { box: "h-5 px-2 gap-1 text-xs", icon: 12 };
-        if (size === "lg") return { box: "h-7 px-3 gap-1.5 text-sm", icon: 16 };
-        return { box: "h-6 px-2.5 gap-1.5 text-xs", icon: 14 };
+        if (size === "lg") return { box: "h-7 px-3 gap-2 text-sm", icon: 16 };
+        return { box: "h-6 px-2 gap-1 text-xs", icon: 14 };
     });
 
     /**

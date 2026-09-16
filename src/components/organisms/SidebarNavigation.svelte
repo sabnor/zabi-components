@@ -185,7 +185,7 @@
         partitionBySection(filteredPrimaryItems),
     );
 
-    const insetX = $derived(isCollapsed ? "px-2.5" : "px-4");
+    const insetX = $derived(isCollapsed ? "px-2" : "px-4");
 
     const containerClasses = $derived.by(() => {
         const widthClass = isCollapsed ? "w-[104px]" : "w-[266px]";
@@ -223,7 +223,7 @@
             (Boolean(activePrimaryHref) && item.href === activePrimaryHref);
         const layoutClasses = isCollapsed
             ? "flex min-h-10 items-center justify-center px-0 py-2"
-            : "flex min-h-10 items-center gap-2.5 px-2.5 py-2";
+            : "flex min-h-10 items-center gap-3 px-2 py-2";
         const structural =
             "focus-ring focus-ring--nav w-full cursor-pointer rounded-control no-underline transition-colors duration-150 outline-none";
 
@@ -317,7 +317,7 @@
                                 fullWidth
                                 onclick={handleSearchClick}
                             >
-                                <span class="flex w-full items-center justify-start gap-2.5">
+                                <span class="flex w-full items-center justify-start gap-3">
                                     <span class={iconContainerClasses} aria-hidden="true">
                                         <TriggerIcon size={17} />
                                     </span>
@@ -349,7 +349,7 @@
         </div>
 
         <div
-            class={`flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pt-4 pb-1.5 ${insetX}`}
+            class={`flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pt-4 pb-2 ${insetX}`}
             role="region"
             aria-label="Navigation links"
         >
@@ -453,7 +453,7 @@
             {/if}
         {:else}
             <div
-                class="rounded-container border border-border border-dashed bg-transparent px-3.5 py-4 ring-1 ring-border/60"
+                class="rounded-container border border-border border-dashed bg-transparent px-4 py-4 ring-1 ring-border/60"
             >
                 <h3 class="text-sm font-semibold {getTextToneClass()}">
                     {normalizedSearchTerm && searchMode === "input"

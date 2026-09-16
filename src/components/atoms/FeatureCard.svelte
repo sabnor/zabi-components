@@ -30,7 +30,7 @@
         </span>
     {/if}
 
-    <div class="flex flex-col gap-1.5">
+    <div class="flex flex-col gap-2">
         <h3 class="text-base font-semibold leading-snug text-headline">
             {title}
         </h3>
