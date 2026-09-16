@@ -40,7 +40,7 @@
 <div class={`flex w-full flex-col gap-2 ${className}`.trim()}>
     {#if showHeading && headingId}
         <h2
-            class="px-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-description"
+            class="px-0 text-xs font-semibold uppercase tracking-wider text-description"
             id={headingId}
         >
             {trimmedTitle}
