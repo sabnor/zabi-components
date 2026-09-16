@@ -86,7 +86,7 @@
     function getItemClasses(itemId: string): string {
         const isActive = selectedItemId === itemId;
         const baseClasses =
-            "focus-ring focus-ring--nav w-full cursor-pointer rounded-control px-3 py-2.5 text-left transition-colors duration-150";
+            "focus-ring focus-ring--nav w-full cursor-pointer rounded-control px-3 py-2 text-left transition-colors duration-150";
         if (isActive) {
             return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border/80`;
         }
@@ -161,7 +161,7 @@
                         aria-selected={selectedItemId === item.id}
                     >
                         <span class="flex items-center justify-between gap-3">
-                            <span class="flex min-w-0 items-start gap-2.5">
+                            <span class="flex min-w-0 items-start gap-3">
                                 {#if item.icon}
                                     {@const Icon = item.icon}
                                     <span
@@ -196,7 +196,7 @@
         </ul>
     {:else}
         <div
-            class="rounded-container border border-dashed border-border bg-transparent px-3.5 py-4 ring-1 ring-border/40"
+            class="rounded-container border border-dashed border-border bg-transparent px-4 py-4 ring-1 ring-border/40"
         >
             <h4 class="text-sm font-semibold text-headline">{emptyStateTitle}</h4>
             <p class="mt-1 text-sm leading-relaxed text-description">{emptyStateDescription}</p>

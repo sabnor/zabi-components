@@ -151,7 +151,7 @@
                 role={toast.type === 'error' ? 'alert' : 'status'}
                 aria-atomic="true"
             >
-            <div class="shrink-0 pt-0.5">
+            <div class="shrink-0 mt-0.5">
                 {#if toast.type === 'success'}
                     <CheckCircle class="size-5 {statusIconClass}" aria-hidden="true" />
                 {:else if toast.type === 'error'}
@@ -169,7 +169,7 @@
                 {/if}
             </h4>
             </div>
-            <div class="flex shrink-0 items-center gap-0.5">
+            <div class="flex shrink-0 items-center gap-1">
                 {#if hasExpandable}
                     <button
                         type="button"

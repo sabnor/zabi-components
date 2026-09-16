@@ -47,7 +47,7 @@
     );
 </script>
 
-<div class={['space-y-1.5', className].filter(Boolean).join(' ')}>
+<div class={['space-y-2', className].filter(Boolean).join(' ')}>
     <div class="flex items-baseline justify-between gap-3">
         <label
             class={[

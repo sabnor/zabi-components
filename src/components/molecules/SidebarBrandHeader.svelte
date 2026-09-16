@@ -42,7 +42,7 @@
 
 {#if showLogo || trimmedName}
     <div
-        class={`flex w-full min-w-0 items-center gap-2.5 ${className}`.trim()}
+        class={`flex w-full min-w-0 items-center gap-3 ${className}`.trim()}
     >
         {#if showLogo}
             <span

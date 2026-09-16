@@ -43,7 +43,7 @@
         <CardContent>
             <button
                 onclick={() => (showCode = !showCode)}
-                class="absolute top-8 right-8 z-10 flex cursor-pointer items-center gap-2 rounded-control px-3 py-1.5 text-sm text-description transition-colors duration-200 hover:bg-surface-hover hover:text-body"
+                class="absolute top-8 right-8 z-10 flex cursor-pointer items-center gap-2 rounded-control px-3 py-2 text-sm text-description transition-colors duration-200 hover:bg-surface-hover hover:text-body"
                 aria-label={showCode ? "Show preview" : "Show code"}
             >
                 {#if showCode}

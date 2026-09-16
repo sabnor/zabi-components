@@ -39,7 +39,7 @@
     });
 </script>
 
-<header class={`flex flex-col space-y-1.5 pb-4 ${className}`.trim()} {...restProps}>
+<header class={`flex flex-col space-y-2 pb-4 ${className}`.trim()} {...restProps}>
     {#if title}
         <svelte:element this={headingTag} class={headingClasses()}>
             {title}

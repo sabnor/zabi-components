@@ -90,13 +90,13 @@
     });
 
     const labelClasses = $derived(
-        () => "block text-sm font-medium text-label mb-1.5",
+        () => "block text-sm font-medium text-label mb-2",
     );
 
     // Message text uses the `-text` step (700), which clears 4.5:1 on a page
     // surface; the solid fill step (600) is for fills, not for small text.
     const messageClasses = $derived(() => {
-        const base = "text-sm mt-1.5 flex items-center gap-1.5";
+        const base = "text-sm mt-2 flex items-center gap-2";
         if (variant === "error") return `text-error-text ${base}`;
         if (variant === "success") return `text-success-text ${base}`;
         if (variant === "warning") return `text-warning-text ${base}`;
