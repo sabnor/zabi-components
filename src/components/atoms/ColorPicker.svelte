@@ -3,6 +3,8 @@
     import { onMount, onDestroy, tick } from "svelte";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         value?: string;
         label?: string;
         disabled?: boolean;
@@ -11,6 +13,7 @@
     }
 
     let {
+        class: className = "",
         value = $bindable(""),
         label = "",
         disabled = false,
@@ -270,7 +273,7 @@
     const pickerIndicatorY = $derived(`${100 - lightness}%`);
 </script>
 
-<div {...restProps}>
+<div class={className} {...restProps}>
     <div class="flex items-start gap-2">
         <div class="flex-1">
             <Input
@@ -290,7 +293,7 @@
                 type="button"
                 onclick={togglePicker}
                 {disabled}
-                class="focus-ring w-11 h-11 rounded-lg border-2 border-card shrink-0 cursor-pointer hover:ring-2 hover:ring-border transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                class="focus-ring w-11 h-11 rounded-control border-2 border-card shrink-0 cursor-pointer hover:ring-2 hover:ring-border transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 style="background-color: {displayColor};"
                 aria-label="Open color picker"
                 aria-expanded={isOpen}
@@ -299,14 +302,14 @@
             {#if isOpen}
                 <div
                     use:setPickerContainer
-                    class="absolute top-12 right-0 z-50 border border-input-border bg-input rounded-2xl shadow-lg p-4 w-80"
+                    class="absolute top-12 right-0 z-50 border border-input-border bg-input rounded-container shadow-lg p-4 w-80"
                     role="dialog"
                     aria-label="Color picker"
                 >
                     <div class="space-y-4">
                         <div
                             use:setColorMapContainer
-                            class="relative w-full h-48 rounded-xl overflow-hidden cursor-crosshair"
+                            class="relative w-full h-48 rounded-container overflow-hidden cursor-crosshair"
                             onmousedown={(e) => {
                                 isDragging = true;
                                 handleColorMapClick(e);
@@ -328,7 +331,7 @@
 
                         <div class="space-y-2">
                             <div
-                                class="relative h-6 rounded-lg overflow-hidden"
+                                class="relative h-6 rounded-control overflow-hidden"
                             >
                                 <div
                                     class="absolute inset-0"

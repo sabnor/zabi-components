@@ -6,6 +6,8 @@
     import { LogOut, Moon, Sun, User } from "@lucide/svelte";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         /** Target id for `aria-controls` from the sidebar footer/nav. */
         panelId?: string;
         style?: string;
@@ -24,6 +26,7 @@
     }
 
     let {
+        class: className = "",
         panelId = generateId("account-panel"),
         style = "",
         profileName = "Account",
@@ -96,6 +99,7 @@
 <div
     id={panelId}
     {style}
+    class={className}
     role="dialog"
     aria-modal="false"
     aria-label="Account panel"

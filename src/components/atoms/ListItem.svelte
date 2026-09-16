@@ -38,10 +38,10 @@
 
     const itemClasses = $derived.by(() => {
         const baseClasses =
-            "group focus-ring flex w-full items-center gap-3 rounded-xl border border-border px-4 py-3 pr-5 text-left transition-all duration-150";
+            "group focus-ring flex w-full items-center gap-3 rounded-container border border-border px-4 py-3 pr-5 text-left transition-all duration-150";
         const interactiveClasses = item.disabled
             ? "cursor-not-allowed opacity-50"
-            : "cursor-pointer focus-visible:bg-base-100";
+            : "cursor-pointer focus-visible:bg-surface-hover";
         const selectedClasses = selected
             ? "bg-action-primary-subtle border-brand-500"
             : "";

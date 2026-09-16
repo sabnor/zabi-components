@@ -9,6 +9,8 @@
     import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         isOpen?: boolean;
         title?: string;
         onclick?: (event: Event) => void;
@@ -17,6 +19,7 @@
     }
 
     let {
+        class: className = "",
         isOpen = $bindable(false),
         title = '',
         onclick,
@@ -137,7 +140,7 @@
     >
         <div
             bind:this={slideUpContainer}
-            class="fixed bottom-0 left-0 right-0 z-modal flex max-h-[90vh] cursor-default flex-col overflow-y-auto rounded-t-3xl border-t border-border-overlay bg-surface-overlay shadow-xl animate-[slideUp_0.3s_ease-out]"
+            class="fixed bottom-0 left-0 right-0 z-modal flex max-h-[90vh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_0.3s_ease-out] {className}"
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? slideTitleId : undefined}

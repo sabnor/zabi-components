@@ -9,6 +9,8 @@
         ariaLabel?: string;
         selectedId?: string;
         showArrow?: boolean;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         onclick?: (item: ListItem, event: MouseEvent) => void;
     }
@@ -18,13 +20,18 @@
         ariaLabel = "List items",
         selectedId = "",
         showArrow = true,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         onclick,
         ...restProps
     }: Props = $props();
 
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+
     const listClasses = $derived(
-        `space-y-1 overflow-hidden rounded-xl ${className}`.trim(),
+        `space-y-1 overflow-hidden rounded-container ${className}`.trim(),
     );
 </script>
 

@@ -7,12 +7,14 @@
         title?: string;
         description?: string;
         /** Title heading level (1–6). */
-        headingLevel?: number;
+        headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
         size?: SizeVariant;
         maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "full" | "none";
         background?: "default" | "muted" | "accent" | "transparent";
         padding?: "none" | "sm" | "md" | "lg" | "xl";
         centered?: boolean;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         children?: Snippet;
     }
@@ -26,10 +28,15 @@
         background = "default",
         padding = "lg",
         centered = false,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         children,
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     const sizeClasses = $derived.by(() => {
         switch (size) {

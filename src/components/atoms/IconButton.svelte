@@ -28,50 +28,42 @@
 
     const isDisabled = $derived(disabled || loading);
 
+    /**
+     * Square, on the same height scale as Button / Input / Select, so an icon
+     * button sits flush in a toolbar beside a text button of the same size.
+     * Previously these were 8–16px shorter than their own Button.
+     */
     const sizeClass = $derived.by(() => {
-        if (size === "sm") {
-            return {
-                padding: "p-2",
-                radius: "rounded-md",
-                spinner: "size-4",
-            };
-        } else if (size === "lg") {
-            return {
-                padding: "p-3",
-                radius: "rounded-xl",
-                spinner: "size-6",
-            };
-        } else {
-            return {
-                padding: "p-2.5",
-                radius: "rounded-lg",
-                spinner: "size-5",
-            };
+        if (size === "sm") return { box: "size-8", spinner: "size-3.5" };
+        if (size === "lg") return { box: "size-12", spinner: "size-5" };
+        return { box: "size-10", spinner: "size-4" };
+    });
+
+    const disabledClass =
+        "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
+
+    const variantClass = $derived.by(() => {
+        switch (variant) {
+            case "secondary":
+                return "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active active:scale-[0.98]";
+            case "danger":
+                return "bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] focus-ring--danger";
+            case "ghost":
+                return "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active active:scale-[0.98] focus-ring--muted";
+            case "outline":
+                return "bg-transparent border border-border text-headline hover:bg-surface-hover hover:border-border-medium active:bg-surface-active active:scale-[0.98]";
+            case "link":
+                return "bg-transparent text-link hover:text-link-hover focus-ring--muted";
+            case "primary":
+            default:
+                return "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98]";
         }
     });
 
-    const variantClass = $derived.by(() => {
-        return variant === "primary"
-            ? "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98]"
-            : variant === "secondary"
-              ? "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active active:scale-[0.98]"
-              : variant === "danger"
-                ? "bg-action-danger text-inverse hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] focus-ring--danger"
-                : variant === "ghost"
-                  ? "bg-transparent text-headline hover:bg-base-100 active:bg-base-200 active:scale-[0.98] focus-ring--muted disabled:text-disabled"
-                  : variant === "outline"
-                    ? "bg-transparent border-2 border-action-primary text-headline hover:bg-action-secondary hover:text-action-primary active:bg-action-primary-active active:text-action-primary active:scale-[0.98] disabled:border-disabled disabled:text-disabled"
-                    : variant === "link"
-                      ? "text-brand-700 active:text-brand-700 hover:underline disabled:text-disabled disabled:no-underline"
-                      : "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98]";
-    });
-
     const buttonClasses = $derived.by(() => {
-        const sizeStyles = sizeClass;
-        const baseClasses =
-            "inline-flex focus-ring items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100";
-
-        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.radius} ${variantClass} ${className}`.trim();
+        const base =
+            "inline-flex focus-ring items-center justify-center rounded-control shrink-0 transition-colors duration-150 cursor-pointer select-none";
+        return `${base} ${sizeClass.box} ${variantClass} ${disabledClass} ${className}`.trim();
     });
 </script>
 

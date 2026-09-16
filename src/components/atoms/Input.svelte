@@ -49,28 +49,18 @@
     const inputId = $derived(idProp ?? fallbackId);
     const isDisabled = $derived(disabled || loading);
 
+    /**
+     * Same fixed height scale as Button, IconButton and Select (32 / 40 / 48),
+     * so a field and its submit button are the same height in a row. These
+     * used to be 38 / 46 / 50 while Button was 40 / 48 / 64.
+     */
     const sizeClass = $derived(() => {
         if (size === "sm") {
-            return {
-                padding: "px-4 py-2",
-                text: "text-sm",
-                leading: "leading-5",
-                spinner: "size-4",
-            };
+            return { box: "h-8 px-3", text: "text-sm", spinner: "size-3.5" };
         } else if (size === "lg") {
-            return {
-                padding: "px-4 py-3",
-                text: "text-base",
-                leading: "leading-6",
-                spinner: "size-5",
-            };
+            return { box: "h-12 px-4", text: "text-base", spinner: "size-5" };
         } else {
-            return {
-                padding: "px-4 py-2.5",
-                text: "text-base",
-                leading: "leading-6",
-                spinner: "size-5",
-            };
+            return { box: "h-10 px-3", text: "text-sm", spinner: "size-4" };
         }
     });
 
@@ -86,30 +76,31 @@
 
     const inputClasses = $derived(() => {
         const sizeStyles = sizeClass();
-        const trailingPad = loading
-            ? size === "sm"
-                ? "pr-9"
-                : "pr-10"
-            : "";
+        const trailingPad = loading ? (size === "sm" ? "pr-9" : "pr-10") : "";
+        /**
+         * The field is a raised surface (`bg-input` = white in light, an inset
+         * step in dark). It used to be a grey fill on a grey page, which read
+         * as disabled. `min-w-48` is gone: it forced a 192px floor on every
+         * field regardless of the layout around it.
+         */
         const baseClasses =
-            "focus-ring w-full min-w-48 border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
+            "focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed";
 
-        return `${baseClasses} ${sizeStyles.padding} ${trailingPad} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()} ${className}`.trim();
+        return `${baseClasses} ${sizeStyles.box} ${trailingPad} ${sizeStyles.text} ${variantClass()} ${className}`.trim();
     });
 
     const labelClasses = $derived(
-        () => "block text-sm font-medium text-label mb-1",
+        () => "block text-sm font-medium text-label mb-1.5",
     );
 
+    // Message text uses the `-text` step (700), which clears 4.5:1 on a page
+    // surface; the solid fill step (600) is for fills, not for small text.
     const messageClasses = $derived(() => {
-        if (variant === "error") {
-            return "text-error text-sm mt-1 flex items-center gap-1.5";
-        } else if (variant === "success") {
-            return "text-success text-sm mt-1 flex items-center gap-1.5";
-        } else if (variant === "warning") {
-            return "text-warning text-sm mt-1 flex items-center gap-1.5";
-        }
-        return "text-description text-sm mt-1 flex items-center gap-1.5";
+        const base = "text-sm mt-1.5 flex items-center gap-1.5";
+        if (variant === "error") return `text-error-text ${base}`;
+        if (variant === "success") return `text-success-text ${base}`;
+        if (variant === "warning") return `text-warning-text ${base}`;
+        return `text-description ${base}`;
     });
 
     const getIcon = $derived(() => {

@@ -10,6 +10,8 @@
         /** `id` on the description `<p>`. */
         descriptionId?: string;
         level?: 1 | 2 | 3 | 4 | 5 | 6;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         children?: Snippet;
     }
@@ -21,10 +23,15 @@
         subtitleId,
         descriptionId,
         level = 3,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         children,
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     const headingTag = $derived(`h${level}`);
     const headingClasses = $derived(() => {

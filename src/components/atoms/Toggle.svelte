@@ -2,6 +2,8 @@
     import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         /** Omit to auto-generate; pass to pair with an external `<label for>`. */
         id?: string;
         /** When set, a hidden input submits `value` with native forms while checked. */
@@ -16,6 +18,7 @@
     }
 
     let {
+        class: className = "",
         id: idProp,
         name = "",
         value = "on",
@@ -45,7 +48,7 @@
             "focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:outline-none";
         const colorClass = checked
             ? "bg-action-primary hover:bg-action-primary-hover active:bg-action-primary-active"
-            : "bg-base-400 hover:bg-base-500 active:bg-base-500";
+            : "bg-control-track hover:bg-control-track-hover active:bg-control-track-active";
         const stateClass = isDisabled
             ? "opacity-50 cursor-not-allowed"
             : "cursor-pointer";
@@ -60,7 +63,7 @@
     });
 </script>
 
-<div class="flex items-center gap-3">
+<div class="flex items-center gap-3 {className}">
     <button
         type="button"
         role="switch"

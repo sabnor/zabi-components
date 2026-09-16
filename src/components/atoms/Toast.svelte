@@ -29,7 +29,7 @@
     };
 
     const cardClasses =
-        'box-border w-full min-w-[18rem] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-lg border p-4 shadow-lg';
+        'box-border w-full min-w-[18rem] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-control border p-4 shadow-lg';
 
     function closeToast(event: Event) {
         isVisible = false;
@@ -46,7 +46,7 @@
         {#if closable}
             <button
                 type="button"
-                class="focus-ring shrink-0 cursor-pointer rounded-md text-description hover:text-headline focus:outline-none"
+                class="focus-ring shrink-0 cursor-pointer rounded-control text-description hover:text-headline focus:outline-none"
                 onclick={closeToast}
                 aria-label="Close notification"
             >

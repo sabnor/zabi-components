@@ -25,6 +25,8 @@
         onkeydown?: (event: Event) => void;
         /** On the `role="dialog"` panel (testing, analytics). */
         "data-testid"?: string;
+        /** Extra classes for the dialog panel. */
+        class?: string;
         children?: Snippet;
         footer?: Snippet;
     }
@@ -35,6 +37,7 @@
         description = '',
         size = 'md',
         showClose = true,
+        class: className = "",
         onclick,
         onkeydown,
         "data-testid": dataTestId = undefined,
@@ -166,7 +169,7 @@
     >
         <div
             bind:this={modalContainer}
-            class="flex max-h-[90vh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-3xl border border-border-overlay bg-surface-overlay p-0 shadow-xl animate-[slideUp_0.3s_ease-out] md:animate-none md:rounded-3xl {sizeClasses}"
+            class="flex max-h-[90vh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-overlay border border-border-overlay bg-surface-overlay p-0 shadow-lg animate-[slideUp_0.3s_ease-out] md:animate-none md:rounded-overlay {sizeClasses} {className}"
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? modalTitleId : undefined}
@@ -197,7 +200,7 @@
                                 <button
                                     type="button"
                                     onclick={closeModal}
-                                    class="focus-ring flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-2xl text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline"
+                                    class="focus-ring flex size-8 cursor-pointer items-center justify-center rounded-control text-2xl text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline"
                                     aria-label="Close"
                                 >
                                     ×
