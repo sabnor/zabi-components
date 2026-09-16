@@ -102,6 +102,24 @@ Stick to **documented package subpaths** from `package.json` `exports`. Do not r
 </NavigationMenu>
 ```
 
+Some components ship both ways. `SidebarNavigation` is the data-driven one — one
+component, ~39 props, excellent when your sidebar is shaped like that one.
+`SidebarShell` is the same chrome with the regions left open, for when it isn't:
+
+```svelte
+<SidebarShell mode="collapsed">
+    {#snippet header({ collapsed })}
+        <SidebarBrandHeader {collapsed} brandName="Zabi" />
+    {/snippet}
+
+    <SidebarNavSection title="Main" sectionKey="main">…</SidebarNavSection>
+
+    {#snippet footer({ collapsed, insetX })}
+        <SidebarFooter {collapsed} class={insetX} />
+    {/snippet}
+</SidebarShell>
+```
+
 Wrong mental model: treating composable roots as optional — see **Common pitfalls**.
 
 ---
@@ -164,10 +182,21 @@ Components use **DOM-style props** (`onclick`, `oninput`), not legacy `on:click`
 
 | Token / class | Role |
 |---------------|------|
-| `surface-1` / `surface-2` | Layered backgrounds — prefer over raw neutrals so light/dark stay aligned. |
+| `bg-surface-base` · `raised` · `elevated` · `overlay` | The four surface levels. Anything floating above content uses `overlay`. In dark mode each level is the one below it with more light on it — shadows don't read on a dark page. |
+| `surface-1` / `surface-2` | Compatibility aliases for `raised` / `elevated`. Prefer the named levels in new code. |
+| `shadow-sm` / `shadow-lg` | Elevation is **two steps**: raised, and floating. `shadow-none` is the explicit absence of one. `shadow-md`, `shadow-xl` and a bare `shadow` fail the build. |
+| `rounded-control` · `container` · `overlay` · `pill` | Radius is chosen by **role**, never by size. A large button is a bigger box with the same corner as a small one. |
+| `hover:bg-surface-hover` / `active:bg-surface-active` | Interaction fills. Surface-relative on purpose — a fixed ramp step can land on exactly the colour it sits on. |
 | `.focus-ring` / `focus-ring--nav` | Keyboard focus rings — don’t replace with `outline-none` unless you substitute an equivalent visible focus style. |
 
-Details: [THEME.md](./THEME.md).
+Spacing rides a **4px grid**: `gap-*`, `space-*` and padding land on whole steps.
+Half-steps survive only as optical nudges, and only on margins (`mt-0.5` on an
+icon beside a first line of text).
+
+`Heading` and `Text` share **one** type scale, so `<Text size="md">` sits on the
+same line box as an `h6` and `size="lg"` as an `h5`.
+
+Details: [THEME.md](./THEME.md) · [THEMING.md](./THEMING.md).
 
 ---
 
@@ -187,6 +216,16 @@ import Button from "some-path/node_modules/zabi-components/dist/atoms/Button.sve
 **Consumers — styling**
 
 Load theme CSS (Quick start). Unstyled components usually mean missing `@import "zabi-components/theme-only"` (and dark overrides if you use `.dark`).
+
+`class` is the public prop on every component and is merged **last**, through
+[tailwind-merge](https://github.com/dcastil/tailwind-merge), so your utility
+wins outright rather than racing the component's own:
+
+```svelte
+<Card class="rounded-pill" />   <!-- rounded-container is dropped, not fought -->
+```
+
+`className` still works everywhere as a deprecated alias.
 
 **Library code (contributors)**
 
@@ -234,6 +273,8 @@ import type { Foo } from "../types/variants.js";
 |-------|---------|---------|
 | Unit / component | `npm run test` | Vitest + Testing Library — logic and regressions |
 | Interaction | `npm run test:e2e` | Playwright — overlays, focus, keyboard flows |
+| Types & structure | `npm run check` | `svelte-check`, import-path and layout-width rules, plus `check:design` |
+| Design system | `npm run check:design` | Ramp lightness, WCAG AA on every rendered pair, interaction fills that differ from their surface, control geometry, and token violations (raw palette classes, off-scale shadows, half-step spacing) |
 
 ---
 

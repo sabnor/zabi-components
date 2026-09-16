@@ -275,7 +275,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "List",
                 category: "atoms",
                 description:
-                    "Semantic `<ul>` built from `items` (`ListItemData`). Optional `icon`, `avatar`, `description`, `href`, `selectedId`, `showArrow`, and `className` on the container. For trailing badges or amounts, use `ListItem` with a `trailing` snippet (see `/components/List`).",
+                    "Semantic `<ul>` built from `items` (`ListItemData`). Optional `icon`, `avatar`, `description`, `href`, `selectedId`, `showArrow`, and `class` on the container. For trailing badges or amounts, use `ListItem` with a `trailing` snippet (see `/components/List`).",
                 props: [
                     {
                         name: "items",
@@ -307,7 +307,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Toggle the right arrow icon visibility",
                     },
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: "",
@@ -1292,11 +1292,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 description: "Footer actions or metadata inside a Card.",
                 props: [
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Extra classes",
+                        description: "Extra classes, merged last so they win",
                     },
                 ],
                 variants: [],
@@ -1884,11 +1884,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Enable viewport for mobile responsiveness",
                     },
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: "",
-                        description: "Additional CSS classes",
+                        description: "Extra classes, merged last so they win",
                     },
                     {
                         name: "listClassName",
@@ -2094,10 +2094,10 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Page",
                 category: "molecules",
                 description:
-                    "Vertical stack for doc-style pages. Apply reading width from the route via className (for example max-w-4xl).",
+                    "Vertical stack for doc-style pages. Apply reading width from the route via class (for example max-w-4xl).",
                 props: [
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: '""',
@@ -2110,7 +2110,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Page",
                         description: "Wrap main doc content",
-                        code: '<Page className="max-w-4xl">…</Page>',
+                        code: '<Page class="max-w-4xl">…</Page>',
                     },
                 ],
             },
@@ -2158,11 +2158,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     "Horizontal menubar list; use inside `NavigationMenu` with items and triggers.",
                 props: [
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Extra classes on the `<ul>`",
+                        description: "Extra classes on the `<ul>`, merged last so they win",
                     },
                 ],
                 variants: [],
@@ -2822,7 +2822,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
   </SidebarNavSection>
 
   {#snippet footer({ collapsed, insetX })}
-    <SidebarFooter {collapsed} className={insetX} />
+    <SidebarFooter {collapsed} class={insetX} />
   {/snippet}
 </SidebarShell>`,
                     },
