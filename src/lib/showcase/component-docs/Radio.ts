@@ -8,10 +8,10 @@ export const doc: ComponentDoc = makeDoc({
     name: "Radio",
     category: "atoms",
     description:
-        "Single radio input for mutually exclusive choices. Use `RadioGroup` when you want a fully accessible group with arrow-key navigation and a single bindable value.",
+        "Single radio input for mutually exclusive choices. Use RadioGroup when you want arrow-key navigation and one bindable value for the set.",
     defaultExample: {
         title: "Default",
-        description: "Use a label and a shared `name` to form a native radio group.",
+        description: "Use a label and a shared name to form a native radio group.",
         demoId: demoId("Radio", "default"),
         code: `<Radio name="plan" value="basic" label="Basic plan" />`,
     },
@@ -19,7 +19,7 @@ export const doc: ComponentDoc = makeDoc({
         {
             title: "Group usage",
             description:
-                "Use `RadioGroup` for options arrays, a semantic fieldset/legend, and roving focus with arrow keys.",
+                "Use RadioGroup for options arrays, a semantic fieldset/legend, and roving focus with arrow keys.",
             demoId: demoId("Radio", "group"),
             code: `<RadioGroup
   legend="Billing cadence"

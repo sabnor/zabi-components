@@ -8,11 +8,11 @@ export const doc: ComponentDoc = makeDoc({
     name: "List",
     category: "atoms",
     description:
-        "List maps an `items` array to a semantic `<ul role=\"list\">` of rows—ideal for menus and settings where each row fits `ListItemData`. Prefer List when the UI maps cleanly from data; compose ListItem inside your own `<ul>` when you need trailing content (badges, amounts, controls). Put the list in a `list-group` (or use `class` on List) for grouped chrome; use `selectedId` to mark the active link.",
+        "Maps an items array to a semantic ul of rows. Compose ListItem inside your own ul when rows need trailing badges, amounts or controls.",
     defaultExample: {
         title: "Minimal rows",
         description:
-            "Each item needs `id` and `label`. Add more fields in later examples.",
+            "Each item needs id and label. Add more fields in later examples.",
         demoId: demoId("List", "default"),
         code: `<script lang="ts">
   const items = [
@@ -30,7 +30,7 @@ export const doc: ComponentDoc = makeDoc({
         {
             title: "Helper line under the label",
             description:
-                "Optional `description` renders as muted text beneath the title.",
+                "Optional description renders as muted text beneath the title.",
             demoId: demoId("List", "withDescription"),
             code: `<script lang="ts">
   const items = [
@@ -87,7 +87,7 @@ export const doc: ComponentDoc = makeDoc({
         {
             title: "Leading avatars",
             description:
-                "`avatar` is an image URL. Set `avatarAlt` for meaningful photos; use `\"\"` when decorative. Avatar wins over `icon` if both are set.",
+                "avatar is an image URL. Set avatarAlt for meaningful photos; use \"\" when decorative. Avatar wins over icon if both are set.",
             demoId: demoId("List", "leadingAvatar"),
             code: `<script lang="ts">
   const items = [
@@ -119,7 +119,7 @@ export const doc: ComponentDoc = makeDoc({
         {
             title: "Active row and list chrome",
             description:
-                "`selectedId` marks the current row. Wrap the list in `list-group` for border, padding, and surface styling.",
+                "selectedId marks the current row. Wrap the list in list-group for border, padding, and surface styling.",
             demoId: demoId("List", "selectedAndChrome"),
             code: `<script lang="ts">
   import { Bell, Shield } from "@lucide/svelte";
@@ -151,7 +151,7 @@ export const doc: ComponentDoc = makeDoc({
         {
             title: "Trailing slot (manual ListItem)",
             description:
-                "`ListItemData` has no trailing slot. Compose your own `<ul>` and pass the `trailing` snippet on ListItem for badges, status, or short meta.",
+                "ListItemData has no trailing slot. Compose your own <ul> and pass the trailing snippet on ListItem for badges, status, or short meta.",
             demoId: demoId("List", "trailing"),
             code: `<script lang="ts">
   import { Badge, ListItem } from "zabi-components/atoms";
@@ -176,7 +176,7 @@ export const doc: ComponentDoc = makeDoc({
         {
             title: "Item fields + trailing snippet",
             description:
-                "Set `icon` on the item; add currency, totals, or labels in `trailing` only.",
+                "Set icon on the item; add currency, totals, or labels in trailing only.",
             demoId: demoId("List", "combined"),
             code: `<script lang="ts">
   import { CreditCard } from "@lucide/svelte";
@@ -202,7 +202,6 @@ export const doc: ComponentDoc = makeDoc({
 </ul>`,
         },
     ],
-    variantsStates: ["default", "selected", "disabled", "no-arrow"],
     props,
     guidelines: {
         whenToUse: [

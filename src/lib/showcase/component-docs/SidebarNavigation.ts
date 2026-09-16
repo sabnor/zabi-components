@@ -10,7 +10,7 @@ export const doc: ComponentDoc = makeDoc({
     name: "SidebarNavigation",
     category: "organisms",
     description:
-        "Sidebar navigation for app shells with clear active-state styling and optional search patterns. Use it to give users strong orientation and predictable navigation.",
+        "Sidebar navigation for app shells, with clear active states and optional search. Use it to give users steady orientation.",
     defaultExample: {
         title: "Default",
         description:

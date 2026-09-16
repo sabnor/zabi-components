@@ -47,7 +47,7 @@ export const load: PageLoad = ({ params }) => {
         (c) => c.name.toLowerCase() === params.name.toLowerCase(),
     );
     if (!foundFallback) {
-        error(404, `Unknown component: ${params.name}`);
+        error(404, `There is no component called "${params.name}".`);
     }
     if (params.name !== foundFallback.name) {
         redirect(301, `/components/${foundFallback.name}`);
