@@ -116,7 +116,8 @@ Dark mapping rule reference:
 
 ### Change Primary Button Color
 
-The primary button uses `--color-action-primary` which defaults to `brand-800`. To change it:
+The primary button uses `--color-action-primary`, which defaults to `brand-600`
+(4.86:1 against a white label). To change it:
 
 ```css
 @theme {
@@ -135,11 +136,15 @@ The brand scale is used throughout the system:
 - **brand-50 to brand-100**: Subtle backgrounds, hover states
 - **brand-300 to brand-400**: Light accents, disabled states
 - **brand-500**: Focus rings, medium emphasis
-- **brand-600**: Primary color, links
-- **brand-700**: Link hover, primary hover
-- **brand-800**: **Primary buttons** (`action-primary`)
-- **brand-900**: Primary button hover
-- **brand-950**: Darkest brand shade
+- **brand-600**: **Primary buttons** (`action-primary`)
+- **brand-700**: Primary hover, links
+- **brand-800**: Primary active, link hover
+- **brand-900 / 950**: Darkest brand shades
+
+Hover and active always move *toward* the dark end in light mode. The `.dark`
+mirror flips that automatically, so "more pressed" means "more contrast against
+the page" in both themes. Never point `-active` at a step on the far side of the
+ramp — that is how the pressed primary label ended up at 1.66:1.
 
 ### Dark Mode
 
@@ -162,15 +167,11 @@ Dark mode action colors are handled in `src/app.css` in the `.dark` block (lines
 - `base-600` (light mode) → `base-400` (dark mode) automatically
 
 ### Danger Actions
-- **Has explicit dark mode overrides** (lines 399-404) because red colors aren't automatically inverted:
-  ```css
-  .dark {
-    --color-action-danger: theme(colors.red.500);
-    --color-action-danger-hover: theme(colors.red.600);
-    --color-action-danger-active: theme(colors.red.700);
-    /* ... */
-  }
-  ```
+- **No re-pointing needed.** Danger resolves through `--color-error-*`, which
+  mirrors like every other ramp, so dark danger is the same step of the same
+  ramp as light danger. The `.dark` block restates the aliases only so that
+  `zabi-components/theme-dark-only` remains a complete standalone import
+  (`validate-theme.js` enforces that).
 
 ### In Generated Files
 
@@ -178,6 +179,115 @@ Dark mode action colors are handled in `src/app.css` in the `.dark` block (lines
 - **`dist/zabi-components-theme-dark-only.css`**: Has dark mode action colors at lines 119-130 (only danger has explicit overrides)
 - **`dist/zabi-components-theme-only.css`**: Only has light mode (@theme block), no dark mode
 - **`dist/zabi-components-theme.css`**: Only has light mode (@theme block), no dark mode
+
+## 🎨 Calibrated Colour Ramps
+
+Every chromatic ramp (`brand`, `citron`, `pine`, `iris`, `warning`, `error`) is
+**generated against one shared lightness curve**, so `<ramp>-600` means the same
+perceptual lightness in every ramp. That is what lets the semantic families read
+as one family instead of six unrelated colours.
+
+| step | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| CIE L\* | 97 | 94 | 88 | 80 | 70 | 58 | **47** | 38 | 29 | 20 | 12 |
+
+Step **600** is the solid-fill step: dark enough to clear 4.5:1 against white,
+light enough to still read as a colour. Every semantic token points at it.
+
+- **Source of truth:** `tokens/chromatic-scales.js` — hue, peak chroma, the
+  chroma envelope, and the target curve.
+- **Regenerate:** `node scripts/generate-ramps.js` (runs inside `npm run sync:tokens`).
+- **Verify:** `node scripts/check-ramp-lightness.js` — fails if any step drifts
+  more than ±1.5 L\* off the curve, or if two adjacent steps differ by more than
+  15 L\* (a cliff rather than a ramp).
+
+To rebrand, edit `hue` / `peakChroma` for a ramp in `tokens/chromatic-scales.js`
+and re-run the generator. **Do not hand-edit `--zabi-<ramp>-*` in `src/app.css`** —
+the generator overwrites them, in both the `@theme` block and the `.dark` mirror.
+
+The `base` (neutral) ramp is deliberately **not** on this curve: it is wider on
+purpose because it also drives text, borders and the surface levels. Semantic
+`neutral` aliases the base step closest to the chromatic 600s.
+
+## 🧩 Semantic Families
+
+Each family exposes the same roles, built from the same steps:
+
+| token | step | use |
+|---|---|---|
+| `--color-<family>` | 600 | solid fill — badge `emphasis="solid"`, progress bars |
+| `--color-<family>-weak` | 700 | pressed / emphasis |
+| `--color-<family>-medium` | 800 | strongest fill |
+| `--color-<family>-strong` | 900 | darkest |
+| `--color-<family>-subtle` | 100 | tinted fill — badges, alerts |
+| `--color-<family>-border` | 200 | tinted edge |
+| `--color-<family>-text` | 700 | text on a subtle fill or a page surface |
+
+Families: `success`, `warning`, `error`, `info`, `energetic`, `neutral`.
+
+Prefer the **subtle** trio (`-subtle` fill + `-border` edge + `-text` label) for
+anything informational. Solid fills are for the one element on a screen that has
+to shout.
+
+## 📐 Control Geometry
+
+One height scale is shared by **every** form control, so a Button, Input, Select
+and IconButton of the same size line up in a row:
+
+| size | height | token |
+|---|---|---|
+| `sm` | 32px | `--control-height-sm` |
+| `md` | 40px | `--control-height-md` |
+| `lg` | 48px | `--control-height-lg` |
+
+Enforced by `scripts/check-control-geometry.js`.
+
+## 🔲 Border Radius
+
+Four radii, chosen by **role**, never by size. A large button is a bigger box
+with the same corner as a small one.
+
+| token | value | use |
+|---|---|---|
+| `--radius-control` | 8px | buttons, inputs, selects, toggles |
+| `--radius-container` | 12px | cards, alerts, panels, list items, code blocks |
+| `--radius-overlay` | 16px | modals, sheets, menus, popovers, toasts |
+| `--radius-pill` | full | badges, avatars, status dots |
+
+`--radius-sm/md/lg/xl` remain as legacy aliases for consumer overrides, but
+components must not use them — `check-control-geometry.js` fails the build if a
+component reaches for a t-shirt radius.
+
+## ✋ Interaction Fills
+
+Hover and active fills are **surface-relative alpha tints**, not fixed ramp steps:
+
+```css
+/* light */
+--color-surface-hover:  rgba(9, 9, 11, 0.06);
+--color-surface-active: rgba(9, 9, 11, 0.11);
+/* dark */
+--color-surface-hover:  rgba(250, 250, 250, 0.08);
+--color-surface-active: rgba(250, 250, 250, 0.14);
+```
+
+A fixed step can coincide exactly with the surface it sits on — `base-100` in
+dark mode *is* `--color-surface-base`, which is how ghost-button hover became
+invisible. `check-token-violations.js` now fails on `hover:bg-base-*` /
+`active:bg-base-*` in component source.
+
+Use `hover:bg-surface-hover` / `active:bg-surface-active` for quiet controls, and
+the `action-*-hover` / `action-*-active` tokens for filled ones.
+
+## ♿ Contrast
+
+`scripts/check-contrast.js` resolves every fill/foreground pair a component can
+render — through the same token chain the CSS uses — in **both** themes, and
+fails below WCAG AA. Run it after re-pointing any token:
+
+```bash
+npm run check:contrast     # or: npm run check:design (all four guards)
+```
 
 ## 🧱 Surface Elevation Levels
 
