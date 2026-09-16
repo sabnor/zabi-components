@@ -78,7 +78,7 @@
     const containerClasses = $derived.by(() => {
         const resolvedWidthClass = widthClass.trim() || "w-80";
         const shell = isElevated
-            ? "rounded-container border border-border bg-card text-headline shadow-md ring-1 ring-border/50"
+            ? "rounded-container border border-border bg-card text-headline shadow-sm ring-1 ring-border/50"
             : "rounded-container border border-border bg-card text-headline shadow-sm";
         return `${resolvedWidthClass} shrink-0 p-5 ${shell} ${className}`.trim();
     });

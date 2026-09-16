@@ -70,6 +70,13 @@ the semantic families read as a single family instead of six unrelated colours.
 - Button type is monotonic again: weight is `font-medium` at every size (it used
   to drop to `font-normal` at `lg`, so the biggest button had the lightest
   label), and the arbitrary letter-spacing values are gone.
+- **Elevation is two steps**, not four. `shadow-sm` means raised (cards, tables,
+  sidebars, toggle knobs), `shadow-lg` means floating (modals, sheets, menus,
+  toasts); `shadow-none` stays the explicit absence of one. `shadow-md` and
+  `shadow-xl` are gone, and so is the bare `shadow` on the Toggle knob, which
+  resolved to a Tailwind default `app.css` never defined. An elevated Card no
+  longer deepens its shadow on hover — it was already at the floating step, so
+  the hover now changes background only.
 
 #### Components
 

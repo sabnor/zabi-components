@@ -321,6 +321,33 @@ To retune the dark levels, edit the four `--color-surface-*` values in the `.dar
 
 > The light surface tokens must stay **below** the `/* Background Colors */` marker in `@theme`. `scripts/sync-theme-tokens.js` regenerates everything between the base-scale aliases and that marker.
 
+## 🌑 Shadow Scale
+
+Elevation in light mode is **two steps**, not a ramp. A shadow says "this is
+above the page" or "this floats over it" — there is no third meaning, and an
+in-between value just makes two neighbouring surfaces look accidentally
+different.
+
+| Utility | Reads as | Use for |
+|---|---|---|
+| `shadow-sm` | Raised | Cards, tables, sidebars, toggle knobs, colour-picker thumbs |
+| `shadow-lg` | Floating | Modals, sheets, dropdown/select menus, toasts, popovers |
+
+`shadow-none` is the explicit *absence* of a shadow (outlined and flat cards,
+disabled buttons), not a third step.
+
+Rules:
+- A raised element that becomes floating on interaction may go `sm` → `lg` on
+  hover. Something already at `lg` does not deepen further — it changes its
+  background instead.
+- `shadow-md`, `shadow-xl` and a bare `shadow` are build failures. The bare
+  `shadow` utility is the sneaky one: it resolves to a Tailwind default that
+  `app.css` never defines, so no token controls it.
+- Shadows carry elevation in **light mode only**. In dark mode the surface
+  levels above do the work — see Surface Elevation Levels.
+
+Enforced by `scripts/check-token-violations.js`.
+
 ## 🔠 Type Scale
 
 `Heading` and `Text` sit on **one** ramp rather than each carrying its own, so a
