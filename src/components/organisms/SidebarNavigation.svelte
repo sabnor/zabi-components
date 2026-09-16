@@ -6,6 +6,7 @@
     import SidebarBrandHeader from "../molecules/SidebarBrandHeader.svelte";
     import SidebarFooter from "../molecules/SidebarFooter.svelte";
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
+    import Tooltip from "../atoms/Tooltip.svelte";
     import { Command, Search } from "@lucide/svelte";
     import type { Snippet } from "svelte";
     import type { Component } from "svelte";
@@ -188,7 +189,7 @@
     const insetX = $derived(isCollapsed ? "px-2" : "px-4");
 
     const containerClasses = $derived.by(() => {
-        const widthClass = isCollapsed ? "w-[104px]" : "w-[266px]";
+        const widthClass = isCollapsed ? "w-[72px]" : "w-[266px]";
         const railSurface = "border-r border-border bg-background text-headline";
         const cardSurface =
             "border-r border-border bg-background text-headline shadow-sm";
@@ -217,18 +218,40 @@
         return isMuted ? "text-description" : "text-headline";
     }
 
-    function getNavItemClasses(item: SidebarNavigationItem): string {
-        const isActive =
+    /**
+     * The selected row used to be carried by its fill alone, and the fill was
+     * 1.05:1 against the sidebar in light mode — not a fill, a rumour. Active
+     * and idle labels were #18181b and #27272a at the same weight, a 15-unit
+     * difference in one channel that nobody can see. So in light mode there
+     * was effectively no indication of where you were.
+     *
+     * Three cues now, only one of which is colour-discrimination dependent:
+     * the label takes --color-nav-menu-item-active (defined all along and
+     * never referenced — the row said `text-inherit`), a 3px bar marks the
+     * leading edge, and the tint stays as reinforcement rather than as the
+     * whole message.
+     */
+    function isItemActive(item: SidebarNavigationItem): boolean {
+        return (
             currentPath === item.href ||
-            (Boolean(activePrimaryHref) && item.href === activePrimaryHref);
+            (Boolean(activePrimaryHref) && item.href === activePrimaryHref)
+        );
+    }
+
+    function getNavItemClasses(item: SidebarNavigationItem): string {
+        const isActive = isItemActive(item);
         const layoutClasses = isCollapsed
             ? "flex min-h-10 items-center justify-center px-0 py-2"
             : "flex min-h-10 items-center gap-3 px-2 py-2";
         const structural =
-            "focus-ring focus-ring--nav w-full cursor-pointer rounded-control no-underline transition-colors duration-150 outline-none";
+            "focus-ring focus-ring--nav relative w-full cursor-pointer rounded-control no-underline transition-colors duration-150 outline-none";
 
         if (isActive) {
-            return `${structural} ${layoutClasses} bg-nav-menu-active text-inherit hover:bg-nav-menu-active hover:text-inherit active:opacity-90`;
+            return (
+                `${structural} ${layoutClasses} bg-nav-menu-active ` +
+                "text-nav-menu-item-active hover:bg-nav-menu-active " +
+                "active:bg-nav-menu-active-hover"
+            );
         }
 
         return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
@@ -370,6 +393,19 @@
                             {#each group.items as item (item.id)}
                                 {@const Icon = item.icon}
                                 <li>
+                                    <!--
+                                      Collapsed rows are icon-only. aria-label
+                                      covers screen readers, but a sighted user
+                                      got an unlabelled glyph with no hover
+                                      affordance at all.
+                                    -->
+                                    <Tooltip
+                                        content={item.label}
+                                        placement="right"
+                                        disabled={!isCollapsed}
+                                        block
+                                        fixed
+                                    >
                                     <a
                                         href={item.href}
                                         class={getNavItemClasses(item)}
@@ -377,6 +413,12 @@
                                         aria-current={getAriaCurrent(item)}
                                         aria-label={isCollapsed ? item.label : undefined}
                                     >
+                                        {#if isItemActive(item)}
+                                            <span
+                                                class="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-pill bg-nav-menu-item-active"
+                                                aria-hidden="true"
+                                            ></span>
+                                        {/if}
                                         {#if Icon}
                                             <span
                                                 class={iconContainerClasses}
@@ -391,16 +433,31 @@
                                                 >{item.label}</span
                                             >
                                         {/if}
-                                        {#if !isCollapsed && getItemBadgeText(item) !== null}
-                                            <span class="ml-auto">
-                                                <Badge
-                                                    variant="default"
-                                                    size="sm"
-                                                    text={getItemBadgeText(item) ?? ""}
-                                                />
-                                            </span>
+                                        {#if getItemBadgeText(item) !== null}
+                                            {#if isCollapsed}
+                                                <!--
+                                                  A notification count that
+                                                  disappears when you collapse
+                                                  the rail is a real loss; the
+                                                  count becomes a dot rather
+                                                  than nothing.
+                                                -->
+                                                <span
+                                                    class="absolute right-2 top-2 size-2 rounded-pill bg-error"
+                                                    aria-hidden="true"
+                                                ></span>
+                                            {:else}
+                                                <span class="ml-auto">
+                                                    <Badge
+                                                        variant="default"
+                                                        size="sm"
+                                                        text={getItemBadgeText(item) ?? ""}
+                                                    />
+                                                </span>
+                                            {/if}
                                         {/if}
                                     </a>
+                                    </Tooltip>
                                 </li>
                             {/each}
                         </SidebarNavSection>
