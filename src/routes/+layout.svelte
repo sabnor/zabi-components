@@ -3,6 +3,7 @@
     import type { Snippet } from "svelte";
     import { page } from "$app/stores";
     import TopNavbar from "../components/organisms/TopNavbar.svelte";
+    import BrandSwitcher from "$lib/marketing/BrandSwitcher.svelte";
     import type { NavItem } from "../types/page.types";
 
     interface Props {
@@ -35,7 +36,11 @@
         items={navItems}
         navVariant="header"
         currentPath={$page.url.pathname}
-    />
+    >
+        {#snippet actions()}
+            <BrandSwitcher />
+        {/snippet}
+    </TopNavbar>
 {/if}
 
 {@render children()}

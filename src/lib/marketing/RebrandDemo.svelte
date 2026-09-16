@@ -4,90 +4,13 @@
     import Input from "../../components/atoms/Input.svelte";
     import Progress from "../../components/atoms/Progress.svelte";
 
-    type Accent = "iris" | "pine" | "citron";
-    type TokenMap = Record<string, string>;
-
-    const accents: { id: Accent; label: string }[] = [
-        { id: "iris", label: "Iris" },
-        { id: "pine", label: "Pine" },
-        { id: "citron", label: "Citron" },
-    ];
-
-    /**
-     * Single source of truth for the demo: these maps are applied as inline custom properties
-     * AND printed in the snippet, so the code shown always matches what renders.
-     * Dark entries layer on top of light ones, exactly like a `.dark .brand` rule would.
-     */
-    const overrides: Record<Exclude<Accent, "iris">, { light: TokenMap; dark: TokenMap }> = {
-        pine: {
-            light: {
-                "--color-action-primary": "var(--zabi-pine-700)",
-                "--color-action-primary-hover": "var(--zabi-pine-600)",
-                "--color-action-primary-active": "var(--zabi-pine-500)",
-                "--color-action-primary-text": "var(--zabi-pine-50)",
-                "--color-action-primary-subtle": "var(--zabi-pine-100)",
-                "--color-action-secondary": "color-mix(in srgb, var(--zabi-pine-600) 12%, transparent)",
-                "--color-action-secondary-hover": "color-mix(in srgb, var(--zabi-pine-600) 22%, transparent)",
-                "--color-brand-500": "var(--zabi-pine-400)",
-                "--color-brand-600": "var(--zabi-pine-500)",
-                "--color-brand-700": "var(--zabi-pine-600)",
-                "--color-focus": "var(--zabi-pine-400)",
-                "--color-focus-ring": "var(--zabi-pine-400)",
-                "--color-link": "var(--zabi-pine-600)",
-            },
-            dark: {
-                "--color-action-primary": "var(--zabi-pine-200)",
-                "--color-action-primary-hover": "var(--zabi-pine-100)",
-                "--color-action-primary-active": "var(--zabi-pine-300)",
-                "--color-action-primary-text": "var(--zabi-pine-950)",
-                "--color-action-primary-subtle": "var(--zabi-pine-900)",
-                "--color-action-secondary": "color-mix(in srgb, var(--zabi-pine-300) 16%, transparent)",
-                "--color-action-secondary-hover": "color-mix(in srgb, var(--zabi-pine-300) 26%, transparent)",
-                "--color-brand-600": "var(--zabi-pine-300)",
-                "--color-link": "var(--zabi-pine-200)",
-                "--color-focus": "var(--zabi-pine-300)",
-                "--color-focus-ring": "var(--zabi-pine-300)",
-            },
-        },
-        citron: {
-            light: {
-                "--color-action-primary": "var(--zabi-citron-800)",
-                "--color-action-primary-hover": "var(--zabi-citron-900)",
-                "--color-action-primary-active": "var(--zabi-citron-700)",
-                "--color-action-primary-text": "var(--zabi-citron-50)",
-                "--color-action-primary-subtle": "var(--zabi-citron-100)",
-                "--color-action-secondary": "color-mix(in srgb, var(--zabi-citron-700) 14%, transparent)",
-                "--color-action-secondary-hover": "color-mix(in srgb, var(--zabi-citron-700) 24%, transparent)",
-                "--color-brand-500": "var(--zabi-citron-500)",
-                "--color-brand-600": "var(--zabi-citron-600)",
-                "--color-brand-700": "var(--zabi-citron-700)",
-                "--color-focus": "var(--zabi-citron-500)",
-                "--color-focus-ring": "var(--zabi-citron-500)",
-                "--color-link": "var(--zabi-citron-800)",
-            },
-            dark: {
-                "--color-action-primary": "var(--zabi-citron-300)",
-                "--color-action-primary-hover": "var(--zabi-citron-200)",
-                "--color-action-primary-active": "var(--zabi-citron-400)",
-                "--color-action-primary-text": "var(--zabi-citron-950)",
-                "--color-action-primary-subtle": "var(--zabi-citron-900)",
-                "--color-action-secondary": "color-mix(in srgb, var(--zabi-citron-300) 16%, transparent)",
-                "--color-action-secondary-hover": "color-mix(in srgb, var(--zabi-citron-300) 26%, transparent)",
-                "--color-brand-600": "var(--zabi-citron-400)",
-                "--color-link": "var(--zabi-citron-300)",
-                "--color-focus": "var(--zabi-citron-400)",
-                "--color-focus-ring": "var(--zabi-citron-400)",
-            },
-        },
-    };
-
-    /** Tokens worth showing in the snippet; the full map is still applied. */
-    const snippetTokens = [
-        "--color-action-primary",
-        "--color-brand-600",
-        "--color-focus-ring",
-        "--color-link",
-    ];
+    import {
+        ACCENTS as accents,
+        SNIPPET_TOKENS as snippetTokens,
+        styleFor,
+        tokensFor,
+        type Accent,
+    } from "./brand-accents";
 
     let accent = $state<Accent>("iris");
     let checked = $state(true);
@@ -101,18 +24,6 @@
         observer.observe(root, { attributes: true, attributeFilter: ["class"] });
         return () => observer.disconnect();
     });
-
-    function tokensFor(id: Accent, dark: boolean): TokenMap {
-        if (id === "iris") return {};
-        const { light, dark: darkMap } = overrides[id];
-        return dark ? { ...light, ...darkMap } : light;
-    }
-
-    function styleFor(id: Accent, dark: boolean): string {
-        return Object.entries(tokensFor(id, dark))
-            .map(([name, value]) => `${name}: ${value}`)
-            .join("; ");
-    }
 
     const snippet = $derived.by(() => {
         if (accent === "iris") {
