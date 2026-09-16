@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { cn } from "../util/cn.js";
+
     interface Props {
         message?: string;
         type?: 'success' | 'error' | 'warning' | 'info';
@@ -62,7 +64,7 @@
             class="pointer-events-none fixed top-4 right-4 left-4 z-toast flex justify-end sm:left-auto"
         >
             <div
-                class="pointer-events-auto {cardClasses} {typeClasses[type]} {className}"
+                class={cn("pointer-events-auto", cardClasses, typeClasses[type], className)}
                 role="alert"
                 {...restProps}
             >
@@ -71,7 +73,7 @@
         </div>
     {:else}
         <div
-            class="relative z-toast mx-auto {cardClasses} {typeClasses[type]} {className}"
+            class={cn("relative z-toast mx-auto", cardClasses, typeClasses[type], className)}
             role="alert"
             {...restProps}
         >

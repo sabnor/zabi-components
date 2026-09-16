@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { cn } from "../util/cn.js";
+
     interface Props {
         src: string;
         alt?: string;
@@ -28,7 +30,7 @@
 <img
     {src}
     {alt}
-    class="w-full h-auto object-cover {className}"
+    class={cn("w-full h-auto object-cover", className)}
     style="width: {typeof width === 'number'
         ? width + 'px'
         : width}; height: {typeof height === 'number'

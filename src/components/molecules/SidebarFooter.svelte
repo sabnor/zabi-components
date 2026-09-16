@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { fixedSidebarFlyout } from "../util/fixed-sidebar-flyout.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         collapsed?: boolean;
@@ -47,7 +48,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const showFooter = $derived(showProfile || showLogout || showThemeToggle);
     const showPanelLauncher = $derived(showProfile);
@@ -67,7 +68,7 @@
 {#if showFooter}
     <div class="w-full shrink-0" data-sidebar-flyout-root>
         <footer
-            class={`flex w-full shrink-0 flex-col gap-3 border-t border-border pt-3 pb-1 ${className}`.trim()}
+            class={cn(`flex w-full shrink-0 flex-col gap-3 border-t border-border pt-3 pb-1 ${className}`)}
             aria-label="Account and settings"
         >
             {#if showPanelLauncher}

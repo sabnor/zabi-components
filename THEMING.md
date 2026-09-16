@@ -334,6 +334,27 @@ To retune the dark levels, edit the four `--color-surface-*` values in the `.dar
 
 > The light surface tokens must stay **below** the `/* Background Colors */` marker in `@theme`. `scripts/sync-theme-tokens.js` regenerates everything between the base-scale aliases and that marker.
 
+## 🎛️ Overriding a Component's Classes
+
+`class` is the public prop on every component and is merged **last**, so a
+call-site utility wins. That promise needs `cn()` (`src/components/util/cn.ts`,
+tailwind-merge) to be true: `rounded-control` and `rounded-container` are
+equal-specificity utilities, so plain concatenation leaves the winner to
+whichever one Tailwind emits later in the stylesheet, not to the caller.
+
+```svelte
+<Card class="rounded-pill" />   <!-- rounded-container is dropped, not fought -->
+```
+
+Most semantic utilities work with stock tailwind-merge — `bg-card` vs
+`bg-surface-overlay`, `text-headline` vs `text-description` all resolve. The
+role-based radii are the exception and are declared explicitly in `cn.ts`,
+because `control`/`container`/`overlay`/`pill` are role names rather than scale
+values. **Add any future custom scale to that config**, or tailwind-merge keeps
+both classes and stylesheet order silently decides again.
+
+Covered by `tests/class-merge.test.ts`.
+
 ## 🌑 Shadow Scale
 
 Elevation in light mode is **two steps**, not a ramp. A shadow says "this is

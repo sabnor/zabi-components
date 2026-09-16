@@ -190,7 +190,7 @@ Across the 63 component files:
 
 A third of the library cannot be adjusted at the call site at all. For a component library, that's the difference between "reusable" and "reusable until you need it to be 4px narrower". `Badge` and `Heading` don't even spread `...restProps`, so you can't attach a `data-testid` or an `aria-*` attribute.
 
-Standardise on `class` everywhere (aliased to `className` internally), always merged last, and always spread `...restProps` onto the root element. Same story for `fullWidth` (Card) vs `isFullWidth` (Button) — pick one, and `fullWidth` is the conventional spelling.
+Standardise on `class` everywhere (aliased to `className` internally), always merged last, and always spread `...restProps` onto the root element. "Merged last" is not enough on its own: `rounded-control` and `rounded-container` are equal-specificity utilities, so plain concatenation leaves the winner to whichever Tailwind emits later. The merge goes through `cn()` (tailwind-merge) so the last conflicting utility actually wins. Same story for `fullWidth` (Card) vs `isFullWidth` (Button) — pick one, and `fullWidth` is the conventional spelling.
 
 **`Badge` specifically needs a pass.** It has no `class`, no `children`, no `restProps` — yet it ships stories called `WithChildren` and `WithCustomClass`, both of which render nothing meaningful because the props don't exist. It's also the only component with `rounded-xs` (2px) and it draws a `border` in the same colour as its fill, which does nothing but add 2px to the box.
 

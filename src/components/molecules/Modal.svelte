@@ -12,6 +12,7 @@
     import CardContent from '../atoms/CardContent.svelte';
     import CardFooter from '../atoms/CardFooter.svelte';
 
+    import { cn } from "../util/cn.js";
     type Size = 'sm' | 'md' | 'lg';
 
     interface Props {
@@ -169,7 +170,11 @@
     >
         <div
             bind:this={modalContainer}
-            class="flex max-h-[90vh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-overlay border border-border-overlay bg-surface-overlay p-0 shadow-lg animate-[slideUp_0.3s_ease-out] md:animate-none md:rounded-overlay {sizeClasses} {className}"
+            class={cn(
+                "flex max-h-[90vh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-overlay border border-border-overlay bg-surface-overlay p-0 shadow-lg animate-[slideUp_0.3s_ease-out] md:animate-none md:rounded-overlay",
+                sizeClasses,
+                className,
+            )}
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? modalTitleId : undefined}

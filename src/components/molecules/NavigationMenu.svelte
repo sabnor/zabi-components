@@ -9,6 +9,8 @@
     import NavigationMenuLink from "./NavigationMenuLink.svelte";
 
     import { generateId } from "../util/ssr-safe.js";
+
+    import { cn } from "../util/cn.js";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
         navigationMenuStableInstanceId,
@@ -59,7 +61,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let activeItem = $state<string | null>(null);
     let isMobile = $state(false);
@@ -114,7 +116,7 @@
 
 <nav
     bind:this={containerElement}
-    class="relative {className}"
+    class={cn("relative", className)}
     aria-label={ariaLabel}
     {...restProps}
 >

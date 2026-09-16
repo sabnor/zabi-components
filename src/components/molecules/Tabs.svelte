@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -92,7 +93,7 @@
     }
 </script>
 
-<div class="tabs-container {className}">
+<div class={cn("tabs-container", className)}>
     <div
         class="flex border-b border-base-200"
         role="tablist"

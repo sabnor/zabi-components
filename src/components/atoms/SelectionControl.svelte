@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
     import {
         SELECTION_CONTROL_LABEL_ROW,
         selectionControlRingOverlayClasses,
@@ -72,7 +73,7 @@
     }
 </script>
 
-<div class="flex items-center gap-2 {className}">
+<div class={cn("flex items-center gap-2", className)}>
     <label for={controlId} class={labelWrapperClasses}>
         <span class={controlContainerClasses}>
             <input

@@ -3,6 +3,7 @@
     import Card from "../atoms/Card.svelte";
     import CardHeader from "../atoms/CardHeader.svelte";
     import CardContent from "../atoms/CardContent.svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         title: string;
@@ -27,7 +28,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let showCode = $state(false);
 </script>

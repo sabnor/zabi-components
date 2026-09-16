@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { getContext } from "svelte";
+    import { cn } from "../util/cn.js";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
         navigationMenuPanelId,
@@ -25,7 +26,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let contentElement = $state<HTMLElement | null>(null);
 
@@ -79,7 +80,7 @@
     <div
         bind:this={contentElement}
         id={panelId || undefined}
-        class="absolute left-0 top-full mt-2 bg-surface-overlay rounded-control shadow-lg border border-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out {className}"
+        class={cn("absolute left-0 top-full mt-2 bg-surface-overlay rounded-control shadow-lg border border-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out", className)}
         data-navigation-menu-content
         {...restProps}
     >

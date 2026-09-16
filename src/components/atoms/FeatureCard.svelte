@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Component, Snippet } from "svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         title: string;
@@ -19,7 +20,7 @@
 </script>
 
 <article
-    class="flex flex-col gap-3 p-6 rounded-container bg-surface-1 border border-border transition-colors duration-200 hover:border-border-medium {className}"
+    class={cn("flex flex-col gap-3 p-6 rounded-container bg-surface-1 border border-border transition-colors duration-200 hover:border-border-medium", className)}
 >
     {#if Icon}
         <span

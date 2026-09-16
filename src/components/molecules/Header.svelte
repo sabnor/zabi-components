@@ -2,6 +2,7 @@
     import Badge from "../atoms/Badge.svelte";
     import Heading from "../atoms/Heading.svelte";
     import type { ComponentCategory } from "../types/page.types";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -22,7 +23,7 @@
     }: Props = $props();
 </script>
 
-<header class="space-y-4 {className}" {...restProps}>
+<header class={cn("space-y-4", className)} {...restProps}>
     <div class="space-y-2">
         <Heading level={1} text={title} />
         <p class="text-lg whitespace-pre-line text-description">{description}</p>

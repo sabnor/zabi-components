@@ -2,6 +2,7 @@
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import { Check, TriangleAlert, X, Info, Zap } from "@lucide/svelte";
+    import { cn } from "../util/cn.js";
     import type {
         ExtendedSemanticVariant,
         SizeVariant,
@@ -81,7 +82,7 @@
     });
 
     const badgeClasses = $derived(
-        `inline-flex items-center justify-center whitespace-nowrap rounded-pill border font-medium ${sizeClass.box} ${variantClass} ${className}`.trim(),
+        cn(`inline-flex items-center justify-center whitespace-nowrap rounded-pill border font-medium ${sizeClass.box} ${variantClass} ${className}`),
     );
 
     /** One outline icon family, so the variants don't look like a rummage. */

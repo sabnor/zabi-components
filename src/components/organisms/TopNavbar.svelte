@@ -1,6 +1,7 @@
 <script lang="ts">
     import ThemeToggle from "../atoms/ThemeToggle.svelte";
     import type { Component, Snippet } from "svelte";
+    import { cn } from "../util/cn.js";
 
     export interface TopNavbarNavItem {
         label: string;
@@ -47,7 +48,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let isMenuOpen = $state(false);
 
@@ -145,7 +146,7 @@
     </nav>
 {:else}
     <nav
-        class="border-b border-border bg-background sticky top-0 z-50 {className}"
+        class={cn("border-b border-border bg-background sticky top-0 z-50", className)}
         aria-label={ariaLabel}
         {...restProps}
     >

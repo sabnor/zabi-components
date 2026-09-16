@@ -1,5 +1,6 @@
 <script lang="ts">
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -63,7 +64,7 @@
     });
 </script>
 
-<div class="flex items-center gap-3 {className}">
+<div class={cn("flex items-center gap-3", className)}>
     <button
         type="button"
         role="switch"

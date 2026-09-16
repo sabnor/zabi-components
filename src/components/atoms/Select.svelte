@@ -8,6 +8,7 @@
         AlertCircle,
     } from "@lucide/svelte";
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -94,7 +95,7 @@
         const baseClasses =
             "focus-ring flex w-full cursor-pointer items-center justify-between gap-2 rounded-control border bg-input text-body transition-colors duration-150 hover:bg-input-hover active:bg-input-focus focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text";
 
-        return `${baseClasses} ${sizeStyles.box} ${sizeStyles.text} ${variantClass()}`.trim();
+        return cn(`${baseClasses} ${sizeStyles.box} ${sizeStyles.text} ${variantClass()}`);
     });
 
     const labelClasses = $derived(
@@ -205,7 +206,7 @@
 
 <svelte:window onclick={handleClickOutside} onkeydown={handleKeydown} />
 
-<div bind:this={selectContainer} class="w-full select-container {className}">
+<div bind:this={selectContainer} class={cn("w-full select-container", className)}>
     {#if label}
         <label for={selectId} class={labelClasses()}>{label}</label>
     {/if}

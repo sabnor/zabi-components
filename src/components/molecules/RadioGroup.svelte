@@ -7,6 +7,7 @@
     } from "../atoms/selection-control.styles";
     import { generateId } from "../util/ssr-safe.js";
     import { SvelteMap } from "svelte/reactivity";
+    import { cn } from "../util/cn.js";
 
     export type RadioGroupOption = {
         value: string;
@@ -153,7 +154,7 @@
 </script>
 
 <fieldset
-    class="space-y-3 {className}"
+    class={cn("space-y-3", className)}
     aria-disabled={disabled ? "true" : undefined}
     onkeydown={handleKeydown}
     {...restProps}

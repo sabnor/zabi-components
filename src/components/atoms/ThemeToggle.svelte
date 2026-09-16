@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { Sun, Moon } from "@lucide/svelte";
     import { FOCUS_BRAND_CLASS } from "../util/focus-utils.js";
+    import { cn } from "../util/cn.js";
     
     function safeLocalStorage(): Storage | undefined {
         return typeof window !== "undefined" ? localStorage : undefined;
@@ -109,7 +110,7 @@
 
     const buttonClasses = $derived(() => {
         const sizeStyles = sizeClass();
-        return `
+        return cn(`
             ${sizeStyles.button}
             ${variantClass()}
             rounded-control
@@ -126,7 +127,7 @@
             disabled:active:scale-100
             disabled:hover:bg-action-disabled
             ${FOCUS_BRAND_CLASS}
-        `.trim().replace(/\s+/g, " ");
+        `).replace(/\s+/g, " ");
     });
 </script>
 

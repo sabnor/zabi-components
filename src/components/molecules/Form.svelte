@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import type { HTMLFormAttributes } from "svelte/elements";
+    import { cn } from "../util/cn.js";
 
     type Props = Omit<HTMLFormAttributes, "method" | "action" | "onsubmit" | "class"> & {
         method?: "get" | "post";
@@ -31,14 +32,14 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 </script>
 
 <form
     {method}
     {action}
     novalidate={novalidate || undefined}
-    class="space-y-4 {className}"
+    class={cn("space-y-4", className)}
     onsubmit={(event) => onsubmit?.(event)}
     {...restProps}
 >

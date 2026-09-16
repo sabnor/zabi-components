@@ -2,6 +2,7 @@
     import Badge from "./Badge.svelte";
     import type { ExtendedSemanticVariant } from "../types/variants.js";
 
+    import { cn } from "../util/cn.js";
     interface Props {
         title: string;
         description: string;
@@ -54,10 +55,7 @@
         "opacity-50 cursor-not-allowed pointer-events-none hover:border-border hover:bg-card active:scale-100";
 
     const panelClasses = $derived(
-        [baseClasses, isDisabled ? disabledClasses : "", className]
-            .filter(Boolean)
-            .join(" ")
-            .trim(),
+        cn(baseClasses, isDisabled ? disabledClasses : "", className),
     );
 
     function handleKeydown(event: KeyboardEvent) {

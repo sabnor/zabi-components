@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
 
+    import { cn } from "../util/cn.js";
     type Tone = 'body' | 'description' | 'caption' | 'headline' | 'label' | 'error';
     type Size = 'xs' | 'sm' | 'md' | 'lg';
     type Weight = 'normal' | 'medium' | 'semibold' | 'bold';
@@ -66,9 +67,7 @@
 
 <svelte:element
     this={Tag}
-    class={[toneClass[tone], sizeClass[size], weightClass[resolvedWeight], className]
-        .filter(Boolean)
-        .join(' ')}
+    class={cn(toneClass[tone], sizeClass[size], weightClass[resolvedWeight], className)}
 >
     {#if children}
         {@render children()}

@@ -1,5 +1,6 @@
 <script lang="ts">
     import ListItemRow, { type ListItemData } from "./ListItem.svelte";
+    import { cn } from "../util/cn.js";
 
     export type ListItem = ListItemData;
 
@@ -28,10 +29,10 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const listClasses = $derived(
-        `space-y-1 overflow-hidden rounded-container ${className}`.trim(),
+        cn(`space-y-1 overflow-hidden rounded-container ${className}`),
     );
 </script>
 

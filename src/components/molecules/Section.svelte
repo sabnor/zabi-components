@@ -2,6 +2,7 @@
     import type { Snippet } from "svelte";
     import type { SizeVariant } from "../types/variants.js";
     import Heading from "../atoms/Heading.svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         title?: string;
@@ -36,7 +37,7 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
-    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const sizeClasses = $derived.by(() => {
         switch (size) {
@@ -104,13 +105,13 @@
         const base = "w-full";
         const maxWidthClass = maxWidthClasses;
         const centeredClass = centered ? "mx-auto" : "";
-        return `${base} ${maxWidthClass} ${centeredClass}`.trim();
+        return cn(`${base} ${maxWidthClass} ${centeredClass}`);
     });
 
     const contentClasses = $derived.by(() => {
         const base = "px-4 sm:px-6 lg:px-8";
         const centeredClass = centered ? "text-center" : "";
-        return `${base} ${centeredClass}`.trim();
+        return cn(`${base} ${centeredClass}`);
     });
 </script>
 
