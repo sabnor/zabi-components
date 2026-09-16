@@ -77,9 +77,6 @@ the semantic families read as a single family instead of six unrelated colours.
   resolved to a Tailwind default `app.css` never defined. An elevated Card no
   longer deepens its shadow on hover — it was already at the floating step, so
   the hover now changes background only.
-
-#### Components
-
 - **Layout spacing snaps to the 4px grid.** 30 half-step utilities
   (`gap-1.5`, `gap-2.5`, `px-2.5`, `px-3.5`, `py-2.5`, `space-y-1.5`, …) were
   setting a second rhythm against the first across forms, sidebars and badges.
@@ -88,6 +85,9 @@ the semantic families read as a single family instead of six unrelated colours.
   radio control still use it.
 - A one-row `Textarea` is now 40px like the `Input` beside it (was 44px, from
   `py-2.5`).
+
+#### Components
+
 - **`Badge`**: rebuilt. New `emphasis` prop (`subtle` | `solid`, default
   `subtle`), plus `class`, `children` and `...restProps` — none of which existed,
   despite stories shipping for two of them. Pill radius instead of 2px. Renders
@@ -134,6 +134,11 @@ the semantic families read as a single family instead of six unrelated colours.
 - `scripts/check-token-violations.js` now also rejects fixed ramp steps in
   interaction states (`hover:bg-base-*`, `active:bg-base-*`), which is how the
   invisible ghost hover got in.
+- `scripts/check-token-violations.js` also rejects **off-scale shadows**
+  (anything but `shadow-sm` / `shadow-lg` / `shadow-none`, including a bare
+  `shadow`) and **half-step spacing** on gap/space/padding utilities. Margins
+  are exempt by design. Comment lines are skipped so prose about shadow DOM
+  doesn't trip it.
 - New scripts: `npm run check:ramps`, `check:contrast`, `check:geometry`, and
   `check:design` (all four). `build:css` and `check` run `check:design`.
 
