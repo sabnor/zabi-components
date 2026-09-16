@@ -109,7 +109,7 @@
                 class="w-full h-32 min-w-64 object-cover rounded-container border-0"
             />
             <div
-                class="absolute inset-0 border border-input-border bg-input min-w-64 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity rounded-container flex items-center justify-center"
+                class="absolute inset-0 border border-border-overlay bg-surface-overlay/60 backdrop-blur-md min-w-64 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity rounded-container flex items-center justify-center"
             >
                 <div class="flex gap-2">
                     <Button
@@ -133,7 +133,7 @@
         </div>
     {:else}
         <div
-            class="border-2 border-dashed border-input rounded-container min-w-64 p-6 text-center hover:border-brand-500 transition-colors {disabled
+            class="border-2 border-dashed border-input-border rounded-container min-w-64 p-6 text-center hover:border-action-primary transition-colors {disabled
                 ? 'cursor-not-allowed opacity-50'
                 : 'cursor-pointer'}"
             onclick={triggerFileSelect}
@@ -169,7 +169,12 @@
     />
 
     {#if errorMessage}
-        <div class="rounded-control border border-error px-3 py-2 text-sm text-error" role="alert">
+        <!-- Same tinted fill + tinted border Alert uses, rather than a bare
+             step-600 outline on a transparent ground. -->
+        <div
+            class="rounded-container border bg-error-subtle border-error-border text-error-text px-3 py-2 text-sm"
+            role="alert"
+        >
             <p class="font-medium">Image upload failed</p>
             <p>{errorMessage}</p>
             <p class="mt-1">Recovery action: try another file or retry upload.</p>
