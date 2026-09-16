@@ -134,6 +134,12 @@ the semantic families read as a single family instead of six unrelated colours.
 - `scripts/check-token-violations.js` now also rejects fixed ramp steps in
   interaction states (`hover:bg-base-*`, `active:bg-base-*`), which is how the
   invisible ghost hover got in.
+- **New** `scripts/generate-surfaces.js` + `tokens/surface-ladder.js` — the four
+  dark surface levels are now derived from one wash ladder instead of four
+  independently tuned hex values, and regenerate with `npm run sync:tokens`.
+  `--color-surface-elevated` moves `#35353a` → `#363638` and
+  `--color-surface-overlay` `#44444c` → `#454547` (slightly less blue); base and
+  raised were already exactly on the ladder.
 - `scripts/check-token-violations.js` also rejects **off-scale shadows**
   (anything but `shadow-sm` / `shadow-lg` / `shadow-none`, including a bare
   `shadow`) and **half-step spacing** on gap/space/padding utilities. Margins

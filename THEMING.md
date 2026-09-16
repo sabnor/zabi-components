@@ -304,6 +304,19 @@ Supporting tokens:
 - `--color-surface-overlay-hover` (`bg-surface-overlay-hover`): row and icon-button hover **inside** an overlay. It is lighter than the overlay in dark mode.
 - `--color-border-overlay` (`border-border-overlay`): 1px edge on overlays. Transparent in light mode, visible in dark mode.
 
+**The dark levels are generated, not hand-picked.** Each one is `#fafafa` — the
+same light as the dark hover tint `--color-surface-hover` — washed over the page
+at 6.4% / 13.1% / 19.7%, so every level is literally the level below it with more
+light on it. The ladder lives in `tokens/surface-ladder.js`; edit the alphas
+there and run `npm run sync:tokens`, never the hex in `app.css`.
+
+The composite is baked to an opaque hex at build time rather than shipped as
+`rgba()`. Flat colours keep the static toolchain working — `check-contrast.js`
+can resolve every AA pair against a surface, `check-surface-elevation.js` can
+measure the steps — and an opaque overlay means a modal never lets the page bleed
+through it. The trade: nesting past the four levels is not automatic. A card
+inside a card does not self-lighten, it names the next level up.
+
 **Why dark mode steps lightness instead of using shadows:** a drop shadow simulates light blocked by a raised object, which reads on a light page. On a dark page the shadow is as dark as the background, so the signal disappears. In dark mode each level is therefore **lighter** than the one below it, by +6 OKLCH lightness points on the neutral base hue. Light mode keeps white surfaces and uses shadows for elevation.
 
 **Rules:**
