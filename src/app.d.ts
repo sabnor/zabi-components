@@ -1,4 +1,7 @@
 // App-wide type definitions for SvelteKit
+
+/** Injected by Vite's `define` from package.json's version field. */
+declare const __PKG_VERSION__: string;
 declare module '$app/navigation' {
     export function goto(url: string | URL, options?: { replaceState?: boolean; noScroll?: boolean; keepFocus?: boolean; }): Promise<void>;
     export function invalidate(url: string | URL): Promise<void>;

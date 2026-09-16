@@ -7,6 +7,7 @@
         GITHUB_URL,
         INSTALL_COMMAND,
         NPM_URL,
+        VERSION,
         componentCount,
         guarantees,
         layers,
@@ -48,7 +49,7 @@
                         Accessible Svelte&nbsp;5 components, themed by tokens.
                     </h1>
                     <p class="mt-8 max-w-lg text-lg leading-8 text-description sm:text-xl sm:leading-9">
-                        {componentCount} components for SvelteKit, from buttons and inputs to
+                        {componentCount} components for Svelte and SvelteKit, from buttons and inputs to
                         navigation and sidebars. Keyboard support, typed props and light and dark
                         themes come built in.
                     </p>
@@ -60,8 +61,15 @@
 
                     <div class="mt-10">
                         <CopyCommand command={INSTALL_COMMAND} />
+                        <ul class="proof mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-description">
+                            <li>{componentCount} components</li>
+                            <li>v{VERSION}</li>
+                            <li>MIT licensed</li>
+                            <li>SSR-safe</li>
+                            <li>Tokens contrast-checked in CI</li>
+                        </ul>
                         <p class="mt-3 text-sm text-description">
-                            MIT licensed. Works with Svelte 5.43 or newer and Tailwind CSS v4.
+                            Needs Svelte 5.43.8 or newer and Tailwind CSS v4.
                         </p>
                     </div>
                 </div>
@@ -87,8 +95,9 @@
                             Small parts that add up to whole screens.
                         </h2>
                         <p class="mt-6 max-w-lg text-lg leading-8 text-description">
-                            The library is organized in three layers. Start with a single button,
-                            or drop in a complete sidebar that already uses the same buttons inside.
+                            Three layers, so you can start as small as you like. Take a single
+                            button, or drop in a complete sidebar already built from those same
+                            buttons.
                         </p>
                         <a
                             href="/components"
@@ -189,8 +198,8 @@
                         Running in three steps.
                     </h2>
                     <p class="mt-6 max-w-lg text-lg leading-8 text-description">
-                        Without the theme CSS, token classes have no values, so import it once in
-                        your global stylesheet.
+                        Import the theme CSS once in your global stylesheet. That is what gives
+                        the token classes their values.
                     </p>
                 </div>
                 <ol class="space-y-8 lg:col-span-8">
@@ -296,6 +305,13 @@
     /* Grid children may shrink below their content (long code, flex rows) instead of widening the page. */
     .landing :global(.grid > *) {
         min-width: 0;
+    }
+
+    /* Dot separators as generated content, with empty alt text so they are not announced. */
+    .proof li:not(:first-child)::before {
+        content: "·" / "";
+        margin-right: 0.75rem;
+        color: var(--color-border-strong);
     }
 
     .landing pre {

@@ -2,6 +2,8 @@ import { componentsCatalog } from "$lib/showcase/components-catalog";
 import type { ComponentMetadata } from "../../types/page.types";
 
 export const INSTALL_COMMAND = "npm install zabi-components";
+/** package.json's version, inlined by Vite, so the page cannot drift from the release. */
+export const VERSION = __PKG_VERSION__;
 export const GITHUB_URL = "https://github.com/sabnor/zabi-components";
 export const NPM_URL = "https://www.npmjs.com/package/zabi-components";
 
@@ -59,7 +61,7 @@ export const guarantees: Guarantee[] = [
     },
     {
         title: "Keyboard",
-        body: "RadioGroup moves with the arrow keys. Dropdown supports arrows, Home, End and Escape.",
+        body: "RadioGroup moves with the arrow keys, and Dropdown handles arrows, Home, End and Escape, so the keyboard work that is easy to skip is already done.",
     },
     {
         title: "Focus",
