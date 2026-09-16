@@ -8,7 +8,7 @@ export const doc: ComponentDoc = makeDoc({
     name: "List",
     category: "atoms",
     description:
-        "List maps an `items` array to a semantic `<ul role=\"list\">` of rows—ideal for menus and settings where each row fits `ListItemData`. Prefer List when the UI maps cleanly from data; compose ListItem inside your own `<ul>` when you need trailing content (badges, amounts, controls). Put the list in a `list-group` (or use `className` on List) for grouped chrome; use `selectedId` to mark the active link.",
+        "List maps an `items` array to a semantic `<ul role=\"list\">` of rows—ideal for menus and settings where each row fits `ListItemData`. Prefer List when the UI maps cleanly from data; compose ListItem inside your own `<ul>` when you need trailing content (badges, amounts, controls). Put the list in a `list-group` (or use `class` on List) for grouped chrome; use `selectedId` to mark the active link.",
     defaultExample: {
         title: "Minimal rows",
         description:
@@ -209,7 +209,7 @@ export const doc: ComponentDoc = makeDoc({
             "Use List when each row is a simple `ListItemData` shape—settings lists, section navigation, lightweight directories.",
             "Use ListItem inside your own `<ul>` when you need trailing snippets, bespoke markup, or controls that do not belong on the shared data type.",
             "Use `selectedId` with linked rows to reflect the current route or active section.",
-            "Wrap lists in `list-group` (or `className` on List) when you want grouped chrome.",
+            "Wrap lists in `list-group` (or `class` on List) when you want grouped chrome.",
         ],
         whenToAvoid: [
             "Avoid long paragraphs in `description`; keep helper lines short so rows stay scannable.",
