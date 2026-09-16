@@ -19,11 +19,11 @@
 </script>
 
 <article
-    class="flex flex-col gap-3 p-6 rounded-2xl bg-surface-1 border border-base-200 transition-colors duration-200 hover:border-base-300 {className}"
+    class="flex flex-col gap-3 p-6 rounded-container bg-surface-1 border border-border transition-colors duration-200 hover:border-border-medium {className}"
 >
     {#if Icon}
         <span
-            class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-brand-50 text-brand-600"
+            class="inline-flex items-center justify-center w-10 h-10 rounded-control bg-brand-50 text-brand-600"
             aria-hidden="true"
         >
             <Icon size={20} />

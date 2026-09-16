@@ -2,6 +2,8 @@
     import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         value?: number;
         max?: number;
         size?: "sm" | "md" | "lg";
@@ -9,6 +11,7 @@
     }
 
     let {
+        class: className = "",
         value = 0,
         max = 100,
         size = "md",
@@ -27,7 +30,7 @@
     });
 </script>
 
-<div>
+<div class={className} {...restProps}>
     {#if label}
         <div class="flex justify-between items-center mb-2">
             <label for={progressId} class="text-sm font-medium text-label"

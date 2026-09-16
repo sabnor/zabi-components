@@ -8,16 +8,23 @@
 
     interface Props {
         value?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         children?: Snippet;
     }
 
     let {
         value = "",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         children,
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     const context = getContext<NavigationMenuContextValue>(
         NAVIGATION_MENU_CONTEXT_KEY,

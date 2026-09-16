@@ -3,15 +3,17 @@
     import Table from "../atoms/Table.svelte";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         props: ComponentProp[];
         caption?: string;
     }
 
-    let { props, caption = "Props / API" }: Props = $props();
+    let { class: className = "", props, caption = "Props / API" }: Props = $props();
 </script>
 
 {#if props.length === 0}
-    <div class="rounded-lg border border-border bg-base-50 px-4 py-4 text-sm text-description">
+    <div class="rounded-control border border-border bg-base-50 px-4 py-4 text-sm text-description {className}">
         No documented props.
     </div>
 {:else}
@@ -37,7 +39,7 @@
         </thead>
         <tbody>
             {#each props as prop}
-                <tr class="hover:bg-base-50/70">
+                <tr class="hover:bg-surface-hover">
                     <td class="border-b border-border px-4 py-3 font-mono text-body">
                         {prop.name}
                     </td>

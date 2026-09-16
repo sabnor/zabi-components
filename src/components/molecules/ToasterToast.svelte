@@ -14,10 +14,12 @@
     import { toastStore, type ToastItem } from './toast-store.js';
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         toast: ToastItem;
     }
 
-    let { toast }: Props = $props();
+    let { class: className = "", toast }: Props = $props();
 
     /** Seconds until auto-dismiss; `0` means no countdown (manual dismiss only). */
     function autoDismissSeconds(duration: number | undefined): number {
@@ -130,7 +132,7 @@
 </script>
 
 <div
-    class="pointer-events-auto relative w-full min-w-[18rem] overflow-hidden rounded-2xl border border-border bg-surface-overlay shadow-xl"
+    class="pointer-events-auto relative w-full min-w-[18rem] overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg {className}"
     in:fly={toastEnter}
     out:fly={toastLeave}
     onmouseenter={() => (hovered = true)}
@@ -171,7 +173,7 @@
                 {#if hasExpandable}
                     <button
                         type="button"
-                        class="focus-ring cursor-pointer rounded-md p-1 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline focus:outline-none"
+                        class="focus-ring cursor-pointer rounded-control p-1 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline focus:outline-none"
                         aria-expanded={isExpanded}
                         aria-controls="toaster-expand-{toast.id}"
                         aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
@@ -187,7 +189,7 @@
                 {/if}
                 <button
                     type="button"
-                    class="focus-ring cursor-pointer rounded-md p-1 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline focus:outline-none"
+                    class="focus-ring cursor-pointer rounded-control p-1 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline focus:outline-none"
                     onclick={handleDismiss}
                     aria-label="Dismiss notification"
                 >
@@ -221,7 +223,7 @@
                 {paused ? 'Paused — closes' : 'This message will close'} in {count} seconds.
                 <button
                     type="button"
-                    class="focus-ring cursor-pointer rounded-sm text-link underline-offset-2 hover:underline focus:outline-none"
+                    class="focus-ring cursor-pointer rounded-control text-link underline-offset-2 hover:underline focus:outline-none"
                     onclick={stopTimer}
                 >
                     Click to stop

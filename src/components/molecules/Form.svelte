@@ -5,6 +5,8 @@
     type Props = Omit<HTMLFormAttributes, "method" | "action" | "onsubmit" | "class"> & {
         method?: "get" | "post";
         action?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         /** Skip native constraint validation (e.g. when validating in `onsubmit`). */
         novalidate?: boolean;
@@ -19,12 +21,17 @@
     let {
         method = "post",
         action = "",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         novalidate = false,
         onsubmit,
         children,
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 </script>
 
 <form

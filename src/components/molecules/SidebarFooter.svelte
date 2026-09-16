@@ -15,6 +15,8 @@
         isLightMode?: boolean;
         onLogout?: () => void;
         onThemeToggle?: (nextIsLightMode: boolean) => void;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         profilePanelOpen?: boolean;
         profilePanelControlsId?: string;
@@ -35,18 +37,23 @@
         isLightMode = $bindable(false),
         onLogout,
         onThemeToggle,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         profilePanelOpen = false,
         profilePanelControlsId = "",
         onProfileClick,
         profilePanel,
     }: Props = $props();
 
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
+
     const showFooter = $derived(showProfile || showLogout || showThemeToggle);
     const showPanelLauncher = $derived(showProfile);
 
     const avatarClasses =
-        "size-10 rounded-xl bg-action-primary text-action-primary flex items-center justify-center text-sm font-semibold shrink-0 ring-1 ring-border-focus";
+        "size-10 rounded-container bg-action-primary text-action-primary flex items-center justify-center text-sm font-semibold shrink-0 ring-1 ring-border-focus";
 
     function getTextToneClass(isMuted = false): string {
         return isMuted ? "text-description" : "text-headline";
@@ -67,7 +74,7 @@
                 <button
                     type="button"
                     data-sidebar-flyout-anchor="profile"
-                    class="w-full cursor-pointer rounded-xl px-2 py-2 outline-none transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover hover:ring-1 hover:ring-border/60 active:bg-base-200 focus-ring focus-ring--nav"
+                    class="w-full cursor-pointer rounded-container px-2 py-2 outline-none transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover hover:ring-1 hover:ring-border/60 active:bg-surface-active focus-ring focus-ring--nav"
                     aria-haspopup="dialog"
                     aria-expanded={profilePanelOpen}
                     aria-controls={profilePanelControlsId.trim()

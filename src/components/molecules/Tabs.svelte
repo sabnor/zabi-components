@@ -3,6 +3,8 @@
     import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         tabs?: Array<{
             id: string;
             label: string;
@@ -17,6 +19,7 @@
     }
 
     let {
+        class: className = "",
         tabs = [],
         activeTab = $bindable(""),
         variant = "default",
@@ -89,7 +92,7 @@
     }
 </script>
 
-<div class="tabs-container">
+<div class="tabs-container {className}">
     <div
         class="flex border-b border-base-200"
         role="tablist"
@@ -102,12 +105,12 @@
                 type="button"
                 role="tab"
                 id={getTabId(tab.id)}
-                class="focus-ring cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none active:bg-base-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description {activeTab ===
+                class="focus-ring cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none active:bg-surface-active disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description {activeTab ===
                 tab.id
                     ? variant === 'pills'
                         ? 'border-brand-500 bg-brand-100 text-brand-700'
                         : 'border-brand-500 text-body'
-                    : 'border-transparent text-description hover:border-base-300 hover:text-body'}"
+                    : 'border-transparent text-description hover:border-border-medium hover:text-body'}"
                 onclick={() => selectTab(tab.id)}
                 disabled={tab.disabled}
                 aria-selected={activeTab === tab.id}

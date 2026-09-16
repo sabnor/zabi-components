@@ -17,6 +17,8 @@
     };
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         id?: string;
         type: SelectionControlType;
         shape: SelectionControlShape;
@@ -33,6 +35,7 @@
     }
 
     let {
+        class: className = "",
         id: idProp,
         type,
         shape,
@@ -69,7 +72,7 @@
     }
 </script>
 
-<div class="flex items-center gap-2">
+<div class="flex items-center gap-2 {className}">
     <label for={controlId} class={labelWrapperClasses}>
         <span class={controlContainerClasses}>
             <input

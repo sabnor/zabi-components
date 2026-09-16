@@ -9,16 +9,23 @@
 
     interface Props {
         value?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         children?: Snippet;
     }
 
     let {
         value = "",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         children,
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     let contentElement = $state<HTMLElement | null>(null);
 
@@ -72,7 +79,7 @@
     <div
         bind:this={contentElement}
         id={panelId || undefined}
-        class="absolute left-0 top-full mt-2 bg-surface-overlay rounded-lg shadow-lg border border-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out {className}"
+        class="absolute left-0 top-full mt-2 bg-surface-overlay rounded-control shadow-lg border border-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out {className}"
         data-navigation-menu-content
         {...restProps}
     >

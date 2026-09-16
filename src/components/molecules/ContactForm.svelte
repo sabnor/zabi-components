@@ -10,14 +10,21 @@
     import type { ContactFormData } from "../types/page.types";
 
     interface Props {
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         onsubmit?: (event: SubmitEvent) => void;
     }
 
     let {
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         onsubmit,
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     let formData = $state<ContactFormData>({
         name: "",
@@ -81,7 +88,7 @@
             <Form onsubmit={handleFormSubmit} className="space-y-4">
                 {#if formErrorMessage}
                 <div
-                    class="rounded-lg border border-error px-4 py-3 text-sm text-error"
+                    class="rounded-control border border-error px-4 py-3 text-sm text-error"
                     role="alert"
                 >
                     <p class="font-medium">Something went wrong</p>

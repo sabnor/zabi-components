@@ -9,16 +9,23 @@
 
     interface Props {
         value?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         children?: Snippet;
     }
 
     let {
         value = "",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         children,
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     const context = getContext<NavigationMenuContextValue>(
         NAVIGATION_MENU_CONTEXT_KEY,
@@ -58,7 +65,7 @@
 
 <button
     type="button"
-    class="focus-ring focus-ring--nav inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover data-[active=true]:bg-nav-menu-active data-[active=true]:text-nav-menu-item-active {className}"
+    class="focus-ring focus-ring--nav inline-flex cursor-pointer items-center justify-center gap-2 rounded-control bg-transparent px-4 py-2 text-sm font-medium text-nav-menu-item transition-colors duration-150 outline-none hover:bg-nav-menu-hover hover:text-nav-menu-item-hover data-[active=true]:bg-nav-menu-active data-[active=true]:text-nav-menu-item-active {className}"
     aria-expanded={isActive ? 'true' : 'false'}
     aria-controls={panelId || undefined}
     onclick={handleClick}

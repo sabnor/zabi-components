@@ -165,7 +165,7 @@
     {#if content && !disabled}
         <div
             id={tooltipId}
-            class="tooltip pointer-events-none invisible absolute z-tooltip whitespace-normal wrap-break-word rounded-lg bg-tooltip-bg px-3 py-2 text-sm leading-5 text-tooltip-fg opacity-0 transition-[opacity,visibility,transform] duration-200 ease-in-out"
+            class="tooltip pointer-events-none invisible absolute z-tooltip whitespace-normal wrap-break-word rounded-control bg-tooltip-bg px-3 py-2 text-sm leading-5 text-tooltip-fg opacity-0 transition-[opacity,visibility,transform] duration-200 ease-in-out"
             role="tooltip"
             aria-hidden={!isVisible}
             data-visible={isVisible}

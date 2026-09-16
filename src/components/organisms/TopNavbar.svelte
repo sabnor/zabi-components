@@ -15,6 +15,8 @@
         /** `aria-label` on `<nav>` when multiple nav landmarks exist. */
         ariaLabel?: string;
         showThemeToggle?: boolean;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         /** Slim mode: only the `nav` region (no full chrome bar). */
         embedded?: boolean;
@@ -30,7 +32,8 @@
         brandHref,
         ariaLabel,
         showThemeToggle = true,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         embedded = false,
         items = [],
         navVariant = "header",
@@ -41,6 +44,10 @@
         actions,
         ...restProps
     }: Props & { nav?: Snippet; actions?: Snippet } = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     let isMenuOpen = $state(false);
 

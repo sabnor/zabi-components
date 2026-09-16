@@ -4,6 +4,8 @@
     import { RADIO_CHECKED_DOT_CLASSES } from "./selection-control.styles";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         id?: string;
         name?: string;
         value?: string;
@@ -16,6 +18,7 @@
     }
 
     let {
+        class: className = "",
         id,
         name = "",
         value = "",
@@ -46,6 +49,7 @@
     {onChange}
     {onchange}
     {mark}
+    class={className}
     {...restProps}
 />
 

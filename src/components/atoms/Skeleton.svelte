@@ -20,9 +20,9 @@
     }: Props = $props();
 
     const radius: Record<Variant, string> = {
-        text: "rounded-md",
+        text: "rounded-control",
         circle: "rounded-full",
-        block: "rounded-lg",
+        block: "rounded-control",
     };
 
     const defaultShape: Record<Variant, string> = {

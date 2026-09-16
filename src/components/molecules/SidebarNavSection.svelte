@@ -8,6 +8,8 @@
         /** `aria-label` on the `<ul>` (required when title is hidden in collapsed mode). */
         listAriaLabel: string;
         collapsed?: boolean;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         children: Snippet;
     }
@@ -17,9 +19,14 @@
         sectionKey = "",
         listAriaLabel,
         collapsed = false,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         children,
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     const trimmedTitle = $derived(title.trim());
     const headingId = $derived(

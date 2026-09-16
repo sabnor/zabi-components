@@ -10,6 +10,8 @@
     import { generateId } from "../util/ssr-safe.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         value?: string | number | undefined;
         options?: Array<{
             value: string | number;
@@ -40,6 +42,7 @@
     }
 
     let {
+        class: className = "",
         value = $bindable(undefined),
         options = [],
         searchable = true,
@@ -69,26 +72,11 @@
     let selectContainer: HTMLDivElement;
     let searchQuery = $state("");
 
+    // Same fixed height scale as Button, IconButton and Input (32 / 40 / 48).
     const sizeClass = $derived(() => {
-        if (size === "sm") {
-            return {
-                padding: "px-4 py-2",
-                text: "text-sm",
-                leading: "leading-5",
-            };
-        } else if (size === "lg") {
-            return {
-                padding: "px-4 py-3",
-                text: "text-base",
-                leading: "leading-6",
-            };
-        } else {
-            return {
-                padding: "px-4 py-2.5",
-                text: "text-base",
-                leading: "leading-6",
-            };
-        }
+        if (size === "sm") return { box: "h-8 px-3", text: "text-sm" };
+        if (size === "lg") return { box: "h-12 px-4", text: "text-base" };
+        return { box: "h-10 px-3", text: "text-sm" };
     });
 
     const variantClass = $derived(() => {
@@ -104,13 +92,13 @@
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "focus-ring flex w-full cursor-pointer items-center justify-between rounded-lg border bg-input text-body transition-all duration-200 hover:bg-input-hover active:bg-input-focus focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:opacity-50";
+            "focus-ring flex w-full cursor-pointer items-center justify-between gap-2 rounded-control border bg-input text-body transition-colors duration-150 hover:bg-input-hover active:bg-input-focus focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text";
 
-        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
+        return `${baseClasses} ${sizeStyles.box} ${sizeStyles.text} ${variantClass()}`.trim();
     });
 
     const labelClasses = $derived(
-        () => "block text-sm font-medium text-label mb-1",
+        () => "block text-sm font-medium text-label mb-1.5",
     );
 
     const messageClasses = $derived(() => {
@@ -217,7 +205,7 @@
 
 <svelte:window onclick={handleClickOutside} onkeydown={handleKeydown} />
 
-<div bind:this={selectContainer} class="w-full select-container">
+<div bind:this={selectContainer} class="w-full select-container {className}">
     {#if label}
         <label for={selectId} class={labelClasses()}>{label}</label>
     {/if}
@@ -287,8 +275,8 @@
                 >
                     {#if isLoading}
                         <div class="space-y-2 px-2 py-2" role="status" aria-live="polite">
-                            <div class="h-8 w-full animate-pulse rounded-md bg-base-200"></div>
-                            <div class="h-8 w-full animate-pulse rounded-md bg-base-200"></div>
+                            <div class="h-8 w-full animate-pulse rounded-control bg-base-200"></div>
+                            <div class="h-8 w-full animate-pulse rounded-control bg-base-200"></div>
                             <p class="text-xs text-description">{loadingText}</p>
                         </div>
                     {:else if filteredOptions().length > 0}
@@ -303,7 +291,7 @@
                                     aria-selected={isSameValue(value, option.value)
                                         ? true
                                         : undefined}
-                                    class="focus-ring flex w-full items-center justify-start rounded-md border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {isSameValue(
+                                    class="focus-ring flex w-full items-center justify-start rounded-control border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {isSameValue(
                                         value,
                                         option.value,
                                     )
@@ -323,13 +311,13 @@
                             {noResultsText}
                         </div>
                     {:else}
-                        <div class="rounded-md border border-border bg-surface-overlay-hover px-3 py-3 text-sm">
+                        <div class="rounded-control border border-border bg-surface-overlay-hover px-3 py-3 text-sm">
                             <p class="font-medium text-headline">{emptyStateTitle}</p>
                             <p class="mt-1 text-description">{emptyStateDescription}</p>
                             {#if emptyStateActionLabel && onEmptyStateAction}
                                 <button
                                     type="button"
-                                    class="mt-3 inline-flex min-h-11 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm text-action-primary"
+                                    class="mt-3 inline-flex min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm text-action-primary"
                                     onclick={onEmptyStateAction}
                                 >
                                     {emptyStateActionLabel}

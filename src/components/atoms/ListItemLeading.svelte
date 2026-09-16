@@ -2,14 +2,14 @@
     import type { Snippet } from "svelte";
 
     interface Props {
-        /** e.g. `rounded-full` for avatars; default is `rounded-md` for icons. */
+        /** e.g. `rounded-full` for avatars; default is `rounded-control` for icons. */
         class?: string;
         children?: Snippet;
     }
 
     let { class: className = "", children }: Props = $props();
 
-    const roundingClass = $derived(className.trim() ? className.trim() : "rounded-md");
+    const roundingClass = $derived(className.trim() ? className.trim() : "rounded-control");
 </script>
 
 <span

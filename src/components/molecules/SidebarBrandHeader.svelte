@@ -4,6 +4,8 @@
         brandName?: string;
         logoSrc?: string;
         logoAlt?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
     }
 
@@ -12,8 +14,13 @@
         brandName = "",
         logoSrc = "",
         logoAlt = "",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     const trimmedName = $derived(brandName.trim());
     const monogram = $derived(
@@ -39,7 +46,7 @@
     >
         {#if showLogo}
             <span
-                class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background ring-1 ring-border"
+                class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-container bg-background ring-1 ring-border"
             >
                 <img
                     src={logoSrc}
@@ -51,7 +58,7 @@
             </span>
         {:else if showMonogram}
             <span
-                class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-action-primary-subtle text-xs font-bold text-headline ring-1 ring-border"
+                class="flex size-9 shrink-0 items-center justify-center rounded-container bg-action-primary-subtle text-xs font-bold text-headline ring-1 ring-border"
                 aria-hidden="true"
             >
                 {monogram}

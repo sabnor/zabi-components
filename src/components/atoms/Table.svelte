@@ -12,7 +12,7 @@
 </script>
 
 <div
-    class="overflow-x-auto rounded-lg border border-border shadow-sm {className}"
+    class="overflow-x-auto rounded-control border border-border shadow-sm {className}"
 >
     <table class="w-full min-w-[20rem] border-collapse text-left text-sm text-body">
         {#if caption}

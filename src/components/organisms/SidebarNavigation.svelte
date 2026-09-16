@@ -34,6 +34,8 @@
         items?: SidebarNavigationItem[];
         currentPath?: string;
         ariaLabel?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         logoSrc?: string;
         logoAlt?: string;
@@ -78,7 +80,8 @@
         currentPath = "",
         activePrimaryHref = "",
         ariaLabel = "Sidebar navigation",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         logoSrc = "",
         logoAlt = "",
         brandName = "",
@@ -112,6 +115,10 @@
         profilePanel,
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     const isCollapsed = $derived(mode === "collapsed");
     const isCard = $derived(layout === "card");
@@ -218,13 +225,13 @@
             ? "flex min-h-10 items-center justify-center px-0 py-2"
             : "flex min-h-10 items-center gap-2.5 px-2.5 py-2";
         const structural =
-            "focus-ring focus-ring--nav w-full cursor-pointer rounded-lg no-underline transition-colors duration-150 outline-none";
+            "focus-ring focus-ring--nav w-full cursor-pointer rounded-control no-underline transition-colors duration-150 outline-none";
 
         if (isActive) {
             return `${structural} ${layoutClasses} bg-nav-menu-active text-inherit hover:bg-nav-menu-active hover:text-inherit active:opacity-90`;
         }
 
-        return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200`;
+        return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
     }
 
     function handleNavigate(item: SidebarNavigationItem, event: MouseEvent) {
@@ -307,7 +314,7 @@
                             <Button
                                 variant={searchTriggerVariant}
                                 size={searchTriggerSize}
-                                isFullWidth
+                                fullWidth
                                 onclick={handleSearchClick}
                             >
                                 <span class="flex w-full items-center justify-start gap-2.5">
@@ -334,7 +341,7 @@
                             bind:value={searchValue}
                             placeholder={searchPlaceholder}
                             aria-label={searchPlaceholder}
-                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent"
+                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent"
                         />
                     </div>
                 {/if}
@@ -446,7 +453,7 @@
             {/if}
         {:else}
             <div
-                class="rounded-xl border border-border border-dashed bg-transparent px-3.5 py-4 ring-1 ring-border/60"
+                class="rounded-container border border-border border-dashed bg-transparent px-3.5 py-4 ring-1 ring-border/60"
             >
                 <h3 class="text-sm font-semibold {getTextToneClass()}">
                     {normalizedSearchTerm && searchMode === "input"
@@ -461,7 +468,7 @@
                 {#if !(normalizedSearchTerm && searchMode === "input")}
                     <button
                         type="button"
-                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
+                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
                         onclick={handleEmptyStateAction}
                     >
                         {emptyStateActionLabel}

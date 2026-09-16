@@ -9,6 +9,8 @@
     };
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         isOpen?: boolean;
         placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
         ariaLabel?: string;
@@ -28,6 +30,7 @@
     }
 
     let {
+        class: className = "",
         isOpen = $bindable(false),
         placement = 'bottom-start',
         ariaLabel = 'Menu',
@@ -202,7 +205,7 @@
     const dropdownContentClasses = $derived(() => {
         return [
             placementClasses(),
-            'rounded-lg border border-border bg-surface-overlay py-2 shadow-lg transition-all duration-200 ease-in-out',
+            'rounded-control border border-border bg-surface-overlay py-2 shadow-lg transition-all duration-200 ease-in-out',
             transformClasses(),
         ]
             .join(' ')
@@ -213,12 +216,12 @@
     const itemRole = $derived(menuRole === 'listbox' ? 'option' : 'menuitem');
 
     const optionClasses =
-        'focus-ring flex w-full items-center justify-start rounded-md px-3 py-2 text-left text-sm text-body transition-colors hover:bg-surface-overlay-hover focus:outline-none disabled:cursor-not-allowed disabled:opacity-50';
+        'focus-ring flex w-full items-center justify-start rounded-control px-3 py-2 text-left text-sm text-body transition-colors hover:bg-surface-overlay-hover focus:outline-none disabled:cursor-not-allowed disabled:opacity-50';
 </script>
 
 <div
     bind:this={rootEl}
-    class="relative inline-block"
+    class="relative inline-block {className}"
     data-placement={placement}
     onkeydown={handleKeydown}
     {...restProps}

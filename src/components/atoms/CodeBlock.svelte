@@ -7,6 +7,8 @@
         /** Raw source; escaped unless `trustHtml` (e.g. highlighter HTML). */
         code: string;
         language?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         showCopyButton?: boolean;
         /** If true, `{@html code}` — only trusted, sanitized input. */
@@ -16,11 +18,16 @@
     let {
         code,
         language = "svelte",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         showCopyButton = true,
         trustHtml = false,
         ...restProps
     }: Props & Record<string, unknown> = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     let copied = $state(false);
 
@@ -38,7 +45,7 @@
 </script>
 
 <div
-    class="code-block relative bg-surface-1 border border-border rounded-lg overflow-hidden {className}"
+    class="code-block relative bg-surface-1 border border-border rounded-control overflow-hidden {className}"
     {...restProps}
 >
     <div

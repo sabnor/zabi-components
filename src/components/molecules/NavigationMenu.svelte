@@ -33,6 +33,8 @@
 
     interface Props {
         viewport?: boolean | "mobile";
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         items?: NavigationMenuItemData[];
         children?: Snippet;
@@ -45,7 +47,8 @@
 
     let {
         viewport = true,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         items = [],
         children,
         listClassName = "",
@@ -53,6 +56,10 @@
         ariaLabel = "Main navigation",
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     let activeItem = $state<string | null>(null);
     let isMobile = $state(false);

@@ -13,6 +13,8 @@
         badgeVariant?: ExtendedSemanticVariant;
         /** Overrides the default accessible name for the clickable region. */
         ariaLabel?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         target?: HTMLAnchorElement["target"];
         rel?: string;
@@ -28,11 +30,16 @@
         badgeText,
         badgeVariant = "neutral",
         ariaLabel,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         target,
         rel,
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(`${classAttr} ${legacyClass}`.trim());
 
     const isDisabled = $derived(disabled || loading);
 
@@ -41,10 +48,10 @@
     );
 
     const baseClasses =
-        "group focus-ring focus-ring--muted block rounded-2xl border border-base-200 bg-base-0 p-6 text-left transition-all duration-200 hover:border-headline/30 hover:bg-base-50 active:scale-[0.99] active:bg-base-100";
+        "group focus-ring focus-ring--muted block rounded-container border border-border bg-card p-6 text-left transition-colors duration-150 hover:border-border-medium hover:bg-surface-hover active:scale-[0.99] active:bg-surface-active";
 
     const disabledClasses =
-        "opacity-50 cursor-not-allowed pointer-events-none hover:border-base-200 hover:bg-base-0 active:scale-100";
+        "opacity-50 cursor-not-allowed pointer-events-none hover:border-border hover:bg-card active:scale-100";
 
     const panelClasses = $derived(
         [baseClasses, isDisabled ? disabledClasses : "", className]
