@@ -85,6 +85,15 @@ the semantic families read as a single family instead of six unrelated colours.
   now actually rebrands headings. `level` is typed `1 | 2 | 3 | 4 | 5 | 6`
   instead of `number`; new `size` prop decouples visual size from semantic
   level; `children` snippet supported; display sizes carry negative tracking.
+- **`Text`**: now sits on the same type ramp as `Heading` rather than carrying
+  its own — `size="md"` matches an `h6` and `size="lg"` an `h5`, line box
+  included, and a new `xs` step (12px) extends the bottom. Leading is stated
+  rather than inherited from Tailwind's defaults, so the shared steps stay
+  locked together if the scale is retuned. **New `weight` prop** (`normal` |
+  `medium` | `semibold` | `bold`) lets body copy carry emphasis without being
+  promoted to a heading; `tone="label"` defaults to `medium`, every other tone
+  to `normal`. Purely additive — existing `sm`/`md`/`lg` call sites are
+  unchanged visually.
 - **`Input`**: raised surface, quieter placeholder, `min-w-48` removed.
 - **`Card`**: radius no longer scales with size; `outlined` uses `border-border`.
 

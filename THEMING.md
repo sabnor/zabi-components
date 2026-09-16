@@ -321,6 +321,27 @@ To retune the dark levels, edit the four `--color-surface-*` values in the `.dar
 
 > The light surface tokens must stay **below** the `/* Background Colors */` marker in `@theme`. `scripts/sync-theme-tokens.js` regenerates everything between the base-scale aliases and that marker.
 
+## 🔠 Type Scale
+
+`Heading` and `Text` sit on **one** ramp rather than each carrying its own, so a
+heading and the copy beneath it share line boxes instead of nearly matching.
+
+| Step | `Heading` | `Text` |
+|---|---|---|
+| 36px | `level={1}` | — |
+| 30px | `level={2}` | — |
+| 24px | `level={3}` | — |
+| 20px | `level={4}` | — |
+| 18px | `level={5}` | `size="lg"` |
+| 16px | `level={6}` | `size="md"` (default) |
+| 14px | — | `size="sm"` |
+| 12px | — | `size="xs"` |
+
+Headings tighten tracking as they grow and are `semibold`/`bold`; `Text` takes a
+`weight` prop (`normal` · `medium` · `semibold` · `bold`) so body copy can carry
+emphasis without being promoted to a heading. `tone="label"` defaults to
+`medium`; every other tone defaults to `normal`.
+
 ## 📁 File Structure
 
 ```
