@@ -54,7 +54,7 @@
             </div>
             <button
                 type="button"
-                class="focus-ring shrink-0 cursor-pointer rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-label transition-colors hover:bg-base-100 aria-pressed:bg-action-primary-subtle aria-pressed:text-headline"
+                class="focus-ring inline-flex h-7 shrink-0 cursor-pointer items-center rounded-full border border-border px-3 text-xs font-semibold text-label transition-colors hover:bg-surface-hover aria-pressed:bg-action-primary-subtle aria-pressed:text-headline"
                 aria-pressed={showNames}
                 onclick={() => (showNames = !showNames)}
             >

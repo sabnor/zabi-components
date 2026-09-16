@@ -13,9 +13,9 @@
     } from "$lib/marketing/content";
 
     const primaryLink =
-        "focus-ring inline-flex items-center justify-center rounded-xl bg-action-primary px-6 py-3.5 text-base font-semibold text-action-primary transition-colors hover:bg-action-primary-hover";
+        "focus-ring inline-flex h-12 items-center justify-center rounded-xl bg-action-primary px-6 text-base font-semibold text-action-primary transition-colors hover:bg-action-primary-hover";
     const secondaryLink =
-        "focus-ring inline-flex items-center justify-center rounded-xl border border-border-medium px-6 py-3.5 text-base font-semibold text-headline transition-colors hover:bg-card";
+        "focus-ring inline-flex h-12 items-center justify-center rounded-xl border border-border-medium px-6 text-base font-semibold text-headline transition-colors hover:bg-card";
 </script>
 
 <svelte:head>
@@ -117,7 +117,7 @@
                                     <li>
                                         <a
                                             href={`/components/${name}`}
-                                            class="focus-ring inline-flex rounded-lg border border-border bg-card px-2.5 py-1 text-sm font-medium text-body transition-colors hover:border-border-strong hover:text-headline"
+                                            class="focus-ring inline-flex h-7 items-center rounded-lg border border-border bg-card px-3 text-sm font-medium text-body transition-colors hover:border-border-strong hover:text-headline"
                                         >
                                             {name}
                                         </a>
@@ -142,8 +142,8 @@
                     </h2>
                     <p class="mt-6 max-w-lg text-lg leading-8 text-description">
                         Components never hardcode a color. They read semantic tokens like
-                        <code class="rounded bg-card px-1.5 py-0.5 text-[0.9em] text-headline">action-primary</code>
-                        and <code class="rounded bg-card px-1.5 py-0.5 text-[0.9em] text-headline">focus-ring</code>,
+                        <code class="rounded bg-card px-2 py-0.5 text-[0.9em] text-headline">action-primary</code>
+                        and <code class="rounded bg-card px-2 py-0.5 text-[0.9em] text-headline">focus-ring</code>,
                         so your brand goes in one place: globally, or scoped to a single section.
                     </p>
                     <p class="mt-4 max-w-lg text-lg leading-8 text-description">
@@ -232,13 +232,13 @@
                     <div class="flex flex-col gap-3 whitespace-nowrap sm:flex-row lg:col-span-4 lg:justify-end">
                         <a
                             href="/components"
-                            class="focus-ring inline-flex items-center justify-center rounded-xl bg-background px-6 py-3.5 text-base font-semibold text-headline transition-opacity hover:opacity-90"
+                            class="focus-ring inline-flex h-12 items-center justify-center rounded-xl bg-background px-6 text-base font-semibold text-headline transition-opacity hover:opacity-90"
                         >
                             Browse components
                         </a>
                         <a
                             href={GITHUB_URL}
-                            class="cta-outline focus-ring inline-flex items-center justify-center rounded-xl border px-6 py-3.5 text-base font-semibold text-action-primary"
+                            class="cta-outline focus-ring inline-flex h-12 items-center justify-center rounded-xl border px-6 text-base font-semibold text-action-primary"
                         >
                             View on GitHub
                         </a>

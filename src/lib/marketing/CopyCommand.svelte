@@ -32,7 +32,7 @@
     <code class="truncate text-[0.9375rem] font-semibold">{command}</code>
     <button
         type="button"
-        class="focus-ring flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-xl text-description transition-colors hover:bg-base-100 hover:text-headline"
+        class="focus-ring flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-xl text-description transition-colors hover:bg-surface-hover hover:text-headline"
         onclick={copy}
         aria-label={copied ? "Install command copied" : "Copy install command"}
     >
