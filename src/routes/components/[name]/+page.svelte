@@ -15,7 +15,7 @@
     let activeTab = $state("tab1");
     let selectValue = $state<string | number | undefined>(undefined);
     let sidebarPath = $state("/revenue");
-    let sidebarSearchValue = $state("Revenue");
+    let sidebarSearchValue = $state("");
     let sidebarSearchPanelOpen = $state(false);
     let sidebarProjectSearch = $state("");
     let selectedProjectId = $state("proj-zabi-web");

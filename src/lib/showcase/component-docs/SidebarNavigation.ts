@@ -36,6 +36,17 @@ export const doc: ComponentDoc = makeDoc({
   onSearchClick={() => (panelOpen = true)}
 />`,
         },
+        {
+            title: "Collapsed rail",
+            description:
+                "Icon-only rail. Labels move into tooltips and item badges become a dot, so a notification count is not lost on collapse.",
+            demoId: demoId("SidebarNavigation", "collapsed"),
+            code: `<SidebarNavigation
+  mode="collapsed"
+  items={sidebarNavItems}
+  currentPath="/revenue"
+/>`,
+        },
     ],
     variantsStates: ["expanded", "collapsed", "searchMode: input", "searchMode: button"],
     props,

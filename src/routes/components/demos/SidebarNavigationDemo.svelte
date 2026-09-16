@@ -12,7 +12,7 @@
     let {
         exampleIndex,
         sidebarPath = "/revenue",
-        sidebarSearchValue = "Revenue",
+        sidebarSearchValue = "",
         sidebarSearchPanelOpen = false,
         sidebarProjectSearch = "",
         selectedProjectId = "proj-zabi-web",
@@ -121,6 +121,20 @@
                 />
             </div>
         {/if}
+    </div>
+{:else if exampleIndex === 2}
+    <div class="w-full">
+        <SidebarNavigation
+            mode="collapsed"
+            items={sidebarNavItems}
+            currentPath={sidebarPath}
+            bind:isLightMode={demoLightMode}
+            onNavigate={handleNavigate}
+            onProfileClick={toggleDemoAccountPanel}
+            profilePanelOpen={demoAccountPanelOpen}
+            profilePanelControlsId={demoAccountPanelId}
+            profilePanel={demoProfilePanel}
+        />
     </div>
 {:else}
     <div class="w-full">
