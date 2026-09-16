@@ -152,7 +152,7 @@
                     role="radio"
                     aria-checked={accent === item.id}
                     tabindex={accent === item.id ? 0 : -1}
-                    class="focus-ring swatch-button flex cursor-pointer items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold text-body transition-colors aria-checked:bg-card aria-checked:text-headline aria-checked:shadow-sm"
+                    class="focus-ring swatch-button flex h-8 cursor-pointer items-center gap-2 rounded-full px-3 text-sm font-semibold text-body transition-colors aria-checked:bg-card aria-checked:text-headline aria-checked:shadow-sm"
                     style={styleFor(item.id, isDark)}
                     onclick={() => (accent = item.id)}
                 >
