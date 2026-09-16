@@ -89,8 +89,13 @@
         </div>
     </div>
 
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+    <!-- Focusable so the snippet can be scrolled by keyboard (WCAG 2.1.1). -->
     <pre
-        class="mt-8 overflow-x-auto rounded-2xl border border-border bg-background p-4 text-sm leading-6 text-body"><code>{snippet}</code></pre>
+        class="focus-ring mt-8 overflow-x-auto rounded-2xl border border-border bg-background p-4 text-sm leading-6 text-body"
+        tabindex="0"
+        role="region"
+        aria-label="Token overrides for the selected accent"><code>{snippet}</code></pre>
 </div>
 
 <style>

@@ -213,8 +213,14 @@
                             </span>
                             <div class="min-w-0">
                                 <h3 class="display pt-2 text-xl font-bold text-headline">{step.title}</h3>
+                                <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+                                <!-- A scrollable region has to be focusable so it can be
+                                scrolled by keyboard (WCAG 2.1.1); the rule cannot tell
+                                that this box scrolls. -->
                                 <pre
-                                    class="mt-3 overflow-x-auto rounded-2xl border border-border bg-card p-5 text-sm leading-6 text-headline"
+                                    class="focus-ring mt-3 overflow-x-auto rounded-2xl border border-border bg-card p-5 text-sm leading-6 text-headline"
+                                    tabindex="0"
+                                    role="region"
                                     aria-label={`${step.language} code`}><code>{step.code}</code></pre>
                             </div>
                         </li>
@@ -234,7 +240,7 @@
                         >
                             Start with one component.
                         </h2>
-                        <p class="cta-copy mt-5 max-w-lg text-lg leading-8">
+                        <p class="mt-5 max-w-lg text-lg leading-8 text-action-primary">
                             Every component page lists its props and variants, with examples
                             you can copy into your app.
                         </p>
@@ -348,12 +354,8 @@
         }
     }
 
-    .cta-copy {
-        color: color-mix(in srgb, var(--color-action-primary-text) 80%, transparent);
-    }
-
     .cta-outline {
-        border-color: color-mix(in srgb, var(--color-action-primary-text) 40%, transparent);
+        border-color: color-mix(in srgb, var(--color-action-primary-text) 70%, transparent);
     }
 
     .cta-outline:hover {

@@ -19,6 +19,36 @@ export const ACCENTS: { id: Accent; label: string; swatch: string }[] = [
     { id: "citron", label: "Citron", swatch: "var(--zabi-citron-500)" },
 ];
 
+/** The stylesheet's own values, for scoping a card back to the default theme. */
+export const IRIS: { light: TokenMap; dark: TokenMap } = {
+    light: {
+        "--color-action-primary": "var(--color-brand-600)",
+        "--color-action-primary-hover": "var(--color-brand-700)",
+        "--color-action-primary-active": "var(--color-brand-800)",
+        "--color-action-primary-text": "#ffffff",
+        "--color-action-primary-subtle": "var(--color-brand-100)",
+        "--color-action-secondary": "rgba(9, 9, 11, 0.07)",
+        "--color-action-secondary-hover": "rgba(9, 9, 11, 0.12)",
+        "--color-brand-100": "var(--zabi-brand-100)",
+        "--color-brand-500": "var(--zabi-brand-500)",
+        "--color-brand-600": "var(--zabi-brand-600)",
+        "--color-brand-700": "var(--zabi-brand-700)",
+        "--color-focus": "var(--color-brand-500)",
+        "--color-focus-ring": "var(--color-focus)",
+        "--color-link": "var(--color-brand-700)",
+    },
+    // Only what `.dark` actually restates; the rest resolves through
+    // `--color-brand-*`, which is why the light entries above hold in dark too.
+    dark: {
+        "--color-action-primary-text": "var(--zabi-brand-950)",
+        "--color-action-secondary": "rgba(250, 250, 250, 0.09)",
+        "--color-action-secondary-hover": "rgba(250, 250, 250, 0.15)",
+        "--color-brand-100": "var(--zabi-brand-900)",
+        "--color-brand-600": "var(--zabi-brand-400)",
+        "--color-brand-700": "var(--zabi-brand-300)",
+    },
+};
+
 /** Dark entries layer on top of light ones, exactly like a `.dark .brand` rule. */
 export const ACCENT_OVERRIDES: Record<
     Exclude<Accent, "iris">,
@@ -111,7 +141,7 @@ export const SNIPPET_TOKENS = [
 /** Every property any accent can set — needed to clear back to Iris. */
 const ALL_TOKEN_NAMES = [
     ...new Set(
-        Object.values(ACCENT_OVERRIDES).flatMap(({ light, dark }) => [
+        [IRIS, ...Object.values(ACCENT_OVERRIDES)].flatMap(({ light, dark }) => [
             ...Object.keys(light),
             ...Object.keys(dark),
         ]),
@@ -119,8 +149,8 @@ const ALL_TOKEN_NAMES = [
 ];
 
 export function tokensFor(id: Accent, dark: boolean): TokenMap {
-    if (id === "iris") return {};
-    const { light, dark: darkMap } = ACCENT_OVERRIDES[id];
+    const { light, dark: darkMap } =
+        id === "iris" ? IRIS : ACCENT_OVERRIDES[id];
     return dark ? { ...light, ...darkMap } : light;
 }
 
@@ -140,6 +170,9 @@ export function styleFor(id: Accent, dark: boolean): string {
  */
 export function applyAccent(el: HTMLElement, id: Accent, dark: boolean): void {
     for (const name of ALL_TOKEN_NAMES) el.style.removeProperty(name);
+    // Iris is the stylesheet's own theme, so clearing is the whole job here -
+    // writing its values back would only restate what the cascade already says.
+    if (id === "iris") return;
     for (const [name, value] of Object.entries(tokensFor(id, dark))) {
         el.style.setProperty(name, value);
     }
