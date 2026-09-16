@@ -296,7 +296,7 @@
    * page reads as disabled. The disabled state is the only grey field. */
   --color-input: var(--color-surface-raised);
   --color-input-border: var(--color-base-350);
-  --color-input-hover: var(--color-base-50);
+  --color-input-hover: var(--color-base-150);
   --color-input-focus: var(--color-surface-raised);
   --color-input-disabled: var(--color-base-100);
 
@@ -316,8 +316,11 @@
   --color-nav-menu-item: var(--color-body);
   --color-nav-menu-item-hover: var(--color-headline);
   --color-nav-menu-item-active: var(--color-link);
-  --color-nav-menu-hover: var(--color-base-100);
+  /* Surface-relative on purpose: base-100 IS surface-base in both themes,
+   * so the old value made sidebar row hover do nothing at all. */
+  --color-nav-menu-hover: var(--color-surface-hover);
   --color-nav-menu-active: var(--color-action-primary-subtle);
+  --color-nav-menu-active-hover: var(--color-action-primary-subtle-hover);
   --color-nav-menu-focus: var(--color-brand-500);
   --color-success-text: var(--color-pine-700);
   --color-warning-text: var(--color-warning-700);
@@ -416,7 +419,9 @@
   --color-neutral-weak: var(--color-base-600);
   --color-neutral-medium: var(--color-base-700);
   --color-neutral-strong: var(--color-base-900);
-  --color-neutral-subtle: var(--color-base-100);
+  /* base-200, not base-100: base-100 IS surface-base, which made a neutral
+   * badge measure 1.00:1 against the page and read as bare text. */
+  --color-neutral-subtle: var(--color-base-200);
   --color-neutral-border: var(--color-base-200);
 
   /* Info Colors */
@@ -800,6 +805,10 @@ body {
   --color-surface-elevated: #35353a;
   --color-surface-overlay: #44444c;
   --color-surface-overlay-hover: #52525b;
+
+  /* Distinct from base, raised AND elevated — a neutral chip has no hue to
+   * separate it, so it has to separate on lightness wherever it lands. */
+  --color-neutral-subtle: var(--color-base-300);
   --color-border-overlay: var(--color-base-450);
 
   /* Background Colors */
@@ -1297,6 +1306,14 @@ body {
 
 .bg-nav-menu-active {
   background-color: var(--color-nav-menu-active);
+}
+
+.active\:bg-nav-menu-active-hover:active {
+  background-color: var(--color-nav-menu-active-hover);
+}
+
+.bg-nav-menu-item-active {
+  background-color: var(--color-nav-menu-item-active);
 }
 
 .text-success {
