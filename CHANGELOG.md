@@ -100,6 +100,18 @@ the semantic families read as a single family instead of six unrelated colours.
   now actually rebrands headings. `level` is typed `1 | 2 | 3 | 4 | 5 | 6`
   instead of `number`; new `size` prop decouples visual size from semantic
   level; `children` snippet supported; display sizes carry negative tracking.
+- **New `SidebarShell`**: the chrome of a sidebar with the regions left open —
+  width, surface, collapse behaviour, the shared inset and a scrolling middle.
+  Regions are snippets (`header` / `children` / `footer`), each handed
+  `{ collapsed, insetX }`. `SidebarNavigation` is 39 props on one component and
+  is excellent right up until your sidebar is not shaped like that one, at
+  which point none of the parts are reachable; compose `SidebarBrandHeader`,
+  `SidebarNavSection` and `SidebarFooter` into the shell instead and skip the
+  ~30 props you never set. `SidebarNavigation` is now built on it rather than
+  duplicating the chrome, so the two cannot drift. Additive — its prop API is
+  unchanged.
+- **`SidebarNavigation`**: its Props table documented 7 of 39 props. All 39 are
+  documented now, with types and defaults.
 - **`Text`**: now sits on the same type ramp as `Heading` rather than carrying
   its own — `size="md"` matches an `h6` and `size="lg"` an `h5`, line box
   included, and a new `xs` step (12px) extends the bottom. Leading is stated
