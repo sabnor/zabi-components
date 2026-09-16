@@ -160,6 +160,10 @@ the semantic families read as a single family instead of six unrelated colours.
   `--color-surface-elevated` moves `#35353a` → `#363638` and
   `--color-surface-overlay` `#44444c` → `#454547` (slightly less blue); base and
   raised were already exactly on the ladder.
+- The ramp-interaction rule now also scans `src/lib/marketing` and the landing
+  route. The rest of the checks guard what ships in the package, but
+  `hover:bg-base-100` had reached two marketing specimens, where dark mode
+  painted the hover darker than the card it sat on.
 - `scripts/check-token-violations.js` also rejects **off-scale shadows**
   (anything but `shadow-sm` / `shadow-lg` / `shadow-none`, including a bare
   `shadow`) and **half-step spacing** on gap/space/padding utilities. Margins
