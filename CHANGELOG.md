@@ -10,6 +10,117 @@ Whenever token or CSS import API surface changes, include:
 - mapping rule updates (for example dark semantic mapping)
 - migration guidance when compatibility aliases remain temporarily
 
+## [Unreleased] - 7.2.0
+
+### Design system
+
+Outcome of a full design review of all 63 components. The headline change is
+that the colour ramps are now generated against one shared lightness curve, so
+the semantic families read as a single family instead of six unrelated colours.
+
+#### Colour — BREAKING (visual)
+
+- **All chromatic ramps regenerated** (`brand`, `citron`, `pine`, `iris`,
+  `warning`, `error`) against a shared CIE L\* curve defined in
+  `tokens/chromatic-scales.js`. `<ramp>-600` now means the same lightness in
+  every ramp. Previously the ramps spanned L\* 34.6–75.0 at step 500 — a
+  40-point spread at the same nominal step — and `pine` fell 29.8 points between
+  400 and 500, which made half that ramp unusable.
+- **Semantic tokens moved to step 600** across the board. `warning`, `error` and
+  `energetic` previously sat at step 500 (the dark mirror's fixed point) and so
+  did not invert between themes at all, while `success` and `info` did. Solid
+  badges were 2.15:1 (warning) and 1.97:1 (energetic) in light mode.
+- **New per-family tokens**: `--color-<family>-subtle` (step 100),
+  `--color-<family>-border` (step 200). `--color-<family>-text` is now step 700
+  for every family.
+- **`--color-action-primary` is now `brand-600`** (was `brand-950`). The primary
+  action carries the brand colour in both themes.
+- **`--color-action-primary-active` no longer jumps across the ramp.** It was
+  `brand-400` against a `brand-50` label — 1.66:1, so the label vanished while
+  the button was held. Hover/active now step darker in light, lighter in dark.
+- **`--color-action-secondary`** is a neutral alpha tint instead of a 10% brand
+  wash, which was too pale to read as a control.
+- **New**: `--color-action-disabled`, `--color-action-disabled-text`,
+  `--color-action-disabled-border` — one quiet neutral pair shared by every
+  variant. Disabled was previously `brand-500` + `opacity-50`, which made a
+  disabled primary *lighter and more colourful* than an enabled secondary.
+- **New**: `--color-surface-hover`, `--color-surface-active` — surface-relative
+  alpha tints. `hover:bg-base-100` resolved to exactly `--color-surface-base` in
+  dark mode, so ghost buttons had no hover feedback on the app shell.
+- **New**: `--color-control-track{,-hover,-active}` for switch rails.
+- **Removed**: `--color-action-{primary,secondary,danger}-disabled` (use
+  `--color-action-disabled`); the raw-hex `.dark` danger overrides (danger now
+  mirrors through `--color-error-*` like every other family).
+- `--color-input` is now a raised surface (white in light, an inset step in
+  dark) rather than a grey well that read as disabled.
+- `--color-input-placeholder` is wired up — it was defined but unused.
+- `--color-link` moved to `brand-700`: `brand-600` cleared AA on a card but only
+  managed 4.42:1 on the page surface.
+
+#### Geometry — BREAKING (visual)
+
+- **One control height scale**: `sm` 32px, `md` 40px, `lg` 48px, shared by
+  Button, IconButton, Input, Select and Textarea. They previously rendered at
+  40/48/64, 32/40/48 and 38/46/50 — a `lg` Button stood 14px taller than the
+  `lg` Input beside it.
+- **Four role-based radii** replace eight t-shirt radii: `--radius-control`
+  (8px), `--radius-container` (12px), `--radius-overlay` (16px),
+  `--radius-pill`. Radius no longer changes with size. `--radius-sm/md/lg/xl`
+  remain as legacy aliases for consumer overrides.
+- Button type is monotonic again: weight is `font-medium` at every size (it used
+  to drop to `font-normal` at `lg`, so the biggest button had the lightest
+  label), and the arbitrary letter-spacing values are gone.
+
+#### Components
+
+- **`Badge`**: rebuilt. New `emphasis` prop (`subtle` | `solid`, default
+  `subtle`), plus `class`, `children` and `...restProps` — none of which existed,
+  despite stories shipping for two of them. Pill radius instead of 2px. Renders
+  nothing when it has no label, rather than leaving an empty box.
+- **`Alert`**: tinted fill + tinted border instead of a bare 1px outline on a
+  transparent ground; full-width by default with a new `inline` prop; one Lucide
+  icon family instead of hand-rolled SVGs of mixed weight.
+- **`Heading`**: no longer hardcodes `font-family: "Nunito Sans"` in a local
+  `<style>` block — it uses `--font-family-sans`, so rebranding the font token
+  now actually rebrands headings. `level` is typed `1 | 2 | 3 | 4 | 5 | 6`
+  instead of `number`; new `size` prop decouples visual size from semantic
+  level; `children` snippet supported; display sizes carry negative tracking.
+- **`Input`**: raised surface, quieter placeholder, `min-w-48` removed.
+- **`Card`**: radius no longer scales with size; `outlined` uses `border-border`.
+
+#### API consistency
+
+- **`class` is now the public prop on every component.** 25 components exposed
+  `className`, 15 exposed `class`, and 21 exposed neither. `className` is kept
+  everywhere as a deprecated alias and both are merged, so existing call sites
+  keep working.
+- Every component spreads `...restProps` onto its host element.
+- `Button`: `fullWidth` replaces `isFullWidth` (deprecated alias retained).
+
+#### Guardrails
+
+- **New** `scripts/check-ramp-lightness.js` — fails if a ramp drifts off the
+  shared curve (±1.5 L\*) or develops a cliff (>15 L\* between adjacent steps).
+- **New** `scripts/check-contrast.js` — resolves every fill/foreground pair a
+  component can render, in both themes, and fails below WCAG AA. 84 pairs.
+- **New** `scripts/check-control-geometry.js` — fails if controls disagree on
+  height, or if any component uses a t-shirt radius.
+- **New** `scripts/generate-ramps.js` + `tokens/chromatic-scales.js` — ramp
+  generation, wired into `npm run sync:tokens`.
+- `scripts/check-token-violations.js` now also rejects fixed ramp steps in
+  interaction states (`hover:bg-base-*`, `active:bg-base-*`), which is how the
+  invisible ghost hover got in.
+- New scripts: `npm run check:ramps`, `check:contrast`, `check:geometry`, and
+  `check:design` (all four). `build:css` and `check` run `check:design`.
+
+#### Stories
+
+- `Badge` → `AllVariantsWithIcons` no longer crashes. It used an invalid CSF
+  render shape (`Component: 'div'` with a `children` array) cast through
+  `as any`, so TypeScript could not catch it and it threw at runtime. Replaced
+  with real harness components, which also fixes `WithChildren` and
+  `WithCustomClass` (both silently rendered nothing).
+
 ## [Unreleased] - 7.1.0
 
 ### Forms
