@@ -324,7 +324,7 @@
                                 class="w-full h-full"
                             ></canvas>
                             <div
-                                class="absolute w-4 h-4 border-2 border-white rounded-full shadow-lg pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
+                                class="absolute w-4 h-4 border-2 border-white rounded-full shadow-sm pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
                                 style="left: {pickerIndicatorX}; top: {pickerIndicatorY};"
                             ></div>
                         </div>
@@ -347,7 +347,7 @@
                                     aria-label="Hue slider"
                                 />
                                 <div
-                                    class="absolute top-0 bottom-0 w-3 bg-card shadow-md pointer-events-none my-0.25 rounded-full border border-base-950"
+                                    class="absolute top-0 bottom-0 w-3 bg-card shadow-sm pointer-events-none my-px rounded-full border border-base-950"
                                     style="left: {(hue / 360) * 100}%;"
                                 ></div>
                             </div>

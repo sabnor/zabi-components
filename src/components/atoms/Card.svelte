@@ -49,7 +49,7 @@
         const shared = "cursor-pointer focus-ring";
         switch (variant) {
             case "elevated":
-                return `${shared} hover:shadow-xl hover:bg-card-hover`;
+                return `${shared} hover:bg-card-hover`;
             case "outlined":
                 return `${shared} hover:border-border-medium hover:bg-card-hover`;
             case "flat":
