@@ -30,9 +30,9 @@ const maxFileSizes = {
   'zabi-components-theme-dark.css': 30000, // ~30KB
   'zabi-components-theme-dark-only.css': 30000,
   'zabi-components.css': 500000, // ~500KB
-  'zabi-components-colors.css': 20000, // ~20KB
+  'zabi-components-colors.css': 30000, // ~30KB (grew with the per-family subtle/border/text tokens)
   'index.js': 10000, // ~10KB
-  'index.d.ts': 5000 // ~5KB
+  'index.d.ts': 8000 // ~8KB (grew with the new Sidebar/Tabs/Select/Toggle props)
 };
 
 // Minimum file sizes (in bytes) - ensure files have content

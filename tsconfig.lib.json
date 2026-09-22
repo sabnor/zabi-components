@@ -15,8 +15,11 @@
         "module": "ESNext",
         "target": "ES2020"
     },
+    // src/lib/** is the demo site (marketing, showcase) and build-script
+    // fixtures: nothing under src/components imports it and no `exports` entry
+    // points at dist/lib, so type-checking it here only emitted dead .d.ts into
+    // the tarball and broke the build on the site's Vite-only __PKG_VERSION__.
     "include": [
-        "src/lib/**/*",
         "src/components/**/*",
         "src/types/**/*.ts",
         "src/svelte.d.ts"
