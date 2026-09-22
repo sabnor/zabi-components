@@ -108,7 +108,7 @@
     "check:design": "npm run check:ramps && npm run check:contrast && npm run check:geometry && npm run check:tokens"
   },
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.63.0",
     "@storybook/addon-docs": "^10.2.19",
     "@storybook/sveltekit": "^10.2.19",
     "@sveltejs/adapter-auto": "^7.0.0",
