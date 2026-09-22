@@ -275,12 +275,16 @@ import type { Foo } from "../types/variants.js";
 | Interaction | `npm run test:e2e` | Playwright — overlays, focus, keyboard flows |
 | Types & structure | `npm run check` | `svelte-check`, import-path and layout-width rules, plus `check:design` |
 | Design system | `npm run check:design` | Ramp lightness, WCAG AA on every rendered pair, interaction fills that differ from their surface, control geometry, and token violations (raw palette classes, off-scale shadows, half-step spacing) |
+| Theme output | `npm run test:themes` | Built CSS is reproducible and matches the frozen hashes |
+
+There is no CI: every gate runs locally, and releases are published by hand. See
+[RELEASING.md](./RELEASING.md) for the order to run them in.
 
 ---
 
 ## More documentation
 
-[THEME.md](./THEME.md) · [THEMING.md](./THEMING.md) · [docs/theme-imports.md](./docs/theme-imports.md) · [CHANGELOG.md](./CHANGELOG.md)
+[THEME.md](./THEME.md) · [THEMING.md](./THEMING.md) · [docs/theme-imports.md](./docs/theme-imports.md) · [RELEASING.md](./RELEASING.md) · [CHANGELOG.md](./CHANGELOG.md)
 
 ## License
 
