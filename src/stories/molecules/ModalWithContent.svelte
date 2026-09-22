@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { untrack } from 'svelte';
     import Modal from '../../components/molecules/Modal.svelte';
     import Button from '../../components/atoms/Button.svelte';
     import Checkbox from '../../components/atoms/Checkbox.svelte';
@@ -15,7 +16,8 @@
         size = 'md',
     }: Props = $props();
 
-    let isOpen = $state(initialOpen);
+    // Initial value only; the effect below syncs later prop changes.
+    let isOpen = $state(untrack(() => initialOpen));
 
     $effect(() => {
         isOpen = initialOpen;

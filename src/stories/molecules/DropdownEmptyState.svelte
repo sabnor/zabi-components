@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { untrack } from 'svelte';
     import Dropdown from '../../components/molecules/Dropdown.svelte';
     import Button from '../../components/atoms/Button.svelte';
 
@@ -12,7 +13,8 @@
         placement = 'bottom-start',
     }: Props = $props();
 
-    let isOpen = $state(initialOpen);
+    // Initial value only; the effect below syncs later prop changes.
+    let isOpen = $state(untrack(() => initialOpen));
 
     $effect(() => {
         isOpen = initialOpen;
