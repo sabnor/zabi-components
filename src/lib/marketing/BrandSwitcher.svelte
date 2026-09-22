@@ -1,7 +1,12 @@
 <script lang="ts">
     import Dropdown from "../../components/molecules/Dropdown.svelte";
     import { Check, Palette } from "@lucide/svelte";
-    import { ACCENTS, applyAccent, type Accent } from "./brand-accents";
+    import {
+        ACCENTS,
+        applyAccent,
+        watchDarkMode,
+        type Accent,
+    } from "./brand-accents";
 
     /**
      * Site-wide accent switcher for the marketing header.
@@ -25,15 +30,7 @@
         ACCENTS.find((item) => item.id === accent) ?? ACCENTS[0],
     );
 
-    // The accent maps differ per theme, so a theme change has to re-apply.
-    $effect(() => {
-        const root = document.documentElement;
-        const sync = () => (isDark = root.classList.contains("dark"));
-        sync();
-        const observer = new MutationObserver(sync);
-        observer.observe(root, { attributes: true, attributeFilter: ["class"] });
-        return () => observer.disconnect();
-    });
+    $effect(() => watchDarkMode((dark) => (isDark = dark)));
 
     $effect(() => {
         applyAccent(document.documentElement, accent, isDark);

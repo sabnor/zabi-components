@@ -13,6 +13,9 @@
     let sendWelcome = $state(true);
     let sending = $state(false);
     let invited = $state<string[]>([]);
+    let sendTimer: ReturnType<typeof setTimeout> | undefined;
+
+    $effect(() => () => clearTimeout(sendTimer));
 
     const seatsTotal = 10;
     const seatsUsed = $derived(6 + invited.length);
@@ -32,7 +35,8 @@
         emailTouched = true;
         if (!emailIsValid || sending || seatsUsed >= seatsTotal) return;
         sending = true;
-        setTimeout(() => {
+        clearTimeout(sendTimer);
+        sendTimer = setTimeout(() => {
             invited = [...invited, email];
             email = "";
             emailTouched = false;

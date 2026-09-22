@@ -9,6 +9,7 @@
         SNIPPET_TOKENS as snippetTokens,
         styleFor,
         tokensFor,
+        watchDarkMode,
         type Accent,
     } from "./brand-accents";
 
@@ -16,14 +17,7 @@
     let checked = $state(true);
     let isDark = $state(false);
 
-    $effect(() => {
-        const root = document.documentElement;
-        const sync = () => (isDark = root.classList.contains("dark"));
-        sync();
-        const observer = new MutationObserver(sync);
-        observer.observe(root, { attributes: true, attributeFilter: ["class"] });
-        return () => observer.disconnect();
-    });
+    $effect(() => watchDarkMode((dark) => (isDark = dark)));
 
     const snippet = $derived.by(() => {
         if (accent === "iris") {

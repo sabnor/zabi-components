@@ -154,6 +154,24 @@ export function tokensFor(id: Accent, dark: boolean): TokenMap {
     return dark ? { ...light, ...darkMap } : light;
 }
 
+/**
+ * Call `onChange` with the current theme, then on every change to the dark
+ * class. Returns the teardown, so it drops straight into an `$effect`.
+ *
+ * The accent maps differ per theme, so anything scoping an accent has to
+ * re-apply when the theme flips.
+ */
+export function watchDarkMode(
+    onChange: (dark: boolean) => void,
+): () => void {
+    const root = document.documentElement;
+    const sync = () => onChange(root.classList.contains("dark"));
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+}
+
 /** Inline `style` string, for scoping an accent to one element. */
 export function styleFor(id: Accent, dark: boolean): string {
     return Object.entries(tokensFor(id, dark))
