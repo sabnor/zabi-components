@@ -10,7 +10,37 @@ Whenever token or CSS import API surface changes, include:
 - mapping rule updates (for example dark semantic mapping)
 - migration guidance when compatibility aliases remain temporarily
 
-## [Unreleased] - 7.2.0
+## [8.0.0] - 2026-09-22
+
+Consolidates two development cycles. 7.1.0 and 7.2.0 were both prepared but
+never published, so the last release on npm is 7.0.2 and everything below ships
+together in 8.0.0.
+
+### Breaking changes since 7.0.2
+
+What can break a working 7.0.2 consumer. Each item is detailed in the sections
+that follow.
+
+- **The `zabi-components/react` subpath is gone** from `exports`. It pointed at
+  `dist/react`, which was never built, so importing from it already failed at
+  resolution — but the subpath no longer exists at all.
+- **Three tokens were removed**: `--color-action-primary-disabled`,
+  `--color-action-secondary-disabled`, `--color-action-danger-disabled`. Use the
+  shared `--color-action-disabled`, `--color-action-disabled-text` and
+  `--color-action-disabled-border` instead. Your own CSS referencing the old
+  names will silently resolve to nothing, so grep for them before upgrading.
+- **Every chromatic ramp was regenerated** against a shared lightness curve, and
+  the semantic families moved from step 500 to step 600. Rendered colour changes
+  throughout, in both themes, with no opt-out. Screenshot tests will all churn.
+- **`max-w-*`, `w-*` and `min-w-*` with `xs`–`2xl` resolve to container sizes
+  again** (`max-w-lg` is 32rem, not 1.5rem). This is a bug fix, but anyone who
+  compensated for the broken values in their own CSS must undo that.
+- **No install scripts run in consumer installs.** The `postinstall` hook is
+  gone; it is now a dev-only `prepare` script and is not in the tarball.
+
+Not breaking, but worth knowing: the published tarball no longer contains
+`dist/lib/**`. Those were declaration files for this repo's demo site and
+showcase, emitted by mistake; no `exports` entry ever pointed at them.
 
 ### Design system
 
@@ -179,8 +209,6 @@ the semantic families read as a single family instead of six unrelated colours.
   `as any`, so TypeScript could not catch it and it threw at runtime. Replaced
   with real harness components, which also fixes `WithChildren` and
   `WithCustomClass` (both silently rendered nothing).
-
-## [Unreleased] - 7.1.0
 
 ### Forms
 

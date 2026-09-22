@@ -14,7 +14,7 @@ Docs: **[zabi-components.vercel.app](https://zabi-components.vercel.app/)**
 npm install zabi-components
 ```
 
-Ensure `svelte@^5.43.8` is installed — SvelteKit apps usually already match; add `@sveltejs/kit@^2` only for Kit. The package is Svelte-only (the unmaintained `zabi-components/react` export was removed in 7.1.0).
+Ensure `svelte@^5.43.8` is installed — SvelteKit apps usually already match; add `@sveltejs/kit@^2` only for Kit. The package is Svelte-only (the unmaintained `zabi-components/react` export was removed in 8.0.0).
 
 **2. Global CSS** (e.g. SvelteKit `src/app.css` — adjust for your bundler entry)
 
