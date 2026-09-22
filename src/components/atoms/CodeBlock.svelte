@@ -2,11 +2,14 @@
     import Check from "@lucide/svelte/icons/check";
     import Copy from "@lucide/svelte/icons/copy";
     import IconButton from "./IconButton.svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         /** Raw source; escaped unless `trustHtml` (e.g. highlighter HTML). */
         code: string;
         language?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         showCopyButton?: boolean;
         /** If true, `{@html code}` — only trusted, sanitized input. */
@@ -16,11 +19,16 @@
     let {
         code,
         language = "svelte",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         showCopyButton = true,
         trustHtml = false,
         ...restProps
-    } = $props();
+    }: Props & Record<string, unknown> = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let copied = $state(false);
 
@@ -38,16 +46,16 @@
 </script>
 
 <div
-    class="code-block relative bg-surface-1 border border-border rounded-lg overflow-hidden {className}"
+    class={cn("code-block relative bg-surface-1 border border-border rounded-control overflow-hidden", className)}
     {...restProps}
 >
     <div
         class="flex items-center justify-between px-4 py-2 bg-surface-2 border-b border-border"
     >
-        <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full bg-red-500"></div>
-            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+        <div class="flex items-center gap-2" aria-hidden="true">
+            <div class="w-3 h-3 rounded-full bg-error"></div>
+            <div class="w-3 h-3 rounded-full bg-warning"></div>
+            <div class="w-3 h-3 rounded-full bg-success"></div>
         </div>
         {#if showCopyButton}
             <IconButton

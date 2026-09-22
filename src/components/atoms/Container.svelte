@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
 
+    import { cn } from "../util/cn.js";
     type MaxWidth = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
 
     interface Props {
@@ -31,9 +32,7 @@
 
 <svelte:element
     this={Tag}
-    class={['mx-auto w-full', maxClass[maxWidth], padded ? 'px-4 sm:px-6' : '', className]
-        .filter(Boolean)
-        .join(' ')}
+    class={cn('mx-auto w-full', maxClass[maxWidth], padded ? 'px-4 sm:px-6' : '', className)}
 >
     {#if children}
         {@render children()}

@@ -1,5 +1,6 @@
 <script lang="ts">
     import ListItemRow, { type ListItemData } from "./ListItem.svelte";
+    import { cn } from "../util/cn.js";
 
     export type ListItem = ListItemData;
 
@@ -9,6 +10,8 @@
         ariaLabel?: string;
         selectedId?: string;
         showArrow?: boolean;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         onclick?: (item: ListItem, event: MouseEvent) => void;
     }
@@ -18,13 +21,18 @@
         ariaLabel = "List items",
         selectedId = "",
         showArrow = true,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         onclick,
         ...restProps
     }: Props = $props();
 
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
+
     const listClasses = $derived(
-        `space-y-1 overflow-hidden rounded-xl ${className}`.trim(),
+        cn(`space-y-1 overflow-hidden rounded-container ${className}`),
     );
 </script>
 

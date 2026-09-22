@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         title?: string;
@@ -10,6 +11,8 @@
         /** `id` on the description `<p>`. */
         descriptionId?: string;
         level?: 1 | 2 | 3 | 4 | 5 | 6;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         children?: Snippet;
     }
@@ -21,10 +24,15 @@
         subtitleId,
         descriptionId,
         level = 3,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         children,
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const headingTag = $derived(`h${level}`);
     const headingClasses = $derived(() => {
@@ -32,7 +40,7 @@
     });
 </script>
 
-<header class={`flex flex-col space-y-1.5 pb-4 ${className}`.trim()} {...restProps}>
+<header class={cn(`flex flex-col space-y-2 pb-4 ${className}`)} {...restProps}>
     {#if title}
         <svelte:element this={headingTag} class={headingClasses()}>
             {title}

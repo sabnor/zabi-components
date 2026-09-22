@@ -2,18 +2,28 @@
     import Badge from "../atoms/Badge.svelte";
     import Heading from "../atoms/Heading.svelte";
     import type { ComponentCategory } from "../types/page.types";
+    import { cn } from "../util/cn.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         title: string;
         description: string;
         category: ComponentCategory;
         variantsStates?: string[];
     }
 
-    let { title, description, category, variantsStates }: Props = $props();
+    let {
+        class: className = "",
+        title,
+        description,
+        category,
+        variantsStates,
+        ...restProps
+    }: Props = $props();
 </script>
 
-<header class="space-y-4">
+<header class={cn("space-y-4", className)} {...restProps}>
     <div class="space-y-2">
         <Heading level={1} text={title} />
         <p class="text-lg whitespace-pre-line text-description">{description}</p>
@@ -32,7 +42,7 @@
                 Variants / states:
             </span>
             {#each variantsStates as v (v)}
-                <span class="rounded-md bg-base-100 px-2 py-1 text-xs text-headline">
+                <span class="rounded-control bg-base-100 px-2 py-1 text-xs text-headline">
                     {v}
                 </span>
             {/each}

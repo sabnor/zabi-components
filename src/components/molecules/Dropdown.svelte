@@ -1,6 +1,7 @@
 <script lang="ts">
     import { generateId } from "../util/ssr-safe.js";
     import type { Snippet } from 'svelte';
+    import { cn } from "../util/cn.js";
 
     export type DropdownTriggerProps = {
         'aria-expanded': boolean;
@@ -9,6 +10,8 @@
     };
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         isOpen?: boolean;
         placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
         ariaLabel?: string;
@@ -22,10 +25,13 @@
         }>;
         onOptionClick?: (value: string | number) => void;
         trigger: Snippet<[DropdownTriggerProps]>;
+        /** Rendered in the popup above the menu/listbox, outside its role (e.g. a search field). */
+        header?: Snippet;
         children?: Snippet;
     }
 
     let {
+        class: className = "",
         isOpen = $bindable(false),
         placement = 'bottom-start',
         ariaLabel = 'Menu',
@@ -34,6 +40,7 @@
         options = [],
         onOptionClick,
         trigger,
+        header,
         children,
         ...restProps
     }: Props = $props();
@@ -49,8 +56,22 @@
         'aria-controls': menuId,
     } satisfies DropdownTriggerProps);
 
+    function isTextEntryTarget(target: EventTarget | null): boolean {
+        if (!(target instanceof HTMLElement)) return false;
+        if (target.isContentEditable || target instanceof HTMLTextAreaElement) {
+            return true;
+        }
+        return (
+            target instanceof HTMLInputElement &&
+            !['checkbox', 'radio', 'button', 'submit', 'reset'].includes(target.type)
+        );
+    }
+
     function handleKeydown(event: KeyboardEvent) {
         if (!isOpen) {
+            if (event.key === ' ' && isTextEntryTarget(event.target)) {
+                return;
+            }
             if (
                 event.key === 'Enter' ||
                 event.key === ' ' ||
@@ -77,10 +98,13 @@
                 focusPreviousItem();
                 break;
             case 'Home':
+                // Let text fields (e.g. Select search) keep native caret movement.
+                if (isTextEntryTarget(event.target)) break;
                 event.preventDefault();
                 focusFirstItem();
                 break;
             case 'End':
+                if (isTextEntryTarget(event.target)) break;
                 event.preventDefault();
                 focusLastItem();
                 break;
@@ -94,9 +118,13 @@
 
     function getMenuItems(): HTMLElement[] {
         if (!menuElement) return [];
+        // `menuitemradio` and `menuitemcheckbox` are menu items too. Matching
+        // only `menuitem` left a menu built from them with nothing to focus:
+        // arrows and Home/End did nothing, opening by keyboard focused nothing,
+        // and Tab closed the menu, so its items could not be reached at all.
         return Array.from(
             menuElement.querySelectorAll<HTMLElement>(
-                '[role="menuitem"], [role="option"]',
+                '[role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"]',
             ),
         );
     }
@@ -182,7 +210,7 @@
     const dropdownContentClasses = $derived(() => {
         return [
             placementClasses(),
-            'rounded-lg border border-border bg-card py-2 shadow-lg transition-all duration-200 ease-in-out',
+            'rounded-control border border-border bg-surface-overlay py-2 shadow-lg transition-all duration-200 ease-in-out',
             transformClasses(),
         ]
             .join(' ')
@@ -193,12 +221,12 @@
     const itemRole = $derived(menuRole === 'listbox' ? 'option' : 'menuitem');
 
     const optionClasses =
-        'focus-ring flex w-full items-center justify-start rounded-md px-3 py-2 text-left text-sm text-body transition-colors hover:bg-base-100 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50';
+        'focus-ring flex w-full items-center justify-start rounded-control px-3 py-2 text-left text-sm text-body transition-colors hover:bg-surface-overlay-hover focus:outline-none disabled:cursor-not-allowed disabled:opacity-50';
 </script>
 
 <div
     bind:this={rootEl}
-    class="relative inline-block"
+    class={cn("relative inline-block", className)}
     data-placement={placement}
     onkeydown={handleKeydown}
     {...restProps}
@@ -206,13 +234,13 @@
     {@render trigger(triggerAria)}
 
     {#if isOpen}
-        <div
-            bind:this={menuElement}
-            id={menuId}
-            class={dropdownContentClasses()}
-            role={menuRole === 'listbox' ? 'listbox' : 'menu'}
-            aria-label={ariaLabel}
-        >
+        <div bind:this={menuElement} class={dropdownContentClasses()}>
+            {@render header?.()}
+            <div
+                id={menuId}
+                role={menuRole === 'listbox' ? 'listbox' : 'menu'}
+                aria-label={ariaLabel}
+            >
             {#if options.length > 0}
                 <div class="px-2 py-1">
                     {#each options as option (option.value)}
@@ -236,6 +264,7 @@
             {:else if children}
                 {@render children?.()}
             {/if}
+            </div>
         </div>
     {/if}
 </div>

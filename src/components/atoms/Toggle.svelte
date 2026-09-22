@@ -1,7 +1,15 @@
 <script lang="ts">
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
+        /** Omit to auto-generate; pass to pair with an external `<label for>`. */
+        id?: string;
+        /** When set, a hidden input submits `value` with native forms while checked. */
+        name?: string;
+        value?: string;
         checked?: boolean;
         disabled?: boolean;
         loading?: boolean;
@@ -11,6 +19,10 @@
     }
 
     let {
+        class: className = "",
+        id: idProp,
+        name = "",
+        value = "on",
         checked = $bindable(false),
         disabled = false,
         loading = false,
@@ -20,7 +32,8 @@
         ...restProps
     }: Props = $props();
 
-    const toggleId = generateId("toggle");
+    const fallbackId = generateId("toggle");
+    const toggleId = $derived(idProp ?? fallbackId);
     const isDisabled = $derived(disabled || loading);
 
     function handleClick(event: MouseEvent) {
@@ -36,7 +49,7 @@
             "focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:outline-none";
         const colorClass = checked
             ? "bg-action-primary hover:bg-action-primary-hover active:bg-action-primary-active"
-            : "bg-base-400 hover:bg-base-500 active:bg-base-500";
+            : "bg-control-track hover:bg-control-track-hover active:bg-control-track-active";
         const stateClass = isDisabled
             ? "opacity-50 cursor-not-allowed"
             : "cursor-pointer";
@@ -45,21 +58,13 @@
 
     const toggleThumbClasses = $derived(() => {
         const base =
-            "pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow transition-transform duration-200 ease-in-out flex items-center justify-center";
+            "pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow-sm transition-transform duration-200 ease-in-out flex items-center justify-center";
         const positionClasses = checked ? "translate-x-4" : "translate-x-0";
         return `${base} ${positionClasses}`;
     });
-
-    function handleKeydown(event: KeyboardEvent) {
-        if (isDisabled) return;
-        if (event.key === " " || event.key === "Enter") {
-            event.preventDefault();
-            handleClick(event as unknown as MouseEvent);
-        }
-    }
 </script>
 
-<div class="flex items-center gap-3">
+<div class={cn("flex items-center gap-3", className)}>
     <button
         type="button"
         role="switch"
@@ -69,7 +74,6 @@
         aria-busy={loading ? "true" : undefined}
         disabled={isDisabled}
         onclick={handleClick}
-        onkeydown={handleKeydown}
         class={toggleButtonClasses()}
         {...restProps}
     >
@@ -82,6 +86,10 @@
             {/if}
         </span>
     </button>
+
+    {#if name && checked}
+        <input type="hidden" {name} {value} />
+    {/if}
 
     {#if label}
         <label

@@ -6,7 +6,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Button",
                 category: "atoms",
                 description:
-                    "Clean, accessible buttons with multiple variants and sizes",
+                    "Six variants from primary to link, three sizes, with loading and disabled states.",
                 props: [
                     {
                         name: "variant",
@@ -61,7 +61,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
             {
                 name: "IconButton",
                 category: "atoms",
-                description: "Icon-only button for compact actions and toolbars",
+                description:
+                    "Icon-only button for compact actions and toolbars.",
                 props: [
                     {
                         name: "variant",
@@ -124,7 +125,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Input",
                 category: "atoms",
                 description:
-                    "Form inputs with labels, variants, and accessibility features",
+                    "Text input whose label, hint and error message are wired to the control for screen readers.",
                 props: [
                     {
                         name: "value",
@@ -181,31 +182,53 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Card",
                 category: "atoms",
                 description:
-                    "Flexible card containers with semantic color variants",
+                    "Container with four surface treatments, a padding step, and an optional clickable mode.",
                 props: [
                     {
-                        name: "title",
-                        type: "string",
-                        required: false,
-                        defaultValue: "",
-                        description: "Card title",
-                    },
-                    {
                         name: "variant",
-                        type: "string",
+                        type: "CardVariant",
                         required: false,
                         defaultValue: "default",
-                        description: "Card variant",
+                        description:
+                            "Surface treatment: default, elevated, outlined or flat.",
                     },
                     {
-                        name: "interactive",
+                        name: "size",
+                        type: "SizeVariant",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Padding step. The corner radius does not change with it.",
+                    },
+                    {
+                        name: "fullWidth",
                         type: "boolean",
                         required: false,
-                        defaultValue: "false",
-                        description: "Make card clickable",
+                        defaultValue: "true",
+                        description:
+                            "Fill the container's width.",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(event: MouseEvent) => void",
+                        required: false,
+                        description:
+                            "Makes the card clickable. Pair it with ariaLabel.",
+                    },
+                    {
+                        name: "ariaLabel",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name. Required when onclick is set.",
                     },
                 ],
-                variants: ["default", "success", "warning", "error", "info"],
+                variants: [
+                    "default",
+                    "elevated",
+                    "outlined",
+                    "flat",
+                ],
                 examples: [
                     {
                         title: "Basic Card",
@@ -220,35 +243,44 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "ColorPicker",
                 category: "atoms",
                 description:
-                    "Color picker with predefined colors and custom hex input",
+                    "Saturation canvas with a hue slider and a hex field.",
                 props: [
                     {
                         name: "value",
                         type: "string",
                         required: false,
-                        defaultValue: "",
-                        description: "Selected color value (hex code)",
+                        description:
+                            "Hex value. Bindable.",
                     },
                     {
                         name: "label",
                         type: "string",
                         required: false,
-                        defaultValue: "",
-                        description: "Color picker label",
+                        description:
+                            "Field label.",
+                    },
+                    {
+                        name: "placeholder",
+                        type: "string",
+                        required: false,
+                        defaultValue: "#000000",
+                        description:
+                            "Placeholder for the hex input.",
                     },
                     {
                         name: "disabled",
                         type: "boolean",
                         required: false,
                         defaultValue: "false",
-                        description: "Disable the color picker",
+                        description:
+                            "Disable the field.",
                     },
                     {
-                        name: "onclick",
-                        type: "function",
+                        name: "onchange",
+                        type: "(event: Event) => void",
                         required: false,
-                        defaultValue: "undefined",
-                        description: "Click event handler",
+                        description:
+                            "Runs when the value changes.",
                     },
                 ],
                 variants: [],
@@ -275,7 +307,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "List",
                 category: "atoms",
                 description:
-                    "Semantic `<ul>` built from `items` (`ListItemData`). Optional `icon`, `avatar`, `description`, `href`, `selectedId`, `showArrow`, and `className` on the container. For trailing badges or amounts, use `ListItem` with a `trailing` snippet (see `/components/List`).",
+                    "Semantic ul built from an items array, with optional icon, avatar, description, href and selection. Use ListItem with a trailing snippet for badges.",
                 props: [
                     {
                         name: "items",
@@ -283,7 +315,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: true,
                         defaultValue: "[]",
                         description:
-                            "Array of `ListItemData`: `id`, `label`, optional `description`, `href`, `icon`, `avatar`, `avatarAlt`, `disabled`, link `target` / `rel`",
+                            "Array of ListItemData: id, label, optional description, href, icon, avatar, avatarAlt, disabled, link target / rel",
                     },
                     {
                         name: "ariaLabel",
@@ -307,12 +339,12 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Toggle the right arrow icon visibility",
                     },
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: "",
                         description:
-                            "Additional Tailwind classes on the `<ul>` (e.g. border, padding, background)",
+                            "Additional Tailwind classes on the <ul> (e.g. border, padding, background)",
                     },
                     {
                         name: "onclick",
@@ -327,7 +359,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "List with links and selection",
                         description:
-                            "Pass `selectedId` to highlight the active row (e.g. current settings section)",
+                            "Pass selectedId to highlight the active row (e.g. current settings section)",
                         code: `<List
   items={items}
   selectedId="billing"
@@ -337,7 +369,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Icons on items",
                         description:
-                            "Optional `icon` per `ListItemData` entry (Lucide or compatible component)",
+                            "Optional icon per ListItemData entry (Lucide or compatible component)",
                         code: `<script lang="ts">
   import { User, CreditCard } from "@lucide/svelte";
   const items = [
@@ -351,7 +383,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Arrow hidden",
                         description:
-                            "Set `showArrow={false}` for compact rows without a chevron",
+                            "Set showArrow={false} for compact rows without a chevron",
                         code: `<List
   items={items}
   showArrow={false}
@@ -364,7 +396,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Badge",
                 category: "atoms",
                 description:
-                    "Small status indicators with semantic color variants",
+                    "Small status label in the semantic tones, plus neutral and energetic.",
                 props: [
                     {
                         name: "text",
@@ -421,7 +453,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Controlled checked state (supports `bind:checked`)",
+                            "Controlled checked state (supports bind:checked)",
                     },
                     {
                         name: "defaultChecked",
@@ -471,14 +503,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "(event: Event) => void",
                         required: false,
                         defaultValue: "undefined",
-                        description: "Change handler (alias: `onchange`)",
+                        description: "Change handler (alias: onchange)",
                     },
                     {
                         name: "onchange",
                         type: "(event: Event) => void",
                         required: false,
                         defaultValue: "undefined",
-                        description: "Alias for `onChange`",
+                        description: "Alias for onChange",
                     },
                 ],
                 variants: [],
@@ -499,7 +531,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Radio",
                 category: "atoms",
                 description:
-                    "Single radio input with label, focus ring, and controlled/uncontrolled checked state",
+                    "Single radio input with label, focus ring, and controlled or uncontrolled checked state.",
                 props: [
                     {
                         name: "id",
@@ -535,7 +567,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Controlled checked state (supports `bind:checked`)",
+                            "Controlled checked state (supports bind:checked)",
                     },
                     {
                         name: "defaultChecked",
@@ -556,14 +588,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "(event: Event) => void",
                         required: false,
                         defaultValue: "undefined",
-                        description: "Change handler (alias: `onchange`)",
+                        description: "Change handler (alias: onchange)",
                     },
                     {
                         name: "onchange",
                         type: "(event: Event) => void",
                         required: false,
                         defaultValue: "undefined",
-                        description: "Alias for `onChange`",
+                        description: "Alias for onChange",
                     },
                 ],
                 variants: [],
@@ -584,7 +616,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Select",
                 category: "atoms",
                 description:
-                    "Select dropdown with search, scrollable options, and variants",
+                    "Dropdown with type-ahead search, scrollable options and validation states.",
                 props: [
                     {
                         name: "options",
@@ -643,14 +675,30 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "CodeBlock",
                 category: "atoms",
                 description:
-                    "Syntax-highlighted code blocks with copy functionality",
+                    "Syntax-highlighted code block with a copy button.",
                 props: [
                     {
                         name: "code",
                         type: "string",
                         required: true,
-                        defaultValue: "",
-                        description: "Code content to display",
+                        description:
+                            "Source to display.",
+                    },
+                    {
+                        name: "language",
+                        type: "string",
+                        required: false,
+                        defaultValue: "svelte",
+                        description:
+                            "Language label for the header.",
+                    },
+                    {
+                        name: "showCopyButton",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Show the copy button.",
                     },
                     {
                         name: "trustHtml",
@@ -658,22 +706,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "When true, `code` is trusted highlighter HTML (e.g. `<span class=\"token\">`). When false, `code` is escaped plain source.",
-                    },
-                    {
-                        name: "language",
-                        type: "string",
-                        required: false,
-                        defaultValue: "javascript",
-                        description:
-                            "Programming language for syntax highlighting",
-                    },
-                    {
-                        name: "showLineNumbers",
-                        type: "boolean",
-                        required: false,
-                        defaultValue: "false",
-                        description: "Show line numbers",
+                            "Render the code as HTML. Only for trusted, sanitised input.",
                     },
                 ],
                 variants: [],
@@ -692,7 +725,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Pre-highlighted HTML",
                         description:
-                            "Pass `trustHtml` when `code` contains markup from your highlighter",
+                            "Pass trustHtml when code contains markup from your highlighter",
                         code: '&lt;CodeBlock trustHtml code={highlightedHtml} language="typescript" /&gt;',
                     },
                 ],
@@ -701,7 +734,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "FeatureCard",
                 category: "atoms",
                 description:
-                    "Minimal, Stripe-inspired card for marketing and overview sections. Composable via snippets.",
+                    "Card for marketing and overview sections, composed from snippets.",
                 props: [
                     {
                         name: "title",
@@ -723,7 +756,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "",
                         description:
-                            "Icon component rendered in the top slot. Pass a Lucide icon directly, e.g. `icon={ShieldCheck}`.",
+                            "Icon component rendered in the top slot. Pass a Lucide icon directly, e.g. icon={ShieldCheck}.",
                     },
                     {
                         name: "children",
@@ -752,7 +785,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "With Lucide Icon",
                         description:
-                            "Pass a Lucide icon component directly via the `icon` prop",
+                            "Pass a Lucide icon component directly via the icon prop",
                         code: 'import { ShieldCheck } from "@lucide/svelte";\n\n&lt;FeatureCard icon={ShieldCheck} title="Secure" description="End-to-end encryption." /&gt;',
                     },
                 ],
@@ -761,31 +794,32 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Heading",
                 category: "atoms",
                 description:
-                    "Semantic heading component with consistent styling",
+                    "Renders h1-h6, with an optional visual size that differs from the semantic level.",
                 props: [
                     {
                         name: "level",
-                        type: "number",
+                        type: "1 | 2 | 3 | 4 | 5 | 6",
                         required: false,
                         defaultValue: "1",
-                        description: "Heading level (1-6)",
+                        description:
+                            "Semantic heading level, and the default visual size.",
                     },
                     {
-                        name: "variant",
-                        type: "string",
+                        name: "size",
+                        type: "1 | 2 | 3 | 4 | 5 | 6",
                         required: false,
-                        defaultValue: "default",
-                        description: "Heading variant",
+                        description:
+                            "Visual size, when it should differ from the level.",
                     },
                     {
-                        name: "color",
+                        name: "text",
                         type: "string",
                         required: false,
-                        defaultValue: "inherit",
-                        description: "Text color",
+                        description:
+                            "Heading text. Ignored when children are provided.",
                     },
                 ],
-                variants: ["default", "display", "subtitle"],
+
                 examples: [
                     {
                         title: "Basic Heading",
@@ -803,42 +837,37 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "OptimizedImage",
                 category: "atoms",
                 description:
-                    "Image component with lazy loading and optimization",
+                    "Image with explicit width and height that always loads lazily.",
                 props: [
                     {
                         name: "src",
                         type: "string",
                         required: true,
-                        defaultValue: "",
-                        description: "Image source URL",
+                        description:
+                            "Image source.",
                     },
                     {
                         name: "alt",
                         type: "string",
-                        required: true,
-                        defaultValue: "",
-                        description: "Image alt text",
+                        required: false,
+                        description:
+                            "Alternative text.",
                     },
                     {
                         name: "width",
-                        type: "number",
+                        type: "number | string",
                         required: false,
-                        defaultValue: "undefined",
-                        description: "Image width",
+                        defaultValue: "100%",
+                        description:
+                            "Rendered width.",
                     },
                     {
                         name: "height",
-                        type: "number",
+                        type: "number | string",
                         required: false,
-                        defaultValue: "undefined",
-                        description: "Image height",
-                    },
-                    {
-                        name: "lazy",
-                        type: "boolean",
-                        required: false,
-                        defaultValue: "true",
-                        description: "Enable lazy loading",
+                        defaultValue: "auto",
+                        description:
+                            "Rendered height.",
                     },
                 ],
                 variants: [],
@@ -859,7 +888,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Skeleton",
                 category: "atoms",
                 description:
-                    "Neutral placeholder that mirrors the shape of content while it loads. Reach for it whenever a view depends on data fetching and the layout is predictable — it preserves the eventual structure and reduces perceived latency compared with a spinner. Compose the three variants (`text`, `circle`, `block`) to match the real UI: text lines for paragraphs and labels, circles for avatars or icon buttons, blocks for media, cards, and hero regions.",
+                    "Placeholder in the shape of the content it replaces: text lines, circles and blocks. Use it where the layout is predictable, in place of a spinner.",
                 props: [
                     {
                         name: "variant",
@@ -867,7 +896,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "'text'",
                         description:
-                            "Shape preset. `text` is a short rounded bar for lines of copy, `circle` is a square with full rounding for avatars and icon placeholders, `block` is a taller rectangle for media, cards, and hero regions.",
+                            "Shape preset. text is a short rounded bar for lines of copy, circle is a square with full rounding for avatars and icon placeholders, block is a taller rectangle for media, cards, and hero regions.",
                     },
                     {
                         name: "width",
@@ -875,7 +904,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "fills parent (circle: 2.5rem)",
                         description:
-                            "Explicit width as a CSS length (e.g. `'50%'`, `'12rem'`) or pixel number. Omit to fill the parent, or pass a fixed Tailwind width via `class` (e.g. `w-64`).",
+                            "Explicit width as a CSS length (e.g. '50%', '12rem') or pixel number. Omit to fill the parent, or pass a fixed Tailwind width via class (e.g. w-64).",
                     },
                     {
                         name: "height",
@@ -899,7 +928,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "'Loading…'",
                         description:
-                            "Label announced by assistive tech. Keep the default for generic loading, or set to something more specific (e.g. `'Loading profile'`) when the skeleton stands in for a named region.",
+                            "Label announced by assistive tech. Keep the default for generic loading, or set to something more specific (e.g. 'Loading profile') when the skeleton stands in for a named region.",
                     },
                 ],
                 variants: ["text", "circle", "block"],
@@ -925,13 +954,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Custom size",
                         description:
-                            "Use the `width` / `height` props for CSS lengths or pixel values, or `class` for a fixed Tailwind utility.",
+                            "Use the width / height props for CSS lengths or pixel values, or class for a fixed Tailwind utility.",
                         code: '&lt;Skeleton width="50%" /&gt;\n&lt;Skeleton width={240} height={8} /&gt;\n&lt;Skeleton variant="block" class="w-64" /&gt;',
                     },
                     {
                         title: "User row",
                         description:
-                            "Classic list-row pattern: avatar beside two stacked text lines of varying length. Wrap the text column in `flex-1` so it adapts to the row width.",
+                            "Classic list-row pattern: avatar beside two stacked text lines of varying length. Wrap the text column in flex-1 so it adapts to the row width.",
                         code: '&lt;div class="flex items-center gap-3"&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;div class="flex-1 space-y-2"&gt;\n    &lt;Skeleton variant="text" width="60%" /&gt;\n    &lt;Skeleton variant="text" width="40%" /&gt;\n  &lt;/div&gt;\n&lt;/div&gt;',
                     },
                     {
@@ -1017,28 +1046,55 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
             {
                 name: "Tooltip",
                 category: "atoms",
-                description: "Contextual tooltip with positioning options",
+                description:
+                    "Hover and focus tooltip on any of four sides, with an optional delay.",
                 props: [
                     {
                         name: "content",
                         type: "string",
-                        required: true,
-                        defaultValue: "",
-                        description: "Tooltip content",
+                        required: false,
+                        description:
+                            "Tooltip text.",
                     },
                     {
-                        name: "position",
-                        type: "string",
+                        name: "placement",
+                        type: "'top' | 'bottom' | 'left' | 'right'",
                         required: false,
                         defaultValue: "top",
-                        description: "Tooltip position",
+                        description:
+                            "Side the bubble appears on.",
                     },
                     {
-                        name: "trigger",
-                        type: "string",
+                        name: "delay",
+                        type: "number",
                         required: false,
-                        defaultValue: "hover",
-                        description: "Tooltip trigger",
+                        defaultValue: "0",
+                        description:
+                            "Milliseconds before it opens.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Suppress the tooltip.",
+                    },
+                    {
+                        name: "block",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Lay the trigger out as a block instead of an inline-block.",
+                    },
+                    {
+                        name: "fixed",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Position against the viewport, to escape a scrolling ancestor.",
                     },
                 ],
                 variants: [],
@@ -1059,7 +1115,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Table",
                 category: "atoms",
                 description:
-                    "Scrollable `<table>` shell with optional caption; pass `<thead>` / `<tbody>` as children.",
+                    "Scrollable table shell with an optional caption; pass thead and tbody as children.",
                 props: [
                     {
                         name: "caption",
@@ -1099,7 +1155,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "boolean",
                         required: false,
                         defaultValue: "false",
-                        description: "Controlled state (`bind:checked`)",
+                        description: "Controlled state (bind:checked)",
                     },
                     {
                         name: "label",
@@ -1143,7 +1199,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Value (`bind:value`)",
+                        description: "Value (bind:value)",
                     },
                     {
                         name: "label",
@@ -1292,11 +1348,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 description: "Footer actions or metadata inside a Card.",
                 props: [
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Extra classes",
+                        description: "Extra classes, merged last so they win",
                     },
                 ],
                 variants: [],
@@ -1312,7 +1368,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "ThemeToggle",
                 category: "atoms",
                 description:
-                    "Sun/moon control that syncs with `document.documentElement` dark class and storage.",
+                    "Sun and moon control that syncs the dark class on the document element with storage.",
                 props: [
                     {
                         name: "size",
@@ -1416,7 +1472,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Text",
                 category: "atoms",
                 description:
-                    "Typography primitive with tone and size tokens (`p`, `span`, or `div`).",
+                    "Typography primitive with tone and size tokens, rendered as p, span or div.",
                 props: [
                     {
                         name: "as",
@@ -1434,10 +1490,18 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "size",
-                        type: "'sm' | 'md' | 'lg'",
+                        type: "'xs' | 'sm' | 'md' | 'lg'",
                         required: false,
                         defaultValue: "md",
-                        description: "Text size",
+                        description:
+                            "Text size — the bottom of the scale Heading sits on (md matches h6, lg matches h5)",
+                    },
+                    {
+                        name: "weight",
+                        type: "'normal' | 'medium' | 'semibold' | 'bold'",
+                        required: false,
+                        defaultValue: "normal (medium for tone=\"label\")",
+                        description: "Font weight; overrides the weight the tone implies",
                     },
                 ],
                 variants: [],
@@ -1499,7 +1563,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Alert",
                 category: "molecules",
                 description:
-                    "Contextual alerts with different variants and optional close functionality",
+                    "Info, success, warning and error messages, with an optional close button.",
                 props: [
                     {
                         name: "variant",
@@ -1543,31 +1607,24 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "ContactForm",
                 category: "molecules",
                 description:
-                    "Complete contact form with validation and submission handling",
+                    "Name, email, message and a subscribe checkbox, ready to wire up with onsubmit.",
                 props: [
                     {
-                        name: "onSubmit",
-                        type: "function",
+                        name: "onsubmit",
+                        type: "(event: SubmitEvent) => void",
                         required: false,
-                        defaultValue: "undefined",
-                        description: "Form submission handler",
+                        description:
+                            "Runs on submit. The fields are markup, not a prop.",
                     },
                     {
-                        name: "fields",
-                        type: "array",
-                        required: false,
-                        defaultValue: "[]",
-                        description: "Custom form fields",
-                    },
-                    {
-                        name: "variant",
+                        name: "class",
                         type: "string",
                         required: false,
-                        defaultValue: "default",
-                        description: "Form variant",
+                        description:
+                            "Extra classes for the form element.",
                     },
                 ],
-                variants: ["default", "minimal", "detailed"],
+
                 examples: [
                     {
                         title: "Basic Contact Form",
@@ -1586,38 +1643,56 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Dropdown",
                 category: "molecules",
                 description:
-                    "Dropdown menu with customizable options and positioning",
+                    "Menu anchored to your own trigger snippet, with arrow-key focus and four placements.",
                 props: [
                     {
-                        name: "options",
-                        type: "array",
+                        name: "trigger",
+                        type: "Snippet<[DropdownTriggerProps]>",
                         required: true,
+                        description:
+                            "The control that opens the menu. Spread the ARIA props it receives onto your button.",
+                    },
+                    {
+                        name: "options",
+                        type: "Array<{ value, label, disabled? }>",
+                        required: false,
                         defaultValue: "[]",
-                        description: "Dropdown options",
+                        description:
+                            "Menu items, when not supplying children.",
                     },
                     {
-                        name: "value",
-                        type: "string",
-                        required: false,
-                        defaultValue: "",
-                        description: "Selected value",
-                    },
-                    {
-                        name: "placeholder",
-                        type: "string",
-                        required: false,
-                        defaultValue: "Select an option",
-                        description: "Placeholder text",
-                    },
-                    {
-                        name: "disabled",
+                        name: "isOpen",
                         type: "boolean",
                         required: false,
                         defaultValue: "false",
-                        description: "Disable the dropdown",
+                        description:
+                            "Open state. Bindable.",
+                    },
+                    {
+                        name: "menuRole",
+                        type: "'menu' | 'listbox'",
+                        required: false,
+                        defaultValue: "menu",
+                        description:
+                            "Role for the popup; listbox for Select-style pickers.",
+                    },
+                    {
+                        name: "placement",
+                        type: "'bottom-start' | 'bottom-end' | 'top-start' | 'top-end'",
+                        required: false,
+                        defaultValue: "bottom-start",
+                        description:
+                            "Where the popup sits relative to the trigger.",
+                    },
+                    {
+                        name: "onOptionClick",
+                        type: "(value: string | number) => void",
+                        required: false,
+                        description:
+                            "Runs when an option is chosen.",
                     },
                 ],
-                variants: ["default", "searchable", "multi-select"],
+
                 examples: [
                     {
                         title: "Basic Dropdown",
@@ -1635,31 +1710,40 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Form",
                 category: "molecules",
                 description:
-                    "Flexible form component with validation and field management",
+                    "Form element with method, action and native validation you can switch off.",
                 props: [
                     {
-                        name: "fields",
-                        type: "array",
-                        required: true,
-                        defaultValue: "[]",
-                        description: "Form field definitions",
+                        name: "method",
+                        type: "'get' | 'post'",
+                        required: false,
+                        defaultValue: "post",
+                        description:
+                            "Form method.",
                     },
                     {
-                        name: "onSubmit",
-                        type: "function",
+                        name: "action",
+                        type: "string",
                         required: false,
-                        defaultValue: "undefined",
-                        description: "Form submission handler",
+                        description:
+                            "Form action.",
                     },
                     {
-                        name: "validation",
-                        type: "object",
+                        name: "novalidate",
+                        type: "boolean",
                         required: false,
-                        defaultValue: "{}",
-                        description: "Validation rules",
+                        defaultValue: "false",
+                        description:
+                            "Skip the browser's own validation.",
+                    },
+                    {
+                        name: "onsubmit",
+                        type: "(event: SubmitEvent) => void",
+                        required: false,
+                        description:
+                            "Runs on submit.",
                     },
                 ],
-                variants: ["default", "inline", "wizard"],
+
                 examples: [
                     {
                         title: "Basic Form",
@@ -1677,38 +1761,56 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "ImageUpload",
                 category: "molecules",
                 description:
-                    "Image upload component with preview and drag-and-drop",
+                    "File input with an image preview, an accept filter and a clear control.",
                 props: [
                     {
-                        name: "onUpload",
-                        type: "function",
+                        name: "value",
+                        type: "string | null",
                         required: false,
-                        defaultValue: "undefined",
-                        description: "Upload handler",
+                        defaultValue: "null",
+                        description:
+                            "Data URL of the selected image. Bindable.",
                     },
                     {
-                        name: "maxSize",
-                        type: "number",
+                        name: "accept",
+                        type: "string",
                         required: false,
-                        defaultValue: "5242880",
-                        description: "Max file size in bytes",
+                        defaultValue: "image/*",
+                        description:
+                            "File types the picker offers.",
                     },
                     {
-                        name: "acceptedTypes",
-                        type: "array",
+                        name: "placeholder",
+                        type: "string",
                         required: false,
-                        defaultValue: "['image/*']",
-                        description: "Accepted file types",
+                        defaultValue: "No image selected",
+                        description:
+                            "Text shown before a file is chosen.",
                     },
                     {
-                        name: "multiple",
+                        name: "disabled",
                         type: "boolean",
                         required: false,
                         defaultValue: "false",
-                        description: "Allow multiple files",
+                        description:
+                            "Disable choosing and clearing.",
+                    },
+                    {
+                        name: "errorMessage",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Message shown beneath the preview.",
+                    },
+                    {
+                        name: "onfileselect",
+                        type: "(detail: ImageUploadFileDetail) => void",
+                        required: false,
+                        description:
+                            "Runs with the chosen file's details.",
                     },
                 ],
-                variants: ["default", "drag-drop", "preview"],
+
                 examples: [
                     {
                         title: "Basic Upload",
@@ -1726,38 +1828,52 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Modal",
                 category: "molecules",
                 description:
-                    "Modal dialog with backdrop and customizable content",
+                    "Dialog that keeps focus inside while open and returns it to the trigger, in three widths.",
                 props: [
                     {
                         name: "isOpen",
                         type: "boolean",
-                        required: true,
-                        defaultValue: "false",
-                        description: "Modal open state",
-                    },
-                    {
-                        name: "onClose",
-                        type: "function",
                         required: false,
-                        defaultValue: "undefined",
-                        description: "Close handler",
+                        defaultValue: "false",
+                        description:
+                            "Open state. Bindable.",
                     },
                     {
                         name: "title",
                         type: "string",
                         required: false,
-                        defaultValue: "",
-                        description: "Modal title",
+                        description:
+                            "Dialog title.",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Text below the title, linked as the dialog's description.",
                     },
                     {
                         name: "size",
-                        type: "string",
+                        type: "'sm' | 'md' | 'lg'",
                         required: false,
                         defaultValue: "md",
-                        description: "Modal size",
+                        description:
+                            "Panel width.",
+                    },
+                    {
+                        name: "showClose",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Show the close button.",
                     },
                 ],
-                variants: ["default", "large", "small", "fullscreen"],
+                variants: [
+                    "sm",
+                    "md",
+                    "lg",
+                ],
                 examples: [
                     {
                         title: "Basic Modal",
@@ -1774,31 +1890,33 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
             {
                 name: "SlideUp",
                 category: "molecules",
-                description: "Slide-up panel component with smooth animations",
+                description:
+                    "Panel that slides up from the bottom edge, with a title and close control.",
                 props: [
                     {
                         name: "isOpen",
                         type: "boolean",
-                        required: true,
-                        defaultValue: "false",
-                        description: "Panel open state",
-                    },
-                    {
-                        name: "onClose",
-                        type: "function",
                         required: false,
-                        defaultValue: "undefined",
-                        description: "Close handler",
+                        defaultValue: "false",
+                        description:
+                            "Open state. Bindable.",
                     },
                     {
-                        name: "height",
+                        name: "title",
                         type: "string",
                         required: false,
-                        defaultValue: "50vh",
-                        description: "Panel height",
+                        description:
+                            "Panel heading.",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(event: Event) => void",
+                        required: false,
+                        description:
+                            "Runs on click inside the panel, including the close control.",
                     },
                 ],
-                variants: ["default", "full", "half"],
+
                 examples: [
                     {
                         title: "Basic SlideUp",
@@ -1816,31 +1934,43 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Tabs",
                 category: "molecules",
                 description:
-                    "Tabbed interface with customizable tabs and content",
+                    "Tab list driven by a tabs array, in default or pills style.",
                 props: [
                     {
                         name: "tabs",
-                        type: "array",
-                        required: true,
+                        type: "Array<{ id, label, disabled? }>",
+                        required: false,
                         defaultValue: "[]",
-                        description: "Tab definitions",
+                        description:
+                            "Tab definitions.",
                     },
                     {
                         name: "activeTab",
                         type: "string",
                         required: false,
-                        defaultValue: "",
-                        description: "Active tab ID",
+                        description:
+                            "Id of the open tab. Bindable.",
                     },
                     {
-                        name: "onTabChange",
-                        type: "function",
+                        name: "variant",
+                        type: "'default' | 'pills'",
                         required: false,
-                        defaultValue: "undefined",
-                        description: "Tab change handler",
+                        defaultValue: "default",
+                        description:
+                            "Tab styling.",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(event: Event) => void",
+                        required: false,
+                        description:
+                            "Runs when a tab is clicked.",
                     },
                 ],
-                variants: ["default", "pills", "underline"],
+                variants: [
+                    "default",
+                    "pills",
+                ],
                 examples: [
                     {
                         title: "Basic Tabs",
@@ -1876,11 +2006,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Enable viewport for mobile responsiveness",
                     },
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: "",
-                        description: "Additional CSS classes",
+                        description: "Extra classes, merged last so they win",
                     },
                     {
                         name: "listClassName",
@@ -1890,12 +2020,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Additional CSS classes for the menu list",
                     },
                 ],
-                variants: [
-                    "default",
-                    "simple",
-                    "with-icons",
-                    "with-descriptions",
-                ],
+
                 examples: [
                     {
                         title: "Data-Driven API",
@@ -1914,7 +2039,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Toaster",
                 category: "molecules",
                 description:
-                    "Fixed notification region; pair with `pushToast()` from `toast-store`. Mount once near the app root.",
+                    "Fixed notification region; pair it with pushToast from the toast store. Mount once near the app root.",
                 props: [
                     {
                         name: "class",
@@ -1937,7 +2062,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "RadioGroup",
                 category: "molecules",
                 description:
-                    "Fieldset-based radio group with optional legend; uses native radios with shared `name`.",
+                    "Fieldset-based radio group with an optional legend; uses native radios with a shared name.",
                 props: [
                     {
                         name: "options",
@@ -1951,7 +2076,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string | undefined",
                         required: false,
                         defaultValue: "undefined",
-                        description: "Selected value (`bind:value`)",
+                        description: "Selected value (bind:value)",
                     },
                     {
                         name: "legend",
@@ -1978,7 +2103,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "FormField",
                 category: "molecules",
                 description:
-                    "Accessible field wrapper: label, description, error, and a `control` snippet for the input.",
+                    "Accessible field wrapper: label, description, error, and a control snippet for the input.",
                 props: [
                     {
                         name: "label",
@@ -2086,10 +2211,10 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Page",
                 category: "molecules",
                 description:
-                    "Vertical stack for doc-style pages. Apply reading width from the route via className (for example max-w-4xl).",
+                    "Vertical stack for doc-style pages. Apply reading width from the route via class (for example max-w-4xl).",
                 props: [
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: '""',
@@ -2102,7 +2227,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Page",
                         description: "Wrap main doc content",
-                        code: '<Page className="max-w-4xl">…</Page>',
+                        code: '<Page class="max-w-4xl">…</Page>',
                     },
                 ],
             },
@@ -2147,14 +2272,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "NavigationMenuList",
                 category: "molecules",
                 description:
-                    "Horizontal menubar list; use inside `NavigationMenu` with items and triggers.",
+                    "Horizontal menubar list; use it inside NavigationMenu with items and triggers.",
                 props: [
                     {
-                        name: "className",
+                        name: "class",
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Extra classes on the `<ul>`",
+                        description: "Extra classes on the <ul>, merged last so they win",
                     },
                 ],
                 variants: [],
@@ -2191,7 +2316,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
             {
                 name: "NavigationMenuTrigger",
                 category: "molecules",
-                description: "Button that toggles the matching `NavigationMenuContent`.",
+                description:
+                    "Button that toggles the matching NavigationMenuContent.",
                 props: [
                     {
                         name: "value",
@@ -2339,7 +2465,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: true,
                         defaultValue: "",
-                        description: "Accessible name for the `<ul>`",
+                        description: "Accessible name for the <ul>",
                     },
                 ],
                 variants: [],
@@ -2387,7 +2513,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "TopNavbar",
                 category: "organisms",
                 description:
-                    "Top navigation bar with brand, optional built-in link list, theme toggle, and responsive mobile menu. Use `embedded` for a link-only strip inside a custom header.",
+                    "Top bar with brand, optional link list, theme toggle and a responsive mobile menu. Use embedded for a link-only strip inside your own header.",
                 props: [
                     {
                         name: "brand",
@@ -2408,7 +2534,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "TopNavbarNavItem[]",
                         required: false,
                         defaultValue: "[]",
-                        description: "Built-in nav links (ignored when a `nav` snippet is provided)",
+                        description: "Built-in nav links (ignored when a nav snippet is provided)",
                     },
                     {
                         name: "navVariant",
@@ -2422,7 +2548,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "boolean",
                         required: false,
                         defaultValue: "false",
-                        description: "Render only the link list (or `nav` snippet) inside a `nav` landmark",
+                        description: "Render only the link list (or nav snippet) inside a nav landmark",
                     },
                     {
                         name: "currentPath",
@@ -2432,7 +2558,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Active route for built-in links",
                     },
                 ],
-                variants: ["chrome", "embedded"],
+                variants: [
+                    "header",
+                    "sidebar",
+                    "embedded",
+                ],
                 examples: [
                     {
                         title: "TopNavbar with inline links",
@@ -2450,58 +2580,280 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "SidebarNavigation",
                 category: "organisms",
                 description:
-                    "Sidebar navigation with optional Daybridge-style card layout, section labels, brand row, collapsed/expanded modes, grouped links, badges, and utility controls.",
+                    "Sidebar rail with brand row, grouped links, section labels, badges, collapsed and expanded modes, and an optional card layout.",
                 props: [
                     {
                         name: "mode",
-                        type: '"expanded" | "collapsed"',
+                        type: "'expanded' | 'collapsed'",
                         required: false,
-                        defaultValue: '"expanded"',
+                        defaultValue: "expanded",
                         description: "Sidebar display mode",
                     },
                     {
                         name: "layout",
-                        type: '"rail" | "card"',
+                        type: "'rail' | 'card'",
                         required: false,
-                        defaultValue: '"rail"',
-                        description:
-                            "Rail attaches to the viewport edge; card is a rounded floating panel on a soft surface",
+                        defaultValue: "rail",
+                        description: "Rail attaches to the viewport edge; card is a rounded floating panel on a soft surface",
                     },
                     {
                         name: "items",
                         type: "SidebarNavigationItem[]",
                         required: false,
                         defaultValue: "[]",
-                        description:
-                            "Primary and secondary sidebar items; optional `section` groups primary rows under headings",
+                        description: "Primary and secondary sidebar items; optional section groups primary rows under headings",
                     },
                     {
                         name: "currentPath",
                         type: "string",
                         required: false,
-                        defaultValue: '""',
+                        defaultValue: "\u2014",
                         description: "Active route path used for selected styling",
                     },
                     {
-                        name: "brandName",
+                        name: "activePrimaryHref",
                         type: "string",
                         required: false,
-                        defaultValue: '""',
-                        description: "Optional product name beside the logo",
+                        defaultValue: "\u2014",
+                        description: "Parent nav href to highlight when currentPath is a deeper leaf",
+                    },
+                    {
+                        name: "ariaLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Sidebar navigation",
+                        description: "Accessible name for the nav landmark",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Extra classes, merged last so they win",
+                    },
+                    {
+                        name: "className",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Deprecated alias for class",
                     },
                     {
                         name: "logoSrc",
                         type: "string",
                         required: false,
-                        defaultValue: '""',
+                        defaultValue: "\u2014",
                         description: "Optional logo image URL",
                     },
                     {
                         name: "logoAlt",
                         type: "string",
                         required: false,
-                        defaultValue: '""',
+                        defaultValue: "\u2014",
                         description: "Accessible label for the logo image",
+                    },
+                    {
+                        name: "brandName",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Optional product name beside the logo",
+                    },
+                    {
+                        name: "showProfile",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "Render the account row in the footer",
+                    },
+                    {
+                        name: "profileName",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Zabi",
+                        description: "Account display name",
+                    },
+                    {
+                        name: "profileEmail",
+                        type: "string",
+                        required: false,
+                        defaultValue: "hello@zabi.dev",
+                        description: "Account secondary line",
+                    },
+                    {
+                        name: "profileInitials",
+                        type: "string",
+                        required: false,
+                        defaultValue: "ZA",
+                        description: "Avatar initials fallback",
+                    },
+                    {
+                        name: "showSearch",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "Render the search affordance",
+                    },
+                    {
+                        name: "searchMode",
+                        type: "'input' | 'button'",
+                        required: false,
+                        defaultValue: "input",
+                        description: "Inline input, or a button that opens your own panel",
+                    },
+                    {
+                        name: "searchPlaceholder",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Search...",
+                        description: "Placeholder, and the button label in trigger mode",
+                    },
+                    {
+                        name: "searchValue",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Bindable search term; filters items in input mode",
+                    },
+                    {
+                        name: "searchTriggerIcon",
+                        type: "Component",
+                        required: false,
+                        defaultValue: "Command",
+                        description: "Trigger icon in button mode or when collapsed",
+                    },
+                    {
+                        name: "searchTriggerVariant",
+                        type: "ButtonVariant",
+                        required: false,
+                        defaultValue: "outline",
+                        description: "Button variant for the search trigger",
+                    },
+                    {
+                        name: "searchTriggerSize",
+                        type: "SizeVariant",
+                        required: false,
+                        defaultValue: "sm",
+                        description: "Button size for the search trigger",
+                    },
+                    {
+                        name: "showLogout",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "Render the logout row",
+                    },
+                    {
+                        name: "logoutLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Logout",
+                        description: "Logout row label",
+                    },
+                    {
+                        name: "showThemeToggle",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "Render the light/dark toggle",
+                    },
+                    {
+                        name: "lightModeLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Light mode",
+                        description: "Theme toggle label",
+                    },
+                    {
+                        name: "isLightMode",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Bindable theme toggle state",
+                    },
+                    {
+                        name: "emptyStateTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Create your first navigation item",
+                        description: "Heading when there are no items",
+                    },
+                    {
+                        name: "emptyStateDescription",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Add your first sidebar item so users can start navigating your product.",
+                        description: "Body copy when there are no items",
+                    },
+                    {
+                        name: "emptyStateActionLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Add navigation item",
+                        description: "Call to action when there are no items",
+                    },
+                    {
+                        name: "onNavigate",
+                        type: "(item, event) => void",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Fires on item click; call preventDefault for client routing",
+                    },
+                    {
+                        name: "onSearchClick",
+                        type: "() => void",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Fires when the search trigger is pressed (button mode)",
+                    },
+                    {
+                        name: "onLogout",
+                        type: "() => void",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Fires when logout is pressed",
+                    },
+                    {
+                        name: "onThemeToggle",
+                        type: "(next: boolean) => void",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Fires with the next light-mode value",
+                    },
+                    {
+                        name: "onEmptyStateAction",
+                        type: "() => void",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Fires when the empty-state action is pressed",
+                    },
+                    {
+                        name: "onProfileClick",
+                        type: "(event?) => void",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Fires when the account row is pressed",
+                    },
+                    {
+                        name: "profilePanelOpen",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Whether your account panel is open (drives aria-expanded)",
+                    },
+                    {
+                        name: "profilePanelControlsId",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Id of your account panel, for aria-controls",
+                    },
+                    {
+                        name: "profilePanel",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description: "Snippet rendered as the account panel",
                     },
                 ],
                 variants: ["expanded", "collapsed"],
@@ -2517,6 +2869,84 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Use a search trigger button to open an adjacent picker panel.",
                         code: "&lt;SidebarNavigation mode=&quot;expanded&quot; searchMode=&quot;button&quot; onSearchClick={() =&gt; (panelOpen = true)} /&gt;",
+                    },
+                ],
+            },
+            {
+                name: "SidebarShell",
+                category: "organisms",
+                description:
+                    "The chrome of a sidebar with the regions left open: width, surface, collapse behaviour and a scrolling middle. Compose the sidebar molecules into it.",
+                props: [
+                    {
+                        name: "mode",
+                        type: "'expanded' | 'collapsed'",
+                        required: false,
+                        defaultValue: "expanded",
+                        description: "Sidebar display mode; passed to every region as collapsed",
+                    },
+                    {
+                        name: "layout",
+                        type: "'rail' | 'card'",
+                        required: false,
+                        defaultValue: "rail",
+                        description: "Rail attaches to the viewport edge; card is a rounded floating panel",
+                    },
+                    {
+                        name: "ariaLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Sidebar navigation",
+                        description: "Accessible name for the nav landmark",
+                    },
+                    {
+                        name: "header",
+                        type: "Snippet<[{ collapsed, insetX }]>",
+                        required: false,
+                        defaultValue: "—",
+                        description: "Brand row, search — anything above the scrolling nav area",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet<[{ collapsed, insetX }]>",
+                        required: false,
+                        defaultValue: "—",
+                        description: "The scrolling middle",
+                    },
+                    {
+                        name: "footer",
+                        type: "Snippet<[{ collapsed, insetX }]>",
+                        required: false,
+                        defaultValue: "—",
+                        description: "Account row, logout, theme toggle — outside the scroll container",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: "—",
+                        description: "Extra classes, merged last so they win",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Composed sidebar",
+                        description:
+                            "Each region is a snippet handed { collapsed, insetX }, so it matches the shell without re-deriving them.",
+                        code: `<SidebarShell mode="collapsed">
+  {#snippet header({ collapsed })}
+    <SidebarBrandHeader {collapsed} brandName="Zabi" />
+  {/snippet}
+
+  <SidebarNavSection title="Main" sectionKey="main" {collapsed}>
+    <li><a href="/">Dashboard</a></li>
+  </SidebarNavSection>
+
+  {#snippet footer({ collapsed, insetX })}
+    <SidebarFooter {collapsed} class={insetX} />
+  {/snippet}
+</SidebarShell>`,
                     },
                 ],
             },
@@ -2555,7 +2985,10 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Currently selected item id",
                     },
                 ],
-                variants: ["default", "empty state"],
+                variants: [
+                    "plain",
+                    "elevated",
+                ],
                 examples: [
                     {
                         title: "Picker panel",
@@ -2569,7 +3002,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "SidebarAccountPanel",
                 category: "organisms",
                 description:
-                    "Account picker panel: profile, theme row, and logout; composes `SidebarPanel` with fixed actions.",
+                    "Account picker panel: profile, theme row, and logout; composes SidebarPanel with fixed actions.",
                 props: [
                     {
                         name: "profileName",
@@ -2590,7 +3023,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: "generated",
-                        description: "Stable id for `aria-controls` from the sidebar",
+                        description: "Stable id for aria-controls from the sidebar",
                     },
                     {
                         name: "variant",

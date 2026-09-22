@@ -30,9 +30,9 @@ const maxFileSizes = {
   'zabi-components-theme-dark.css': 30000, // ~30KB
   'zabi-components-theme-dark-only.css': 30000,
   'zabi-components.css': 500000, // ~500KB
-  'zabi-components-colors.css': 20000, // ~20KB
+  'zabi-components-colors.css': 30000, // ~30KB (grew with the per-family subtle/border/text tokens)
   'index.js': 10000, // ~10KB
-  'index.d.ts': 5000 // ~5KB
+  'index.d.ts': 8000 // ~8KB (grew with the new Sidebar/Tabs/Select/Toggle props)
 };
 
 // Minimum file sizes (in bytes) - ensure files have content
@@ -177,6 +177,22 @@ function verifyPackageExports() {
     if (!documented) {
       console.error(`❌ CSS export is not documented in docs/theme-imports.md: ${exportPath}`);
       allExportsValid = false;
+    }
+  }
+
+  // Validate every non-CSS export condition resolves to a built file (never raw .ts sources).
+  for (const [exportPath, target] of Object.entries(exports)) {
+    if (typeof target !== 'object' || target === null) continue;
+    for (const [condition, targetPath] of Object.entries(target)) {
+      const resolved = path.join(__dirname, '..', targetPath);
+      if (!fs.existsSync(resolved)) {
+        console.error(`❌ Export points to missing file: ${exportPath} [${condition}] -> ${targetPath}`);
+        allExportsValid = false;
+      }
+      if (targetPath.endsWith('.ts') && !targetPath.endsWith('.d.ts')) {
+        console.error(`❌ Export points to raw TypeScript source: ${exportPath} [${condition}] -> ${targetPath}`);
+        allExportsValid = false;
+      }
     }
   }
 

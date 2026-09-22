@@ -94,7 +94,7 @@
         activeTab = $bindable("tab1"),
         selectValue = $bindable<string | number | undefined>(undefined),
         sidebarPath = $bindable("/revenue"),
-        sidebarSearchValue = $bindable("Revenue"),
+        sidebarSearchValue = $bindable(""),
         sidebarSearchPanelOpen = $bindable(false),
         sidebarProjectSearch = $bindable(""),
         selectedProjectId = $bindable("proj-zabi-web"),

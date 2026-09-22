@@ -6,6 +6,8 @@
     import Section from "../../../components/molecules/Section.svelte";
     import type { PageData } from "./$types";
 
+    import { ExternalLink } from "@lucide/svelte";
+    import { GITHUB_URL } from "$lib/marketing/content";
     let { data }: { data: PageData } = $props();
 
     const component = $derived(data.component);
@@ -15,14 +17,14 @@
     let activeTab = $state("tab1");
     let selectValue = $state<string | number | undefined>(undefined);
     let sidebarPath = $state("/revenue");
-    let sidebarSearchValue = $state("Revenue");
+    let sidebarSearchValue = $state("");
     let sidebarSearchPanelOpen = $state(false);
     let sidebarProjectSearch = $state("");
     let selectedProjectId = $state("proj-zabi-web");
 </script>
 
 <svelte:head>
-    <title>{component.name} - Components - Zabi Components</title>
+    <title>{component.name} — Zabi Components</title>
     <meta
         name="description"
         content={component.description}
@@ -60,8 +62,8 @@
     </Section>
 
     <Section
-        title="Props / API"
-        description="Minimal API reference for the exported component."
+        title="Props"
+        description="The props you are most likely to need, with types and defaults."
         padding="none"
         background="transparent"
         maxWidth="none"
@@ -79,10 +81,10 @@
         >
             <div class="text-center md:text-left">
                 <p class="mb-2 text-description">
-                    Open source · MIT license · Code on GitHub
+                    Zabi Components is open source under the MIT license.
                 </p>
                 <p class="text-sm text-caption">
-                    © 2026 Zabi Components. MIT License.
+                    © {new Date().getFullYear()} Zabi Components.
                 </p>
             </div>
             <div class="flex gap-6">
@@ -97,9 +99,15 @@
                     >Components</a
                 >
                 <a
-                    href="https://github.com/sabnor/zabi-components"
-                    class="text-description transition-colors hover:text-headline"
-                    >GitHub</a
+                    href={GITHUB_URL}
+                    class="inline-flex items-center text-description transition-colors hover:text-headline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >GitHub<ExternalLink
+                        size={12}
+                        class="ml-1 shrink-0 opacity-70"
+                        aria-hidden="true"
+                    /><span class="sr-only">(opens in a new tab)</span></a
                 >
             </div>
         </div>

@@ -8,7 +8,7 @@ export const doc: ComponentDoc = makeDoc({
     name: "Modal",
     category: "molecules",
     description:
-        "Dialog overlay for focused tasks that require immediate user attention. Use it for confirmations, short forms, and critical flows that shouldn’t lose context.",
+        "Dialog overlay for focused tasks. Use it for confirmations, short forms, and critical flows that should not lose context.",
     defaultExample: {
         title: "Default",
         description: "A modal with a title and a clear primary action.",
@@ -23,7 +23,7 @@ export const doc: ComponentDoc = makeDoc({
   </div>
 </Modal>`,
     },
-    variantsStates: ["default"],
+    variantsStates: ["sm", "md", "lg"],
     props,
     guidelines: {
         whenToUse: [

@@ -8,16 +8,24 @@
     import CardHeader from "../atoms/CardHeader.svelte";
     import CardContent from "../atoms/CardContent.svelte";
     import type { ContactFormData } from "../types/page.types";
+    import { cn } from "../util/cn.js";
 
     interface Props {
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         onsubmit?: (event: SubmitEvent) => void;
     }
 
     let {
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         onsubmit,
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let formData = $state<ContactFormData>({
         name: "",
@@ -60,6 +68,8 @@
         };
 
         if (!validate(data)) {
+            // Block native submission so the page does not reload and wipe the errors.
+            event.preventDefault();
             formErrorMessage =
                 "We could not submit your request. Fix the highlighted fields and try again.";
             return;
@@ -79,7 +89,7 @@
             <Form onsubmit={handleFormSubmit} className="space-y-4">
                 {#if formErrorMessage}
                 <div
-                    class="rounded-lg border border-error px-4 py-3 text-sm text-error"
+                    class="rounded-control border border-error px-4 py-3 text-sm text-error"
                     role="alert"
                 >
                     <p class="font-medium">Something went wrong</p>

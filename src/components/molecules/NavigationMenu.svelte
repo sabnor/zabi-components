@@ -9,6 +9,8 @@
     import NavigationMenuLink from "./NavigationMenuLink.svelte";
 
     import { generateId } from "../util/ssr-safe.js";
+
+    import { cn } from "../util/cn.js";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
         navigationMenuStableInstanceId,
@@ -33,23 +35,33 @@
 
     interface Props {
         viewport?: boolean | "mobile";
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         items?: NavigationMenuItemData[];
         children?: Snippet;
         listClassName?: string;
         /** Panel id / `aria-controls` prefix; pass for SSR or multiple menus. If omitted with non-empty `items`, a deterministic hash is used. */
         menuId?: string;
+        /** Accessible name for the `<nav>` landmark. */
+        ariaLabel?: string;
     }
 
     let {
         viewport = true,
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         items = [],
         children,
         listClassName = "",
         menuId = "",
+        ariaLabel = "Main navigation",
         ...restProps
     }: Props = $props();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let activeItem = $state<string | null>(null);
     let isMobile = $state(false);
@@ -104,8 +116,8 @@
 
 <nav
     bind:this={containerElement}
-    class="relative {className}"
-    aria-label="Main navigation"
+    class={cn("relative", className)}
+    aria-label={ariaLabel}
     {...restProps}
 >
     {#if items.length > 0}

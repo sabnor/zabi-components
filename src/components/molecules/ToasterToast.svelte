@@ -12,12 +12,15 @@
     } from '@lucide/svelte';
     import Button from '../atoms/Button.svelte';
     import { toastStore, type ToastItem } from './toast-store.js';
+    import { cn } from "../util/cn.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         toast: ToastItem;
     }
 
-    let { toast }: Props = $props();
+    let { class: className = "", toast }: Props = $props();
 
     /** Seconds until auto-dismiss; `0` means no countdown (manual dismiss only). */
     function autoDismissSeconds(duration: number | undefined): number {
@@ -31,6 +34,10 @@
     let count = $state(0);
     let timerActive = $state(false);
     let isExpanded = $state(false);
+    /** Hover or keyboard focus inside the toast pauses auto-dismiss (WCAG 2.2.1). */
+    let hovered = $state(false);
+    let focusWithin = $state(false);
+    const paused = $derived(hovered || focusWithin);
 
     let intervalRef: ReturnType<typeof setInterval> | undefined;
 
@@ -90,6 +97,7 @@
         timerActive = true;
 
         intervalRef = setInterval(() => {
+            if (paused) return;
             count -= 1;
             if (count <= 0) {
                 stopTimer();
@@ -113,19 +121,38 @@
         isExpanded = false;
     }
 
+    function handleFocusOut(event: FocusEvent) {
+        const next = event.relatedTarget as Node | null;
+        if (!next || !(event.currentTarget as HTMLElement).contains(next)) {
+            focusWithin = false;
+        }
+    }
+
     const toastEnter = { y: 18, duration: 260, opacity: 0, easing: cubicOut };
     const toastLeave = { y: 14, duration: 300, opacity: 0, easing: cubicOut };
 </script>
 
 <div
-    class="pointer-events-auto relative w-full min-w-[18rem] overflow-hidden rounded-2xl border border-border bg-surface-1 shadow-xl"
+    class={cn("pointer-events-auto relative w-full min-w-[18rem] overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg", className)}
     in:fly={toastEnter}
     out:fly={toastLeave}
-    role={toast.type === 'error' ? 'alert' : 'status'}
+    onmouseenter={() => (hovered = true)}
+    onmouseleave={() => (hovered = false)}
+    onfocusin={() => (focusWithin = true)}
+    onfocusout={handleFocusOut}
+    role="group"
+    aria-label={headerTitle}
+    data-paused={paused}
 >
     <div class="p-4">
         <div class="flex items-start gap-3">
-            <div class="shrink-0 pt-0.5">
+            <!-- Live region holds only title + message, so the countdown and buttons are never re-announced. -->
+            <div
+                class="flex min-w-0 flex-1 items-start gap-3"
+                role={toast.type === 'error' ? 'alert' : 'status'}
+                aria-atomic="true"
+            >
+            <div class="shrink-0 mt-0.5">
                 {#if toast.type === 'success'}
                     <CheckCircle class="size-5 {statusIconClass}" aria-hidden="true" />
                 {:else if toast.type === 'error'}
@@ -138,12 +165,16 @@
             </div>
             <h4 class="min-w-0 flex-1 text-base font-semibold text-headline">
                 {headerTitle}
+                {#if toast.message.trim() && toast.message.trim() !== headerTitle}
+                    <span class="sr-only">{toast.message}</span>
+                {/if}
             </h4>
-            <div class="flex shrink-0 items-center gap-0.5">
+            </div>
+            <div class="flex shrink-0 items-center gap-1">
                 {#if hasExpandable}
                     <button
                         type="button"
-                        class="focus-ring cursor-pointer rounded-md p-1 text-description transition-colors hover:bg-base-100 hover:text-headline focus:outline-none"
+                        class="focus-ring cursor-pointer rounded-control p-1 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline focus:outline-none"
                         aria-expanded={isExpanded}
                         aria-controls="toaster-expand-{toast.id}"
                         aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
@@ -159,7 +190,7 @@
                 {/if}
                 <button
                     type="button"
-                    class="focus-ring cursor-pointer rounded-md p-1 text-description transition-colors hover:bg-base-100 hover:text-headline focus:outline-none"
+                    class="focus-ring cursor-pointer rounded-control p-1 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline focus:outline-none"
                     onclick={handleDismiss}
                     aria-label="Dismiss notification"
                 >
@@ -189,11 +220,11 @@
 
     {#if timerActive}
         <div class="px-4 pb-3" transition:fade={{ duration: 180 }}>
-            <p class="text-xs text-description">
-                This message will close in {count} seconds.
+            <p class="text-xs text-description" data-toast-countdown>
+                {paused ? 'Paused — closes' : 'This message will close'} in {count} seconds.
                 <button
                     type="button"
-                    class="focus-ring cursor-pointer rounded-sm text-link underline-offset-2 hover:underline focus:outline-none"
+                    class="focus-ring cursor-pointer rounded-control text-link underline-offset-2 hover:underline focus:outline-none"
                     onclick={stopTimer}
                 >
                     Click to stop

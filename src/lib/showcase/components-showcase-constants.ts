@@ -11,23 +11,12 @@ import {
     Users,
 } from "@lucide/svelte";
 
+/** The sidebar renders the label and a count; nothing displays a description. */
 export const categories = [
-    {
-        id: "all",
-        label: "All",
-        description: "All component categories",
-    },
-    { id: "atoms", label: "Atoms", description: "Basic building blocks" },
-    {
-        id: "molecules",
-        label: "Molecules",
-        description: "Composite components",
-    },
-    {
-        id: "organisms",
-        label: "Organisms",
-        description: "Complex components",
-    },
+    { id: "all", label: "All" },
+    { id: "atoms", label: "Atoms" },
+    { id: "molecules", label: "Molecules" },
+    { id: "organisms", label: "Organisms" },
 ];
 
 export const sampleCode = `function greet(name) {

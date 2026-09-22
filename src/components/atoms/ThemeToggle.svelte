@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { Sun, Moon } from "@lucide/svelte";
     import { FOCUS_BRAND_CLASS } from "../util/focus-utils.js";
+    import { cn } from "../util/cn.js";
     
     function safeLocalStorage(): Storage | undefined {
         return typeof window !== "undefined" ? localStorage : undefined;
@@ -12,6 +13,8 @@
     }
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         size?: "sm" | "md" | "lg";
         variant?: "default" | "ghost" | "outline";
         disabled?: boolean;
@@ -19,9 +22,11 @@
     }
 
     let {
+        class: className = "",
         size = "md",
         variant = "default",
         disabled = false,
+        onclick,
         ...restProps
     }: Props = $props();
 
@@ -57,10 +62,8 @@
         if (mounted && storage) {
             storage.setItem("theme", isDark ? "dark" : "light");
         }
-        
-        if (onclick) {
-            (onclick as (event: Event) => void)(event);
-        }
+
+        onclick?.(event);
     }
 
     function updateTheme() {
@@ -97,20 +100,20 @@
 
     const variantClass = $derived(() => {
         if (variant === "ghost") {
-            return "bg-transparent hover:bg-base-100 active:bg-base-200 border-0";
+            return "bg-transparent hover:bg-surface-hover active:bg-surface-active border-0";
         } else if (variant === "outline") {
-            return "bg-base-50 hover:bg-base-100 active:bg-base-200 border border-border";
+            return "bg-action-secondary hover:bg-action-secondary-hover active:bg-action-secondary-active border border-border";
         } else {
-            return "bg-base-50 hover:bg-base-100 active:bg-base-200 border-0";
+            return "bg-action-secondary hover:bg-action-secondary-hover active:bg-action-secondary-active border-0";
         }
     });
 
     const buttonClasses = $derived(() => {
         const sizeStyles = sizeClass();
-        return `
+        return cn(`
             ${sizeStyles.button}
             ${variantClass()}
-            rounded-lg
+            rounded-control
             flex
             items-center
             justify-center
@@ -122,16 +125,16 @@
             disabled:opacity-50
             disabled:cursor-not-allowed
             disabled:active:scale-100
-            disabled:hover:bg-base-50
+            disabled:hover:bg-action-disabled
             ${FOCUS_BRAND_CLASS}
-        `.trim().replace(/\s+/g, " ");
+        `).replace(/\s+/g, " ");
     });
 </script>
 
 {#if mounted}
     <button
         onclick={toggleTheme}
-        class={buttonClasses()}
+        class="{buttonClasses()} {className}"
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         aria-pressed={isDark}
         type="button"
@@ -146,12 +149,12 @@
     </button>
 {:else}
     <button
-        class="w-10 h-10 bg-base-50 rounded-lg flex items-center justify-center text-label cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        class="{sizeClass().button} {variantClass()} rounded-control flex items-center justify-center text-label cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Theme toggle"
         type="button"
         {disabled}
         {...restProps}
     >
-        <Sun size={20} class="text-label" />
+        <Sun size={sizeClass().icon} class="text-label" />
     </button>
 {/if}

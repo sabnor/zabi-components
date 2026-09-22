@@ -8,8 +8,11 @@
         AlertCircle,
     } from "@lucide/svelte";
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         value?: string | number | undefined;
         options?: Array<{
             value: string | number;
@@ -28,6 +31,8 @@
         emptyStateActionLabel?: string;
         placeholder?: string;
         label?: string;
+        /** When set, a hidden input submits the selected value with native forms. */
+        name?: string;
         required?: boolean;
         disabled?: boolean;
         size?: "sm" | "md" | "lg";
@@ -38,6 +43,7 @@
     }
 
     let {
+        class: className = "",
         value = $bindable(undefined),
         options = [],
         searchable = true,
@@ -52,6 +58,7 @@
         emptyStateActionLabel = "",
         placeholder = "Select an option",
         label = "",
+        name = "",
         required = false,
         disabled = false,
         size = "md",
@@ -66,26 +73,11 @@
     let selectContainer: HTMLDivElement;
     let searchQuery = $state("");
 
+    // Same fixed height scale as Button, IconButton and Input (32 / 40 / 48).
     const sizeClass = $derived(() => {
-        if (size === "sm") {
-            return {
-                padding: "px-4 py-2",
-                text: "text-sm",
-                leading: "leading-5",
-            };
-        } else if (size === "lg") {
-            return {
-                padding: "px-4 py-3",
-                text: "text-base",
-                leading: "leading-6",
-            };
-        } else {
-            return {
-                padding: "px-4 py-2.5",
-                text: "text-base",
-                leading: "leading-6",
-            };
-        }
+        if (size === "sm") return { box: "h-8 px-3", text: "text-sm" };
+        if (size === "lg") return { box: "h-12 px-4", text: "text-base" };
+        return { box: "h-10 px-3", text: "text-sm" };
     });
 
     const variantClass = $derived(() => {
@@ -101,24 +93,24 @@
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "focus-ring flex w-full cursor-pointer items-center justify-between rounded-lg border bg-input text-body transition-all duration-200 hover:bg-input-hover active:bg-input-focus focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:opacity-50";
+            "focus-ring flex w-full cursor-pointer items-center justify-between gap-2 rounded-control border bg-input text-body transition-colors duration-150 hover:bg-input-hover active:bg-input-focus focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text";
 
-        return `${baseClasses} ${sizeStyles.padding} ${sizeStyles.text} ${sizeStyles.leading} ${variantClass()}`.trim();
+        return cn(`${baseClasses} ${sizeStyles.box} ${sizeStyles.text} ${variantClass()}`);
     });
 
     const labelClasses = $derived(
-        () => "block text-sm font-medium text-label mb-1",
+        () => "block text-sm font-medium text-label mb-2",
     );
 
     const messageClasses = $derived(() => {
         if (variant === "error") {
-            return "text-error text-sm mt-1 flex items-center gap-1.5 w-full";
+            return "text-error text-sm mt-1 flex items-center gap-2 w-full";
         } else if (variant === "success") {
-            return "text-success text-sm mt-1 flex items-center gap-1.5 w-full";
+            return "text-success text-sm mt-1 flex items-center gap-2 w-full";
         } else if (variant === "warning") {
-            return "text-warning text-sm mt-1 flex items-center gap-1.5 w-full";
+            return "text-warning text-sm mt-1 flex items-center gap-2 w-full";
         }
-        return "text-description text-sm mt-1 flex items-center gap-1.5 w-full";
+        return "text-description text-sm mt-1 flex items-center gap-2 w-full";
     });
 
     const getIcon = $derived(() => {
@@ -130,25 +122,24 @@
 
     const selectId = generateId("select");
 
-    const selectedLabel = $derived(() => {
-        if (isEmpty()) {
-            return String(placeholder || "Select an option");
-        }
-        const selected = options.find((opt) => opt.value === value);
-        return selected?.label
-            ? String(selected.label)
-            : String(placeholder || "Select an option");
-    });
-
     const isEmpty = $derived(() => {
         return value === undefined || value === null || value === "";
     });
 
-    const normalizedOptions = $derived(() => {
-        const fallbackOptions = (restProps as { options?: Props["options"] })
-            .options;
-        return Array.from(options ?? fallbackOptions ?? []);
-    });
+    /** String comparison so `"2"` and `2` match — same rule as Dropdown's `selectedValue`. */
+    function isSameValue(
+        a: string | number | null | undefined,
+        b: string | number | null | undefined,
+    ): boolean {
+        if (a === undefined || a === null || b === undefined || b === null) {
+            return false;
+        }
+        return String(a) === String(b);
+    }
+
+    const selectedOption = $derived.by(() =>
+        options.find((opt) => isSameValue(opt.value, value)),
+    );
 
     const hasSearchQuery = $derived(() => {
         return searchQuery.trim().length > 0;
@@ -156,7 +147,7 @@
 
     const filteredOptions = $derived(() => {
         const query = searchQuery.trim().toLowerCase();
-        const availableOptions = normalizedOptions();
+        const availableOptions = options;
         if (!searchable || query.length === 0) {
             return availableOptions;
         }
@@ -215,7 +206,7 @@
 
 <svelte:window onclick={handleClickOutside} onkeydown={handleKeydown} />
 
-<div bind:this={selectContainer} class="w-full select-container">
+<div bind:this={selectContainer} class={cn("w-full select-container", className)}>
     {#if label}
         <label for={selectId} class={labelClasses()}>{label}</label>
     {/if}
@@ -250,8 +241,7 @@
                     {:else}
                         {isEmpty()
                         ? placeholder
-                        : options.find((opt) => opt.value === value)?.label ||
-                          placeholder}
+                        : selectedOption?.label || placeholder}
                     {/if}
                 </span>
                 <ChevronDown
@@ -262,29 +252,32 @@
                 />
             </button>
         {/snippet}
+        {#snippet header()}
+            {#if searchable && !isLoading}
+                <!-- Outside role="listbox": a textbox is not a valid listbox child. -->
+                <div class="px-3 pb-2 pt-1" style:width={menuWidth}>
+                    <Input
+                        type="text"
+                        size="sm"
+                        class="min-w-0"
+                        placeholder={searchPlaceholder}
+                        bind:value={searchQuery}
+                        aria-label={searchPlaceholder}
+                        {disabled}
+                    />
+                </div>
+            {/if}
+        {/snippet}
         {#snippet children()}
             <div class="px-2 pb-2 pt-1" style:width={menuWidth}>
-                {#if searchable && !isLoading}
-                    <div class="px-1 pb-2">
-                        <Input
-                            type="text"
-                            size="sm"
-                            class="min-w-0"
-                            placeholder={searchPlaceholder}
-                            bind:value={searchQuery}
-                            aria-label={searchPlaceholder}
-                            {disabled}
-                        />
-                    </div>
-                {/if}
                 <div
                     class="overflow-y-auto px-1"
                     style:max-height={maxMenuHeight}
                 >
                     {#if isLoading}
                         <div class="space-y-2 px-2 py-2" role="status" aria-live="polite">
-                            <div class="h-8 w-full animate-pulse rounded-md bg-base-200"></div>
-                            <div class="h-8 w-full animate-pulse rounded-md bg-base-200"></div>
+                            <div class="h-8 w-full animate-pulse rounded-control bg-base-200"></div>
+                            <div class="h-8 w-full animate-pulse rounded-control bg-base-200"></div>
                             <p class="text-xs text-description">{loadingText}</p>
                         </div>
                     {:else if filteredOptions().length > 0}
@@ -292,17 +285,19 @@
                             {@const buttonRestProps = {
                                 "data-value": String(option.value),
                             } as Record<string, string>}
-                            <div class="w-full my-0.5">
+                            <div class="w-full my-1">
                                 <button
                                     type="button"
                                     role="option"
-                                    aria-selected={value === option.value
+                                    aria-selected={isSameValue(value, option.value)
                                         ? true
                                         : undefined}
-                                    class="focus-ring flex w-full items-center justify-start rounded-md border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {value ===
-                                    option.value
+                                    class="focus-ring flex w-full items-center justify-start rounded-control border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {isSameValue(
+                                        value,
+                                        option.value,
+                                    )
                                         ? 'border-action-primary bg-transparent text-headline'
-                                        : 'border-transparent bg-transparent text-body hover:bg-base-100'}"
+                                        : 'border-transparent bg-transparent text-body hover:bg-surface-overlay-hover'}"
                                     disabled={option.disabled}
                                     {...buttonRestProps}
                                     onclick={() =>
@@ -317,13 +312,13 @@
                             {noResultsText}
                         </div>
                     {:else}
-                        <div class="rounded-md border border-border bg-base-50 px-3 py-3 text-sm">
+                        <div class="rounded-control border border-border bg-surface-overlay-hover px-3 py-3 text-sm">
                             <p class="font-medium text-headline">{emptyStateTitle}</p>
                             <p class="mt-1 text-description">{emptyStateDescription}</p>
                             {#if emptyStateActionLabel && onEmptyStateAction}
                                 <button
                                     type="button"
-                                    class="mt-3 inline-flex min-h-11 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm text-action-primary"
+                                    class="mt-3 inline-flex min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm text-action-primary"
                                     onclick={onEmptyStateAction}
                                 >
                                     {emptyStateActionLabel}
@@ -335,6 +330,9 @@
             </div>
         {/snippet}
     </Dropdown>
+    {#if name}
+        <input type="hidden" {name} value={isEmpty() ? "" : String(value)} />
+    {/if}
     {#if message && variant !== "default"}
         <p
             id={`${selectId}-message`}

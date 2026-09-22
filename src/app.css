@@ -64,17 +64,17 @@
   --font-family-sans: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
 
   /* Brand Color Scale — physical ramp + semantic aliases (same mirror pattern as pine / base) */
-  --zabi-brand-50: #f7faff;
-  --zabi-brand-100: #edf2fb;
-  --zabi-brand-200: #dfe7fb;
-  --zabi-brand-300: #ccdbfd;
-  --zabi-brand-400: #abc4ff;
-  --zabi-brand-500: #8fa8ff;
-  --zabi-brand-600: #6e84fa;
-  --zabi-brand-700: #5366e2;
-  --zabi-brand-800: #3f4fc0;
-  --zabi-brand-900: #2f3c99;
-  --zabi-brand-950: #1f2866;
+  --zabi-brand-50: #f4f6ff;
+  --zabi-brand-100: #e9eeff;
+  --zabi-brand-200: #d3dcff;
+  --zabi-brand-300: #b5c6ff;
+  --zabi-brand-400: #92a9ff;
+  --zabi-brand-500: #6d87f1;
+  --zabi-brand-600: #4f68da;
+  --zabi-brand-700: #3c52ba;
+  --zabi-brand-800: #2b3e95;
+  --zabi-brand-900: #1c2c6d;
+  --zabi-brand-950: #111d49;
 
   --color-brand-50: var(--zabi-brand-50);
   --color-brand-100: var(--zabi-brand-100);
@@ -89,17 +89,17 @@
   --color-brand-950: var(--zabi-brand-950);
 
   /* Citron Color Scale — physical ramp + semantic aliases (same mirror pattern as pine / base) */
-  --zabi-citron-50: #f9faeb;
-  --zabi-citron-100: #f1f5cf;
-  --zabi-citron-200: #e4ecaa;
-  --zabi-citron-300: #d5e184;
-  --zabi-citron-400: #c7d460;
-  --zabi-citron-500: #bbbe64;
-  --zabi-citron-600: #a3a852;
-  --zabi-citron-700: #848a43;
-  --zabi-citron-800: #666c35;
-  --zabi-citron-900: #4d5229;
-  --zabi-citron-950: #323518;
+  --zabi-citron-50: #f6f7ef;
+  --zabi-citron-100: #edefdf;
+  --zabi-citron-200: #dcdfbf;
+  --zabi-citron-300: #c5ca95;
+  --zabi-citron-400: #aab063;
+  --zabi-citron-500: #8c9027;
+  --zabi-citron-600: #707400;
+  --zabi-citron-700: #5a5d00;
+  --zabi-citron-800: #454700;
+  --zabi-citron-900: #313200;
+  --zabi-citron-950: #202100;
 
   --color-citron-50: var(--zabi-citron-50);
   --color-citron-100: var(--zabi-citron-100);
@@ -114,17 +114,17 @@
   --color-citron-950: var(--zabi-citron-950);
 
   /* Pine Color Scale — physical ramp + semantic aliases (mirror pattern matches --zabi-base-* / --color-base-*) */
-  --zabi-pine-50: #e9f6f2;
-  --zabi-pine-100: #d2ece4;
-  --zabi-pine-200: #a7d9c9;
-  --zabi-pine-300: #78c4ad;
-  --zabi-pine-400: #49ad91;
-  --zabi-pine-500: #0c5d43;
-  --zabi-pine-600: #0a513a;
-  --zabi-pine-700: #084532;
-  --zabi-pine-800: #063a2a;
-  --zabi-pine-900: #04231a;
-  --zabi-pine-950: #02160f;
+  --zabi-pine-50: #f0f8f5;
+  --zabi-pine-100: #e2f1eb;
+  --zabi-pine-200: #c5e4d7;
+  --zabi-pine-300: #9fd1bd;
+  --zabi-pine-400: #70ba9e;
+  --zabi-pine-500: #399c7a;
+  --zabi-pine-600: #00805e;
+  --zabi-pine-700: #00674a;
+  --zabi-pine-800: #004f37;
+  --zabi-pine-900: #003826;
+  --zabi-pine-950: #002518;
 
   --color-pine-50: var(--zabi-pine-50);
   --color-pine-100: var(--zabi-pine-100);
@@ -139,17 +139,17 @@
   --color-pine-950: var(--zabi-pine-950);
 
   /* Iris Color Scale — physical ramp + semantic aliases (same mirror pattern as pine / base) */
-  --zabi-iris-50: #f4f4fa;
-  --zabi-iris-100: #e9e9f7;
-  --zabi-iris-200: #d6d6f0;
-  --zabi-iris-300: #bdbde6;
-  --zabi-iris-400: #a3a3d8;
-  --zabi-iris-500: #6969b3;
-  --zabi-iris-600: #58589e;
-  --zabi-iris-700: #474788;
-  --zabi-iris-800: #38386f;
-  --zabi-iris-900: #2a2a56;
-  --zabi-iris-950: #1b1b37;
+  --zabi-iris-50: #f6f6fd;
+  --zabi-iris-100: #ecedfb;
+  --zabi-iris-200: #dadbf6;
+  --zabi-iris-300: #c1c4ef;
+  --zabi-iris-400: #a5a7e2;
+  --zabi-iris-500: #8486cd;
+  --zabi-iris-600: #6969b4;
+  --zabi-iris-700: #535397;
+  --zabi-iris-800: #3f3f78;
+  --zabi-iris-900: #2c2c58;
+  --zabi-iris-950: #1d1d3a;
 
   --color-iris-50: var(--zabi-iris-50);
   --color-iris-100: var(--zabi-iris-100);
@@ -164,17 +164,17 @@
   --color-iris-950: var(--zabi-iris-950);
 
   /* Warning Color Scale — physical ramp + semantic aliases (Tailwind amber) */
-  --zabi-warning-50: #fffbeb;
-  --zabi-warning-100: #fef3c7;
-  --zabi-warning-200: #fde68a;
-  --zabi-warning-300: #fcd34d;
-  --zabi-warning-400: #fbbf24;
-  --zabi-warning-500: #f59e0b;
-  --zabi-warning-600: #d97706;
-  --zabi-warning-700: #b45309;
-  --zabi-warning-800: #92400e;
-  --zabi-warning-900: #78350f;
-  --zabi-warning-950: #451a03;
+  --zabi-warning-50: #fbf6ed;
+  --zabi-warning-100: #f7ecda;
+  --zabi-warning-200: #f1d9b6;
+  --zabi-warning-300: #e8bf87;
+  --zabi-warning-400: #db9e4c;
+  --zabi-warning-500: #c17b00;
+  --zabi-warning-600: #9e6000;
+  --zabi-warning-700: #824c00;
+  --zabi-warning-800: #663800;
+  --zabi-warning-900: #4b2600;
+  --zabi-warning-950: #341800;
 
   --color-warning-50: var(--zabi-warning-50);
   --color-warning-100: var(--zabi-warning-100);
@@ -189,17 +189,17 @@
   --color-warning-950: var(--zabi-warning-950);
 
   /* Error Color Scale — physical ramp + semantic aliases (Tailwind red) */
-  --zabi-error-50: #fef2f2;
-  --zabi-error-100: #fee2e2;
-  --zabi-error-200: #fecaca;
-  --zabi-error-300: #fca5a5;
-  --zabi-error-400: #f87171;
-  --zabi-error-500: #ef4444;
-  --zabi-error-600: #dc2626;
-  --zabi-error-700: #b91c1c;
-  --zabi-error-800: #991b1b;
-  --zabi-error-900: #7f1d1d;
-  --zabi-error-950: #450a0a;
+  --zabi-error-50: #fff4f3;
+  --zabi-error-100: #ffe9e6;
+  --zabi-error-200: #ffd2cd;
+  --zabi-error-300: #ffb2ab;
+  --zabi-error-400: #ff877d;
+  --zabi-error-500: #ed564e;
+  --zabi-error-600: #d22828;
+  --zabi-error-700: #b20912;
+  --zabi-error-800: #8c0006;
+  --zabi-error-900: #660002;
+  --zabi-error-950: #460202;
 
   --color-error-50: var(--zabi-error-50);
   --color-error-100: var(--zabi-error-100);
@@ -237,7 +237,23 @@
   --color-base-950: var(--zabi-base-950);
 
   /* Background Colors */
-  --color-background: var(--color-base-100);
+
+  /* Surface elevation — four semantic levels, lowest → highest.
+   * base: page/app shell · raised: cards, panels, sidebars · elevated: nested cards, hover/active fills
+   * overlay: modals, sheets, menus, popovers, toasts. Light mode keeps white surfaces + shadows;
+   * dark mode (see .dark) steps each level up in OKLCH lightness because shadows don't read on dark.
+   * Keep this block BELOW the "Background Colors" marker: scripts/sync-theme-tokens.js regenerates
+   * everything between the base-scale aliases and that marker. */
+  --color-surface-base: var(--color-base-100);
+  --color-surface-raised: #ffffff;
+  --color-surface-elevated: var(--color-base-50);
+  --color-surface-overlay: #ffffff;
+  /* Hover/active fill for rows and icon buttons inside an overlay (must read above the overlay) */
+  --color-surface-overlay-hover: var(--color-base-100);
+  /* 1px edge for overlays: invisible in light (shadow carries elevation), visible in dark */
+  --color-border-overlay: transparent;
+
+  --color-background: var(--color-surface-base);
   --color-background-secondary: var(--color-base-50);
   --color-background-tertiary: var(--color-base-100);
 
@@ -245,46 +261,68 @@
   --color-page: var(--color-base-100);
   --color-page-secondary: var(--color-base-200);
 
-  /* Card Colors */
-  --color-card: #ffffff;
+  /* Card Colors — aliases of the surface levels (kept for compatibility) */
+  --color-card: var(--color-surface-raised);
   --color-card-hover: var(--color-base-100);
   --color-card-active: var(--color-base-100);
-  --color-card-elevated: #ffffff;
+  --color-card-elevated: var(--color-surface-overlay);
 
-  /* Surfaces — layered UI (ascending number = higher layer / more contrast against page) */
-  --color-surface-1: #ffffff;
-  --color-surface-2: var(--color-base-50);
+  /* Surfaces — numbered aliases (kept for compatibility; prefer surface-base/raised/elevated/overlay) */
+  --color-surface-1: var(--color-surface-raised);
+  --color-surface-2: var(--color-surface-elevated);
   --color-surface-3: var(--color-base-75);
   --color-surface-4: var(--color-base-100);
+
+  /* Control track — the unselected rail of a Toggle or switch. A real token
+   * rather than a raw ramp step, so the hover/active direction is defined once
+   * and inverts correctly with the theme. */
+  --color-control-track: var(--color-base-400);
+  --color-control-track-hover: var(--color-base-450);
+  --color-control-track-active: var(--color-base-500);
+
+  /* Interaction fills — surface-relative on purpose.
+   * A hard-coded ramp step (e.g. base-100) can coincide exactly with the
+   * surface it sits on, which is how ghost hover became invisible: in dark
+   * mode --color-base-100 IS --color-surface-base. An alpha tint is always
+   * one step away from whatever is underneath it. */
+  --color-surface-hover: rgba(9, 9, 11, 0.06);
+  --color-surface-active: rgba(9, 9, 11, 0.11);
 
   /* Overlay Colors */
   --color-overlay: rgba(0, 0, 0, 0.5);
 
-  /* Input Colors */
-  --color-input: var(--color-base-250);
+  /* Input Colors
+   * The field is a RAISED surface, not a grey well — a grey fill on a grey
+   * page reads as disabled. The disabled state is the only grey field. */
+  --color-input: var(--color-surface-raised);
   --color-input-border: var(--color-base-350);
-  --color-input-hover: var(--color-base-300);
-  --color-input-focus: var(--color-base-300);
+  --color-input-hover: var(--color-base-150);
+  --color-input-focus: var(--color-surface-raised);
   --color-input-disabled: var(--color-base-100);
 
   /* Text Colors */
   --color-headline: var(--color-base-900);
   --color-body: var(--color-base-800);
   --color-description: var(--color-base-600);
-  --color-caption: var(--color-base-500);
-  --color-input-placeholder: var(--color-base-400);
+  --color-caption: var(--color-base-550); /* ≥ 4.5:1 on every surface level (base-500 was 4.40 on surface-base) */
+  --color-input-placeholder: var(--color-base-500);
   --color-label: var(--color-base-700);
-  --color-link: var(--color-brand-600);
-  --color-link-hover: var(--color-brand-700);
+  /* brand-600 clears 4.5:1 on a card but only 4.42:1 on the page surface, so
+   * links sit one step darker. */
+  --color-link: var(--color-brand-700);
+  --color-link-hover: var(--color-brand-800);
 
   /* Navigation menu item — menubar triggers, menu links, inline/sidebar nav rows */
   --color-nav-menu-item: var(--color-body);
   --color-nav-menu-item-hover: var(--color-headline);
   --color-nav-menu-item-active: var(--color-link);
-  --color-nav-menu-hover: var(--color-base-100);
+  /* Surface-relative on purpose: base-100 IS surface-base in both themes,
+   * so the old value made sidebar row hover do nothing at all. */
+  --color-nav-menu-hover: var(--color-surface-hover);
   --color-nav-menu-active: var(--color-action-primary-subtle);
+  --color-nav-menu-active-hover: var(--color-action-primary-subtle-hover);
   --color-nav-menu-focus: var(--color-brand-500);
-  --color-success-text: var(--color-success);
+  --color-success-text: var(--color-pine-700);
   --color-warning-text: var(--color-warning-700);
   --color-neutral-text: var(--color-base-700);
   --color-energetic-text: var(--color-citron-700);
@@ -319,35 +357,72 @@
   --color-secondary-medium: var(--color-base-800);
   --color-secondary-strong: var(--color-base-900);
 
+  /* ----------------------------------------------------------------
+   * SEMANTIC FAMILIES
+   * Every family resolves to the SAME step on the shared lightness curve, so
+   * success / warning / error / info / energetic / neutral read as one family.
+   * See tokens/chromatic-scales.js; enforced by check-ramp-lightness.js.
+   *
+   *   <family>          step 600  solid fill (>= 4.5:1 with white)
+   *   <family>-weak     step 700  pressed / emphasis
+   *   <family>-medium   step 800  strongest fill
+   *   <family>-strong   step 900  darkest
+   *   <family>-subtle   step 100  tinted fill (badges, alerts)
+   *   <family>-border   step 200  tinted edge
+   *   <family>-text     step 700  text on a subtle fill or a page surface
+   *
+   * Warning, error and energetic previously sat at step 500 — the mirror's
+   * fixed point — so they did not invert between themes at all, while success
+   * and info did. That is why a solid warning badge was 2.15:1 in light mode
+   * and fine in dark.
+   * ---------------------------------------------------------------- */
+
   /* Success Colors */
   --color-success: var(--color-pine-600);
   --color-success-weak: var(--color-pine-700);
   --color-success-medium: var(--color-pine-800);
-  --color-success-strong: var(--color-pine-900);  
+  --color-success-strong: var(--color-pine-900);
+  --color-success-subtle: var(--color-pine-100);
+  --color-success-border: var(--color-pine-200);
 
   /* Warning Colors */
-  --color-warning: var(--color-warning-500);
-  --color-warning-weak: var(--color-warning-600);
-  --color-warning-medium: var(--color-warning-400);
-  --color-warning-strong: var(--color-warning-300);
+  --color-warning: var(--color-warning-600);
+  --color-warning-weak: var(--color-warning-700);
+  --color-warning-medium: var(--color-warning-800);
+  --color-warning-strong: var(--color-warning-900);
+  --color-warning-subtle: var(--color-warning-100);
+  --color-warning-border: var(--color-warning-200);
 
   /* Error Colors */
-  --color-error: var(--color-error-500);
-  --color-error-weak: var(--color-error-600);
-  --color-error-medium: var(--color-error-400);
-  --color-error-strong: var(--color-error-300);
+  --color-error: var(--color-error-600);
+  --color-error-weak: var(--color-error-700);
+  --color-error-medium: var(--color-error-800);
+  --color-error-strong: var(--color-error-900);
+  --color-error-subtle: var(--color-error-100);
+  --color-error-border: var(--color-error-200);
 
   /* Energetic Colors (Citron) */
-  --color-energetic: var(--color-citron-500);
-  --color-energetic-weak: var(--color-citron-600);
-  --color-energetic-medium: var(--color-citron-400);
-  --color-energetic-strong: var(--color-citron-300);
+  --color-energetic: var(--color-citron-600);
+  --color-energetic-weak: var(--color-citron-700);
+  --color-energetic-medium: var(--color-citron-800);
+  --color-energetic-strong: var(--color-citron-900);
+  --color-energetic-subtle: var(--color-citron-100);
+  --color-energetic-border: var(--color-citron-200);
 
-  /* Neutral Colors */
-  --color-neutral: var(--color-base-600);
-  --color-neutral-weak: var(--color-base-700);
-  --color-neutral-medium: var(--color-base-800);
+  /* Neutral Colors
+   * The base ramp is wider than the chromatic ones on purpose (it also drives
+   * text, borders and surfaces), so neutral cannot sit on exactly the same
+   * step. base-550 is the closest match to the chromatic 600s that still
+   * clears AA; .dark pins base-600, because base-500 is the mirror's fixed
+   * point and would not invert at all. */
+  --color-neutral: var(--color-base-550);
+  --color-neutral-weak: var(--color-base-600);
+  --color-neutral-medium: var(--color-base-700);
   --color-neutral-strong: var(--color-base-900);
+  /* base-200, not base-100: base-100 IS surface-base, which made a neutral
+   * badge measure 1.00:1 against the page and read as bare text. */
+  --color-neutral-subtle: var(--color-base-200);
+  --color-neutral-border: var(--color-base-200);
 
   /* Info Colors */
   --color-info: var(--color-iris-600);
@@ -355,38 +430,63 @@
   --color-info-medium: var(--color-iris-800);
   --color-info-strong: var(--color-iris-900);
   --color-info-active: var(--color-iris-400);
+  --color-info-subtle: var(--color-iris-100);
+  --color-info-border: var(--color-iris-200);
   /* Text alias */
-  --color-info-text: var(--color-info);
+  --color-info-text: var(--color-iris-700);
 
   /* ========================================
      ACTION COLORS - For interactive elements (buttons, links, etc.)
      ======================================== */
   
-  /* Primary Actions - Used by bg-action-primary utility class */
-  /* 🎯 TO CHANGE bg-action-primary COLOR: Edit the values below */
-  --color-action-primary: var(--color-brand-950);
-  --color-action-primary-hover: var(--color-brand-900);
-  --color-action-primary-active: var(--color-brand-400);
-  --color-action-primary-disabled: var(--color-brand-500);
+  /* Primary Actions - Used by bg-action-primary utility class
+   * 🎯 TO CHANGE bg-action-primary COLOR: edit --color-action-primary below.
+   *
+   * Primary is brand-600 — the product actually looks like its brand. Hover
+   * and active go one and two steps DARKER in light mode; the .dark mirror
+   * flips that to lighter automatically, so "more pressed" always means "more
+   * contrast against the page" in both themes. Never point active at a step on
+   * the far side of the ramp: active used to be brand-400 against a brand-50
+   * label, which is 1.66:1 — the label vanished while the button was held. */
+  --color-action-primary: var(--color-brand-600);
+  --color-action-primary-hover: var(--color-brand-700);
+  --color-action-primary-active: var(--color-brand-800);
   --color-action-primary-subtle: var(--color-brand-100);
   --color-action-primary-subtle-hover: var(--color-brand-200);
-  --color-action-primary-text: var(--color-brand-50);
+  /* Pinned rather than aliased to brand-50: the ramp's lightest tint lands at
+   * exactly 4.50:1 on brand-600 — passing, but with no margin. Pure white
+   * gives 4.86:1. The .dark block pins the inverse. */
+  --color-action-primary-text: #ffffff;
 
-  /* Secondary Actions - Used by bg-action-secondary utility class */
-  --color-action-secondary: color-mix(in srgb, var(--color-brand-800) 10%, transparent);
-  --color-action-secondary-hover: color-mix(in srgb, var(--color-brand-800) 20%, transparent);
-  --color-action-secondary-active: var(--color-brand-400);
-  --color-action-secondary-disabled: var(--color-brand-500);
-  --color-action-secondary-subtle: var(--color-brand-600);
-  --color-action-secondary-subtle-hover: var(--color-brand-700);
+  /* Secondary Actions - Used by bg-action-secondary utility class
+   * A neutral alpha tint: reads as a real button on any surface level, and
+   * cannot collide with the background the way a fixed ramp step can. The old
+   * 10%-brand wash was so pale it barely registered as a control. */
+  --color-action-secondary: rgba(9, 9, 11, 0.07);
+  --color-action-secondary-hover: rgba(9, 9, 11, 0.12);
+  --color-action-secondary-active: rgba(9, 9, 11, 0.17);
+  --color-action-secondary-subtle: var(--color-base-100);
+  --color-action-secondary-subtle-hover: var(--color-base-200);
+  --color-action-secondary-text: var(--color-headline);
 
-  /* Danger Actions - Used by bg-action-danger utility class */
-  --color-action-danger: #dc2626;
-  --color-action-danger-hover: #b91c1c;
-  --color-action-danger-active: #991b1b;
-  --color-action-danger-disabled: #fca5a5;
-  --color-action-danger-subtle: #fef2f2;
-  --color-action-danger-subtle-hover: #fee2e2;
+  /* Disabled Actions - shared by every variant.
+   * Disabled must be the QUIETEST state, never a brighter colour than the
+   * enabled secondary. It used to be brand-500 plus opacity-50, which made a
+   * disabled primary lighter and more colourful than an enabled secondary. */
+  --color-action-disabled: var(--color-base-200);
+  --color-action-disabled-text: var(--color-base-500);
+  --color-action-disabled-border: var(--color-base-250);
+
+  /* Danger Actions - Used by bg-action-danger utility class.
+   * Same ramp step as every other family, so the destructive action no longer
+   * out-shouts the primary one. The bright red is spent on hover, where the
+   * user is already committing. */
+  --color-action-danger: var(--color-error-600);
+  --color-action-danger-hover: var(--color-error-700);
+  --color-action-danger-active: var(--color-error-800);
+  --color-action-danger-subtle: var(--color-error-100);
+  --color-action-danger-subtle-hover: var(--color-error-200);
+  --color-action-danger-text: var(--color-error-50);
 
   /* Shadow Colors */
   --shadow-color: 0 0 0;
@@ -404,11 +504,58 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
 
-  /* Border Radius */
+  /*
+   * Sizing names for w-* / min-w-* / max-w-*.
+   * Tailwind v4 resolves these utilities as --max-width-* (or --width-* / --min-width-*) → --spacing-* → --container-*.
+   * Because the named --spacing-xs…2xl tokens above exist, `max-w-lg` would otherwise resolve to 1.5rem
+   * instead of Tailwind's 32rem container size. These keys are checked before --spacing-*, so they restore
+   * the standard container scale while `p-lg`, `gap-md`, etc. keep using the spacing tokens.
+   */
+  --max-width-xs: 20rem;
+  --max-width-sm: 24rem;
+  --max-width-md: 28rem;
+  --max-width-lg: 32rem;
+  --max-width-xl: 36rem;
+  --max-width-2xl: 42rem;
+  --width-xs: 20rem;
+  --width-sm: 24rem;
+  --width-md: 28rem;
+  --width-lg: 32rem;
+  --width-xl: 36rem;
+  --width-2xl: 42rem;
+  --min-width-xs: 20rem;
+  --min-width-sm: 24rem;
+  --min-width-md: 28rem;
+  --min-width-lg: 32rem;
+  --min-width-xl: 36rem;
+  --min-width-2xl: 42rem;
+
+  /* ----------------------------------------------------------------
+   * BORDER RADIUS — four values, chosen by ROLE, never by size.
+   * A large button is a bigger box with the same corner as a small one.
+   * Enforced by scripts/check-control-geometry.js.
+   * ---------------------------------------------------------------- */
+  --radius-control: 0.5rem;    /*  8px — buttons, inputs, selects, toggles */
+  --radius-container: 0.75rem; /* 12px — cards, alerts, panels, list items */
+  --radius-overlay: 1rem;      /* 16px — modals, sheets, menus, popovers   */
+  --radius-pill: 9999px;       /*        badges, avatars, status dots      */
+
+  /* Legacy t-shirt radii. Kept so existing consumer overrides keep working;
+   * components must not use them. */
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
+
+  /* ----------------------------------------------------------------
+   * CONTROL GEOMETRY — one height scale shared by every form control, so a
+   * Button, Input, Select and IconButton of the same size are the same height
+   * and line up in a row. They previously rendered at 40/48/64, 38/46/50 and
+   * 32/40/48 respectively. Grid-aligned (8px).
+   * ---------------------------------------------------------------- */
+  --control-height-sm: 2rem;   /* 32px */
+  --control-height-md: 2.5rem; /* 40px */
+  --control-height-lg: 3rem;   /* 48px */
 
   /* Z-index */
   --z-dropdown: 1000;
@@ -468,17 +615,17 @@ body {
   --zabi-base-950: #09090b;
 
   /* Mirror @theme --zabi-brand-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-brand-50: #f7faff;
-  --zabi-brand-100: #edf2fb;
-  --zabi-brand-200: #dfe7fb;
-  --zabi-brand-300: #ccdbfd;
-  --zabi-brand-400: #abc4ff;
-  --zabi-brand-500: #8fa8ff;
-  --zabi-brand-600: #6e84fa;
-  --zabi-brand-700: #5366e2;
-  --zabi-brand-800: #3f4fc0;
-  --zabi-brand-900: #2f3c99;
-  --zabi-brand-950: #1f2866;
+  --zabi-brand-50: #f4f6ff;
+  --zabi-brand-100: #e9eeff;
+  --zabi-brand-200: #d3dcff;
+  --zabi-brand-300: #b5c6ff;
+  --zabi-brand-400: #92a9ff;
+  --zabi-brand-500: #6d87f1;
+  --zabi-brand-600: #4f68da;
+  --zabi-brand-700: #3c52ba;
+  --zabi-brand-800: #2b3e95;
+  --zabi-brand-900: #1c2c6d;
+  --zabi-brand-950: #111d49;
 
   /* Brand Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-brand-50: var(--zabi-brand-950);
@@ -494,17 +641,17 @@ body {
   --color-brand-950: var(--zabi-brand-50);
 
   /* Mirror @theme --zabi-citron-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-citron-50: #f9faeb;
-  --zabi-citron-100: #f1f5cf;
-  --zabi-citron-200: #e4ecaa;
-  --zabi-citron-300: #d5e184;
-  --zabi-citron-400: #c7d460;
-  --zabi-citron-500: #bbbe64;
-  --zabi-citron-600: #a3a852;
-  --zabi-citron-700: #848a43;
-  --zabi-citron-800: #666c35;
-  --zabi-citron-900: #4d5229;
-  --zabi-citron-950: #323518;
+  --zabi-citron-50: #f6f7ef;
+  --zabi-citron-100: #edefdf;
+  --zabi-citron-200: #dcdfbf;
+  --zabi-citron-300: #c5ca95;
+  --zabi-citron-400: #aab063;
+  --zabi-citron-500: #8c9027;
+  --zabi-citron-600: #707400;
+  --zabi-citron-700: #5a5d00;
+  --zabi-citron-800: #454700;
+  --zabi-citron-900: #313200;
+  --zabi-citron-950: #202100;
 
   /* Citron Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-citron-50: var(--zabi-citron-950);
@@ -520,17 +667,17 @@ body {
   --color-citron-950: var(--zabi-citron-50);
 
   /* Mirror @theme --zabi-pine-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-pine-50: #e9f6f2;
-  --zabi-pine-100: #d2ece4;
-  --zabi-pine-200: #a7d9c9;
-  --zabi-pine-300: #78c4ad;
-  --zabi-pine-400: #49ad91;
-  --zabi-pine-500: #0c5d43;
-  --zabi-pine-600: #0a513a;
-  --zabi-pine-700: #084532;
-  --zabi-pine-800: #063a2a;
-  --zabi-pine-900: #04231a;
-  --zabi-pine-950: #02160f;
+  --zabi-pine-50: #f0f8f5;
+  --zabi-pine-100: #e2f1eb;
+  --zabi-pine-200: #c5e4d7;
+  --zabi-pine-300: #9fd1bd;
+  --zabi-pine-400: #70ba9e;
+  --zabi-pine-500: #399c7a;
+  --zabi-pine-600: #00805e;
+  --zabi-pine-700: #00674a;
+  --zabi-pine-800: #004f37;
+  --zabi-pine-900: #003826;
+  --zabi-pine-950: #002518;
 
   /* Pine Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-pine-50: var(--zabi-pine-950);
@@ -546,17 +693,17 @@ body {
   --color-pine-950: var(--zabi-pine-50);
 
   /* Mirror @theme --zabi-iris-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-iris-50: #f4f4fa;
-  --zabi-iris-100: #e9e9f7;
-  --zabi-iris-200: #d6d6f0;
-  --zabi-iris-300: #bdbde6;
-  --zabi-iris-400: #a3a3d8;
-  --zabi-iris-500: #6969b3;
-  --zabi-iris-600: #58589e;
-  --zabi-iris-700: #474788;
-  --zabi-iris-800: #38386f;
-  --zabi-iris-900: #2a2a56;
-  --zabi-iris-950: #1b1b37;
+  --zabi-iris-50: #f6f6fd;
+  --zabi-iris-100: #ecedfb;
+  --zabi-iris-200: #dadbf6;
+  --zabi-iris-300: #c1c4ef;
+  --zabi-iris-400: #a5a7e2;
+  --zabi-iris-500: #8486cd;
+  --zabi-iris-600: #6969b4;
+  --zabi-iris-700: #535397;
+  --zabi-iris-800: #3f3f78;
+  --zabi-iris-900: #2c2c58;
+  --zabi-iris-950: #1d1d3a;
 
   /* Iris Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-iris-50: var(--zabi-iris-950);
@@ -572,17 +719,17 @@ body {
   --color-iris-950: var(--zabi-iris-50);
 
   /* Mirror @theme --zabi-warning-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-warning-50: #fffbeb;
-  --zabi-warning-100: #fef3c7;
-  --zabi-warning-200: #fde68a;
-  --zabi-warning-300: #fcd34d;
-  --zabi-warning-400: #fbbf24;
-  --zabi-warning-500: #f59e0b;
-  --zabi-warning-600: #d97706;
-  --zabi-warning-700: #b45309;
-  --zabi-warning-800: #92400e;
-  --zabi-warning-900: #78350f;
-  --zabi-warning-950: #451a03;
+  --zabi-warning-50: #fbf6ed;
+  --zabi-warning-100: #f7ecda;
+  --zabi-warning-200: #f1d9b6;
+  --zabi-warning-300: #e8bf87;
+  --zabi-warning-400: #db9e4c;
+  --zabi-warning-500: #c17b00;
+  --zabi-warning-600: #9e6000;
+  --zabi-warning-700: #824c00;
+  --zabi-warning-800: #663800;
+  --zabi-warning-900: #4b2600;
+  --zabi-warning-950: #341800;
 
   /* Warning Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-warning-50: var(--zabi-warning-950);
@@ -598,17 +745,17 @@ body {
   --color-warning-950: var(--zabi-warning-50);
 
   /* Mirror @theme --zabi-error-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-error-50: #fef2f2;
-  --zabi-error-100: #fee2e2;
-  --zabi-error-200: #fecaca;
-  --zabi-error-300: #fca5a5;
-  --zabi-error-400: #f87171;
-  --zabi-error-500: #ef4444;
-  --zabi-error-600: #dc2626;
-  --zabi-error-700: #b91c1c;
-  --zabi-error-800: #991b1b;
-  --zabi-error-900: #7f1d1d;
-  --zabi-error-950: #450a0a;
+  --zabi-error-50: #fff4f3;
+  --zabi-error-100: #ffe9e6;
+  --zabi-error-200: #ffd2cd;
+  --zabi-error-300: #ffb2ab;
+  --zabi-error-400: #ff877d;
+  --zabi-error-500: #ed564e;
+  --zabi-error-600: #d22828;
+  --zabi-error-700: #b20912;
+  --zabi-error-800: #8c0006;
+  --zabi-error-900: #660002;
+  --zabi-error-950: #460202;
 
   /* Error Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-error-50: var(--zabi-error-950);
@@ -650,27 +797,66 @@ body {
 
   /* Page Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Card Colors */
-  --color-card: var(--color-base-200);
-  --color-card-hover: var(--color-base-300);
-  --color-card-active: var(--color-base-400);
-  --color-card-elevated: var(--color-base-200);
+  /* Surface elevation — shadows don't read on dark, so each level steps up +6 OKLCH lightness
+   * from the page background (L 21 → 27 → 33 → 39).
+   *
+   * GENERATED by scripts/generate-surfaces.js from tokens/surface-ladder.js — do not hand-edit.
+   * Each level is #fafafa (the same light as the dark hover tint) washed over the page at
+   * 6.4% / 13.1% / 19.7%, so every level is the one below it with more light on it. Baked to
+   * opaque hex so the static checks can still resolve them and a modal stays opaque.
+   * Enforced by scripts/check-surface-elevation.js (strictly increasing, 5–8 points). */
+  --color-surface-base: #18181b;
+  --color-surface-raised: #262629;
+  --color-surface-elevated: #363638;
+  --color-surface-overlay: #454547;
+  --color-surface-overlay-hover: #52525b;
 
-  /* Surfaces — layered UI (each step is lighter than the previous to read as "elevated") */
-  --color-surface-1: var(--color-base-250);
-  --color-surface-2: var(--color-base-300);
-  --color-surface-3: var(--color-base-350);
+  /* Distinct from base, raised AND elevated — a neutral chip has no hue to
+   * separate it, so it has to separate on lightness wherever it lands. */
+  --color-neutral-subtle: var(--color-base-300);
+  --color-border-overlay: var(--color-base-450);
+
+  /* Background Colors */
+  --color-background: var(--color-surface-base);
+
+  /* Card Colors — aliases of the surface levels */
+  --color-card: var(--color-surface-raised);
+  --color-card-hover: var(--color-surface-elevated);
+  --color-card-active: var(--color-surface-overlay);
+  --color-card-elevated: var(--color-surface-elevated);
+
+  /* Surfaces — numbered aliases of the surface levels */
+  --color-surface-1: var(--color-surface-raised);
+  --color-surface-2: var(--color-surface-elevated);
+  --color-surface-3: var(--color-surface-overlay);
   --color-surface-4: var(--color-base-400);
+
+  /*
+   * Secondary text keeps ≥ 4.5:1 on every surface level, including overlays (L39).
+   * Only base-650 and lighter pass on the overlay, so caption takes base-650 and description
+   * moves one step up to base-700 to stay visibly stronger than caption.
+   */
+  --color-description: var(--color-base-700);
+  --color-caption: var(--color-base-650);
+
+  /* Interaction fills — light tint on dark, mirroring the light-mode rule.
+   * Alpha keeps these one step away from every surface level, which a fixed
+   * ramp step cannot guarantee (base-100 in dark IS the page background). */
+  --color-surface-hover: rgba(250, 250, 250, 0.08);
+  --color-surface-active: rgba(250, 250, 250, 0.14);
 
   /* Overlay Colors */
   --color-overlay: rgba(0, 0, 0, 0.7);
 
-  /* Input Colors */
-  --color-input: var(--color-base-250);
-  --color-input-border: var(--color-base-350);
-  --color-input-hover: var(--color-base-300);
-  --color-input-focus: var(--color-base-300);
-  --color-input-disabled: var(--color-base-300);
+  /* Input Colors
+   * Dark fields are INSET: one step below the raised surface they sit on,
+   * which is the dark-mode equivalent of a white field on a grey page. */
+  --color-input: var(--color-base-150);
+  --color-input-border: var(--color-base-300);
+  --color-input-hover: var(--color-base-200);
+  --color-input-focus: var(--color-base-150);
+  --color-input-disabled: var(--color-base-100);
+  --color-input-placeholder: var(--color-base-500);
 
   /* Text Colors - No dark mode overrides needed, base colors are already inverted */
 
@@ -690,7 +876,9 @@ body {
 
   /* Energetic Colors — no overrides: @theme uses --color-citron-*; citron mirrors in .dark via --zabi-citron-* */
 
-  /* Neutral Colors - No dark mode overrides needed, base colors are already inverted */
+  /* Neutral Colors — base-550 mirrors to L* 57, which is only 4.35:1 on a
+   * raised surface. One step lighter clears AA on every dark surface level. */
+  --color-neutral: var(--color-base-600);
 
   /* Info Colors — no overrides: @theme uses --color-iris-* (incl. --color-info-active); iris mirrors in .dark via --zabi-iris-* */
 
@@ -700,18 +888,30 @@ body {
   
   /* Primary Actions - Background adapts automatically via brand color inversion */
   /* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit --zabi-brand-* physical ramp above (semantic --color-brand-* follows mirror) */
-  /* Text color - Use brand-50 (semantic; maps across light/dark via --zabi-brand-*) for proper contrast */
-  --color-action-primary-text: var(--color-brand-50);
+  /* Text color - the physical dark end of the brand ramp, on the physical
+   * light end used as the dark-mode primary fill. 7.21:1. */
+  --color-action-primary-text: var(--zabi-brand-950);
 
-  /* Secondary Actions - No dark mode overrides needed, base colors are already inverted */
+  /* Secondary Actions - light alpha tint instead of the light-mode dark tint */
+  --color-action-secondary: rgba(250, 250, 250, 0.09);
+  --color-action-secondary-hover: rgba(250, 250, 250, 0.15);
+  --color-action-secondary-active: rgba(250, 250, 250, 0.21);
 
-  /* Danger Actions */
-  --color-action-danger: #ef4444;
-  --color-action-danger-hover: #dc2626;
-  --color-action-danger-active: #b91c1c;
-  --color-action-danger-disabled: #b91c1c;
-  --color-action-danger-subtle: #450a0a;
-  --color-action-danger-subtle-hover: #7f1d1d;
+  /* Disabled Actions - base-200 in dark is #27272a, still the quietest fill */
+
+  /* Danger Actions — restated as aliases, not re-pointed.
+   * These resolve through the mirrored --color-error-* scale, so dark danger
+   * is the same step of the same ramp as light danger. They are repeated here
+   * only because `zabi-components/theme-dark-only` has to stand alone as a
+   * complete import (validate-theme.js enforces that). The raw hex this
+   * replaced pinned dark danger brighter than light, which is why the
+   * destructive action was the loudest element on a dark page. */
+  --color-action-danger: var(--color-error-600);
+  --color-action-danger-hover: var(--color-error-700);
+  --color-action-danger-active: var(--color-error-800);
+  --color-action-danger-subtle: var(--color-error-100);
+  --color-action-danger-subtle-hover: var(--color-error-200);
+  --color-action-danger-text: var(--color-error-50);
 
   /* Shadow Colors */
   --shadow-opacity: 0.3;
@@ -1113,6 +1313,14 @@ body {
   background-color: var(--color-nav-menu-active);
 }
 
+.active\:bg-nav-menu-active-hover:active {
+  background-color: var(--color-nav-menu-active-hover);
+}
+
+.bg-nav-menu-item-active {
+  background-color: var(--color-nav-menu-item-active);
+}
+
 .text-success {
   color: var(--color-success-text);
 }
@@ -1356,7 +1564,8 @@ body {
 }
 
 .bg-action-primary:disabled {
-  background-color: var(--color-action-primary-disabled);
+  background-color: var(--color-action-disabled);
+  color: var(--color-action-disabled-text);
 }
 
 .bg-action-primary-subtle {
@@ -1385,7 +1594,8 @@ body {
 }
 
 .bg-action-secondary:disabled {
-  background-color: var(--color-action-secondary-disabled);
+  background-color: var(--color-action-disabled);
+  color: var(--color-action-disabled-text);
 }
 
 .bg-action-secondary-subtle {
@@ -1410,7 +1620,8 @@ body {
 }
 
 .bg-action-danger:disabled {
-  background-color: var(--color-action-danger-disabled);
+  background-color: var(--color-action-disabled);
+  color: var(--color-action-disabled-text);
 }
 
 .bg-action-danger-subtle {
@@ -1421,7 +1632,18 @@ body {
   background-color: var(--color-action-danger-subtle-hover);
 }
 
+/* `bg-action-disabled`, `text-action-disabled-text`, `bg-surface-hover` and
+ * friends are generated automatically from the `--color-*` tokens in @theme.
+ * Use them with Tailwind variants — `hover:bg-surface-hover`,
+ * `active:bg-surface-active`, `disabled:bg-action-disabled` — rather than
+ * hand-writing pseudo-class rules here, which would collide with the
+ * generated bare utility of the same name. */
+
 /* Z-index utilities */
+.z-sticky {
+  z-index: var(--z-sticky);
+}
+
 .z-dropdown {
   z-index: var(--z-dropdown);
 }

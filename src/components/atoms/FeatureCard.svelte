@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Component, Snippet } from "svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         title: string;
@@ -19,18 +20,18 @@
 </script>
 
 <article
-    class="flex flex-col gap-3 p-6 rounded-2xl bg-surface-1 border border-base-200 transition-colors duration-200 hover:border-base-300 {className}"
+    class={cn("flex flex-col gap-3 p-6 rounded-container bg-surface-1 border border-border transition-colors duration-200 hover:border-border-medium", className)}
 >
     {#if Icon}
         <span
-            class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-brand-50 text-brand-600"
+            class="inline-flex items-center justify-center w-10 h-10 rounded-control bg-brand-50 text-brand-600"
             aria-hidden="true"
         >
             <Icon size={20} />
         </span>
     {/if}
 
-    <div class="flex flex-col gap-1.5">
+    <div class="flex flex-col gap-2">
         <h3 class="text-base font-semibold leading-snug text-headline">
             {title}
         </h3>

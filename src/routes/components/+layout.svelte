@@ -130,7 +130,7 @@
                 type="button"
                 class="fixed inset-x-0 bottom-0 top-16 z-20 bg-black/30 md:hidden"
                 onclick={() => (sidebarOpen = false)}
-                aria-label="Close components sidebar"
+                aria-label="Close the component sidebar"
             ></button>
         {/if}
 
@@ -142,7 +142,7 @@
             <SidebarNavigation
                 className="min-h-0 flex-1"
                 mode="expanded"
-                ariaLabel="Component catalog: categories and components"
+                ariaLabel="Component catalog"
                 items={docsSidebarItems}
                 currentPath={docsSidebarCurrentPath}
                 activePrimaryHref={`category:${selectedCategory}`}
@@ -151,7 +151,7 @@
                 showProfile={false}
                 showThemeToggle={false}
                 showLogout={false}
-                emptyStateTitle="No navigation matches"
+                emptyStateTitle="Nothing matches"
                 emptyStateDescription="Try another term to find categories or components."
                 onNavigate={handleDocsSidebarNavigate}
             />
@@ -166,10 +166,10 @@
                         type="button"
                         onclick={() => (sidebarOpen = !sidebarOpen)}
                         class="text-description hover:text-headline cursor-pointer text-2xl transition-colors"
-                        aria-label="Toggle component sidebar"
+                        aria-label="Toggle the component sidebar"
                         aria-expanded={sidebarOpen}
                     >
-                        ☰
+                        <span aria-hidden="true">☰</span>
                     </button>
                     <span class="text-sm font-semibold text-headline"
                         >Browse components</span

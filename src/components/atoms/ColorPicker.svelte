@@ -3,6 +3,8 @@
     import { onMount, onDestroy, tick } from "svelte";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         value?: string;
         label?: string;
         disabled?: boolean;
@@ -11,7 +13,8 @@
     }
 
     let {
-        value = "",
+        class: className = "",
+        value = $bindable(""),
         label = "",
         disabled = false,
         placeholder = "#000000",
@@ -35,7 +38,14 @@
         return hexPattern.test(hex);
     }
 
-    function hexToHsl(hex: string): [number, number, number] {
+    /** `#f00` → `#ff0000`; 6-digit input is returned unchanged. */
+    function expandHex(hex: string): string {
+        if (hex.length !== 4) return hex;
+        return `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
+    }
+
+    function hexToHsl(rawHex: string): [number, number, number] {
+        const hex = expandHex(rawHex);
         const r = parseInt(hex.slice(1, 3), 16) / 255;
         const g = parseInt(hex.slice(3, 5), 16) / 255;
         const b = parseInt(hex.slice(5, 7), 16) / 255;
@@ -263,7 +273,7 @@
     const pickerIndicatorY = $derived(`${100 - lightness}%`);
 </script>
 
-<div {...restProps}>
+<div class={className} {...restProps}>
     <div class="flex items-start gap-2">
         <div class="flex-1">
             <Input
@@ -283,7 +293,7 @@
                 type="button"
                 onclick={togglePicker}
                 {disabled}
-                class="focus-ring w-11 h-11 rounded-lg border-2 border-card shrink-0 cursor-pointer hover:ring-2 hover:ring-border transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                class="focus-ring w-11 h-11 rounded-control border-2 border-card shrink-0 cursor-pointer hover:ring-2 hover:ring-border transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 style="background-color: {displayColor};"
                 aria-label="Open color picker"
                 aria-expanded={isOpen}
@@ -292,14 +302,14 @@
             {#if isOpen}
                 <div
                     use:setPickerContainer
-                    class="absolute top-12 right-0 z-50 border border-input-border bg-input rounded-2xl shadow-lg p-4 w-80"
+                    class="absolute top-12 right-0 z-popover border border-input-border bg-input rounded-container shadow-lg p-4 w-80"
                     role="dialog"
                     aria-label="Color picker"
                 >
                     <div class="space-y-4">
                         <div
                             use:setColorMapContainer
-                            class="relative w-full h-48 rounded-xl overflow-hidden cursor-crosshair"
+                            class="relative w-full h-48 rounded-container overflow-hidden cursor-crosshair"
                             onmousedown={(e) => {
                                 isDragging = true;
                                 handleColorMapClick(e);
@@ -314,14 +324,14 @@
                                 class="w-full h-full"
                             ></canvas>
                             <div
-                                class="absolute w-4 h-4 border-2 border-white rounded-full shadow-lg pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
+                                class="absolute w-4 h-4 border-2 border-white rounded-full shadow-sm pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
                                 style="left: {pickerIndicatorX}; top: {pickerIndicatorY};"
                             ></div>
                         </div>
 
                         <div class="space-y-2">
                             <div
-                                class="relative h-6 rounded-lg overflow-hidden"
+                                class="relative h-6 rounded-control overflow-hidden"
                             >
                                 <div
                                     class="absolute inset-0"
@@ -337,7 +347,7 @@
                                     aria-label="Hue slider"
                                 />
                                 <div
-                                    class="absolute top-0 bottom-0 w-3 bg-card shadow-md pointer-events-none my-0.25 rounded-full border border-base-950"
+                                    class="absolute top-0 bottom-0 w-3 bg-card shadow-sm pointer-events-none my-px rounded-full border border-base-950"
                                     style="left: {(hue / 360) * 100}%;"
                                 ></div>
                             </div>

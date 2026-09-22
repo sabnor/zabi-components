@@ -3,6 +3,7 @@
     import Badge from "../atoms/Badge.svelte";
     import { Search, X } from "@lucide/svelte";
     import type { Component } from "svelte";
+    import { cn } from "../util/cn.js";
 
     export interface SidebarPanelItem {
         id: string;
@@ -13,6 +14,8 @@
     }
 
     interface Props {
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         widthClass?: string;
         variant?: "plain" | "elevated";
@@ -35,7 +38,8 @@
     }
 
     let {
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         widthClass = "w-80",
         variant = "elevated",
         ariaLabel = "Picker panel",
@@ -57,6 +61,10 @@
         ...restProps
     }: Props = $props();
 
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
+
     const normalizedSearchTerm = $derived(searchValue.trim().toLowerCase());
     const filteredItems = $derived(
         normalizedSearchTerm
@@ -71,19 +79,19 @@
     const containerClasses = $derived.by(() => {
         const resolvedWidthClass = widthClass.trim() || "w-80";
         const shell = isElevated
-            ? "rounded-3xl border border-border bg-card text-headline shadow-md ring-1 ring-border/50"
-            : "rounded-3xl border border-border bg-card text-headline shadow-sm";
-        return `${resolvedWidthClass} shrink-0 p-5 ${shell} ${className}`.trim();
+            ? "rounded-container border border-border bg-card text-headline shadow-sm ring-1 ring-border/50"
+            : "rounded-container border border-border bg-card text-headline shadow-sm";
+        return cn(`${resolvedWidthClass} shrink-0 p-5 ${shell} ${className}`);
     });
 
     function getItemClasses(itemId: string): string {
         const isActive = selectedItemId === itemId;
         const baseClasses =
-            "focus-ring focus-ring--nav w-full cursor-pointer rounded-lg px-3 py-2.5 text-left transition-colors duration-150";
+            "focus-ring focus-ring--nav w-full cursor-pointer rounded-control px-3 py-2 text-left transition-colors duration-150";
         if (isActive) {
             return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border/80`;
         }
-        return `${baseClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200`;
+        return `${baseClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
     }
 
     function handleSelect(item: SidebarPanelItem): void {
@@ -116,7 +124,7 @@
         </div>
         <button
             type="button"
-            class="-mr-0.5 -mt-0.5 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-nav-menu-item transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover focus-ring focus-ring--nav"
+            class="-mr-0.5 -mt-0.5 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-control text-nav-menu-item transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover focus-ring focus-ring--nav"
             aria-label={closeLabel}
             onclick={handleClose}
         >
@@ -137,7 +145,7 @@
                 bind:value={searchValue}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                class="w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
+                class="w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
             />
         </div>
     {/if}
@@ -154,7 +162,7 @@
                         aria-selected={selectedItemId === item.id}
                     >
                         <span class="flex items-center justify-between gap-3">
-                            <span class="flex min-w-0 items-start gap-2.5">
+                            <span class="flex min-w-0 items-start gap-3">
                                 {#if item.icon}
                                     {@const Icon = item.icon}
                                     <span
@@ -189,14 +197,14 @@
         </ul>
     {:else}
         <div
-            class="rounded-xl border border-dashed border-border bg-transparent px-3.5 py-4 ring-1 ring-border/40"
+            class="rounded-container border border-dashed border-border bg-transparent px-4 py-4 ring-1 ring-border/40"
         >
             <h4 class="text-sm font-semibold text-headline">{emptyStateTitle}</h4>
             <p class="mt-1 text-sm leading-relaxed text-description">{emptyStateDescription}</p>
             {#if emptyStateActionLabel.trim() && onEmptyStateAction}
                 <button
                     type="button"
-                    class="mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary transition-colors hover:bg-action-primary-hover focus-ring focus-ring--nav"
+                    class="mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary transition-colors hover:bg-action-primary-hover focus-ring focus-ring--nav"
                     onclick={handleEmptyStateAction}
                 >
                     {emptyStateActionLabel.trim()}

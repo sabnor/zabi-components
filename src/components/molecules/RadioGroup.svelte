@@ -7,6 +7,7 @@
     } from "../atoms/selection-control.styles";
     import { generateId } from "../util/ssr-safe.js";
     import { SvelteMap } from "svelte/reactivity";
+    import { cn } from "../util/cn.js";
 
     export type RadioGroupOption = {
         value: string;
@@ -16,6 +17,8 @@
     };
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         options: RadioGroupOption[];
         /** Selected value; `bind:value`. Use `undefined` for no selection. */
         value?: string | undefined;
@@ -28,6 +31,7 @@
     }
 
     let {
+        class: className = "",
         options,
         defaultValue,
         value = $bindable(defaultValue),
@@ -150,7 +154,7 @@
 </script>
 
 <fieldset
-    class="space-y-3"
+    class={cn("space-y-3", className)}
     aria-disabled={disabled ? "true" : undefined}
     onkeydown={handleKeydown}
     {...restProps}

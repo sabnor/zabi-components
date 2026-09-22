@@ -1,27 +1,47 @@
 <script lang="ts">
     import { onDestroy } from "svelte";
+    import type { HTMLAttributes } from "svelte/elements";
     import Button from "../atoms/Button.svelte";
     import { Image } from "@lucide/svelte";
+    import { cn } from "../util/cn.js";
 
-    interface Props {
+    export type ImageUploadFileDetail = {
+        /** Selected file, or `null` when the image is removed. */
+        file: File | null;
+        /** Object URL used for the preview, or `null`. */
+        url: string | null;
+    };
+
+    type Props = Omit<HTMLAttributes<HTMLDivElement>, "onchange" | "onclick"> & {
+        /** Extra classes for the host element. */
+        class?: string;
+        /** Preview URL; `bind:value` to read it. */
         value?: string | null;
         disabled?: boolean;
         accept?: string;
         placeholder?: string;
         errorMessage?: string;
+        /** Native `change` event from the hidden file input. */
         onchange?: (event: Event) => void;
+        /** Fires when the file chooser is opened. */
         onclick?: (event: Event) => void;
-    }
+        /** Selected file and preview URL; `{ file: null, url: null }` on remove. */
+        onfileselect?: (detail: ImageUploadFileDetail) => void;
+    };
 
     let {
-        value = null,
+        class: className = "",
+        value = $bindable(null),
         disabled = false,
         accept = "image/*",
         placeholder = "No image selected",
         errorMessage = "",
-        children,
+        onchange,
+        onclick,
+        onfileselect,
+        children: _children,
         ...restProps
-    } = $props<Props & { children?: any }>();
+    }: Props = $props();
 
     let fileInput = $state<HTMLInputElement>();
     let currentObjectUrl = $state<string | null>(null);
@@ -40,13 +60,17 @@
         if (!input.files || input.files.length === 0) return;
 
         const file = input.files[0];
+        let url: string | null = null;
 
         if (typeof URL !== "undefined" && URL.createObjectURL) {
             revokeCurrentObjectUrl();
-            const url = URL.createObjectURL(file);
+            url = URL.createObjectURL(file);
             value = url;
             currentObjectUrl = url;
         }
+
+        onchange?.(event);
+        onfileselect?.({ file, url });
     }
 
     function removeImage() {
@@ -54,11 +78,21 @@
 
         revokeCurrentObjectUrl();
         value = null;
+        if (fileInput) fileInput.value = "";
+        onfileselect?.({ file: null, url: null });
     }
 
-    function triggerFileSelect() {
+    function triggerFileSelect(event: Event) {
         if (disabled) return;
+        onclick?.(event);
         fileInput?.click();
+    }
+
+    function handleDropZoneKeydown(event: KeyboardEvent) {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            triggerFileSelect(event);
+        }
     }
 
     onDestroy(() => {
@@ -66,16 +100,16 @@
     });
 </script>
 
-<div class="space-y-3">
+<div class={cn("space-y-3", className)} {...restProps}>
     {#if value}
         <div class="relative group">
             <img
                 src={value}
                 alt=""
-                class="w-full h-32 min-w-64 object-cover rounded-2xl border-0"
+                class="w-full h-32 min-w-64 object-cover rounded-container border-0"
             />
             <div
-                class="absolute inset-0 border border-input-border bg-input min-w-64 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center"
+                class="absolute inset-0 border border-border-overlay bg-surface-overlay/60 backdrop-blur-md min-w-64 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity rounded-container flex items-center justify-center"
             >
                 <div class="flex gap-2">
                     <Button
@@ -99,19 +133,18 @@
         </div>
     {:else}
         <div
-            class="border-2 border-dashed border-input rounded-2xl min-w-64 p-6 text-center hover:border-brand-500 transition-colors {disabled
+            class="border-2 border-dashed border-input-border rounded-container min-w-64 p-6 text-center hover:border-action-primary transition-colors {disabled
                 ? 'cursor-not-allowed opacity-50'
                 : 'cursor-pointer'}"
             onclick={triggerFileSelect}
             role="button"
             tabindex={disabled ? -1 : 0}
-            onkeydown={(e) =>
-                e.key === "Enter" && !disabled && triggerFileSelect()}
+            onkeydown={handleDropZoneKeydown}
             aria-disabled={disabled}
         >
             <div class="space-y-3">
                 <div
-                    class="w-12 h-12 mx-auto bg-action-secondary rounded-lg flex items-center justify-center"
+                    class="w-12 h-12 mx-auto bg-action-secondary rounded-control flex items-center justify-center"
                 >
                     <Image size={24} class="text-description" />
                 </div>
@@ -132,10 +165,16 @@
         onchange={handleFileSelect}
         {disabled}
         class="hidden"
+        data-testid="image-upload-input"
     />
 
     {#if errorMessage}
-        <div class="rounded-lg border border-error px-3 py-2 text-sm text-error" role="alert">
+        <!-- Same tinted fill + tinted border Alert uses, rather than a bare
+             step-600 outline on a transparent ground. -->
+        <div
+            class="rounded-container border bg-error-subtle border-error-border text-error-text px-3 py-2 text-sm"
+            role="alert"
+        >
             <p class="font-medium">Image upload failed</p>
             <p>{errorMessage}</p>
             <p class="mt-1">Recovery action: try another file or retry upload.</p>

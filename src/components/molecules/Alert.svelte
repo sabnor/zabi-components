@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { Check, TriangleAlert, X, Info, Zap } from "@lucide/svelte";
     import type { ExtendedSemanticVariant } from "../types/variants.js";
+    import { cn } from "../util/cn.js";
     type AlertVisualVariant = Exclude<ExtendedSemanticVariant, "default">;
 
     interface Props {
@@ -7,6 +9,12 @@
         title?: string;
         message?: string;
         closable?: boolean;
+        /** Visible state; `closable` dismiss sets it to `false`. Supports `bind:open`. */
+        open?: boolean;
+        /** Shrink to content instead of filling the container. */
+        inline?: boolean;
+        class?: string;
+        /** @deprecated use `class` — kept so 7.x call sites keep working. */
         className?: string;
         onclick?: (event: Event) => void;
     }
@@ -16,6 +24,9 @@
         title = "",
         message = "",
         closable = false,
+        open = $bindable(true),
+        inline = false,
+        class: classProp = "",
         className = "",
         onclick,
         children,
@@ -23,6 +34,7 @@
     }: Props & { children?: any } = $props();
 
     function handleDismiss(event: MouseEvent) {
+        open = false;
         if (onclick) {
             onclick(event);
         }
@@ -32,13 +44,20 @@
         variant === "default" ? "info" : variant,
     );
 
+    /**
+     * A tinted fill plus a tinted edge, not a bare 1px outline on a
+     * transparent ground — an outline-only alert on a light page barely
+     * registers, and the pale warning and citron borders were close to
+     * invisible. The icon carries the family colour at its `-text` step.
+     */
     let alertClasses = $derived({
-        info: "text-info border border-info",
-        success: "text-success border border-success",
-        warning: "text-warning border border-warning",
-        error: "text-error border border-error",
-        neutral: "text-neutral border border-neutral",
-        energetic: "text-energetic border border-energetic",
+        info: "bg-info-subtle border-info-border text-info-text",
+        success: "bg-success-subtle border-success-border text-success-text",
+        warning: "bg-warning-subtle border-warning-border text-warning-text",
+        error: "bg-error-subtle border-error-border text-error-text",
+        neutral: "bg-neutral-subtle border-neutral-border text-neutral-text",
+        energetic:
+            "bg-energetic-subtle border-energetic-border text-energetic-text",
     });
 
     let alertRole = $derived(
@@ -48,83 +67,42 @@
 
 {#snippet icon()}
     {#if visualVariant === "info"}
-        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-                fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clip-rule="evenodd"
-            />
-        </svg>
+        <Info size={20} aria-hidden="true" />
     {:else if visualVariant === "success"}
-        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clip-rule="evenodd"
-            />
-        </svg>
+        <Check size={20} aria-hidden="true" />
     {:else if visualVariant === "warning"}
-        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-                fill-rule="evenodd"
-                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                clip-rule="evenodd"
-            />
-        </svg>
+        <TriangleAlert size={20} aria-hidden="true" />
     {:else if visualVariant === "error"}
-        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clip-rule="evenodd"
-            />
-        </svg>
+        <X size={20} aria-hidden="true" />
     {:else if visualVariant === "neutral"}
-        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-                fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM10 9a1 1 0 100 2 1 1 0 000-2z"
-                clip-rule="evenodd"
-            />
-        </svg>
+        <Info size={20} aria-hidden="true" />
     {:else}
-        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M11 3L4 14h6l-1 7 7-11h-6l1-7z" />
-        </svg>
+        <Zap size={20} aria-hidden="true" />
     {/if}
 {/snippet}
 
+{#if open}
 <div
-    class="relative rounded-md p-4 border {alertClasses[
-        visualVariant
-    ]} transition-all duration-200 motion-reduce:transition-none {className}"
+    class={cn(
+        'relative rounded-container p-4 border',
+        inline ? 'inline-block' : 'block w-full',
+        alertClasses[visualVariant],
+        'transition-colors duration-150 motion-reduce:transition-none',
+        classProp,
+        className,
+    )}
     role={alertRole}
-    aria-live={visualVariant === "success" || visualVariant === "info"
-        ? "polite"
-        : "assertive"}
     aria-atomic="true"
     {...restProps}
 >
     {#if closable}
         <button
             onclick={handleDismiss}
-            class="group absolute right-2 top-2 z-10 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-description transition-colors duration-200 hover:text-body motion-reduce:transition-none focus-ring"
+            class="absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body motion-reduce:transition-none focus-ring--muted"
             aria-label="Dismiss alert"
             type="button"
         >
-            <svg
-                class="w-4 h-4 text-current group-hover:scale-110 transition-transform duration-200 motion-reduce:transition-none"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                />
-            </svg>
+            <X size={16} aria-hidden="true" />
         </button>
     {/if}
 
@@ -148,3 +126,4 @@
         </div>
     </div>
 </div>
+{/if}

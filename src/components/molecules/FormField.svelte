@@ -2,6 +2,7 @@
     import type { Snippet } from 'svelte';
     import { generateId } from "../util/ssr-safe.js";
 
+    import { cn } from "../util/cn.js";
     export type FormFieldControlProps = {
         id: string;
         'aria-describedby'?: string;
@@ -47,7 +48,7 @@
     );
 </script>
 
-<div class={['space-y-1.5', className].filter(Boolean).join(' ')}>
+<div class={cn('space-y-2', className)}>
     <div class="flex items-baseline justify-between gap-3">
         <label
             class={[

@@ -2,6 +2,7 @@
     import { CheckCircle, AlertTriangle, AlertCircle } from '@lucide/svelte';
     import type { SemanticVariant, SizeVariant } from '../types/variants.js';
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         id?: string;
@@ -56,9 +57,9 @@
 
     const textareaClasses = $derived(() => {
         const baseClasses =
-            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-lg transition-all duration-200 placeholder:text-description text-body focus:outline-none focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed resize-y px-4 py-2.5 text-base leading-6';
+            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed resize-y px-3 py-2 text-sm leading-6';
 
-        return `${baseClasses} ${variantClass()} ${className}`.trim();
+        return cn(`${baseClasses} ${variantClass()} ${className}`);
     });
 
     const labelClasses = $derived(
@@ -67,13 +68,13 @@
 
     const messageClasses = $derived(() => {
         if (variant === 'error') {
-            return 'mt-1 flex items-center gap-1.5 text-sm text-error';
+            return 'mt-1 flex items-center gap-2 text-sm text-error';
         } else if (variant === 'success') {
-            return 'mt-1 flex items-center gap-1.5 text-sm text-success';
+            return 'mt-1 flex items-center gap-2 text-sm text-success';
         } else if (variant === 'warning') {
-            return 'mt-1 flex items-center gap-1.5 text-sm text-warning';
+            return 'mt-1 flex items-center gap-2 text-sm text-warning';
         }
-        return 'mt-1 flex items-center gap-1.5 text-sm text-description';
+        return 'mt-1 flex items-center gap-2 text-sm text-description';
     });
 
     const getIcon = $derived(() => {

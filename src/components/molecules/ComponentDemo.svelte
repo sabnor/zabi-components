@@ -3,12 +3,15 @@
     import Card from "../atoms/Card.svelte";
     import CardHeader from "../atoms/CardHeader.svelte";
     import CardContent from "../atoms/CardContent.svelte";
+    import { cn } from "../util/cn.js";
 
     interface Props {
         title: string;
         description?: string;
         code: string;
         language?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
     }
 
@@ -17,10 +20,15 @@
         description = "",
         code,
         language = "svelte",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         children,
         ...restProps
     } = $props<Props & { children?: any }>();
+
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+    const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let showCode = $state(false);
 </script>
@@ -36,7 +44,7 @@
         <CardContent>
             <button
                 onclick={() => (showCode = !showCode)}
-                class="absolute top-8 right-8 z-10 flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-sm text-description transition-colors duration-200 hover:bg-base-50 hover:text-body"
+                class="absolute top-8 right-8 z-10 flex cursor-pointer items-center gap-2 rounded-control px-3 py-2 text-sm text-description transition-colors duration-200 hover:bg-surface-hover hover:text-body"
                 aria-label={showCode ? "Show preview" : "Show code"}
             >
                 {#if showCode}

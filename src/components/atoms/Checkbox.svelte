@@ -3,6 +3,8 @@
     import type { SelectionControlMarkProps } from "./SelectionControl.svelte";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         id?: string;
         name?: string;
         value?: string;
@@ -16,6 +18,7 @@
     }
 
     let {
+        class: className = "",
         id,
         value = "",
         name = "",
@@ -65,5 +68,6 @@
     {onChange}
     {onchange}
     {mark}
+    class={className}
     {...restProps}
 />

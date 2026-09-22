@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Badge from '../../components/atoms/Badge.svelte';
+import BadgeGallery from './BadgeGallery.svelte';
+import BadgeWithChildren from './BadgeWithChildren.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Badge',
@@ -18,6 +20,10 @@ const meta = {
         },
         showIcon: {
             control: 'boolean'
+        },
+        emphasis: {
+            control: 'inline-radio',
+            options: ['subtle', 'solid']
         }
     }
 } satisfies Meta<typeof Badge>;
@@ -77,7 +83,15 @@ export const Energetic: Story = {
 export const WithCustomClass: Story = {
     args: {
         variant: 'default',
-        text: 'Custom Styled Badge'
+        text: 'Custom Styled Badge',
+        class: 'uppercase tracking-wide'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: '`class` is merged last, so call-site utilities win over the variant styles.'
+            }
+        }
     }
 };
 
@@ -85,6 +99,15 @@ export const EmptyText: Story = {
     args: {
         variant: 'default',
         text: ''
+    },
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'A badge with no label renders nothing at all. An empty pill is never what ' +
+                    'the caller wanted, and it used to leave a stray 30px box in the layout.'
+            }
+        }
     }
 };
 
@@ -98,13 +121,22 @@ export const NullText: Story = {
 export const WithChildren: Story = {
     args: {
         variant: 'info',
-        text: ''
+        showIcon: false
     },
     render: (args) => ({
-        Component: Badge,
-        props: args,
-        children: 'Custom content with children'
-    })
+        Component: BadgeWithChildren,
+        props: args
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'Snippet children take precedence over `text`, so a badge can hold markup ' +
+                    'rather than a plain string. A `children` string passed through CSF args ' +
+                    'cannot work — Svelte needs a real snippet, which is what this harness provides.'
+            }
+        }
+    }
 };
 
 export const DynamicContent: Story = {
@@ -152,30 +184,34 @@ export const WithoutIcons: Story = {
 };
 
 export const AllVariantsWithIcons: Story = {
-    args: {
-        variant: 'default',
-        text: 'Badge',
-        showIcon: false
-    },
-    render: () => ({
-        Component: 'div' as any,
-        props: {
-            class: 'flex flex-wrap gap-2 items-center'
-        },
-        children: [
-            { Component: Badge, props: { variant: 'default', text: 'Default', showIcon: true } },
-            { Component: Badge, props: { variant: 'success', text: 'Success', showIcon: true } },
-            { Component: Badge, props: { variant: 'warning', text: 'Warning', showIcon: true } },
-            { Component: Badge, props: { variant: 'error', text: 'Error', showIcon: true } },
-            { Component: Badge, props: { variant: 'info', text: 'Info', showIcon: true } },
-            { Component: Badge, props: { variant: 'neutral', text: 'Neutral', showIcon: true } },
-            { Component: Badge, props: { variant: 'energetic', text: 'Energetic', showIcon: true } }
-        ]
-    } as any),
+    render: (args) => ({
+        Component: BadgeGallery,
+        props: { showIcon: true, ...args }
+    }),
     parameters: {
         docs: {
             description: {
-                story: 'All badge variants displayed with their respective Lucide icons (Check, AlertTriangle, X, Info).'
+                story:
+                    'Every variant at both emphases. Subtle is the default: a page full of ' +
+                    'saturated fills is noise, and a badge is a label, not a button. Both ' +
+                    'emphases are built from the same step of each family ramp, so no variant ' +
+                    'shouts louder than another.'
+            }
+        }
+    }
+};
+
+export const Solid: Story = {
+    args: {
+        variant: 'warning',
+        emphasis: 'solid',
+        text: 'Solid Badge',
+        showIcon: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Use `emphasis="solid"` for the one badge on a screen that has to shout.'
             }
         }
     }

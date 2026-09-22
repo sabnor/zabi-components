@@ -65,15 +65,13 @@ export {
 
 export { default as TopNavbar } from './organisms/TopNavbar.svelte';
 export { default as SidebarNavigation } from './organisms/SidebarNavigation.svelte';
+export { default as SidebarShell } from './organisms/SidebarShell.svelte';
 export { default as SidebarAccountPanel } from './organisms/SidebarAccountPanel.svelte';
 export { default as SidebarPanel } from './organisms/SidebarPanel.svelte';
 
-export const generateId = (prefix: string = 'id'): string => {
-    if (typeof window !== 'undefined') {
-        return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
-    }
-    return `${prefix}-ssr-${Date.now()}`;
-};
+import { generateId } from './util/ssr-safe.js';
+
+export { generateId };
 
 export const createId = (prefix: string = 'id'): string => generateId(prefix);
 

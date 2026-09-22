@@ -6,6 +6,8 @@
     import SidebarBrandHeader from "../molecules/SidebarBrandHeader.svelte";
     import SidebarFooter from "../molecules/SidebarFooter.svelte";
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
+    import Tooltip from "../atoms/Tooltip.svelte";
+    import SidebarShell from "./SidebarShell.svelte";
     import { Command, Search } from "@lucide/svelte";
     import type { Snippet } from "svelte";
     import type { Component } from "svelte";
@@ -34,6 +36,8 @@
         items?: SidebarNavigationItem[];
         currentPath?: string;
         ariaLabel?: string;
+        class?: string;
+        /** @deprecated use `class`. */
         className?: string;
         logoSrc?: string;
         logoAlt?: string;
@@ -78,7 +82,8 @@
         currentPath = "",
         activePrimaryHref = "",
         ariaLabel = "Sidebar navigation",
-        className = "",
+        class: classAttr = "",
+        className: legacyClass = "",
         logoSrc = "",
         logoAlt = "",
         brandName = "",
@@ -113,8 +118,10 @@
         ...restProps
     }: Props = $props();
 
+    /** `class` is the public prop; `className` is a deprecated alias.
+     * Both are merged here so existing call sites keep working. */
+
     const isCollapsed = $derived(mode === "collapsed");
-    const isCard = $derived(layout === "card");
     const showBrandRow = $derived(
         Boolean(logoSrc.trim() || brandName.trim()),
     );
@@ -178,24 +185,6 @@
         partitionBySection(filteredPrimaryItems),
     );
 
-    const insetX = $derived(isCollapsed ? "px-2.5" : "px-4");
-
-    const containerClasses = $derived.by(() => {
-        const widthClass = isCollapsed ? "w-[104px]" : "w-[266px]";
-        const railSurface = "border-r border-border bg-background text-headline";
-        const cardSurface =
-            "border-r border-border bg-background text-headline shadow-sm";
-        const surfaceClasses = isCard ? cardSurface : railSurface;
-        const verticalPad = isCard ? "py-4" : "py-5";
-        const baseClasses = `flex h-full min-h-0 max-h-full flex-col overflow-visible ${verticalPad}`;
-
-        return `${baseClasses} ${widthClass} ${surfaceClasses} ${className}`.trim();
-    });
-
-    const headerStackClasses = $derived(
-        `flex w-full shrink-0 flex-col gap-5 ${insetX}`,
-    );
-
     const iconContainerClasses = $derived(
         "flex size-6 shrink-0 items-center justify-center leading-none text-current",
     );
@@ -210,21 +199,43 @@
         return isMuted ? "text-description" : "text-headline";
     }
 
-    function getNavItemClasses(item: SidebarNavigationItem): string {
-        const isActive =
+    /**
+     * The selected row used to be carried by its fill alone, and the fill was
+     * 1.05:1 against the sidebar in light mode — not a fill, a rumour. Active
+     * and idle labels were #18181b and #27272a at the same weight, a 15-unit
+     * difference in one channel that nobody can see. So in light mode there
+     * was effectively no indication of where you were.
+     *
+     * Three cues now, only one of which is colour-discrimination dependent:
+     * the label takes --color-nav-menu-item-active (defined all along and
+     * never referenced — the row said `text-inherit`), a 3px bar marks the
+     * leading edge, and the tint stays as reinforcement rather than as the
+     * whole message.
+     */
+    function isItemActive(item: SidebarNavigationItem): boolean {
+        return (
             currentPath === item.href ||
-            (Boolean(activePrimaryHref) && item.href === activePrimaryHref);
+            (Boolean(activePrimaryHref) && item.href === activePrimaryHref)
+        );
+    }
+
+    function getNavItemClasses(item: SidebarNavigationItem): string {
+        const isActive = isItemActive(item);
         const layoutClasses = isCollapsed
             ? "flex min-h-10 items-center justify-center px-0 py-2"
-            : "flex min-h-10 items-center gap-2.5 px-2.5 py-2";
+            : "flex min-h-10 items-center gap-3 px-2 py-2";
         const structural =
-            "focus-ring focus-ring--nav w-full cursor-pointer rounded-lg no-underline transition-colors duration-150 outline-none";
+            "focus-ring focus-ring--nav relative w-full cursor-pointer rounded-control no-underline transition-colors duration-150 outline-none";
 
         if (isActive) {
-            return `${structural} ${layoutClasses} bg-nav-menu-active text-inherit hover:bg-nav-menu-active hover:text-inherit active:opacity-90`;
+            return (
+                `${structural} ${layoutClasses} bg-nav-menu-active ` +
+                "text-nav-menu-item-active hover:bg-nav-menu-active " +
+                "active:bg-nav-menu-active-hover"
+            );
         }
 
-        return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-base-200`;
+        return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
     }
 
     function handleNavigate(item: SidebarNavigationItem, event: MouseEvent) {
@@ -268,11 +279,15 @@
     }
 </script>
 
-<nav class={containerClasses} aria-label={ariaLabel} {...restProps}>
-    <div
-        class="flex min-h-0 w-full min-w-0 flex-1 flex-col"
-    >
-        <div class={`${headerStackClasses} pb-3`.trim()}>
+<SidebarShell
+    {mode}
+    {layout}
+    {ariaLabel}
+    class={classAttr}
+    className={legacyClass}
+    {...restProps}
+>
+    {#snippet header()}
             {#if showBrandRow}
                 <SidebarBrandHeader
                     collapsed={isCollapsed}
@@ -307,10 +322,10 @@
                             <Button
                                 variant={searchTriggerVariant}
                                 size={searchTriggerSize}
-                                isFullWidth
+                                fullWidth
                                 onclick={handleSearchClick}
                             >
-                                <span class="flex w-full items-center justify-start gap-2.5">
+                                <span class="flex w-full items-center justify-start gap-3">
                                     <span class={iconContainerClasses} aria-hidden="true">
                                         <TriggerIcon size={17} />
                                     </span>
@@ -334,18 +349,13 @@
                             bind:value={searchValue}
                             placeholder={searchPlaceholder}
                             aria-label={searchPlaceholder}
-                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-xl border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent"
+                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent"
                         />
                     </div>
                 {/if}
             {/if}
-        </div>
+    {/snippet}
 
-        <div
-            class={`flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pt-4 pb-1.5 ${insetX}`}
-            role="region"
-            aria-label="Navigation links"
-        >
         {#if hasFilteredItems}
             <div
                 class="flex w-full min-w-0 flex-col divide-y divide-border"
@@ -363,6 +373,19 @@
                             {#each group.items as item (item.id)}
                                 {@const Icon = item.icon}
                                 <li>
+                                    <!--
+                                      Collapsed rows are icon-only. aria-label
+                                      covers screen readers, but a sighted user
+                                      got an unlabelled glyph with no hover
+                                      affordance at all.
+                                    -->
+                                    <Tooltip
+                                        content={item.label}
+                                        placement="right"
+                                        disabled={!isCollapsed}
+                                        block
+                                        fixed
+                                    >
                                     <a
                                         href={item.href}
                                         class={getNavItemClasses(item)}
@@ -370,6 +393,12 @@
                                         aria-current={getAriaCurrent(item)}
                                         aria-label={isCollapsed ? item.label : undefined}
                                     >
+                                        {#if isItemActive(item)}
+                                            <span
+                                                class="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-pill bg-nav-menu-item-active"
+                                                aria-hidden="true"
+                                            ></span>
+                                        {/if}
                                         {#if Icon}
                                             <span
                                                 class={iconContainerClasses}
@@ -384,16 +413,31 @@
                                                 >{item.label}</span
                                             >
                                         {/if}
-                                        {#if !isCollapsed && getItemBadgeText(item) !== null}
-                                            <span class="ml-auto">
-                                                <Badge
-                                                    variant="default"
-                                                    size="sm"
-                                                    text={getItemBadgeText(item) ?? ""}
-                                                />
-                                            </span>
+                                        {#if getItemBadgeText(item) !== null}
+                                            {#if isCollapsed}
+                                                <!--
+                                                  A notification count that
+                                                  disappears when you collapse
+                                                  the rail is a real loss; the
+                                                  count becomes a dot rather
+                                                  than nothing.
+                                                -->
+                                                <span
+                                                    class="absolute right-2 top-2 size-2 rounded-pill bg-error"
+                                                    aria-hidden="true"
+                                                ></span>
+                                            {:else}
+                                                <span class="ml-auto">
+                                                    <Badge
+                                                        variant="default"
+                                                        size="sm"
+                                                        text={getItemBadgeText(item) ?? ""}
+                                                    />
+                                                </span>
+                                            {/if}
                                         {/if}
                                     </a>
+                                    </Tooltip>
                                 </li>
                             {/each}
                         </SidebarNavSection>
@@ -446,7 +490,7 @@
             {/if}
         {:else}
             <div
-                class="rounded-xl border border-border border-dashed bg-transparent px-3.5 py-4 ring-1 ring-border/60"
+                class="rounded-container border border-border border-dashed bg-transparent px-4 py-4 ring-1 ring-border/60"
             >
                 <h3 class="text-sm font-semibold {getTextToneClass()}">
                     {normalizedSearchTerm && searchMode === "input"
@@ -461,7 +505,7 @@
                 {#if !(normalizedSearchTerm && searchMode === "input")}
                     <button
                         type="button"
-                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-lg bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
+                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
                         onclick={handleEmptyStateAction}
                     >
                         {emptyStateActionLabel}
@@ -469,11 +513,9 @@
                 {/if}
             </div>
         {/if}
-        </div>
-    </div>
-
-    <SidebarFooter
-        collapsed={isCollapsed}
+    {#snippet footer({ insetX })}
+        <SidebarFooter
+            collapsed={isCollapsed}
         {showProfile}
         {profileName}
         {profileEmail}
@@ -489,6 +531,7 @@
         {profilePanelOpen}
         {profilePanelControlsId}
         {profilePanel}
-        className={insetX}
-    />
-</nav>
+            className={insetX}
+        />
+    {/snippet}
+</SidebarShell>

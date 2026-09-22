@@ -1,5 +1,7 @@
 # Design System Audit Scorecard (2026-03-15)
 
+> **Status update (2026-09-14):** the blockers listed below are resolved — `svelte-check` reports 0 errors / 0 warnings, and `vitest`, `test:themes` and `check:tokens` pass. A follow-up review (shipped in 8.0.0) covers form, widget, overlay and packaging fixes; see `CHANGELOG.md`. The sections below are kept as the historical record of the March pass.
+
 ## Scope
 
 - Component library surface in `src/components`

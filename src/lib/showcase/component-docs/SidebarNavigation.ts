@@ -10,7 +10,7 @@ export const doc: ComponentDoc = makeDoc({
     name: "SidebarNavigation",
     category: "organisms",
     description:
-        "Sidebar navigation for app shells with clear active-state styling and optional search patterns. Use it to give users strong orientation and predictable navigation.",
+        "Sidebar navigation for app shells, with clear active states and optional search. Use it to give users steady orientation.",
     defaultExample: {
         title: "Default",
         description:
@@ -34,6 +34,17 @@ export const doc: ComponentDoc = makeDoc({
   items={sidebarNavItems}
   currentPath="/revenue"
   onSearchClick={() => (panelOpen = true)}
+/>`,
+        },
+        {
+            title: "Collapsed rail",
+            description:
+                "Icon-only rail. Labels move into tooltips and item badges become a dot, so a notification count is not lost on collapse.",
+            demoId: demoId("SidebarNavigation", "collapsed"),
+            code: `<SidebarNavigation
+  mode="collapsed"
+  items={sidebarNavItems}
+  currentPath="/revenue"
 />`,
         },
     ],

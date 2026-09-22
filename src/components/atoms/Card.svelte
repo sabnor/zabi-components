@@ -1,72 +1,75 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import type { HTMLAttributes } from "svelte/elements";
     import type { CardVariant, SizeVariant } from "../types/variants.js";
 
-    interface Props {
+    import { cn } from "../util/cn.js";
+    type Props = Omit<HTMLAttributes<HTMLDivElement>, "class"> & {
         onclick?: (event: MouseEvent) => void | Promise<void>;
         size?: SizeVariant;
         variant?: CardVariant;
         fullWidth?: boolean;
+        class?: string;
+        /** @deprecated use `class` — kept so 7.x call sites keep working. */
         className?: string;
         /** Required when `onclick` is set (no visible label). */
         ariaLabel?: string;
         children?: Snippet;
-    }
+    };
 
     let {
         onclick,
         size = "md",
         variant = "default",
         fullWidth = true,
+        class: classProp = "",
         className = "",
         ariaLabel,
         children,
         ...restProps
     }: Props = $props();
 
+    /** Size changes the padding. It does NOT change the corner — see
+     * `--radius-container`. A large card is a bigger box, not a rounder one. */
     const sizeClass = $derived(
         size === "sm" ? "p-4" : size === "lg" ? "p-8" : "p-6",
     );
 
-    const radiusClass = $derived(
-        size === "sm"
-            ? "rounded-xl"
-            : size === "lg"
-              ? "rounded-3xl"
-              : "rounded-2xl",
-    );
-
     const variantClasses = $derived(
         variant === "elevated"
-            ? "bg-card shadow-lg"
+            ? "bg-card-elevated shadow-lg"
             : variant === "outlined"
-              ? "bg-card border-2 border-base-200 shadow-none"
+              ? "bg-card border border-border shadow-none"
               : variant === "flat"
                 ? "bg-card shadow-none border-none"
                 : "bg-card shadow-sm",
     );
 
+    const interactiveClasses = $derived.by(() => {
+        if (!onclick) return "";
+        const shared = "cursor-pointer focus-ring";
+        switch (variant) {
+            case "elevated":
+                return `${shared} hover:bg-card-hover`;
+            case "outlined":
+                return `${shared} hover:border-border-medium hover:bg-card-hover`;
+            case "flat":
+                return `${shared} hover:bg-card-hover`;
+            default:
+                return `${shared} hover:shadow-lg hover:bg-card-hover`;
+        }
+    });
+
     const cardClasses = $derived(
-        [
-            radiusClass,
-            "transition-all duration-200",
+        cn(
+            "rounded-container transition-all duration-150",
             variantClasses,
-            onclick
-                ? variant === "elevated"
-                    ? "cursor-pointer hover:shadow-xl hover:bg-card-hover"
-                    : variant === "outlined"
-                      ? "cursor-pointer hover:border-brand-500 hover:bg-card-hover"
-                      : variant === "flat"
-                        ? "cursor-pointer hover:bg-card-hover"
-                        : "cursor-pointer hover:shadow-lg hover:bg-card-hover"
-                : "",
+            interactiveClasses,
             fullWidth ? "w-full" : "",
             sizeClass,
+            classProp,
             className,
-        ]
-            .filter(Boolean)
-            .join(" ")
-            .trim(),
+        ),
     );
 
     function handleKeydown(event: KeyboardEvent) {

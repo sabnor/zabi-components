@@ -8,7 +8,7 @@ export const doc: ComponentDoc = makeDoc({
     name: "Skeleton",
     category: "atoms",
     description:
-        "Neutral placeholder that mirrors the shape of content while it loads. Use when the final layout is predictable to reduce perceived latency and layout shift.",
+        "Neutral placeholder that mirrors the shape of content while it loads. Use it where the layout is predictable, to reduce perceived latency.",
     defaultExample: {
         title: "Default",
         description: "A single text line placeholder that fills its container.",
@@ -32,7 +32,7 @@ export const doc: ComponentDoc = makeDoc({
         {
             title: "Custom size",
             description:
-                "Use `width` / `height` for CSS lengths or pixel values, or Tailwind width utilities via `class`.",
+                "Use width / height for CSS lengths or pixel values, or Tailwind width utilities via class.",
             demoId: demoId("Skeleton", "size"),
             code: `<div class="space-y-3">
   <Skeleton width="50%" />

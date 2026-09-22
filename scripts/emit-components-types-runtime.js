@@ -57,3 +57,21 @@ fs.writeFileSync(
   'utf8',
 );
 console.log(`✓ Wrote ${path.relative(root, variantsTypesEntryJs)}`);
+
+// `dist/types/index.d.ts` re-exports `./events.js`, `./variants.js`, `./page.types.js`; the
+// `./types` export's `import` condition needs matching runtime modules (events is types-only).
+const eventsTypesJs = path.join(typesRootDir, 'events.js');
+fs.writeFileSync(eventsTypesJs, 'export {};\n', 'utf8');
+console.log(`✓ Wrote ${path.relative(root, eventsTypesJs)}`);
+
+const pageTypesEntryJs = path.join(typesRootDir, 'page.types.js');
+fs.writeFileSync(pageTypesEntryJs, 'export {};\n', 'utf8');
+console.log(`✓ Wrote ${path.relative(root, pageTypesEntryJs)}`);
+
+const typesIndexJs = path.join(typesRootDir, 'index.js');
+fs.writeFileSync(
+  typesIndexJs,
+  "export * from './events.js';\nexport * from './variants.js';\nexport * from './page.types.js';\n",
+  'utf8',
+);
+console.log(`✓ Wrote ${path.relative(root, typesIndexJs)}`);

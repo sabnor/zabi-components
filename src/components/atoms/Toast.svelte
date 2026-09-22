@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { cn } from "../util/cn.js";
+
     interface Props {
         message?: string;
         type?: 'success' | 'error' | 'warning' | 'info';
@@ -22,14 +24,14 @@
     let isVisible = $state(true);
 
     const typeClasses: Record<NonNullable<Props['type']>, string> = {
-        success: 'border-success bg-card text-success',
-        error: 'border-error bg-card text-error',
-        warning: 'border-warning bg-card text-warning',
-        info: 'border-border bg-card text-body',
+        success: 'border-success bg-surface-overlay text-success',
+        error: 'border-error bg-surface-overlay text-error',
+        warning: 'border-warning bg-surface-overlay text-warning',
+        info: 'border-border bg-surface-overlay text-body',
     };
 
     const cardClasses =
-        'box-border w-full min-w-[18rem] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-lg border p-4 shadow-lg';
+        'box-border w-full min-w-[18rem] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-control border p-4 shadow-lg';
 
     function closeToast(event: Event) {
         isVisible = false;
@@ -46,7 +48,7 @@
         {#if closable}
             <button
                 type="button"
-                class="focus-ring shrink-0 cursor-pointer rounded-md text-description hover:text-headline focus:outline-none"
+                class="focus-ring shrink-0 cursor-pointer rounded-control text-description hover:text-headline focus:outline-none"
                 onclick={closeToast}
                 aria-label="Close notification"
             >
@@ -62,7 +64,7 @@
             class="pointer-events-none fixed top-4 right-4 left-4 z-toast flex justify-end sm:left-auto"
         >
             <div
-                class="pointer-events-auto {cardClasses} {typeClasses[type]} {className}"
+                class={cn("pointer-events-auto", cardClasses, typeClasses[type], className)}
                 role="alert"
                 {...restProps}
             >
@@ -71,7 +73,7 @@
         </div>
     {:else}
         <div
-            class="relative z-toast mx-auto {cardClasses} {typeClasses[type]} {className}"
+            class={cn("relative z-toast mx-auto", cardClasses, typeClasses[type], className)}
             role="alert"
             {...restProps}
         >

@@ -1,38 +1,47 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
+    import { cn } from "../util/cn.js";
 
     interface Props {
+        /** Extra classes for the host element. */
+        class?: string;
         tabs?: Array<{
             id: string;
             label: string;
             disabled?: boolean;
         }>;
+        /** Selected tab id; supports `bind:activeTab`. */
         activeTab?: string;
         variant?: "default" | "pills";
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
+        children?: Snippet<[{ activeTab: string }]>;
     }
 
     let {
+        class: className = "",
         tabs = [],
-        activeTab = "",
+        activeTab = $bindable(""),
         variant = "default",
         children,
         ...restProps
-    }: Props & { children?: any } = $props();
+    }: Props = $props();
 
     const tabsBaseId = generateId("tabs");
 
-    function selectTab(tabId: string) {
+    /** Button refs keyed by tab id — roving tabindex needs focus to follow selection. */
+    const tabElements: Record<string, HTMLButtonElement | undefined> = {};
+
+    function selectTab(tabId: string, moveFocus = false) {
         activeTab = tabId;
+        if (moveFocus) {
+            tabElements[tabId]?.focus();
+        }
     }
 
     function getEnabledTabs() {
         return tabs.filter((tab) => !tab.disabled);
-    }
-
-    function getTabIndex(tabId: string) {
-        return tabs.findIndex((tab) => tab.id === tabId);
     }
 
     function getTabId(tabId: string) {
@@ -72,40 +81,37 @@
             const nextIndex =
                 (fallbackIndex + direction + enabledTabs.length) %
                 enabledTabs.length;
-            selectTab(enabledTabs[nextIndex].id);
+            selectTab(enabledTabs[nextIndex].id, true);
         } else if (event.key === "Home") {
             event.preventDefault();
-            selectTab(enabledTabs[0].id);
+            selectTab(enabledTabs[0].id, true);
         } else if (event.key === "End") {
             event.preventDefault();
-            selectTab(enabledTabs[enabledTabs.length - 1].id);
-        } else if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            if (currentIndex === -1) {
-                selectTab(enabledTabs[0].id);
-            }
+            selectTab(enabledTabs[enabledTabs.length - 1].id, true);
         }
+        // Enter/Space: native <button> click already selects the tab.
     }
 </script>
 
-<div class="tabs-container">
+<div class={cn("tabs-container", className)}>
     <div
         class="flex border-b border-base-200"
         role="tablist"
-        tabindex="0"
+        tabindex="-1"
         onkeydown={handleKeydown}
     >
         {#each tabs as tab (tab.id)}
             <button
+                bind:this={tabElements[tab.id]}
                 type="button"
                 role="tab"
                 id={getTabId(tab.id)}
-                class="focus-ring cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none active:bg-base-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description {activeTab ===
+                class="focus-ring cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none active:bg-surface-active disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description {activeTab ===
                 tab.id
                     ? variant === 'pills'
                         ? 'border-brand-500 bg-brand-100 text-brand-700'
                         : 'border-brand-500 text-body'
-                    : 'border-transparent text-description hover:border-base-300 hover:text-body'}"
+                    : 'border-transparent text-description hover:border-border-medium hover:text-body'}"
                 onclick={() => selectTab(tab.id)}
                 disabled={tab.disabled}
                 aria-selected={activeTab === tab.id}

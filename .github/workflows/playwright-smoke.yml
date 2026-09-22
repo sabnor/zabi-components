@@ -22,11 +22,23 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "npm"
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Theme output tests
+        run: npm run test:themes
+
+      - name: Token violations
+        run: npm run check:tokens
 
       - name: Install Playwright Chromium
         run: npx playwright install chromium --with-deps
