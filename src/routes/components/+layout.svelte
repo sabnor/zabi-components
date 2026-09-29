@@ -123,7 +123,7 @@
 
 <div class="bg-background">
     <main
-        class="flex h-[calc(100dvh-4rem)] min-h-0 w-full max-w-screen"
+        class="flex h-[calc(100dvh-4rem-1px)] min-h-0 w-full max-w-screen"
     >
         {#if sidebarOpen}
             <button
@@ -158,8 +158,12 @@
         </div>
 
         <div class="flex min-h-0 min-w-0 flex-1 flex-col">
+            <!-- `relative` makes this the containing block for absolutely
+            positioned descendants. Without it an `sr-only` span far down the
+            content is not clipped by this scroller, and it stretches the
+            document itself: blank space to scroll through under the page. -->
             <div
-                class="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8"
+                class="relative min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8"
             >
                 <div class="mb-6 flex items-center gap-3 md:hidden">
                     <button

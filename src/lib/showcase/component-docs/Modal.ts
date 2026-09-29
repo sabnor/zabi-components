@@ -15,7 +15,7 @@ export const doc: ComponentDoc = makeDoc({
         demoId: demoId("Modal", "default"),
         code: `<Button onclick={() => (open = true)}>Open modal</Button>
 
-<Modal title="Confirm changes" bind:open>
+<Modal title="Confirm changes" bind:isOpen={open}>
   <p class="text-description">This change affects all team members.</p>
   <div class="mt-4 flex justify-end gap-2">
     <Button variant="secondary" onclick={() => (open = false)}>Cancel</Button>

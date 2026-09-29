@@ -8,6 +8,31 @@ function allComponents(): ComponentDoc[] {
     return allComponentDocs();
 }
 
+/**
+ * Many catalog examples are stored HTML-escaped (`&lt;Button&gt;`). CodeBlock
+ * renders its code as text, so without this the entities reach the page as
+ * written and the example cannot be copied. `&amp;` goes last so an escaped
+ * entity is only decoded once.
+ */
+function decodeEntities(code: string): string {
+    return code
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&amp;/g, "&");
+}
+
+function withReadableExamples(component: ComponentMetadata): ComponentMetadata {
+    return {
+        ...component,
+        examples: component.examples?.map((example) => ({
+            ...example,
+            code: decodeEntities(example.code),
+        })),
+    };
+}
+
 function docToMetadata(doc: ComponentDoc): ComponentMetadata {
     return {
         name: doc.name,
@@ -35,7 +60,7 @@ export const load: PageLoad = ({ params }) => {
         if (params.name !== foundDoc.name) {
             redirect(301, `/components/${foundDoc.name}`);
         }
-        return { component: docToMetadata(foundDoc) };
+        return { component: withReadableExamples(docToMetadata(foundDoc)) };
     }
 
     const fallbackList: ComponentMetadata[] = [
@@ -52,5 +77,5 @@ export const load: PageLoad = ({ params }) => {
     if (params.name !== foundFallback.name) {
         redirect(301, `/components/${foundFallback.name}`);
     }
-    return { component: foundFallback };
+    return { component: withReadableExamples(foundFallback) };
 };
