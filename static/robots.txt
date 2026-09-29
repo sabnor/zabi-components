@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /storybook/
+
+Sitemap: https://zabi-components.vercel.app/sitemap.xml

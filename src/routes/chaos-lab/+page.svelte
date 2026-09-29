@@ -57,6 +57,9 @@
 
 <svelte:head>
     <title>Chaos lab — Playwright</title>
+    <!-- A test fixture, not a page for visitors. robots.txt must not block it:
+    a crawler that cannot fetch the page never sees this tag. -->
+    <meta name="robots" content="noindex" />
 </svelte:head>
 
 <main class="mx-auto max-w-3xl space-y-16 p-8">

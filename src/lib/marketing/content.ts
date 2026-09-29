@@ -4,8 +4,18 @@ import type { ComponentMetadata } from "../../types/page.types";
 export const INSTALL_COMMAND = "npm install zabi-components";
 /** package.json's version, inlined by Vite, so the page cannot drift from the release. */
 export const VERSION = __PKG_VERSION__;
+/** Production origin, for canonical links, social cards and the sitemap. */
+export const SITE_URL = "https://zabi-components.vercel.app";
+export const SITE_NAME = "Zabi Components";
 export const GITHUB_URL = "https://github.com/sabnor/zabi-components";
 export const NPM_URL = "https://www.npmjs.com/package/zabi-components";
+export const ISSUES_URL = `${GITHUB_URL}/issues`;
+/**
+ * Storybook is built into static/storybook by `npm run build:site`, so it is a
+ * file on this origin rather than a route. The explicit index.html makes the
+ * link work on any static host, whether or not it serves directory indexes.
+ */
+export const STORYBOOK_URL = "/storybook/index.html";
 
 export interface Layer {
     id: ComponentMetadata["category"];
@@ -43,6 +53,15 @@ export const layers: Layer[] = [
         names: namesFor("organisms"),
     },
 ];
+
+/**
+ * Where a layer's breadcrumb points. No page exists per layer, so this matches
+ * the catalog sidebar, which opens the layer's first component.
+ */
+export function layerPath(id: ComponentMetadata["category"]): string {
+    const first = componentsCatalog[id]?.[0];
+    return first ? `/components/${first.name}` : "/components";
+}
 
 export const componentCount = layers.reduce(
     (total, layer) => total + layer.names.length,
