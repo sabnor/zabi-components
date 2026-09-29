@@ -28,10 +28,17 @@ const outputFile = path.join(__dirname, '../dist/zabi-components.css');
 
 /**
  * Get raw children text for an at-rule/rule block.
+ *
+ * PostCSS keeps the semicolon between declarations on the parent, not on the
+ * declaration, so `decl.toString()` comes back without one. Joining those with
+ * newlines produced theme files a CSS parser read as a single declaration.
  */
 function stringifyChildNodes(node) {
   if (!node.nodes || node.nodes.length === 0) return '';
-  return node.nodes.map((child) => child.toString()).join('\n').trim();
+  return node.nodes
+    .map((child) => (child.type === 'decl' ? `${child.toString()};` : child.toString()))
+    .join('\n')
+    .trim();
 }
 
 /**
@@ -62,6 +69,44 @@ function extractThemeAndDarkBlocks(css, fromPath) {
 }
 
 /**
+ * The hand-written rules in app.css: everything that is neither a token block
+ * nor Tailwind itself.
+ *
+ * Tailwind can generate `.text-action-primary` from the `--color-action-primary`
+ * token, but it would set the label to the fill colour. The library's own rule
+ * points at `--color-action-primary-text` instead, and `.focus-ring`, the action
+ * hover states and the `z-*` scale have no generated equivalent at all. A theme
+ * file without these styles nothing correctly, so they ship with it.
+ *
+ * Left out: the universal-selector scrollbar rules. They restyle every
+ * scrollbar in the consumer's app, which importing a theme should not do;
+ * `.scrollbar-semantic` is the opt-in.
+ */
+function extractComponentStyles(css, fromPath) {
+  const root = postcss.parse(css, { from: fromPath });
+  root.walkComments((comment) => comment.remove());
+
+  const kept = [];
+  root.each((node) => {
+    if (node.type === 'atrule' && (node.name === 'import' || node.name === 'theme')) return;
+    if (node.type === 'rule') {
+      const selectors = (node.selectors ?? [node.selector]).map((s) => s.trim());
+      if (selectors.includes('.dark')) return;
+      if (selectors.every((selector) => selector.startsWith('*'))) return;
+    }
+    kept.push(node.toString().trim());
+  });
+  return kept.join('\n\n');
+}
+
+/**
+ * Tailwind does not scan node_modules, so without this the classes inside the
+ * package are never generated. The path is relative to the theme file, which
+ * sits in dist/ beside the compiled components.
+ */
+const SOURCE_DIRECTIVE = '@source "./**/*.{svelte,js}";';
+
+/**
  * Serialize declarations from an @theme at-rule or a rule (e.g. `.dark`) to one line:
  * comments stripped, each decl ends with `;`. Must use the PostCSS AST — stringifying
  * `@theme` children and re-parsing drops semicolons and merges declarations incorrectly.
@@ -84,15 +129,17 @@ async function buildCSS() {
   if (themeBlocks.length > 0) {
     // Merge all theme blocks (they should be at root level, not nested)
     const mergedTheme = themeBlocks.join('\n\n');
+    const componentStyles = extractComponentStyles(css, inputFile);
+    const themeBody = `${SOURCE_DIRECTIVE}\n\n@theme {\n${mergedTheme}\n}\n\n${componentStyles}\n`;
     
     // Create theme file with Tailwind import (for standalone use)
-    const themeBlock = `@import "tailwindcss";\n\n@theme {\n${mergedTheme}\n}`;
+    const themeBlock = `@import "tailwindcss";\n\n${themeBody}`;
     const themeOutputFile = path.join(__dirname, '../dist/zabi-components-theme.css');
     fs.writeFileSync(themeOutputFile, themeBlock);
     console.log(`✓ Built theme CSS: ${themeOutputFile}`);
     
     // Create theme-only file without Tailwind import (for consumers with existing Tailwind)
-    const themeOnlyBlock = `@theme {\n${mergedTheme}\n}`;
+    const themeOnlyBlock = themeBody;
     const themeOnlyOutputFile = path.join(__dirname, '../dist/zabi-components-theme-only.css');
     fs.writeFileSync(themeOnlyOutputFile, themeOnlyBlock);
     console.log(`✓ Built theme-only CSS: ${themeOnlyOutputFile}`);

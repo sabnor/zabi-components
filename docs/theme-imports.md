@@ -12,7 +12,29 @@ For most Tailwind v4 apps, use:
 @import "zabi-components/theme-dark-only";
 ```
 
+Without Tailwind, import the compiled stylesheet on its own:
+
+```css
+@import "zabi-components/css";
+```
+
 Use short package exports by default. Legacy deep `dist` imports remain supported for compatibility.
+
+## What the theme files contain
+
+`theme` and `theme-only` hold three things:
+
+1. An `@source` directive for the package's own components. Tailwind CSS v4 does not scan `node_modules`, and this is what makes it generate the classes the components use. You do not need an `@source` line of your own.
+2. The `@theme` block with every token.
+3. The hand-written component rules that Tailwind cannot generate from the tokens: `.focus-ring`, `.text-action-primary`, the action hover, active and disabled states, the semantic colour classes and the `z-*` scale.
+
+`theme-dark` and `theme-dark-only` hold the `.dark { … }` overrides.
+
+The universal scrollbar rules are in the compiled `css` bundle only. Importing a theme does not restyle the scrollbars in your app; add `.scrollbar-semantic` where you want them.
+
+## Versions before 8.0.1
+
+In 8.0.0 and 7.0.2 the theme files were published without semicolons, without the `@source` directive and without the component rules, so they left components unstyled. Upgrade, or import `zabi-components/css`, which worked in those versions too.
 
 ## Package export paths
 

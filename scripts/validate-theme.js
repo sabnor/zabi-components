@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import postcss from 'postcss';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,14 +47,57 @@ const REQUIRED_DARK_OVERRIDES = [
 /** Dark-only tokens not present in light @theme (prefer defining in @theme + mirror instead). */
 const ALLOWED_DARK_ONLY_VARIABLES = new Set();
 
-function extractCssVariables(content) {
-  const variables = new Set();
-  const regex = /--([\w-]+)\s*:/g;
-  let match;
-  while ((match = regex.exec(content)) !== null) {
-    variables.add(match[1]);
+/**
+ * Token names as a CSS parser sees them, in source order.
+ *
+ * Parsed rather than pattern-matched on purpose. A regex for `--name:` was
+ * satisfied by theme files that had lost every semicolon, which a parser reads
+ * as one declaration with a very long value; those files shipped in 8.0.0.
+ * Only the token block counts: the component rules that follow it set custom
+ * properties of their own (`--zabi-focus-ring-color`), and those are not tokens.
+ */
+function readTokenNames(content, isDarkTheme) {
+  const root = postcss.parse(content);
+  const names = [];
+  const collect = (container) => {
+    container.each((node) => {
+      if (node.type === 'decl' && node.prop.startsWith('--')) {
+        names.push(node.prop.slice(2));
+      }
+    });
+  };
+  if (isDarkTheme) {
+    root.walkRules((rule) => {
+      const selectors = (rule.selectors ?? [rule.selector]).map((s) => s.trim());
+      if (selectors.includes('.dark')) collect(rule);
+    });
+  } else {
+    root.walkAtRules('theme', collect);
   }
-  return variables;
+  return names;
+}
+
+function extractCssVariables(content, isDarkTheme) {
+  return new Set(readTokenNames(content, isDarkTheme));
+}
+
+/** Classes the components need that Tailwind cannot generate from the tokens. */
+const REQUIRED_COMPONENT_SELECTORS = [
+  '.text-action-primary',
+  '.focus-ring',
+  '.focus-ring:focus-visible',
+  '.bg-action-primary:hover',
+  '.z-modal',
+];
+
+function readSelectors(content) {
+  const selectors = new Set();
+  postcss.parse(content).walkRules((rule) => {
+    for (const selector of rule.selectors ?? [rule.selector]) {
+      selectors.add(selector.trim());
+    }
+  });
+  return selectors;
 }
 
 function requireVariables(variables, expected, errors, context) {
@@ -72,7 +116,19 @@ function validateThemeFile(filePath, fileName) {
   const content = fs.readFileSync(filePath, 'utf8');
   const errors = [];
   const isDarkTheme = fileName.includes('dark');
-  const variables = extractCssVariables(content);
+  const tokenNames = readTokenNames(content, isDarkTheme);
+  const variables = new Set(tokenNames);
+
+  if (!isDarkTheme) {
+    const selectors = readSelectors(content);
+    const missing = REQUIRED_COMPONENT_SELECTORS.filter((selector) => !selectors.has(selector));
+    if (missing.length > 0) {
+      errors.push(`Missing component rules in ${fileName}:\n   - ${missing.join('\n   - ')}`);
+    }
+    if (!/@source\s+["']/.test(content)) {
+      errors.push(`Missing @source directive in ${fileName}: Tailwind will not scan the package`);
+    }
+  }
 
   if (!isDarkTheme && !content.includes('@theme')) {
     errors.push(`Missing @theme block in ${fileName}`);
@@ -143,12 +199,9 @@ function validateThemeFile(filePath, fileName) {
     requireVariables(variables, REQUIRED_DARK_OVERRIDES, errors, fileName);
   }
 
-  const variableRegex = /--([\w-]+)\s*:/g;
   const seen = new Set();
-  let match;
   const duplicates = [];
-  while ((match = variableRegex.exec(content)) !== null) {
-    const variableName = match[1];
+  for (const variableName of tokenNames) {
     if (seen.has(variableName)) {
       duplicates.push(variableName);
     }
@@ -175,8 +228,8 @@ function validateDarkThemeStructure(lightThemePath, darkThemePath) {
 
   const lightContent = fs.readFileSync(lightThemePath, 'utf8');
   const darkContent = fs.readFileSync(darkThemePath, 'utf8');
-  const lightVars = extractCssVariables(lightContent);
-  const darkVars = extractCssVariables(darkContent);
+  const lightVars = extractCssVariables(lightContent, false);
+  const darkVars = extractCssVariables(darkContent, true);
 
   const requiredParity = [
     ...BASE_STEPS.map((step) => `zabi-base-${step}`),
