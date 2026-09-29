@@ -50,7 +50,7 @@
     {#snippet trigger(props)}
         <button
             type="button"
-            class="focus-ring inline-flex h-10 cursor-pointer items-center gap-2 rounded-control border border-border px-3 text-sm font-medium text-body transition-colors hover:bg-surface-hover hover:text-headline"
+            class="focus-ring relative inline-flex h-10 cursor-pointer items-center gap-2 rounded-control border border-border px-3 text-sm font-medium text-body transition-colors before:absolute before:inset-x-0 before:-inset-y-1 hover:bg-surface-hover hover:text-headline"
             onclick={() => (isOpen = !isOpen)}
             {...props}
         >
@@ -61,7 +61,9 @@
                 aria-hidden="true"
             ></span>
             <span class="sr-only">Brand accent:</span>
-            {current.label}
+            <!-- Below lg the top bar has no room to spare, so the name is kept
+            for screen readers and the swatch carries it visually. -->
+            <span class="sr-only lg:not-sr-only">{current.label}</span>
         </button>
     {/snippet}
 

@@ -5,7 +5,7 @@
     import TopNavbar from "../components/organisms/TopNavbar.svelte";
     import BrandSwitcher from "$lib/marketing/BrandSwitcher.svelte";
     import type { NavItem } from "../types/page.types";
-    import { GITHUB_URL } from "$lib/marketing/content";
+    import { GITHUB_URL, STORYBOOK_URL } from "$lib/marketing/content";
 
     interface Props {
         children: Snippet;
@@ -13,18 +13,17 @@
 
     let { children }: Props = $props();
 
+    // No "Home" item: the brand link already goes there, and with Storybook
+    // added the bar was 44px wider than a 768px screen.
     const navItems: NavItem[] = [
-        { label: "Home", href: "/" },
         { label: "Components", href: "/components" },
         { label: "Docs", href: "/docs" },
+        { label: "Storybook", href: STORYBOOK_URL },
         { label: "GitHub", href: GITHUB_URL },
     ];
 </script>
 
 <svelte:head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Tracks the OS preference. A manual toggle cannot move this, so it is
     matched to the page background of each theme rather than left white. -->
     <meta
