@@ -7,6 +7,12 @@ const meta = {
     title: 'Design System/Atoms/Badge',
     component: Badge,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Small status label in the semantic tones, plus neutral and energetic.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],
