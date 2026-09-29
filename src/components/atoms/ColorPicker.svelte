@@ -1,6 +1,6 @@
 <script lang="ts">
     import Input from "./Input.svelte";
-    import { onMount, onDestroy, tick } from "svelte";
+    import { onMount, tick } from "svelte";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -260,12 +260,14 @@
         window.addEventListener("mousedown", handleClickOutside);
         window.addEventListener("mouseup", handleMouseUp);
         window.addEventListener("mousemove", handleColorMapDrag);
-    });
 
-    onDestroy(() => {
-        window.removeEventListener("mousedown", handleClickOutside);
-        window.removeEventListener("mouseup", handleMouseUp);
-        window.removeEventListener("mousemove", handleColorMapDrag);
+        // Teardown is returned from onMount rather than registered with
+        // onDestroy: onDestroy also runs on the server, where there is no window.
+        return () => {
+            window.removeEventListener("mousedown", handleClickOutside);
+            window.removeEventListener("mouseup", handleMouseUp);
+            window.removeEventListener("mousemove", handleColorMapDrag);
+        };
     });
 
     const displayColor = $derived(value && isValidHex(value) ? value : placeholder);

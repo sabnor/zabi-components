@@ -20,6 +20,7 @@
     }: Props = $props();
 
     const progressId = generateId("progress");
+    const labelId = `${progressId}-label`;
 
     let percentage = $derived(Math.min(Math.max((value / max) * 100, 0), 100));
 
@@ -33,8 +34,10 @@
 <div class={className} {...restProps}>
     {#if label}
         <div class="flex justify-between items-center mb-2">
-            <label for={progressId} class="text-sm font-medium text-label"
-                >{label}</label
+            <!-- A span named through aria-labelledby, not a label: `for` only
+            names form controls, so it left the progressbar without a name. -->
+            <span id={labelId} class="text-sm font-medium text-label"
+                >{label}</span
             >
             <span class="text-sm text-caption">{Math.round(percentage)}%</span>
         </div>
@@ -44,6 +47,7 @@
         id={progressId}
         class="w-full border border-input-border bg-input rounded-full overflow-hidden {sizeClasses[size]}"
         role="progressbar"
+        aria-labelledby={label ? labelId : undefined}
         aria-valuenow={value}
         aria-valuemin="0"
         aria-valuemax={max}
