@@ -1,8 +1,13 @@
 # Zabi Components
 
-Svelte **5** UI primitives (runes, `onclick` / `oninput`, …), Tailwind **v4** design tokens, SSR-safe. Requires **Svelte ≥ 5.43.8**.
+[![npm version](https://img.shields.io/npm/v/zabi-components.svg)](https://www.npmjs.com/package/zabi-components)
+[![license](https://img.shields.io/npm/l/zabi-components.svg)](./LICENSE)
 
-Docs: **[zabi-components.vercel.app](https://zabi-components.vercel.app/)**
+A Svelte 5 UI component library with TypeScript types, Tailwind CSS v4 design tokens, light and dark themes, and server-side rendering support.
+
+Live examples and docs: **[zabi-components.vercel.app](https://zabi-components.vercel.app/)**
+
+Requires **Svelte ≥ 5.43.8**. Components are written with runes and take DOM-style props (`onclick` / `oninput`, …).
 
 ---
 
@@ -24,7 +29,9 @@ Ensure `svelte@^5.43.8` is installed — SvelteKit apps usually already match; a
 @import "zabi-components/theme-dark-only";
 ```
 
-No Tailwind? See [docs/theme-imports.md](./docs/theme-imports.md) (`colors` or full `css`).
+No Tailwind? Import the compiled stylesheet instead: `@import "zabi-components/css";`. See [docs/theme-imports.md](./docs/theme-imports.md).
+
+> **On 8.0.0 or earlier?** The theme files in those versions leave components unstyled. Upgrade to 8.0.1, or import `zabi-components/css`.
 
 **3. Use a component** (`+page.svelte` or any Svelte 5 component)
 
@@ -41,7 +48,23 @@ No Tailwind? See [docs/theme-imports.md](./docs/theme-imports.md) (`colors` or f
 </div>
 ```
 
-Without the theme CSS, token classes (`bg-input`, `text-body`, …) look unstyled — always import the theme.
+Without the theme CSS, components render unstyled — always import it.
+
+---
+
+## What is included
+
+- **Components in three layers.** Atoms (buttons, inputs, checkboxes, badges, tooltips), molecules (form fields, dropdowns, tabs, modals, alerts, toasts) and organisms (a top navigation bar and a sidebar). Each one has a page with a live example and its props at [zabi-components.vercel.app/components](https://zabi-components.vercel.app/components).
+- **Svelte 5 only.** Runes, snippets and DOM-style event props. There is no Svelte 4 or React build.
+- **TypeScript.** Props are typed, and the shared unions are exported from `zabi-components/types`.
+- **Theming by tokens.** Colours, surfaces, radius and shadows are Tailwind CSS v4 design tokens, so a rebrand is a change to the tokens rather than to each component. See [THEMING.md](./THEMING.md).
+- **Light and dark themes.** Every colour token has a dark value; add the `dark` class to the `html` element to switch.
+- **Server-side rendering.** Components render on the server in SvelteKit, and browser-only APIs are guarded.
+- **Accessibility work already done.** Labels, hints and errors are connected to their control. RadioGroup and Dropdown handle the arrow keys. Modal keeps focus inside while open and returns it to the trigger. Focus rings are visible by default.
+- **Your classes win.** `class` is merged last through tailwind-merge, so a utility you pass replaces the component's own.
+- **MIT licensed.**
+
+The rest of this file is reference: import paths, the two component styles, tokens, constraints and common pitfalls.
 
 ---
 
@@ -215,7 +238,7 @@ import Button from "some-path/node_modules/zabi-components/dist/atoms/Button.sve
 
 **Consumers — styling**
 
-Load theme CSS (Quick start). Unstyled components usually mean missing `@import "zabi-components/theme-only"` (and dark overrides if you use `.dark`).
+Load theme CSS (Quick start). Unstyled components usually mean a missing `@import "zabi-components/theme-only"` (and dark overrides if you use `.dark`), or a version before 8.0.1.
 
 `class` is the public prop on every component and is merged **last**, through
 [tailwind-merge](https://github.com/dcastil/tailwind-merge), so your utility
@@ -236,7 +259,7 @@ import { analytics } from "../../routes/lib/analytics";
 // ✅ Shared helpers live next to components
 import { generateId } from "../util/ssr-safe.js";
 
-// ❌ Packaging: escaping `dist/` layout (CI fails `npm run check`)
+// ❌ Packaging: escaping `dist/` layout (`npm run check` fails)
 import type { Foo } from "../../types/variants";
 
 // ✅ Depth matches publish layout

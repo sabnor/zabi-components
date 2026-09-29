@@ -10,6 +10,52 @@ Whenever token or CSS import API surface changes, include:
 - mapping rule updates (for example dark semantic mapping)
 - migration guidance when compatibility aliases remain temporarily
 
+## [8.0.1] - 2026-09-29
+
+Fixes the documented setup. In 8.0.0 (and 7.0.2) the three-line Tailwind setup
+from the README left components unstyled; `@import "zabi-components/css"` was
+the only import that worked. No tokens or `exports` paths were added, removed
+or renamed.
+
+### Fixed
+
+- **Theme files are valid CSS again.** `theme`, `theme-only`, `theme-dark` and
+  `theme-dark-only` were written without semicolons between declarations, so a
+  CSS parser read all 355 tokens as one declaration. `scripts/build-css.js` now
+  terminates each declaration.
+- **`theme` and `theme-only` carry an `@source` directive** for the package's
+  own components. Tailwind CSS v4 does not scan `node_modules`, so the classes
+  the components use were never generated. No `@source` line is needed in your
+  own CSS.
+- **`theme` and `theme-only` ship the hand-written component rules**:
+  `.focus-ring` and its variants, `.text-action-primary`, the action hover,
+  active and disabled states, the semantic colour classes and the `z-*` scale.
+  These existed only in the compiled `css` bundle. Without them a primary
+  button's label took the colour of its fill, and nothing had a focus ring.
+- **ColorPicker renders on the server.** Its teardown ran in `onDestroy`, which
+  also runs during SSR, and threw `window is not defined`. It is now returned
+  from `onMount`.
+- **Progress has an accessible name.** Its label was a `<label for>`, which
+  only names form controls, so screen readers announced a progressbar with no
+  name. The label is now referenced through `aria-labelledby`.
+
+### Changed
+
+- The universal-selector scrollbar rules (`* { scrollbar-width: thin }` and the
+  `*::-webkit-scrollbar` family) are in the compiled `css` bundle only, not in
+  the theme files, so importing a theme does not restyle every scrollbar in
+  your app. `.scrollbar-semantic` is in both and is the opt-in.
+- `theme` and `theme-only` grew from about 22 kB to about 35 kB.
+- `scripts/validate-theme.js` parses the theme files instead of pattern-matching
+  them, and fails the build if the token block does not parse or the component
+  rules are missing. The old check passed on the broken files.
+
+### Migration
+
+Nothing to change if you import `zabi-components/css`. If you worked around the
+broken theme files with your own `@source` line or your own copies of
+`.focus-ring` or `.text-action-primary`, you can remove them.
+
 ## [8.0.0] - 2026-09-22
 
 Consolidates two development cycles. 7.1.0 and 7.2.0 were both prepared but
