@@ -4,7 +4,13 @@ import ToasterStory from './ToasterStory.svelte';
 const meta = {
     title: 'Design System/Molecules/Toaster',
     component: ToasterStory,
-    parameters: { layout: 'fullscreen' },
+    parameters: {
+        docs: {
+            description: {
+                component:
+                    'Fixed notification region; pair it with pushToast from the toast store. Mount once near the app root.'
+            }
+        }, layout: 'fullscreen' },
     tags: ['autodocs'],
 } satisfies Meta<typeof ToasterStory>;
 

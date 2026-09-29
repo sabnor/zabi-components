@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Molecules/ImageUpload',
     component: ImageUpload,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'File input with an image preview, an accept filter and a clear control.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],

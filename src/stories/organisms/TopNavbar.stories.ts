@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Organisms/TopNavbar',
     component: TopNavbarDemo,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Top bar with brand, optional link list, theme toggle and a responsive mobile menu. Use embedded for a link-only strip inside your own header.'
+            }
+        },
         layout: 'fullscreen'
     },
     tags: ['autodocs'],

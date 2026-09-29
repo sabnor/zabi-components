@@ -6,6 +6,12 @@ const meta = {
     title: 'Design System/Molecules/Dropdown',
     component: DropdownWithContent,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Menu anchored to your own trigger snippet, with arrow-key focus and four placements.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],

@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Atoms/Select',
     component: Select,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Dropdown with type-ahead search, scrollable options and validation states.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs']

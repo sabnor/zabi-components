@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Atoms/Textarea',
     component: Textarea,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Multi-line field with label, semantic variants, and validation message slot.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],

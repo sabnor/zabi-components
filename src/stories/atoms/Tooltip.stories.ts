@@ -6,6 +6,12 @@ const meta = {
     title: 'Design System/Atoms/Tooltip',
     component: Tooltip,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Hover and focus tooltip on any of four sides, with an optional delay.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],

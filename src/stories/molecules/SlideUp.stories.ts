@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Molecules/SlideUp',
     component: SlideUp,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Panel that slides up from the bottom edge, with a title and close control.'
+            }
+        },
         layout: 'fullscreen'
     },
     tags: ['autodocs'],

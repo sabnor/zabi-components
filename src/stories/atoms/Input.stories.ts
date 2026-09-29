@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Atoms/Input',
     component: Input,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Text input whose label, hint and error message are wired to the control for screen readers.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],

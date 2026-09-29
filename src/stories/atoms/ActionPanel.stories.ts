@@ -4,6 +4,14 @@ import ActionPanel from '../../components/atoms/ActionPanel.svelte';
 const meta = {
     title: 'Design System/Atoms/ActionPanel',
     component: ActionPanel,
+    parameters: {
+        docs: {
+            description: {
+                component:
+                    'Clickable or link card for primary actions with optional badge.'
+            }
+        }
+    },
     tags: ['autodocs'],
 } satisfies Meta<typeof ActionPanel>;
 
