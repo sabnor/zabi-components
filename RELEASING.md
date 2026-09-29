@@ -86,6 +86,12 @@ Nothing is triggered by the tag; it is for the record.
 vercel deploy --prod
 ```
 
+The site build is `npm run build:site` (wired to Vercel through the
+`vercel-build` script). It builds Storybook first and copies it into
+`static/storybook`, which is what the Storybook links in the top bar, the footer
+and the docs open. If the project's Build Command is overridden in the Vercel
+dashboard, set it to `npm run build:site`, or those links will 404.
+
 The Vercel project is linked by id in `.vercel/`, with no git integration, so
 deploys are CLI-only and a push does not trigger one. Publish to npm **before**
 deploying: the landing page prints `package.json`'s version next to the install
