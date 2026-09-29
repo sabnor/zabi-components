@@ -1,0 +1,82 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# Zabi Components
+
+Svelte 5 components with TypeScript types, Tailwind CSS v4 design tokens, light
+and dark themes, and server-side rendering support.
+
+This Storybook shows every component in every variant and state. For setup
+guides and copy-ready examples, see the [documentation site](../).
+
+## Install
+
+```bash
+npm install zabi-components
+```
+
+Needs Svelte 5.43.8 or newer.
+
+## Import the theme
+
+In your global stylesheet, with Tailwind CSS v4:
+
+```css
+@import "tailwindcss";
+@import "zabi-components/theme-only";
+@import "zabi-components/theme-dark-only";
+```
+
+Without Tailwind, import the compiled stylesheet instead:
+
+```css
+@import "zabi-components/css";
+```
+
+The theme files need version 8.0.1 or newer. Earlier versions leave components
+unstyled with the first setup; the second works in every version.
+
+## Use a component
+
+```svelte
+<script lang="ts">
+  import { Button, Input } from "zabi-components";
+  let name = $state("");
+</script>
+
+<Input label="Name" bind:value={name} />
+<Button onclick={() => console.log(name)}>Save</Button>
+```
+
+Event handlers are plain props such as `onclick`, not `on:click`.
+
+## How this Storybook is organised
+
+| Section | What is in it |
+|---|---|
+| **Colors** | The ramps and the semantic tokens, read from the stylesheet |
+| **Atoms** | Single controls and text: buttons, inputs, checkboxes, badges |
+| **Molecules** | Atoms combined into patterns: dropdowns, tabs, modals, alerts |
+| **Organisms** | Whole regions of an app: the top navigation bar and the sidebar |
+
+Each component has a **Docs** page with a description, the props table and
+every story, followed by the stories one at a time.
+
+## Toolbar
+
+| Control | What it does |
+|---|---|
+| **Theme** | Switches the components between light and dark. It starts on your system setting. |
+| **Backgrounds** | Puts the component on a different surface: page, raised, elevated or overlay. Use it to check a component on the surface you plan to place it on. |
+| **Controls** panel | Changes props on the selected story, below the canvas. |
+
+The frames use the library's own surface tokens, so what you see is the color
+the component will sit on in an app.
+
+## Accessibility
+
+Labels, hints and errors are connected to their control. RadioGroup and
+Dropdown handle the arrow keys. Modal keeps focus inside while open and returns
+it to the element that opened it. Try any story with the keyboard: Tab moves
+between controls, and every one of them shows a focus ring.
