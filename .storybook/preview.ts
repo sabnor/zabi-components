@@ -1,5 +1,8 @@
 import type { Preview } from '@storybook/svelte';
 import '../src/app.css';
+import { dark, light, prefersDark } from './zabi-theme';
+
+const startsDark = prefersDark();
 
 const preview: Preview = {
   parameters: {
@@ -8,28 +11,31 @@ const preview: Preview = {
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/i
+      },
+      // Props first, then events, so the table reads in the order people use it.
+      sort: 'requiredFirst'
+    },
+    docs: {
+      theme: startsDark ? dark : light
+    },
+    options: {
+      storySort: {
+        order: [
+          'Introduction',
+          'Design System',
+          ['Colors', 'Atoms', 'Molecules', 'Organisms']
+        ]
       }
     },
+    // Surfaces are given as tokens, not hex values, so each one is the right
+    // colour in both themes and cannot drift from the stylesheet.
     backgrounds: {
-      default: 'app',
-      values: [
-        {
-          name: 'app',
-          value: '#f4f4f5'
-        },
-        {
-          name: 'white',
-          value: '#ffffff'
-        },
-        {
-          name: 'muted',
-          value: '#ececee'
-        },
-        {
-          name: 'dark canvas',
-          value: '#09090b'
-        }
-      ]
+      options: {
+        page: { name: 'Page', value: 'var(--color-surface-base)' },
+        raised: { name: 'Raised (cards, inputs)', value: 'var(--color-surface-raised)' },
+        elevated: { name: 'Elevated', value: 'var(--color-surface-elevated)' },
+        overlay: { name: 'Overlay (menus, dialogs)', value: 'var(--color-surface-overlay)' }
+      }
     },
     svelte: {
       options: {
@@ -40,19 +46,19 @@ const preview: Preview = {
   },
 
   initialGlobals: {
-    theme: 'light'
+    theme: startsDark ? 'dark' : 'light',
+    backgrounds: { value: 'page' }
   },
 
   globalTypes: {
     theme: {
-      description: 'Global theme for components',
-      defaultValue: 'light',
+      description: 'Light or dark theme for the components',
       toolbar: {
         title: 'Theme',
         icon: 'circlehollow',
         items: [
-          { value: 'light', title: 'Light' },
-          { value: 'dark', title: 'Dark' }
+          { value: 'light', title: 'Light', icon: 'sun' },
+          { value: 'dark', title: 'Dark', icon: 'moon' }
         ],
         dynamicTitle: true
       }
@@ -63,13 +69,10 @@ const preview: Preview = {
     (Story, context) => {
       const theme = context.globals.theme || 'light';
 
-      // Apply theme to document element
+      // The library's dark theme is the `dark` class on the html element.
       if (typeof document !== 'undefined') {
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.style.colorScheme = theme;
       }
 
       return Story();

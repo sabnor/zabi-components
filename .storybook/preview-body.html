@@ -1,11 +1,22 @@
-<!-- Preview iframe: matches app surface tokens (see src/app.css @theme / .dark) -->
+<!-- Frames sit on the page surface token, so a component is shown on the
+colour it was designed against and the frame follows the theme toggle. The
+hex values are only what shows before the stylesheet has loaded. -->
 <style>
   body {
     margin: 0;
     min-height: 100vh;
     background-color: var(--color-background, #f4f4f5);
+    color: var(--color-body, #27272a);
   }
+
   html.dark body {
-    background-color: var(--color-base-950, #09090b);
+    background-color: var(--color-background, #18181b);
+  }
+
+  /* Each story on a docs page is drawn in its own frame, which Storybook
+  paints white. In the dark theme that left light text on a white box. */
+  .docs-story {
+    background-color: var(--color-background, #f4f4f5);
+    color: var(--color-body, #27272a);
   }
 </style>
