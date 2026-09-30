@@ -48,6 +48,7 @@
         onopenchange={(open) => onopenchange?.("members", open)}
     >
         <p>Member list</p>
+        <button type="button">Invite</button>
     </Collapsible>
     <Collapsible
         bind:open={billing}

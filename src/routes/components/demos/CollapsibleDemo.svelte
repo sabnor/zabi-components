@@ -56,6 +56,11 @@
                 Type something, collapse the section and open it again: the
                 field keeps its value.
             </p>
+            <div class="mt-4">
+                <Button size="sm" onclick={() => (billingOpen = false)}>
+                    Save and close
+                </Button>
+            </div>
         </Collapsible>
     </Card>
 {:else}

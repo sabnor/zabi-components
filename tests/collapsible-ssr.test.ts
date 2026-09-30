@@ -41,4 +41,34 @@ describe("Collapsible on the server", () => {
         expect(open?.[0]).not.toContain("hidden");
         expect(body).toContain("<h3");
     });
+
+    it("serves a single-open group already settled when several panels start open", () => {
+        const { body } = renderOnServer(CollapsibleGroupHarness, {
+            props: { initial: ["general", "members", "billing"] },
+        });
+
+        // General is first, so it is the one served open. "Advanced" is the
+        // fourth trigger, nested in General's panel and never open here.
+        const expanded = [...body.matchAll(/aria-expanded="(true|false)"/g)].map(
+            (match) => match[1],
+        );
+        expect(expanded).toEqual(["true", "false", "false", "false"]);
+
+        const regions = [...body.matchAll(/<div[^>]*role="region"[^>]*>/g)].map(
+            (match) => match[0],
+        );
+        expect(regions).toHaveLength(3);
+        expect(regions.filter((panel) => !/\shidden(=|\s|>)/.test(panel))).toHaveLength(1);
+    });
+
+    it("serves a disabled open panel open beside the first open one", () => {
+        const { body } = renderOnServer(CollapsibleGroupHarness, {
+            props: { initial: ["general", "members", "billing"], disableMembers: true },
+        });
+        const expanded = [...body.matchAll(/aria-expanded="(true|false)"/g)].map(
+            (match) => match[1],
+        );
+        // General, Advanced (nested, closed), Members (disabled, kept), Billing.
+        expect(expanded).toEqual(["true", "false", "true", "false"]);
+    });
 });

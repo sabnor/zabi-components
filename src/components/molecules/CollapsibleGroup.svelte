@@ -32,9 +32,14 @@
     /** In the order the Collapsibles were created. */
     const members = new Set<CollapsibleGroupMember>();
 
+    /** A disabled panel keeps its state, so it neither holds the one open slot nor loses it. */
+    function holdsTheSlot(member: CollapsibleGroupMember): boolean {
+        return member.isOpen() && !member.isDisabled();
+    }
+
     function closeOthers(keep: CollapsibleGroupMember) {
         for (const member of members) {
-            if (member !== keep && member.isOpen()) member.close();
+            if (member !== keep && holdsTheSlot(member)) member.close();
         }
     }
 
@@ -43,11 +48,19 @@
             return multiple;
         },
         register(member) {
+            // Settled here, while the members initialise, so the first render
+            // (the server's included) already shows one open panel.
+            const startClosed =
+                !multiple &&
+                holdsTheSlot(member) &&
+                [...members].some(holdsTheSlot);
             members.add(member);
-            return () => members.delete(member);
+            return { unregister: () => members.delete(member), startClosed };
         },
         opened(member) {
-            if (!multiple) closeOthers(member);
+            // A disabled panel is outside the one-open rule in both
+            // directions: it is not closed, and it closes nothing.
+            if (!multiple && !member.isDisabled()) closeOthers(member);
         },
     });
 
@@ -55,7 +68,7 @@
     $effect(() => {
         if (multiple) return;
         untrack(() => {
-            const first = [...members].find((member) => member.isOpen());
+            const first = [...members].find(holdsTheSlot);
             if (first) closeOthers(first);
         });
     });

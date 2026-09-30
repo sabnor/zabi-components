@@ -97,7 +97,7 @@ export const Disabled: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'A disabled trigger cannot be activated. The panel keeps the state it has.'
+                story: 'A disabled trigger cannot be activated. The panel keeps the state it has, and a CollapsibleGroup does not close it when another panel opens.'
             }
         }
     }

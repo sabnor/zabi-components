@@ -415,7 +415,15 @@ Inside a `CollapsibleGroup`, on a header button:
 
 The arrow keys only move focus; they open nothing. Every header stays in the
 tab order, so the group works without them, and a disabled header is skipped.
-A closed panel is `hidden`: nothing in it takes focus or is read out. Arrow
+A closed panel is `hidden`: nothing in it takes focus or is read out. If a
+panel closes while focus is inside it (a Save button in the panel closes it, or
+the group closes it because another panel was opened), focus moves to that
+panel's trigger; focus is not moved in any other case.
+
+A disabled panel keeps its state. In a single-open group it is not closed when
+another panel opens, so a disabled panel that is open stays open beside the
+one the user opened. If several panels are marked open at the start of a
+single-open group, only the first is rendered open, on the server too. Arrow
 keys with Shift, Alt, Ctrl or Meta are left to the browser, and so are the keys
 on a Collapsible nested inside a panel, which is not part of the group.
 

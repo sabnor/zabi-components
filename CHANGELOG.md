@@ -257,6 +257,13 @@ Whenever token or CSS import API surface changes, include:
   natively disabled button that could not take focus, so ArrowDown stopped at
   the option before it. It is now `aria-disabled`: reachable, announced as
   disabled, and still not selectable.
+- **Collapsible keeps focus when its panel closes under it.** If the panel
+  closes while focus is inside it, focus moves to the panel's trigger instead
+  of falling to the page.
+- **CollapsibleGroup settles panels that start open.** In a single-open group
+  only the first panel marked open is rendered open, on the server too, and
+  `onopenchange` is not called for it. A disabled panel keeps its state: it is
+  not closed when another panel opens.
 
 ### Documentation
 

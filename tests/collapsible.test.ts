@@ -1,5 +1,6 @@
-import { cleanup, render, screen } from "@testing-library/svelte";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
+import { tick } from "svelte";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { nextTriggerIndex } from "../src/components/util/collapsible";
@@ -403,5 +404,151 @@ describe("CollapsibleGroup", () => {
             "Billing",
             "Open billing from outside",
         ]);
+    });
+});
+
+describe("Collapsible focus when the panel closes", () => {
+    it("moves focus to the trigger when a control inside the panel closes it", async () => {
+        const user = userEvent.setup();
+        render(CollapsibleHarness, { props: { initialOpen: true } });
+
+        const save = screen.getByRole("button", { name: "Save" });
+        save.focus();
+        await user.keyboard("{Enter}");
+
+        expect(state()).toBe("closed");
+        expect(document.activeElement).toBe(trigger());
+    });
+
+    it("does the same for a custom trigger and for unmounted content", async () => {
+        const user = userEvent.setup();
+        render(CollapsibleHarness, {
+            props: { initialOpen: true, custom: true, unmountOnClose: true },
+        });
+
+        await user.click(screen.getByRole("button", { name: "Save" }));
+        expect(state()).toBe("closed");
+        expect(screen.queryByTestId("note")).toBeNull();
+        expect(document.activeElement).toBe(trigger("Toggle billing"));
+    });
+
+    it("leaves focus alone when it is outside the panel", async () => {
+        const user = userEvent.setup();
+        render(CollapsibleHarness, { props: { initialOpen: true } });
+
+        const outside = screen.getByRole("button", { name: "Outside toggle" });
+        await user.click(outside);
+        expect(state()).toBe("closed");
+        expect(document.activeElement).toBe(outside);
+
+        // Opening never moves focus either.
+        await user.click(outside);
+        expect(state()).toBe("open");
+        expect(document.activeElement).toBe(outside);
+    });
+
+    it("moves focus to the header of a panel its group closes", async () => {
+        render(CollapsibleGroupHarness, { props: { initial: ["members"] } });
+
+        screen.getByRole("button", { name: "Invite" }).focus();
+        // A programmatic open of a sibling: the click does not move focus.
+        await fireEvent.click(
+            screen.getByRole("button", { name: "Open billing from outside" }),
+        );
+
+        await waitFor(() => expect(state()).toBe("billing"));
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Members" }));
+    });
+});
+
+describe("CollapsibleGroup settling panels that start open", () => {
+    it("renders only the first one open and brings the bound state in line, silently", async () => {
+        const onopenchange = vi.fn();
+        render(CollapsibleGroupHarness, {
+            props: { initial: ["general", "members", "billing"], onopenchange },
+        });
+
+        // Before any effect has run, the markup is already settled.
+        const expanded = screen
+            .getAllByRole("button")
+            .filter((button) => button.getAttribute("aria-expanded") === "true");
+        expect(expanded.map((button) => button.textContent?.trim())).toEqual(["General"]);
+
+        await waitFor(() => expect(state()).toBe("general"));
+        expect(onopenchange).not.toHaveBeenCalled();
+    });
+
+    it("lets a panel that started closed this way open normally afterwards", async () => {
+        const user = userEvent.setup();
+        const onopenchange = vi.fn();
+        render(CollapsibleGroupHarness, {
+            props: { initial: ["members", "billing"], onopenchange },
+        });
+        await waitFor(() => expect(state()).toBe("members"));
+
+        await user.click(screen.getByRole("button", { name: "Billing" }));
+        expect(state()).toBe("billing");
+        expect(onopenchange.mock.calls).toEqual([
+            ["billing", true],
+            ["members", false],
+        ]);
+    });
+
+    it("leaves every panel open with multiple", async () => {
+        const onopenchange = vi.fn();
+        render(CollapsibleGroupHarness, {
+            props: { multiple: true, initial: ["general", "billing"], onopenchange },
+        });
+        await tick();
+        expect(state()).toBe("general,billing");
+        expect(onopenchange).not.toHaveBeenCalled();
+    });
+});
+
+describe("CollapsibleGroup and disabled panels", () => {
+    it("does not close a disabled open panel, so two can be open in a single-open group", async () => {
+        const user = userEvent.setup();
+        const onopenchange = vi.fn();
+        render(CollapsibleGroupHarness, {
+            props: { initial: ["members"], disableMembers: true, onopenchange },
+        });
+
+        await user.click(screen.getByRole("button", { name: "General" }));
+        expect(state()).toBe("general,members");
+        await user.click(screen.getByRole("button", { name: "Billing" }));
+        expect(state()).toBe("members,billing");
+        expect(onopenchange.mock.calls).toEqual([
+            ["general", true],
+            ["billing", true],
+            ["general", false],
+        ]);
+    });
+
+    it("does not let a disabled open panel keep the others from starting open", async () => {
+        render(CollapsibleGroupHarness, {
+            props: { initial: ["members", "billing"], disableMembers: true },
+        });
+        await tick();
+        expect(state()).toBe("members,billing");
+    });
+
+    it("keeps a disabled panel open when multiple is turned off", async () => {
+        const view = render(CollapsibleGroupHarness, {
+            props: {
+                multiple: true,
+                initial: ["general", "members", "billing"],
+                disableMembers: true,
+            },
+        });
+        await view.rerender({ multiple: false });
+        expect(state()).toBe("general,members");
+    });
+});
+
+describe("Collapsible default trigger", () => {
+    it("aligns its text to the start, so it follows the writing direction", () => {
+        render(CollapsibleHarness);
+        expect(trigger().className).toContain("text-start");
+        expect(trigger().className).not.toContain("text-left");
     });
 });

@@ -33,6 +33,7 @@
         <input data-testid="note" />
     </label>
     <a href="/details">Read more</a>
+    <button type="button" onclick={() => (open = false)}>Save</button>
 {/snippet}
 
 {#if custom}

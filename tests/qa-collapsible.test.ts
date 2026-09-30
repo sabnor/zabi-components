@@ -6,11 +6,11 @@ import CollapsibleGroupHarness from "./fixtures/CollapsibleGroupHarness.svelte";
 import CollapsibleHarness from "./fixtures/CollapsibleHarness.svelte";
 
 /**
- * QA review of 6fed7ec. Gaps the package's own tests leave open. The tests
- * marked DEFECT fail against the components as committed and are skipped so
- * the suite stays green; each names what has to change before it is enabled.
- * The server half of QA-C-1 is in the QA-2 report: a server render needs its
- * own file and environment.
+ * QA review of 6fed7ec. Gaps the package's own tests left open. The three
+ * tests marked QA-C-n failed against that commit and were skipped until the
+ * defects were fixed; each comment says what used to happen. The server half
+ * of QA-C-1 is in `collapsible-ssr.test.ts`: a server render needs its own
+ * file and environment.
  */
 
 afterEach(() => {
@@ -66,13 +66,13 @@ describe("CollapsibleGroup (QA): reporting", () => {
         ]);
     });
 
-    // DEFECT (QA-C-1): in a single-open group every panel that starts open
-    // is rendered open, and an effect closes all but the first after mount.
-    // On the server that is the HTML the visitor gets (all open, all
-    // regions) until hydration collapses it, and on the client each extra
-    // panel reports `onopenchange(false)` for a change nobody made. The
-    // group should settle which panel is open while the members initialise.
-    it.skip("does not report a change while settling panels that start open", async () => {
+    // QA-C-1: in a single-open group every panel that started open used to
+    // be rendered open, and an effect closed all but the first after mount.
+    // On the server that was the HTML the visitor got until hydration
+    // collapsed it, and on the client each extra panel reported
+    // `onopenchange(false)` for a change nobody made. The group now settles
+    // which panel is open while the members initialise.
+    it("does not report a change while settling panels that start open", async () => {
         const onopenchange = vi.fn();
         render(CollapsibleGroupHarness, {
             props: { initial: ["members", "billing"], onopenchange },
@@ -81,11 +81,11 @@ describe("CollapsibleGroup (QA): reporting", () => {
         expect(onopenchange).not.toHaveBeenCalled();
     });
 
-    // DEFECT (QA-C-2): `disabled` is documented as "the panel keeps its
-    // current state", but a disabled panel that is open is closed when a
-    // sibling opens, and its trigger then cannot reopen it. Either the group
-    // leaves disabled members alone or the prop's description changes.
-    it.skip("keeps a disabled open panel open when a sibling opens", async () => {
+    // QA-C-2: `disabled` is documented as "the panel keeps its current
+    // state", but a disabled panel that was open used to be closed when a
+    // sibling opened, and its trigger then could not reopen it. The group now
+    // leaves disabled members alone.
+    it("keeps a disabled open panel open when a sibling opens", async () => {
         const user = userEvent.setup();
         render(CollapsibleGroupHarness, {
             props: { initial: ["members"], disableMembers: true },
@@ -98,11 +98,11 @@ describe("CollapsibleGroup (QA): reporting", () => {
 });
 
 describe("Collapsible (QA): focus when the panel closes under it", () => {
-    // DEFECT (QA-C-3): when the panel closes while focus is inside it (the
-    // parent sets `open = false` from a Save button in the panel, or a group
-    // closes it), the focused control is hidden and focus falls to <body>.
-    // Focus should move to the panel's trigger.
-    it.skip("moves focus to the trigger", async () => {
+    // QA-C-3: when the panel closed while focus was inside it (the parent
+    // sets `open = false` from a Save button in the panel, or a group closes
+    // it), the focused control was hidden and focus fell to <body>. Focus now
+    // moves to the panel's trigger.
+    it("moves focus to the trigger", async () => {
         render(CollapsibleHarness, { props: { initialOpen: true } });
         screen.getByTestId("note").focus();
 

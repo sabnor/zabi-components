@@ -79,6 +79,35 @@ test.describe("Collapsible — hydrated wiring and focus", () => {
         await expect(field).toBeFocused();
     });
 
+    test("closing from inside the panel moves focus to the trigger, not to the page", async ({
+        page,
+    }) => {
+        const trigger = page.getByRole("button", { name: "Billing details" });
+        await setOpen(trigger, true);
+
+        // A real browser drops focus on <body> when the focused control is hidden.
+        const save = page.getByRole("button", { name: "Save and close" });
+        // This example is served open, so nothing above waited for hydration:
+        // a key pressed before it is lost.
+        await expect(async () => {
+            if (await save.isVisible()) {
+                await save.focus();
+                await page.keyboard.press("Enter");
+            }
+            await expect(trigger).toHaveAttribute("aria-expanded", "false", {
+                timeout: 1_000,
+            });
+        }).toPass({ timeout: 30_000 });
+
+        await expect(save).toBeHidden();
+        await expect(trigger).toBeFocused();
+    });
+
+    test("the default trigger's text follows the writing direction", async ({ page }) => {
+        const trigger = page.getByRole("button", { name: "Delivery notes" });
+        await expect(trigger).toHaveCSS("text-align", "start");
+    });
+
     test("a library Button works as the trigger, and unmounted content is gone while closed", async ({
         page,
     }) => {

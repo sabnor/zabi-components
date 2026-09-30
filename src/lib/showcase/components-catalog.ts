@@ -3300,7 +3300,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "The trigger cannot be activated. The panel keeps its current state.",
+                            "The trigger cannot be activated. The panel keeps its current state, and a group does not close it.",
                     },
                     {
                         name: "unmountOnClose",
@@ -3372,6 +3372,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
             </div>
         {/snippet}
         <Input label="Invoice reference" placeholder="PO-2041" />
+        <!-- Closing from inside the panel moves focus to the trigger. -->
+        <Button size="sm" onclick={() => (open = false)}>Save and close</Button>
     </Collapsible>
 </Card>`,
                     },
@@ -3404,7 +3406,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Lets several panels be open at once. By default opening one closes the others.",
+                            "Lets several panels be open at once. By default opening one closes the others, except a disabled panel, which keeps its state.",
                     },
                 ],
                 variants: ["multiple"],

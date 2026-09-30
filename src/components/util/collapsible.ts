@@ -29,15 +29,28 @@ export interface CollapsibleTriggerState {
 export interface CollapsibleGroupMember {
     triggerId: string;
     isOpen: () => boolean;
+    /** A disabled member keeps its state: the group neither closes it nor counts it. */
+    isDisabled: () => boolean;
     close: () => void;
+}
+
+/** What a member gets back when it joins a group. */
+export interface CollapsibleGroupRegistration {
+    /** Removes the member again. */
+    unregister: () => void;
+    /**
+     * True when the member asked to start open in a single-open group that
+     * already has an open panel. The member then renders closed from the
+     * start, on the server too, instead of opening and being closed again.
+     */
+    startClosed: boolean;
 }
 
 /** What a `CollapsibleGroup` offers the Collapsibles inside it, through context. */
 export interface CollapsibleGroupContext {
     /** False when opening one panel closes the others. */
     readonly multiple: boolean;
-    /** Returns the function that removes the member again. */
-    register: (member: CollapsibleGroupMember) => () => void;
+    register: (member: CollapsibleGroupMember) => CollapsibleGroupRegistration;
     /** Called whenever a member is open, however it got there. */
     opened: (member: CollapsibleGroupMember) => void;
 }
