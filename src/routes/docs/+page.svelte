@@ -205,7 +205,7 @@ import type { ButtonVariant } from "zabi-components/types";`;
                         class="mt-6 max-w-3xl rounded-2xl border border-border bg-card shadow-sm p-5 text-base leading-7 text-body"
                     >
                         <strong class="font-semibold text-headline">Components look unstyled?</strong>
-                        The theme import is missing, or the package is older than 8.0.1.
+                        The theme import is missing, or the package is 8.0.0 or older.
                         Without the theme, the token classes have no values.
                     </p>
 

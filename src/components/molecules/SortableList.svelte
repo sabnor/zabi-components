@@ -31,7 +31,7 @@
         getLabel: (item: T) => string;
         /** Content of one row. The second argument carries the row state and its controls. */
         item: Snippet<[T, SortableListRow]>;
-        /** Called once per move, after `items` has the new order. */
+        /** Called once per move (each arrow-key step is a move), after `items` has the new order. */
         onreorder?: (detail: SortableListReorderDetail<T>) => void;
         /**
          * `auto` lays out handle, content and move buttons in a row. `manual`
@@ -43,11 +43,18 @@
          * around them is not toggled by it.
          */
         controls?: "auto" | "manual";
-        /** Show the move up / move down buttons when `controls="auto"`. */
+        /**
+         * Show the move up / move down buttons when `controls="auto"`. A screen
+         * reader in browse mode does not pass arrow keys to the handle, so
+         * hiding them removes that way of reordering.
+         */
         showMoveButtons?: boolean;
         /** Disables every handle and move button. */
         disabled?: boolean;
-        /** Disables one item's own controls. Other items can still move past it. */
+        /**
+         * Disables one item's own controls. Other items can still move past it,
+         * so its index can change; it is not pinned in place.
+         */
         isItemDisabled?: (item: T) => boolean;
         /** Overrides for the built-in strings. */
         strings?: Partial<SortableListStrings>;

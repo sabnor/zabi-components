@@ -43,7 +43,7 @@ Neither order is right. With Tailwind in the app, import `theme-only` and `theme
 
 The hand-written colour classes (`bg-card`, `text-headline`, `border-border` and the rest) are outside every layer, in `css` and in the theme files alike, so they win over any utility on the same element: `bg-card md:bg-red-500` keeps the card colour. Change the colour by replacing the class, not by adding a variant next to it.
 
-## Versions before 8.0.1
+## Version 8.0.0 and earlier
 
 In 8.0.0 and 7.0.2 the theme files were published without semicolons, without the `@source` directive and without the component rules, so they left components unstyled. Upgrade, or import `zabi-components/css`, which worked in those versions too.
 

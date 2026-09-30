@@ -31,7 +31,7 @@ Ensure `svelte@^5.43.8` is installed — SvelteKit apps usually already match; a
 
 No Tailwind? Import the compiled stylesheet instead: `@import "zabi-components/css";`. See [docs/theme-imports.md](./docs/theme-imports.md).
 
-> **On 8.0.0 or earlier?** The theme files in those versions leave components unstyled. Upgrade to 8.0.1, or import `zabi-components/css`.
+> **On 8.0.0 or earlier?** The theme files in those versions leave components unstyled. Upgrade to the latest release, or import `zabi-components/css`.
 
 **3. Use a component** (`+page.svelte` or any Svelte 5 component)
 
@@ -239,7 +239,7 @@ import Button from "some-path/node_modules/zabi-components/dist/atoms/Button.sve
 
 **Consumers — styling**
 
-Load theme CSS (Quick start). Unstyled components usually mean a missing `@import "zabi-components/theme-only"` (and dark overrides if you use `.dark`), or a version before 8.0.1.
+Load theme CSS (Quick start). Unstyled components usually mean a missing `@import "zabi-components/theme-only"` (and dark overrides if you use `.dark`), or version 8.0.0 or earlier.
 
 `class` is the public prop on every component and is merged **last**, through
 [tailwind-merge](https://github.com/dcastil/tailwind-merge), so your utility
