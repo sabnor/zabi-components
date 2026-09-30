@@ -103,7 +103,7 @@ Card variants change the visual appearance of cards:
 
 ## Size Variants
 
-Size variants are consistent across all components:
+Size variants are consistent across the components that take `SizeVariant`:
 
 - **`sm`** - Small size
   - Use for: Compact spaces, dense layouts
@@ -113,6 +113,16 @@ Size variants are consistent across all components:
 
 - **`lg`** - Large size
   - Use for: Prominent elements, spacious layouts
+
+Button, IconButton, Input, Select and Slider share one height per size (32, 40
+and 48px), so controls of the same size line up in a row.
+
+A few components have sizes of their own, because the shared three do not fit
+them:
+
+- **IconButton** and **Spinner** add **`xs`** (IconButton: a 24px box for dense, pointer-first layouts).
+- **EmptyState** takes `default` | `compact`.
+- **Drawer** takes `sm` | `md` | `lg` for the width of the panel, not a control height.
 
 ## Usage Guidelines
 
@@ -153,12 +163,13 @@ Use style variants when:
 
 1. **Semantic variants should be consistent** - If a component supports `success`, it should use the same green color as other components
 2. **Style variants can be component-specific** - Button variants don't need to match Card variants
-3. **Size variants are always consistent** - `sm`, `md`, `lg` mean the same thing across all components
+3. **Size variants are always consistent** - `sm`, `md`, `lg` mean the same thing wherever a component takes `SizeVariant`
 4. **Default is always available** - All components should have a `default` variant or size
 
 ## Type Definitions
 
-All variants are defined in `src/types/variants.ts`:
+The shared variants are defined in `src/components/types/variants.ts` and
+exported from `zabi-components/types`:
 
 ```typescript
 // Semantic variants
@@ -179,6 +190,11 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 - Variants: `primary`, `secondary`, `danger`, `ghost`, `outline`, `link`
 - Sizes: `sm`, `md`, `lg`
 
+### IconButton
+- Variants: the Button variants
+- Sizes: `xs`, `sm`, `md`, `lg`
+- Tone: `default`, `danger` (colour intent for the `ghost` and `outline` variants)
+
 ### Card
 - Variants: `default`, `elevated`, `outlined`, `flat`
 - Sizes: `sm`, `md`, `lg`
@@ -194,6 +210,26 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 ### Alert
 - Variants: `info`, `success`, `warning`, `error`, `neutral`, `energetic`
 
+### Slider
+- Variants: `default`, `success`, `warning`, `error`, `info`
+- Sizes: `sm`, `md`, `lg`
+
+### Spinner
+- Sizes: `xs`, `sm`, `md`, `lg`
+
+### ConfirmDialog
+- Variants: `danger`, `warning`, `info` (`ConfirmDialogVariant`)
+
+### DropdownItem
+- Tone: `default`, `danger` (`DropdownItemTone`)
+
+### Drawer
+- Side: `left`, `right`, `start`, `end` (`DrawerSide`)
+- Sizes: `sm`, `md`, `lg` (`DrawerSize`)
+
+### EmptyState
+- Sizes: `default`, `compact`
+
 ## Best Practices
 
 1. **Use semantic variants for states** - Don't use `error` variant just because you like red
@@ -207,7 +243,7 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 When adding variants to existing components:
 
 1. Check if semantic variants are appropriate
-2. Use centralized type definitions from `src/types/variants.ts`
+2. Use centralized type definitions from `src/components/types/variants.ts`
 3. Update component props to use the types
 4. Add stories for all variants in Storybook
 5. Document variants in component API docs
@@ -233,9 +269,7 @@ When adding variants to existing components:
 
 <!-- Card with elevated style -->
 <Card variant="elevated">
-    <CardHeader>
-        <CardTitle>Title</CardTitle>
-    </CardHeader>
+    <CardHeader title="Title" />
 </Card>
 ```
 

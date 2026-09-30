@@ -5,7 +5,7 @@
  * This is a static check on purpose: it runs in CI without a browser, and the
  * thing it guards is a source-level convention.
  *
- *   1. HEIGHT — Button, IconButton, Input and Select must use the same height
+ *   1. HEIGHT — Button, IconButton, Input, Select and Slider must use the same height
  *      utility for the same size. They previously rendered at 40/48/64,
  *      38/46/50 and 32/40/48 respectively, so a `lg` Button stood 14px taller
  *      than the `lg` Input beside it.
@@ -40,6 +40,7 @@ const CONTROLS = [
     'atoms/IconButton.svelte',
     'atoms/Input.svelte',
     'atoms/Select.svelte',
+    'atoms/Slider.svelte',
 ];
 
 const BANNED_RADII = /(?<![\w-])rounded(-[trblxy]{1,2})?-(xs|sm|md|lg|xl|2xl|3xl)(?![\w-])/g;

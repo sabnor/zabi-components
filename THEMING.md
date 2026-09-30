@@ -238,14 +238,18 @@ to shout.
 
 ## 📐 Control Geometry
 
-One height scale is shared by **every** form control, so a Button, Input, Select
-and IconButton of the same size line up in a row:
+One height scale is shared by **every** form control, so a Button, Input, Select,
+IconButton and Slider of the same size line up in a row:
 
 | size | height | token |
 |---|---|---|
 | `sm` | 32px | `--control-height-sm` |
 | `md` | 40px | `--control-height-md` |
 | `lg` | 48px | `--control-height-lg` |
+
+IconButton also has `xs`, a 24px box for dense pointer-first layouts. No text
+control is that small, so it sits outside the shared scale, and the check pins
+it separately.
 
 Enforced by `scripts/check-control-geometry.js`.
 

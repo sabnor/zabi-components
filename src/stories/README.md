@@ -17,12 +17,16 @@ npm run build:site         # site build, with Storybook copied into static/story
 |---|---|
 | `Introduction.mdx` | First page: install, theme import, how to use the toolbar |
 | `Colors.mdx` | Ramps and semantic tokens, read from `src/app.css` through `tokens.ts` |
-| `atoms/` | ActionPanel, Badge, Button, Card, Checkbox, CodeBlock, ColorPicker, Container, Divider, FeatureCard, Heading, IconButton, Input, List, ListItem, OptimizedImage, Progress, Select, Skeleton, Table, Text, Textarea, ThemeToggle, Toast, Toggle, Tooltip |
-| `molecules/` | Alert, ContactForm, Dropdown, EmptyState, Form, FormField, ImageUpload, Modal, NavigationMenu, Section, SlideUp, Tabs, Toaster |
+| `atoms/` | ActionPanel, Badge, Button, Card, Checkbox, CodeBlock, ColorPicker, Container, Divider, FeatureCard, Heading, IconButton, Input, List, ListItem, OptimizedImage, Progress, Select, Skeleton, Slider, Spinner, Table, Text, Textarea, ThemeToggle, Toast, Toggle, Tooltip |
+| `molecules/` | Alert, Collapsible, ConfirmDialog, ContactForm, Drawer, Dropdown, EmptyState, Form, FormField, ImageUpload, MediaGrid, Modal, NavigationMenu, Section, SlideUp, SortableList, Tabs, Toaster, UnsavedChangesBar |
 | `organisms/` | SidebarNavigation, SidebarNavigation/Account panel, SidebarPanel, TopNavbar, TopNavbar/Inline nav |
 
 A `.svelte` file beside a story is a wrapper for it, used when a story needs
 children, snippets or local state that story args cannot express.
+
+Two components have no file of their own: CollapsibleGroup is shown in the
+Collapsible stories (the accordion ones), and DropdownItem in the Dropdown
+stories.
 
 ## Writing a story
 
@@ -40,7 +44,7 @@ children, snippets or local state that story args cannot express.
 | File | Purpose |
 |---|---|
 | `.storybook/zabi-theme.ts` | Storybook's own interface in Zabi's colors, light and dark |
-| `.storybook/manager.ts` | Applies that theme to the sidebar and toolbar |
-| `.storybook/preview.ts` | Theme control, background surfaces, sidebar order |
+| `.storybook/manager.ts` | Applies that theme to the sidebar and toolbar, and follows the Theme control |
+| `.storybook/preview.ts` | Theme control, background surfaces, sidebar order, and the Docs pages' theme, which follows the same control |
 | `.storybook/preview-head.html` | Font faces for the stories |
 | `.storybook/preview-body.html` | Frame background, from the surface tokens |

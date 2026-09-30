@@ -56,8 +56,8 @@ Event handlers are plain props such as `onclick`, not `on:click`.
 | Section | What is in it |
 |---|---|
 | **Colors** | The ramps and the semantic tokens, read from the stylesheet |
-| **Atoms** | Single controls and text: buttons, inputs, checkboxes, badges |
-| **Molecules** | Atoms combined into patterns: dropdowns, tabs, modals, alerts |
+| **Atoms** | Single controls and text: buttons, inputs, checkboxes, sliders, badges |
+| **Molecules** | Atoms combined into patterns: dropdowns, tabs, modals, drawers, sortable lists, alerts |
 | **Organisms** | Whole regions of an app: the top navigation bar and the sidebar |
 
 Each component has a **Docs** page with a description, the props table and
@@ -67,7 +67,7 @@ every story, followed by the stories one at a time.
 
 | Control | What it does |
 |---|---|
-| **Theme** | Switches the components between light and dark. It starts on your system setting. |
+| **Theme** | Switches the components between light and dark, and Storybook's own sidebar, toolbar and Docs pages with them. It starts on your system setting. |
 | **Backgrounds** | Puts the component on a different surface: page, raised, elevated or overlay. Use it to check a component on the surface you plan to place it on. |
 | **Controls** panel | Changes props on the selected story, below the canvas. |
 
@@ -77,6 +77,6 @@ the component will sit on in an app.
 ## Accessibility
 
 Labels, hints and errors are connected to their control. RadioGroup and
-Dropdown handle the arrow keys. Modal keeps focus inside while open and returns
-it to the element that opened it. Try any story with the keyboard: Tab moves
+Dropdown handle the arrow keys. Modal, Drawer and SlideUp keep focus inside
+while open and return it to the element that opened them. Try any story with the keyboard: Tab moves
 between controls, and every one of them shows a focus ring.

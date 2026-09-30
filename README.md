@@ -54,13 +54,13 @@ Without the theme CSS, components render unstyled — always import it.
 
 ## What is included
 
-- **Components in three layers.** Atoms (buttons, inputs, checkboxes, badges, tooltips), molecules (form fields, dropdowns, tabs, modals, alerts, toasts) and organisms (a top navigation bar and a sidebar). Each one has a page with a live example and its props at [zabi-components.vercel.app/components](https://zabi-components.vercel.app/components).
+- **Components in three layers.** Atoms (buttons, inputs, checkboxes, sliders, badges, tooltips), molecules (form fields, dropdowns, tabs, modals, drawers, confirm dialogs, collapsible sections, sortable lists, alerts, toasts) and organisms (a top navigation bar and a sidebar). Each one has a page with a live example and its props at [zabi-components.vercel.app/components](https://zabi-components.vercel.app/components).
 - **Svelte 5 only.** Runes, snippets and DOM-style event props. There is no Svelte 4 or React build.
 - **TypeScript.** Props are typed, and the shared unions are exported from `zabi-components/types`.
 - **Theming by tokens.** Colours, surfaces, radius and shadows are Tailwind CSS v4 design tokens, so a rebrand is a change to the tokens rather than to each component. See [THEMING.md](./THEMING.md).
 - **Light and dark themes.** Every colour token has a dark value; add the `dark` class to the `html` element to switch.
 - **Server-side rendering.** Components render on the server in SvelteKit, and browser-only APIs are guarded.
-- **Accessibility work already done.** Labels, hints and errors are connected to their control. RadioGroup and Dropdown handle the arrow keys. Modal keeps focus inside while open and returns it to the trigger. Focus rings are visible by default.
+- **Accessibility work already done.** Labels, hints and errors are connected to their control. RadioGroup and Dropdown handle the arrow keys. Modal, Drawer and SlideUp keep focus inside while open and return it to the trigger. Focus rings are visible by default, in forced-colours mode too.
 - **Your classes win.** `class` is merged last through tailwind-merge, so a utility you pass replaces the component's own.
 - **MIT licensed.**
 
@@ -206,6 +206,7 @@ Components use **DOM-style props** (`onclick`, `oninput`), not legacy `on:click`
 | Token / class | Role |
 |---------------|------|
 | `bg-surface-base` · `raised` · `elevated` · `overlay` | The four surface levels. Anything floating above content uses `overlay`. In dark mode each level is the one below it with more light on it — shadows don't read on a dark page. |
+| `bg-surface-inset` | A recessed area on a card: a well, a stat strip, a code sample. Darker than the card in both themes. |
 | `surface-1` / `surface-2` | Compatibility aliases for `raised` / `elevated`. Prefer the named levels in new code. |
 | `shadow-sm` / `shadow-lg` | Elevation is **two steps**: raised, and floating. `shadow-none` is the explicit absence of one. `shadow-md`, `shadow-xl` and a bare `shadow` fail the build. |
 | `rounded-control` · `container` · `overlay` · `pill` | Radius is chosen by **role**, never by size. A large button is a bigger box with the same corner as a small one. |
@@ -297,7 +298,7 @@ import type { Foo } from "../types/variants.js";
 | Unit / component | `npm run test` | Vitest + Testing Library — logic and regressions |
 | Interaction | `npm run test:e2e` | Playwright — overlays, focus, keyboard flows |
 | Types & structure | `npm run check` | `svelte-check`, import-path and layout-width rules, plus `check:design` |
-| Design system | `npm run check:design` | Ramp lightness, WCAG AA on every rendered pair, interaction fills that differ from their surface, control geometry, and token violations (raw palette classes, off-scale shadows, half-step spacing) |
+| Design system | `npm run check:design` | Ramp lightness, WCAG AA on every rendered pair, the focus ring at 3:1, interaction fills and hover tints that read on their surface, control geometry, token violations (raw palette classes, off-scale shadows, half-step spacing), and state variants that cannot win |
 | Theme output | `npm run test:themes` | Built CSS is reproducible and matches the frozen hashes |
 
 There is no CI: every gate runs locally, and releases are published by hand. See

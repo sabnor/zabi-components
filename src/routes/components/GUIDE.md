@@ -13,7 +13,7 @@ Category rows still use internal `category:` `href`s with `preventDefault` and `
 ## Layout
 
 - **Left column**: `SidebarNavigation` drives category and component selection. Search filters both category rows and the component list. The active category is highlighted via `activePrimaryHref` so nested selection stays clear.
-- **Main column**: Header (name, description, badges, variants), `ComponentShowcaseExampleDemos` examples, then the props table.
+- **Main column**: Header (name, description, badges, variants), the examples rendered by `ComponentShowcaseExampleDemos`, then the props table.
 
 On small viewports, the sidebar is a drawer; use the menu control to open it.
 
@@ -47,9 +47,11 @@ Do not confuse **TopNavbar** (header) with **SidebarNavigation** (side rail).
 
 ## Maintaining the catalog
 
-1. Add or edit entries in **`components-catalog.ts`** (name, description, `props[]`, `examples[]`, `variants`).
-2. For new organisms, add a branch in **`ComponentShowcaseExampleDemos.svelte`** so the showcase renders a demo.
-3. Add Storybook stories under **`src/stories/`** for isolated development (`npm run storybook`).
+1. Add or edit entries in **`components-catalog.ts`** (name, description, `props[]`, `examples[]`, `variants`). The landing page and the docs page count and list components from this catalog, so nothing else needs a number changed.
+2. Give the component a live demo. There are two places, and `ComponentShowcaseExampleDemos.svelte` looks in this order:
+   - **`demos/registry.ts`** — the way to add one now. Write `demos/<Name>Demo.svelte`, which receives `exampleIndex` (one demo component renders every example of its catalog entry, by index) and the shared state in `demos/types.ts`, then add it to the `registry` map under the catalog name. A registered demo wins over a branch.
+   - **A `{:else if component.name === "…"}` branch in `ComponentShowcaseExampleDemos.svelte`** — how the older components are still rendered. Those branches stay until they are moved; do not add new ones.
+3. Add Storybook stories under **`src/stories/`** for isolated development (`npm run storybook`), and list the component in `src/stories/README.md`.
 
 ## Related docs
 

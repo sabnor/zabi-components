@@ -9,6 +9,17 @@ This document provides a comprehensive accessibility audit for zabi-components, 
 **Target Level:** AA  
 **Scope:** All components in zabi-components library
 
+> **Reading this document.** The per-component results are the January 2025
+> audit. The entries for Button, Card, Modal, Dropdown, Navigation and Select,
+> and the keyboard, screen reader, focus and summary sections, were checked
+> against the code on 2026-09-30 and corrected where the issue had been fixed.
+> The other entries, and every low-priority recommendation, were not
+> re-checked. Components added since the audit (SortableList, Collapsible,
+> ConfirmDialog, Drawer, MediaGrid, Slider, Spinner, UnsavedChangesBar and
+> others) are not audited here; their keyboard behaviour is in
+> KEYBOARD_NAVIGATION.md and their conventions are under
+> [Library conventions](#library-conventions).
+
 ## WCAG Principles
 
 ### 1. Perceivable
@@ -36,16 +47,16 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 - ✅ Keyboard accessible (Enter/Space)
 - ✅ Type attribute support (button/submit/reset)
 
+- ✅ `aria-busy` while loading
+- ✅ Extra attributes such as `aria-label` pass through to the `<button>`; icon-only buttons are `IconButton`
+
 **Issues Found:**
-- ⚠️ Missing `aria-label` support for icon-only buttons
-- ⚠️ Loading state not announced to screen readers
+- ✅ The two issues of the original audit (no `aria-label`, loading not announced) are resolved
 
 **Recommendations:**
-- Add `aria-label` prop for accessibility
-- Add `aria-busy` for loading states
-- Ensure focus styles meet contrast requirements
+- None open
 
-**Priority:** Medium
+**Priority:** Low
 
 ---
 
@@ -95,78 +106,65 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 
 ### Card Component
 
-**Status:** ⚠️ Needs Improvement
+**Status:** ✅ Mostly Compliant
 
 **Current Features:**
 - ✅ Semantic HTML structure
 - ✅ Proper heading hierarchy support
+- ✅ A card with `onclick` gets `role="button"`, `tabindex="0"` and a key handler
 
 **Issues Found:**
-- ⚠️ Interactive cards need proper ARIA roles
-- ⚠️ Clickable cards should have `role="button"` or be actual buttons
-- ⚠️ Missing keyboard navigation for interactive cards
-- ⚠️ No focus management for card interactions
+- ✅ The role and keyboard issues of the original audit are resolved
 
 **Recommendations:**
-- Add `role="button"` and `tabindex="0"` for interactive cards
-- Implement keyboard handlers (Enter/Space) for interactive cards
-- Add `aria-label` or `aria-labelledby` for card actions
-- Ensure focus styles are visible
+- Give an interactive card an accessible name (`aria-label` or `aria-labelledby`) when its content does not say what it does
 
-**Priority:** High
+**Priority:** Low
 
 ---
 
 ### Modal Component
 
-**Status:** ⚠️ Needs Improvement
+**Status:** ✅ Compliant
 
 **Current Features:**
 - ✅ `role="dialog"`
 - ✅ `aria-modal="true"`
 - ✅ `aria-labelledby` for title
+- ✅ `aria-describedby` for the description
 - ✅ Escape key to close
 - ✅ Backdrop click to close
+- ✅ Tab is kept inside the panel
+- ✅ Focus moves into the panel on open and returns to the opener on close, also when modals are nested
 
 **Issues Found:**
-- ❌ **CRITICAL:** No focus trap - focus escapes modal
-- ❌ **CRITICAL:** Focus not returned to trigger element on close
-- ⚠️ Missing `aria-describedby` for description
-- ⚠️ No focus management on open
+- ✅ The focus trap, focus return and `aria-describedby` issues of the original audit are resolved
 
 **Recommendations:**
-- **HIGH PRIORITY:** Implement focus trap
-- **HIGH PRIORITY:** Return focus to trigger on close
-- Add initial focus to first focusable element
-- Add `aria-describedby` support
-- Ensure backdrop is properly announced
+- None open. SlideUp and Drawer share the same behaviour; see [Library conventions](#library-conventions)
 
-**Priority:** Critical
+**Priority:** Low
 
 ---
 
 ### Dropdown Component
 
-**Status:** ⚠️ Needs Improvement
+**Status:** ✅ Mostly Compliant
 
 **Current Features:**
-- ✅ Basic keyboard navigation
+- ✅ The trigger carries `aria-expanded` and `aria-haspopup`
+- ✅ The popup is `role="menu"` or `role="listbox"`
+- ✅ Arrow keys, Home and End move between items; Escape closes
+- ✅ Focus returns to the trigger when the menu closes with focus inside it
+- ✅ A disabled item is `aria-disabled` and stays in the arrow-key order
 
 **Issues Found:**
-- ❌ **CRITICAL:** Missing proper ARIA attributes (`aria-expanded`, `aria-haspopup`)
-- ❌ **CRITICAL:** Missing `role="menu"` or `role="listbox"`
-- ⚠️ Keyboard navigation incomplete (Arrow keys, Home, End)
-- ⚠️ Focus management issues
-- ⚠️ No focus trap when open
+- ✅ The ARIA and keyboard issues of the original audit are resolved
 
 **Recommendations:**
-- **HIGH PRIORITY:** Add proper ARIA attributes
-- **HIGH PRIORITY:** Implement complete keyboard navigation
-- Add focus trap when dropdown is open
-- Ensure proper focus management
-- Add `aria-activedescendant` for current selection
+- None open. Focus moves between the items themselves, so `aria-activedescendant` is not used
 
-**Priority:** Critical
+**Priority:** Low
 
 ---
 
@@ -246,16 +244,15 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 - ✅ Focus management
 - ✅ Active state indication
 
+- ✅ `aria-current="page"` on the current item (TopNavbar, SidebarNavigation)
+
 **Issues Found:**
-- ⚠️ Missing `aria-current="page"` for current page
-- ⚠️ Could improve keyboard navigation documentation
+- ✅ The `aria-current` issue of the original audit is resolved
 
 **Recommendations:**
-- Add `aria-current` for current page
-- Improve keyboard navigation patterns
-- Ensure focus styles are visible
+- None open; the keyboard patterns are in KEYBOARD_NAVIGATION.md
 
-**Priority:** Medium
+**Priority:** Low
 
 ---
 
@@ -282,23 +279,21 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 
 ### Select Component
 
-**Status:** ⚠️ Needs Improvement
+**Status:** ✅ Mostly Compliant
 
 **Current Features:**
-- ✅ Basic functionality
+- ✅ Built on Dropdown: the trigger carries `aria-expanded` and `aria-haspopup="listbox"`, the list is `role="listbox"` and each choice `role="option"` with `aria-selected`
+- ✅ Arrow keys, Home and End move between options
+- ✅ A disabled option is `aria-disabled` and stays in the arrow-key order
+- ✅ The message below the field is `role="alert"` for an error and `role="status"` otherwise
 
 **Issues Found:**
-- ⚠️ Missing proper ARIA attributes
-- ⚠️ Keyboard navigation could be improved
-- ⚠️ Focus management issues
+- ✅ The ARIA and keyboard issues of the original audit are resolved
 
 **Recommendations:**
-- Add `role="combobox"` or `role="listbox"`
-- Implement proper keyboard navigation
-- Add `aria-expanded` for open state
-- Ensure proper focus management
+- None open
 
-**Priority:** Medium
+**Priority:** Low
 
 ---
 
@@ -348,10 +343,7 @@ All components use semantic color tokens that should meet WCAG AA contrast requi
 - ✅ Arrow keys: Navigate within components (Tabs, Navigation)
 
 ### Missing Patterns
-- ❌ Focus trap for modals
-- ❌ Focus return on modal close
-- ⚠️ Complete keyboard navigation for Dropdown
-- ⚠️ Complete keyboard navigation for Select
+- None of the four patterns the original audit listed is missing any more: modals trap and return focus, and Dropdown and Select handle the arrow keys, Home and End.
 
 ### Recommendations
 See KEYBOARD_NAVIGATION.md for detailed patterns.
@@ -362,9 +354,8 @@ See KEYBOARD_NAVIGATION.md for detailed patterns.
 Most components have basic ARIA support, but improvements are needed.
 
 ### Issues
-- ⚠️ Missing live regions for dynamic content updates
-- ⚠️ Missing `aria-live` for toast notifications
-- ⚠️ Incomplete ARIA attributes in some components
+- ✅ Toasts are announced: each toast is `role="status"`, or `role="alert"` for an error
+- ⚠️ Not re-checked: live regions for other dynamic content, and ARIA completeness outside the components corrected above
 
 ### Recommendations
 - Add `aria-live` regions for dynamic content
@@ -374,59 +365,49 @@ Most components have basic ARIA support, but improvements are needed.
 ## Focus Management
 
 ### Current Status
-Basic focus styles exist, but focus management needs improvement.
-
-### Issues
-- ❌ No focus trap in Modal
-- ❌ Focus not returned after Modal close
-- ⚠️ Focus management incomplete in Dropdown
-- ⚠️ Focus styles may not meet visibility requirements
+The four issues of the original audit are resolved: Modal traps focus and returns it, Dropdown returns focus to its trigger, and the focus ring is 2px with a 2px gap, held to 3:1 against the page and a card by `scripts/check-contrast.js`.
 
 ### Recommendations
-- Implement focus trap utility
-- Add focus return functionality
-- Ensure focus styles are highly visible (2px outline minimum)
-- Test focus order (tab order)
+- Test focus order (tab order) in each app; the library cannot check it
+
+## Library conventions
+
+Rules every component follows, new ones included. Each names where it lives in the code.
+
+- **Focus never falls to `<body>`.** When the focused element is removed or disabled, the browser drops focus on `<body>`, and the next Tab starts from the top of the page. Components that remove or disable their own focused control move focus first:
+  - ImageUpload, when the dropzone and the Change button replace each other;
+  - Collapsible, to its trigger when a panel closes with focus inside it;
+  - MediaGrid, to the item that took a removed item's place, or to the grid when none is left;
+  - Toaster, to the neighbouring toast when the focused one is dismissed, or back to where focus came from;
+  - UnsavedChangesBar, which holds focus on the bar while its buttons are disabled during a save.
+
+  Modal, SlideUp and Drawer cover the case they cannot prevent, content inside them that disables or removes its own focused control: the next Tab goes to the first control in the panel and Escape still closes it (`recoverStrayFocus` in `src/components/util/focus-utils.ts`).
+- **Modal overlays share one stack and one scroll lock.** Modal, SlideUp and Drawer (and ConfirmDialog, which is a Modal) join the same stack, so the overlay opened last is on top whatever the DOM order, and only it acts on Tab and Escape (`joinOverlayStack` in `focus-utils.ts`). The scroll lock on `<body>` is counted, so the page scrolls again only when the last overlay has closed (`lockBodyScroll` in `src/components/util/overlay.ts`).
+- **Disabled options stay reachable.** A disabled Dropdown item or Select option is `aria-disabled`, not `disabled`. It keeps its place in the arrow-key order and is announced as unavailable, and activating it does nothing. A natively disabled button cannot take focus, so the arrow keys used to stop at the option before it.
+- **Nothing is reachable by hover alone.** Actions revealed on hover also appear when focus is inside the component, and are always visible where hover does not exist (touch). ImageUpload shows Change and Remove that way; MediaGrid keeps its remove button beside the item and always visible.
+- **Focus is visible in forced colours.** The focus ring is a box-shadow, which forced-colours mode (Windows High Contrast) drops. `src/app.css` restates it there as an outline for `.focus-ring`, the legacy `.focus-brand` and `.focus-nav`, and the checkbox and radio row.
 
 ## Summary
 
-### Overall Compliance: ⚠️ Partially Compliant
+### Overall Compliance
 
-**Critical Issues:** 2
-- Modal focus trap
-- Dropdown ARIA attributes
+The original audit found 2 critical, 3 high-priority and 4 medium-priority issues. All nine are resolved in the code as of 2026-09-30:
 
-**High Priority Issues:** 3
+- Modal focus trap and focus return
+- Dropdown ARIA attributes and keyboard navigation
 - Card keyboard navigation
-- Modal focus return
-- Dropdown keyboard navigation
-
-**Medium Priority Issues:** 4
-- Button aria-label support
-- Navigation aria-current
+- Button `aria-label` and loading state
+- Navigation `aria-current`
 - Select ARIA attributes
-- Focus management improvements
+- Focus management
 
-**Low Priority Issues:** Multiple
-- Various minor improvements
+The low-priority recommendations were not re-checked, and the components added since have not had a formal audit.
 
 ## Action Plan
 
-1. **Immediate (Critical):**
-   - Fix Modal focus trap
-   - Fix Dropdown ARIA attributes
+1. **Done:** the critical, high and medium items of the original audit (above).
 
-2. **Short Term (High Priority):**
-   - Add Card keyboard navigation
-   - Implement Modal focus return
-   - Complete Dropdown keyboard navigation
-
-3. **Medium Term:**
-   - Add missing ARIA attributes across components
-   - Improve focus management
-   - Add keyboard navigation documentation
-
-4. **Long Term:**
+2. **Still open:**
    - Comprehensive screen reader testing
    - Automated accessibility testing
    - Accessibility documentation updates

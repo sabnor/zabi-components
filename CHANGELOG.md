@@ -371,6 +371,13 @@ Whenever token or CSS import API surface changes, include:
   first, the package's `w-full` beats your `md:w-1/2`; `css` first, your `p-0`
   beats Modal's `md:p-4`. With Tailwind in the app, import `theme-only` and
   `theme-dark-only` instead. No CSS output changed.
+- `docs/ACCESSIBILITY.md` no longer lists fixed issues as open, and has a
+  "Library conventions" section: where focus goes when a focused control is
+  removed, the shared overlay stack and scroll lock, disabled options,
+  hover-revealed actions, and focus in forced colours.
+- `THEME_QUICK_REFERENCE.md` shows the current primary colour and dark mirror.
+- `docs/VARIANTS.md`, the README, the Storybook introduction and the showcase
+  guide cover the components added in this release.
 
 ### Site and Storybook (not in the package)
 
