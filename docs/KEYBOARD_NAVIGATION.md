@@ -448,6 +448,47 @@ dialog stays open.
 
 ---
 
+### Drawer Component
+
+**Current Keyboard Support:**
+- ✅ **Tab / Shift + Tab**: Move through the controls in the drawer; focus wraps and never reaches the page behind
+- ✅ **Escape**: Close the drawer (not when `dismissible` is false)
+- ✅ **Enter / Space**: Activate the focused control, including the close button
+
+When the drawer opens, focus moves to the control `initialFocus` selects, or to
+the first control (the close button) when it is not set. When the drawer
+closes, focus returns to the element that opened it. The page behind does not
+scroll while the drawer is open.
+
+With other overlays: a Drawer can open over a Modal and a Modal can open from a
+Drawer. Escape closes only the topmost one, Tab stays inside it, and focus goes
+back one step at a time. If the focused control is disabled or removed and focus
+falls to the page, the next Tab brings it back into the drawer.
+
+**Usage:**
+```svelte
+<Drawer
+    bind:isOpen={open}
+    title="Choose a project"
+    side="right"
+    initialFocus="#project-search"
+>
+    <Input id="project-search" label="Search projects" />
+    <ProjectList />
+    {#snippet footer()}
+        <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
+    {/snippet}
+</Drawer>
+```
+
+**Best Practices:**
+- Point `initialFocus` at the control the user came for (a search field); otherwise focus starts on the close button
+- Use `start` or `end` for a drawer that should mirror in a right-to-left page; `left` and `right` stay where they are
+- Translate the close button through `closeLabel`
+- With `dismissible={false}`, give the drawer its own way out: the close button stays focusable but does nothing
+
+---
+
 ## Focus Management
 
 ### Focus Styles

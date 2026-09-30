@@ -3300,6 +3300,152 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "Drawer",
+                category: "molecules",
+                description:
+                    "A modal panel that slides in from the left or right edge, with a focus trap and the scroll lock shared with Modal and SlideUp.",
+                props: [
+                    {
+                        name: "isOpen",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Whether the drawer is shown. Bindable.",
+                    },
+                    {
+                        name: "title",
+                        type: "string",
+                        required: true,
+                        description: "Heading of the drawer, and its accessible name.",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A line under the title. It is the dialog's accessible description.",
+                    },
+                    {
+                        name: "side",
+                        type: "'left' | 'right' | 'start' | 'end'",
+                        required: false,
+                        defaultValue: "right",
+                        description:
+                            "The edge the drawer slides in from. left and right are physical; start and end follow the writing direction.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Panel width: 20rem, 28rem or 42rem. Never wider than the screen.",
+                    },
+                    {
+                        name: "footer",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Pinned to the bottom of the panel, below the scrolling content.",
+                    },
+                    {
+                        name: "portal",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Renders in document.body so a transformed or clipped ancestor cannot trap the drawer. Pass false to render in place.",
+                    },
+                    {
+                        name: "dismissible",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "When false, Escape, a backdrop click and the close button do not close the drawer. Setting isOpen yourself still does.",
+                    },
+                    {
+                        name: "onclose",
+                        type: "(detail: { reason: 'escape' | 'backdrop' | 'close-button' }) => void",
+                        required: false,
+                        description:
+                            "Runs when the drawer closes itself, with what the user did.",
+                    },
+                    {
+                        name: "closeLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Close",
+                        description: "Accessible name of the close button.",
+                    },
+                    {
+                        name: "initialFocus",
+                        type: "string",
+                        required: false,
+                        description:
+                            "CSS selector, inside the panel, of the control that takes focus on open. Without a match the first control does: the close button.",
+                    },
+                ],
+                variants: ["left", "right", "start", "end", "sm", "md", "lg"],
+                examples: [
+                    {
+                        title: "Project picker",
+                        description:
+                            "From the right edge, with the search field taking the initial focus through initialFocus",
+                        code: `<script lang="ts">
+    import { Button, Drawer, Input } from "zabi-components";
+
+    let open = $state(false);
+</script>
+
+<Button onclick={() => (open = true)}>Choose project</Button>
+
+<Drawer
+    bind:isOpen={open}
+    title="Choose a project"
+    description="The page moves to the project you pick."
+    initialFocus="#project-search"
+    onclose={({ reason }) => console.log(reason)}
+>
+    <Input id="project-search" label="Search projects" bind:value={search} />
+    <ProjectList {search} onpick={() => (open = false)} />
+    {#snippet footer()}
+        <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
+    {/snippet}
+</Drawer>`,
+                    },
+                    {
+                        title: "From the start edge",
+                        description:
+                            "A narrow drawer on the side where reading starts: the left, or the right in a right-to-left page",
+                        code: `<Drawer bind:isOpen={open} title="Filters" side="start" size="sm">
+    <Checkbox label="Published" checked />
+    <Checkbox label="Drafts" />
+    <Checkbox label="Archived" />
+    {#snippet footer()}
+        <Button onclick={() => (open = false)}>Show results</Button>
+    {/snippet}
+</Drawer>`,
+                    },
+                    {
+                        title: "With other overlays",
+                        description:
+                            "Opened from a modal, and opening a modal of its own: Escape closes the topmost one and focus goes back a step at a time",
+                        code: `<Modal bind:isOpen={editOpen} title="Edit page" portal>
+    <Button onclick={() => (pickerOpen = true)}>Move to project</Button>
+</Modal>
+
+<Drawer bind:isOpen={pickerOpen} title="Choose a project">
+    <ProjectList />
+    <Button variant="outline" onclick={() => (newOpen = true)}>New project</Button>
+    <Modal bind:isOpen={newOpen} title="New project" portal>
+        <Input label="Project name" />
+    </Modal>
+</Drawer>`,
+                    },
+                ],
+            },
         ],
         organisms: [
             {

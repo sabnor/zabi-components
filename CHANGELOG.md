@@ -119,6 +119,17 @@ Whenever token or CSS import API surface changes, include:
 - **Modal accepts the dialog panel's attributes as typed props**
   (`aria-describedby`, `aria-busy`, `data-*`, `id`); they were already passed
   through, but not declared.
+- **Drawer**, a new molecule: a modal panel that slides in from the side of the
+  screen. `side` is `left`, `right`, or `start` / `end` to follow the writing
+  direction; `size` is `sm`, `md` or `lg` and never wider than the screen. It
+  has a `title`, an optional `description` and a `footer` snippet pinned below
+  the scrolling content. Focus is trapped and returns to the opener, the page
+  behind does not scroll, and Escape, the backdrop and the close button close
+  it; `dismissible`, `onclose({ reason })` and `closeLabel` work as in Modal.
+  `initialFocus` names the control that takes focus on open. It renders in
+  `document.body` unless `portal={false}`, shares the scroll lock with Modal
+  and SlideUp, and can be opened over a Modal or host one. The slide is skipped
+  under `prefers-reduced-motion`.
 
 ### Changed
 

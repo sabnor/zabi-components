@@ -49,4 +49,10 @@ export type {
     ConfirmDialogResult,
     ConfirmDialogVariant,
 } from '../util/confirm-dialog.js';
+export { default as Drawer } from './Drawer.svelte';
+export type {
+    DrawerCloseReason,
+    DrawerSide,
+    DrawerSize,
+} from '../util/drawer.js';
 export * from './toast-store.js';

@@ -51,6 +51,7 @@ export const MIN_TEXT_CONTRAST = 4.5;
 export const FLOATING_COMPONENTS = [
   'src/components/molecules/Modal.svelte',
   'src/components/molecules/SlideUp.svelte',
+  'src/components/molecules/Drawer.svelte',
   'src/components/molecules/Dropdown.svelte',
   'src/components/molecules/NavigationMenuContent.svelte',
   'src/components/molecules/ToasterToast.svelte',
