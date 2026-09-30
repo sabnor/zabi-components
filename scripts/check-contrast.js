@@ -20,7 +20,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const appCssPath = path.join(__dirname, '../src/app.css');
+// Optional path, so the guard can be run against another revision of the stylesheet.
+const appCssPath = process.argv[2]
+    ? path.resolve(process.argv[2])
+    : path.join(__dirname, '../src/app.css');
 
 const AA_NORMAL = 4.5;
 const AA_LARGE = 3.0;
@@ -107,7 +110,56 @@ function resolve(map, token, depth = 0) {
     if (value.startsWith('#')) return value;
     const varMatch = value.match(/^var\((--[\w-]+)\)$/);
     if (varMatch) return resolve(map, varMatch[1], depth + 1);
-    return null; // rgba()/color-mix() — not a flat colour, skipped by design
+    return null; // rgba()/color-mix() — not a flat colour; see resolveOver()
+}
+
+function toHex(channels) {
+    return '#' + channels.map((c) => Math.round(c).toString(16).padStart(2, '0')).join('');
+}
+
+function parseHex(hex) {
+    const h = hex.replace('#', '');
+    const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+    return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
+}
+
+/** Follow `var()` chains to the literal value, whatever form it takes. */
+function resolveRaw(map, token, depth = 0) {
+    if (depth > 20) return null;
+    let value = map[token];
+    if (!value) return null;
+    value = value.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+    const varMatch = value.match(/^var\((--[\w-]+)\)$/);
+    return varMatch ? resolveRaw(map, varMatch[1], depth + 1) : value;
+}
+
+/**
+ * The colour a token paints when laid over `surfaceToken`: a flat token is
+ * returned as it is, an `rgba()` tint is composited source-over onto the
+ * surface, and `transparent` is the surface itself.
+ *
+ * The alpha tokens are the hover, pressed and secondary-button fills. They
+ * used to be skipped as "always visible by construction", which is true of
+ * their direction and says nothing about their strength: light hover was 6%
+ * ink, 1.14:1 on a card, and nothing here noticed.
+ */
+function resolveOver(map, token, surfaceToken) {
+    const surface = resolve(map, surfaceToken);
+    const raw = resolveRaw(map, token);
+    if (!surface || !raw) return null;
+    if (raw.startsWith('#')) return raw;
+    if (raw === 'transparent') return surface;
+    const m = raw.match(/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:[\s,/]+([\d.]+))?\s*\)$/);
+    if (!m) return null;
+    const alpha = m[4] === undefined ? 1 : Number(m[4]);
+    const tint = [m[1], m[2], m[3]].map(Number);
+    return toHex(parseHex(surface).map((c, i) => c * (1 - alpha) + tint[i] * alpha));
+}
+
+function contrastExact(a, b) {
+    const la = luminance(a);
+    const lb = luminance(b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
 
 /* ---------- interaction fills must differ from what they sit on ---------- */
@@ -140,6 +192,11 @@ const INTERACTION_FILLS = [
     { name: 'sidebar row :hover', fill: '--color-nav-menu-hover', on: '--color-background' },
     { name: 'sidebar row active', fill: '--color-nav-menu-active', on: '--color-background' },
     { name: 'card :hover', fill: '--color-card-hover', on: '--color-card' },
+    // The card sits on the page, so its hover fill must not BE the page either.
+    // Light card-hover and the light page were both base-100: a hovered card
+    // kept its shadow and lost its fill. The floor is lower than for the fill
+    // it replaces because the shadow still draws the card's outline.
+    { name: 'card :hover vs the page', fill: '--color-card-hover', on: '--color-surface-base', min: 2.5 },
     { name: 'card :active', fill: '--color-card-active', on: '--color-card' },
     { name: 'overlay row :hover', fill: '--color-surface-overlay-hover', on: '--color-surface-overlay' },
     { name: 'input :hover', fill: '--color-input-hover', on: '--color-input' },
@@ -168,10 +225,87 @@ function checkInteractionFills(themes) {
             if (!fill || !on) continue;
             checked += 1;
             const distance = deltaE(fill, on);
-            if (distance < MIN_FILL_DELTA_E) {
+            const floor = entry.min ?? MIN_FILL_DELTA_E;
+            if (distance < floor) {
                 failures.push(
                     `${themeName} · ${entry.name}: ${entry.fill} ${fill} is ΔE ${distance} from ` +
-                        `${entry.on} ${on} (needs ${MIN_FILL_DELTA_E})`,
+                        `${entry.on} ${on} (needs ${floor})`,
+                );
+            }
+        }
+    }
+
+    return { failures, checked };
+}
+
+/* ---------- alpha tints, composited over the surface they land on ---------- */
+
+/**
+ * A hover or secondary fill has to be strong enough to see, not merely
+ * different. 1.2:1 is where dark mode already sat (1.24–1.32) and where a
+ * tint starts to read as a control rather than as noise.
+ */
+const MIN_TINT_CONTRAST = 1.2;
+/** Each state must also be a visible step past the one before it. */
+const MIN_STATE_STEP = 1.08;
+
+const TINT_SURFACES = ['--color-surface-base', '--color-surface-raised', '--color-surface-elevated', '--color-surface-overlay'];
+
+/** [name, resting tint, then each stronger state in order] */
+const TINT_LADDERS = [
+    ['quiet control', '--color-surface-hover', '--color-surface-active'],
+    ['secondary button', '--color-action-secondary', '--color-action-secondary-hover', '--color-action-secondary-active'],
+];
+
+function checkAlphaTints(themes) {
+    const failures = [];
+    let checked = 0;
+
+    for (const themeName of ['light', 'dark']) {
+        const map = themes[themeName];
+        for (const surface of TINT_SURFACES) {
+            const under = resolve(map, surface);
+            for (const [name, ...states] of TINT_LADDERS) {
+                let previous = under;
+                states.forEach((token, i) => {
+                    const painted = resolveOver(map, token, surface);
+                    if (!painted || !under) {
+                        failures.push(`${themeName} · ${name}: ${token} over ${surface} cannot be resolved`);
+                        return;
+                    }
+                    checked += 1;
+                    const ratio = contrastExact(painted, under);
+                    if (i === 0 && ratio < MIN_TINT_CONTRAST) {
+                        failures.push(
+                            `${themeName} · ${name}: ${token} over ${surface} paints ${painted} on ${under} = ` +
+                                `${ratio.toFixed(2)}:1 (needs ${MIN_TINT_CONTRAST}:1)`,
+                        );
+                    }
+                    const step = contrastExact(painted, previous);
+                    if (i > 0 && step < MIN_STATE_STEP) {
+                        failures.push(
+                            `${themeName} · ${name}: ${token} over ${surface} paints ${painted}, only ` +
+                                `${step.toFixed(2)}:1 past the state before it (needs ${MIN_STATE_STEP}:1)`,
+                        );
+                    }
+                    previous = painted;
+                });
+            }
+        }
+
+        // The overlay edge is drawn on the overlay's own fill and has to show
+        // against it: a white menu over a white card has no other outline.
+        const edge = resolveOver(map, '--color-border-overlay', '--color-surface-overlay');
+        const overlay = resolve(map, '--color-surface-overlay');
+        if (!edge || !overlay) {
+            failures.push(`${themeName} · overlay edge: --color-border-overlay cannot be resolved`);
+        } else {
+            checked += 1;
+            const ratio = contrastExact(edge, overlay);
+            if (ratio < MIN_TINT_CONTRAST) {
+                failures.push(
+                    `${themeName} · overlay edge: --color-border-overlay paints ${edge} on ${overlay} = ` +
+                        `${ratio.toFixed(2)}:1 (needs ${MIN_TINT_CONTRAST}:1)`,
                 );
             }
         }
@@ -239,6 +373,16 @@ function buildPairs() {
         { name: 'tooltip', bg: '--color-tooltip-bg', fg: '--color-tooltip-fg', min: AA_NORMAL },
         // Disabled controls are exempt from WCAG, but should still be legible.
         { name: 'disabled control', bg: '--color-action-disabled', fg: '--color-action-disabled-text', min: 3.0 },
+        // WCAG 1.4.11: a focus indicator needs 3:1 against what it is drawn
+        // next to. Light brand-500 was 2.99:1 on the page and nothing checked it.
+        { name: 'focus ring on page', bg: '--color-surface-base', fg: '--color-focus-ring', min: AA_LARGE },
+        { name: 'focus ring on card', bg: '--color-surface-raised', fg: '--color-focus-ring', min: AA_LARGE },
+        { name: 'nav focus ring on page', bg: '--color-surface-base', fg: '--color-nav-menu-focus', min: AA_LARGE },
+        { name: 'nav focus ring on card', bg: '--color-surface-raised', fg: '--color-nav-menu-focus', min: AA_LARGE },
+        // The ring may equal the primary fill (it does in light), so on a
+        // primary button it is the 2px offset gap that separates the two.
+        { name: 'focus offset gap on primary button', bg: '--color-action-primary', fg: '--color-focus-ring-offset', min: AA_LARGE },
+        { name: 'focus ring against its offset gap', bg: '--color-focus-ring-offset', fg: '--color-focus-ring', min: AA_LARGE },
     );
 
     return pairs;
@@ -278,6 +422,9 @@ function main() {
     const fills = checkInteractionFills(themes);
     failures.push(...fills.failures);
 
+    const tints = checkAlphaTints(themes);
+    failures.push(...tints.failures);
+
     if (failures.length) {
         console.error('\n❌ Contrast check failed:\n');
         failures.forEach((f) => console.error('  • ' + f));
@@ -286,7 +433,8 @@ function main() {
     }
 
     console.log(`✓ ${pairs.length * 2 - skipped.length} colour pairs pass WCAG AA in both themes`);
-    console.log(`✓ ${fills.checked} interaction fills are distinguishable from the surface they sit on\n`);
+    console.log(`✓ ${fills.checked} interaction fills are distinguishable from the surface they sit on`);
+    console.log(`✓ ${tints.checked} alpha tints read at ${MIN_TINT_CONTRAST}:1 or more over the surface they land on\n`);
 }
 
 main();

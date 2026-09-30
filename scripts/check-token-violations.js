@@ -13,8 +13,27 @@ const componentsDir = path.resolve("src/components");
  * where in dark mode it painted the hover DARKER than the card it sat on while
  * every other hover in the system goes lighter.
  */
-const appPaths = ["src/lib/marketing", "src/routes/+page.svelte"].map((p) =>
+const appPaths = ["src/lib/marketing", "src/routes", "src/app.css"].map((p) =>
     path.resolve(p),
+);
+
+/**
+ * Site files that already break the ramp-interaction rule.
+ *
+ * The scan used to cover only the marketing folder and the home page, so the
+ * rest of `src/routes` was never checked, and neither was `src/app.css`, whose
+ * `@apply` lines can carry the same mistake. Widening it found the files below.
+ * They are listed so the wider scan can gate everything else today; each entry
+ * is a debt, reported on every run, and the list is meant to reach empty. Do
+ * not add to it: fix the class instead.
+ */
+const knownAppViolations = new Set(
+    [
+        // 6 × hover:bg-base-100 on the demo menu rows (lines 508–547)
+        "src/routes/components/ComponentShowcaseExampleDemos.svelte",
+        // hover:bg-base-200 (line 82) and hover:bg-base-100 (line 94) in the tab variants
+        "src/routes/lib/tabs-utils.ts",
+    ].map((p) => path.resolve(p)),
 );
 const allowedHexPatterns = [
     // Documentation examples or user-input placeholders are allowed.
@@ -180,6 +199,7 @@ function scanForViolations() {
         }
     }
 
+    const knownDebt = [];
     for (const file of appFiles) {
         const content = fs.readFileSync(file, "utf8");
         let match;
@@ -187,13 +207,38 @@ function scanForViolations() {
         while ((match = rawRampInteractionRegex.exec(content)) !== null) {
             const lineNumber = getLineNumber(content, match.index);
             const line = content.split("\n")[lineNumber - 1] || "";
-            violations.push({
+            // A comment may name the class it warns about.
+            if (isCommentLine(line)) continue;
+            (knownAppViolations.has(file) ? knownDebt : violations).push({
                 file,
                 lineNumber,
                 value: match[0],
                 line: line.trim(),
                 hint: "use surface-hover / surface-active — a fixed ramp step can equal the surface it sits on (base-100 IS surface-base in both themes)",
             });
+        }
+    }
+
+    const staleAllowances = [...knownAppViolations].filter(
+        (file) => !knownDebt.some((entry) => entry.file === file),
+    );
+    for (const file of staleAllowances) {
+        violations.push({
+            file,
+            lineNumber: 0,
+            value: "(allow-list)",
+            line: "this file no longer breaks the rule",
+            hint: "remove it from knownAppViolations in scripts/check-token-violations.js",
+        });
+    }
+    if (knownDebt.length > 0) {
+        console.warn(
+            `⚠️  ${knownDebt.length} known ramp-interaction violations in allow-listed site files (not failing the check):`,
+        );
+        for (const entry of knownDebt) {
+            console.warn(
+                `- ${path.relative(process.cwd(), entry.file)}:${entry.lineNumber} ${entry.value}`,
+            );
         }
     }
 

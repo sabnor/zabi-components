@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Surface elevation guard for dark mode.
+ * Surface elevation guard, both themes.
  *
  * Shadows don't read on dark backgrounds, so elevation must come from lightness. This check:
  * 1. Resolves the four semantic surface levels (`--color-surface-base|raised|elevated|overlay`)
@@ -12,7 +12,14 @@
  * 4. Floating components (modals, sheets, menus, toasts) must paint `bg-surface-overlay`
  *    and must not use a lower surface class for their panel.
  * 5. Both themes: text tokens (`TEXT_TOKENS`) must reach WCAG AA (MIN_TEXT_CONTRAST) on every
- *    surface level, so secondary text stays readable wherever a component is placed.
+ *    surface level and on the inset surface, so secondary text stays readable wherever a
+ *    component is placed.
+ * 6. Light mode: the ladder cannot climb past white, so it is ordered downwards instead:
+ *    base < elevated < raised, overlay no darker than raised, every grey step at least
+ *    LIGHT_MIN_STEP points apart. Light used to pass this file untested with 1.5 points
+ *    (1.04:1) between a card and the card nested in it.
+ * 7. Both themes: `--color-surface-inset` must sit at least INSET_MIN_STEP points below the
+ *    raised surface it is cut into, and must not be darker than the page.
  *
  * Run standalone (`node scripts/check-surface-elevation.js`) or via `scripts/validate-theme.js`.
  */
@@ -30,6 +37,11 @@ const appCssPath = path.join(root, 'src', 'app.css');
 export const SURFACE_LEVELS = ['surface-base', 'surface-raised', 'surface-elevated', 'surface-overlay'];
 export const MIN_STEP = 5;
 export const MAX_STEP = 8;
+/** Light steps are smaller than dark ones (shadows share the work) but never below this. */
+export const LIGHT_MIN_STEP = 2;
+/** The recessed surface inside a card, checked in both themes. */
+export const INSET_SURFACE = 'surface-inset';
+export const INSET_MIN_STEP = 2;
 
 /** Text tokens that must stay readable on every surface level, in both themes. */
 export const TEXT_TOKENS = ['--color-headline', '--color-body', '--color-label', '--color-description', '--color-caption'];
@@ -83,9 +95,9 @@ function lightness(color) {
   return parsed.l * 100;
 }
 
-export function checkSurfaceElevation({ log = console.log } = {}) {
+export function checkSurfaceElevation({ log = console.log, cssPath = appCssPath } = {}) {
   const errors = [];
-  const css = fs.readFileSync(appCssPath, 'utf8');
+  const css = fs.readFileSync(cssPath, 'utf8');
   const { light, dark } = collectDeclarations(css);
   const themes = { light: [light], dark: [dark, light] };
   const report = {};
@@ -101,6 +113,45 @@ export function checkSurfaceElevation({ log = console.log } = {}) {
         continue;
       }
       report[theme].push({ level, color: resolved, L, Y: wcagLuminance(resolved) * 100 });
+    }
+  }
+
+  const inset = {};
+  for (const [theme, scopes] of Object.entries(themes)) {
+    const prop = `--color-${INSET_SURFACE}`;
+    const resolved = resolveVar(prop, scopes);
+    const L = resolved ? lightness(resolved) : undefined;
+    if (resolved === undefined || L === undefined) {
+      errors.push(`${theme}: ${prop} is missing or not a resolvable color (got ${resolved})`);
+      continue;
+    }
+    inset[theme] = { level: INSET_SURFACE, color: resolved, L };
+    const base = report[theme].find((r) => r.level === 'surface-base');
+    const raised = report[theme].find((r) => r.level === 'surface-raised');
+    if (raised && raised.L - L < INSET_MIN_STEP) {
+      errors.push(
+        `${theme}: ${prop} (L ${L.toFixed(1)}) must sit at least ${INSET_MIN_STEP} OKLCH L points below ` +
+          `--color-surface-raised (L ${raised.L.toFixed(1)}); it steps ${(raised.L - L).toFixed(1)}`,
+      );
+    }
+    if (base && L < base.L) {
+      errors.push(`${theme}: ${prop} (L ${L.toFixed(1)}) is darker than --color-surface-base (L ${base.L.toFixed(1)})`);
+    }
+  }
+
+  const lightLevels = report.light;
+  if (lightLevels.length === SURFACE_LEVELS.length) {
+    const [base, raised, elevated, overlay] = lightLevels;
+    for (const [lower, upper] of [[base, elevated], [elevated, raised]]) {
+      const step = upper.L - lower.L;
+      if (step <= 0) {
+        errors.push(`light: ${upper.level} (L ${upper.L.toFixed(1)}) is not lighter than ${lower.level} (L ${lower.L.toFixed(1)})`);
+      } else if (step < LIGHT_MIN_STEP) {
+        errors.push(`light: ${lower.level} → ${upper.level} steps ${step.toFixed(1)} OKLCH L points (needs ≥ ${LIGHT_MIN_STEP})`);
+      }
+    }
+    if (overlay.L < raised.L) {
+      errors.push(`light: ${overlay.level} (L ${overlay.L.toFixed(1)}) is darker than ${raised.level} (L ${raised.L.toFixed(1)}); overlays must not sink below cards`);
     }
   }
 
@@ -134,7 +185,7 @@ export function checkSurfaceElevation({ log = console.log } = {}) {
         errors.push(`${theme}: ${token} is missing or not a resolvable color (got ${text})`);
         continue;
       }
-      const failing = report[theme]
+      const failing = [...report[theme], ...(inset[theme] ? [inset[theme]] : [])]
         .map((surface) => ({ surface, ratio: wcagContrast(text, surface.color) }))
         .filter(({ ratio }) => ratio < MIN_TEXT_CONTRAST);
       for (const { surface, ratio } of failing) {
@@ -165,7 +216,8 @@ export function checkSurfaceElevation({ log = console.log } = {}) {
     const row = report[theme]
       .map((r) => `${r.level.replace('surface-', '')} ${r.color} L${r.L.toFixed(1)}`)
       .join(' → ');
-    log(`  ${theme}: ${row}`);
+    const insetNote = inset[theme] ? ` · inset ${inset[theme].color} L${inset[theme].L.toFixed(1)}` : '';
+    log(`  ${theme}: ${row}${insetNote}`);
   }
 
   return errors;
@@ -174,7 +226,8 @@ export function checkSurfaceElevation({ log = console.log } = {}) {
 const invokedDirectly = import.meta.url === pathToFileURL(process.argv[1] ?? '').href;
 if (invokedDirectly) {
   console.log('🔍 Checking surface elevation levels...');
-  const errors = checkSurfaceElevation();
+  // Optional path, so the guard can be run against another revision of the stylesheet.
+  const errors = checkSurfaceElevation(process.argv[2] ? { cssPath: path.resolve(process.argv[2]) } : {});
   if (errors.length > 0) {
     console.error('❌ Surface elevation check failed:');
     errors.forEach((e) => console.error(`   - ${e}`));
