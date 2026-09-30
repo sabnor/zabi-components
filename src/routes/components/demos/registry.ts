@@ -5,6 +5,7 @@ import ModalDemo from "./ModalDemo.svelte";
 import RadioDemo from "./RadioDemo.svelte";
 import SidebarNavigationDemo from "./SidebarNavigationDemo.svelte";
 import SkeletonDemo from "./SkeletonDemo.svelte";
+import SpinnerDemo from "./SpinnerDemo.svelte";
 import ListDemo from "./ListDemo.svelte";
 import MediaGridDemo from "./MediaGridDemo.svelte";
 import SortableListDemo from "./SortableListDemo.svelte";
@@ -19,6 +20,7 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     Input: InputDemo,
     Radio: RadioDemo,
     Skeleton: SkeletonDemo,
+    Spinner: SpinnerDemo,
     Modal: ModalDemo,
     SidebarNavigation: SidebarNavigationDemo,
     List: ListDemo,

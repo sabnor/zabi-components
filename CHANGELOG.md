@@ -161,6 +161,10 @@ Whenever token or CSS import API surface changes, include:
 - **SlideUp's close button can be renamed** with `closeLabel` (default "Close").
 - **ConfirmDialog announces its loading state.** `loadingLabel` (default
   "Working…") is read out once, politely, when loading starts.
+- **Spinner**, a new atom: the loading ring Button, IconButton and Input show,
+  on its own. Sizes `xs` to `lg` (12, 14, 16, 20px), in the text colour. With a
+  `label` it is a `status` that screen readers announce; without one it is
+  decorative. Under `prefers-reduced-motion` it fades instead of spinning.
 
 ### Changed
 

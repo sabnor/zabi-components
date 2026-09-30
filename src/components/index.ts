@@ -28,6 +28,7 @@ export { default as CodeBlock } from './atoms/CodeBlock.svelte';
 export { default as FeatureCard } from './atoms/FeatureCard.svelte';
 export { default as OptimizedImage } from './atoms/OptimizedImage.svelte';
 export { default as ActionPanel } from './atoms/ActionPanel.svelte';
+export { default as Spinner } from './atoms/Spinner.svelte';
 
 export { default as Alert } from './molecules/Alert.svelte';
 export { default as ComponentDemo } from './molecules/ComponentDemo.svelte';

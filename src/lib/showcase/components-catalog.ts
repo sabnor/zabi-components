@@ -1617,6 +1617,60 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "Spinner",
+                category: "atoms",
+                description:
+                    "Loading ring in the text colour, decorative by default and announced as a status when given a label.",
+                props: [
+                    {
+                        name: "size",
+                        type: "'xs' | 'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Diameter: 12, 14, 16 or 20px, as the built-in loading states use. Pass a size utility through class for anything else.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "What is loading. With a label the spinner is a status and the label is read out; without one it is hidden from assistive technology.",
+                    },
+                ],
+                variants: [
+                    "xs",
+                    "sm",
+                    "md",
+                    "lg",
+                ],
+                examples: [
+                    {
+                        title: "Beside text",
+                        description: "Decorative: the text says what is happening",
+                        code: `<div class="flex items-center gap-2 text-sm">
+    <Spinner />
+    Saving changes
+</div>`,
+                    },
+                    {
+                        title: "Sizes",
+                        description: "The four sizes, and a custom one through class",
+                        code: `<Spinner size="xs" />
+<Spinner size="sm" />
+<Spinner size="md" />
+<Spinner size="lg" />
+<Spinner class="size-8" />`,
+                    },
+                    {
+                        title: "On its own",
+                        description: "A label makes it a status that screen readers announce",
+                        code: '<Spinner label="Loading projects" size="lg" class="text-link" />',
+                    },
+                ],
+            },
         ],
         molecules: [
             {
