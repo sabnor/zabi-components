@@ -74,6 +74,7 @@ export {
     pushToast,
     dismissToast,
     type ToastItem,
+    type ToastAction,
     type ToastLevel,
 } from './molecules/toast-store.js';
 

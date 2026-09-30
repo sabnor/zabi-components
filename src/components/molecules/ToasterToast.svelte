@@ -117,6 +117,19 @@
         toastStore.dismiss(toast.id);
     }
 
+    /** The toast closes even if the handler throws, unless the action opted out. */
+    function handleAction() {
+        const action = toast.action;
+        if (!action) return;
+        try {
+            action.onclick();
+        } finally {
+            if (action.dismissOnClick !== false) {
+                toastStore.dismiss(toast.id);
+            }
+        }
+    }
+
     function handleOkay() {
         isExpanded = false;
     }
@@ -168,6 +181,10 @@
                 {#if toast.message.trim() && toast.message.trim() !== headerTitle}
                     <span class="sr-only">{toast.message}</span>
                 {/if}
+                {#if toast.action}
+                    <!-- The button sits outside the live region, so this is how a screen reader user hears that there is one. -->
+                    <span class="sr-only">{toast.action.label} available.</span>
+                {/if}
             </h4>
             </div>
             <div class="flex shrink-0 items-center gap-1">
@@ -198,6 +215,20 @@
                 </button>
             </div>
         </div>
+
+        {#if toast.action}
+            <!-- Indented to the title: past the 20px status icon and its gap. -->
+            <div class="mt-3 pl-8">
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    text={toast.action.label}
+                    type="button"
+                    data-toast-action
+                    onclick={handleAction}
+                />
+            </div>
+        {/if}
 
         {#if hasExpandable && isExpanded}
             <div

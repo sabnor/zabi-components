@@ -1638,6 +1638,26 @@
                             title: "Saved",
                         })}
                 />
+                <Button
+                    variant="outline"
+                    text="Push toast with Undo"
+                    onclick={() =>
+                        pushToast({
+                            title: "Project archived",
+                            message:
+                                "It is still in the archive, where you can restore it.",
+                            type: "success",
+                            duration: 30000,
+                            action: {
+                                label: "Undo",
+                                onclick: () =>
+                                    pushToast({
+                                        message: "Project restored.",
+                                        type: "info",
+                                    }),
+                            },
+                        })}
+                />
             {:else if component.name === "RadioGroup"}
                 <RadioGroup
                     legend="Billing plan"

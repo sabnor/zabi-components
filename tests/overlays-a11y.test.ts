@@ -464,6 +464,133 @@ describe("Toaster live regions", () => {
     });
 });
 
+describe("Toaster action", () => {
+    it("renders the action as a named button, apart from the dismiss control", async () => {
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            type: "success",
+            duration: 0,
+            action: { label: "Undo", onclick: () => {} },
+        });
+
+        const action = await screen.findByRole("button", { name: "Undo" });
+        const dismiss = screen.getByRole("button", { name: "Dismiss notification" });
+        expect(action).not.toBe(dismiss);
+        expect(action.tagName).toBe("BUTTON");
+        expect(action.className).toContain("focus-ring");
+        // Visible text, not an icon: that is what tells it from the dismiss control.
+        expect(action.textContent?.trim()).toBe("Undo");
+        expect(action.closest(LIVE_REGION)).toBeNull();
+    });
+
+    it("renders no action button for a toast without one", async () => {
+        render(Toaster);
+        pushToast({ message: "Saved", type: "success", duration: 0 });
+
+        const toast = await screen.findByRole("group", { name: "Changes saved" });
+        expect(toast.querySelector("[data-toast-action]")).toBeNull();
+        expect(screen.getByRole("status").textContent).not.toContain("available");
+    });
+
+    it("announces that an action is available with the message", async () => {
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            type: "success",
+            duration: 0,
+            action: { label: "Undo", onclick: () => {} },
+        });
+
+        const status = await screen.findByRole("status");
+        expect(status.textContent).toContain("Project archived");
+        expect(status.textContent).toContain("Undo available.");
+    });
+
+    it("runs the handler and then closes the toast", async () => {
+        const user = userEvent.setup();
+        const onclick = vi.fn();
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            duration: 0,
+            action: { label: "Undo", onclick },
+        });
+
+        await user.click(await screen.findByRole("button", { name: "Undo" }));
+        expect(onclick).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(screen.queryByRole("group")).toBeNull());
+    });
+
+    it("stays open after the action when dismissOnClick is false", async () => {
+        const user = userEvent.setup();
+        const onclick = vi.fn();
+        render(Toaster);
+        pushToast({
+            message: "Upload failed",
+            type: "error",
+            duration: 0,
+            action: { label: "Retry", onclick, dismissOnClick: false },
+        });
+
+        const retry = await screen.findByRole("button", { name: "Retry" });
+        await user.click(retry);
+        await user.click(retry);
+        expect(onclick).toHaveBeenCalledTimes(2);
+        expect(screen.getByRole("button", { name: "Retry" })).toBeTruthy();
+    });
+
+    it("is reachable with Tab and activates with the keyboard", async () => {
+        const user = userEvent.setup();
+        const onclick = vi.fn();
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            duration: 0,
+            action: { label: "Undo", onclick },
+        });
+        const action = await screen.findByRole("button", { name: "Undo" });
+
+        for (let i = 0; i < 4 && document.activeElement !== action; i++) {
+            await user.tab();
+        }
+        expect(document.activeElement).toBe(action);
+        await user.keyboard("{Enter}");
+        expect(onclick).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not time out while focus is on the action", async () => {
+        vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            duration: 3000,
+            action: { label: "Undo", onclick: () => {} },
+        });
+        const action = await screen.findByRole("button", { name: "Undo" });
+        const toast = screen.getByRole("group");
+
+        action.focus();
+        await waitFor(() => expect(toast.getAttribute("data-paused")).toBe("true"));
+        vi.advanceTimersByTime(10_000);
+        await waitFor(() => expect(toast.textContent).toContain("3 seconds"));
+        expect(screen.getByRole("button", { name: "Undo" })).toBeTruthy();
+
+        action.blur();
+        await waitFor(() => expect(toast.getAttribute("data-paused")).toBe("false"));
+        vi.advanceTimersByTime(3000);
+        await waitFor(() => expect(screen.queryByRole("group")).toBeNull());
+    });
+
+    it("keeps the action on the stored item", () => {
+        const action = { label: "Undo", onclick: () => {} };
+        const id = toastStore.push({ message: "Archived", action });
+        let items: { id: string; action?: unknown }[] = [];
+        toastStore.subscribe((list) => (items = list))();
+        expect(items.find((item) => item.id === id)?.action).toBe(action);
+    });
+});
+
 describe("Alert", () => {
     it("hides itself on dismiss and still calls onclick", async () => {
         const user = userEvent.setup();

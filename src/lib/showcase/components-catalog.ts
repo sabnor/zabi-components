@@ -2255,6 +2255,12 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Stacked toasts bottom-right",
                         code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });",
                     },
+                    {
+                        title: "Toast with an action",
+                        description:
+                            "pushToast takes an optional action ({ label, onclick, dismissOnClick? }) that renders as a button and closes the toast after it runs. The countdown pauses on hover and focus; still give an action toast a long duration or 0, and offer the same action elsewhere in the page.",
+                        code: "pushToast({\n  message: 'Project archived',\n  type: 'success',\n  duration: 30000,\n  action: { label: 'Undo', onclick: () => restore(project) },\n});",
+                    },
                 ],
             },
             {

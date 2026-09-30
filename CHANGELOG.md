@@ -80,6 +80,13 @@ Whenever token or CSS import API surface changes, include:
   so its controls stay clear.
 - ImageUpload announces "Image selected" and "Image removed" to screen readers;
   `selectedText` and `removedText` replace the wording.
+- **A toast can offer an action.** `pushToast` takes an optional
+  `action: { label, onclick, dismissOnClick? }`, rendered as a button in the
+  toast; the toast closes after the handler runs unless `dismissOnClick` is
+  `false`. The countdown pauses while the pointer or focus is on the toast, and
+  the action is announced with the message. Give an action toast a long
+  `duration` (or `0`), and offer the same action elsewhere in the page. The
+  `ToastAction` type is exported.
 
 ### Changed
 

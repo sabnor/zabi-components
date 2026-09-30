@@ -31,6 +31,23 @@
             onclick={() =>
                 pushToast({ message: 'Tip: use keyboard shortcuts.', type: 'info' })}
         />
+        <Button
+            variant="outline"
+            text="With Undo"
+            onclick={() =>
+                pushToast({
+                    title: 'Project archived',
+                    message: 'It is still in the archive, where you can restore it.',
+                    type: 'success',
+                    // Long enough to reach the button; the timer also pauses on hover and focus.
+                    duration: 30000,
+                    action: {
+                        label: 'Undo',
+                        onclick: () =>
+                            pushToast({ message: 'Project restored.', type: 'info' }),
+                    },
+                })}
+        />
     </div>
     <Toaster />
 </div>
