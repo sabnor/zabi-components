@@ -138,6 +138,9 @@ Whenever token or CSS import API surface changes, include:
   cells their headers.
 - Table takes `captionHidden`, which keeps the caption as the table's accessible
   name but hides it from view.
+- EmptyState takes `headingLevel` (1–6, default 2) so its title fits the heading
+  outline of the page, and `size="compact"` with tighter padding and a smaller
+  title for use inside a card.
 
 ### Changed
 

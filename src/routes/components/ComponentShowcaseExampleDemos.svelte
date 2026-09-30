@@ -1748,6 +1748,14 @@
                         <Button variant="primary" text="Create report" />
                     {/snippet}
                 </EmptyState>
+                <div class="mt-6 rounded-container border border-border">
+                    <EmptyState
+                        size="compact"
+                        headingLevel={3}
+                        title="No comments"
+                        description="Comments on this report will show up here."
+                    />
+                </div>
             {:else if component.name === "Page"}
                 <Page className="max-w-lg">
                     <p class="text-sm text-description">

@@ -2527,6 +2527,21 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "",
                         description: "Supporting copy",
                     },
+                    {
+                        name: "headingLevel",
+                        type: "1 | 2 | 3 | 4 | 5 | 6",
+                        required: false,
+                        defaultValue: "2",
+                        description: "Heading element of the title",
+                    },
+                    {
+                        name: "size",
+                        type: '"default" | "compact"',
+                        required: false,
+                        defaultValue: '"default"',
+                        description:
+                            "compact tightens padding and the title, for use inside a card",
+                    },
                 ],
                 variants: [],
                 examples: [
@@ -2534,6 +2549,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Empty state",
                         description: "Zero-results or onboarding",
                         code: '<EmptyState title="No projects" description="Create one to get started." />',
+                    },
+                    {
+                        title: "Compact, inside a card",
+                        description: "Tighter spacing and a heading level that fits the card",
+                        code: '<EmptyState size="compact" headingLevel={3} title="No comments" description="Comments will show up here." />',
                     },
                 ],
             },

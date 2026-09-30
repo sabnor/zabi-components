@@ -80,3 +80,24 @@ export const FirstUse: Story = {
         }
     }
 };
+
+export const Compact: Story = {
+    args: {
+        title: 'No comments',
+        description: 'Comments on this task will show up here.',
+        actionLabel: 'Add comment',
+        size: 'compact',
+        headingLevel: 3,
+    },
+    render: (args) => ({
+        Component: EmptyStateStory,
+        props: args,
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'The compact size has tighter padding and a smaller title, for an empty list inside a card. Set `headingLevel` so the title fits the heading outline around it; here it is an `h3` under the card\'s `h2`.'
+            }
+        }
+    }
+};

@@ -9,6 +9,8 @@
         withAction?: boolean;
         withMedia?: boolean;
         actionLabel?: string;
+        headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+        size?: 'default' | 'compact';
     }
 
     let {
@@ -17,10 +19,12 @@
         withAction = true,
         withMedia = false,
         actionLabel = 'Create project',
+        headingLevel = 2,
+        size = 'default',
     }: Props = $props();
 </script>
 
-<EmptyState {title} {description}>
+<EmptyState {title} {description} {headingLevel} {size}>
     {#snippet media()}
         {#if withMedia}
             <span
@@ -32,7 +36,7 @@
     {/snippet}
     {#snippet action()}
         {#if withAction}
-            <Button text={actionLabel} />
+            <Button text={actionLabel} size={size === 'compact' ? 'sm' : 'md'} />
         {/if}
     {/snippet}
 </EmptyState>
