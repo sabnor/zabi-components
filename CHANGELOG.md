@@ -278,6 +278,11 @@ Whenever token or CSS import API surface changes, include:
   optional and deprecated, so existing code keeps compiling. `SelectProps.options`,
   `AlertProps.message` and `TooltipProps.content` are optional, as they are on
   the components.
+- **Keyboard focus is visible in forced-colours mode.** The focus ring is a
+  box-shadow, which Windows High Contrast drops, so focus had no indicator
+  there. `.focus-ring`, the legacy `.focus-brand` and `.focus-nav`, and the
+  checkbox and radio row now draw an outline in forced colours. Nothing changes
+  outside that mode.
 
 ### Documentation
 

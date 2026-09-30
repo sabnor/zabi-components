@@ -1616,6 +1616,31 @@ body {
 }
 
 /* ========================================
+   FOCUS IN FORCED COLOURS
+   ========================================
+   The focus ring above is a box-shadow, and forced-colours mode (Windows High
+   Contrast) drops every box-shadow, so keyboard focus had no indicator there
+   at all. This restates it as an outline, which forced colours keep.
+
+   It sits outside the layers on purpose: fields carry
+   `focus-visible:outline-none`, a utility, and a rule inside
+   `@layer components` would lose to it. Nothing here applies outside forced
+   colours, so the ring everyone else sees is unchanged.
+
+   A pressed IconButton already draws an inset outline as its pressed mark. An
+   element has one outline, so while such a button is focused the focus outline
+   replaces the mark; it returns when focus leaves. */
+@media (forced-colors: active) {
+  .focus-ring:focus-visible,
+  .focus-brand:focus-visible,
+  .focus-nav:focus-visible,
+  .selection-control-label-row-interaction:has(:focus-visible) {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+/* ========================================
    ACTION UTILITY CLASSES
    ======================================== */
 /* These classes use the CSS variables defined in the @theme block above */
@@ -1725,8 +1750,8 @@ body {
    property; tests/state-variants.test.ts fails when a component adds one that
    is not here.
 
-   Order matters and follows Tailwind's: hover, then active, then disabled,
-   then disabled:hover. Keep this block after the action classes so a disabled
+   Order matters and follows Tailwind's: hover, then enabled:hover, then
+   active, then disabled, then disabled:hover. Keep this block after the action classes so a disabled
    rule also beats `.bg-action-*:hover`. */
 
 /* Text */
@@ -1740,6 +1765,10 @@ body {
 
 .hover\:text-link:hover {
   color: var(--color-link);
+}
+
+.enabled\:hover\:text-error-text:enabled:hover {
+  color: var(--color-error-text);
 }
 
 .group:hover .group-hover\:text-headline\/90 {
@@ -1756,6 +1785,10 @@ body {
 
 /* Border */
 .hover\:border-border-medium:hover {
+  border-color: var(--color-border-medium);
+}
+
+.enabled\:hover\:border-border-medium:enabled:hover {
   border-color: var(--color-border-medium);
 }
 

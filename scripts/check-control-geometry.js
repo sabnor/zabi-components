@@ -28,6 +28,13 @@ const componentsDir = path.join(__dirname, '../src/components');
 /** The shared scale. `size-N` counts as `h-N` (square controls). */
 const EXPECTED_HEIGHT = { sm: 'h-8', md: 'h-10', lg: 'h-12' };
 
+/**
+ * Sizes that exist on one control only. IconButton has `xs`, a 24px box for
+ * dense pointer-first layouts; no text control is that small, so it is not on
+ * the shared scale, but it is pinned here so it cannot drift either.
+ */
+const EXTRA_HEIGHT = { 'atoms/IconButton.svelte': { xs: 'h-6' } };
+
 const CONTROLS = [
     'atoms/Button.svelte',
     'atoms/IconButton.svelte',
@@ -44,15 +51,16 @@ const BANNED_RADII = /(?<![\w-])rounded(-[trblxy]{1,2})?-(xs|sm|md|lg|xl|2xl|3xl
  * for the square IconButton), so the height is read from the `box` value only
  * — never from a spinner or icon class that happens to sit nearby.
  */
-function heightsBySize(source) {
+function heightsBySize(source, extraSizes = []) {
     const found = { sm: null, md: null, lg: null };
+    for (const size of extraSizes) found[size] = null;
     const heightOf = (box) => {
         const m = box.match(/(?<![\w-])(?:h|size)-(\d+(?:\.\d+)?)(?![\w-])/);
         return m ? `h-${m[1]}` : null;
     };
 
     // Arms are written as: if (size === "sm") ... box: "..."   / "lg" likewise.
-    for (const size of ['sm', 'lg']) {
+    for (const size of ['sm', 'lg', ...extraSizes]) {
         const arm = new RegExp(`size === "${size}"[\\s\\S]{0,240}?box:\\s*"([^"]+)"`);
         const m = source.match(arm);
         if (m) found[size] = heightOf(m[1]);
@@ -89,7 +97,8 @@ function main() {
             failures.push(`${rel} not found`);
             continue;
         }
-        const heights = heightsBySize(fs.readFileSync(full, 'utf8'));
+        const extra = EXTRA_HEIGHT[rel] ?? {};
+        const heights = heightsBySize(fs.readFileSync(full, 'utf8'), Object.keys(extra));
         table[rel] = heights;
         for (const size of ['sm', 'md', 'lg']) {
             if (!heights[size]) {
@@ -101,13 +110,20 @@ function main() {
                 );
             }
         }
+        for (const [size, expected] of Object.entries(extra)) {
+            if (!heights[size]) {
+                failures.push(`${rel}: could not find a height utility for size "${size}"`);
+            } else if (heights[size] !== expected) {
+                failures.push(`${rel}: size "${size}" is ${heights[size]}, expected ${expected}`);
+            }
+        }
     }
 
-    console.log('  component                 sm     md     lg');
+    console.log('  component                 sm     md     lg     xs');
     for (const [rel, h] of Object.entries(table)) {
         console.log(
             '  ' + rel.replace(/^.*\//, '').padEnd(24) +
-            String(h.sm).padEnd(7) + String(h.md).padEnd(7) + String(h.lg),
+            String(h.sm).padEnd(7) + String(h.md).padEnd(7) + String(h.lg).padEnd(7) + (h.xs ?? ''),
         );
     }
 
