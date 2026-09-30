@@ -2,9 +2,8 @@
     import "../app.css";
     import type { Snippet } from "svelte";
     import { page } from "$app/stores";
-    import TopNavbar from "../components/organisms/TopNavbar.svelte";
+    import TopNavbar, { type TopNavbarNavItem } from "../components/organisms/TopNavbar.svelte";
     import BrandSwitcher from "$lib/marketing/BrandSwitcher.svelte";
-    import type { NavItem } from "../types/page.types";
     import { GITHUB_URL, STORYBOOK_URL } from "$lib/marketing/content";
     import { watchDarkMode } from "$lib/marketing/brand-accents";
 
@@ -16,10 +15,10 @@
 
     // No "Home" item: the brand link already goes there, and with Storybook
     // added the bar was 44px wider than a 768px screen.
-    const navItems: NavItem[] = [
+    const navItems: TopNavbarNavItem[] = [
         { label: "Components", href: "/components" },
         { label: "Docs", href: "/docs" },
-        { label: "Storybook", href: STORYBOOK_URL },
+        { label: "Storybook", href: STORYBOOK_URL, external: true },
         { label: "GitHub", href: GITHUB_URL },
     ];
 

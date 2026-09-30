@@ -14,7 +14,13 @@
             <ul class="flex flex-wrap gap-x-8 gap-y-6">
                 <li><a class="focus-ring relative inline-flex rounded-sm before:absolute before:-inset-x-2 before:-inset-y-3 hover:text-headline" href="/docs">Docs</a></li>
                 <li><a class="focus-ring relative inline-flex rounded-sm before:absolute before:-inset-x-2 before:-inset-y-3 hover:text-headline" href="/components">Components</a></li>
-                <li><a class="focus-ring relative inline-flex rounded-sm before:absolute before:-inset-x-2 before:-inset-y-3 hover:text-headline" href={STORYBOOK_URL} data-sveltekit-reload>Storybook</a></li>
+                <li>
+                    <a
+                        class="focus-ring relative inline-flex items-center rounded-sm before:absolute before:-inset-x-2 before:-inset-y-3 hover:text-headline"
+                        href={STORYBOOK_URL}
+                        target="_blank"
+                        rel="noopener noreferrer">Storybook<ExternalLink size={12} class="ml-1 inline-block shrink-0 align-[-0.1em] opacity-70" aria-hidden="true" /><span class="sr-only">(opens in a new tab)</span></a>
+                </li>
                 <li>
                     <a
                         class="focus-ring relative inline-flex items-center rounded-sm before:absolute before:-inset-x-2 before:-inset-y-3 hover:text-headline"

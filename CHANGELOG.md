@@ -186,6 +186,9 @@ Whenever token or CSS import API surface changes, include:
   Warning before the page is left is your app's job.
 - **`focusToasts()`** moves keyboard focus to the newest toast, for a shortcut
   of your own. Focus returns to where it was when that toast is dismissed.
+- **TopNavbar nav items take `external`.** It marks the link and opens it in a
+  new tab; it defaults to true for absolute URLs, and can be set on a
+  same-origin link that leaves the app, or turned off.
 
 ### Changed
 

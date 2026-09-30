@@ -4195,7 +4195,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "TopNavbarNavItem[]",
                         required: false,
                         defaultValue: "[]",
-                        description: "Built-in nav links (ignored when a nav snippet is provided)",
+                        description:
+                            "Built-in nav links (ignored when a nav snippet is provided). Absolute URLs open in a new tab and are marked; set external on an item to force or prevent that.",
                     },
                     {
                         name: "navVariant",

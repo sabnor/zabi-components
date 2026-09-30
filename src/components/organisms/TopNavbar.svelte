@@ -11,6 +11,8 @@
         href: string;
         icon?: Component<{ size?: number; class?: string }>;
         iconFilled?: Component<{ size?: number; class?: string }>;
+        /** Marks the link and opens it in a new tab. Defaults to true for absolute URLs. */
+        external?: boolean;
     }
 
     interface Props {
@@ -76,9 +78,10 @@
         }
     }
 
-    /** Absolute URLs leave the site, so they are marked and open in a new tab. */
-    function isExternal(href: string): boolean {
-        return href.startsWith("http://") || href.startsWith("https://");
+    /** Absolute URLs leave the site, so they are marked and open in a new tab.
+     * `external` overrides that for same-origin links that leave the app. */
+    function isExternal(item: TopNavbarNavItem): boolean {
+        return item.external ?? (item.href.startsWith("http://") || item.href.startsWith("https://"));
     }
 
     /** App routes: prefix match except `/` and absolute URLs (exact match). */
@@ -147,7 +150,7 @@
     <ul class="{ulClasses} list-none m-0 p-0">
         {#each items as item (item.href)}
             {@const isActive = isNavItemActive(item.href)}
-            {@const external = isExternal(item.href)}
+            {@const external = isExternal(item)}
             <li class={getNavItemClasses()}>
                 <a
                     href={item.href}
