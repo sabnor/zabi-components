@@ -270,6 +270,14 @@ Whenever token or CSS import API surface changes, include:
 - **Drawer stacks with the other overlays.** A modal opened while a portalled
   drawer is open, or a drawer opened while a portalled modal is open, is now
   drawn on top of it.
+- **`zabi-components/types` matches the components again.** Every exported
+  `*Props` interface now declares the props its component accepts today:
+  `ModalProps` has `isOpen`, the interfaces have `class`, and the props added
+  since are there. Members that were exported but never existed (`open`,
+  `className`, `position`, Button's `ariaLabel` and icon props) stay as
+  optional and deprecated, so existing code keeps compiling. `SelectProps.options`,
+  `AlertProps.message` and `TooltipProps.content` are optional, as they are on
+  the components.
 
 ### Documentation
 
