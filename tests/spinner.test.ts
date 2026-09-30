@@ -3,7 +3,12 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import Button from "../src/components/atoms/Button.svelte";
 import IconButton from "../src/components/atoms/IconButton.svelte";
+import ActionPanel from "../src/components/atoms/ActionPanel.svelte";
+import Checkbox from "../src/components/atoms/Checkbox.svelte";
+import Input from "../src/components/atoms/Input.svelte";
 import Spinner from "../src/components/atoms/Spinner.svelte";
+import Textarea from "../src/components/atoms/Textarea.svelte";
+import Toggle from "../src/components/atoms/Toggle.svelte";
 
 afterEach(cleanup);
 
@@ -45,19 +50,15 @@ describe("Spinner", () => {
     it("draws the same ring as a loading Button and IconButton of the same size", () => {
         const classesOf = (element: Element | null) =>
             new Set((element?.getAttribute("class") ?? "").split(/\s+/).filter(Boolean));
-        // The spinner adds its reduced-motion behaviour; everything else matches.
-        const own = (element: Element | null) => {
-            const classes = classesOf(element);
-            classes.delete("motion-reduce:animate-pulse");
-            return classes;
-        };
+        // Full equality, the reduced-motion class included: a loading Button
+        // must stop spinning under the preference just as the Spinner does.
 
         for (const size of ["sm", "md"] as const) {
             const button = render(Button, { props: { loading: true, size, text: "Save" } });
             const inButton = classesOf(button.container.querySelector(".animate-spin"));
             button.unmount();
             const spinner = render(Spinner, { props: { size } });
-            expect(own(ring(spinner.container))).toEqual(inButton);
+            expect(classesOf(ring(spinner.container))).toEqual(inButton);
             spinner.unmount();
         }
 
@@ -68,9 +69,32 @@ describe("Spinner", () => {
             const inButton = classesOf(button.container.querySelector(".animate-spin"));
             button.unmount();
             const spinner = render(Spinner, { props: { size } });
-            expect(own(ring(spinner.container))).toEqual(inButton);
+            expect(classesOf(ring(spinner.container))).toEqual(inButton);
             spinner.unmount();
         }
+    });
+
+    it("has the same reduced-motion behaviour in every built-in loading state", () => {
+        const spinnerOf = (container: HTMLElement) =>
+            (container.querySelector(".animate-spin")?.getAttribute("class") ?? "").split(/\s+/);
+
+        for (const [name, Component, props] of [
+            ["Input", Input, { loading: true, label: "Name" }],
+            ["Textarea", Textarea, { loading: true, label: "Notes" }],
+            ["ActionPanel", ActionPanel, { loading: true, title: "Billing", description: "Invoices" }],
+            ["Toggle", Toggle, { loading: true, label: "Alerts" }],
+        ] as const) {
+            const view = render(Component as never, { props: props as never });
+            // Rotation is what the preference is about; the ring fades instead.
+            expect(spinnerOf(view.container), name).toContain("motion-reduce:animate-pulse");
+            view.unmount();
+        }
+
+        // Checkbox hides its ring with `opacity-0` until it is busy, and a
+        // pulse animates opacity, so there the ring stops instead of fading.
+        const checkbox = render(Checkbox, { props: { loading: true, label: "Agree" } });
+        expect(spinnerOf(checkbox.container)).toContain("motion-reduce:animate-none");
+        expect(spinnerOf(checkbox.container)).not.toContain("motion-reduce:animate-pulse");
     });
 
     it("takes the text colour and does not spin under reduced motion", () => {

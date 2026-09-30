@@ -119,7 +119,7 @@
                 aria-hidden="true"
             >
                 <span
-                    class="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70"
+                    class="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70 motion-reduce:animate-pulse"
                 ></span>
             </span>
         {/if}

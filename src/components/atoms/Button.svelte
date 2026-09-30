@@ -99,7 +99,7 @@
 >
     {#if loading}
         <span
-            class="inline-block {sizeClass.spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80"
+            class="inline-block {sizeClass.spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80 motion-reduce:animate-pulse"
             aria-hidden="true"
         ></span>
     {/if}

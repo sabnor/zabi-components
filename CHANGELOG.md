@@ -362,6 +362,10 @@ Whenever token or CSS import API surface changes, include:
   children had them pushed to opposite ends of the line; they now sit together
   on the value side. A cell with no `data-label` puts its content on the value
   side too, and an empty cell no longer leaves a blank line.
+- **Built-in loading rings respect reduced motion.** The rings in Button,
+  IconButton, Input, Textarea, ActionPanel and Toggle kept spinning under
+  `prefers-reduced-motion`; they now fade in and out instead, as Spinner does.
+  Checkbox's ring stops.
 
 ### Documentation
 

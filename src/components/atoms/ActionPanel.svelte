@@ -93,7 +93,7 @@
             {/if}
             {#if loading}
                 <span
-                    class="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-description border-t-transparent opacity-70"
+                    class="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-description border-t-transparent opacity-70 motion-reduce:animate-pulse"
                     aria-hidden="true"
                 ></span>
             {/if}

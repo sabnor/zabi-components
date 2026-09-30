@@ -151,7 +151,7 @@
             >
                 <span
                     class="inline-block {sizeClass()
-                        .spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70"
+                        .spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70 motion-reduce:animate-pulse"
                 ></span>
             </span>
         {/if}

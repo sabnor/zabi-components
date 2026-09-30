@@ -80,7 +80,7 @@
         <span class={toggleThumbClasses()}>
             {#if loading}
                 <span
-                    class="inline-block size-3 shrink-0 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"
+                    class="inline-block size-3 shrink-0 animate-spin rounded-full border-2 border-brand-500 border-t-transparent motion-reduce:animate-pulse"
                     aria-hidden="true"
                 ></span>
             {/if}

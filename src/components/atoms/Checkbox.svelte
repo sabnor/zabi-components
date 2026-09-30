@@ -34,8 +34,9 @@
 </script>
 
 {#snippet mark(props: SelectionControlMarkProps)}
+    <!-- Under reduced motion the ring stops; it cannot take Spinner's pulse, because a pulse animates opacity and would override the `opacity-0` that hides the ring while idle. -->
     <span
-        class="pointer-events-none absolute inline-block size-3 shrink-0 animate-spin rounded-full border-2 border-brand-500 border-t-transparent z-10 opacity-0 group-has-[aria-busy=true]/control:opacity-100 group-has-checked/control:border-base-50"
+        class="pointer-events-none absolute inline-block size-3 shrink-0 animate-spin motion-reduce:animate-none rounded-full border-2 border-brand-500 border-t-transparent z-10 opacity-0 group-has-[aria-busy=true]/control:opacity-100 group-has-checked/control:border-base-50"
         aria-hidden="true"
     ></span>
     <svg
