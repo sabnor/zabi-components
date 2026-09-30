@@ -155,6 +155,11 @@
         {disabled}
         {...restProps}
     >
-        <Sun size={sizeClass().icon} class="text-label" />
+        <!-- Before mount there is no state to read: the server cannot know the
+        theme, and hydration has not run yet. Both icons are in the markup and
+        the `dark` class on an ancestor picks one, so a dark page never shows
+        the Sun first. The icon matches the mounted button: Moon when dark. -->
+        <Sun size={sizeClass().icon} class="text-label [.dark_&]:hidden" />
+        <Moon size={sizeClass().icon} class="text-label hidden [.dark_&]:block" />
     </button>
 {/if}

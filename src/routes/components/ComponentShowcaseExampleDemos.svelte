@@ -212,7 +212,7 @@
                         </span>
                         {#each component.variants as variant}
                             <span
-                                class="rounded-md bg-base-100 px-2 py-1 text-xs text-headline"
+                                class="rounded-md bg-surface-raised px-2 py-1 text-xs text-headline"
                             >
                                 {variant}
                             </span>
@@ -505,19 +505,19 @@
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
                                     >Option 1</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
                                     >Option 2</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
                                     >Option 3</button
                                 >
                             </div>
@@ -532,19 +532,19 @@
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
                                     >Red</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
                                     >Blue</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
                                     >Green</button
                                 >
                             </div>
@@ -959,7 +959,7 @@
                             Embedded link list
                         </h4>
                         <div
-                            class="rounded-lg border border-border bg-base-50 p-4"
+                            class="rounded-lg border border-border bg-surface-inset p-4"
                         >
                             <TopNavbar
                                 embedded
@@ -987,7 +987,7 @@
             {:else if component.name === "SidebarNavigation"}
                 <div class="space-y-10">
                     <section
-                        class="rounded-xl border border-border bg-base-50/70 p-5 ring-1 ring-border/40"
+                        class="rounded-xl border border-border bg-surface-inset p-5 ring-1 ring-border/40"
                         aria-labelledby="sn-built-from"
                     >
                         <h4
@@ -996,7 +996,7 @@
                         >
                             What
                             <code
-                                class="rounded bg-base-100 px-1 font-mono text-xs"
+                                class="rounded bg-neutral-subtle px-1 font-mono text-xs"
                                 >SidebarNavigation</code
                             >
                             is built from
@@ -1081,7 +1081,7 @@
                             page content would render.
                         </p>
                         <div
-                            class="flex flex-col overflow-visible rounded-2xl border border-border bg-base-100 shadow-sm md:min-h-[min(520px,65vh)] md:flex-row md:items-stretch"
+                            class="flex flex-col overflow-visible rounded-2xl border border-border bg-surface-base shadow-sm md:min-h-[min(520px,65vh)] md:flex-row md:items-stretch"
                         >
                             {#snippet appShellProfilePanel()}
                                 <SidebarAccountPanel
@@ -1463,7 +1463,7 @@
                         <p class="text-sm text-description">
                             Triggers below call
                             <code
-                                class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs"
+                                class="rounded bg-neutral-subtle px-1 py-0.5 font-mono text-xs"
                                 >pushToast()</code
                             >. The live region is fixed bottom-right (same as a
                             real app).
@@ -1518,7 +1518,7 @@
                         <p class="text-sm text-description">
                             Same surface as viewport toasts, but
                             <code
-                                class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs"
+                                class="rounded bg-neutral-subtle px-1 py-0.5 font-mono text-xs"
                                 >layout="inline"</code
                             >
                             keeps it in the document flow for docs and previews.
@@ -1551,7 +1551,7 @@
                         <p class="text-sm text-description">
                             The
                             <code
-                                class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs"
+                                class="rounded bg-neutral-subtle px-1 py-0.5 font-mono text-xs"
                                 >type</code
                             >
                             prop maps to semantic border and text colors.
@@ -1581,7 +1581,7 @@
             {:else if component.name === "Table"}
                 <!-- Stacks below 640px; `data-label` is the label shown beside each value there. -->
                 <Table caption="Q1 results" stacked="sm">
-                    <thead class="border-b border-border bg-base-50">
+                    <thead class="border-b border-border bg-surface-elevated">
                         <tr>
                             <th class="px-4 py-3 font-medium text-headline"
                                 >Region</th
@@ -1650,7 +1650,7 @@
             {:else if component.name === "Container"}
                 <Container
                     maxWidth="md"
-                    class="rounded-lg border border-border bg-base-50 py-4 text-center"
+                    class="rounded-lg border border-border bg-surface-inset py-4 text-center"
                 >
                     <Text tone="caption">Centered max-width container</Text>
                 </Container>
@@ -1825,7 +1825,7 @@
                 </div>
             {:else if component.name === "ComponentDemo"}
                 <div
-                    class="rounded-lg border border-dashed border-border bg-base-50 p-4"
+                    class="rounded-lg border border-dashed border-border bg-surface-inset p-4"
                 >
                     <p class="mb-3 text-sm text-description">
                         This site wraps each example in ComponentDemo: title,

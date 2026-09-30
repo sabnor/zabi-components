@@ -79,7 +79,7 @@ export const tabsVariantClasses = {
     },
     pills: {
         container: "bg-base-100 p-1 rounded-lg",
-        tab: "rounded-md text-secondary hover:text-primary hover:bg-base-200 transition-colors",
+        tab: "rounded-md text-secondary hover:text-primary hover:bg-surface-hover transition-colors",
         activeTab: "bg-base-50 text-primary shadow-adaptive-sm",
         panel: "mt-4",
     },
@@ -91,7 +91,7 @@ export const tabsVariantClasses = {
     },
     cards: {
         container: "space-y-2",
-        tab: "border border-primary rounded-lg text-secondary hover:text-primary hover:bg-base-100 transition-colors",
+        tab: "border border-primary rounded-lg text-secondary hover:text-primary hover:bg-surface-hover transition-colors",
         activeTab: "bg-base-50 text-primary shadow-adaptive-sm border-primary",
         panel: "mt-4",
     },

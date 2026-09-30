@@ -12,7 +12,7 @@
 
 <div class="inline-block max-w-full">
     <div
-        class="inline-flex max-w-full items-center gap-3 rounded-2xl border border-border bg-card py-2 pl-4 pr-2 text-headline"
+        class="inline-flex max-w-full items-center gap-3 rounded-2xl border border-border bg-card py-2 pl-4 pr-2 text-headline shadow-sm"
     >
         <span class="text-description select-none" aria-hidden="true">$</span>
         <code class="truncate text-[0.9375rem] font-semibold">{command}</code>

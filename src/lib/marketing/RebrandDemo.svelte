@@ -41,7 +41,7 @@
     }
 </script>
 
-<div class="rounded-3xl border border-border bg-card p-6 sm:p-8">
+<div class="rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <p id="accent-label" class="text-sm font-semibold text-label">Accent</p>
         <div

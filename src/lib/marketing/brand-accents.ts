@@ -51,29 +51,37 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
     },
 };
 
-/** Dark entries layer on top of light ones, exactly like a `.dark .brand` rule. */
+/**
+ * Dark entries layer on top of light ones, exactly like a `.dark .brand` rule.
+ *
+ * The light entries are the Iris recipe on another ramp: fill at step 600 with
+ * a white label, hover 700, active 800, focus ring 600, link 700, tint 200.
+ * Every ramp sits on one lightness curve, so the same steps give the same
+ * contrast (tests/brand-accents.test.ts checks it). They were tuned by eye in
+ * dark mode before, which left light Pine with a focus ring at 1.93:1.
+ */
 export const ACCENT_OVERRIDES: Record<
     Exclude<Accent, "iris">,
     { light: TokenMap; dark: TokenMap }
 > = {
     pine: {
         light: {
-            "--color-action-primary": "var(--zabi-pine-700)",
-            "--color-action-primary-hover": "var(--zabi-pine-600)",
-            "--color-action-primary-active": "var(--zabi-pine-500)",
-            "--color-action-primary-text": "var(--zabi-pine-50)",
-            "--color-action-primary-subtle": "var(--zabi-pine-100)",
+            "--color-action-primary": "var(--zabi-pine-600)",
+            "--color-action-primary-hover": "var(--zabi-pine-700)",
+            "--color-action-primary-active": "var(--zabi-pine-800)",
+            "--color-action-primary-text": "#ffffff",
+            "--color-action-primary-subtle": "var(--zabi-pine-200)",
             "--color-action-secondary":
-                "color-mix(in srgb, var(--zabi-pine-600) 12%, transparent)",
+                "color-mix(in srgb, var(--zabi-pine-600) 14%, transparent)",
             "--color-action-secondary-hover":
-                "color-mix(in srgb, var(--zabi-pine-600) 22%, transparent)",
+                "color-mix(in srgb, var(--zabi-pine-600) 24%, transparent)",
             "--color-brand-100": "var(--zabi-pine-100)",
-            "--color-brand-500": "var(--zabi-pine-400)",
-            "--color-brand-600": "var(--zabi-pine-500)",
-            "--color-brand-700": "var(--zabi-pine-600)",
-            "--color-focus": "var(--zabi-pine-400)",
-            "--color-focus-ring": "var(--zabi-pine-400)",
-            "--color-link": "var(--zabi-pine-600)",
+            "--color-brand-500": "var(--zabi-pine-500)",
+            "--color-brand-600": "var(--zabi-pine-600)",
+            "--color-brand-700": "var(--zabi-pine-700)",
+            "--color-focus": "var(--zabi-pine-600)",
+            "--color-focus-ring": "var(--zabi-pine-600)",
+            "--color-link": "var(--zabi-pine-700)",
         },
         dark: {
             "--color-action-primary": "var(--zabi-pine-200)",
@@ -95,11 +103,11 @@ export const ACCENT_OVERRIDES: Record<
     },
     citron: {
         light: {
-            "--color-action-primary": "var(--zabi-citron-800)",
-            "--color-action-primary-hover": "var(--zabi-citron-900)",
-            "--color-action-primary-active": "var(--zabi-citron-700)",
-            "--color-action-primary-text": "var(--zabi-citron-50)",
-            "--color-action-primary-subtle": "var(--zabi-citron-100)",
+            "--color-action-primary": "var(--zabi-citron-600)",
+            "--color-action-primary-hover": "var(--zabi-citron-700)",
+            "--color-action-primary-active": "var(--zabi-citron-800)",
+            "--color-action-primary-text": "#ffffff",
+            "--color-action-primary-subtle": "var(--zabi-citron-200)",
             "--color-action-secondary":
                 "color-mix(in srgb, var(--zabi-citron-700) 14%, transparent)",
             "--color-action-secondary-hover":
@@ -108,9 +116,9 @@ export const ACCENT_OVERRIDES: Record<
             "--color-brand-500": "var(--zabi-citron-500)",
             "--color-brand-600": "var(--zabi-citron-600)",
             "--color-brand-700": "var(--zabi-citron-700)",
-            "--color-focus": "var(--zabi-citron-500)",
-            "--color-focus-ring": "var(--zabi-citron-500)",
-            "--color-link": "var(--zabi-citron-800)",
+            "--color-focus": "var(--zabi-citron-600)",
+            "--color-focus-ring": "var(--zabi-citron-600)",
+            "--color-link": "var(--zabi-citron-700)",
         },
         dark: {
             "--color-action-primary": "var(--zabi-citron-300)",

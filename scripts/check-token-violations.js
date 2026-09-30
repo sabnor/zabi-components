@@ -22,19 +22,11 @@ const appPaths = ["src/lib/marketing", "src/routes", "src/app.css"].map((p) =>
  *
  * The scan used to cover only the marketing folder and the home page, so the
  * rest of `src/routes` was never checked, and neither was `src/app.css`, whose
- * `@apply` lines can carry the same mistake. Widening it found the files below.
- * They are listed so the wider scan can gate everything else today; each entry
- * is a debt, reported on every run, and the list is meant to reach empty. Do
- * not add to it: fix the class instead.
+ * `@apply` lines can carry the same mistake. Widening it found eight classes in
+ * two site files, which were listed here until they were fixed. The list is
+ * empty and should stay empty: fix the class instead of adding a file.
  */
-const knownAppViolations = new Set(
-    [
-        // 6 × hover:bg-base-100 on the demo menu rows (lines 508–547)
-        "src/routes/components/ComponentShowcaseExampleDemos.svelte",
-        // hover:bg-base-200 (line 82) and hover:bg-base-100 (line 94) in the tab variants
-        "src/routes/lib/tabs-utils.ts",
-    ].map((p) => path.resolve(p)),
-);
+const knownAppViolations = new Set([].map((p) => path.resolve(p)));
 const allowedHexPatterns = [
     // Documentation examples or user-input placeholders are allowed.
     /Please enter a valid hex color/i,

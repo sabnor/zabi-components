@@ -309,6 +309,9 @@ Whenever token or CSS import API surface changes, include:
   and fell back to the text colour; it now uses the border colour.
 - Removed a `dark:` variant from Section's accent background. It followed the
   OS setting, not the `.dark` class, and never applied.
+- **ThemeToggle shows the right icon before it mounts.** On a dark page the
+  server-rendered button showed the Sun until hydration. Both icons are now in
+  the markup and the `dark` class picks one. No prop changed.
 
 ### Documentation
 
@@ -318,6 +321,18 @@ Whenever token or CSS import API surface changes, include:
   first, the package's `w-full` beats your `md:w-1/2`; `css` first, your `p-0`
   beats Modal's `md:p-4`. With Tailwind in the app, import `theme-only` and
   `theme-dark-only` instead. No CSS output changed.
+
+### Site and Storybook (not in the package)
+
+- Site cards carry `shadow-sm`, the hero stage and the navbar read against the
+  new page colour, and the showcase uses surface tokens in place of raw ramp
+  steps.
+- The Pine and Citron accents follow the Iris recipe in light mode: fill at
+  step 600 with a white label, focus ring at step 600. Pine's light focus ring
+  was 1.93:1 on the page and is now 4.19:1.
+- Storybook's sidebar, toolbar and docs pages follow the Theme control in the
+  toolbar instead of the operating system.
+- `theme-color` follows the theme toggle.
 
 ## [8.0.1] - 2026-09-29
 

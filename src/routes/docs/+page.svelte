@@ -111,7 +111,7 @@ import type { ButtonVariant } from "zabi-components/types";`;
             <nav class="lg:col-span-3" aria-label="On this page">
                 <!-- Below lg there is no column for the sticky list, so the same
                 links fold into a disclosure ahead of the first section. -->
-                <details class="group rounded-2xl border border-border bg-card lg:hidden">
+                <details class="group rounded-2xl border border-border bg-card shadow-sm lg:hidden">
                     <summary
                         class="focus-ring flex h-12 cursor-pointer list-none items-center justify-between rounded-2xl px-5 text-sm font-semibold text-headline [&::-webkit-details-marker]:hidden"
                     >
@@ -158,20 +158,20 @@ import type { ButtonVariant } from "zabi-components/types";`;
                         Requirements
                     </h2>
                     <dl class="mt-6 grid gap-4 sm:grid-cols-3">
-                        <div class="rounded-2xl border border-border bg-card p-5">
+                        <div class="rounded-2xl border border-border bg-card shadow-sm p-5">
                             <dt class="text-sm font-semibold text-headline">Svelte</dt>
                             <dd class="mt-1 text-base leading-7 text-description">
                                 5.43.8 or newer. Components use runes.
                             </dd>
                         </div>
-                        <div class="rounded-2xl border border-border bg-card p-5">
+                        <div class="rounded-2xl border border-border bg-card shadow-sm p-5">
                             <dt class="text-sm font-semibold text-headline">Tailwind CSS</dt>
                             <dd class="mt-1 text-base leading-7 text-description">
                                 v4 is recommended. There is a
                                 <a href="#theme" class={textLink}>stylesheet without it</a>.
                             </dd>
                         </div>
-                        <div class="rounded-2xl border border-border bg-card p-5">
+                        <div class="rounded-2xl border border-border bg-card shadow-sm p-5">
                             <dt class="text-sm font-semibold text-headline">SvelteKit</dt>
                             <dd class="mt-1 text-base leading-7 text-description">
                                 Optional. Version 2 if you use it; components render on the server.
@@ -202,7 +202,7 @@ import type { ButtonVariant } from "zabi-components/types";`;
                     </p>
                     <CodeBlock class="mt-6" code={themeStep.code} language="css" />
                     <p
-                        class="mt-6 max-w-3xl rounded-2xl border border-border bg-card p-5 text-base leading-7 text-body"
+                        class="mt-6 max-w-3xl rounded-2xl border border-border bg-card shadow-sm p-5 text-base leading-7 text-body"
                     >
                         <strong class="font-semibold text-headline">Components look unstyled?</strong>
                         The theme import is missing, or the package is older than 8.0.1.
@@ -286,7 +286,7 @@ import type { ButtonVariant } from "zabi-components/types";`;
                         lists every token: surfaces, radius, shadows, spacing and type.
                     </p>
                     <p
-                        class="mt-6 max-w-3xl rounded-2xl border border-border bg-card p-5 text-base leading-7 text-body"
+                        class="mt-6 max-w-3xl rounded-2xl border border-border bg-card shadow-sm p-5 text-base leading-7 text-body"
                     >
                         <strong class="font-semibold text-headline">Check the colors you change.</strong>
                         The colors that ship are contrast checked before every release. Colors
@@ -311,15 +311,23 @@ import type { ButtonVariant } from "zabi-components/types";`;
                         Next steps
                     </h2>
                     <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                        <div class="rounded-3xl border border-border bg-card p-6 sm:p-8">
+                        <div class="rounded-3xl border border-border bg-card shadow-sm p-6 sm:p-8">
                             <h3 class="display text-xl font-bold text-headline">
                                 Pick your first component
                             </h3>
                             <p class="mt-2 text-base leading-7 text-description">
                                 Each page has a live example, the props table and code to copy.
                                 Every variant and state is in
-                                <a href={STORYBOOK_URL} data-sveltekit-reload class={textLink}
-                                    >Storybook</a
+                                <a
+                                    href={STORYBOOK_URL}
+                                    class={textLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    >Storybook<ExternalLink
+                                        size={14}
+                                        class="ml-1 inline-block shrink-0 align-[-0.1em] opacity-70"
+                                        aria-hidden="true"
+                                    /><span class="sr-only">(opens in a new tab)</span></a
                                 >.
                             </p>
                             <a
@@ -329,7 +337,7 @@ import type { ButtonVariant } from "zabi-components/types";`;
                                 Browse components
                             </a>
                         </div>
-                        <div class="rounded-3xl border border-border bg-card p-6 sm:p-8">
+                        <div class="rounded-3xl border border-border bg-card shadow-sm p-6 sm:p-8">
                             <h3 class="display text-xl font-bold text-headline">Stuck on something?</h3>
                             <p class="mt-2 text-base leading-7 text-description">
                                 Open an issue on GitHub with what you tried and what you expected.

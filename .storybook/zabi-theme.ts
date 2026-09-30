@@ -7,6 +7,10 @@ import { create } from 'storybook/theming/create';
  * outside the preview's stylesheet, so they cannot read the CSS tokens. The
  * values are copied from the `--zabi-*` ramps and the semantic tokens in
  * src/app.css; the token each one mirrors is named beside it.
+ *
+ * A comment that names a `--color-*` token is checked: tests/storybook-theme.test.ts
+ * fails when the value beside it is no longer what that token resolves to in
+ * that theme.
  */
 const shared = {
     brandTitle: 'Zabi Components',
@@ -27,9 +31,9 @@ export const light = create({
     colorPrimary: '#4f68da', // brand-600, --color-action-primary
     colorSecondary: '#4f68da',
 
-    appBg: '#f4f4f5', // base-100, --color-surface-base
+    appBg: '#ececee', // base-150, --color-surface-base
     appContentBg: '#ffffff', // --color-surface-raised
-    appPreviewBg: '#f4f4f5',
+    appPreviewBg: '#ececee', // --color-surface-base
     appBorderColor: '#d4d4d8', // base-300, --color-border
 
     textColor: '#18181b', // base-900, --color-headline
@@ -62,12 +66,12 @@ export const dark = create({
 
     appBg: '#18181b', // dark --color-surface-base
     appContentBg: '#262629', // dark --color-surface-raised
-    appPreviewBg: '#18181b',
+    appPreviewBg: '#18181b', // dark --color-surface-base
     appBorderColor: '#3f3f46', // base-700
 
     textColor: '#f4f4f5', // base-100
     textInverseColor: '#18181b',
-    textMutedColor: '#a1a1aa', // base-400
+    textMutedColor: '#d4d4d8', // dark --color-description
 
     barBg: '#18181b',
     barTextColor: '#a1a1aa',

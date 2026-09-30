@@ -99,7 +99,7 @@
 </Page>
 
 <footer
-    class="mt-16 -mx-8 border-t border-border bg-base-100 px-8 py-8"
+    class="mt-16 -mx-8 border-t border-border bg-surface-raised px-8 py-8"
 >
     <div class="mx-auto max-w-4xl">
         <div

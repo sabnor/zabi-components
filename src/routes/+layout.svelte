@@ -6,6 +6,7 @@
     import BrandSwitcher from "$lib/marketing/BrandSwitcher.svelte";
     import type { NavItem } from "../types/page.types";
     import { GITHUB_URL, STORYBOOK_URL } from "$lib/marketing/content";
+    import { watchDarkMode } from "$lib/marketing/brand-accents";
 
     interface Props {
         children: Snippet;
@@ -21,20 +22,34 @@
         { label: "Storybook", href: STORYBOOK_URL },
         { label: "GitHub", href: GITHUB_URL },
     ];
+
+    /** The page background of each theme: `--color-surface-base`. */
+    const THEME_COLOR = { light: "#ececee", dark: "#18181b" };
+
+    // Null until the page is running. After that the theme is whatever the
+    // `dark` class says, which the toggle controls and the OS only seeds.
+    let themeColor = $state<string | null>(null);
+
+    $effect(() =>
+        watchDarkMode((dark) => {
+            themeColor = dark ? THEME_COLOR.dark : THEME_COLOR.light;
+        }),
+    );
 </script>
 
 <svelte:head>
-    <!-- Tracks the OS preference. A manual toggle cannot move this, so it is
-    matched to the page background of each theme rather than left white. -->
+    <!-- Server-rendered, these follow the OS preference, which is all that is
+    known then. Once the page runs, both take the colour of the theme in use,
+    so the browser chrome follows the toggle whichever query matches. -->
     <meta
         name="theme-color"
         media="(prefers-color-scheme: light)"
-        content="#f4f4f5"
+        content={themeColor ?? THEME_COLOR.light}
     />
     <meta
         name="theme-color"
         media="(prefers-color-scheme: dark)"
-        content="#18181b"
+        content={themeColor ?? THEME_COLOR.dark}
     />
 </svelte:head>
 
@@ -43,7 +58,7 @@
         brand="Zabi Components"
         brandHref="/"
         ariaLabel="Main navigation"
-        className="supports-[backdrop-filter]:bg-base-50/95 backdrop-blur"
+        className="bg-surface-raised supports-[backdrop-filter]:bg-surface-raised/90 backdrop-blur"
         items={navItems}
         navVariant="header"
         currentPath={$page.url.pathname}

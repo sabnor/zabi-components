@@ -45,3 +45,54 @@ describe("Storybook theme", () => {
         expect(stylesheetColours.has(hex)).toBe(true);
     });
 });
+
+/**
+ * The check above only asks whether a colour exists somewhere in the
+ * stylesheet. That let `appBg` stay at `#f4f4f5` after the page surface moved
+ * to `#ececee`: the old value is still a ramp step, just no longer the page.
+ *
+ * So where a line's comment names the token it mirrors (`// dark
+ * --color-surface-base`), the value has to be what that token resolves to in
+ * that theme.
+ */
+function declarations(block: string): Record<string, string> {
+    const map: Record<string, string> = {};
+    for (const [, name, value] of block.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+        map[name] = value.replace(/\/\*[\s\S]*?\*\//g, "").trim();
+    }
+    return map;
+}
+
+const lightTokens = declarations(/@theme\s*\{([\s\S]*?)\n\}/.exec(appCss)?.[1] ?? "");
+const darkTokens = {
+    ...lightTokens,
+    ...declarations(/\n\.dark\s*\{([\s\S]*?)\n\}/.exec(appCss)?.[1] ?? ""),
+};
+
+function resolveToken(map: Record<string, string>, token: string, depth = 0): string | undefined {
+    const value = map[token];
+    if (value === undefined || depth > 20) return undefined;
+    const reference = /^var\((--[\w-]+)\)$/.exec(value);
+    return reference ? resolveToken(map, reference[1], depth + 1) : value.toLowerCase();
+}
+
+/** [theme, property, hex, token] for every annotated line of one `create({ … })` call. */
+function annotated(theme: "light" | "dark"): [string, string, string, string][] {
+    const body = new RegExp(`export const ${theme} = create\\(\\{([\\s\\S]*?)\\n\\}\\);`).exec(themeSource)?.[1] ?? "";
+    return [...body.matchAll(/(\w+):\s*'(#[0-9a-fA-F]{6})',?\s*\/\/[^\n]*?(--color-[\w-]+)/g)].map(
+        ([, property, hex, token]) => [theme, property, hex.toLowerCase(), token],
+    );
+}
+
+describe("Storybook theme values that name their token", () => {
+    const cases = [...annotated("light"), ...annotated("dark")];
+
+    it("has annotated values in both themes", () => {
+        expect(cases.filter(([theme]) => theme === "light").length).toBeGreaterThan(5);
+        expect(cases.filter(([theme]) => theme === "dark").length).toBeGreaterThan(3);
+    });
+
+    it.each(cases)("%s %s %s is what %s resolves to", (theme, _property, hex, token) => {
+        expect(resolveToken(theme === "dark" ? darkTokens : lightTokens, token)).toBe(hex);
+    });
+});

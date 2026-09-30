@@ -117,9 +117,14 @@
                             Or try every variant and state in
                             <a
                                 href={STORYBOOK_URL}
-                                data-sveltekit-reload
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 class="focus-ring relative rounded-sm font-semibold text-link underline underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-3 hover:text-link-hover"
-                                >Storybook</a
+                                >Storybook<ExternalLink
+                                    size={14}
+                                    class="ml-1 inline-block shrink-0 align-[-0.1em] opacity-70"
+                                    aria-hidden="true"
+                                /><span class="sr-only">(opens in a new tab)</span></a
                             >.
                         </p>
                     </div>
@@ -247,7 +252,7 @@
                                 scrolled by keyboard (WCAG 2.1.1); the rule cannot tell
                                 that this box scrolls. -->
                                 <pre
-                                    class="focus-ring mt-3 overflow-x-auto rounded-2xl border border-border bg-card p-5 text-sm leading-6 text-headline"
+                                    class="focus-ring mt-3 overflow-x-auto rounded-2xl border border-border bg-card p-5 text-sm leading-6 text-headline shadow-sm"
                                     tabindex="0"
                                     role="region"
                                     aria-label={`${step.language} code`}><code>{step.code}</code></pre>
@@ -338,17 +343,27 @@
         font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
 
-    /* Hero stage: a dotted drafting surface behind the live specimen. */
+    /* Hero stage: a dotted drafting surface behind the live specimen.
+    Light takes the primary tint as it is. Mixed with the page, as dark does,
+    it came out at 1.01:1 against the page and the stage disappeared. */
     .stage-grid {
         position: absolute;
         inset: 0;
         border-radius: 2rem;
+        background-color: var(--color-action-primary-subtle);
+        background-image: radial-gradient(
+            color-mix(in srgb, var(--color-brand-700) 55%, transparent) 1px,
+            transparent 1px
+        );
+        background-size: 1.25rem 1.25rem;
+    }
+
+    :global(.dark) .stage-grid {
         background-color: color-mix(in srgb, var(--color-brand-100) 70%, var(--color-background));
         background-image: radial-gradient(
             color-mix(in srgb, var(--color-brand-700) 35%, transparent) 1px,
             transparent 1px
         );
-        background-size: 1.25rem 1.25rem;
     }
 
     @media (min-width: 1280px) {
