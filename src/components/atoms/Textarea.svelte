@@ -55,9 +55,10 @@
                 : 'border-input-border';
     });
 
+    // 16px below `sm`: iOS Safari zooms the page when a focused field is smaller.
     const textareaClasses = $derived(() => {
         const baseClasses =
-            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed resize-y px-3 py-2 text-sm leading-6';
+            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed resize-y px-3 py-2 text-sm max-sm:text-base leading-6';
 
         return cn(`${baseClasses} ${variantClass()} ${className}`);
     });

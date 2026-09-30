@@ -54,14 +54,18 @@
      * Same fixed height scale as Button, IconButton and Select (32 / 40 / 48),
      * so a field and its submit button are the same height in a row. These
      * used to be 38 / 46 / 50 while Button was 40 / 48 / 64.
+     *
+     * Below the `sm` breakpoint the text is 16px at every size: iOS Safari
+     * zooms the page when a focused field is smaller. Only the font grows;
+     * the box keeps its height.
      */
     const sizeClass = $derived(() => {
         if (size === "sm") {
-            return { box: "h-8 px-3", text: "text-sm", spinner: "size-3.5" };
+            return { box: "h-8 px-3", text: "text-sm max-sm:text-base", spinner: "size-3.5" };
         } else if (size === "lg") {
             return { box: "h-12 px-4", text: "text-base", spinner: "size-5" };
         } else {
-            return { box: "h-10 px-3", text: "text-sm", spinner: "size-4" };
+            return { box: "h-10 px-3", text: "text-sm max-sm:text-base", spinner: "size-4" };
         }
     });
 

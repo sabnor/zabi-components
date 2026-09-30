@@ -186,6 +186,11 @@ Whenever token or CSS import API surface changes, include:
 - **Dark mode is unchanged.** `.dark` now restates the values above that it
   used to inherit, so nothing moves there. No token was removed or renamed and
   no `exports` path changed.
+- Input, Textarea and Select render their text at 16px below the `sm`
+  breakpoint (640px), so iOS Safari no longer zooms the page when a field takes
+  focus. Sizes are unchanged from `sm` up, and control heights are unchanged
+  everywhere. This also covers ColorPicker's hex field and the search fields in
+  Select and the sidebars.
 
 ### Deprecated
 
@@ -234,6 +239,10 @@ Whenever token or CSS import API surface changes, include:
   instead of falling to `<body>`.
 - **SlideUp keeps Tab inside, and still closes on Escape,** when focus has
   fallen out of the sheet because the focused control was disabled or removed.
+- **Select's arrow keys get past a disabled option.** A disabled option was a
+  natively disabled button that could not take focus, so ArrowDown stopped at
+  the option before it. It is now `aria-disabled`: reachable, announced as
+  disabled, and still not selectable.
 
 ### Documentation
 

@@ -73,11 +73,12 @@
     let selectContainer: HTMLDivElement;
     let searchQuery = $state("");
 
-    // Same fixed height scale as Button, IconButton and Input (32 / 40 / 48).
+    // Same fixed height scale as Button, IconButton and Input (32 / 40 / 48),
+    // and the same 16px text below `sm`, so a Select beside an Input matches it.
     const sizeClass = $derived(() => {
-        if (size === "sm") return { box: "h-8 px-3", text: "text-sm" };
+        if (size === "sm") return { box: "h-8 px-3", text: "text-sm max-sm:text-base" };
         if (size === "lg") return { box: "h-12 px-4", text: "text-base" };
-        return { box: "h-10 px-3", text: "text-sm" };
+        return { box: "h-10 px-3", text: "text-sm max-sm:text-base" };
     });
 
     const variantClass = $derived(() => {
@@ -164,6 +165,7 @@
 
     function handleOptionClick(optionValue: string | number) {
         if (disabled || isLoading) return;
+        if (options.find((option) => option.value === optionValue)?.disabled) return;
         value = optionValue;
         isOpen = false;
 
@@ -286,19 +288,22 @@
                                 "data-value": String(option.value),
                             } as Record<string, string>}
                             <div class="w-full my-1">
+                                <!-- `aria-disabled`, not `disabled`: a natively disabled button cannot take focus, so the arrow keys stopped at the option before it. The click is refused in `handleOptionClick`. -->
                                 <button
                                     type="button"
                                     role="option"
                                     aria-selected={isSameValue(value, option.value)
                                         ? true
                                         : undefined}
-                                    class="focus-ring flex w-full items-center justify-start rounded-control border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {isSameValue(
+                                    class="focus-ring flex w-full items-center justify-start rounded-control border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 {isSameValue(
                                         value,
                                         option.value,
                                     )
                                         ? 'border-action-primary bg-transparent text-headline'
-                                        : 'border-transparent bg-transparent text-body hover:bg-surface-overlay-hover'}"
-                                    disabled={option.disabled}
+                                        : option.disabled
+                                          ? 'border-transparent bg-transparent text-body'
+                                          : 'border-transparent bg-transparent text-body hover:bg-surface-overlay-hover'}"
+                                    aria-disabled={option.disabled ? "true" : undefined}
                                     {...buttonRestProps}
                                     onclick={() =>
                                         handleOptionClick(option.value)}
