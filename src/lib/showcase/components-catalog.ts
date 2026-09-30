@@ -700,6 +700,187 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "Slider",
+                category: "atoms",
+                description:
+                    "Native range input in the library's colours, with a label, an optional formatted value, helper text and three sizes.",
+                props: [
+                    {
+                        name: "value",
+                        type: "number",
+                        required: false,
+                        description:
+                            "Current value. Bindable. Starts at min when not given.",
+                    },
+                    {
+                        name: "min",
+                        type: "number",
+                        required: false,
+                        defaultValue: "0",
+                        description:
+                            "Lowest value.",
+                    },
+                    {
+                        name: "max",
+                        type: "number",
+                        required: false,
+                        defaultValue: "100",
+                        description:
+                            "Highest value.",
+                    },
+                    {
+                        name: "step",
+                        type: "number",
+                        required: false,
+                        defaultValue: "1",
+                        description:
+                            "Distance between values.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Visible label, associated with the input.",
+                    },
+                    {
+                        name: "hideLabel",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Leaves the label out when FormField supplies it.",
+                    },
+                    {
+                        name: "showValue",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the current value beside the label.",
+                    },
+                    {
+                        name: "formatValue",
+                        type: "(value: number) => string",
+                        required: false,
+                        description:
+                            "Turns the value into text with a unit. Used for the shown value and read by assistive technology.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Height of the row, on the scale Input and Button use.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Disables the input.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Helper or error text below the slider.",
+                    },
+                    {
+                        name: "variant",
+                        type: "'default' | 'success' | 'warning' | 'error' | 'info'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "Colours the message; error also marks the input invalid.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Name the value is submitted under in a form.",
+                    },
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of the input; generated when omitted.",
+                    },
+                    {
+                        name: "oninput",
+                        type: "(event: Event) => void",
+                        required: false,
+                        description:
+                            "Native input event: fires while the thumb moves.",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(event: Event) => void",
+                        required: false,
+                        description:
+                            "Native change event: fires when the thumb is released.",
+                    },
+                ],
+                variants: [
+                    "sm",
+                    "md",
+                    "lg",
+                    "disabled",
+                    "error",
+                ],
+                examples: [
+                    {
+                        title: "Basic slider",
+                        description: "A labelled slider from 0 to 100 bound to a number",
+                        code: '<Slider label="Volume" bind:value={volume} />',
+                    },
+                    {
+                        title: "With a shown value and a unit",
+                        description:
+                            "formatValue adds the unit for the display and for screen readers",
+                        code: `<Slider
+    label="Image quality"
+    bind:value={quality}
+    min={10}
+    max={100}
+    step={10}
+    showValue
+    formatValue={(value) => \`\${value} %\`}
+    message="Lower quality makes smaller files."
+/>`,
+                    },
+                    {
+                        title: "Sizes",
+                        description: "Rows of 32, 40 and 48px, as Input and Button",
+                        code: `<Slider label="Small" size="sm" bind:value={small} showValue />
+<Slider label="Medium" bind:value={medium} showValue />
+<Slider label="Large" size="lg" bind:value={large} showValue />`,
+                    },
+                    {
+                        title: "Disabled and error",
+                        description: "A disabled slider, and one whose message turns into an error",
+                        code: `<Slider label="Locked by your plan" value={30} showValue disabled />
+<Slider
+    label="Zoom"
+    bind:value={zoom}
+    min={1}
+    max={10}
+    showValue
+    variant={zoom > 6 ? "error" : "default"}
+    message={zoom > 6 ? "Above 6x the image is too blurred to print." : "Up to 6x prints sharply."}
+/>`,
+                    },
+                ],
+            },
+            {
                 name: "CodeBlock",
                 category: "atoms",
                 description:

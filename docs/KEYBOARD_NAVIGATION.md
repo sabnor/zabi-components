@@ -285,6 +285,37 @@ function handleKeydown(event: KeyboardEvent) {
 
 ---
 
+### Slider Component
+
+**Current Keyboard Support** (native `<input type="range">`):
+- ✅ **Tab**: Move to the slider
+- ✅ **Arrow Right / Arrow Up**: Increase by one step
+- ✅ **Arrow Left / Arrow Down**: Decrease by one step (left and right swap in a right-to-left layout)
+- ✅ **Home**: Go to the minimum
+- ✅ **End**: Go to the maximum
+- ✅ **Page Up / Page Down**: Larger step, as the browser defines it
+
+**Usage:**
+```svelte
+<Slider
+    label="Image quality"
+    bind:value={quality}
+    min={10}
+    max={100}
+    step={10}
+    showValue
+    formatValue={(value) => `${value} %`}
+/>
+```
+
+**Best Practices:**
+- Give it a `label`, or an `aria-label` when there is no visible one
+- Pass `formatValue` whenever the number has a unit; it sets `aria-valuetext`, so "80 %" is read instead of "80"
+- Choose a `step` that gets across the range in a reasonable number of key presses
+- The focus ring is drawn on the thumb
+
+---
+
 ### Alert Component
 
 **Keyboard Support:**

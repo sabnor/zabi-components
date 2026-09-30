@@ -165,6 +165,12 @@ Whenever token or CSS import API surface changes, include:
   on its own. Sizes `xs` to `lg` (12, 14, 16, 20px), in the text colour. With a
   `label` it is a `status` that screen readers announce; without one it is
   decorative. Under `prefers-reduced-motion` it fades instead of spinning.
+- **Slider**, a new atom: a native range input in the library's colours, so
+  the keyboard, touch, right-to-left layouts and form submission are the
+  browser's own. `bind:value`, `min`, `max`, `step`, a label, helper or error
+  text, and three sizes on the Input and Button height scale. `showValue`
+  displays the value and `formatValue` adds a unit, which is also what
+  assistive technology reads (`aria-valuetext`).
 
 ### Changed
 

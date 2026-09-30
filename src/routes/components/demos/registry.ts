@@ -3,6 +3,7 @@ import ButtonDemo from "./ButtonDemo.svelte";
 import InputDemo from "./InputDemo.svelte";
 import ModalDemo from "./ModalDemo.svelte";
 import RadioDemo from "./RadioDemo.svelte";
+import SliderDemo from "./SliderDemo.svelte";
 import SidebarNavigationDemo from "./SidebarNavigationDemo.svelte";
 import SkeletonDemo from "./SkeletonDemo.svelte";
 import SpinnerDemo from "./SpinnerDemo.svelte";
@@ -19,6 +20,7 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     Button: ButtonDemo,
     Input: InputDemo,
     Radio: RadioDemo,
+    Slider: SliderDemo,
     Skeleton: SkeletonDemo,
     Spinner: SpinnerDemo,
     Modal: ModalDemo,
