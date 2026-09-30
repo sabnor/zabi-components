@@ -58,6 +58,7 @@
         loading: 'Laddar media',
         emptyTitle: 'Inga filer än',
         emptyDescription: 'Bilder och videor du laddar upp visas här.',
+        keyboardHint: 'Flytta mellan objekten med piltangenterna.',
     };
 </script>
 

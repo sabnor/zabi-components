@@ -148,7 +148,7 @@ export const Translated: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Every built-in string comes from the strings prop: the delete button name, the video name, the loading message and the empty state. Pass only the ones you translate.'
+                story: 'Every built-in string comes from the strings prop: the delete button name, the video name, the loading message, the empty state and the keyboard hint. Pass only the ones you translate.'
             }
         }
     }

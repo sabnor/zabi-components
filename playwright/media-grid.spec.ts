@@ -296,6 +296,144 @@ test.describe("MediaGrid — layout, keyboard and focus", () => {
     });
 });
 
+test.describe("MediaGrid — keyboard hint and right-to-left", () => {
+    test.beforeEach(async ({ page }) => {
+        await gotoHydrated(page);
+    });
+
+    test("hint: shown only while the grid has keyboard focus, and it describes the item Tab lands on", async ({
+        page,
+    }) => {
+        const grid = library(page);
+        const hint = grid.locator("[data-media-grid-hint]");
+        await expect(hint).toBeHidden();
+
+        // A pointer user never sees it.
+        await item(grid, "office.jpg").click();
+        await expect(hint).toBeHidden();
+        await item(grid, "team.png").click();
+
+        // What Chromium gives assistive technology for the Tab stop, hint hidden.
+        await page.locator("body").click({ position: { x: 1, y: 1 } });
+        const client = await page.context().newCDPSession(page);
+        await client.send("Accessibility.enable");
+        const descriptions = async () => {
+            const { nodes } = await client.send("Accessibility.getFullAXTree");
+            return nodes
+                .filter(
+                    (node) =>
+                        !node.ignored &&
+                        node.role?.value === "button" &&
+                        node.description?.value ===
+                            "Use the arrow keys to move between items.",
+                )
+                .map((node) => node.name?.value)
+                // The page's other demo grids have a Tab stop of their own.
+                .filter((name) => name === "team.png" || name === "office.jpg");
+        };
+        expect(await descriptions()).toEqual(["team.png"]);
+
+        await item(grid, "team.png").focus();
+        await page.keyboard.press("ArrowRight");
+        await expect(item(grid, "office.jpg")).toBeFocused();
+        await expect(hint).toBeVisible();
+        await expect(hint).toHaveText("Use the arrow keys to move between items.");
+        expect(
+            await descriptions(),
+            "The item arrowed to has no description to read again",
+        ).toEqual(["team.png"]);
+
+        await page.keyboard.press("Tab");
+        await page.keyboard.press("Tab");
+        await expect(hint, "Gone again when keyboard focus leaves the grid").toBeHidden();
+    });
+
+    test("right-to-left: the delete button and the badges move to the other corner", async ({
+        page,
+    }) => {
+        const grid = library(page);
+        const tile = item(grid, "team.png");
+        const remove = item(grid, "Delete team.png");
+        const before = { tile: await box(tile), remove: await box(remove) };
+        expect(
+            before.tile.x + before.tile.width - (before.remove.x + before.remove.width),
+            "Left-to-right: 4px inside the right edge",
+        ).toBeCloseTo(4, 0);
+
+        await grid.evaluate((el) => el.setAttribute("dir", "rtl"));
+        const after = { tile: await box(tile), remove: await box(remove) };
+        expect(
+            after.remove.x - after.tile.x,
+            "Right-to-left: 4px inside the left edge",
+        ).toBeCloseTo(4, 0);
+        const check = await box(tile.locator("[data-media-grid-check]"));
+        expect(
+            after.tile.x + after.tile.width - (check.x + check.width),
+            "The check mark takes the right corner instead",
+        ).toBeLessThan(8);
+    });
+});
+
+test.describe("MediaGrid — coarse pointer", () => {
+    test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 800 } });
+
+    test("touch: the delete button takes taps in a 44px area, drawn at 28px, and the tile keeps the rest", async ({
+        page,
+    }) => {
+        await gotoHydrated(page);
+        expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(true);
+        const grid = library(page);
+        const tile = item(grid, "office.jpg");
+        const remove = item(grid, "Delete office.jpg");
+        await tile.scrollIntoViewIfNeeded();
+        const drawn = await box(remove);
+        expect(drawn.width).toBe(28);
+        expect(drawn.height).toBe(28);
+
+        // Which element a tap at each point of the tile would reach.
+        const report = await tile.evaluate((el) => {
+            const rect = el.getBoundingClientRect();
+            let toDelete = 0;
+            let toTile = 0;
+            for (let x = Math.ceil(rect.left); x < rect.right; x += 1) {
+                for (let y = Math.ceil(rect.top); y < rect.bottom; y += 1) {
+                    const hit = document.elementFromPoint(x, y);
+                    if (hit?.closest("[data-media-grid-delete]")) toDelete += 1;
+                    else if (hit?.closest("[data-media-grid-item]") === el) toTile += 1;
+                }
+            }
+            return { width: rect.width, toDelete, toTile };
+        });
+        console.log("MEDIAGRID-HIT", JSON.stringify(report));
+        // 44px square, of which 4px hangs over the tile's edge on two sides.
+        expect(report.toDelete).toBeGreaterThanOrEqual(39 * 39);
+        expect(report.toDelete).toBeLessThanOrEqual(41 * 41);
+        expect(
+            report.toTile / (report.toTile + report.toDelete),
+            "Most of the tile still selects",
+        ).toBeGreaterThan(0.8);
+
+        // A near miss, 6px outside the drawn button, asks to delete instead of selecting.
+        await page.touchscreen.tap(drawn.x - 6, drawn.y + drawn.height + 6);
+        const dialog = page.getByRole("alertdialog");
+        await expect(dialog).toBeVisible();
+        await expect(page.getByTestId("media-demo-selected")).toHaveText("team.png");
+        await dialog.getByRole("button", { name: "Cancel" }).tap();
+        await expect(dialog).toBeHidden();
+
+        // The neighbouring tile is out of its reach.
+        const neighbour = await page.evaluate(
+            ([x, y]) =>
+                document
+                    .elementFromPoint(x, y)
+                    ?.closest("[data-media-grid-item]")
+                    ?.getAttribute("aria-label"),
+            [drawn.x + drawn.width + 4 + 8 + 2, drawn.y + 10],
+        );
+        expect(neighbour).not.toBe("office.jpg");
+    });
+});
+
 test.describe("MediaGrid — touch", () => {
     test.use({ hasTouch: true });
 

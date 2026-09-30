@@ -2482,7 +2482,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "Partial<MediaGridStrings>",
                         required: false,
                         description:
-                            "Overrides for the built-in strings: deleteLabel, videoLabel, loading, emptyTitle and emptyDescription.",
+                            "Overrides for the built-in strings: deleteLabel, videoLabel, loading, emptyTitle, emptyDescription and keyboardHint.",
                     },
                     {
                         name: "aria-label",

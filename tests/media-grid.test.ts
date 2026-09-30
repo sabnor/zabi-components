@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { isVideoPath, isVideoUrl as sharedIsVideoUrl } from "../src/components/util/media";
 import { columnCount, isVideoUrl, moveIndex } from "../src/components/util/media-grid";
 import MediaGridHarness from "./fixtures/MediaGridHarness.svelte";
 
@@ -43,6 +44,22 @@ describe("isVideoUrl", () => {
         expect(isVideoUrl("/media/hero.jpg")).toBe(false);
         expect(isVideoUrl("/media/photo.jpg?name=clip.mp4")).toBe(false);
         expect(isVideoUrl("/media/9f3a")).toBe(false);
+    });
+});
+
+describe("the shared video rule", () => {
+    it("is one function, whichever module it is imported from", () => {
+        expect(isVideoUrl).toBe(sharedIsVideoUrl);
+    });
+
+    it("judges a bare path or file name by its extension", () => {
+        expect(isVideoPath("holiday.MOV")).toBe(true);
+        expect(isVideoPath("/media/clip.m4v?download=1")).toBe(true);
+        expect(isVideoPath("clip.ogv#t=3")).toBe(true);
+        expect(isVideoPath("photo.jpeg")).toBe(false);
+        expect(isVideoPath("mp4")).toBe(false);
+        // A data URL has no extension; only `isVideoUrl` knows about those.
+        expect(isVideoPath("data:video/mp4;base64,AAAA")).toBe(false);
     });
 });
 
@@ -329,6 +346,81 @@ describe("MediaGrid keyboard", () => {
     });
 });
 
+describe("MediaGrid keyboard hint", () => {
+    const hint = () => grid().querySelector<HTMLElement>("[data-media-grid-hint]")!;
+    const described = () =>
+        tiles()
+            .filter((button) => button.hasAttribute("aria-describedby"))
+            .map((button) => button.getAttribute("aria-label"));
+
+    it("describes the Tab stop, and only it, with one short sentence", () => {
+        render(MediaGridHarness, { props: { deleting: "report" } });
+        expect(hint().textContent?.trim()).toBe("Use the arrow keys to move between items.");
+        expect(described()).toEqual(["hero.jpg"]);
+        expect(tile("hero.jpg").getAttribute("aria-describedby")).toBe(hint().id);
+        // Not on the delete buttons.
+        expect(grid().querySelectorAll("[data-media-grid-delete][aria-describedby]")).toHaveLength(0);
+    });
+
+    it("follows the selected item, which is where Tab lands", () => {
+        render(MediaGridHarness, { props: { initialSelected: "logo" } });
+        expect(described()).toEqual(["logo.svg"]);
+    });
+
+    it("stays on the item focus came in on, so arrowing does not repeat it", async () => {
+        const user = userEvent.setup();
+        render(MediaGridHarness);
+        stubColumns(3);
+
+        screen.getByTestId("before").focus();
+        await user.tab();
+        expect(document.activeElement).toBe(tile("hero.jpg"));
+        expect(described()).toEqual(["hero.jpg"]);
+
+        await user.keyboard("{ArrowRight}");
+        expect(document.activeElement).toBe(tile("team.png"));
+        // The newly focused item has no description to read out.
+        expect(described()).toEqual(["hero.jpg"]);
+        await user.keyboard("{ArrowDown}");
+        expect(described()).toEqual(["hero.jpg"]);
+    });
+
+    it("moves to the new Tab stop once focus has left the grid", async () => {
+        const user = userEvent.setup();
+        render(MediaGridHarness);
+        stubColumns(3);
+
+        tile("hero.jpg").focus();
+        await user.keyboard("{ArrowRight}");
+        await user.tab();
+        expect(document.activeElement).toBe(screen.getByTestId("after"));
+        // Coming back lands on team.png, and it is read there.
+        expect(described()).toEqual(["team.png"]);
+        await user.tab({ shift: true });
+        expect(document.activeElement).toBe(tile("team.png"));
+        expect(described()).toEqual(["team.png"]);
+    });
+
+    it("is hidden until the grid has keyboard focus, by a rule on the host", () => {
+        render(MediaGridHarness);
+        const classes = hint().className.split(" ");
+        expect(classes).toContain("hidden");
+        expect(classes).toContain("group-has-[:focus-visible]/media:block");
+        expect(grid().className.split(" ")).toContain("group/media");
+    });
+
+    it("is translatable, and absent with nothing to move between", () => {
+        const { unmount } = render(MediaGridHarness, {
+            props: { strings: { keyboardHint: "Flytta med piltangenterna." } },
+        });
+        expect(hint().textContent?.trim()).toBe("Flytta med piltangenterna.");
+        unmount();
+
+        render(MediaGridHarness, { props: { initialItems: [] } });
+        expect(grid().querySelector("[data-media-grid-hint]")).toBeNull();
+    });
+});
+
 describe("MediaGrid delete", () => {
     it("has no delete buttons unless ondelete is given", () => {
         render(MediaGridHarness);
@@ -351,6 +443,17 @@ describe("MediaGrid delete", () => {
         expect(onselect).not.toHaveBeenCalled();
         expect(selected()).toBe("");
         expect(tiles()).toHaveLength(7);
+    });
+
+    it("sits on the logical end corner, with a larger tap area for coarse pointers", () => {
+        render(MediaGridHarness, { props: { deleting: "report" } });
+        const classes = tile("Delete hero.jpg").className.split(" ");
+        expect(classes).toContain("end-1");
+        expect(classes).not.toContain("right-1");
+        // Drawn at 28px; the pseudo-element is what grows, and only on touch.
+        expect(classes).toContain("size-7");
+        expect(classes).toContain("before:hidden");
+        expect(classes).toContain("pointer-coarse:before:block");
     });
 
     it("names a video's delete button by its label alone", () => {
@@ -540,10 +643,11 @@ describe("MediaGrid states", () => {
         const { unmount } = render(MediaGridHarness, { props: { initialItems: [] } });
         const heading = screen.getByRole("heading", { name: "No media yet" });
         expect(heading.tagName).toBe("H3");
-        // Compact: the tighter padding, not the page-sized default.
-        const section = heading.closest("section")!;
-        expect(section.className).toContain("py-6");
-        expect(section.className).not.toContain("py-12");
+        expect(screen.getByText("Images and videos you upload appear here.")).toBeTruthy();
+        // Compact: the smaller title, not the page-sized default. Read from
+        // the heading, whatever element EmptyState wraps it in.
+        expect(heading.className).toContain("text-base");
+        expect(heading.className).not.toContain("text-lg");
         unmount();
 
         render(MediaGridHarness, {

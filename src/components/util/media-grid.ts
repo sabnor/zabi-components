@@ -23,6 +23,12 @@ export interface MediaGridStrings {
     loading: string;
     emptyTitle: string;
     emptyDescription: string;
+    /**
+     * How to get around by keyboard. Read once when focus enters the grid,
+     * and shown below it while it has keyboard focus. Keep it to one short
+     * sentence.
+     */
+    keyboardHint: string;
 }
 
 export const MEDIA_GRID_STRINGS: MediaGridStrings = {
@@ -31,14 +37,11 @@ export const MEDIA_GRID_STRINGS: MediaGridStrings = {
     loading: "Loading media",
     emptyTitle: "No media yet",
     emptyDescription: "Images and videos you upload appear here.",
+    keyboardHint: "Use the arrow keys to move between items.",
 };
 
-const VIDEO_EXTENSION = /\.(mp4|m4v|webm|ogv|mov)$/i;
-
-/** The same rule `ImageUpload` applies to its preview: a video data URL, or a video file extension before any query or hash. */
-export function isVideoUrl(url: string): boolean {
-    return url.startsWith("data:video/") || VIDEO_EXTENSION.test(url.split(/[?#]/)[0]);
-}
+// The rule is shared with `ImageUpload`; re-exported so this module's exports stay as they were.
+export { isVideoUrl } from "./media.js";
 
 /**
  * Columns in the rendered grid, read from the top edge of each tile in DOM

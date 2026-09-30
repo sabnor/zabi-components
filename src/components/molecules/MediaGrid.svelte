@@ -6,6 +6,7 @@
     import EmptyState from "./EmptyState.svelte";
     import { cn } from "../util/cn.js";
     import type { CollapsibleHeadingLevel } from "../util/collapsible.js";
+    import { generateId } from "../util/ssr-safe.js";
     import {
         MEDIA_GRID_STRINGS,
         columnCount,
@@ -109,6 +110,8 @@
         typeof minTileSize === "number" ? `${minTileSize}px` : minTileSize,
     );
 
+    const hintId = generateId("media-grid-hint");
+
     let host: HTMLDivElement | undefined = $state();
     /** URLs that failed to load; a changed URL is tried again. */
     let failed = $state<string[]>([]);
@@ -124,6 +127,28 @@
         if (!multiple && selected !== null && keys.includes(selected)) return selected;
         return keys[0] ?? null;
     });
+
+    /**
+     * Nothing about a list of buttons says that the arrow keys work, so the
+     * item focus arrives on is described by the hint. Only that one: a
+     * description on every item would be read again at each arrow press.
+     * While focus is outside, that item is the Tab stop; once inside, it
+     * stays the item focus came in on until focus leaves.
+     */
+    let focusInside = $state(false);
+    let entryKey = $state<MediaGridKey | null>(null);
+    const describedKey = $derived(focusInside ? entryKey : tabbableKey);
+
+    function handleTileFocus(key: MediaGridKey) {
+        // Runs before the host's own focusin, which sets `focusInside`.
+        if (!focusInside) entryKey = key;
+        activeKey = key;
+    }
+
+    function handleHostFocusOut(event: FocusEvent) {
+        const next = event.relatedTarget;
+        if (!(next instanceof Node) || !host?.contains(next)) focusInside = false;
+    }
 
     function isSelected(key: MediaGridKey): boolean {
         return multiple ? selectedKeys.includes(key) : selected === key;
@@ -304,7 +329,9 @@
 <div
     bind:this={host}
     tabindex="-1"
-    class={cn("focus-ring relative rounded-container", className)}
+    class={cn("group/media focus-ring relative rounded-container", className)}
+    onfocusin={() => (focusInside = true)}
+    onfocusout={handleHostFocusOut}
     data-disabled={disabled ? "" : undefined}
     {...restProps}
 >
@@ -344,7 +371,7 @@
                     class="relative aspect-square"
                     data-media-grid-tile
                     data-selected={on ? "" : undefined}
-                    onfocusin={() => (activeKey = key)}
+                    onfocusin={() => handleTileFocus(key)}
                 >
                     <!-- Selection is a thicker border and a check mark, not
                     a colour alone. -->
@@ -358,6 +385,7 @@
                         )}
                         aria-pressed={on}
                         aria-label={video ? text.videoLabel(label) : label}
+                        aria-describedby={key === describedKey ? hintId : undefined}
                         {tabindex}
                         {disabled}
                         data-media-grid-item
@@ -399,7 +427,7 @@
                             <span
                                 class={cn(
                                     badgeClasses,
-                                    "left-1 top-1 rounded-pill bg-action-primary text-action-primary",
+                                    "start-1 top-1 rounded-pill bg-action-primary text-action-primary",
                                 )}
                                 data-media-grid-check
                             >
@@ -412,7 +440,7 @@
                             <span
                                 class={cn(
                                     badgeClasses,
-                                    "bottom-1 left-1 rounded-control border border-border-overlay bg-surface-overlay text-body",
+                                    "bottom-1 start-1 rounded-control border border-border-overlay bg-surface-overlay text-body",
                                 )}
                                 data-media-grid-video
                             >
@@ -423,10 +451,14 @@
                     {#if isDeletable(entry)}
                         <!-- Beside the item's button, not inside it, and
                         always visible: hover cannot reveal it on a touch
-                        screen. -->
+                        screen. On the end corner, so it mirrors in a
+                        right-to-left layout. On a coarse pointer the
+                        pseudo-element widens what takes the tap to 44px
+                        without changing the 28px that is drawn, so a near
+                        miss no longer toggles the selection. -->
                         <button
                             type="button"
-                            class="focus-ring focus-ring--danger absolute right-1 top-1 flex size-7 cursor-pointer items-center justify-center rounded-control border border-border-overlay bg-surface-overlay text-body transition-colors duration-150 enabled:hover:text-error-text motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50"
+                            class="focus-ring focus-ring--danger absolute end-1 top-1 flex size-7 cursor-pointer before:absolute before:hidden before:-inset-[9px] before:content-[''] pointer-coarse:before:block items-center justify-center rounded-control border border-border-overlay bg-surface-overlay text-body transition-colors duration-150 enabled:hover:text-error-text motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50"
                             aria-label={text.deleteLabel(label)}
                             {tabindex}
                             {disabled}
@@ -447,6 +479,16 @@
                 {/each}
             {/if}
         </ul>
+        <!-- Hidden until the grid has keyboard focus: a sighted keyboard user
+        needs it as much as a screen reader user, and a pointer user does not.
+        It describes the item focus enters on whether it is shown or not. -->
+        <p
+            id={hintId}
+            class="mt-2 hidden text-xs text-description group-has-[:focus-visible]/media:block"
+            data-media-grid-hint
+        >
+            {text.keyboardHint}
+        </p>
     {/if}
 
     <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">

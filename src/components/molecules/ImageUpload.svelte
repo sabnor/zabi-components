@@ -4,6 +4,7 @@
     import Button from "../atoms/Button.svelte";
     import { Image } from "@lucide/svelte";
     import { cn } from "../util/cn.js";
+    import { isVideoPath, isVideoUrl } from "../util/media.js";
     import { generateId } from "../util/ssr-safe.js";
 
     export type ImageUploadFileDetail = {
@@ -108,8 +109,6 @@
         ...restProps
     }: Props = $props();
 
-    const VIDEO_EXTENSION = /\.(mp4|m4v|webm|ogv|mov)$/i;
-
     const fallbackId = generateId("image-upload");
     const controlId = $derived(idProp ?? fallbackId);
     const labelId = $derived(`${controlId}-label`);
@@ -131,15 +130,11 @@
     // Set by Change, Remove and the dropzone: the next swap is this control's doing.
     let focusReturnArmed = false;
 
-    function isVideoPath(path: string) {
-        return VIDEO_EXTENSION.test(path.split(/[?#]/)[0]);
-    }
-
     const resolvedPreviewType = $derived.by<ImageUploadPreviewType>(() => {
         if (previewType) return previewType;
         if (!value) return "image";
         if (value === currentObjectUrl && currentObjectType) return currentObjectType;
-        return value.startsWith("data:video/") || isVideoPath(value) ? "video" : "image";
+        return isVideoUrl(value) ? "video" : "image";
     });
 
     const actionsInStrip = $derived(

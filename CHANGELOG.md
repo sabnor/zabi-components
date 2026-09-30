@@ -156,6 +156,10 @@ Whenever token or CSS import API surface changes, include:
   or your `empty` snippet. Columns follow
   the width (`minTileSize`, default 96px), and every built-in string can be
   replaced through `strings`.
+  "Use the arrow keys to move between items." is read when focus enters the
+  grid and shown below it while it has keyboard focus. The delete button sits
+  on the end corner, mirrors in right-to-left layouts, and takes taps in a
+  44px area on touch screens.
 - **Modal and SlideUp take `initialFocus`**, a CSS selector for the control
   that takes focus on open, as Drawer does.
 - **SlideUp's close button can be renamed** with `closeLabel` (default "Close").

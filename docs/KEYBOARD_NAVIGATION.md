@@ -410,6 +410,12 @@ of two hundred files is one Tab stop; the arrow keys move between items and do
 not select. A screen reader's own button and list navigation reaches every
 item whatever the Tab order.
 
+Nothing about a list of buttons says that the arrow keys work, so the grid
+says it: "Use the arrow keys to move between items." is the description of the
+item focus arrives on (read once per visit, not at every arrow press), and the
+same sentence is shown below the grid while it has keyboard focus. Translate it
+through `strings.keyboardHint`.
+
 **Usage:**
 ```svelte
 <MediaGrid
