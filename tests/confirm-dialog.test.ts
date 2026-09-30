@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/svelte";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { tick } from "svelte";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -280,7 +280,8 @@ describe("ConfirmDialog loading", () => {
         expect(confirmButton().disabled).toBe(true);
         expect(confirmButton().getAttribute("aria-busy")).toBe("true");
         expect(cancelButton().disabled).toBe(true);
-        expect(dialog().getAttribute("aria-busy")).toBe("true");
+        // Not on the panel: a busy element may hold back the status message in it.
+        expect(dialog().hasAttribute("aria-busy")).toBe(false);
 
         await user.keyboard("{Escape}");
         await fireEvent.click(dialog().parentElement as HTMLElement);
@@ -432,5 +433,67 @@ describe("ConfirmDialog over a Modal", () => {
         expect(state()).toBe("closed");
         expect(screen.queryByRole("alertdialog")).toBeNull();
         expect(screen.queryByRole("dialog")).toBeNull();
+    });
+});
+
+describe("ConfirmDialog loading announcement", () => {
+    const status = () => within(dialog()).getByRole("status");
+
+    it("has an empty polite status region until loading starts, then says so once", async () => {
+        const user = userEvent.setup();
+        const work = deferred<void>();
+        render(ConfirmDialogHarness, { props: { onconfirm: () => work.promise } });
+
+        await openDialog(user);
+        expect(within(dialog()).getAllByRole("status")).toHaveLength(1);
+        expect(status().getAttribute("aria-live")).toBe("polite");
+        expect(status().textContent?.trim()).toBe("");
+        const region = status();
+
+        await user.click(confirmButton());
+        // The same element gains the text: that change is what is announced.
+        expect(status()).toBe(region);
+        expect(region.textContent?.trim()).toBe("Working…");
+        expect(region.className).toContain("sr-only");
+
+        work.resolve();
+        await waitFor(() => expect(state()).toBe("closed"));
+    });
+
+    it("clears the message when a failed confirm leaves the dialog open", async () => {
+        const user = userEvent.setup();
+        const onerror = vi.fn();
+        render(ConfirmDialogHarness, {
+            props: { onconfirm: () => Promise.reject(new Error("409")), onerror },
+        });
+
+        await openDialog(user);
+        await user.click(confirmButton());
+        await waitFor(() => expect(onerror).toHaveBeenCalled());
+        await tick();
+        expect(status().textContent?.trim()).toBe("");
+    });
+
+    it("takes the message from loadingLabel, for the loading prop too", () => {
+        render(ConfirmDialogHarness, {
+            props: { initialOpen: true, loading: true, loadingLabel: "Raderar…" },
+        });
+        expect(status().textContent?.trim()).toBe("Raderar…");
+    });
+
+    it("keeps the message out of the dialog's description", () => {
+        render(ConfirmDialogHarness, {
+            props: { initialOpen: true, loading: true, rich: true, message: "" },
+        });
+        expect(
+            screen.getByRole("alertdialog", {
+                description: "Type the project name to continue.",
+            }),
+        ).toBeTruthy();
+    });
+
+    it("does not draw a focus outline around the panel it holds focus on", () => {
+        render(ConfirmDialogHarness, { props: { initialOpen: true } });
+        expect(dialog().className).toContain("outline-none");
     });
 });

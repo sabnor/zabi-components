@@ -3543,6 +3543,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Shows the confirm button's loading state, disables cancel and blocks Escape and the backdrop. Set by the dialog itself while a promise is pending.",
                     },
                     {
+                        name: "loadingLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Working…",
+                        description:
+                            "Announced to assistive technology once when loading starts. It is not shown; the spinner is the visual.",
+                    },
+                    {
                         name: "portal",
                         type: "boolean",
                         required: false,
@@ -3696,6 +3704,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "CSS selector, inside the panel, of the control that takes focus on open. Without a match the first control does: the close button.",
                     },
+                    {
+                        name: "onkeydown",
+                        type: "(event: KeyboardEvent) => void",
+                        required: false,
+                        description:
+                            "Hears every keydown in the drawer, after the drawer has handled Escape. The Tab cycle is kept either way.",
+                    },
                 ],
                 variants: ["left", "right", "start", "end", "sm", "md", "lg"],
                 examples: [
@@ -3752,6 +3767,17 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
     <Modal bind:isOpen={newOpen} title="New project" portal>
         <Input label="Project name" />
     </Modal>
+</Drawer>`,
+                    },
+                    {
+                        title: "Text that scrolls",
+                        description:
+                            "With nothing to focus in the content, the scrolling area itself takes focus so the arrow keys can scroll it",
+                        code: `<Drawer bind:isOpen={open} title="Release notes" size="sm">
+    {#each notes as note (note.version)}
+        <h3 class="mt-4 text-sm font-medium text-headline">{note.version}</h3>
+        <p class="mt-1 text-sm text-description">{note.text}</p>
+    {/each}
 </Drawer>`,
                     },
                 ],

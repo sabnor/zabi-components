@@ -473,8 +473,10 @@ to the element that opened it.
 
 While a confirm is loading both buttons are disabled and Escape and the
 backdrop do nothing. Focus is held on the dialog itself instead of falling to
-the page, and returns to the confirm button if the request fails and the
-dialog stays open.
+the page (without a focus outline around the whole dialog, since the dialog is
+not a control), and returns to the confirm button if the request fails and the
+dialog stays open. `loadingLabel` ("Working…" by default) is announced once,
+politely, when loading starts.
 
 **Usage:**
 ```svelte
@@ -514,6 +516,15 @@ With other overlays: a Drawer can open over a Modal and a Modal can open from a
 Drawer. Escape closes only the topmost one, Tab stays inside it, and focus goes
 back one step at a time. If the focused control is disabled or removed and focus
 falls to the page, the next Tab brings it back into the drawer.
+
+Content with nothing to focus: when the content is taller than the drawer and
+holds no control, the scrolling area becomes a Tab stop, named by the title, so
+the arrow keys, Page Up/Down and Space can scroll it. With any control in the
+content there is no extra Tab stop.
+
+`onkeydown` hears every keydown inside the drawer, after the drawer has handled
+Escape; it does not replace the Tab cycle. On a touch screen the close button's
+hit area is 44px around the same 32px button.
 
 **Usage:**
 ```svelte

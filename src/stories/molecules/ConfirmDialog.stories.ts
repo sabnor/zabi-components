@@ -140,6 +140,8 @@ export const Translated: Story = {
         message: 'Projektet och dess filer tas bort för alla.',
         confirmLabel: 'Radera',
         cancelLabel: 'Avbryt',
+        loadingLabel: 'Arbetar…',
+        outcome: 'resolve',
     },
     render: (args) => ({
         Component: ConfirmDialogStory,
@@ -148,7 +150,7 @@ export const Translated: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Every string comes from props: title, message, confirmLabel and cancelLabel. There is no built-in text besides the two button defaults.'
+                story: 'Every string comes from props: title, message, confirmLabel, cancelLabel and loadingLabel, the message announced to screen readers while the request runs. The defaults are Confirm, Cancel and Working…'
             }
         }
     }

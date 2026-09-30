@@ -512,3 +512,73 @@ describe("Drawer stacking with Modal", () => {
         expect(overlayOf("Alone").style.zIndex).toBe("");
     });
 });
+
+describe("Drawer onkeydown", () => {
+    it("calls the caller's handler and keeps its own Tab cycle and Escape", async () => {
+        const user = userEvent.setup();
+        const onkeydown = vi.fn();
+        render(DrawerHarness, { props: { onkeydown, withFooter: true } });
+
+        await openDrawer(user);
+        await user.keyboard("a");
+        expect(onkeydown).toHaveBeenCalledTimes(1);
+        expect(onkeydown.mock.calls[0][0].key).toBe("a");
+
+        // The trap is still the drawer's: Shift+Tab from the first control wraps.
+        await user.tab({ shift: true });
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Done" }));
+        expect(onkeydown.mock.calls.at(-1)?.[0].key).toBe("Tab");
+
+        await user.keyboard("{Escape}");
+        expect(state()).toBe("closed");
+        expect(onkeydown.mock.calls.at(-1)?.[0].key).toBe("Escape");
+    });
+});
+
+describe("Drawer scrolling content", () => {
+    /** jsdom has no layout; give every element a box shorter than its content. */
+    function overflow() {
+        vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(1200);
+        vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(400);
+    }
+    const scroller = () => screen.getByTestId("prose").parentElement as HTMLElement;
+
+    it("makes the scrolling area a named Tab stop when nothing in it can take focus", async () => {
+        overflow();
+        const user = userEvent.setup();
+        render(DrawerHarness, { props: { textOnly: true } });
+
+        await openDrawer(user);
+        expect(scroller().getAttribute("tabindex")).toBe("0");
+        expect(screen.getByRole("group", { name: "Choose a project" })).toBe(scroller());
+
+        // It is part of the drawer's Tab cycle, after the close button.
+        expect(document.activeElement).toBe(closeButton());
+        await user.tab();
+        expect(document.activeElement).toBe(scroller());
+        await user.tab();
+        expect(document.activeElement).toBe(closeButton());
+    });
+
+    it("adds no Tab stop when the content has a control, even if it scrolls", async () => {
+        overflow();
+        const user = userEvent.setup();
+        render(DrawerHarness);
+
+        await openDrawer(user);
+        const box = screen.getByRole("textbox", { name: "Search projects" })
+            .parentElement as HTMLElement;
+        expect(box.hasAttribute("tabindex")).toBe(false);
+        expect(box.hasAttribute("role")).toBe(false);
+        expect(box.hasAttribute("aria-labelledby")).toBe(false);
+    });
+
+    it("adds no Tab stop when the content fits", async () => {
+        const user = userEvent.setup();
+        render(DrawerHarness, { props: { textOnly: true } });
+
+        await openDrawer(user);
+        expect(scroller().hasAttribute("tabindex")).toBe(false);
+        expect(screen.queryByRole("group")).toBeNull();
+    });
+});

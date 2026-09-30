@@ -130,6 +130,59 @@ test.describe("Drawer — edge, focus and closing", () => {
     });
 });
 
+test.describe("Drawer — content that only scrolls", () => {
+    test.beforeEach(async ({ page }) => {
+        await page.goto("/components/Drawer", { waitUntil: "domcontentloaded" });
+    });
+
+    test("text-only content that overflows is a Tab stop the keyboard can scroll", async ({
+        page,
+    }) => {
+        const opener = page.getByRole("button", { name: "Release notes" });
+        const panel = page.getByRole("dialog", { name: "Release notes" });
+        await openWith(opener, panel);
+        await settled(panel);
+
+        const scroller = panel.getByRole("group", { name: "Release notes" });
+        await expect(scroller).toHaveAttribute("tabindex", "0");
+        expect(
+            await scroller.evaluate((el) => el.scrollHeight > el.clientHeight),
+        ).toBe(true);
+
+        // Close button first, then the scrolling area, then back: one extra stop.
+        await expect(panel.getByRole("button", { name: "Close" })).toBeFocused();
+        await page.keyboard.press("Tab");
+        await expect(scroller).toBeFocused();
+        await expect(scroller).not.toHaveCSS("outline-style", "none");
+
+        await page.keyboard.press("PageDown");
+        await expect.poll(() => scroller.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+
+        await page.keyboard.press("Tab");
+        await expect(panel.getByRole("button", { name: "Close" })).toBeFocused();
+    });
+
+    test("content with a control in it gets no extra Tab stop", async ({ page }) => {
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await openWith(opener, panel);
+        await settled(panel);
+
+        await expect(panel.getByRole("group")).toHaveCount(0);
+        expect(await panel.locator("[tabindex='0']").count()).toBe(0);
+    });
+
+    test("with a mouse the close button has no enlarged hit area", async ({ page }) => {
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await openWith(opener, panel);
+        const content = await panel
+            .getByRole("button", { name: "Close" })
+            .evaluate((el) => getComputedStyle(el, "::before").content);
+        expect(content).toBe("none");
+    });
+});
+
 test.describe("Drawer — with Modal", () => {
     test("modal, drawer, modal: Escape closes the topmost and focus unwinds in order", async ({
         page,
@@ -238,6 +291,51 @@ test.describe("Drawer — phone", () => {
         await expect(panel.getByRole("button", { name: "Cancel" })).toBeInViewport();
         await panel.getByRole("button", { name: "Close" }).tap();
         await expect(panel).toBeHidden();
+    });
+
+    test("the close button takes a tap within 44px, and does not cover the title", async ({
+        page,
+    }) => {
+        await page.goto("/components/Drawer", { waitUntil: "domcontentloaded" });
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await expect(async () => {
+            if ((await panel.count()) === 0) await opener.tap();
+            await expect(panel).toBeVisible({ timeout: 1_000 });
+        }).toPass({ timeout: 30_000 });
+        await settled(panel);
+
+        const close = panel.getByRole("button", { name: "Close" });
+        const box = (await close.boundingBox())!;
+        // The visible box is unchanged.
+        expect(Math.round(box.width)).toBe(32);
+        expect(Math.round(box.height)).toBe(32);
+
+        // The title's own box ends before the hit area starts.
+        const title = (await panel.getByRole("heading", { level: 2 }).boundingBox())!;
+        expect(title.x + title.width).toBeLessThanOrEqual(box.x - 6);
+        const underTitleEdge = await page.evaluate(
+            ([x, y]) => document.elementFromPoint(x, y)?.tagName,
+            [title.x + title.width - 2, title.y + title.height / 2],
+        );
+        expect(underTitleEdge).toBe("H2");
+
+        // 4px outside the visible box, on each side, still closes.
+        const points: [number, number][] = [
+            [box.x - 4, box.y + box.height / 2],
+            [box.x + box.width / 2, box.y - 4],
+            [box.x + box.width + 4, box.y + box.height / 2],
+            [box.x + box.width / 2, box.y + box.height + 4],
+        ];
+        for (const [x, y] of points) {
+            if ((await panel.count()) === 0) {
+                await opener.tap();
+                await expect(panel).toBeVisible();
+                await settled(panel);
+            }
+            await page.touchscreen.tap(x, y);
+            await expect(panel).toBeHidden();
+        }
     });
 
     test("the narrow drawer leaves part of the page visible to tap", async ({ page }) => {

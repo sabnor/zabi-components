@@ -29,6 +29,11 @@
          */
         loading?: boolean;
         /**
+         * Announced to assistive technology, once, when the loading state
+         * starts. Not shown: the spinner on the confirm button is the visual.
+         */
+        loadingLabel?: string;
+        /**
          * Called when the confirm button is activated. The dialog then closes,
          * unless this returns (or resolves to) `false`, throws or rejects.
          */
@@ -63,6 +68,7 @@
         confirmLabel = "Confirm",
         cancelLabel = "Cancel",
         loading = false,
+        loadingLabel = "Working…",
         onconfirm,
         oncancel,
         onerror,
@@ -162,6 +168,13 @@
   is the way out, it is the first control, and so it takes the initial focus
   for every variant. The message is rendered here, beside the icon, so the
   description is wired here too; Modal puts these attributes on its panel.
+
+  `outline-none`: the panel holds focus while loading. It is not a control,
+  and the browser's focus outline around the whole dialog says nothing.
+
+  No `aria-busy` on the panel: assistive technology may hold back changes
+  inside a busy element, and the status message below is such a change. The
+  confirm button carries `aria-busy` itself.
 -->
 <Modal
     bind:isOpen={open}
@@ -173,9 +186,8 @@
     dismissible={!busy}
     onclose={({ reason }) => oncancel?.({ reason })}
     data-testid={dataTestId}
-    class={className}
+    class={cn("outline-none", className)}
     aria-describedby={messageId}
-    aria-busy={busy ? "true" : undefined}
     data-variant={variant}
 >
     <div bind:this={bodyElement} class="flex items-start gap-3">
@@ -193,6 +205,11 @@
             {/if}
             {@render children?.()}
         </div>
+        <!-- Always in the dialog, so the text appearing is the change that
+        gets announced; it changes only when loading starts or ends. -->
+        <span class="sr-only" role="status" aria-live="polite">
+            {busy ? loadingLabel : ""}
+        </span>
     </div>
 
     {#snippet footer()}

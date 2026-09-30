@@ -158,6 +158,8 @@ Whenever token or CSS import API surface changes, include:
 - **Modal and SlideUp take `initialFocus`**, a CSS selector for the control
   that takes focus on open, as Drawer does.
 - **SlideUp's close button can be renamed** with `closeLabel` (default "Close").
+- **ConfirmDialog announces its loading state.** `loadingLabel` (default
+  "Working…") is read out once, politely, when loading starts.
 
 ### Changed
 
@@ -312,6 +314,16 @@ Whenever token or CSS import API surface changes, include:
 - **ThemeToggle shows the right icon before it mounts.** On a dark page the
   server-rendered button showed the Sun until hydration. Both icons are now in
   the markup and the `dark` class picks one. No prop changed.
+- **ConfirmDialog no longer draws a focus outline around the whole dialog**
+  while it is loading, and no longer sets `aria-busy` on the dialog panel,
+  which could hold back the loading announcement.
+- **Drawer's `onkeydown` was silently dropped.** It now runs after the drawer
+  has handled Escape, and the Tab cycle is kept.
+- **Drawer content with nothing to focus can be scrolled by keyboard.** When
+  the content overflows and holds no control, the scrolling area is a Tab
+  stop named by the title.
+- **Drawer's close button has a 44px hit area on touch screens**, around the
+  same 32px button.
 
 ### Documentation
 

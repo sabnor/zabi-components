@@ -13,6 +13,7 @@
         confirmLabel?: string;
         cancelLabel?: string;
         loading?: boolean;
+        loadingLabel?: string;
         portal?: boolean;
         /** Render a paragraph through `children`. */
         rich?: boolean;
@@ -28,6 +29,7 @@
         confirmLabel,
         cancelLabel,
         loading = false,
+        loadingLabel,
         portal,
         rich = false,
         onconfirm,
@@ -53,6 +55,7 @@
         {confirmLabel}
         {cancelLabel}
         {loading}
+        {loadingLabel}
         {portal}
         {onconfirm}
         {oncancel}

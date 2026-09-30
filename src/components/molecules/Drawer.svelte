@@ -5,6 +5,7 @@
     import { cn } from "../util/cn.js";
     import {
         focusFirstElement,
+        getFocusableElements,
         joinOverlayStack,
         recoverStrayFocus,
         returnFocus,
@@ -24,7 +25,7 @@
     type Props = Omit<
         HTMLAttributes<HTMLDivElement>,
         // `onclose` is also a DOM event handler; ours carries a reason instead.
-        "class" | "title" | "onclose"
+        "class" | "title" | "onclose" | "onkeydown"
     > & {
         isOpen?: boolean;
         /** Heading of the drawer, and its accessible name. */
@@ -52,6 +53,11 @@
         dismissible?: boolean;
         /** Fired when the drawer closes itself, with what the user did. */
         onclose?: (detail: { reason: DrawerCloseReason }) => void;
+        /**
+         * Hears every keydown in the drawer, after the drawer has handled
+         * Escape. The Tab cycle is kept either way.
+         */
+        onkeydown?: (event: KeyboardEvent) => void;
         /** Accessible name of the close button. */
         closeLabel?: string;
         /**
@@ -76,6 +82,7 @@
         portal = true,
         dismissible = true,
         onclose,
+        onkeydown,
         closeLabel = "Close",
         initialFocus,
         class: className = "",
@@ -90,7 +97,15 @@
     const descriptionId = generateId("drawer-description");
 
     let panel = $state<HTMLDivElement>();
+    let scroller = $state<HTMLDivElement>();
     let focusActive = false;
+    /**
+     * True when the content is taller than its box and holds nothing that can
+     * take focus. Only then is the scrolling box itself a Tab stop, so the
+     * keyboard can scroll it; content with a control in it is reached, and
+     * scrolled, through that control.
+     */
+    let scrollerNeedsFocus = $state(false);
     /** Position among the open overlays; lifts a drawer opened later above the earlier ones. */
     let depth = $state(0);
 
@@ -141,6 +156,30 @@
     }
 
     $effect(() => {
+        const box = scroller;
+        if (!isOpen || !box) {
+            scrollerNeedsFocus = false;
+            return;
+        }
+        const measure = () => {
+            scrollerNeedsFocus =
+                box.scrollHeight > box.clientHeight &&
+                getFocusableElements(box).length === 0;
+        };
+        measure();
+        // The answer changes with the viewport and with the content.
+        const resize =
+            typeof ResizeObserver === "function" ? new ResizeObserver(measure) : undefined;
+        resize?.observe(box);
+        const mutation = new MutationObserver(measure);
+        mutation.observe(box, { childList: true, subtree: true, characterData: true });
+        return () => {
+            resize?.disconnect();
+            mutation.disconnect();
+        };
+    });
+
+    $effect(() => {
         const container = panel;
         if (isOpen && container) {
             saveFocus();
@@ -182,6 +221,9 @@
             event.preventDefault();
             close("escape");
         }
+        // The caller's handler, as in Modal: it listens, the trap on the
+        // panel is separate and cannot be replaced by it.
+        onkeydown?.(event);
     }
 </script>
 
@@ -228,10 +270,13 @@
                     {/if}
                 </div>
                 <!-- `aria-disabled`, not `disabled` or removed: the button may hold focus when `dismissible` turns false, and a disabled or missing element would drop focus out of the trap. -->
+                <!-- On a touch screen the hit area grows to 44px around the
+                same 32px box. The 6px it adds each way stays inside the
+                header's padding and the 16px gap to the title. -->
                 <button
                     type="button"
                     onclick={() => close("close-button")}
-                    class="focus-ring flex size-8 shrink-0 items-center justify-center rounded-control text-description transition-colors motion-reduce:transition-none {dismissible
+                    class="focus-ring relative flex size-8 shrink-0 items-center justify-center rounded-control text-description transition-colors motion-reduce:transition-none pointer-coarse:before:absolute pointer-coarse:before:-inset-1.5 pointer-coarse:before:content-[''] {dismissible
                         ? 'cursor-pointer hover:bg-surface-overlay-hover hover:text-headline'
                         : 'cursor-not-allowed opacity-50'}"
                     aria-label={closeLabel}
@@ -243,7 +288,20 @@
 
             <!-- `pt-1`: a scroll container clips, and the focus ring of a
             first control needs the room. -->
-            <div class="min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-1">
+            <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+            <div
+                bind:this={scroller}
+                class={cn(
+                    "min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-1",
+                    // Inset: a ring outside the box would be cut off at
+                    // the screen edge the drawer sits on.
+                    scrollerNeedsFocus &&
+                        "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus-ring",
+                )}
+                tabindex={scrollerNeedsFocus ? 0 : undefined}
+                role={scrollerNeedsFocus ? "group" : undefined}
+                aria-labelledby={scrollerNeedsFocus ? titleId : undefined}
+            >
                 {@render children?.()}
             </div>
 

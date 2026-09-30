@@ -84,7 +84,13 @@ test.describe("ConfirmDialog — focus, loading and the backdrop", () => {
         await expect(confirm).toBeDisabled();
         await expect(confirm).toHaveAttribute("aria-busy", "true");
         await expect(cancel).toBeDisabled();
-        await expect(panel).toHaveAttribute("aria-busy", "true");
+        // Announced through a polite status region, not `aria-busy` on the panel.
+        await expect(panel.getByRole("status")).toHaveText("Working…");
+        await expect(panel).not.toHaveAttribute("aria-busy", /.*/);
+        // The panel holds the focus, reached by keyboard, and draws no ring
+        // around the whole dialog.
+        await expect(panel).toBeFocused();
+        await expect(panel).toHaveCSS("outline-style", "none");
         // The focused button was just disabled; focus must not be on <body>.
         expect(
             await page.evaluate(

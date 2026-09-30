@@ -19,6 +19,9 @@
         initialFocus?: string;
         /** `drawer-in-modal`: the drawer opens from a modal. `modal-in-drawer`: the reverse. */
         nesting?: "none" | "drawer-in-modal" | "modal-in-drawer";
+        /** Replace the controls with plain text, as a read-only drawer has. */
+        textOnly?: boolean;
+        onkeydown?: (event: KeyboardEvent) => void;
         onclose?: (detail: { reason: DrawerCloseReason }) => void;
     }
 
@@ -33,6 +36,8 @@
         withFooter = false,
         initialFocus,
         nesting = "none",
+        textOnly = false,
+        onkeydown,
         onclose,
     }: Props = $props();
 
@@ -55,7 +60,11 @@
         {closeLabel}
         {initialFocus}
         {onclose}
+        {onkeydown}
     >
+        {#if textOnly}
+            <p data-testid="prose">Release notes, with nothing to focus.</p>
+        {:else}
         <input aria-label="Search projects" id="project-search" />
         <button type="button">Zabi web</button>
         <button
@@ -65,6 +74,7 @@
         >
             Apply
         </button>
+        {/if}
         {#if nesting === "modal-in-drawer"}
             <button type="button" onclick={() => (modalOpen = true)}>New project</button>
             <Modal bind:isOpen={modalOpen} title="New project" portal>

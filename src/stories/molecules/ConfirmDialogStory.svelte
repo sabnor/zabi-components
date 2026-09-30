@@ -9,6 +9,8 @@
         message?: string;
         confirmLabel?: string;
         cancelLabel?: string;
+        /** Announced to screen readers when loading starts. */
+        loadingLabel?: string;
         /** Hold the dialog in its loading state. */
         loading?: boolean;
         /** What confirming does: finish at once, after a request, or fail after one. */
@@ -23,6 +25,7 @@
         message = 'It becomes visible to everyone with the link.',
         confirmLabel = 'Confirm',
         cancelLabel = 'Cancel',
+        loadingLabel = 'Working…',
         loading = false,
         outcome = 'sync',
         open = false,
@@ -68,6 +71,7 @@
         {confirmLabel}
         {cancelLabel}
         {loading}
+        {loadingLabel}
     >
         {#if failure}
             <p class="text-error-text">{failure}</p>

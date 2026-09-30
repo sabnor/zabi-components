@@ -16,6 +16,12 @@
         "Partner portal",
     ];
 
+    /** Long enough to scroll on any screen, with nothing in it to focus. */
+    const notes = Array.from({ length: 14 }, (_, index) => ({
+        version: `8.${14 - index}.0`,
+        text: "Fixes and small improvements across the components, the tokens and the documentation site. Nothing in this release changes an existing prop.",
+    }));
+
     let open = $state(false);
     let search = $state("");
     let selected = $state("Zabi web");
@@ -108,6 +114,16 @@
             {#snippet footer()}
                 <Button onclick={() => (open = false)}>Show results</Button>
             {/snippet}
+        </Drawer>
+    </div>
+{:else if exampleIndex === 3}
+    <div class="w-full">
+        <Button variant="outline" onclick={() => (open = true)}>Release notes</Button>
+        <Drawer bind:isOpen={open} title="Release notes" size="sm">
+            {#each notes as note (note.version)}
+                <h3 class="mt-4 text-sm font-medium text-headline">{note.version}</h3>
+                <p class="mt-1 text-sm text-description">{note.text}</p>
+            {/each}
         </Drawer>
     </div>
 {:else}
