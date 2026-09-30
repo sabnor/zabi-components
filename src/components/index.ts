@@ -45,6 +45,13 @@ export { default as Header } from './molecules/Header.svelte';
 export { default as EmptyState } from './molecules/EmptyState.svelte';
 export { default as Toaster } from './molecules/Toaster.svelte';
 export { default as ImageUpload } from './molecules/ImageUpload.svelte';
+export { default as MediaGrid } from './molecules/MediaGrid.svelte';
+export type {
+    MediaGridItemType,
+    MediaGridKey,
+    MediaGridSelectDetail,
+    MediaGridStrings,
+} from './util/media-grid.js';
 export { default as Modal } from './molecules/Modal.svelte';
 export { default as SlideUp } from './molecules/SlideUp.svelte';
 export { default as Tabs } from './molecules/Tabs.svelte';

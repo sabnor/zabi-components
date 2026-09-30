@@ -10,6 +10,13 @@ export type {
 } from '../util/dropdown.js';
 export { default as Form } from './Form.svelte';
 export { default as ImageUpload } from './ImageUpload.svelte';
+export { default as MediaGrid } from './MediaGrid.svelte';
+export type {
+    MediaGridItemType,
+    MediaGridKey,
+    MediaGridSelectDetail,
+    MediaGridStrings,
+} from '../util/media-grid.js';
 export { default as Modal } from './Modal.svelte';
 export { default as NavigationMenu } from './NavigationMenu.svelte';
 export { default as NavigationMenuList } from './NavigationMenuList.svelte';

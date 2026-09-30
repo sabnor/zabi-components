@@ -2103,6 +2103,239 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "MediaGrid",
+                category: "molecules",
+                description:
+                    "Grid of selectable image and video thumbnails with per-item delete, loading placeholders and an empty state.",
+                props: [
+                    {
+                        name: "items",
+                        type: "T[]",
+                        required: true,
+                        description:
+                            "The images and videos to show.",
+                    },
+                    {
+                        name: "getKey",
+                        type: "(item: T) => string | number",
+                        required: true,
+                        description:
+                            "Stable identity of an item. Selection is stored as keys.",
+                    },
+                    {
+                        name: "getLabel",
+                        type: "(item: T) => string",
+                        required: true,
+                        description:
+                            "Name of an item: the image's alt, and part of the delete button's name.",
+                    },
+                    {
+                        name: "getUrl",
+                        type: "(item: T) => string",
+                        required: true,
+                        description:
+                            "Address of the image or video.",
+                    },
+                    {
+                        name: "getType",
+                        type: "(item: T) => 'image' | 'video' | undefined",
+                        required: false,
+                        description:
+                            "Whether an item is a video. Without it, the URL's extension decides.",
+                    },
+                    {
+                        name: "getPoster",
+                        type: "(item: T) => string | undefined",
+                        required: false,
+                        description:
+                            "A still image for a video, shown instead of loading the video's first frame.",
+                    },
+                    {
+                        name: "selected",
+                        type: "string | number | null",
+                        required: false,
+                        defaultValue: "null",
+                        description:
+                            "Key of the selected item. Bindable. Used unless multiple.",
+                    },
+                    {
+                        name: "multiple",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Lets any number of items be selected; the keys are in selectedKeys.",
+                    },
+                    {
+                        name: "selectedKeys",
+                        type: "(string | number)[]",
+                        required: false,
+                        defaultValue: "[]",
+                        description:
+                            "Keys of the selected items. Bindable. Used when multiple.",
+                    },
+                    {
+                        name: "onselect",
+                        type: "(detail: { item: T; selected: boolean; keys: (string | number)[] }) => void",
+                        required: false,
+                        description:
+                            "Runs when an item is selected or its selection is cleared.",
+                    },
+                    {
+                        name: "ondelete",
+                        type: "(item: T) => void",
+                        required: false,
+                        description:
+                            "Shows a delete button on each item and reports the one activated. The grid neither confirms nor removes: confirm, then take the item out of items.",
+                    },
+                    {
+                        name: "isItemDeletable",
+                        type: "(item: T) => boolean",
+                        required: false,
+                        description:
+                            "Leaves the delete button off one item.",
+                    },
+                    {
+                        name: "loading",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Adds placeholder tiles after the items, for a first load or a next page.",
+                    },
+                    {
+                        name: "loadingCount",
+                        type: "number",
+                        required: false,
+                        defaultValue: "8",
+                        description:
+                            "How many placeholder tiles loading shows.",
+                    },
+                    {
+                        name: "empty",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Replaces the built-in empty state.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Disables selecting and deleting.",
+                    },
+                    {
+                        name: "minTileSize",
+                        type: "number | string",
+                        required: false,
+                        defaultValue: "96",
+                        description:
+                            "Smallest tile edge, as px or any CSS length. The grid fits as many columns as that allows.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<MediaGridStrings>",
+                        required: false,
+                        description:
+                            "Overrides for the built-in strings: deleteLabel, videoLabel, loading, emptyTitle and emptyDescription.",
+                    },
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name of the list. Use this or aria-labelledby.",
+                    },
+                    {
+                        name: "aria-labelledby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of the element that names the list.",
+                    },
+                ],
+                variants: [
+                    "multiple",
+                    "loading",
+                    "disabled",
+                ],
+                examples: [
+                    {
+                        title: "Library with delete",
+                        description:
+                            "Pick one item. Delete asks first, and an item in use has no delete button",
+                        code: `<script lang="ts">
+    import { ConfirmDialog, MediaGrid } from "zabi-components";
+
+    let items = $state(await loadMedia());
+    let selected = $state(null);
+    let toDelete = $state(null);
+    let confirmOpen = $state(false);
+</script>
+
+<MediaGrid
+    {items}
+    getKey={(item) => item.id}
+    getLabel={(item) => item.name}
+    getUrl={(item) => item.url}
+    bind:selected
+    ondelete={(item) => {
+        toDelete = item;
+        confirmOpen = true;
+    }}
+    isItemDeletable={(item) => !item.inUse}
+    aria-label="Media library"
+/>
+
+<ConfirmDialog
+    bind:open={confirmOpen}
+    variant="danger"
+    title="Delete this file?"
+    confirmLabel="Delete"
+    onconfirm={() => (items = items.filter((item) => item.id !== toDelete.id))}
+/>`,
+                    },
+                    {
+                        title: "Multiple, loading and empty",
+                        description:
+                            "Several items selected at once, placeholder tiles for a next page, and the empty state",
+                        code: `<MediaGrid
+    {items}
+    getKey={(item) => item.id}
+    getLabel={(item) => item.name}
+    getUrl={(item) => item.url}
+    multiple
+    bind:selectedKeys
+    {loading}
+    loadingCount={4}
+    minTileSize={72}
+    aria-label="Attachments"
+/>`,
+                    },
+                    {
+                        title: "Picker in a Modal",
+                        description:
+                            "The grid as the body of a Modal, closing on the first choice",
+                        code: `<Modal bind:isOpen={pickerOpen} title="Media library">
+    <MediaGrid
+        {items}
+        getKey={(item) => item.id}
+        getLabel={(item) => item.name}
+        getUrl={(item) => item.url}
+        selected={value}
+        onselect={({ item }) => {
+            value = item.id;
+            pickerOpen = false;
+        }}
+        aria-label="Media library"
+    />
+</Modal>`,
+                    },
+                ],
+            },
+            {
                 name: "Modal",
                 category: "molecules",
                 description:

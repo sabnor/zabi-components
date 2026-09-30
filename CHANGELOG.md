@@ -141,6 +141,20 @@ Whenever token or CSS import API surface changes, include:
 - EmptyState takes `headingLevel` (1–6, default 2) so its title fits the heading
   outline of the page, and `size="compact"` with tighter padding and a smaller
   title for use inside a card.
+- **MediaGrid**, a new molecule: a grid of image and video thumbnails to pick
+  from, for a media library. It is the grid only; the modal, the upload button
+  and the data stay yours. Pass `getKey`, `getLabel` and `getUrl`. One item is
+  selected at a time (`bind:selected`), or any number with `multiple`
+  (`bind:selectedKeys`); the selected item has a thicker border and a check
+  mark. `ondelete` shows an always-visible delete button named after each item;
+  the grid only reports the item, and when it is removed focus moves to the one
+  that took its place. The grid is one Tab stop: arrow keys move between items
+  by the columns on screen, Home and End within the row, and Delete asks to
+  delete. A video is a still with a play badge (`getType`, `getPoster`), a file
+  that fails to load shows a fallback, `loading` adds placeholder tiles, and an
+  empty library shows an empty state or your `empty` snippet. Columns follow
+  the width (`minTileSize`, default 96px), and every built-in string can be
+  replaced through `strings`.
 
 ### Changed
 

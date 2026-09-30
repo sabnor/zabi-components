@@ -359,6 +359,48 @@ sentence for that reason; keep a translated one short too.
 
 ---
 
+### MediaGrid Component
+
+**Current Keyboard Support:**
+- ✅ **Tab**: Into the grid (the selected item, else the first), then to that item's delete button, then out
+- ✅ **Arrow Left / Arrow Right**: Previous / next item (mirrored in a right-to-left layout)
+- ✅ **Arrow Up / Arrow Down**: The item above / below, by the number of columns on screen
+- ✅ **Home / End**: First / last item in the row
+- ✅ **Ctrl + Home / Ctrl + End**: First / last item in the grid
+- ✅ **Enter / Space**: Select the item, or clear its selection
+- ✅ **Delete**: Ask to delete the focused item (the same as its delete button)
+
+Each item is a toggle button (`aria-pressed`) in a list, with its delete button
+beside it, not inside it. A `listbox` was not used because an option cannot
+contain a button, and a `grid` role needs rows in the DOM, which a layout that
+picks its column count from the available width does not have. Only one
+item's buttons are in the Tab order at a time (a roving tabindex), so a library
+of two hundred files is one Tab stop; the arrow keys move between items and do
+not select. A screen reader's own button and list navigation reaches every
+item whatever the Tab order.
+
+**Usage:**
+```svelte
+<MediaGrid
+    {items}
+    getKey={(item) => item.id}
+    getLabel={(item) => item.name}
+    getUrl={(item) => item.url}
+    bind:selected
+    ondelete={askToDelete}
+    aria-label="Media library"
+/>
+```
+
+**Best Practices:**
+- Give the list a name with `aria-label` or `aria-labelledby`
+- Return the file name or a title from `getLabel`; it names the item and its delete button ("Delete hero.jpg")
+- Confirm a delete before removing the item (`ConfirmDialog`); the grid only reports it
+- When the item is removed, focus moves to the item that took its place, also when a confirmation dialog closes after the removal; with nothing left it moves to the grid itself
+- Inside a `Modal`, the arrow keys move between items instead of scrolling the dialog
+
+---
+
 ### Collapsible and CollapsibleGroup
 
 **Current Keyboard Support** (on the trigger, a `<button>`):
