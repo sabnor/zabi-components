@@ -1198,6 +1198,14 @@ body {
   background-color: var(--color-input-hover);
 }
 
+.focus-visible\:bg-input-focus:focus-visible {
+  background-color: var(--color-input-focus);
+}
+
+.active\:bg-input-focus:active {
+  background-color: var(--color-input-focus);
+}
+
 .disabled\:bg-input-disabled:disabled {
   background-color: var(--color-input-disabled);
 }
@@ -1701,6 +1709,72 @@ body {
  * `active:bg-surface-active`, `disabled:bg-action-disabled` — rather than
  * hand-writing pseudo-class rules here, which would collide with the
  * generated bare utility of the same name. */
+
+/* ========================================
+   STATE VARIANTS OF THE HAND-WRITTEN COLOUR CLASSES
+   ========================================
+   The colour classes above are outside every cascade layer, so they beat any
+   generated utility on the same element, including the state variant meant to
+   replace them: `text-description hover:text-headline` never changed on hover,
+   because the generated `hover:text-headline` sits in `@layer utilities` and
+   the hand-written `.text-description` does not.
+
+   Each rule here restates one such variant in the same idiom as
+   `.hover\:bg-input-hover:hover`, so it wins again. The list is exactly the
+   variants the components pair with a hand-written class of the same
+   property; tests/state-variants.test.ts fails when a component adds one that
+   is not here.
+
+   Order matters and follows Tailwind's: hover, then active, then disabled,
+   then disabled:hover. Keep this block after the action classes so a disabled
+   rule also beats `.bg-action-*:hover`. */
+
+/* Text */
+.hover\:text-body:hover {
+  color: var(--color-body);
+}
+
+.hover\:text-headline:hover {
+  color: var(--color-headline);
+}
+
+.hover\:text-link:hover {
+  color: var(--color-link);
+}
+
+.group:hover .group-hover\:text-headline\/90 {
+  color: color-mix(in oklab, var(--color-headline) 90%, transparent);
+}
+
+.disabled\:text-action-disabled-text:disabled {
+  color: var(--color-action-disabled-text);
+}
+
+.disabled\:hover\:text-description:disabled:hover {
+  color: var(--color-description);
+}
+
+/* Border */
+.hover\:border-border-medium:hover {
+  border-color: var(--color-border-medium);
+}
+
+.disabled\:border-transparent:disabled {
+  border-color: transparent;
+}
+
+.disabled\:hover\:border-transparent:disabled:hover {
+  border-color: transparent;
+}
+
+/* Background */
+.active\:bg-action-primary-subtle-hover:active {
+  background-color: var(--color-action-primary-subtle-hover);
+}
+
+.disabled\:bg-action-disabled:disabled {
+  background-color: var(--color-action-disabled);
+}
 
 /* Z-index utilities */
 .z-sticky {

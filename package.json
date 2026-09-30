@@ -119,7 +119,8 @@
     "check:ramps": "node scripts/check-ramp-lightness.js",
     "check:contrast": "node scripts/check-contrast.js",
     "check:geometry": "node scripts/check-control-geometry.js",
-    "check:design": "npm run check:ramps && npm run check:contrast && npm run check:geometry && npm run check:tokens"
+    "check:states": "node scripts/check-state-variants.js",
+    "check:design": "npm run check:ramps && npm run check:contrast && npm run check:geometry && npm run check:tokens && npm run check:states"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

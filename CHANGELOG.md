@@ -186,6 +186,12 @@ Whenever token or CSS import API surface changes, include:
 - **Checkbox and radio rows show their hover.** The row used a fixed
   `base-100` fill, which was the page colour in both themes; it now uses
   `--color-surface-hover` and `--color-surface-active`.
+- **State variants beside a semantic colour class work.** The hand-written
+  colour classes are outside every cascade layer, so a generated variant on the
+  same element never won: `text-description hover:text-headline` did not change
+  on hover. Thirteen such variants the components use are now restated by hand,
+  among them the hover colour of close buttons, the hover border of outline
+  buttons and the disabled text colour of fields and ghost buttons.
 
 ### Documentation
 
