@@ -8,7 +8,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
  * hydrated, which is how a consumer's page reaches the dialog too.
  */
 
-const dialog = (page: Page) => page.getByRole("dialog");
+const dialog = (page: Page) => page.getByRole("alertdialog");
 
 /** The page is usable before it hydrates; a click that lands early is lost. */
 async function openDialog(page: Page, opener: Locator): Promise<Locator> {
@@ -88,7 +88,7 @@ test.describe("ConfirmDialog — focus, loading and the backdrop", () => {
         // The focused button was just disabled; focus must not be on <body>.
         expect(
             await page.evaluate(
-                () => !!document.activeElement?.closest('[role="dialog"]'),
+                () => !!document.activeElement?.closest('[role="alertdialog"]'),
             ),
         ).toBe(true);
 
@@ -98,7 +98,7 @@ test.describe("ConfirmDialog — focus, loading and the backdrop", () => {
         await expect(panel).toBeVisible();
         expect(
             await page.evaluate(
-                () => !!document.activeElement?.closest('[role="dialog"]'),
+                () => !!document.activeElement?.closest('[role="alertdialog"]'),
             ),
         ).toBe(true);
 

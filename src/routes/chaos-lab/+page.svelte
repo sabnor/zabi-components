@@ -67,6 +67,8 @@
     let portalOpen = $state(false);
     let trappedOpen = $state(false);
     let portalLastClose = $state("");
+    let pageModalOpen = $state(false);
+    let textOnlyOpen = $state(false);
 </script>
 
 <svelte:head>
@@ -279,8 +281,17 @@
                 data-testid="chaos-modal-portal"
                 onclose={({ reason }) => (portalLastClose = reason)}
             >
-                <button type="button" data-testid="chaos-portal-action">
-                    In-portal action
+                <Tooltip content="Chaos modal tooltip" placement="bottom">
+                    <button type="button" data-testid="chaos-portal-action">
+                        In-portal action
+                    </button>
+                </Tooltip>
+                <button
+                    type="button"
+                    data-testid="chaos-open-page-modal"
+                    onclick={() => (pageModalOpen = true)}
+                >
+                    Open page modal
                 </button>
             </Modal>
             <Modal
@@ -295,5 +306,29 @@
             Last close:
             <span data-testid="chaos-portal-last-close">{portalLastClose}</span>
         </p>
+        <!-- Declared in the page and rendered in place, so it sits before the
+        portalled modal in the document and is opened after it. -->
+        <Modal
+            bind:isOpen={pageModalOpen}
+            title="Chaos page modal"
+            data-testid="chaos-modal-page"
+        >
+            <p class="text-sm text-description">Opened from the portalled modal.</p>
+        </Modal>
+        <button
+            type="button"
+            data-testid="chaos-open-text-only"
+            onclick={() => (textOnlyOpen = true)}
+        >
+            Open text-only modal
+        </button>
+        <Modal
+            bind:isOpen={textOnlyOpen}
+            showClose={false}
+            data-testid="chaos-modal-text-only"
+            aria-label="Chaos text only"
+        >
+            <p class="text-sm text-description">Nothing to focus in here.</p>
+        </Modal>
     </section>
 </main>

@@ -1,10 +1,14 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
     import {
+        DIALOG_SELECTOR,
         getFocusableElements,
         saveFocus,
         returnFocus,
         focusFirstElement,
+        joinOverlayStack,
+        recoverStrayFocus,
     } from '../util/focus-utils.js';
     import { generateId } from "../util/ssr-safe.js";
     import { portal as portalTo } from "../util/portal.js";
@@ -17,17 +21,32 @@
     type Size = 'sm' | 'md' | 'lg';
     type CloseReason = 'escape' | 'backdrop' | 'close-button';
 
-    interface Props {
+    /**
+     * Anything else is an attribute of the dialog panel (`aria-describedby`,
+     * `aria-busy`, `data-*`, `id`), which is where it is spread.
+     */
+    type Props = Omit<
+        HTMLAttributes<HTMLDivElement>,
+        'class' | 'title' | 'role' | 'onclick' | 'onkeydown' | 'onclose' | 'children'
+    > & {
         isOpen?: boolean;
         title?: string;
         description?: string;
         size?: Size;
+        /**
+         * `alertdialog` for a dialog that interrupts to ask for a response,
+         * such as a confirmation. Focus handling is the same for both.
+         */
+        role?: 'dialog' | 'alertdialog';
         /** Render the close button even when there is no `title`. */
         showClose?: boolean;
+        /** Accessible name of the close button. */
+        closeLabel?: string;
         /**
          * Render the overlay in `document.body` instead of in place, so an
          * ancestor with a transform, filter or clipped overflow cannot trap it.
-         * A theme class set below `body` does not reach a portalled modal.
+         * The theme class belongs on `<html>` or `<body>`; set lower, it does
+         * not reach a portalled modal.
          */
         portal?: boolean;
         /**
@@ -50,14 +69,16 @@
         class?: string;
         children?: Snippet;
         footer?: Snippet;
-    }
+    };
 
     let {
         isOpen = $bindable(false),
         title = '',
         description = '',
         size = 'md',
+        role = 'dialog',
         showClose = true,
+        closeLabel = 'Close',
         portal = false,
         dismissible = true,
         class: className = "",
@@ -75,6 +96,8 @@
 
     let modalContainer = $state<HTMLDivElement>();
     let focusActive = false;
+    /** Position among the open overlays; lifts a modal opened later above the earlier ones. */
+    let depth = $state(0);
 
     const sizeClasses = $derived(
         {
@@ -124,13 +147,21 @@
             saveFocus();
             focusActive = true;
             const unlockScroll = lockBodyScroll();
+            const overlay = joinOverlayStack(container);
+            depth = overlay.depth;
             const t = setTimeout(() => {
                 focusFirstElement(container);
             }, 0);
-            document.addEventListener('keydown', handleStrayKeydown);
+            // Focus can leave the dialog without a Tab (a confirm that starts
+            // loading disables the focused button); the topmost dialog takes
+            // Tab and Escape back from `<body>`.
+            const stopRecovery = recoverStrayFocus(container, {
+                onEscape: (event) => closeModal('escape', event),
+            });
             return () => {
                 clearTimeout(t);
-                document.removeEventListener('keydown', handleStrayKeydown);
+                stopRecovery();
+                overlay.leave();
                 unlockScroll();
                 if (focusActive) {
                     focusActive = false;
@@ -145,7 +176,7 @@
         const container = modalContainer;
         if (event.key !== 'Tab' || !container) return;
         // A nested dialog handles its own Tab cycle.
-        const owner = (event.target as Element | null)?.closest?.('[role="dialog"]');
+        const owner = (event.target as Element | null)?.closest?.(DIALOG_SELECTOR);
         if (owner && owner !== container) return;
 
         const focusable = getFocusableElements(container);
@@ -170,29 +201,6 @@
         }
     }
 
-    /**
-     * Focus can leave the dialog without a Tab: the focused button is disabled
-     * or removed (a confirm that starts loading) and the browser drops focus on
-     * `<body>`, where the handlers on the overlay never hear the key. The
-     * topmost dialog takes Tab and Escape back from there.
-     */
-    function handleStrayKeydown(event: KeyboardEvent) {
-        const container = modalContainer;
-        if (!container || event.defaultPrevented) return;
-        if (event.key !== 'Tab' && event.key !== 'Escape') return;
-        // Inside a dialog, that dialog's own handlers deal with the key.
-        if (document.activeElement?.closest('[role="dialog"]')) return;
-        const dialogs = document.querySelectorAll('[role="dialog"][aria-modal="true"]');
-        if (dialogs[dialogs.length - 1] !== container) return;
-
-        event.preventDefault();
-        if (event.key === 'Escape') {
-            closeModal('escape', event);
-            return;
-        }
-        (getFocusableElements(container)[0] ?? container).focus();
-    }
-
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) {
             closeModal('backdrop', event);
@@ -215,6 +223,8 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
         class="fixed inset-0 z-modal flex {dismissible ? 'cursor-pointer' : 'cursor-default'} items-end justify-center bg-overlay p-0 md:items-center md:p-4"
+        style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
+        data-overlay-depth={depth}
         use:portalTo={portal}
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
@@ -223,11 +233,11 @@
         <div
             bind:this={modalContainer}
             class={cn(
-                "flex max-h-[90vh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-overlay border border-border-overlay bg-surface-overlay p-0 shadow-lg animate-[slideUp_0.3s_ease-out] md:animate-none md:rounded-overlay",
+                "flex max-h-[90vh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-overlay border border-border-overlay bg-surface-overlay p-0 shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none md:animate-none md:rounded-overlay",
                 sizeClasses,
                 className,
             )}
-            role="dialog"
+            {role}
             aria-modal="true"
             aria-labelledby={title ? modalTitleId : undefined}
             aria-describedby={description ? modalDescriptionId : undefined}
@@ -261,7 +271,7 @@
                                     class="focus-ring flex size-8 items-center justify-center rounded-control text-2xl text-description transition-colors {dismissible
                                         ? 'cursor-pointer hover:bg-surface-overlay-hover hover:text-headline'
                                         : 'cursor-not-allowed opacity-50'}"
-                                    aria-label="Close"
+                                    aria-label={closeLabel}
                                     aria-disabled={dismissible ? undefined : "true"}
                                 >
                                     ×

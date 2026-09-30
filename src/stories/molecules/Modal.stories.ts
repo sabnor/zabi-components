@@ -21,6 +21,15 @@ const meta = {
             options: ['sm', 'md', 'lg'],
             description: 'Size of the modal'
         },
+        role: {
+            control: 'select',
+            options: ['dialog', 'alertdialog'],
+            description: 'alertdialog for a dialog that interrupts to ask for a response'
+        },
+        closeLabel: {
+            control: 'text',
+            description: 'Accessible name of the close button'
+        },
         portal: {
             control: 'boolean',
             description: 'Render the overlay in document.body'

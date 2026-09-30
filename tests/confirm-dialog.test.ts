@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 const state = () => screen.getByTestId("state").textContent?.trim();
-const dialog = () => screen.getByRole("dialog");
+const dialog = () => screen.getByRole("alertdialog");
 const confirmButton = (name = "Confirm") =>
     screen.getByRole("button", { name }) as HTMLButtonElement;
 const cancelButton = (name = "Cancel") =>
@@ -40,14 +40,16 @@ function deferred<T>() {
 }
 
 describe("ConfirmDialog semantics", () => {
-    it("is a modal dialog named by the title and described by the message", () => {
+    it("is a modal alertdialog named by the title and described by the message", () => {
         render(ConfirmDialogHarness, { props: { initialOpen: true } });
 
         const panel = dialog();
+        expect(panel.getAttribute("role")).toBe("alertdialog");
+        expect(screen.queryByRole("dialog")).toBeNull();
         expect(panel.getAttribute("aria-modal")).toBe("true");
-        expect(screen.getByRole("dialog", { name: "Delete this project?" })).toBe(panel);
+        expect(screen.getByRole("alertdialog", { name: "Delete this project?" })).toBe(panel);
         expect(
-            screen.getByRole("dialog", {
+            screen.getByRole("alertdialog", {
                 description: "The project and its files are removed for everyone.",
             }),
         ).toBe(panel);
@@ -71,7 +73,7 @@ describe("ConfirmDialog semantics", () => {
             props: { initialOpen: true, rich: true, message: "" },
         });
         expect(
-            screen.getByRole("dialog", {
+            screen.getByRole("alertdialog", {
                 description: "Type the project name to continue.",
             }),
         ).toBeTruthy();
@@ -99,7 +101,7 @@ describe("ConfirmDialog semantics", () => {
 
     it("renders nothing while closed", () => {
         render(ConfirmDialogHarness);
-        expect(screen.queryByRole("dialog")).toBeNull();
+        expect(screen.queryByRole("alertdialog")).toBeNull();
     });
 });
 
@@ -214,6 +216,7 @@ describe("ConfirmDialog confirm and cancel", () => {
         expect(onconfirm).toHaveBeenCalledTimes(1);
         expect(oncancel).not.toHaveBeenCalled();
         expect(state()).toBe("closed");
+        expect(screen.queryByRole("alertdialog")).toBeNull();
         expect(screen.queryByRole("dialog")).toBeNull();
     });
 
@@ -257,10 +260,10 @@ describe("ConfirmDialog confirm and cancel", () => {
         expect(state()).toBe("closed");
 
         await user.click(opener());
-        expect(screen.getByRole("dialog")).toBeTruthy();
+        expect(screen.getByRole("alertdialog")).toBeTruthy();
         // The backdrop covers the page for a pointer; the parent's state does not care.
         await fireEvent.click(screen.getByRole("button", { name: "Close from parent" }));
-        expect(screen.queryByRole("dialog")).toBeNull();
+        expect(screen.queryByRole("alertdialog")).toBeNull();
     });
 });
 
@@ -387,11 +390,11 @@ describe("ConfirmDialog portal", () => {
         const view = render(ConfirmDialogHarness, { props: { initialOpen: true } });
 
         await user.click(cancelButton());
-        expect(document.querySelector('[role="dialog"]')).toBeNull();
+        expect(document.querySelector('[role="alertdialog"]')).toBeNull();
 
         await user.click(opener());
         view.unmount();
-        expect(document.querySelector('[role="dialog"]')).toBeNull();
+        expect(document.querySelector('[role="alertdialog"]')).toBeNull();
     });
 });
 
@@ -405,7 +408,7 @@ describe("ConfirmDialog over a Modal", () => {
         await user.click(discard);
         await settled();
 
-        const confirm = screen.getByRole("dialog", { name: "Discard your changes?" });
+        const confirm = screen.getByRole("alertdialog", { name: "Discard your changes?" });
         const cancel = screen.getByRole("button", { name: "Cancel" });
         const proceed = screen.getByRole("button", { name: "Discard" });
         expect(document.activeElement).toBe(cancel);
@@ -418,7 +421,7 @@ describe("ConfirmDialog over a Modal", () => {
 
         // Escape closes the confirm only, and focus goes back to what opened it.
         await user.keyboard("{Escape}");
-        expect(screen.queryByRole("dialog", { name: "Discard your changes?" })).toBeNull();
+        expect(screen.queryByRole("alertdialog", { name: "Discard your changes?" })).toBeNull();
         expect(confirm.isConnected).toBe(false);
         expect(state()).toBe("editing");
         expect(document.activeElement).toBe(discard);
@@ -427,6 +430,7 @@ describe("ConfirmDialog over a Modal", () => {
         await settled();
         await user.click(screen.getByRole("button", { name: "Discard" }));
         expect(state()).toBe("closed");
+        expect(screen.queryByRole("alertdialog")).toBeNull();
         expect(screen.queryByRole("dialog")).toBeNull();
     });
 });

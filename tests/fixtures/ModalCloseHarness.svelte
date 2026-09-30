@@ -7,6 +7,9 @@
         /** Open a second, portalled modal from inside the first. */
         nested?: boolean;
         innerDismissible?: boolean;
+        /** Role of the nested modal, or of the only one when not nested. */
+        role?: "dialog" | "alertdialog";
+        closeLabel?: string;
         initialOpen?: boolean;
         onclose?: (detail: { reason: string }) => void;
         onclick?: (event: Event) => void;
@@ -16,6 +19,8 @@
         dismissible = true,
         nested = false,
         innerDismissible = true,
+        role = "dialog",
+        closeLabel = undefined,
         initialOpen = false,
         onclose,
         onclick,
@@ -37,9 +42,13 @@
         bind:isOpen
         title="Closing dialog"
         {portal}
+        role={nested ? "dialog" : role}
+        {closeLabel}
         dismissible={dismissible && !locked}
         {onclose}
         {onclick}
+        aria-busy={locked ? "true" : undefined}
+        data-variant="harness"
     >
         <button type="button" data-testid="modal-action">Modal action</button>
         <button type="button" data-testid="lock" onclick={() => (locked = true)}>
@@ -64,6 +73,7 @@
                 bind:isOpen={innerOpen}
                 title="Inner dialog"
                 {portal}
+                {role}
                 dismissible={innerDismissible}
             >
                 <button type="button" data-testid="inner-action">

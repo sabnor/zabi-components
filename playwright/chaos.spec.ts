@@ -249,6 +249,12 @@ test.describe("Chaos lab — browser-only interaction risks", () => {
         );
         await assertTabStaysInTopDialog(page, 8);
 
+        // Tab may have left focus on the button with a tooltip, whose first
+        // Escape only hides the tooltip; close from a control without one.
+        await dialog.getByRole("button", { name: "Close" }).focus();
+        await expect(
+            dialog.getByRole("tooltip", { includeHidden: true }),
+        ).toHaveAttribute("data-visible", "false");
         await page.keyboard.press("Escape");
         await expect(dialog).not.toBeAttached();
         await expect(page.getByTestId("chaos-portal-last-close")).toHaveText("escape");
@@ -260,5 +266,102 @@ test.describe("Chaos lab — browser-only interaction risks", () => {
             await page.locator("body > [role='presentation']").count(),
             "Nothing should be left behind in <body>",
         ).toBe(0);
+    });
+
+    test("modal opened from a portalled modal: it is on top, and Escape closes them in order", async ({
+        page,
+    }) => {
+        await page.getByTestId("chaos-open-portal").click();
+        const portalled = page.getByTestId("chaos-modal-portal");
+        await expect(portalled).toBeVisible();
+        await page.getByTestId("chaos-open-page-modal").click();
+        const later = page.getByTestId("chaos-modal-page");
+        await expect(later).toBeAttached();
+        await waitForFocusInside(
+            page,
+            later,
+            "Focus should move into the modal that was opened last",
+        );
+
+        const onTop = await later.evaluate((panel: HTMLElement) => {
+            const box = panel.getBoundingClientRect();
+            const hit = document.elementFromPoint(
+                box.left + box.width / 2,
+                box.top + box.height / 2,
+            );
+            return !!hit && panel.contains(hit);
+        });
+        expect(
+            onTop,
+            "The modal opened last must be drawn above the portalled one, not behind it",
+        ).toBe(true);
+
+        await page.keyboard.press("Escape");
+        await expect(later).not.toBeAttached();
+        await expect(portalled).toBeVisible();
+        await page.keyboard.press("Escape");
+        await expect(portalled).not.toBeAttached();
+    });
+
+    test("modal: Escape with a tooltip showing hides the tooltip and keeps the modal", async ({
+        page,
+    }) => {
+        await page.getByTestId("chaos-open-portal").click();
+        const dialog = page.getByTestId("chaos-modal-portal");
+        await expect(dialog).toBeVisible();
+        const action = page.getByTestId("chaos-portal-action");
+        await action.focus();
+        const tooltip = dialog.getByRole("tooltip", { includeHidden: true });
+        await expect(tooltip).toHaveAttribute("data-visible", "true");
+
+        await page.keyboard.press("Escape");
+        await expect(tooltip).toHaveAttribute("data-visible", "false");
+        await expect(
+            dialog,
+            "The first Escape belongs to the tooltip (WCAG 1.4.13)",
+        ).toBeVisible();
+        await expect(action).toBeFocused();
+
+        await page.keyboard.press("Escape");
+        await expect(dialog).not.toBeAttached();
+    });
+
+    test("modal with nothing focusable: focus moves to the dialog itself", async ({
+        page,
+    }) => {
+        const opener = page.getByTestId("chaos-open-text-only");
+        await opener.click();
+        const dialog = page.getByTestId("chaos-modal-text-only");
+        await expect(dialog).toBeVisible();
+        await expect(
+            dialog,
+            "With no focusable content the panel takes focus, so a screen reader is moved into the dialog",
+        ).toBeFocused();
+        await page.keyboard.press("Escape");
+        await expect(dialog).not.toBeAttached();
+        await expect(opener).toBeFocused();
+    });
+
+    test("modal: no slide-up animation under prefers-reduced-motion", async ({
+        page,
+    }) => {
+        // Below the md breakpoint, where the panel slides up from the bottom.
+        await page.setViewportSize({ width: 600, height: 800 });
+        await page.getByTestId("chaos-open-modal").click();
+        const dialog = page.getByTestId("chaos-modal-root");
+        await expect(dialog).toBeVisible();
+        expect(
+            await dialog.evaluate((el) => getComputedStyle(el).animationName),
+            "Control: the panel animates when motion is allowed",
+        ).toBe("slideUp");
+        await page.keyboard.press("Escape");
+        await expect(dialog).not.toBeAttached();
+
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await page.getByTestId("chaos-open-modal").click();
+        await expect(dialog).toBeVisible();
+        expect(
+            await dialog.evaluate((el) => getComputedStyle(el).animationName),
+        ).toBe("none");
     });
 });

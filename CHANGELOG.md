@@ -112,6 +112,13 @@ Whenever token or CSS import API surface changes, include:
   `--color-input` for a well; it is white in light mode.
 - **`--color-input-border-hover`**, the edge of a hovered field: `base-450` in
   light, equal to `--color-input-border` in dark. No component uses it yet.
+- **Modal can be an `alertdialog`.** `role="alertdialog"` is for a dialog that
+  interrupts to ask for a response; the focus trap treats both roles alike,
+  including when one is opened over the other. ConfirmDialog uses it.
+- **Modal's close button can be renamed** with `closeLabel` (default "Close").
+- **Modal accepts the dialog panel's attributes as typed props**
+  (`aria-describedby`, `aria-busy`, `data-*`, `id`); they were already passed
+  through, but not declared.
 
 ### Changed
 
@@ -192,6 +199,19 @@ Whenever token or CSS import API surface changes, include:
   on hover. Thirteen such variants the components use are now restated by hand,
   among them the hover colour of close buttons, the hover border of outline
   buttons and the disabled text colour of fields and ghost buttons.
+- **An overlay opened later is always on top.** Modal and SlideUp take a
+  z-index that grows with the number of open overlays, so a modal opened from
+  a portalled one no longer opens behind it.
+- **Escape with a tooltip showing dismisses the tooltip only**, not the modal
+  or sheet it sits in.
+- **A modal or sheet with nothing focusable takes focus itself**, instead of
+  leaving it on the opener behind the backdrop.
+- **Modal and SlideUp do not slide in under `prefers-reduced-motion`.**
+- **Focus returns to a replaced element.** When the element that opened an
+  overlay has left the document, focus goes to the element that now has its id
+  instead of falling to `<body>`.
+- **SlideUp keeps Tab inside, and still closes on Escape,** when focus has
+  fallen out of the sheet because the focused control was disabled or removed.
 
 ### Documentation
 

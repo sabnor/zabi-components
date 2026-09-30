@@ -6,6 +6,7 @@ import Alert from "../src/components/molecules/Alert.svelte";
 import SlideUp from "../src/components/molecules/SlideUp.svelte";
 import Toaster from "../src/components/molecules/Toaster.svelte";
 import { pushToast, toastStore } from "../src/components/molecules/toast-store.js";
+import { returnFocus, saveFocus } from "../src/components/util/focus-utils.js";
 import ModalCloseHarness from "./fixtures/ModalCloseHarness.svelte";
 import ModalHarness from "./fixtures/ModalHarness.svelte";
 import ModalDynamicHarness from "./fixtures/ModalDynamicHarness.svelte";
@@ -271,6 +272,165 @@ describe("Modal closing", () => {
     });
 });
 
+describe("Modal role, close label and panel attributes", () => {
+    it("is a dialog by default and an alertdialog on request", async () => {
+        const user = userEvent.setup();
+        const first = render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        expect((await screen.findByRole("dialog")).getAttribute("aria-modal")).toBe("true");
+        first.unmount();
+
+        render(ModalCloseHarness, { role: "alertdialog" });
+        await user.click(screen.getByTestId("open-modal"));
+        const alert = await screen.findByRole("alertdialog", { name: "Closing dialog" });
+        expect(alert.getAttribute("aria-modal")).toBe("true");
+        expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it.each([false, true])(
+        "keeps Tab inside an alertdialog opened over a modal (portal: %s)",
+        async (portal) => {
+            const user = userEvent.setup();
+            render(ModalCloseHarness, { nested: true, role: "alertdialog", portal });
+            await user.click(screen.getByTestId("open-modal"));
+            await fireEvent.click(await screen.findByTestId("open-inner"));
+            const inner = await screen.findByRole("alertdialog", { name: "Inner dialog" });
+            await waitFor(() => expect(inner.contains(document.activeElement)).toBe(true));
+
+            // Close button and one action: Tab must cycle between those two, and
+            // never reach the outer modal's controls.
+            for (let i = 0; i < 4; i++) {
+                await user.tab();
+                expect(inner.contains(document.activeElement)).toBe(true);
+            }
+            await user.tab({ shift: true });
+            expect(inner.contains(document.activeElement)).toBe(true);
+        },
+    );
+
+    it("an alertdialog on top takes stray Tab and Escape, not the modal under it", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { nested: true, role: "alertdialog" });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("alertdialog", { name: "Inner dialog" });
+        await waitFor(() => expect(inner.contains(document.activeElement)).toBe(true));
+
+        (document.activeElement as HTMLElement).blur();
+        await user.tab();
+        expect(inner.contains(document.activeElement)).toBe(true);
+
+        (document.activeElement as HTMLElement).blur();
+        await user.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+    });
+
+    it("Escape inside an alertdialog closes it and leaves the modal under it open", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { nested: true, role: "alertdialog" });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("alertdialog");
+
+        await fireEvent.keyDown(inner, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+    });
+
+    it("names the close button Close, or what closeLabel says", async () => {
+        const user = userEvent.setup();
+        const first = render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        await screen.findByRole("dialog");
+        expect(screen.getByRole("button", { name: "Close" })).toBeTruthy();
+        first.unmount();
+
+        render(ModalCloseHarness, { closeLabel: "Stäng" });
+        await user.click(screen.getByTestId("open-modal"));
+        await screen.findByRole("dialog");
+        expect(screen.getByRole("button", { name: "Stäng" })).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
+    });
+
+    it("puts extra attributes on the dialog panel", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+
+        expect(dialog.getAttribute("data-variant")).toBe("harness");
+        expect(dialog.hasAttribute("aria-busy")).toBe(false);
+        await fireEvent.click(screen.getByTestId("lock"));
+        expect(dialog.getAttribute("aria-busy")).toBe("true");
+        expect(dialog.parentElement!.hasAttribute("data-variant")).toBe(false);
+    });
+});
+
+describe("returnFocus", () => {
+    function button(id = "") {
+        const el = document.createElement("button");
+        if (id) el.id = id;
+        document.body.appendChild(el);
+        return el;
+    }
+
+    afterEach(() => {
+        document.body.querySelectorAll("button[data-return-focus]").forEach((el) => el.remove());
+    });
+
+    it("falls back to the element that now has the saved id", () => {
+        const dropzone = button("logo-upload");
+        dropzone.dataset.returnFocus = "";
+        dropzone.focus();
+        saveFocus();
+
+        // A picker set the value: the dropzone is replaced by a Change button
+        // with the same id.
+        dropzone.remove();
+        const change = button("logo-upload");
+        change.dataset.returnFocus = "";
+        expect(document.activeElement).toBe(document.body);
+
+        returnFocus();
+        expect(document.activeElement).toBe(change);
+    });
+
+    it("gives up silently when the element is gone and nothing has its id", () => {
+        const withId = button("gone");
+        withId.focus();
+        saveFocus();
+        withId.remove();
+        expect(() => returnFocus()).not.toThrow();
+        expect(document.activeElement).toBe(document.body);
+
+        const noId = button();
+        noId.focus();
+        saveFocus();
+        noId.remove();
+        expect(() => returnFocus()).not.toThrow();
+        expect(document.activeElement).toBe(document.body);
+    });
+
+    it("stays LIFO, and a lost entry does not shift the ones under it", () => {
+        const outer = button("outer-opener");
+        outer.dataset.returnFocus = "";
+        const inner = button("inner-opener");
+        inner.dataset.returnFocus = "";
+
+        outer.focus();
+        saveFocus();
+        inner.focus();
+        saveFocus();
+        inner.remove();
+
+        returnFocus();
+        expect(document.activeElement).not.toBe(outer);
+        returnFocus();
+        expect(document.activeElement).toBe(outer);
+    });
+});
+
 describe("Modal portal", () => {
     it("renders in place by default", async () => {
         const user = userEvent.setup();
@@ -379,6 +539,34 @@ describe("SlideUp semantics", () => {
         expect(document.body.style.overflow).toBe("hidden");
 
         unmount();
+        expect(document.body.style.overflow).toBe("");
+    });
+
+    it("takes Tab back when focus has fallen out of the sheet", async () => {
+        const user = userEvent.setup();
+        render(SlideUp, { isOpen: true, title: "Sheet" });
+        const dialog = await screen.findByRole("dialog", { name: "Sheet" });
+        const close = screen.getByRole("button", { name: "Close" });
+        await waitFor(() => expect(document.activeElement).toBe(close));
+
+        // What a browser does when the focused control is disabled or removed.
+        close.blur();
+        expect(document.activeElement).toBe(document.body);
+        await user.tab();
+        expect(document.activeElement).toBe(close);
+        expect(dialog.contains(document.activeElement)).toBe(true);
+    });
+
+    it("still closes on Escape when focus has fallen out of the sheet", async () => {
+        const user = userEvent.setup();
+        render(SlideUp, { isOpen: true, title: "Sheet" });
+        await screen.findByRole("dialog", { name: "Sheet" });
+        const close = screen.getByRole("button", { name: "Close" });
+        await waitFor(() => expect(document.activeElement).toBe(close));
+
+        close.blur();
+        await user.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
         expect(document.body.style.overflow).toBe("");
     });
 });

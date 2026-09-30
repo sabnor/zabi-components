@@ -14,7 +14,7 @@ vi.mock("svelte", () => import("../node_modules/svelte/src/index-server.js"));
 describe("ConfirmDialog on the server", () => {
     it("renders nothing while closed", () => {
         const { body } = renderOnServer(ConfirmDialogHarness, { props: {} });
-        expect(body).not.toContain('role="dialog"');
+        expect(body).not.toContain('role="alertdialog"');
         expect(body).toContain("Delete project");
     });
 
@@ -24,7 +24,7 @@ describe("ConfirmDialog on the server", () => {
             props: { initialOpen: true, variant: "danger" },
         });
 
-        const panel = /<div[^>]*role="dialog"[^>]*>/.exec(body)?.[0] ?? "";
+        const panel = /<div[^>]*role="alertdialog"[^>]*>/.exec(body)?.[0] ?? "";
         const describedBy = /aria-describedby="([^"]+)"/.exec(panel)?.[1];
         expect(describedBy).toBeTruthy();
         expect(body).toContain(

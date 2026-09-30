@@ -1,8 +1,11 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
     import {
+        DIALOG_SELECTOR,
         focusFirstElement,
         getFocusableElements,
+        joinOverlayStack,
+        recoverStrayFocus,
         returnFocus,
         saveFocus,
     } from '../util/focus-utils.js';
@@ -33,6 +36,8 @@
 
     let slideUpContainer = $state<HTMLDivElement>();
     let focusActive = false;
+    /** Position among the open overlays; lifts a sheet opened later above the earlier ones. */
+    let depth = $state(0);
 
     /** Ref-counted on `<body>`; shares the counter with Modal so nested overlays unlock once. */
     function lockBodyScroll(): () => void {
@@ -72,11 +77,20 @@
             saveFocus();
             focusActive = true;
             const unlockScroll = lockBodyScroll();
+            const overlay = joinOverlayStack(container);
+            depth = overlay.depth;
             const t = setTimeout(() => {
                 focusFirstElement(container);
             }, 0);
+            // If the focused control is disabled or removed, focus lands on
+            // `<body>`; take Tab and Escape back from there.
+            const stopRecovery = recoverStrayFocus(container, {
+                onEscape: (event) => closeSlideUp(event),
+            });
             return () => {
                 clearTimeout(t);
+                stopRecovery();
+                overlay.leave();
                 unlockScroll();
                 if (focusActive) {
                     focusActive = false;
@@ -90,7 +104,7 @@
     function handleTrapKeydown(event: KeyboardEvent) {
         const container = slideUpContainer;
         if (event.key !== 'Tab' || !container) return;
-        const owner = (event.target as Element | null)?.closest?.('[role="dialog"]');
+        const owner = (event.target as Element | null)?.closest?.(DIALOG_SELECTOR);
         if (owner && owner !== container) return;
 
         const focusable = getFocusableElements(container);
@@ -135,13 +149,15 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
         class="fixed inset-0 z-modal cursor-pointer bg-overlay"
+        style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
+        data-overlay-depth={depth}
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
         role="presentation"
     >
         <div
             bind:this={slideUpContainer}
-            class={cn("fixed bottom-0 left-0 right-0 z-modal flex max-h-[90vh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_0.3s_ease-out]", className)}
+            class={cn("fixed bottom-0 left-0 right-0 z-modal flex max-h-[90vh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none", className)}
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? slideTitleId : undefined}

@@ -133,7 +133,7 @@
     let wasBusy = false;
     $effect(() => {
         const now = busy;
-        const panel = bodyElement?.closest<HTMLElement>('[role="dialog"]');
+        const panel = bodyElement?.closest<HTMLElement>('[role="alertdialog"]');
         untrack(() => {
             if (!panel) {
                 wasBusy = false;
@@ -154,27 +154,18 @@
             wasBusy = now;
         });
     });
-
-    /**
-     * Modal spreads what it does not know onto its dialog panel. The message
-     * is rendered here, beside the icon, so the description is wired here too.
-     */
-    const panelAttributes = $derived({
-        "aria-describedby": messageId,
-        "aria-busy": busy ? "true" : undefined,
-        "data-variant": variant,
-    });
 </script>
 
 <!--
-  `role="dialog"`, not `alertdialog`: Modal finds dialogs by `[role="dialog"]`
-  in its focus trap and its stray-key recovery, so an alertdialog would lose
-  both. No close button: Cancel is the way out, it is the first control, and so
-  it takes the initial focus for every variant.
+  An alertdialog: it interrupts to ask for a response. No close button: Cancel
+  is the way out, it is the first control, and so it takes the initial focus
+  for every variant. The message is rendered here, beside the icon, so the
+  description is wired here too; Modal puts these attributes on its panel.
 -->
 <Modal
     bind:isOpen={open}
     {title}
+    role="alertdialog"
     size="sm"
     showClose={false}
     {portal}
@@ -182,7 +173,9 @@
     onclose={({ reason }) => oncancel?.({ reason })}
     data-testid={dataTestId}
     class={className}
-    {...panelAttributes}
+    aria-describedby={messageId}
+    aria-busy={busy ? "true" : undefined}
+    data-variant={variant}
 >
     <div bind:this={bodyElement} class="flex items-start gap-3">
         <span class={cn("mt-0.5 shrink-0", iconClass)}>

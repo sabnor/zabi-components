@@ -444,7 +444,7 @@ dialog stays open.
 - Name the action on the confirm button ("Delete", "Publish"), not "OK" or "Yes"
 - Return the request's promise from `onconfirm` and let the dialog run the loading state; return `false` to keep it open
 - Show a failed request inside the dialog through `children`, and handle it in `onerror`
-- The dialog uses `role="dialog"` with `aria-modal`, not `alertdialog`
+- The dialog uses `role="alertdialog"` with `aria-modal`: it interrupts to ask for a response, and is named by the title and described by the message
 
 ---
 

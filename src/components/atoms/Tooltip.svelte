@@ -145,6 +145,9 @@
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape" && isVisible) {
+            // Capture phase, and marked as handled: the first Escape dismisses
+            // the tooltip only, not the modal or menu it sits in (WCAG 1.4.13).
+            event.preventDefault();
             clearShowDelay();
             clearHideBlurTimeout();
             isVisible = false;
@@ -195,7 +198,7 @@
     }
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window onkeydowncapture={handleKeydown} />
 
 <div
     class={cn(

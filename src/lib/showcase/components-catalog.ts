@@ -2115,12 +2115,28 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Show the close button.",
                     },
                     {
+                        name: "closeLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Close",
+                        description:
+                            "Accessible name of the close button, for translation.",
+                    },
+                    {
+                        name: "role",
+                        type: "'dialog' | 'alertdialog'",
+                        required: false,
+                        defaultValue: "dialog",
+                        description:
+                            "Use alertdialog for a dialog that interrupts to ask for a response, such as a confirmation. Focus handling is the same for both. Other attributes (aria-describedby, aria-busy, data-*, id) are passed to the dialog panel.",
+                    },
+                    {
                         name: "portal",
                         type: "boolean",
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Render the overlay in document.body, so an ancestor with a transform, filter or clipped overflow cannot trap it. A theme class set below body does not reach a portalled modal.",
+                            "Render the overlay in document.body, so an ancestor with a transform, filter or clipped overflow cannot trap it. The theme class belongs on html or body; set lower, it does not reach a portalled modal.",
                     },
                     {
                         name: "dismissible",
