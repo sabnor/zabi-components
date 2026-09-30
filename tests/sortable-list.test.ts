@@ -74,8 +74,12 @@ describe("SortableList semantics", () => {
         const description = document.getElementById(
             grip.getAttribute("aria-describedby") ?? "",
         );
-        expect(description?.textContent).toMatch(/arrow key/i);
-        expect(description?.textContent).toMatch(/Escape/);
+        expect(description?.textContent).toBe(
+            "Arrow keys move this item. Home and End move it to the start or the end.",
+        );
+        // Out of the reading order, so it is not read as loose text after the
+        // list; a hidden element still describes what points at it.
+        expect(description?.hidden).toBe(true);
 
         const status = screen.getByRole("status");
         expect(status.getAttribute("aria-live")).toBe("polite");
@@ -148,6 +152,33 @@ describe("SortableList keyboard", () => {
         expect(document.activeElement).toBe(grip);
     });
 
+    it("says so when a key cannot move the item any further", async () => {
+        const user = userEvent.setup();
+        const onreorder = vi.fn();
+        render(SortableListHarness, { props: { onreorder } });
+
+        handle("Hero").focus();
+        expect(announcement()).toBe("");
+        await user.keyboard("{ArrowUp}");
+        expect(announcement()).toBe("Hero, already first");
+        const once = screen.getByRole("status").textContent;
+        // Pressing it again must change the text, or it is not read again.
+        await user.keyboard("{Home}");
+        expect(announcement()).toBe("Hero, already first");
+        expect(screen.getByRole("status").textContent).not.toBe(once);
+
+        handle("FAQ").focus();
+        await user.keyboard("{ArrowDown}");
+        expect(announcement()).toBe("FAQ, already last");
+        await user.keyboard("{End}");
+        expect(announcement()).toBe("FAQ, already last");
+
+        // Home on the last item is a real move, not a boundary.
+        await user.keyboard("{Home}");
+        expect(announcement()).toBe("FAQ, moved to position 1 of 4");
+        expect(onreorder).toHaveBeenCalledTimes(1);
+    });
+
     it("does nothing at an end, and still stops the page from scrolling", async () => {
         const onreorder = vi.fn();
         render(SortableListHarness, { props: { onreorder } });
@@ -159,7 +190,6 @@ describe("SortableList keyboard", () => {
         expect(await fireEvent.keyDown(first, { key: "Home" })).toBe(false);
         expect(order()).toBe("hero,gallery,pricing,faq");
         expect(onreorder).not.toHaveBeenCalled();
-        expect(announcement()).toBe("");
 
         // Keys the handle does not own are left alone, as are browser shortcuts.
         expect(await fireEvent.keyDown(first, { key: "Tab" })).toBe(true);
@@ -227,6 +257,48 @@ describe("SortableList move buttons", () => {
     });
 });
 
+/**
+ * `controls="manual"` puts the handle and the move buttons wherever the
+ * snippet says, and a card header that toggles on click is the obvious place.
+ * Enter and Space on a button produce a click too.
+ */
+describe("SortableList inside a clickable header", () => {
+    it("does not let a click or a key press on the handle reach the header", async () => {
+        const user = userEvent.setup();
+        const onheaderclick = vi.fn();
+        render(SortableListHarness, {
+            props: { controls: "manual", onheaderclick },
+        });
+
+        await user.click(handle("Hero"));
+        handle("Hero").focus();
+        await user.keyboard("{Enter}");
+        await user.keyboard(" ");
+        await user.keyboard("{ArrowDown}");
+        expect(onheaderclick).not.toHaveBeenCalled();
+        expect(order()).toBe("gallery,hero,pricing,faq");
+
+        // The header itself still works.
+        await user.click(within(screen.getByTestId("card-hero")).getByText("Hero"));
+        expect(onheaderclick).toHaveBeenCalledTimes(1);
+        expect(onheaderclick).toHaveBeenCalledWith("hero");
+    });
+
+    it("does not let a move button's click reach the header, by mouse or keyboard", async () => {
+        const user = userEvent.setup();
+        const onheaderclick = vi.fn();
+        render(SortableListHarness, {
+            props: { controls: "manual", onheaderclick },
+        });
+
+        await user.click(screen.getByRole("button", { name: "Move Hero down" }));
+        expect(order()).toBe("gallery,hero,pricing,faq");
+        await user.keyboard("{Enter}");
+        expect(order()).toBe("gallery,pricing,hero,faq");
+        expect(onheaderclick).not.toHaveBeenCalled();
+    });
+});
+
 describe("SortableList strings", () => {
     it("takes translated names, description and announcements", async () => {
         const user = userEvent.setup();
@@ -238,6 +310,7 @@ describe("SortableList strings", () => {
                     moveUp: (label: string) => `Flytta upp ${label}`,
                     moved: ({ label, position, total }) =>
                         `${label} är nu nummer ${position} av ${total}`,
+                    atEnd: ({ label }) => `${label} är redan sist`,
                 },
             },
         });
@@ -254,6 +327,14 @@ describe("SortableList strings", () => {
         grip.focus();
         await user.keyboard("{ArrowDown}");
         expect(announcement()).toBe("Hero är nu nummer 2 av 4");
+
+        screen.getByRole("button", { name: "Flytta FAQ" }).focus();
+        await user.keyboard("{ArrowDown}");
+        expect(announcement()).toBe("FAQ är redan sist");
+        // Not overridden, so the default.
+        grip.focus();
+        await user.keyboard("{ArrowUp}{ArrowUp}");
+        expect(announcement()).toBe("Hero, already first");
     });
 });
 

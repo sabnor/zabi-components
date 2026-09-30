@@ -21,6 +21,11 @@ Whenever token or CSS import API surface changes, include:
   `onreorder` reports the item with its old and new index, `controls="manual"`
   lets a row place the handle itself, and every built-in string can be replaced
   through `strings`. Escape cancels a drag.
+  A key that cannot move the item further says so ("Hero section, already
+  first"). If the parent replaces `items` during a drag, the drag is cancelled
+  rather than moving another item. A click on the handle or a move button does
+  not bubble, so a card header with its own click handler is not toggled; put
+  them beside a header toggle, never inside another button.
 - **ImageUpload can open your own picker.** `onbrowse` replaces the native file
   chooser, for a media library or another source, and `event.preventDefault()`
   in `onclick` now keeps the chooser closed.

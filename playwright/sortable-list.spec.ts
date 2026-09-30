@@ -87,6 +87,66 @@ test.describe("SortableList — real pointer, focus and motion", () => {
         await expect(page.getByTestId("chaos-sortable-last-move")).toHaveText("");
     });
 
+    test("mouse: a parent that replaces the list mid-drag cancels the drag instead of moving another item", async ({
+        page,
+    }) => {
+        const from = await centre(handle(page, "Hero"));
+        const target = await page
+            .getByTestId("chaos-sortable-card-gallery")
+            .boundingBox();
+
+        await page.mouse.move(from.x, from.y);
+        await page.mouse.down();
+        await page.mouse.move(from.x, target!.y + target!.height, { steps: 8 });
+        await expect(page.locator("[data-dragging]")).toHaveCount(1);
+
+        // The pointer is busy, so the "parent" acts through the DOM.
+        await page.evaluate(() =>
+            document
+                .querySelector<HTMLElement>('[data-testid="chaos-sortable-reverse"]')!
+                .click(),
+        );
+        await expect(order(page)).toHaveText("faq,pricing,gallery,hero");
+        await expect(
+            page.locator("[data-dragging]"),
+            "The drag ends as soon as the order changes under it",
+        ).toHaveCount(0);
+        await expect(status(page)).toHaveText(
+            "Hero, move cancelled, still at position 4 of 4",
+        );
+
+        await page.mouse.up();
+        await expect(order(page)).toHaveText("faq,pricing,gallery,hero");
+        await expect(
+            page.getByTestId("chaos-sortable-last-move"),
+            "Releasing must not move whichever item now sits at the old index",
+        ).toHaveText("");
+    });
+
+    test("accessibility tree: the handle keeps its description from a hidden element, which is not read on its own", async ({
+        page,
+    }) => {
+        const description =
+            "Arrow keys move this item. Home and End move it to the start or the end.";
+        await expect(handle(page, "Hero")).toHaveAccessibleDescription(description);
+
+        // Chromium's own computation, not Playwright's.
+        const client = await page.context().newCDPSession(page);
+        await client.send("Accessibility.enable");
+        const { nodes } = await client.send("Accessibility.getFullAXTree");
+        const exposed = nodes.filter((node) => !node.ignored);
+        const grip = exposed.find(
+            (node) =>
+                node.role?.value === "button" && node.name?.value === "Reorder Hero",
+        );
+        expect(grip, "The handle is a named button in the tree").toBeTruthy();
+        expect(grip!.description?.value).toBe(description);
+        expect(
+            exposed.filter((node) => node.name?.value === description),
+            "The description must not also appear as loose text after the list",
+        ).toHaveLength(0);
+    });
+
     test("keyboard: arrows, Home and End move the item, keep focus and do not scroll the page", async ({
         page,
     }) => {
@@ -116,6 +176,11 @@ test.describe("SortableList — real pointer, focus and motion", () => {
         await page.keyboard.press("Home");
         await expect(order(page)).toHaveText("gallery,hero,pricing,faq");
         await expect(grip).toBeFocused();
+
+        // Already first: the key says so instead of doing nothing silently.
+        await page.keyboard.press("ArrowUp");
+        await expect(status(page)).toHaveText("Gallery, already first");
+        await expect(order(page)).toHaveText("gallery,hero,pricing,faq");
 
         expect(
             await page.evaluate(() => window.scrollY),

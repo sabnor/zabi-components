@@ -2730,7 +2730,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "auto",
                         description:
-                            "auto lays out handle, content and move buttons in a row. manual renders only your snippet, which places row.handle and row.moveButtons itself.",
+                            "auto lays out handle, content and move buttons in a row. manual renders only your snippet, which places row.handle and row.moveButtons itself. Put them beside a header toggle, never inside another button or link. Their clicks do not bubble, so a clickable header around them is not toggled.",
                     },
                     {
                         name: "showMoveButtons",
@@ -2760,7 +2760,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "Partial<SortableListStrings>",
                         required: false,
                         description:
-                            "Overrides for the built-in strings: handleLabel, handleDescription, moveUp, moveDown, moved and cancelled.",
+                            "Overrides for the built-in strings: handleLabel, handleDescription, moveUp, moveDown, moved, cancelled, atStart and atEnd.",
                     },
                     {
                         name: "listClass",

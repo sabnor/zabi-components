@@ -44,18 +44,26 @@ export interface SortableListStrings {
     moved: (detail: SortableListAnnouncement) => string;
     /** Announced when Escape (or a cancelled pointer) abandons a drag. */
     cancelled: (detail: SortableListAnnouncement) => string;
+    /** Announced when Arrow Up or Home is pressed on the first item. */
+    atStart: (detail: SortableListAnnouncement) => string;
+    /** Announced when Arrow Down or End is pressed on the last item. */
+    atEnd: (detail: SortableListAnnouncement) => string;
 }
 
 export const SORTABLE_LIST_STRINGS: SortableListStrings = {
     handleLabel: (label) => `Reorder ${label}`,
+    // Kept short: a screen reader reads it after the name each time the
+    // handle takes focus, and a move down can hand focus back to the handle.
     handleDescription:
-        "Press the up or down arrow key to move this item one place, or Home or End to move it to the start or the end. You can also drag it; Escape cancels a drag.",
+        "Arrow keys move this item. Home and End move it to the start or the end.",
     moveUp: (label) => `Move ${label} up`,
     moveDown: (label) => `Move ${label} down`,
     moved: ({ label, position, total }) =>
         `${label}, moved to position ${position} of ${total}`,
     cancelled: ({ label, position, total }) =>
         `${label}, move cancelled, still at position ${position} of ${total}`,
+    atStart: ({ label }) => `${label}, already first`,
+    atEnd: ({ label }) => `${label}, already last`,
 };
 
 /** A copy of `items` with the entry at `from` moved to `to`. Out-of-range indexes are clamped. */

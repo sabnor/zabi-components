@@ -1,5 +1,5 @@
 <script lang="ts" generics="T">
-    import { tick, type Snippet } from "svelte";
+    import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import { ChevronDown, ChevronUp, GripVertical } from "@lucide/svelte";
     import { cn } from "../util/cn.js";
@@ -37,6 +37,10 @@
          * `auto` lays out handle, content and move buttons in a row. `manual`
          * renders only your snippet, which places `row.handle` (and
          * `row.moveButtons` if wanted) itself, for example in a card header.
+         * Put them beside a header toggle, never inside another `<button>`
+         * or link: a button inside a button is invalid and unreachable. A
+         * click on either does not bubble, so a clickable (non-button) header
+         * around them is not toggled by it.
          */
         controls?: "auto" | "manual";
         /** Show the move up / move down buttons when `controls="auto"`. */
@@ -105,6 +109,10 @@
     let session: {
         pointerId: number;
         handle: HTMLElement;
+        /** The dragged item's label, kept in case the item is gone by the time it is announced. */
+        label: string;
+        /** Key order at drag start. The measured slots only describe this order. */
+        keys: (string | number)[];
         slots: SortableSlot[];
         /** Pointer position relative to the list's top edge at drag start. */
         grab: number;
@@ -210,11 +218,35 @@
 
         // Also keeps the arrow keys from scrolling the page under the handle.
         event.preventDefault();
-        if (isDisabled(entry)) return;
+        if (isDisabled(entry) || index === -1 || items.length < 2) return;
+
+        const last = items.length - 1;
+        if (Math.max(0, Math.min(last, to)) === index) {
+            // A key that does nothing and says nothing reads as a broken control.
+            const detail = {
+                label: getLabel(entry),
+                position: index + 1,
+                total: items.length,
+            };
+            announce(index === 0 ? text.atStart(detail) : text.atEnd(detail));
+            return;
+        }
         void move(index, to, event.currentTarget as HTMLElement);
     }
 
+    /**
+     * Neither control lets its click bubble. The handle has no click action,
+     * and a move button's action is the move; in a clickable card header
+     * (`controls="manual"`) a bubbling click, including the one Enter and
+     * Space produce, would also toggle the card. `onreorder` is the way to
+     * observe a move.
+     */
+    function handleHandleClick(event: MouseEvent) {
+        event.stopPropagation();
+    }
+
     function handleMoveClick(event: MouseEvent, entry: T, direction: -1 | 1) {
+        event.stopPropagation();
         if (isDisabled(entry)) return;
         const index = indexOf(entry);
         void move(index, index + direction, event.currentTarget as HTMLElement);
@@ -236,6 +268,8 @@
 
     function handlePointerDown(event: PointerEvent, entry: T) {
         if (drag || !listElement || isDisabled(entry)) return;
+        // One item has nowhere to go; do not mark it as dragging.
+        if (items.length < 2) return;
         if (event.pointerType === "mouse" && event.button !== 0) return;
 
         const index = indexOf(entry);
@@ -262,6 +296,8 @@
         session = {
             pointerId: event.pointerId,
             handle,
+            label: getLabel(entry),
+            keys: items.map(getKey),
             slots,
             grab: event.clientY - listTop,
             clientY: event.clientY,
@@ -303,8 +339,7 @@
     /** Recomputes the drag from the last pointer position; also runs on scroll. */
     function updateDrag() {
         if (!drag || !session || !listElement) return;
-        if (session.slots.length !== items.length) {
-            // The list changed under the drag; the measured slots are stale.
+        if (!orderUnchanged()) {
             void cancelDrag();
             return;
         }
@@ -361,6 +396,10 @@
 
     function handlePointerUp(event: PointerEvent) {
         if (!session || !drag || event.pointerId !== session.pointerId) return;
+        if (!orderUnchanged()) {
+            void cancelDrag();
+            return;
+        }
         const { from, to, active } = drag;
         const { handle } = session;
         const before = active ? rowTops() : null;
@@ -390,21 +429,36 @@
         void cancelDrag();
     }
 
-    /** Abandons the drag. `items` was never changed, so the original order is simply shown again. */
+    /** False once the parent has reordered, added or removed items since the drag started. */
+    function orderUnchanged(): boolean {
+        if (!session) return true;
+        const { keys } = session;
+        return (
+            keys.length === items.length &&
+            items.every((entry, index) => getKey(entry) === keys[index])
+        );
+    }
+
+    /**
+     * Abandons the drag. `items` was never changed by it, so the order is
+     * whatever the parent last set. The dragged item is looked up by key: the
+     * parent may have moved or removed it while the pointer was down.
+     */
     async function cancelDrag() {
-        if (!drag) return;
-        const { from, active } = drag;
+        if (!drag || !session) return;
+        const { key, active } = drag;
+        const { label } = session;
         const before = active ? rowTops() : null;
         stopSession();
         drag = null;
         if (!before) return;
 
-        const entry = items[from];
-        if (entry !== undefined) {
+        const index = items.findIndex((entry) => getKey(entry) === key);
+        if (index !== -1) {
             announce(
                 text.cancelled({
-                    label: getLabel(entry),
-                    position: from + 1,
+                    label,
+                    position: index + 1,
                     total: items.length,
                 }),
             );
@@ -412,6 +466,19 @@
         await tick();
         settle(before);
     }
+
+    // A parent that replaces `items` mid-drag (a poll, a refetch) invalidates
+    // the measured slots and the indexes; releasing would move the wrong item.
+    $effect(() => {
+        const keys = items.map(getKey);
+        untrack(() => {
+            if (!session) return;
+            const stale =
+                keys.length !== session.keys.length ||
+                keys.some((key, index) => key !== session?.keys[index]);
+            if (stale) void cancelDrag();
+        });
+    });
 
     function rowTransform(index: number): string | undefined {
         if (!drag?.active) return undefined;
@@ -471,6 +538,7 @@
                     disabled={rowDisabled}
                     data-sortable-handle
                     onpointerdown={(event) => handlePointerDown(event, entry)}
+                    onclick={handleHandleClick}
                     onkeydown={(event) => handleKeydown(event, entry)}
                 >
                     <GripVertical size={16} aria-hidden="true" />
@@ -540,7 +608,9 @@
         {/each}
     </ul>
 
-    <span id={descriptionId} class="sr-only">{text.handleDescription}</span>
+    <!-- `hidden` keeps it out of the reading order (it would be read as loose
+    text after every list); `aria-describedby` still resolves hidden content. -->
+    <span id={descriptionId} hidden>{text.handleDescription}</span>
     <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {announcement}
     </div>

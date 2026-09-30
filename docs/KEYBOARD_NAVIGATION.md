@@ -324,8 +324,15 @@ function handleKeydown(event: KeyboardEvent) {
 The model is immediate: each arrow press moves the item and is announced
 ("Hero section, moved to position 2 of 5") in a polite live region. There is no
 grab mode to enter or leave, so there is no state to get stuck in, and a move
-is undone with the opposite arrow. Arrow keys with Alt, Ctrl or Meta are left
-to the browser.
+is undone with the opposite arrow. A key that cannot move the item any further
+says so ("Hero section, already first"). Arrow keys with Alt, Ctrl or Meta are
+left to the browser.
+
+Focus stays on the handle, but not always without a blur: reordering moves DOM
+nodes, a moved node loses focus, and the list puts it back. This happens on a
+move down, Home and End; a screen reader may then read the handle's name and
+description again before the announcement. The description is one short
+sentence for that reason; keep a translated one short too.
 
 **Usage:**
 ```svelte
@@ -347,6 +354,8 @@ to the browser.
 - Keep the move buttons unless space is tight: a screen reader in browse mode does not pass arrow keys to a button, and the move buttons work there
 - Focus stays on the control that was used; when a move button reaches an end and becomes disabled, focus moves to the row's other move button
 - Translate the button names, the handle description and the announcements through `strings`
+- With `controls="manual"`, put `row.handle` and `row.moveButtons` beside a header toggle, never inside another `<button>` or link: a button inside a button is invalid markup and cannot be reached by keyboard
+- A click on the handle or a move button does not bubble (Enter and Space produce a click too), so a card header with its own click handler is not toggled by them; use `onreorder` to observe a move
 
 ---
 

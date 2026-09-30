@@ -15,6 +15,12 @@
         strings?: Partial<SortableListStrings>;
         /** Marks "Gallery" as a disabled item. */
         lockGallery?: boolean;
+        /**
+         * Manual mode only: makes each card's header clickable, as a card
+         * that expands on a header click would, and renders the move buttons
+         * inside it too.
+         */
+        onheaderclick?: (id: string) => void;
     }
 
     let {
@@ -24,6 +30,7 @@
         disabled = false,
         strings,
         lockGallery = false,
+        onheaderclick,
     }: Props = $props();
 
     let items = $state<Section[]>([
@@ -48,10 +55,22 @@
 >
     {#snippet item(section, row)}
         {#if controls === "manual"}
-            <div data-testid="card-{section.id}">
-                {@render row.handle()}
-                <span>{section.title}</span>
-            </div>
+            {#if onheaderclick}
+                <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+                <div
+                    data-testid="card-{section.id}"
+                    onclick={() => onheaderclick(section.id)}
+                >
+                    {@render row.handle()}
+                    <span>{section.title}</span>
+                    {@render row.moveButtons()}
+                </div>
+            {:else}
+                <div data-testid="card-{section.id}">
+                    {@render row.handle()}
+                    <span>{section.title}</span>
+                </div>
+            {/if}
         {:else}
             <span data-testid="card-{section.id}">{section.title}</span>
         {/if}

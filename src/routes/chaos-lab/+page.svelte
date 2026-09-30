@@ -227,6 +227,14 @@
                 </div>
             {/snippet}
         </SortableList>
+        <!-- Plays a parent that replaces the list (a poll, a refetch) while a drag is in progress. -->
+        <button
+            type="button"
+            data-testid="chaos-sortable-reverse"
+            onclick={() => (sortableItems = [...sortableItems].reverse())}
+        >
+            Reverse order
+        </button>
         <p class="text-sm text-description">
             Order: <span data-testid="chaos-sortable-order"
                 >{sortableItems.map((entry) => entry.id).join(",")}</span

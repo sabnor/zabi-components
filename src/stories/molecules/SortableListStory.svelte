@@ -37,13 +37,15 @@
     const swedish = {
         handleLabel: (label: string) => `Flytta ${label}`,
         handleDescription:
-            'Tryck på uppåtpil eller nedåtpil för att flytta ett steg, Home eller End för att flytta först eller sist. Du kan också dra; Escape avbryter.',
+            'Piltangenterna flyttar objektet. Home och End flyttar det först eller sist.',
         moveUp: (label: string) => `Flytta upp ${label}`,
         moveDown: (label: string) => `Flytta ned ${label}`,
         moved: ({ label, position, total }: { label: string; position: number; total: number }) =>
             `${label}, flyttad till plats ${position} av ${total}`,
         cancelled: ({ label, position, total }: { label: string; position: number; total: number }) =>
             `${label}, flytten avbröts, kvar på plats ${position} av ${total}`,
+        atStart: ({ label }: { label: string }) => `${label}, redan först`,
+        atEnd: ({ label }: { label: string }) => `${label}, redan sist`,
     };
 
     function describeMove({ item, from, to }: SortableListReorderDetail<Section>) {

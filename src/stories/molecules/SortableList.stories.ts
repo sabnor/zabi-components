@@ -44,7 +44,7 @@ export const CardsWithHandleInHeader: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'With controls="manual" the list renders only your snippet, and the snippet places row.handle and row.moveButtons itself. Use it when the handle belongs inside a card header.'
+                story: 'With controls="manual" the list renders only your snippet, and the snippet places row.handle and row.moveButtons itself. Use it when the handle belongs inside a card header. Put them beside a header toggle, never inside another button.'
             }
         }
     }
@@ -113,7 +113,7 @@ export const Translated: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Every built-in string comes from the strings prop: the handle name and its description, the move button names, and the two announcements. Pass only the ones you translate.'
+                story: 'Every built-in string comes from the strings prop: the handle name and its description, the move button names, and the announcements for a move, a cancelled drag and a key pressed at either end. Pass only the ones you translate.'
             }
         }
     }
