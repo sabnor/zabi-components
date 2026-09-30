@@ -377,6 +377,8 @@ Whenever token or CSS import API surface changes, include:
   never appeared. It now replaces the tick while loading, on the fill if the
   box is checked, and fades instead of spinning under
   `prefers-reduced-motion`.
+- **Toggle's loading ring has its gap back**, so the rotation can be seen; the
+  hand-written border colour used to close it.
 
 ### Documentation
 
