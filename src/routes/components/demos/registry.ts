@@ -6,6 +6,7 @@ import RadioDemo from "./RadioDemo.svelte";
 import SidebarNavigationDemo from "./SidebarNavigationDemo.svelte";
 import SkeletonDemo from "./SkeletonDemo.svelte";
 import ListDemo from "./ListDemo.svelte";
+import SortableListDemo from "./SortableListDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -16,6 +17,7 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     Modal: ModalDemo,
     SidebarNavigation: SidebarNavigationDemo,
     List: ListDemo,
+    SortableList: SortableListDemo,
 };
 
 export function getComponentDemo(

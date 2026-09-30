@@ -310,6 +310,46 @@ function handleKeydown(event: KeyboardEvent) {
 
 ---
 
+### SortableList Component
+
+**Current Keyboard Support** (on the drag handle, a `<button>`):
+- ✅ **Tab**: Move to the handle, then to the row's move up / move down buttons
+- ✅ **Arrow Up**: Move the item up one place
+- ✅ **Arrow Down**: Move the item down one place
+- ✅ **Home**: Move the item to the start
+- ✅ **End**: Move the item to the end
+- ✅ **Escape**: Cancel a pointer drag and restore the original order
+- ✅ **Enter / Space**: Activate a move up / move down button
+
+The model is immediate: each arrow press moves the item and is announced
+("Hero section, moved to position 2 of 5") in a polite live region. There is no
+grab mode to enter or leave, so there is no state to get stuck in, and a move
+is undone with the opposite arrow. Arrow keys with Alt, Ctrl or Meta are left
+to the browser.
+
+**Usage:**
+```svelte
+<SortableList
+    bind:items={sections}
+    getKey={(section) => section.id}
+    getLabel={(section) => section.title}
+    aria-label="Page sections"
+>
+    {#snippet item(section)}
+        <SectionCard {section} />
+    {/snippet}
+</SortableList>
+```
+
+**Best Practices:**
+- Give the list a name with `aria-label` or `aria-labelledby`
+- Return a short, unique name from `getLabel`; it is in every button name and announcement
+- Keep the move buttons unless space is tight: a screen reader in browse mode does not pass arrow keys to a button, and the move buttons work there
+- Focus stays on the control that was used; when a move button reaches an end and becomes disabled, focus moves to the row's other move button
+- Translate the button names, the handle description and the announcements through `strings`
+
+---
+
 ## Focus Management
 
 ### Focus Styles

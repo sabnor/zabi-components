@@ -6,6 +6,7 @@
         type NavigationMenuItemData,
     } from "../../components/molecules/NavigationMenu.svelte";
     import RadioGroup from "../../components/molecules/RadioGroup.svelte";
+    import SortableList from "../../components/molecules/SortableList.svelte";
 
     let modalOpen = $state(false);
     let outerOpen = $state(false);
@@ -53,6 +54,15 @@
     });
 
     const chaosTooltipDelayMs = 320;
+
+    /** Rows of unequal height: a drag has to cope with real layout, not a fixed step. */
+    let sortableItems = $state([
+        { id: "hero", title: "Hero", lines: 1 },
+        { id: "gallery", title: "Gallery", lines: 3 },
+        { id: "pricing", title: "Pricing", lines: 1 },
+        { id: "faq", title: "FAQ", lines: 2 },
+    ]);
+    let sortableLastMove = $state("");
 </script>
 
 <svelte:head>
@@ -186,5 +196,39 @@
             Swap options
         </button>
         <RadioGroup legend="Chaos radios" bind:value={radioValue} options={radioOptions} />
+    </section>
+
+    <section class="space-y-3" aria-labelledby="chaos-sortable-heading">
+        <h2 id="chaos-sortable-heading" class="text-lg font-medium">
+            Sortable list
+        </h2>
+        <SortableList
+            bind:items={sortableItems}
+            getKey={(entry) => entry.id}
+            getLabel={(entry) => entry.title}
+            onreorder={({ item, from, to }) =>
+                (sortableLastMove = `${item.id}:${from}>${to}`)}
+            aria-labelledby="chaos-sortable-heading"
+            data-testid="chaos-sortable"
+        >
+            {#snippet item(entry)}
+                <div
+                    class="rounded-container border border-border bg-surface-raised p-3 text-sm"
+                    data-testid="chaos-sortable-card-{entry.id}"
+                >
+                    <p class="font-medium">{entry.title}</p>
+                    {#each { length: entry.lines - 1 } as _, line (line)}
+                        <p class="text-description">Extra line {line + 1}</p>
+                    {/each}
+                </div>
+            {/snippet}
+        </SortableList>
+        <p class="text-sm text-description">
+            Order: <span data-testid="chaos-sortable-order"
+                >{sortableItems.map((entry) => entry.id).join(",")}</span
+            >
+            · Last move:
+            <span data-testid="chaos-sortable-last-move">{sortableLastMove}</span>
+        </p>
     </section>
 </main>

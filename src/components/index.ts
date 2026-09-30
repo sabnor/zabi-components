@@ -54,6 +54,13 @@ export { default as Section } from './molecules/Section.svelte';
 export { default as SidebarBrandHeader } from './molecules/SidebarBrandHeader.svelte';
 export { default as SidebarFooter } from './molecules/SidebarFooter.svelte';
 export { default as SidebarNavSection } from './molecules/SidebarNavSection.svelte';
+export { default as SortableList } from './molecules/SortableList.svelte';
+export type {
+    SortableListAnnouncement,
+    SortableListReorderDetail,
+    SortableListRow,
+    SortableListStrings,
+} from './util/sortable-list.js';
 
 export {
     toastStore,

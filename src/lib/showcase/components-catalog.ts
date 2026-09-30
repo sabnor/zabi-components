@@ -2625,6 +2625,169 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "SortableList",
+                category: "molecules",
+                description:
+                    "Reorderable list with a drag handle, arrow-key and button reordering, and a live announcement of each move.",
+                props: [
+                    {
+                        name: "items",
+                        type: "T[]",
+                        required: true,
+                        description:
+                            "The items, in order. Bindable.",
+                    },
+                    {
+                        name: "getKey",
+                        type: "(item: T) => string | number",
+                        required: true,
+                        description:
+                            "Stable identity of an item. Rows are keyed by it.",
+                    },
+                    {
+                        name: "getLabel",
+                        type: "(item: T) => string",
+                        required: true,
+                        description:
+                            "Name of an item, used in the button names and the announcements.",
+                    },
+                    {
+                        name: "item",
+                        type: "Snippet<[T, SortableListRow]>",
+                        required: true,
+                        description:
+                            "Content of one row. The second argument carries index, dragging, disabled, and the handle and moveButtons snippets.",
+                    },
+                    {
+                        name: "onreorder",
+                        type: "(detail: { item: T; from: number; to: number; items: T[] }) => void",
+                        required: false,
+                        description:
+                            "Runs once per move, after items has the new order.",
+                    },
+                    {
+                        name: "controls",
+                        type: "'auto' | 'manual'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "auto lays out handle, content and move buttons in a row. manual renders only your snippet, which places row.handle and row.moveButtons itself.",
+                    },
+                    {
+                        name: "showMoveButtons",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Shows the move up and move down buttons when controls is auto.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Disables every handle and move button.",
+                    },
+                    {
+                        name: "isItemDisabled",
+                        type: "(item: T) => boolean",
+                        required: false,
+                        description:
+                            "Disables one item's own controls. Other items can still move past it.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<SortableListStrings>",
+                        required: false,
+                        description:
+                            "Overrides for the built-in strings: handleLabel, handleDescription, moveUp, moveDown, moved and cancelled.",
+                    },
+                    {
+                        name: "listClass",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the ul, for example a different gap.",
+                    },
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name of the list. Use this or aria-labelledby.",
+                    },
+                    {
+                        name: "aria-labelledby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of the element that names the list.",
+                    },
+                ],
+                variants: [
+                    "auto",
+                    "manual",
+                    "disabled",
+                ],
+                examples: [
+                    {
+                        title: "Basic list",
+                        description:
+                            "Drag the handle, press the arrow keys on it, or use the move buttons",
+                        code: `<script lang="ts">
+    import { SortableList } from "zabi-components";
+
+    let steps = $state([
+        { id: "details", title: "Your details" },
+        { id: "plan", title: "Choose a plan" },
+        { id: "payment", title: "Payment" },
+    ]);
+</script>
+
+<SortableList
+    bind:items={steps}
+    getKey={(step) => step.id}
+    getLabel={(step) => step.title}
+    aria-label="Checkout steps"
+>
+    {#snippet item(step, row)}
+        <div class="rounded-control border border-border bg-surface-raised px-3 py-1 text-sm">
+            {row.index + 1}. {step.title}
+        </div>
+    {/snippet}
+</SortableList>`,
+                    },
+                    {
+                        title: "Cards with the handle in the header",
+                        description:
+                            "Manual controls, a disabled item, and the reorder callback",
+                        code: `<SortableList
+    bind:items={sections}
+    getKey={(section) => section.id}
+    getLabel={(section) => section.title}
+    isItemDisabled={(section) => section.locked}
+    onreorder={({ item, from, to }) => save(item.id, from, to)}
+    controls="manual"
+    listClass="gap-3"
+    aria-label="Page sections"
+>
+    {#snippet item(section, row)}
+        <Card fullWidth={true}>
+            <div class="flex items-center gap-2">
+                {@render row.handle()}
+                <p class="flex-1 text-sm font-medium">{section.title}</p>
+                {@render row.moveButtons()}
+            </div>
+            <p class="mt-2 text-sm text-description">{section.summary}</p>
+        </Card>
+    {/snippet}
+</SortableList>`,
+                    },
+                ],
+            },
         ],
         organisms: [
             {

@@ -14,6 +14,13 @@ Whenever token or CSS import API surface changes, include:
 
 ### Added
 
+- **SortableList**, a new molecule that reorders items and leaves their content
+  to you. Each row has a drag handle (mouse and touch, by pointer events), arrow
+  keys, Home and End on the handle, optional move up and move down buttons, and
+  a polite announcement of the new position. `bind:items` holds the order,
+  `onreorder` reports the item with its old and new index, `controls="manual"`
+  lets a row place the handle itself, and every built-in string can be replaced
+  through `strings`. Escape cancels a drag.
 - **ImageUpload can open your own picker.** `onbrowse` replaces the native file
   chooser, for a media library or another source, and `event.preventDefault()`
   in `onclick` now keeps the chooser closed.
