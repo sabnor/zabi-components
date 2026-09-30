@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import { Heart } from '@lucide/svelte';
+import { Bold, Heart, Trash2 } from '@lucide/svelte';
 import IconButton from '../../components/atoms/IconButton.svelte';
 
 const iconSizeByButtonSize = {
+    xs: 14,
     sm: 16,
     md: 20,
     lg: 24
@@ -15,7 +16,8 @@ const meta = {
         layout: 'centered',
         docs: {
             description: {
-                component: 'Icon-only button for compact actions. Provide an accessible label via the label prop.'
+                component:
+                    'Icon-only button for compact actions. Provide an accessible label via the label prop. Pass pressed to make it a toggle button, and tone="danger" on a ghost or outline button for a quiet destructive action.'
             }
         }
     },
@@ -27,7 +29,14 @@ const meta = {
         },
         size: {
             control: 'select',
-            options: ['sm', 'md', 'lg']
+            options: ['xs', 'sm', 'md', 'lg']
+        },
+        tone: {
+            control: 'select',
+            options: ['default', 'danger']
+        },
+        pressed: {
+            control: 'boolean'
         }
     }
 } satisfies Meta<typeof IconButton>;
@@ -35,7 +44,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const renderWithIcon = (args: Story['args']) => {
+const renderWith = (Icon: typeof Heart) => (args: Story['args']) => {
     const size = (args?.size ?? 'md') as keyof typeof iconSizeByButtonSize;
 
     return {
@@ -43,12 +52,14 @@ const renderWithIcon = (args: Story['args']) => {
         props: args,
         children: [
             {
-                Component: Heart,
+                Component: Icon,
                 props: { size: iconSizeByButtonSize[size] }
             }
         ]
     };
 };
+
+const renderWithIcon = renderWith(Heart);
 
 export const Default: Story = {
     args: {
@@ -85,6 +96,16 @@ export const Small: Story = {
     render: renderWithIcon
 };
 
+/** 24px, for dense pointer-first layouts such as a card header. On touch the hit area grows to 44px. */
+export const ExtraSmall: Story = {
+    args: {
+        variant: 'ghost',
+        size: 'xs',
+        label: 'Favorite'
+    },
+    render: renderWithIcon
+};
+
 export const Large: Story = {
     args: {
         size: 'lg',
@@ -99,4 +120,25 @@ export const Disabled: Story = {
         label: 'Favorite'
     },
     render: renderWithIcon
+};
+
+/** A toolbar toggle: click it to flip `pressed`, which is announced through `aria-pressed`. */
+export const PressedToggle: Story = {
+    args: {
+        variant: 'ghost',
+        size: 'sm',
+        pressed: true,
+        label: 'Bold'
+    },
+    render: renderWith(Bold)
+};
+
+/** The quiet destructive button for inline delete. `tone` applies to ghost and outline. */
+export const GhostDanger: Story = {
+    args: {
+        variant: 'ghost',
+        tone: 'danger',
+        label: 'Delete'
+    },
+    render: renderWith(Trash2)
 };

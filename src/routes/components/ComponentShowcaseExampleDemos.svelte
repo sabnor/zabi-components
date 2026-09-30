@@ -62,6 +62,9 @@
     import CircleQuestionMark from "@lucide/svelte/icons/circle-question-mark";
     import Circle from "@lucide/svelte/icons/circle";
     import Heart from "@lucide/svelte/icons/heart";
+    import Bold from "@lucide/svelte/icons/bold";
+    import Italic from "@lucide/svelte/icons/italic";
+    import Trash2 from "@lucide/svelte/icons/trash-2";
     import Zap from "@lucide/svelte/icons/zap";
     import ShieldCheck from "@lucide/svelte/icons/shield-check";
     import Sparkles from "@lucide/svelte/icons/sparkles";
@@ -113,6 +116,10 @@
     const appShellAccountPanelId = "app-shell-account-panel";
     let appShellAccountPanelOpen = $state(false);
     let appShellAccountLightMode = $state(false);
+
+    /** IconButton toolbar-toggle demo. */
+    let iconButtonBold = $state(true);
+    let iconButtonItalic = $state(false);
 
     let dropdownDemoAOpen = $state(false);
     let dropdownDemoBOpen = $state(false);
@@ -274,6 +281,94 @@
                         </IconButton>
                         <IconButton variant="danger" disabled label="Remove">
                             <Heart />
+                        </IconButton>
+                    </div>
+                    <div class="flex flex-wrap gap-4 items-end">
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-xs font-medium text-headline">
+                                xs
+                            </span>
+                            <IconButton
+                                variant="outline"
+                                size="xs"
+                                label="Favorite"
+                            >
+                                <Heart size={14} />
+                            </IconButton>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-xs font-medium text-headline">
+                                sm
+                            </span>
+                            <IconButton
+                                variant="outline"
+                                size="sm"
+                                label="Favorite"
+                            >
+                                <Heart size={16} />
+                            </IconButton>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-xs font-medium text-headline">
+                                md
+                            </span>
+                            <IconButton variant="outline" label="Favorite">
+                                <Heart size={20} />
+                            </IconButton>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-xs font-medium text-headline">
+                                lg
+                            </span>
+                            <IconButton
+                                variant="outline"
+                                size="lg"
+                                label="Favorite"
+                            >
+                                <Heart />
+                            </IconButton>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <div
+                            class="flex items-center gap-1"
+                            role="toolbar"
+                            aria-label="Text formatting"
+                        >
+                            <IconButton
+                                variant="ghost"
+                                size="sm"
+                                label="Bold"
+                                bind:pressed={iconButtonBold}
+                            >
+                                <Bold size={16} />
+                            </IconButton>
+                            <IconButton
+                                variant="ghost"
+                                size="sm"
+                                label="Italic"
+                                bind:pressed={iconButtonItalic}
+                            >
+                                <Italic size={16} />
+                            </IconButton>
+                        </div>
+                        <IconButton variant="ghost" tone="danger" label="Delete">
+                            <Trash2 size={20} />
+                        </IconButton>
+                        <IconButton
+                            variant="outline"
+                            tone="danger"
+                            label="Delete"
+                        >
+                            <Trash2 size={20} />
+                        </IconButton>
+                        <IconButton
+                            variant="ghost"
+                            tone="danger"
+                            size="xs"
+                            label="Delete"
+                        >
+                            <Trash2 size={14} />
                         </IconButton>
                     </div>
                 </div>

@@ -76,7 +76,23 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: "md",
-                        description: "Icon button size",
+                        description:
+                            "Icon button size: xs (24px), sm, md or lg. xs is for dense pointer-first layouts; on touch its hit area grows to 44px",
+                    },
+                    {
+                        name: "tone",
+                        type: "string",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "Colour intent for the ghost and outline variants: default or danger (quiet destructive action)",
+                    },
+                    {
+                        name: "pressed",
+                        type: "boolean",
+                        required: false,
+                        description:
+                            "Makes a toggle button: when set it renders aria-pressed and an active style, and a click flips it (bindable). Leave undefined for a plain button",
                     },
                     {
                         name: "disabled",
@@ -118,6 +134,18 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Variants",
                         description: "Different icon button variants",
                         code: '&lt;IconButton variant="primary" label="Favorite"&gt;\n  &lt;Heart /&gt;\n&lt;/IconButton&gt;\n&lt;IconButton variant="ghost" label="Favorite"&gt;\n  &lt;Heart /&gt;\n&lt;/IconButton&gt;',
+                    },
+                    {
+                        title: "Toolbar toggle",
+                        description:
+                            "A pressed state announced through aria-pressed",
+                        code: '&lt;IconButton variant="ghost" size="sm" label="Bold" bind:pressed={bold}&gt;\n  &lt;Bold size={16} /&gt;\n&lt;/IconButton&gt;',
+                    },
+                    {
+                        title: "Inline delete",
+                        description:
+                            "A ghost danger button at the xs size for a dense card header",
+                        code: '&lt;IconButton variant="ghost" tone="danger" size="xs" label="Delete"&gt;\n  &lt;Trash2 size={14} /&gt;\n&lt;/IconButton&gt;',
                     },
                 ],
             },

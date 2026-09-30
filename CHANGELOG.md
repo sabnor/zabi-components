@@ -36,6 +36,16 @@ Whenever token or CSS import API surface changes, include:
 - **ImageUpload copy is configurable**: `browseText`, `changeText`,
   `removeText`, `errorTitle` and `errorRecovery` (`false` leaves the line out).
   The defaults are the previous strings.
+- **IconButton has an `xs` size**, a 24px box for dense, pointer-first layouts
+  such as card headers. On a touch device its hit area grows to 44px without
+  moving the visual box; leave room around it there, or use `sm`.
+- **IconButton can be a toggle.** `pressed` (bindable) renders `aria-pressed`
+  and a pressed style in every variant, and a click flips it;
+  `event.preventDefault()` in `onclick` keeps the current state. Left
+  undefined, the button renders no `aria-pressed`, as before.
+- **IconButton has a quiet destructive style.** `tone="danger"` on the `ghost`
+  or `outline` variant gives a danger-coloured icon, a danger-tinted hover and
+  the danger focus ring, for inline delete.
 
 ### Changed
 
