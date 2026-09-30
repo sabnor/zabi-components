@@ -11,8 +11,8 @@
         variant?: ButtonVariant;
         /**
          * `xs` is a 24px box for dense, pointer-first layouts (card headers,
-         * table rows). On a touch device its hit area grows to 44px without
-         * moving the visual box, so leave room around it or use `sm` there.
+         * table rows). That is the WCAG 2.2 minimum target size and no more:
+         * where the primary input is touch, use `sm` or larger.
          */
         size?: IconButtonSize;
         /**
@@ -24,7 +24,10 @@
          * Makes this a toggle button. When defined (true or false) it renders
          * `aria-pressed` and a click flips it; bind it, or pass it one-way and
          * update your own state in `onclick`. Call `event.preventDefault()` in
-         * `onclick` to keep the current state. Leave undefined for a plain button.
+         * `onclick` to keep the current state: do that whenever the parent
+         * updates later (after a request, say) or may refuse the change, or the
+         * button shows a state the parent does not have. Leave undefined for a
+         * plain button.
          */
         pressed?: boolean;
         loading?: boolean;
@@ -68,16 +71,12 @@
      * Previously these were 8–16px shorter than their own Button.
      *
      * `xs` sits below that scale on purpose: no text control is 24px. Its
-     * `before:` layer is the touch target, 10px past each edge (44px), and only
-     * exists for a coarse pointer so it cannot cover a neighbour under a mouse.
+     * target is the box itself on every pointer type. An invisible larger hit
+     * area was tried and removed: on touch it covered the visible edge of the
+     * neighbouring button, so a tap there fired the wrong one.
      */
     const sizeClass = $derived.by(() => {
-        if (size === "xs") {
-            return {
-                box: "size-6 relative pointer-coarse:before:absolute pointer-coarse:before:-inset-2.5 pointer-coarse:before:content-['']",
-                spinner: "size-3",
-            };
-        }
+        if (size === "xs") return { box: "size-6", spinner: "size-3" };
         if (size === "sm") return { box: "size-8", spinner: "size-3.5" };
         if (size === "lg") return { box: "size-12", spinner: "size-5" };
         return { box: "size-10", spinner: "size-4" };

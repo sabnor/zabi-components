@@ -96,7 +96,7 @@ export const Small: Story = {
     render: renderWithIcon
 };
 
-/** 24px, for dense pointer-first layouts such as a card header. On touch the hit area grows to 44px. */
+/** 24px, for dense pointer-first layouts such as a card header. Where the primary input is touch, use `sm` or larger. */
 export const ExtraSmall: Story = {
     args: {
         variant: 'ghost',

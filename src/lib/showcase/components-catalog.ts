@@ -77,7 +77,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "md",
                         description:
-                            "Icon button size: xs (24px), sm, md or lg. xs is for dense pointer-first layouts; on touch its hit area grows to 44px",
+                            "Icon button size: xs (24px), sm, md or lg. xs is for dense pointer-first layouts and is the minimum target size; use sm or larger where the primary input is touch",
                     },
                     {
                         name: "tone",
@@ -92,7 +92,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "boolean",
                         required: false,
                         description:
-                            "Makes a toggle button: when set it renders aria-pressed and an active style, and a click flips it (bindable). Leave undefined for a plain button",
+                            "Makes a toggle button: when set it renders aria-pressed and an active style, and a click flips it (bindable). Passed one-way, call preventDefault() in onclick when the parent updates later or may refuse the change. Leave undefined for a plain button",
                     },
                     {
                         name: "disabled",

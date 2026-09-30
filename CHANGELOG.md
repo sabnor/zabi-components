@@ -42,8 +42,8 @@ Whenever token or CSS import API surface changes, include:
   `removeText`, `errorTitle` and `errorRecovery` (`false` leaves the line out).
   The defaults are the previous strings.
 - **IconButton has an `xs` size**, a 24px box for dense, pointer-first layouts
-  such as card headers. On a touch device its hit area grows to 44px without
-  moving the visual box; leave room around it there, or use `sm`.
+  such as card headers. It is the minimum target size; use `sm` or larger where
+  the primary input is touch.
 - **IconButton can be a toggle.** `pressed` (bindable) renders `aria-pressed`
   and a pressed style in every variant, and a click flips it;
   `event.preventDefault()` in `onclick` keeps the current state. Left

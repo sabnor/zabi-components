@@ -82,4 +82,21 @@ describe("IconButton (QA): toggle edge cases", () => {
         expect(button("Delete row").getAttribute("data-row")).toBe("7");
         expect(button("Delete row").getAttribute("type")).toBe("button");
     });
+
+    // The colours themselves are CSS: measured in a browser, a pressed and
+    // disabled button shows the neutral disabled pair in every variant. jsdom
+    // can only pin that the disabled classes are still on it beside the state.
+    it.each(["primary", "secondary", "danger", "ghost", "outline", "link"] as const)(
+        "keeps the disabled treatment on a pressed %s button",
+        (variant) => {
+            render(IconButton, {
+                props: { label: "Bold", variant, pressed: true, disabled: true },
+            });
+            const classes = button().className.split(/\s+/);
+            expect(classes).toContain("disabled:bg-action-disabled");
+            expect(classes).toContain("disabled:text-action-disabled-text");
+            expect(classes).toContain("outline-2");
+            expect(button().getAttribute("aria-pressed")).toBe("true");
+        },
+    );
 });

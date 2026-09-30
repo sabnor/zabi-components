@@ -13,25 +13,22 @@ const classesOf = (element: HTMLElement) => element.className.split(/\s+/);
 
 describe("IconButton", () => {
     describe("size", () => {
-        it("renders xs as a 24px box with a touch-only hit area", () => {
+        it("renders xs as a 24px box", () => {
             render(IconButton, { size: "xs", label: "Edit" });
             const classes = classesOf(screen.getByRole("button", { name: "Edit" }));
 
             expect(classes).toContain("size-6");
             expect(classes).not.toContain("size-10");
-            // The target grows for a coarse pointer only, and as a pseudo-element,
-            // so the visual box stays 24px and a mouse never hits a hidden layer.
-            expect(classes).toContain("relative");
-            expect(classes).toContain("pointer-coarse:before:absolute");
-            expect(classes).toContain("pointer-coarse:before:-inset-2.5");
-            expect(classes.some((c) => c.startsWith("before:"))).toBe(false);
         });
 
         it.each([
+            ["xs", "size-6"],
             ["sm", "size-8"],
             ["md", "size-10"],
             ["lg", "size-12"],
-        ] as const)("keeps %s on the shared scale with no hit-area layer", (size, box) => {
+        ] as const)("renders %s with no invisible hit-area layer", (size, box) => {
+            // An `xs` touch overlay once reached 10px past the box and covered
+            // the visible edge of the button beside it; the box is the target.
             render(IconButton, { size, label: "Edit" });
             const classes = classesOf(screen.getByRole("button", { name: "Edit" }));
 
