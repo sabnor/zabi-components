@@ -1143,14 +1143,30 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Table",
                 category: "atoms",
                 description:
-                    "Scrollable table shell with an optional caption; pass thead and tbody as children.",
+                    "Scrollable table shell with an optional caption; pass thead and tbody as children. Can stack rows on small screens.",
                 props: [
                     {
                         name: "caption",
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Visible table caption",
+                        description: "Table caption, and its accessible name",
+                    },
+                    {
+                        name: "captionHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Hide the caption from view; it still names the table for screen readers",
+                    },
+                    {
+                        name: "stacked",
+                        type: 'boolean | "sm" | "md" | "lg"',
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Lay each row out as label and value pairs instead of scrolling sideways: always (true) or below a breakpoint. Each cell's label is its data-label attribute",
                     },
                     {
                         name: "class",
@@ -1168,6 +1184,22 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         code: `<Table caption="Team">
   <thead>…</thead>
   <tbody>…</tbody>
+</Table>`,
+                    },
+                    {
+                        title: "Stacked on small screens",
+                        description:
+                            "Below 640px each row is a block of pairs; data-label supplies the label",
+                        code: `<Table caption="Team" stacked="sm">
+  <thead>
+    <tr><th>Name</th><th>Role</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td data-label="Name">Ada</td>
+      <td data-label="Role">Admin</td>
+    </tr>
+  </tbody>
 </Table>`,
                     },
                 ],

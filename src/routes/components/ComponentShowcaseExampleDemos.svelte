@@ -1579,7 +1579,8 @@
                     </div>
                 {/if}
             {:else if component.name === "Table"}
-                <Table caption="Q1 results">
+                <!-- Stacks below 640px; `data-label` is the label shown beside each value there. -->
+                <Table caption="Q1 results" stacked="sm">
                     <thead class="border-b border-border bg-base-50">
                         <tr>
                             <th class="px-4 py-3 font-medium text-headline"
@@ -1592,12 +1593,12 @@
                     </thead>
                     <tbody class="divide-y divide-border">
                         <tr>
-                            <td class="px-4 py-3 text-body">North</td>
-                            <td class="px-4 py-3 text-body">$12,400</td>
+                            <td class="px-4 py-3 text-body" data-label="Region">North</td>
+                            <td class="px-4 py-3 text-body" data-label="Revenue">$12,400</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 text-body">South</td>
-                            <td class="px-4 py-3 text-body">$9,200</td>
+                            <td class="px-4 py-3 text-body" data-label="Region">South</td>
+                            <td class="px-4 py-3 text-body" data-label="Revenue">$9,200</td>
                         </tr>
                     </tbody>
                 </Table>

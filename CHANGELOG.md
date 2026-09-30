@@ -130,6 +130,14 @@ Whenever token or CSS import API surface changes, include:
   `document.body` unless `portal={false}`, shares the scroll lock with Modal
   and SlideUp, and can be opened over a Modal or host one. The slide is skipped
   under `prefers-reduced-motion`.
+- **Table can stack its rows on small screens.** `stacked` lays each row out as
+  label and value pairs and drops the 20rem minimum width, so nothing scrolls
+  sideways; `stacked="sm"`, `"md"` or `"lg"` does so only below that breakpoint.
+  Put the column name on each cell as `data-label` (`<td data-label="Role">`).
+  Keep the `<thead>`: it is hidden from view when stacked but still gives the
+  cells their headers.
+- Table takes `captionHidden`, which keeps the caption as the table's accessible
+  name but hides it from view.
 
 ### Changed
 
