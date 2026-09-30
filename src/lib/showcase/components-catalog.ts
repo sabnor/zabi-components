@@ -1890,6 +1890,29 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Replaces the built-in preview. Receives the url, type and alt.",
                     },
                     {
+                        name: "actionsPlacement",
+                        type: '"overlay" | "strip"',
+                        required: false,
+                        description:
+                            "Where Change and Remove sit over the preview. Defaults to strip for a video and on touch, overlay otherwise.",
+                    },
+                    {
+                        name: "selectedText",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Image selected",
+                        description:
+                            "Announced to screen readers when a file or URL is set.",
+                    },
+                    {
+                        name: "removedText",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Image removed",
+                        description:
+                            "Announced to screen readers when the value is cleared.",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,

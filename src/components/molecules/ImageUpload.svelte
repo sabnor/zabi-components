@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onDestroy, type Snippet } from "svelte";
+    import { onDestroy, tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Button from "../atoms/Button.svelte";
     import { Image } from "@lucide/svelte";
@@ -14,6 +14,8 @@
     };
 
     export type ImageUploadPreviewType = "image" | "video";
+
+    export type ImageUploadActionsPlacement = "overlay" | "strip";
 
     export type ImageUploadPreviewDetail = {
         /** The current `value`. */
@@ -49,6 +51,16 @@
         previewType?: ImageUploadPreviewType;
         /** Replaces the built-in `<img>` / `<video>` preview. */
         preview?: Snippet<[ImageUploadPreviewDetail]>;
+        /**
+         * Where Change and Remove sit: over the whole preview, or in a strip
+         * along its top edge. Defaults to the strip for a video, whose controls
+         * an overlay would cover, and to the overlay otherwise.
+         */
+        actionsPlacement?: ImageUploadActionsPlacement;
+        /** Announced to screen readers when a file or URL is set. */
+        selectedText?: string;
+        /** Announced to screen readers when the value is cleared. */
+        removedText?: string;
         errorMessage?: string;
         errorTitle?: string;
         /** Closing line of the error block; `false` or `""` leaves it out. */
@@ -81,6 +93,9 @@
         alt = "",
         previewType,
         preview,
+        actionsPlacement,
+        selectedText = "Image selected",
+        removedText = "Image removed",
         errorMessage = "",
         errorTitle = "Image upload failed",
         errorRecovery = "Recovery action: try another file or retry upload.",
@@ -101,6 +116,7 @@
     const hintId = $derived(`${controlId}-hint`);
     const errorId = $derived(`${controlId}-error`);
 
+    let host = $state<HTMLDivElement>();
     let fileInput = $state<HTMLInputElement>();
     let currentObjectUrl = $state<string | null>(null);
     // An object URL has no extension, so the kind is kept from the file itself.
@@ -109,6 +125,11 @@
     let dragDepth = $state(0);
 
     const isDragOver = $derived(dragDepth > 0);
+
+    let statusMessage = $state("");
+    let previousValue: string | null | undefined;
+    // Set by Change, Remove and the dropzone: the next swap is this control's doing.
+    let focusReturnArmed = false;
 
     function isVideoPath(path: string) {
         return VIDEO_EXTENSION.test(path.split(/[?#]/)[0]);
@@ -119,6 +140,51 @@
         if (!value) return "image";
         if (value === currentObjectUrl && currentObjectType) return currentObjectType;
         return value.startsWith("data:video/") || isVideoPath(value) ? "video" : "image";
+    });
+
+    const actionsInStrip = $derived(
+        (actionsPlacement ?? (resolvedPreviewType === "video" ? "strip" : "overlay")) ===
+            "strip",
+    );
+
+    function announce(message: string) {
+        // An unchanged live region is not read again; a trailing no-break
+        // space makes a repeat a change without altering what is heard.
+        statusMessage = message === statusMessage ? `${message}\u00a0` : message;
+    }
+
+    /**
+     * The dropzone and the actions are different nodes, so filling or clearing
+     * the value unmounts whichever had focus and the browser drops focus on
+     * `<body>`. Hand it to the control that now carries the id, but only when
+     * focus was in here or the swap came from one of this component's own
+     * controls, and never when it has since settled somewhere else.
+     */
+    $effect.pre(() => {
+        const current = value;
+        untrack(() => {
+            if (previousValue === undefined) {
+                previousValue = current ?? null;
+                return;
+            }
+            if ((current ?? null) === previousValue) return;
+
+            const swapped = Boolean(current) !== Boolean(previousValue);
+            previousValue = current ?? null;
+            announce(current ? selectedText : removedText);
+            if (!swapped) return;
+
+            const hadFocus = Boolean(host?.contains(document.activeElement));
+            const armed = focusReturnArmed;
+            focusReturnArmed = false;
+            if (!hadFocus && !armed) return;
+
+            void tick().then(() => {
+                const active = document.activeElement;
+                if (active && active !== document.body) return;
+                document.getElementById(controlId)?.focus();
+            });
+        });
     });
 
     const changeName = $derived(
@@ -170,6 +236,7 @@
     function removeImage() {
         if (disabled) return;
 
+        focusReturnArmed = true;
         revokeCurrentObjectUrl();
         value = null;
         if (fileInput) fileInput.value = "";
@@ -180,6 +247,7 @@
         if (disabled) return;
         onclick?.(event);
         if (event.defaultPrevented) return;
+        focusReturnArmed = true;
         if (onbrowse) {
             onbrowse(event);
             return;
@@ -208,17 +276,19 @@
         return Array.from(event.dataTransfer?.types ?? []).includes("Files");
     }
 
+    // A disabled upload still cancels a file drag: left alone, the browser
+    // opens the dropped file in the tab and the surrounding form is lost.
     function handleDragEnter(event: DragEvent) {
-        if (disabled || !carriesFiles(event)) return;
+        if (!carriesFiles(event)) return;
         event.preventDefault();
-        dragDepth += 1;
+        if (!disabled) dragDepth += 1;
     }
 
     function handleDragOver(event: DragEvent) {
-        if (disabled || !carriesFiles(event)) return;
+        if (!carriesFiles(event)) return;
         // Without this the browser refuses the drop and opens the file instead.
         event.preventDefault();
-        if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+        if (event.dataTransfer) event.dataTransfer.dropEffect = disabled ? "none" : "copy";
     }
 
     function handleDragLeave() {
@@ -227,8 +297,9 @@
 
     function handleDrop(event: DragEvent) {
         dragDepth = 0;
-        if (disabled || !carriesFiles(event)) return;
+        if (!carriesFiles(event)) return;
         event.preventDefault();
+        if (disabled) return;
 
         const file = event.dataTransfer?.files?.[0];
         if (!file) return;
@@ -248,7 +319,7 @@
     });
 </script>
 
-<div class={cn("space-y-3", className)} {...restProps}>
+<div bind:this={host} class={cn("space-y-3", className)} {...restProps}>
     {#if label}
         <label
             id={labelId}
@@ -262,6 +333,7 @@
     <!-- Wraps both states so a drop is handled the same over either. -->
     <div
         role="presentation"
+        class={disabled ? "cursor-not-allowed" : undefined}
         ondragenter={handleDragEnter}
         ondragover={handleDragOver}
         ondragleave={handleDragLeave}
@@ -297,38 +369,45 @@
                 {/if}
                 <!-- Hover cannot reveal the actions on a touch screen, so there
                      they stay visible as a strip that leaves the preview in
-                     view. A video always gets the strip: a full overlay would
-                     cover its controls. -->
+                     view. The layer itself never takes the pointer: only the
+                     plate under the buttons does, so a video beneath stays
+                     operable. The plate is opaque so the labels keep their
+                     contrast whatever the image behind them. -->
                 <div
                     class={cn(
-                        "absolute inset-0 border border-border-overlay bg-surface-overlay/60 backdrop-blur-md opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity motion-reduce:transition-none rounded-container flex items-center justify-center",
+                        "absolute inset-0 p-1 border border-border-overlay bg-surface-overlay/60 backdrop-blur-md opacity-0 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100 transition-opacity motion-reduce:transition-none rounded-container flex items-center justify-center pointer-events-none",
                         "pointer-coarse:opacity-100 [@media(hover:none)]:opacity-100",
-                        !preview && resolvedPreviewType === "video"
-                            ? "bottom-auto py-2"
-                            : "pointer-coarse:bottom-auto pointer-coarse:py-2 [@media(hover:none)]:bottom-auto [@media(hover:none)]:py-2",
+                        actionsInStrip
+                            ? "bottom-auto"
+                            : "pointer-coarse:bottom-auto [@media(hover:none)]:bottom-auto",
                         isDragOver && "opacity-100 border-action-primary",
                     )}
                     data-testid="image-upload-actions"
                 >
-                    <div class="flex gap-2">
+                    <div
+                        class="pointer-events-auto flex min-w-0 flex-wrap justify-center gap-2 rounded-control bg-surface-overlay p-1"
+                    >
                         <Button
                             id={controlId}
                             variant="secondary"
                             size="sm"
+                            class="min-w-0"
                             onclick={triggerFileSelect}
                             aria-label={changeName}
+                            aria-describedby={errorMessage ? errorId : undefined}
                             {disabled}
                         >
-                            {changeText}
+                            <span class="truncate">{changeText}</span>
                         </Button>
                         <Button
                             variant="danger"
                             size="sm"
+                            class="min-w-0"
                             onclick={removeImage}
                             aria-label={removeName}
                             {disabled}
                         >
-                            {removeText}
+                            <span class="truncate">{removeText}</span>
                         </Button>
                     </div>
                 </div>
@@ -338,8 +417,10 @@
                 type="button"
                 id={controlId}
                 class={cn(
-                    "focus-ring block w-full border-2 border-dashed border-input-border rounded-container p-6 text-center hover:border-action-primary transition-colors",
-                    disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                    "focus-ring block w-full border-2 border-dashed border-input-border rounded-container p-6 text-center enabled:hover:border-action-primary transition-colors",
+                    // Disabled form controls can swallow pointer events; let a
+                    // drag land on the wrapper, which cancels it.
+                    disabled ? "pointer-events-none opacity-50" : "cursor-pointer",
                     isDragOver && "border-action-primary bg-action-primary-subtle",
                 )}
                 onclick={triggerFileSelect}
@@ -374,6 +455,10 @@
         class="hidden"
         data-testid="image-upload-input"
     />
+
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        {statusMessage}
+    </div>
 
     {#if errorMessage}
         <!-- Same tinted fill + tinted border Alert uses, rather than a bare

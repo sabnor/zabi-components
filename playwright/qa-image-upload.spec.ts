@@ -1,10 +1,11 @@
 import { devices, expect, test, type Page } from "@playwright/test";
 
 /**
- * ImageUpload in a real browser (QA review of b76dace): the parts jsdom
- * cannot show. jsdom evaluates no media queries, so the unit test for the
- * touch layout can only compare class names; and it does not drop focus the
- * way a browser does when the focused node is unmounted.
+ * ImageUpload in a real browser (QA review of b76dace, and the fixes that
+ * followed): the parts jsdom cannot show. jsdom evaluates no media queries,
+ * so the unit test for the touch layout can only compare class names; and it
+ * does not drop focus the way a browser does when the focused node is
+ * unmounted.
  */
 
 const PATH = "/components/ImageUpload";
@@ -39,6 +40,9 @@ test.describe("ImageUpload — names, focus and the overlay", () => {
         const change = group.getByRole("button", { name: "Change Cover image" });
         const remove = group.getByRole("button", { name: "Remove Cover image" });
 
+        await expect(change, "A keyboard pick leaves focus on Change").toBeFocused();
+        await expect(actions(page)).toHaveCSS("opacity", "1");
+        await change.blur();
         await expect(
             actions(page),
             "With a mouse and nothing focused, the actions stay out of the way",
@@ -50,22 +54,79 @@ test.describe("ImageUpload — names, focus and the overlay", () => {
         await expect(actions(page)).toHaveCSS("opacity", "1");
     });
 
-    // DEFECT (QA-IU-1): the empty and the filled state are different nodes,
-    // and the swap unmounts whichever had focus. Focus falls to <body>, so a
-    // keyboard user is sent back to the top of the page after every pick and
-    // every Remove. Focus should follow the control id: Change after a pick,
-    // the dropzone after Remove.
-    test.fixme("keyboard: focus follows the control across a pick and a Remove", async ({
+    // QA-IU-1: the empty and the filled state are different nodes, and the
+    // swap unmounts whichever had focus. Focus used to fall to <body>, sending
+    // a keyboard user back to the top of the page after every pick and every
+    // Remove. It follows the control id: Change after a pick, the dropzone
+    // after Remove.
+    test("keyboard: focus follows the control across a pick and a Remove", async ({
         page,
     }) => {
         await pickImage(page);
         await expect(
             page.getByRole("button", { name: "Change Cover image" }).first(),
         ).toBeFocused();
+        await expect(page.getByRole("status").filter({ hasText: "Image selected" })).toHaveCount(1);
 
         await page.getByRole("button", { name: "Remove Cover image" }).first().focus();
         await page.keyboard.press("Enter");
         await expect(dropzone(page)).toBeFocused();
+        await expect(page.getByRole("status").filter({ hasText: "Image removed" })).toHaveCount(1);
+    });
+
+    test("mouse: a pick leaves the new preview uncovered and the layer lets the pointer through", async ({
+        page,
+    }) => {
+        await page.goto(PATH, { waitUntil: "networkidle" });
+        await expect(async () => {
+            const chooser = page.waitForEvent("filechooser", { timeout: 2_000 });
+            await dropzone(page).click();
+            await (await chooser).setFiles({ name: "cover.png", mimeType: "image/png", buffer: PNG });
+        }, "The route must hydrate before the dropzone opens the chooser").toPass();
+        await expect(actions(page)).toBeAttached();
+        await page.mouse.move(1, 1);
+
+        // Focus is restored to Change, but without a focus ring to show there
+        // is nothing to reveal: the overlay must not sit on the fresh preview.
+        await expect(actions(page)).toHaveCSS("opacity", "0");
+        const hit = await page
+            .getByRole("group", { name: "Cover image" })
+            .first()
+            .locator("img")
+            .evaluate((img) => {
+                const box = img.getBoundingClientRect();
+                return document.elementFromPoint(box.x + 12, box.y + 12) === img;
+            });
+        expect(hit, "The invisible layer must not take clicks meant for the preview").toBe(true);
+    });
+
+    test("narrow: Change and Remove wrap inside a 128px column", async ({ page }) => {
+        await pickImage(page);
+        const group = page.getByRole("group", { name: "Cover image" }).first();
+        // group -> drop wrapper -> host element
+        await group.evaluate((el) => {
+            (el.parentElement!.parentElement as HTMLElement).style.width = "128px";
+        });
+        await page.getByRole("button", { name: "Change Cover image" }).first().focus();
+
+        const preview = await group.boundingBox();
+        expect(preview!.width).toBeCloseTo(128, 0);
+        const boxes = [];
+        for (const name of ["Change Cover image", "Remove Cover image"]) {
+            const box = await page.getByRole("button", { name }).first().boundingBox();
+            expect(box, name).toBeTruthy();
+            expect(box!.x, `${name} left edge`).toBeGreaterThanOrEqual(preview!.x);
+            expect(box!.x + box!.width, `${name} right edge`).toBeLessThanOrEqual(
+                preview!.x + preview!.width,
+            );
+            expect(box!.y + box!.height, `${name} bottom edge`).toBeLessThanOrEqual(
+                preview!.y + preview!.height,
+            );
+            boxes.push(box!);
+        }
+        expect(boxes[1].y, "Side by side they need 160px, so Remove wraps below").toBeGreaterThan(
+            boxes[0].y,
+        );
     });
 });
 

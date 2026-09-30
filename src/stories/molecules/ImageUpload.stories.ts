@@ -97,6 +97,21 @@ export const VideoPreview: Story = {
     }
 };
 
+export const StripActions: Story = {
+    args: {
+        label: 'Banner',
+        value: 'https://placehold.co/300x200',
+        actionsPlacement: 'strip'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'With `actionsPlacement="strip"` Change and Remove sit along the top edge and leave the preview in view on hover. A video gets the strip by default so its controls stay clear; an image gets it on touch.'
+            }
+        }
+    }
+};
+
 export const MediaLibrary: Story = {
     args: {
         label: 'Cover image',

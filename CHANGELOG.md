@@ -75,6 +75,11 @@ Whenever token or CSS import API surface changes, include:
   opening one closes the others, or `multiple` lets several stay open. Arrow
   Up, Arrow Down, Home and End move focus between the header buttons, and Tab
   still reaches each of them.
+- ImageUpload takes `actionsPlacement` (`"overlay"` or `"strip"`). A video
+  preview, including one rendered by a `preview` snippet, defaults to the strip
+  so its controls stay clear.
+- ImageUpload announces "Image selected" and "Image removed" to screen readers;
+  `selectedText` and `removedText` replace the wording.
 
 ### Changed
 
@@ -82,6 +87,9 @@ Whenever token or CSS import API surface changes, include:
   container. Set a width on the host with `class` if you relied on it.
 - **ImageUpload's `id` now names the control** the label points at, not the
   host element.
+- ImageUpload reveals Change and Remove on keyboard focus (`:focus-visible`)
+  rather than on any focus, so they do not cover a preview just picked with a
+  mouse. They wrap and truncate in a narrow container.
 
 ### Deprecated
 
@@ -96,6 +104,18 @@ Whenever token or CSS import API surface changes, include:
   not available, they now stay visible.
 - **Modal keeps Tab inside, and still closes on Escape, when focus has fallen
   out of the dialog** because the focused control was disabled or removed.
+- **ImageUpload keeps keyboard focus.** Picking a file, removing it, or setting
+  `value` from your own picker used to drop focus on `<body>`. Focus now moves
+  to Change after a selection and to the dropzone after Remove, and is left
+  alone when it is somewhere else.
+- **ImageUpload's Change label is readable over any image.** In the dark theme
+  over a light image it fell to 2.59:1; the actions now sit on an opaque plate.
+- ImageUpload cancels a file dropped while `disabled`, so the browser no longer
+  opens the file in place of the page.
+- ImageUpload's actions layer no longer takes clicks meant for the preview.
+- ImageUpload's error message is tied to the Change button when a preview is
+  showing, not only to the empty dropzone.
+- A disabled ImageUpload dropzone no longer takes the primary border on hover.
 
 ### Documentation
 

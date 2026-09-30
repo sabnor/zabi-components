@@ -5,9 +5,8 @@ import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import ImageUpload from "../src/components/molecules/ImageUpload.svelte";
 
 /**
- * QA review of b76dace. Gaps the package's own tests leave open. The tests
- * marked DEFECT fail against the component as committed and are skipped so
- * the suite stays green; each names what has to change before it is enabled.
+ * QA review of b76dace. Gaps the package's own tests left open. The tests
+ * tagged QA-IU-n failed against that commit and pin the fixes that followed.
  */
 
 afterEach(() => {
@@ -112,11 +111,10 @@ describe("ImageUpload (QA): drag state", () => {
         expect(dropzone.className).not.toContain("bg-action-primary-subtle");
     });
 
-    // DEFECT (QA-IU-3): while `disabled`, dragover and drop are not cancelled,
-    // so the browser falls back to its default and navigates the tab to the
-    // dropped file, discarding the form the component sits in. A disabled
-    // upload should swallow the drop (preventDefault, dropEffect "none").
-    it.skip("swallows a file dropped while disabled instead of letting the browser open it", async () => {
+    // QA-IU-3: while `disabled`, dragover and drop used not to be cancelled,
+    // so the browser fell back to its default and navigated the tab to the
+    // dropped file, discarding the form the component sits in.
+    it("swallows a file dropped while disabled instead of letting the browser open it", async () => {
         const onfileselect = vi.fn();
         render(ImageUpload, { props: { disabled: true, onfileselect } });
         const dropzone = screen.getByRole("button", { name: /No image selected/ });
@@ -131,10 +129,10 @@ describe("ImageUpload (QA): drag state", () => {
 });
 
 describe("ImageUpload (QA): focus across the empty / filled swap", () => {
-    // DEFECT (QA-IU-1): Remove unmounts the focused button and nothing takes
-    // focus, so it falls to <body> and a keyboard user starts again from the
-    // top of the page. Focus should land on the dropzone (same `id`).
-    it.skip("moves focus to the dropzone after Remove", async () => {
+    // QA-IU-1: Remove unmounts the focused button; focus used to fall to
+    // <body>, sending a keyboard user back to the top of the page. It lands
+    // on the dropzone, which takes over the `id`.
+    it("moves focus to the dropzone after Remove", async () => {
         const user = userEvent.setup();
         render(ImageUpload, { props: { label: "Logo", value: STORED } });
 
@@ -146,6 +144,6 @@ describe("ImageUpload (QA): focus across the empty / filled swap", () => {
         );
     });
 
-    // Picking a file loses focus the same way; jsdom cannot show it (user.upload
+    // Picking a file lost focus the same way; jsdom cannot show it (user.upload
     // focuses the hidden input), so that half is in playwright/qa-image-upload.spec.ts.
 });
