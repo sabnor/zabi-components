@@ -224,7 +224,7 @@
     const dropdownContentClasses = $derived(() => {
         return [
             placementClasses(),
-            'rounded-control border border-border bg-surface-overlay py-2 shadow-lg transition-all duration-200 ease-in-out',
+            'rounded-control border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-all duration-200 ease-in-out',
             transformClasses(),
         ]
             .join(' ')

@@ -38,7 +38,7 @@ const defaultCssPath = path.join(root, 'src', 'app.css');
 const componentsDir = path.join(root, 'src', 'components');
 
 /** Variants that select a state of the element (or of its `group`). */
-const STATE_VARIANTS = new Set(['hover', 'active', 'focus', 'focus-visible', 'focus-within', 'disabled', 'group-hover']);
+const STATE_VARIANTS = new Set(['hover', 'active', 'focus', 'focus-visible', 'focus-within', 'disabled', 'enabled', 'group-hover']);
 
 /** Utility prefix → the property a hand-written colour class would also set. */
 const GROUPS = { bg: 'background-color', text: 'color', border: 'border-color' };
@@ -49,16 +49,13 @@ const COLOUR_KEYWORDS = new Set(['transparent', 'current', 'inherit', 'white', '
 /**
  * Pairs that are known to be dead and are left dead on purpose.
  *
- * Restating these variants would replace an opaque fill (a white panel, a
- * selected row) with a transparent tint, which looks worse than no feedback.
- * They need a change in the component, not in the stylesheet. The list is
- * meant to reach empty; do not add to it.
+ * For a pair where restating the variant would do harm: it would replace an
+ * opaque fill (a white panel, a selected row) with a transparent tint, which
+ * looks worse than no feedback. Such a pair needs a change in the component,
+ * not in the stylesheet. Three were listed here until ActionPanel and Tabs
+ * were fixed. The list is empty and should stay empty.
  */
-export const KNOWN_DEAD = new Set([
-    'bg-card + hover:bg-surface-hover', // atoms/ActionPanel.svelte
-    'bg-card + active:bg-surface-active', // atoms/ActionPanel.svelte
-    'bg-brand-100 + active:bg-surface-active', // molecules/Tabs.svelte (selected pill)
-]);
+export const KNOWN_DEAD = new Set([]);
 
 function unescapeClass(name) {
     return name.replace(/\\(.)/g, '$1');

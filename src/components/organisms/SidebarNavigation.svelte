@@ -349,7 +349,7 @@
                             bind:value={searchValue}
                             placeholder={searchPlaceholder}
                             aria-label={searchPlaceholder}
-                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent"
+                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent"
                         />
                     </div>
                 {/if}
@@ -490,7 +490,7 @@
             {/if}
         {:else}
             <div
-                class="rounded-container border border-border border-dashed bg-transparent px-4 py-4 ring-1 ring-border/60"
+                class="rounded-container border border-border border-dashed bg-transparent px-4 py-4"
             >
                 <h3 class="text-sm font-semibold {getTextToneClass()}">
                     {normalizedSearchTerm && searchMode === "input"

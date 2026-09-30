@@ -76,7 +76,7 @@
               ? "border-warning focus-visible:border-warning"
               : variant === "error"
                 ? "border-error focus-visible:border-error"
-                : "border-input-border focus-visible:border-input-border";
+                : "border-input-border enabled:hover:border-input-border-hover focus-visible:border-input-border";
     });
 
     const inputClasses = $derived(() => {

@@ -80,7 +80,7 @@
     <div
         bind:this={contentElement}
         id={panelId || undefined}
-        class={cn("absolute left-0 top-full mt-2 bg-surface-overlay rounded-control shadow-lg border border-border p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out", className)}
+        class={cn("absolute left-0 top-full mt-2 bg-surface-overlay rounded-control shadow-lg border border-border-overlay p-4 z-dropdown min-w-[200px] transition-all duration-200 ease-in-out", className)}
         data-navigation-menu-content
         {...restProps}
     >

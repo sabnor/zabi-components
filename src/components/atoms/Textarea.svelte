@@ -52,7 +52,7 @@
               ? 'border-warning focus-visible:border-warning'
               : variant === 'error'
                 ? 'border-error focus-visible:border-error'
-                : 'border-input-border';
+                : 'border-input-border enabled:hover:border-input-border-hover';
     });
 
     // 16px below `sm`: iOS Safari zooms the page when a focused field is smaller.

@@ -128,7 +128,7 @@
 </script>
 
 <div
-    class={cn("overflow-x-auto rounded-control border border-border shadow-sm", className)}
+    class={cn("overflow-x-auto rounded-control border border-border bg-card shadow-sm", className)}
 >
     <table
         bind:this={tableElement}
@@ -141,7 +141,7 @@
                 id={captionId}
                 class={captionHidden
                     ? "sr-only"
-                    : "border-b border-border bg-base-50 px-4 py-3 text-left text-headline"}
+                    : "border-b border-border bg-surface-elevated px-4 py-3 text-left text-headline"}
             >
                 {caption}
             </caption>

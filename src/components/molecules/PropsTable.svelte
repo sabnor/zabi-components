@@ -14,13 +14,13 @@
 </script>
 
 {#if props.length === 0}
-    <div class={cn("rounded-control border border-border bg-base-50 px-4 py-4 text-sm text-description", className)}>
+    <div class={cn("rounded-control border border-border bg-card px-4 py-4 text-sm text-description", className)}>
         No documented props.
     </div>
 {:else}
     <Table caption={caption}>
         <thead>
-            <tr class="bg-base-50">
+            <tr class="bg-surface-elevated">
                 <th class="border-b border-border px-4 py-3 text-left font-semibold text-headline">
                     Name
                 </th>

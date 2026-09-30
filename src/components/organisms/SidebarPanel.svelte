@@ -79,7 +79,7 @@
     const containerClasses = $derived.by(() => {
         const resolvedWidthClass = widthClass.trim() || "w-80";
         const shell = isElevated
-            ? "rounded-container border border-border bg-card text-headline shadow-sm ring-1 ring-border/50"
+            ? "rounded-container border border-border bg-card text-headline shadow-sm ring-1 ring-border"
             : "rounded-container border border-border bg-card text-headline shadow-sm";
         return cn(`${resolvedWidthClass} shrink-0 p-5 ${shell} ${className}`);
     });
@@ -89,7 +89,7 @@
         const baseClasses =
             "focus-ring focus-ring--nav w-full cursor-pointer rounded-control px-3 py-2 text-left transition-colors duration-150";
         if (isActive) {
-            return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border/80`;
+            return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border`;
         }
         return `${baseClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
     }
@@ -145,7 +145,7 @@
                 bind:value={searchValue}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                class="w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
+                class="w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
             />
         </div>
     {/if}
@@ -197,7 +197,7 @@
         </ul>
     {:else}
         <div
-            class="rounded-container border border-dashed border-border bg-transparent px-4 py-4 ring-1 ring-border/40"
+            class="rounded-container border border-dashed border-border bg-transparent px-4 py-4"
         >
             <h4 class="text-sm font-semibold text-headline">{emptyStateTitle}</h4>
             <p class="mt-1 text-sm leading-relaxed text-description">{emptyStateDescription}</p>

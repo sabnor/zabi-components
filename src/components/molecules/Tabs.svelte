@@ -91,11 +91,28 @@
         }
         // Enter/Space: native <button> click already selects the tab.
     }
+
+    const TAB_BASE =
+        "focus-ring cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed";
+    // A disabled tab is never the selected one, so only this arm carries the disabled state.
+    const TAB_IDLE =
+        "border-transparent text-description hover:border-border-medium hover:text-body active:bg-surface-active disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description";
+    const TAB_SELECTED = "border-brand-500 text-body active:bg-surface-active";
+    // The pill has a fill of its own, so its pressed state is the next step of
+    // that fill; a translucent tint in its place would be a weaker fill, not a
+    // stronger one.
+    const TAB_SELECTED_PILL =
+        "border-brand-500 bg-action-primary-subtle text-link active:bg-action-primary-subtle-hover";
+
+    function tabClasses(tabId: string): string {
+        if (activeTab !== tabId) return `${TAB_BASE} ${TAB_IDLE}`;
+        return `${TAB_BASE} ${variant === "pills" ? TAB_SELECTED_PILL : TAB_SELECTED}`;
+    }
 </script>
 
 <div class={cn("tabs-container", className)}>
     <div
-        class="flex border-b border-base-200"
+        class="flex border-b border-border"
         role="tablist"
         tabindex="-1"
         onkeydown={handleKeydown}
@@ -106,12 +123,7 @@
                 type="button"
                 role="tab"
                 id={getTabId(tab.id)}
-                class="focus-ring cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none active:bg-surface-active disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description {activeTab ===
-                tab.id
-                    ? variant === 'pills'
-                        ? 'border-brand-500 bg-brand-100 text-brand-700'
-                        : 'border-brand-500 text-body'
-                    : 'border-transparent text-description hover:border-border-medium hover:text-body'}"
+                class={tabClasses(tab.id)}
                 onclick={() => selectTab(tab.id)}
                 disabled={tab.disabled}
                 aria-selected={activeTab === tab.id}

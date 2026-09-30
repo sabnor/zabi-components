@@ -76,7 +76,7 @@
             case "muted":
                 return "bg-base-50";
             case "accent":
-                return "bg-brand-50 dark:bg-brand-950";
+                return "bg-brand-50";
             case "transparent":
                 return "bg-transparent";
             default:

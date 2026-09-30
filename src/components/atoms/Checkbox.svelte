@@ -39,7 +39,7 @@
         aria-hidden="true"
     ></span>
     <svg
-        class="absolute w-3 h-3 text-base-50 pointer-events-none z-10 opacity-0 group-has-checked/control:opacity-100"
+        class="absolute w-3 h-3 text-action-primary pointer-events-none z-10 opacity-0 group-has-checked/control:opacity-100"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

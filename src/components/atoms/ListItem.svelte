@@ -38,14 +38,18 @@
 
     const itemClasses = $derived.by(() => {
         const baseClasses =
-            "group focus-ring flex w-full items-center gap-3 rounded-container border border-border px-4 py-3 pr-5 text-left transition-all duration-150";
-        const interactiveClasses = item.disabled
-            ? "cursor-not-allowed opacity-50"
-            : "cursor-pointer focus-visible:bg-surface-hover";
-        const selectedClasses = selected
-            ? "bg-action-primary-subtle border-brand-500"
-            : "";
-        return `${baseClasses} ${interactiveClasses} ${selectedClasses}`.trim();
+            "group focus-ring flex w-full items-center gap-3 rounded-container border px-4 py-3 pr-5 text-left transition-all duration-150";
+        const cursorClasses = item.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer";
+        // A selected row keeps its fill under keyboard focus, which the focus
+        // ring already shows; the hover tint is for rows with no fill. The two
+        // never share an element, and neither does the selected border with
+        // `border-border`: beside each other the second of each pair lost.
+        const stateClasses = selected
+            ? "bg-action-primary-subtle border-action-primary"
+            : item.disabled
+              ? "border-border"
+              : "border-border focus-visible:bg-surface-hover";
+        return `${baseClasses} ${cursorClasses} ${stateClasses}`.trim();
     });
 
     const ariaCurrent = $derived(item.href && selected ? "page" : undefined);

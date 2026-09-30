@@ -208,6 +208,24 @@ Whenever token or CSS import API surface changes, include:
   focus. Sizes are unchanged from `sm` up, and control heights are unchanged
   everywhere. This also covers ColorPicker's hex field and the search fields in
   Select and the sidebars.
+- **Checked checkboxes and radios use the primary action fill**, the same
+  colour as a primary button, in place of a paler step that was 2.8:1 on the
+  light page. The tick and the radio dot take the primary button's text colour.
+- **Menus share one edge and surface.** Dropdown, NavigationMenuContent and the
+  ColorPicker popover all use `border-border-overlay` on `bg-surface-overlay`.
+  The ColorPicker popover no longer sits on the inset field colour in dark.
+- Table and PropsTable sit on the card surface with an elevated header band,
+  in place of a `base-50` band over a body that was the page colour.
+- Skeleton and the variant chips in Header use the neutral fill
+  (`bg-neutral-subtle`), so they show on a card and on the page in both themes.
+- Input, Select and Textarea darken their border on hover in light mode
+  (`--color-input-border-hover`); error, success, warning and disabled fields
+  are unchanged.
+- Sidebar search fields, the selected panel item, the elevated panel and the
+  profile button use full-strength rings in place of 40–80% alpha ones; the
+  dashed empty states keep only their dashed border.
+- The rule under Tabs is `border-border`, and a selected pill uses
+  `action-primary-subtle`, which shows on the light page.
 
 ### Deprecated
 
@@ -283,6 +301,14 @@ Whenever token or CSS import API surface changes, include:
   there. `.focus-ring`, the legacy `.focus-brand` and `.focus-nav`, and the
   checkbox and radio row now draw an outline in forced colours. Nothing changes
   outside that mode.
+- **ActionPanel shows its hover and pressed states.** The hover fill never
+  applied beside `bg-card`; the tint is now drawn over the card.
+- A selected Tabs pill shows its pressed state, and a selected List row shows
+  its selected border, which the default border used to override.
+- SidebarFooter's avatar ring pointed at a colour token that does not exist
+  and fell back to the text colour; it now uses the border colour.
+- Removed a `dark:` variant from Section's accent background. It followed the
+  OS setting, not the `.dark` class, and never applied.
 
 ### Documentation
 
