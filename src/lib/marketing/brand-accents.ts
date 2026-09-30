@@ -26,14 +26,14 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
         "--color-action-primary-hover": "var(--color-brand-700)",
         "--color-action-primary-active": "var(--color-brand-800)",
         "--color-action-primary-text": "#ffffff",
-        "--color-action-primary-subtle": "var(--color-brand-100)",
-        "--color-action-secondary": "rgba(9, 9, 11, 0.07)",
-        "--color-action-secondary-hover": "rgba(9, 9, 11, 0.12)",
+        "--color-action-primary-subtle": "var(--color-brand-200)",
+        "--color-action-secondary": "rgba(9, 9, 11, 0.1)",
+        "--color-action-secondary-hover": "rgba(9, 9, 11, 0.15)",
         "--color-brand-100": "var(--zabi-brand-100)",
         "--color-brand-500": "var(--zabi-brand-500)",
         "--color-brand-600": "var(--zabi-brand-600)",
         "--color-brand-700": "var(--zabi-brand-700)",
-        "--color-focus": "var(--color-brand-500)",
+        "--color-focus": "var(--color-brand-600)",
         "--color-focus-ring": "var(--color-focus)",
         "--color-link": "var(--color-brand-700)",
     },
@@ -41,11 +41,13 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
     // `--color-brand-*`, which is why the light entries above hold in dark too.
     dark: {
         "--color-action-primary-text": "var(--zabi-brand-950)",
+        "--color-action-primary-subtle": "var(--color-brand-100)",
         "--color-action-secondary": "rgba(250, 250, 250, 0.09)",
         "--color-action-secondary-hover": "rgba(250, 250, 250, 0.15)",
         "--color-brand-100": "var(--zabi-brand-900)",
         "--color-brand-600": "var(--zabi-brand-400)",
         "--color-brand-700": "var(--zabi-brand-300)",
+        "--color-focus": "var(--color-brand-500)",
     },
 };
 

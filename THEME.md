@@ -217,8 +217,8 @@ Semantic colors map to specific use cases:
 - `--color-description` - Secondary/description text
 - `--color-caption` - Captions and labels
 - `--color-border` - Borders and dividers
-- `--color-surface-elevated` - Elevated surfaces (cards, modals)
-- `--color-surface-level-0/1/2` - Surface hierarchy
+- `--color-surface-base` / `-raised` / `-elevated` / `-overlay` - Surface levels: page, cards, nested cards, floating panels
+- `--color-surface-inset` - A recessed area on a card (a well); see THEMING.md, Surface Elevation Levels
 - `--color-primary` - Primary actions
 - `--color-secondary` - Secondary actions
 - `--color-success` - Success states

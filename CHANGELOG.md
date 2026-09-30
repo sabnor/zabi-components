@@ -104,6 +104,14 @@ Whenever token or CSS import API surface changes, include:
   `oncancel` reports how the user backed out. Focus starts on Cancel, Enter
   only activates the focused button, and the dialog renders in `document.body`
   unless `portal={false}`.
+- **`--color-surface-inset`** (`bg-surface-inset`), a recessed area on a card
+  that works in both themes: a well, a stat strip, a code sample. It is the
+  ramp step between the page and the raised surface, `base-100` in light and
+  `base-150` in dark, and every text token passes AA on it. Dark
+  `--color-input` now points at it and keeps its value. Do not use
+  `--color-input` for a well; it is white in light mode.
+- **`--color-input-border-hover`**, the edge of a hovered field: `base-450` in
+  light, equal to `--color-input-border` in dark. No component uses it yet.
 
 ### Changed
 
@@ -118,6 +126,37 @@ Whenever token or CSS import API surface changes, include:
   `aria-disabled` instead of `disabled`, so the arrow keys reach it and move
   past it, and a screen reader can read why it is unavailable; it still cannot
   be chosen.
+- **Light mode has a visible surface ladder.** The page
+  (`--color-surface-base`, `--color-page`, `--color-background-tertiary`) moves
+  from `base-100` to `base-150`, and `--color-surface-elevated` from `base-50`
+  to `base-100`. A card is now 1.18:1 on the page (was 1.10) and a nested card
+  1.10:1 on its parent (was 1.04). `--color-card-active` is `base-150` and
+  `--color-surface-overlay-hover` is `base-150`.
+- **Light tinted fills read on a white card.** `--color-<family>-subtle` moves
+  from step 100 to step 200 and `--color-<family>-border` from 200 to 300, for
+  success, warning, error, energetic and info (1.36:1 on a card, was 1.16).
+  `--color-neutral-subtle` is `base-250` and `--color-neutral-border`
+  `base-300`. `--color-action-primary-subtle` and `-subtle-hover` are
+  `brand-200` and `brand-300`.
+- **Light hover and secondary fills are stronger.** `--color-surface-hover` and
+  `--color-surface-active` are 9% and 15% ink (were 6% and 11%);
+  `--color-action-secondary`, `-hover` and `-active` are 10%, 15% and 20% (were
+  7%, 12%, 17%).
+- **The light focus ring clears 3:1.** `--color-focus` moves from `brand-500`
+  (2.99:1 on the page) to `brand-600` (4.12:1), and `--color-focus-weak`,
+  `-medium` and `-strong` each move one step. `--color-nav-menu-focus` now
+  follows `--color-focus`.
+- **Overlays have an edge in light mode.** `--color-border-overlay` was
+  transparent and is now a 10% ink tint.
+- **Light shadows are stronger.** `--shadow-color` is `24 24 27` and
+  `--shadow-opacity` 0.14 (were `0 0 0` and 0.1).
+- **Light fields and disabled controls follow the new page.**
+  `--color-input-hover` is `base-100`, `--color-input-disabled` is the page
+  colour, `--color-action-disabled` is `base-250` and
+  `--color-action-disabled-border` `base-300`.
+- **Dark mode is unchanged.** `.dark` now restates the values above that it
+  used to inherit, so nothing moves there. No token was removed or renamed and
+  no `exports` path changed.
 
 ### Deprecated
 
@@ -144,6 +183,9 @@ Whenever token or CSS import API surface changes, include:
 - ImageUpload's error message is tied to the Change button when a preview is
   showing, not only to the empty dropzone.
 - A disabled ImageUpload dropzone no longer takes the primary border on hover.
+- **Checkbox and radio rows show their hover.** The row used a fixed
+  `base-100` fill, which was the page colour in both themes; it now uses
+  `--color-surface-hover` and `--color-surface-active`.
 
 ### Documentation
 

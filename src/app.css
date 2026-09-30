@@ -242,29 +242,45 @@
    * base: page/app shell · raised: cards, panels, sidebars · elevated: nested cards, hover/active fills
    * overlay: modals, sheets, menus, popovers, toasts. Light mode keeps white surfaces + shadows;
    * dark mode (see .dark) steps each level up in OKLCH lightness because shadows don't read on dark.
+   *
+   * Light cannot go lighter than white, so its ladder runs the other way below
+   * the card: page (base-150) → elevated (base-100) → raised and overlay (white).
+   * Each grey sits a visible step from its neighbour; the page used to be
+   * base-100 with elevated at base-50, which left 1.04:1 between a card and the
+   * card nested in it. Enforced by scripts/check-surface-elevation.js.
    * Keep this block BELOW the "Background Colors" marker: scripts/sync-theme-tokens.js regenerates
    * everything between the base-scale aliases and that marker. */
-  --color-surface-base: var(--color-base-100);
+  --color-surface-base: var(--color-base-150);
   --color-surface-raised: #ffffff;
-  --color-surface-elevated: var(--color-base-50);
+  --color-surface-elevated: var(--color-base-100);
   --color-surface-overlay: #ffffff;
+  /* Inset — a recessed area ON a raised surface (a well, a code sample, a stat
+   * strip inside a card). It is the ramp step between the page and the raised
+   * surface in both themes, so it always reads as cut into the card, never as
+   * floating above it. In dark this is the step the input field already used;
+   * --color-input points here. In light it shares base-100 with `elevated`,
+   * because below a white card the only direction left is down. */
+  --color-surface-inset: var(--color-base-100);
   /* Hover/active fill for rows and icon buttons inside an overlay (must read above the overlay) */
-  --color-surface-overlay-hover: var(--color-base-100);
-  /* 1px edge for overlays: invisible in light (shadow carries elevation), visible in dark */
-  --color-border-overlay: transparent;
+  --color-surface-overlay-hover: var(--color-base-150);
+  /* 1px edge for overlays. An ink tint in light, so a white menu on a white
+   * card still has an outline where its shadow is thinnest; a solid step in dark. */
+  --color-border-overlay: rgba(9, 9, 11, 0.1);
 
   --color-background: var(--color-surface-base);
   --color-background-secondary: var(--color-base-50);
-  --color-background-tertiary: var(--color-base-100);
+  --color-background-tertiary: var(--color-base-150);
 
   /* Page Colors */
-  --color-page: var(--color-base-100);
+  --color-page: var(--color-base-150);
   --color-page-secondary: var(--color-base-200);
 
   /* Card Colors — aliases of the surface levels (kept for compatibility) */
   --color-card: var(--color-surface-raised);
+  /* Hover stays one step off the white card and is no longer the page colour
+   * (a hovered card used to turn exactly into the page). Active goes one further. */
   --color-card-hover: var(--color-base-100);
-  --color-card-active: var(--color-base-100);
+  --color-card-active: var(--color-base-150);
   --color-card-elevated: var(--color-surface-overlay);
 
   /* Surfaces — numbered aliases (kept for compatibility; prefer surface-base/raised/elevated/overlay) */
@@ -285,8 +301,8 @@
    * surface it sits on, which is how ghost hover became invisible: in dark
    * mode --color-base-100 IS --color-surface-base. An alpha tint is always
    * one step away from whatever is underneath it. */
-  --color-surface-hover: rgba(9, 9, 11, 0.06);
-  --color-surface-active: rgba(9, 9, 11, 0.11);
+  --color-surface-hover: rgba(9, 9, 11, 0.09);
+  --color-surface-active: rgba(9, 9, 11, 0.15);
 
   /* Overlay Colors */
   --color-overlay: rgba(0, 0, 0, 0.5);
@@ -296,9 +312,17 @@
    * page reads as disabled. The disabled state is the only grey field. */
   --color-input: var(--color-surface-raised);
   --color-input-border: var(--color-base-350);
-  --color-input-hover: var(--color-base-150);
+  /* Hover edge for a field. Light-mode hover is meant to be carried by the
+   * border, not by greying the fill; dark keeps its fill step and leaves this
+   * equal to the resting border. */
+  --color-input-border-hover: var(--color-base-450);
+  /* One step off white. It was base-150, which is now the page itself, and was
+   * already greyer than the disabled fill. */
+  --color-input-hover: var(--color-base-100);
   --color-input-focus: var(--color-surface-raised);
-  --color-input-disabled: var(--color-base-100);
+  /* The page colour: a disabled field stops being a raised surface. Dark does
+   * the same (base-100 is the dark page). */
+  --color-input-disabled: var(--color-surface-base);
 
   /* Text Colors */
   --color-headline: var(--color-base-900);
@@ -321,7 +345,7 @@
   --color-nav-menu-hover: var(--color-surface-hover);
   --color-nav-menu-active: var(--color-action-primary-subtle);
   --color-nav-menu-active-hover: var(--color-action-primary-subtle-hover);
-  --color-nav-menu-focus: var(--color-brand-500);
+  --color-nav-menu-focus: var(--color-focus);
   --color-success-text: var(--color-pine-700);
   --color-warning-text: var(--color-warning-700);
   --color-neutral-text: var(--color-base-700);
@@ -336,11 +360,16 @@
   --color-border-medium: var(--color-base-400);
   --color-border-strong: var(--color-base-500);
 
-  /* Focus Colors */
-  --color-focus: var(--color-brand-500);
-  --color-focus-weak: var(--color-brand-600);
-  --color-focus-medium: var(--color-brand-700);
-  --color-focus-strong: var(--color-brand-800);
+  /* Focus Colors
+   * brand-600, not brand-500: a focus indicator needs 3:1 against what is
+   * around it, and brand-500 was 2.99:1 on the page. brand-600 is also the
+   * primary button fill, so on a primary button the ring is separated by its
+   * 2px offset gap (--color-focus-ring-offset), which .focus-ring always draws.
+   * .dark pins the previous steps: the mirrored brand-500 already clears 5:1. */
+  --color-focus: var(--color-brand-600);
+  --color-focus-weak: var(--color-brand-700);
+  --color-focus-medium: var(--color-brand-800);
+  --color-focus-strong: var(--color-brand-900);
   /* Aliases for `ring-focus-ring`, `.focus-ring`, and form utils */
   --color-focus-ring: var(--color-focus);
   --color-focus-ring-offset: var(--color-card);
@@ -367,8 +396,8 @@
    *   <family>-weak     step 700  pressed / emphasis
    *   <family>-medium   step 800  strongest fill
    *   <family>-strong   step 900  darkest
-   *   <family>-subtle   step 100  tinted fill (badges, alerts)
-   *   <family>-border   step 200  tinted edge
+   *   <family>-subtle   step 200  tinted fill (badges, alerts); .dark pins step 100
+   *   <family>-border   step 300  tinted edge; .dark pins step 200
    *   <family>-text     step 700  text on a subtle fill or a page surface
    *
    * Warning, error and energetic previously sat at step 500 — the mirror's
@@ -382,32 +411,32 @@
   --color-success-weak: var(--color-pine-700);
   --color-success-medium: var(--color-pine-800);
   --color-success-strong: var(--color-pine-900);
-  --color-success-subtle: var(--color-pine-100);
-  --color-success-border: var(--color-pine-200);
+  --color-success-subtle: var(--color-pine-200);
+  --color-success-border: var(--color-pine-300);
 
   /* Warning Colors */
   --color-warning: var(--color-warning-600);
   --color-warning-weak: var(--color-warning-700);
   --color-warning-medium: var(--color-warning-800);
   --color-warning-strong: var(--color-warning-900);
-  --color-warning-subtle: var(--color-warning-100);
-  --color-warning-border: var(--color-warning-200);
+  --color-warning-subtle: var(--color-warning-200);
+  --color-warning-border: var(--color-warning-300);
 
   /* Error Colors */
   --color-error: var(--color-error-600);
   --color-error-weak: var(--color-error-700);
   --color-error-medium: var(--color-error-800);
   --color-error-strong: var(--color-error-900);
-  --color-error-subtle: var(--color-error-100);
-  --color-error-border: var(--color-error-200);
+  --color-error-subtle: var(--color-error-200);
+  --color-error-border: var(--color-error-300);
 
   /* Energetic Colors (Citron) */
   --color-energetic: var(--color-citron-600);
   --color-energetic-weak: var(--color-citron-700);
   --color-energetic-medium: var(--color-citron-800);
   --color-energetic-strong: var(--color-citron-900);
-  --color-energetic-subtle: var(--color-citron-100);
-  --color-energetic-border: var(--color-citron-200);
+  --color-energetic-subtle: var(--color-citron-200);
+  --color-energetic-border: var(--color-citron-300);
 
   /* Neutral Colors
    * The base ramp is wider than the chromatic ones on purpose (it also drives
@@ -419,10 +448,12 @@
   --color-neutral-weak: var(--color-base-600);
   --color-neutral-medium: var(--color-base-700);
   --color-neutral-strong: var(--color-base-900);
-  /* base-200, not base-100: base-100 IS surface-base, which made a neutral
-   * badge measure 1.00:1 against the page and read as bare text. */
-  --color-neutral-subtle: var(--color-base-200);
-  --color-neutral-border: var(--color-base-200);
+  /* One visible step past the page (base-150) and two past a card. It was
+   * base-100 once, which IS the dark page and made a neutral badge measure
+   * 1.00:1 and read as bare text. The border is a step darker than the fill,
+   * like every other family. */
+  --color-neutral-subtle: var(--color-base-250);
+  --color-neutral-border: var(--color-base-300);
 
   /* Info Colors */
   --color-info: var(--color-iris-600);
@@ -430,8 +461,8 @@
   --color-info-medium: var(--color-iris-800);
   --color-info-strong: var(--color-iris-900);
   --color-info-active: var(--color-iris-400);
-  --color-info-subtle: var(--color-iris-100);
-  --color-info-border: var(--color-iris-200);
+  --color-info-subtle: var(--color-iris-200);
+  --color-info-border: var(--color-iris-300);
   /* Text alias */
   --color-info-text: var(--color-iris-700);
 
@@ -451,8 +482,8 @@
   --color-action-primary: var(--color-brand-600);
   --color-action-primary-hover: var(--color-brand-700);
   --color-action-primary-active: var(--color-brand-800);
-  --color-action-primary-subtle: var(--color-brand-100);
-  --color-action-primary-subtle-hover: var(--color-brand-200);
+  --color-action-primary-subtle: var(--color-brand-200);
+  --color-action-primary-subtle-hover: var(--color-brand-300);
   /* Pinned rather than aliased to brand-50: the ramp's lightest tint lands at
    * exactly 4.50:1 on brand-600 — passing, but with no margin. Pure white
    * gives 4.86:1. The .dark block pins the inverse. */
@@ -462,9 +493,9 @@
    * A neutral alpha tint: reads as a real button on any surface level, and
    * cannot collide with the background the way a fixed ramp step can. The old
    * 10%-brand wash was so pale it barely registered as a control. */
-  --color-action-secondary: rgba(9, 9, 11, 0.07);
-  --color-action-secondary-hover: rgba(9, 9, 11, 0.12);
-  --color-action-secondary-active: rgba(9, 9, 11, 0.17);
+  --color-action-secondary: rgba(9, 9, 11, 0.1);
+  --color-action-secondary-hover: rgba(9, 9, 11, 0.15);
+  --color-action-secondary-active: rgba(9, 9, 11, 0.2);
   --color-action-secondary-subtle: var(--color-base-100);
   --color-action-secondary-subtle-hover: var(--color-base-200);
   --color-action-secondary-text: var(--color-headline);
@@ -473,9 +504,9 @@
    * Disabled must be the QUIETEST state, never a brighter colour than the
    * enabled secondary. It used to be brand-500 plus opacity-50, which made a
    * disabled primary lighter and more colourful than an enabled secondary. */
-  --color-action-disabled: var(--color-base-200);
+  --color-action-disabled: var(--color-base-250);
   --color-action-disabled-text: var(--color-base-500);
-  --color-action-disabled-border: var(--color-base-250);
+  --color-action-disabled-border: var(--color-base-300);
 
   /* Danger Actions - Used by bg-action-danger utility class.
    * Same ramp step as every other family, so the destructive action no longer
@@ -488,9 +519,11 @@
   --color-action-danger-subtle-hover: var(--color-error-200);
   --color-action-danger-text: var(--color-error-50);
 
-  /* Shadow Colors */
-  --shadow-color: 0 0 0;
-  --shadow-opacity: 0.1;
+  /* Shadow Colors
+   * Light elevation is carried by the shadow, so it is the ramp's own ink
+   * (base-900) at a strength that still reads on the top and side edges. */
+  --shadow-color: 24 24 27;
+  --shadow-opacity: 0.14;
   --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
@@ -810,14 +843,22 @@ body {
   --color-surface-elevated: #363638;
   --color-surface-overlay: #454547;
   --color-surface-overlay-hover: #52525b;
+  /* Inset — the step between the page and the raised surface (L 24). The input
+   * field is the library's own inset; see --color-input below. */
+  --color-surface-inset: var(--color-base-150);
 
   /* Distinct from base, raised AND elevated — a neutral chip has no hue to
    * separate it, so it has to separate on lightness wherever it lands. */
   --color-neutral-subtle: var(--color-base-300);
+  --color-neutral-border: var(--color-base-200);
   --color-border-overlay: var(--color-base-450);
 
   /* Background Colors */
   --color-background: var(--color-surface-base);
+  --color-background-tertiary: var(--color-base-100);
+
+  /* Page Colors — pinned: light moved the page to base-150, dark stays on base-100 */
+  --color-page: var(--color-base-100);
 
   /* Card Colors — aliases of the surface levels */
   --color-card: var(--color-surface-raised);
@@ -851,8 +892,9 @@ body {
   /* Input Colors
    * Dark fields are INSET: one step below the raised surface they sit on,
    * which is the dark-mode equivalent of a white field on a grey page. */
-  --color-input: var(--color-base-150);
+  --color-input: var(--color-surface-inset);
   --color-input-border: var(--color-base-300);
+  --color-input-border-hover: var(--color-input-border);
   --color-input-hover: var(--color-base-200);
   --color-input-focus: var(--color-base-150);
   --color-input-disabled: var(--color-base-100);
@@ -862,25 +904,39 @@ body {
 
   /* Border Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Focus Colors - No dark mode overrides needed, brand colors are already inverted */
+  /* Focus Colors — pinned to the steps dark has always used. Light moved each
+   * one step darker to clear 3:1 on its page; the mirrored brand-500 is already
+   * 5.4:1 on the dark page. */
+  --color-focus: var(--color-brand-500);
+  --color-focus-weak: var(--color-brand-600);
+  --color-focus-medium: var(--color-brand-700);
+  --color-focus-strong: var(--color-brand-800);
 
   /* Primary Colors - No dark mode overrides needed, brand colors are already inverted */
 
   /* Secondary Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Success Colors — no overrides: @theme uses --color-pine-*; semantic pine resolves to mirrored physical ramp inside .dark */
-
-  /* Warning Colors — no overrides: @theme uses --color-warning-* scale; it mirrors in .dark via --zabi-warning-* */
-
-  /* Error Colors — no overrides: @theme uses --color-error-* scale; it mirrors in .dark via --zabi-error-* */
-
-  /* Energetic Colors — no overrides: @theme uses --color-citron-*; citron mirrors in .dark via --zabi-citron-* */
+  /* Tinted fills and edges — pinned at steps 100 and 200.
+   * The solid, weak, medium, strong and text steps need no override: they
+   * resolve through the mirrored ramps. The tints do, because light moved them
+   * to steps 200 and 300 to read on a white card, and the mirror of those is
+   * too heavy on a dark surface. */
+  --color-success-subtle: var(--color-pine-100);
+  --color-success-border: var(--color-pine-200);
+  --color-warning-subtle: var(--color-warning-100);
+  --color-warning-border: var(--color-warning-200);
+  --color-error-subtle: var(--color-error-100);
+  --color-error-border: var(--color-error-200);
+  --color-energetic-subtle: var(--color-citron-100);
+  --color-energetic-border: var(--color-citron-200);
+  --color-info-subtle: var(--color-iris-100);
+  --color-info-border: var(--color-iris-200);
 
   /* Neutral Colors — base-550 mirrors to L* 57, which is only 4.35:1 on a
    * raised surface. One step lighter clears AA on every dark surface level. */
   --color-neutral: var(--color-base-600);
 
-  /* Info Colors — no overrides: @theme uses --color-iris-* (incl. --color-info-active); iris mirrors in .dark via --zabi-iris-* */
+  /* Info Colors — no further overrides: @theme uses --color-iris-* (incl. --color-info-active); iris mirrors in .dark via --zabi-iris-* */
 
   /* ========================================
      ACTION COLORS - Dark Mode Overrides
@@ -891,13 +947,19 @@ body {
   /* Text color - the physical dark end of the brand ramp, on the physical
    * light end used as the dark-mode primary fill. 7.21:1. */
   --color-action-primary-text: var(--zabi-brand-950);
+  /* Pinned like the other tints: light moved these a step darker. */
+  --color-action-primary-subtle: var(--color-brand-100);
+  --color-action-primary-subtle-hover: var(--color-brand-200);
 
   /* Secondary Actions - light alpha tint instead of the light-mode dark tint */
   --color-action-secondary: rgba(250, 250, 250, 0.09);
   --color-action-secondary-hover: rgba(250, 250, 250, 0.15);
   --color-action-secondary-active: rgba(250, 250, 250, 0.21);
 
-  /* Disabled Actions - base-200 in dark is #27272a, still the quietest fill */
+  /* Disabled Actions - base-200 in dark is #27272a, still the quietest fill.
+   * Pinned: light moved a step darker to stay visible on its darker page. */
+  --color-action-disabled: var(--color-base-200);
+  --color-action-disabled-border: var(--color-base-250);
 
   /* Danger Actions — restated as aliases, not re-pointed.
    * These resolve through the mirrored --color-error-* scale, so dark danger
@@ -913,7 +975,8 @@ body {
   --color-action-danger-subtle-hover: var(--color-error-200);
   --color-action-danger-text: var(--color-error-50);
 
-  /* Shadow Colors */
+  /* Shadow Colors — black, not the light theme's ink tint */
+  --shadow-color: 0 0 0;
   --shadow-opacity: 0.3;
   --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
@@ -1521,7 +1584,7 @@ body {
    * Compose with layout utilities in `selection-control.styles.ts` (`p-2`, `flex`, etc.).
    */
   .selection-control-label-row-interaction {
-    @apply rounded-md transition-colors outline-none cursor-pointer hover:bg-base-100 active:bg-base-200 has-disabled:opacity-50 has-disabled:cursor-not-allowed has-disabled:hover:bg-transparent;
+    @apply rounded-md transition-colors outline-none cursor-pointer hover:bg-surface-hover active:bg-surface-active has-disabled:opacity-50 has-disabled:cursor-not-allowed has-disabled:hover:bg-transparent;
     /* Mirror `.focus-ring` geometry on the label row when the control is keyboard-focused. */
     box-shadow: none;
   }

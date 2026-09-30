@@ -135,8 +135,8 @@ The brand scale is used throughout the system:
 
 - **brand-50 to brand-100**: Subtle backgrounds, hover states
 - **brand-300 to brand-400**: Light accents, disabled states
-- **brand-500**: Focus rings, medium emphasis
-- **brand-600**: **Primary buttons** (`action-primary`)
+- **brand-500**: Medium emphasis; the dark-mode focus ring
+- **brand-600**: **Primary buttons** (`action-primary`); the light-mode focus ring
 - **brand-700**: Primary hover, links
 - **brand-800**: Primary active, link hover
 - **brand-900 / 950**: Darkest brand shades
@@ -219,11 +219,18 @@ Each family exposes the same roles, built from the same steps:
 | `--color-<family>-weak` | 700 | pressed / emphasis |
 | `--color-<family>-medium` | 800 | strongest fill |
 | `--color-<family>-strong` | 900 | darkest |
-| `--color-<family>-subtle` | 100 | tinted fill — badges, alerts |
-| `--color-<family>-border` | 200 | tinted edge |
+| `--color-<family>-subtle` | 200 (dark: 100) | tinted fill — badges, alerts |
+| `--color-<family>-border` | 300 (dark: 200) | tinted edge |
 | `--color-<family>-text` | 700 | text on a subtle fill or a page surface |
 
 Families: `success`, `warning`, `error`, `info`, `energetic`, `neutral`.
+
+The tints are the one role that does not simply mirror. A step-100 fill is
+1.16:1 on a white card, too pale to read as a fill, so light uses steps 200 and
+300 (1.36:1 and about 1.7:1). Mirrored, those would be too heavy on a dark
+surface, so `.dark` pins 100 and 200. `neutral` follows the same shape on the
+base ramp: `base-250` fill and `base-300` edge in light, `base-300` and
+`base-200` in dark.
 
 Prefer the **subtle** trio (`-subtle` fill + `-border` edge + `-text` label) for
 anything informational. Solid fills are for the one element on a screen that has
@@ -264,8 +271,8 @@ Hover and active fills are **surface-relative alpha tints**, not fixed ramp step
 
 ```css
 /* light */
---color-surface-hover:  rgba(9, 9, 11, 0.06);
---color-surface-active: rgba(9, 9, 11, 0.11);
+--color-surface-hover:  rgba(9, 9, 11, 0.09);
+--color-surface-active: rgba(9, 9, 11, 0.15);
 /* dark */
 --color-surface-hover:  rgba(250, 250, 250, 0.08);
 --color-surface-active: rgba(250, 250, 250, 0.14);
@@ -274,16 +281,34 @@ Hover and active fills are **surface-relative alpha tints**, not fixed ramp step
 A fixed step can coincide exactly with the surface it sits on — `base-100` in
 dark mode *is* `--color-surface-base`, which is how ghost-button hover became
 invisible. `check-token-violations.js` now fails on `hover:bg-base-*` /
-`active:bg-base-*` in component source.
+`active:bg-base-*` in component source, in `src/routes` and in the `@apply`
+lines of `src/app.css`.
+
+Being one step away is not the same as being visible. `check-contrast.js`
+composites each tint over every surface level and requires 1.2:1 for the
+resting hover and the secondary button, and a further 1.08:1 for each state
+after it. Light hover was 6% ink, 1.14:1, and passed every check until then.
 
 Use `hover:bg-surface-hover` / `active:bg-surface-active` for quiet controls, and
 the `action-*-hover` / `action-*-active` tokens for filled ones.
+
+**State variants next to a hand-written colour class.** `text-description`,
+`border-border`, `bg-card` and the other semantic colour classes are written by
+hand in `src/app.css`, outside every cascade layer, so they beat any generated
+utility on the same element, including the state variant meant to replace
+them. `text-description hover:text-headline` compiled and never changed on
+hover. Each such variant a component uses is restated by hand in the block
+headed "STATE VARIANTS OF THE HAND-WRITTEN COLOUR CLASSES". When a component
+needs a new one, add the rule there; `tests/state-variants.test.ts`
+(`scripts/check-state-variants.js`) fails until it exists.
 
 ## ♿ Contrast
 
 `scripts/check-contrast.js` resolves every fill/foreground pair a component can
 render — through the same token chain the CSS uses — in **both** themes, and
-fails below WCAG AA. Run it after re-pointing any token:
+fails below WCAG AA. It also holds the focus ring to 3:1 against the page, a
+card, and the offset gap that separates it from a primary button. Run it after
+re-pointing any token:
 
 ```bash
 npm run check:contrast     # or: npm run check:design (all four guards)
@@ -293,16 +318,33 @@ npm run check:contrast     # or: npm run check:design (all four guards)
 
 Every surface uses one of four semantic levels. Use these tokens instead of raw `base-*` steps for backgrounds:
 
-| Level | Token / utility | Use for | Light | Dark (OKLCH L) |
+| Level | Token / utility | Use for | Light (OKLCH L) | Dark (OKLCH L) |
 |---|---|---|---|---|
-| Base | `--color-surface-base` · `bg-surface-base` | Page / app shell (the darkest level in dark mode) | `base-100` | `#18181b` · 21 |
-| Raised | `--color-surface-raised` · `bg-surface-raised` | Cards, panels, sidebars | `#ffffff` | `#262629` · 27 |
-| Elevated | `--color-surface-elevated` · `bg-surface-elevated` | Nested cards, hover and active fills | `base-50` | `#35353a` · 33 |
-| Overlay | `--color-surface-overlay` · `bg-surface-overlay` | Modals, sheets, dropdown/select menus, navigation panels, toasts | `#ffffff` | `#44444c` · 39 |
+| Base | `--color-surface-base` · `bg-surface-base` | Page / app shell (the darkest level in both themes) | `base-150` · 94 | `#18181b` · 21 |
+| Raised | `--color-surface-raised` · `bg-surface-raised` | Cards, panels, sidebars | `#ffffff` · 100 | `#262629` · 27 |
+| Elevated | `--color-surface-elevated` · `bg-surface-elevated` | Nested cards, hover and active fills | `base-100` · 97 | `#363638` · 33 |
+| Overlay | `--color-surface-overlay` · `bg-surface-overlay` | Modals, sheets, dropdown/select menus, navigation panels, toasts | `#ffffff` · 100 | `#454547` · 39 |
+| Inset | `--color-surface-inset` · `bg-surface-inset` | A recessed area on a raised surface: a well, a stat strip, a code sample inside a card | `base-100` · 97 | `base-150` `#1f1f22` · 24 |
+
+**Inset is not a fifth rung.** The four levels say how far a surface is lifted;
+inset says it is cut into the card it sits on. It is the ramp step between the
+page and the raised surface in both themes, about 3 lightness points below
+`raised`, and every text token passes AA on it. In dark it is the step the input
+field has always used, and `--color-input` now points at it. In light it shares
+`base-100` with `elevated`: under a white card the only direction left is down,
+so a nested card and a well are the same colour there and differ only in dark.
+Do not use `--color-input` for a well. It is white in light mode, because a
+light field is a raised surface.
 
 Supporting tokens:
 - `--color-surface-overlay-hover` (`bg-surface-overlay-hover`): row and icon-button hover **inside** an overlay. It is lighter than the overlay in dark mode.
-- `--color-border-overlay` (`border-border-overlay`): 1px edge on overlays. Transparent in light mode, visible in dark mode.
+- `--color-border-overlay` (`border-border-overlay`): 1px edge on overlays. A 10% ink tint in light mode, so a white menu on a white card has an outline; a solid step in dark mode.
+
+**The light ladder runs downwards.** Light cannot go lighter than white, so
+below the card it is ordered page → elevated → raised, with overlay equal to
+raised and separated from it by `shadow-lg` and the overlay edge. The page is
+`base-150`, not `base-100`: at `base-100` a card was 1.10:1 on the page and a
+nested card 1.04:1 on its parent.
 
 **The dark levels are generated, not hand-picked.** Each one is `#fafafa` — the
 same light as the dark hover tint `--color-surface-hover` — washed over the page
@@ -326,7 +368,10 @@ inside a card does not self-lighten, it names the next level up.
 
 **Enforced by** `scripts/check-surface-elevation.js`, which `validate-theme.js` runs during `npm run build:css`. It fails when:
 - dark levels aren't strictly increasing;
-- any step is outside 5–8 OKLCH L points;
+- any dark step is outside 5–8 OKLCH L points;
+- the light levels are not ordered base < elevated < raised, either step is under 2 points, or the overlay is darker than raised;
+- the inset surface is less than 2 points below raised, or darker than the page, in either theme;
+- a text token falls below AA on any level or on the inset surface;
 - overlay hover or tooltip fills are darker than the overlay;
 - a floating component paints a surface class below overlay.
 
@@ -379,6 +424,8 @@ Rules:
   `app.css` never defines, so no token controls it.
 - Shadows carry elevation in **light mode only**. In dark mode the surface
   levels above do the work — see Surface Elevation Levels.
+- The light shadow is the ramp's own ink (`--shadow-color: 24 24 27`) at
+  `--shadow-opacity: 0.14`. Dark keeps black at 0.3.
 
 Enforced by `scripts/check-token-violations.js`.
 
