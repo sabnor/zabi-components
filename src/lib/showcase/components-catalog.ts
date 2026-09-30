@@ -3138,6 +3138,152 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "ConfirmDialog",
+                category: "molecules",
+                description:
+                    "A modal that asks before an action, with danger, warning and info variants and a loading state that blocks closing.",
+                props: [
+                    {
+                        name: "open",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Whether the dialog is shown. Bindable.",
+                    },
+                    {
+                        name: "title",
+                        type: "string",
+                        required: true,
+                        description:
+                            "The question, as the dialog's heading and accessible name.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        description:
+                            "What will happen. It is the dialog's accessible description. Use children for richer content below it.",
+                    },
+                    {
+                        name: "variant",
+                        type: "'danger' | 'warning' | 'info'",
+                        required: false,
+                        defaultValue: "info",
+                        description:
+                            "danger makes the confirm button the danger button. Each variant has its own icon.",
+                    },
+                    {
+                        name: "confirmLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Confirm",
+                        description: "Text of the confirm button. Name the action.",
+                    },
+                    {
+                        name: "cancelLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Cancel",
+                        description: "Text of the cancel button.",
+                    },
+                    {
+                        name: "onconfirm",
+                        type: "() => void | boolean | Promise<void | boolean>",
+                        required: false,
+                        description:
+                            "Runs on confirm. The dialog then closes, unless this returns or resolves to false, throws or rejects. A promise shows the loading state until it settles.",
+                    },
+                    {
+                        name: "oncancel",
+                        type: "(detail: { reason: 'cancel-button' | 'escape' | 'backdrop' | 'close-button' }) => void",
+                        required: false,
+                        description:
+                            "Runs when the user backs out, with how they did it.",
+                    },
+                    {
+                        name: "onerror",
+                        type: "(error: unknown) => void",
+                        required: false,
+                        description:
+                            "Runs when the promise from onconfirm rejects; the dialog stays open. Without it the error goes to the global error handler.",
+                    },
+                    {
+                        name: "loading",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the confirm button's loading state, disables cancel and blocks Escape and the backdrop. Set by the dialog itself while a promise is pending.",
+                    },
+                    {
+                        name: "portal",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Renders in document.body so a transformed or clipped ancestor cannot trap the dialog. Pass false to render in place.",
+                    },
+                ],
+                variants: ["danger", "warning", "info", "loading"],
+                examples: [
+                    {
+                        title: "Destructive action",
+                        description:
+                            "The handler returns a promise, so the dialog shows its loading state and closes when the request is done",
+                        code: `<script lang="ts">
+    import { Button, ConfirmDialog } from "zabi-components";
+
+    let open = $state(false);
+</script>
+
+<Button variant="danger" onclick={() => (open = true)}>Delete project</Button>
+
+<ConfirmDialog
+    bind:open
+    variant="danger"
+    title="Delete this project?"
+    message="The project and its files are removed for everyone. This cannot be undone."
+    confirmLabel="Delete"
+    onconfirm={() => api.deleteProject(project.id)}
+/>`,
+                    },
+                    {
+                        title: "Plain confirmation",
+                        description:
+                            "The info variant with its own labels and a line of extra content",
+                        code: `<ConfirmDialog
+    bind:open
+    title="Publish this page?"
+    message="It becomes visible to everyone with the link."
+    confirmLabel="Publish"
+    cancelLabel="Not now"
+    onconfirm={() => publish(page)}
+>
+    <p class="text-description">You can unpublish it again at any time.</p>
+</ConfirmDialog>`,
+                    },
+                    {
+                        title: "A request that fails",
+                        description:
+                            "When the promise rejects the dialog stays open and onerror receives the error to show inside it",
+                        code: `<ConfirmDialog
+    bind:open
+    variant="warning"
+    title="Transfer ownership?"
+    message="You keep access as a member, and only the new owner can undo this."
+    confirmLabel="Transfer"
+    onconfirm={transferOwnership}
+    onerror={(error) => (failure = error.message)}
+    oncancel={() => (failure = "")}
+>
+    {#if failure}
+        <Alert variant="error" message={failure} />
+    {/if}
+</ConfirmDialog>`,
+                    },
+                ],
+            },
         ],
         organisms: [
             {

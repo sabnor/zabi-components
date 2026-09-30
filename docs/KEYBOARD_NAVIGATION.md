@@ -409,6 +409,45 @@ on a Collapsible nested inside a panel, which is not part of the group.
 
 ---
 
+### ConfirmDialog Component
+
+**Current Keyboard Support:**
+- ✅ **Tab / Shift + Tab**: Move between Cancel and the confirm button; focus stays in the dialog
+- ✅ **Enter / Space**: Activate the focused button
+- ✅ **Escape**: Cancel and close (not while loading)
+
+Focus starts on **Cancel** for every variant, so a stray Enter backs out
+instead of confirming. There is no Enter shortcut for the confirm button: Enter
+only activates the button that has focus. When the dialog closes, focus returns
+to the element that opened it.
+
+While a confirm is loading both buttons are disabled and Escape and the
+backdrop do nothing. Focus is held on the dialog itself instead of falling to
+the page, and returns to the confirm button if the request fails and the
+dialog stays open.
+
+**Usage:**
+```svelte
+<ConfirmDialog
+    bind:open
+    variant="danger"
+    title="Delete this project?"
+    message="The project and its files are removed for everyone."
+    confirmLabel="Delete"
+    onconfirm={() => api.deleteProject(id)}
+    onerror={(error) => (failure = error.message)}
+/>
+```
+
+**Best Practices:**
+- Write the title as the question and put the consequence in `message`: the title is the dialog's name and the message its description
+- Name the action on the confirm button ("Delete", "Publish"), not "OK" or "Yes"
+- Return the request's promise from `onconfirm` and let the dialog run the loading state; return `false` to keep it open
+- Show a failed request inside the dialog through `children`, and handle it in `onerror`
+- The dialog uses `role="dialog"` with `aria-modal`, not `alertdialog`
+
+---
+
 ## Focus Management
 
 ### Focus Styles

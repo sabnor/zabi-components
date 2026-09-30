@@ -93,6 +93,17 @@ Whenever token or CSS import API surface changes, include:
   linked as the item's description. The `DropdownOption` type is exported.
 - **DropdownItem**, the same menu item as a component, for a Dropdown's custom
   `children`. It takes its role from the Dropdown and joins the arrow-key order.
+- **ConfirmDialog**, a new molecule built on Modal: a dialog that asks before
+  an action. `title` names it and `message` describes it; `variant` is
+  `danger`, `warning` or `info`, each with its own icon, and `danger` uses the
+  danger button. `confirmLabel` and `cancelLabel` set the button text. If
+  `onconfirm` returns a promise the dialog shows its loading state and cannot
+  be dismissed until it settles: it closes on success and stays open on
+  failure, with the error passed to `onerror`. Returning `false` keeps it open.
+  `loading` does the same for callers who track the request themselves.
+  `oncancel` reports how the user backed out. Focus starts on Cancel, Enter
+  only activates the focused button, and the dialog renders in `document.body`
+  unless `portal={false}`.
 
 ### Changed
 

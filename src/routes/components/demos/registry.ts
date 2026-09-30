@@ -9,6 +9,7 @@ import ListDemo from "./ListDemo.svelte";
 import SortableListDemo from "./SortableListDemo.svelte";
 import CollapsibleDemo from "./CollapsibleDemo.svelte";
 import CollapsibleGroupDemo from "./CollapsibleGroupDemo.svelte";
+import ConfirmDialogDemo from "./ConfirmDialogDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -22,6 +23,7 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     SortableList: SortableListDemo,
     Collapsible: CollapsibleDemo,
     CollapsibleGroup: CollapsibleGroupDemo,
+    ConfirmDialog: ConfirmDialogDemo,
 };
 
 export function getComponentDemo(

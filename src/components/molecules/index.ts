@@ -43,4 +43,10 @@ export type {
     CollapsibleTriggerProps,
     CollapsibleTriggerState,
 } from '../util/collapsible.js';
+export { default as ConfirmDialog } from './ConfirmDialog.svelte';
+export type {
+    ConfirmDialogCancelReason,
+    ConfirmDialogResult,
+    ConfirmDialogVariant,
+} from '../util/confirm-dialog.js';
 export * from './toast-store.js';
