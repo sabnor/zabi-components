@@ -122,14 +122,16 @@ export function returnFocus(): void {
  * Moves focus into an overlay: to its first focusable element, or to the
  * container itself when it has none (give the container `tabindex="-1"`), so
  * focus never stays on the opener behind the backdrop.
+ *
+ * `preferred` is a CSS selector, looked up inside the container: the matching
+ * control takes focus instead of the first one, if it can take focus.
  */
-export function focusFirstElement(container: HTMLElement): void {
+export function focusFirstElement(container: HTMLElement, preferred?: string): void {
     const focusableElements = getFocusableElements(container);
-    if (focusableElements.length > 0) {
-        focusableElements[0].focus();
-    } else {
-        container.focus();
-    }
+    const wanted = preferred
+        ? focusableElements.find((element) => element.matches(preferred))
+        : undefined;
+    (wanted ?? focusableElements[0] ?? container).focus();
 }
 
 /** Open modal overlays, oldest first. The last one is the one on top. */

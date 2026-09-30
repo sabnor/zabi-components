@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { resolveDrawerEdge } from "../src/components/util/drawer";
+import Drawer from "../src/components/molecules/Drawer.svelte";
+import Modal from "../src/components/molecules/Modal.svelte";
 import DrawerHarness from "./fixtures/DrawerHarness.svelte";
 
 afterEach(() => {
@@ -456,5 +458,57 @@ describe("Drawer with Modal", () => {
         await user.keyboard("{Escape}");
         expect(screen.getByRole("dialog", { name: "Choose a project" })).toBeTruthy();
         expect(screen.getByRole("dialog", { name: "Edit page" })).toBeTruthy();
+    });
+});
+
+/**
+ * Every overlay has the same z-index class, so paint order used to be DOM
+ * order: an overlay rendered in place and opened after a portalled one sat
+ * earlier in the document, and opened behind it. Each overlay now takes a
+ * depth from the shared stack, which becomes its z-index.
+ */
+describe("Drawer stacking with Modal", () => {
+    const overlayOf = (name: string) =>
+        screen.getByRole("dialog", { name }).parentElement as HTMLElement;
+    const depth = (name: string) => Number(overlayOf(name).dataset.overlayDepth);
+    const precedes = (first: string, second: string) =>
+        (overlayOf(first).compareDocumentPosition(overlayOf(second)) &
+            Node.DOCUMENT_POSITION_FOLLOWING) !==
+        0;
+
+    it("lifts an in-place modal opened while a portalled drawer is open", async () => {
+        const modal = render(Modal, { props: { isOpen: false, title: "Confirm" } });
+        render(Drawer, { props: { isOpen: true, title: "Projects" } });
+        await modal.rerender({ isOpen: true });
+
+        // The modal is earlier in the document, so only its z-index puts it on top.
+        expect(precedes("Confirm", "Projects")).toBe(true);
+        expect(depth("Projects")).toBe(0);
+        expect(overlayOf("Projects").style.zIndex).toBe("");
+        expect(depth("Confirm")).toBe(1);
+        expect(overlayOf("Confirm").style.zIndex).toBe("calc(var(--z-modal) + 1)");
+    });
+
+    it("lifts an in-place drawer opened while a portalled modal is open", async () => {
+        const later = render(Drawer, {
+            props: { isOpen: false, title: "Projects", portal: false },
+        });
+        render(Modal, { props: { isOpen: true, title: "Editor", portal: true } });
+        await later.rerender({ isOpen: true });
+
+        expect(precedes("Projects", "Editor")).toBe(true);
+        expect(depth("Editor")).toBe(0);
+        expect(depth("Projects")).toBe(1);
+        expect(overlayOf("Projects").style.zIndex).toBe("calc(var(--z-modal) + 1)");
+    });
+
+    it("releases its place in the stack when it closes", async () => {
+        const first = render(Drawer, { props: { isOpen: true, title: "Projects" } });
+        expect(depth("Projects")).toBe(0);
+        first.unmount();
+
+        render(Modal, { props: { isOpen: true, title: "Alone" } });
+        expect(depth("Alone")).toBe(0);
+        expect(overlayOf("Alone").style.zIndex).toBe("");
     });
 });

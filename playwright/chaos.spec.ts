@@ -364,4 +364,66 @@ test.describe("Chaos lab — browser-only interaction risks", () => {
             await dialog.evaluate((el) => getComputedStyle(el).animationName),
         ).toBe("none");
     });
+
+    test("modal opened while a portalled drawer is open: it is on top, and Escape closes them in order", async ({
+        page,
+    }) => {
+        await page.getByTestId("chaos-open-drawer").click();
+        const drawer = page.getByTestId("chaos-drawer");
+        await expect(drawer).toBeVisible();
+        await page.getByTestId("chaos-drawer-open-page-modal").click();
+        const later = page.getByTestId("chaos-modal-page");
+        await expect(later).toBeAttached();
+        await waitForFocusInside(page, later, "Focus should move into the modal opened last");
+
+        expect(
+            await later.evaluate((panel: HTMLElement) => {
+                const box = panel.getBoundingClientRect();
+                const hit = document.elementFromPoint(
+                    box.left + box.width / 2,
+                    box.top + box.height / 2,
+                );
+                return !!hit && panel.contains(hit);
+            }),
+            "The modal opened last must be drawn above the portalled drawer",
+        ).toBe(true);
+
+        await page.keyboard.press("Escape");
+        await expect(later).not.toBeAttached();
+        await expect(drawer).toBeVisible();
+        await page.keyboard.press("Escape");
+        await expect(drawer).not.toBeAttached();
+        await expect(page.getByTestId("chaos-open-drawer")).toBeFocused();
+    });
+
+    test("drawer opened while a portalled modal is open: it is on top, and Escape closes them in order", async ({
+        page,
+    }) => {
+        await page.getByTestId("chaos-open-portal").click();
+        const modal = page.getByTestId("chaos-modal-portal");
+        await expect(modal).toBeVisible();
+        await page.getByTestId("chaos-open-page-drawer").click();
+        const later = page.getByTestId("chaos-drawer-page");
+        await expect(later).toBeAttached();
+        await waitForFocusInside(page, later, "Focus should move into the drawer opened last");
+        await expect
+            .poll(() => later.evaluate((el) => el.getAnimations().length))
+            .toBe(0);
+
+        expect(
+            await later.evaluate((panel: HTMLElement) => {
+                const box = panel.getBoundingClientRect();
+                const hit = document.elementFromPoint(
+                    box.left + box.width / 2,
+                    box.top + box.height / 2,
+                );
+                return !!hit && panel.contains(hit);
+            }),
+            "The drawer opened last must be drawn above the portalled modal",
+        ).toBe(true);
+
+        await page.keyboard.press("Escape");
+        await expect(later).not.toBeAttached();
+        await expect(modal).toBeVisible();
+    });
 });

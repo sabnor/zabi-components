@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Tooltip from "../../components/atoms/Tooltip.svelte";
+    import Drawer from "../../components/molecules/Drawer.svelte";
     import Modal from "../../components/molecules/Modal.svelte";
     import NavigationMenu, {
         type NavigationMenuItemData,
@@ -69,6 +70,8 @@
     let portalLastClose = $state("");
     let pageModalOpen = $state(false);
     let textOnlyOpen = $state(false);
+    let drawerOpen = $state(false);
+    let pageDrawerOpen = $state(false);
 </script>
 
 <svelte:head>
@@ -293,6 +296,13 @@
                 >
                     Open page modal
                 </button>
+                <button
+                    type="button"
+                    data-testid="chaos-open-page-drawer"
+                    onclick={() => (pageDrawerOpen = true)}
+                >
+                    Open page drawer
+                </button>
             </Modal>
             <Modal
                 bind:isOpen={trappedOpen}
@@ -330,5 +340,31 @@
         >
             <p class="text-sm text-description">Nothing to focus in here.</p>
         </Modal>
+        <!-- Rendered in place: earlier in the document than the portalled
+        modal it is opened from. -->
+        <Drawer
+            bind:isOpen={pageDrawerOpen}
+            portal={false}
+            title="Chaos page drawer"
+            data-testid="chaos-drawer-page"
+        >
+            <p class="text-sm text-description">Opened from the portalled modal.</p>
+        </Drawer>
+        <button
+            type="button"
+            data-testid="chaos-open-drawer"
+            onclick={() => (drawerOpen = true)}
+        >
+            Open portalled drawer
+        </button>
+        <Drawer bind:isOpen={drawerOpen} title="Chaos drawer" data-testid="chaos-drawer">
+            <button
+                type="button"
+                data-testid="chaos-drawer-open-page-modal"
+                onclick={() => (pageModalOpen = true)}
+            >
+                Open page modal from drawer
+            </button>
+        </Drawer>
     </section>
 </main>

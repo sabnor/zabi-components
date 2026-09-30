@@ -173,6 +173,10 @@ test.describe("Drawer — with Modal", () => {
         await newProject.click();
         await expect(newModal).toBeVisible();
         expect(await lockCount(page)).toBe("3");
+        // Modal moves focus on the next task; wait for it before pressing Tab.
+        await expect
+            .poll(() => newModal.evaluate((el) => el.contains(document.activeElement)))
+            .toBe(true);
         for (let i = 0; i < 6; i += 1) {
             await page.keyboard.press("Tab");
             expect(

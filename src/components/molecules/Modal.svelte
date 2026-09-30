@@ -2,14 +2,13 @@
     import type { Snippet } from 'svelte';
     import type { HTMLAttributes } from 'svelte/elements';
     import {
-        DIALOG_SELECTOR,
-        getFocusableElements,
         saveFocus,
         returnFocus,
         focusFirstElement,
         joinOverlayStack,
         recoverStrayFocus,
     } from '../util/focus-utils.js';
+    import { lockBodyScroll, trapTabKey } from '../util/overlay.js';
     import { generateId } from "../util/ssr-safe.js";
     import { portal as portalTo } from "../util/portal.js";
     import Card from '../atoms/Card.svelte';
@@ -42,6 +41,12 @@
         showClose?: boolean;
         /** Accessible name of the close button. */
         closeLabel?: string;
+        /**
+         * CSS selector, looked up inside the panel, of the control that takes
+         * focus when the modal opens (a search field, or the safe choice in a
+         * confirmation). Without it, or with no match, the first control does.
+         */
+        initialFocus?: string;
         /**
          * Render the overlay in `document.body` instead of in place, so an
          * ancestor with a transform, filter or clipped overflow cannot trap it.
@@ -79,6 +84,7 @@
         role = 'dialog',
         showClose = true,
         closeLabel = 'Close',
+        initialFocus,
         portal = false,
         dismissible = true,
         class: className = "",
@@ -107,27 +113,6 @@
         }[size] || 'w-full md:w-[28rem]',
     );
 
-    /** Ref-counted on `<body>` so nested Modal/SlideUp overlays share one lock. */
-    function lockBodyScroll(): () => void {
-        const body = document.body;
-        const count = Number(body.dataset.zabiScrollLock ?? '0');
-        if (count === 0) {
-            body.dataset.zabiScrollLockOverflow = body.style.overflow;
-            body.style.overflow = 'hidden';
-        }
-        body.dataset.zabiScrollLock = String(count + 1);
-        return () => {
-            const next = Number(body.dataset.zabiScrollLock ?? '1') - 1;
-            if (next <= 0) {
-                body.style.overflow = body.dataset.zabiScrollLockOverflow ?? '';
-                delete body.dataset.zabiScrollLock;
-                delete body.dataset.zabiScrollLockOverflow;
-            } else {
-                body.dataset.zabiScrollLock = String(next);
-            }
-        };
-    }
-
     function closeModal(reason: CloseReason, event?: Event) {
         if (!dismissible) return;
         isOpen = false;
@@ -150,7 +135,7 @@
             const overlay = joinOverlayStack(container);
             depth = overlay.depth;
             const t = setTimeout(() => {
-                focusFirstElement(container);
+                focusFirstElement(container, initialFocus);
             }, 0);
             // Focus can leave the dialog without a Tab (a confirm that starts
             // loading disables the focused button); the topmost dialog takes
@@ -170,36 +155,6 @@
             };
         }
     });
-
-    /** Re-queries focusables on every Tab so content added while open stays inside the trap. */
-    function handleTrapKeydown(event: KeyboardEvent) {
-        const container = modalContainer;
-        if (event.key !== 'Tab' || !container) return;
-        // A nested dialog handles its own Tab cycle.
-        const owner = (event.target as Element | null)?.closest?.(DIALOG_SELECTOR);
-        if (owner && owner !== container) return;
-
-        const focusable = getFocusableElements(container);
-        if (focusable.length === 0) {
-            event.preventDefault();
-            container.focus();
-            return;
-        }
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        const active = document.activeElement as HTMLElement | null;
-
-        if (!active || !focusable.includes(active)) {
-            event.preventDefault();
-            first.focus();
-        } else if (event.shiftKey && active === first) {
-            event.preventDefault();
-            last.focus();
-        } else if (!event.shiftKey && active === last) {
-            event.preventDefault();
-            first.focus();
-        }
-    }
 
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) {
@@ -243,7 +198,7 @@
             aria-describedby={description ? modalDescriptionId : undefined}
             tabindex="-1"
             data-testid={dataTestId}
-            onkeydown={handleTrapKeydown}
+            onkeydown={(event) => trapTabKey(modalContainer, event)}
             {...restProps}
         >
             <!-- The panel owns padding: Card's own p-6 would stack with the header's px-6/pt-6 and indent the title 24px past the body. -->

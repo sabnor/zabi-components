@@ -2388,6 +2388,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Accessible name of the close button, for translation.",
                     },
                     {
+                        name: "initialFocus",
+                        type: "string",
+                        required: false,
+                        description:
+                            "CSS selector, looked up inside the panel, of the control that takes focus on open. Without it, or with no match, the first control does.",
+                    },
+                    {
                         name: "role",
                         type: "'dialog' | 'alertdialog'",
                         required: false,
@@ -2466,6 +2473,21 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Panel heading.",
                     },
                     {
+                        name: "closeLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Close",
+                        description:
+                            "Accessible name of the close button, for translation.",
+                    },
+                    {
+                        name: "initialFocus",
+                        type: "string",
+                        required: false,
+                        description:
+                            "CSS selector, looked up inside the sheet, of the control that takes focus on open. Without it, or with no match, the first control does.",
+                    },
+                    {
                         name: "onclick",
                         type: "(event: Event) => void",
                         required: false,
@@ -2478,12 +2500,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Basic SlideUp",
                         description: "Simple slide-up panel",
-                        code: "&lt;SlideUp isOpen={isOpen} onClose={() => isOpen = false}&gt;\n  &lt;p&gt;Panel content&lt;/p&gt;\n&lt;/SlideUp&gt;",
+                        code: '&lt;SlideUp bind:isOpen title="Filters"&gt;\n  &lt;p&gt;Panel content&lt;/p&gt;\n&lt;/SlideUp&gt;',
                     },
                     {
-                        title: "Custom Height",
-                        description: "Slide-up with custom height",
-                        code: '&lt;SlideUp isOpen={isOpen} height="75vh"&gt;\n  &lt;p&gt;Tall panel&lt;/p&gt;\n&lt;/SlideUp&gt;',
+                        title: "Translated close button and first focus",
+                        description:
+                            "A close label for the reader's language, and focus starting on a field",
+                        code: '&lt;SlideUp bind:isOpen title="Filter" closeLabel="Stäng" initialFocus="#filter-search"&gt;\n  &lt;Input id="filter-search" label="Sök" /&gt;\n&lt;/SlideUp&gt;',
                     },
                 ],
             },
@@ -3525,7 +3548,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "true",
                         description:
-                            "Renders in document.body so a transformed or clipped ancestor cannot trap the dialog. Pass false to render in place.",
+                            "Renders in document.body so a transformed or clipped ancestor cannot trap the dialog. Pass false to render in place. The theme class belongs on html or body; set lower, it does not reach a portalled dialog.",
                     },
                 ],
                 variants: ["danger", "warning", "info", "loading"],
@@ -3642,7 +3665,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "true",
                         description:
-                            "Renders in document.body so a transformed or clipped ancestor cannot trap the drawer. Pass false to render in place.",
+                            "Renders in document.body so a transformed or clipped ancestor cannot trap the drawer. Pass false to render in place. The theme class belongs on html or body; set lower, it does not reach a portalled drawer.",
                     },
                     {
                         name: "dismissible",

@@ -66,6 +66,8 @@ export const doc: ComponentDoc = makeDoc({
             "Use `onclose` to learn why the modal closed. `onclick` still fires on close for older code, but is deprecated for that purpose.",
             "Set `role=\"alertdialog\"` when the dialog interrupts to ask for a response; for a plain confirmation, use `ConfirmDialog`, which does this for you.",
             "Translate the close button with `closeLabel`.",
+            "Set `initialFocus` to a selector when the first control is not where a user should start (a search field, or the safe choice in a confirmation).",
+            "A `keydown` listener of your own on `document` can run before the modal has handled Escape, and then sees `defaultPrevented` still false; for a portalled modal this is the usual order. Use `onclose` to learn that the modal closed, not your own Escape listener.",
             "Set `dismissible={false}` while an action is pending, so the dialog cannot be closed from under it. Keep a visible sign of progress in the dialog.",
         ],
         whenToAvoid: [

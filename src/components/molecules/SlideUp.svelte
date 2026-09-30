@@ -1,14 +1,13 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
     import {
-        DIALOG_SELECTOR,
         focusFirstElement,
-        getFocusableElements,
         joinOverlayStack,
         recoverStrayFocus,
         returnFocus,
         saveFocus,
     } from '../util/focus-utils.js';
+    import { lockBodyScroll, trapTabKey } from '../util/overlay.js';
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
 
@@ -17,6 +16,13 @@
         class?: string;
         isOpen?: boolean;
         title?: string;
+        /** Accessible name of the close button. */
+        closeLabel?: string;
+        /**
+         * CSS selector, looked up inside the sheet, of the control that takes
+         * focus when it opens. Without it, or with no match, the first control does.
+         */
+        initialFocus?: string;
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
         children?: Snippet;
@@ -26,6 +32,8 @@
         class: className = "",
         isOpen = $bindable(false),
         title = '',
+        closeLabel = 'Close',
+        initialFocus,
         onclick,
         onkeydown,
         children,
@@ -38,27 +46,6 @@
     let focusActive = false;
     /** Position among the open overlays; lifts a sheet opened later above the earlier ones. */
     let depth = $state(0);
-
-    /** Ref-counted on `<body>`; shares the counter with Modal so nested overlays unlock once. */
-    function lockBodyScroll(): () => void {
-        const body = document.body;
-        const count = Number(body.dataset.zabiScrollLock ?? '0');
-        if (count === 0) {
-            body.dataset.zabiScrollLockOverflow = body.style.overflow;
-            body.style.overflow = 'hidden';
-        }
-        body.dataset.zabiScrollLock = String(count + 1);
-        return () => {
-            const next = Number(body.dataset.zabiScrollLock ?? '1') - 1;
-            if (next <= 0) {
-                body.style.overflow = body.dataset.zabiScrollLockOverflow ?? '';
-                delete body.dataset.zabiScrollLock;
-                delete body.dataset.zabiScrollLockOverflow;
-            } else {
-                body.dataset.zabiScrollLock = String(next);
-            }
-        };
-    }
 
     function closeSlideUp(event?: Event) {
         isOpen = false;
@@ -80,7 +67,7 @@
             const overlay = joinOverlayStack(container);
             depth = overlay.depth;
             const t = setTimeout(() => {
-                focusFirstElement(container);
+                focusFirstElement(container, initialFocus);
             }, 0);
             // If the focused control is disabled or removed, focus lands on
             // `<body>`; take Tab and Escape back from there.
@@ -99,35 +86,6 @@
             };
         }
     });
-
-    /** Re-queries focusables on every Tab so late-rendered content stays inside the trap. */
-    function handleTrapKeydown(event: KeyboardEvent) {
-        const container = slideUpContainer;
-        if (event.key !== 'Tab' || !container) return;
-        const owner = (event.target as Element | null)?.closest?.(DIALOG_SELECTOR);
-        if (owner && owner !== container) return;
-
-        const focusable = getFocusableElements(container);
-        if (focusable.length === 0) {
-            event.preventDefault();
-            container.focus();
-            return;
-        }
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        const active = document.activeElement as HTMLElement | null;
-
-        if (!active || !focusable.includes(active)) {
-            event.preventDefault();
-            first.focus();
-        } else if (event.shiftKey && active === first) {
-            event.preventDefault();
-            last.focus();
-        } else if (!event.shiftKey && active === last) {
-            event.preventDefault();
-            first.focus();
-        }
-    }
 
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) {
@@ -162,7 +120,7 @@
             aria-modal="true"
             aria-labelledby={title ? slideTitleId : undefined}
             tabindex="-1"
-            onkeydown={handleTrapKeydown}
+            onkeydown={(event) => trapTabKey(slideUpContainer, event)}
             {...restProps}
         >
             {#if title}
@@ -177,7 +135,7 @@
                         type="button"
                         onclick={closeSlideUp}
                         class="focus-ring flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-2xl text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline"
-                        aria-label="Close"
+                        aria-label={closeLabel}
                     >
                         ×
                     </button>

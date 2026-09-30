@@ -10,6 +10,7 @@
         /** Role of the nested modal, or of the only one when not nested. */
         role?: "dialog" | "alertdialog";
         closeLabel?: string;
+        initialFocus?: string;
         initialOpen?: boolean;
         onclose?: (detail: { reason: string }) => void;
         onclick?: (event: Event) => void;
@@ -21,6 +22,7 @@
         innerDismissible = true,
         role = "dialog",
         closeLabel = undefined,
+        initialFocus = undefined,
         initialOpen = false,
         onclose,
         onclick,
@@ -44,6 +46,7 @@
         {portal}
         role={nested ? "dialog" : role}
         {closeLabel}
+        {initialFocus}
         dismissible={dismissible && !locked}
         {onclose}
         {onclick}

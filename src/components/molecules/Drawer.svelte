@@ -4,12 +4,13 @@
     import { X } from "@lucide/svelte";
     import { cn } from "../util/cn.js";
     import {
-        DIALOG_SELECTOR,
-        getFocusableElements,
+        focusFirstElement,
+        joinOverlayStack,
         recoverStrayFocus,
         returnFocus,
         saveFocus,
     } from "../util/focus-utils.js";
+    import { lockBodyScroll, trapTabKey } from "../util/overlay.js";
     import { portal as portalTo } from "../util/portal.js";
     import { generateId } from "../util/ssr-safe.js";
     import {
@@ -38,9 +39,9 @@
         size?: DrawerSize;
         /**
          * Render the overlay in `document.body`, so an ancestor with a
-         * transform, filter or clipped overflow cannot trap it. A theme class
-         * set below `body` does not reach a portalled drawer; pass `false` to
-         * render in place.
+         * transform, filter or clipped overflow cannot trap it; pass `false`
+         * to render in place. The theme class belongs on `<html>` or `<body>`;
+         * set lower, it does not reach a portalled drawer.
          */
         portal?: boolean;
         /**
@@ -90,6 +91,8 @@
 
     let panel = $state<HTMLDivElement>();
     let focusActive = false;
+    /** Position among the open overlays; lifts a drawer opened later above the earlier ones. */
+    let depth = $state(0);
 
     /** `100%` is the overlay, which is the viewport: the cap for phones. */
     const sizeClasses = $derived(
@@ -110,65 +113,6 @@
         }[side] ?? "right-0 border-l",
     );
 
-    // ── Shared overlay contract ─────────────────────────────────────────
-    // The next two functions are copies of the private ones in Modal.svelte,
-    // kept identical so the overlays interoperate: the lock counter on
-    // `<body>` is the contract. Replace them with a shared util once Modal's
-    // are factored out.
-
-    /** Ref-counted on `<body>`; shares the counter with Modal and SlideUp so nested overlays unlock once. */
-    function lockBodyScroll(): () => void {
-        const body = document.body;
-        const count = Number(body.dataset.zabiScrollLock ?? "0");
-        if (count === 0) {
-            body.dataset.zabiScrollLockOverflow = body.style.overflow;
-            body.style.overflow = "hidden";
-        }
-        body.dataset.zabiScrollLock = String(count + 1);
-        return () => {
-            const next = Number(body.dataset.zabiScrollLock ?? "1") - 1;
-            if (next <= 0) {
-                body.style.overflow = body.dataset.zabiScrollLockOverflow ?? "";
-                delete body.dataset.zabiScrollLock;
-                delete body.dataset.zabiScrollLockOverflow;
-            } else {
-                body.dataset.zabiScrollLock = String(next);
-            }
-        };
-    }
-
-    /** Re-queries focusables on every Tab so content added while open stays inside the trap. */
-    function handleTrapKeydown(event: KeyboardEvent) {
-        const container = panel;
-        if (event.key !== "Tab" || !container) return;
-        // A nested dialog handles its own Tab cycle.
-        const owner = (event.target as Element | null)?.closest?.(DIALOG_SELECTOR);
-        if (owner && owner !== container) return;
-
-        const focusable = getFocusableElements(container);
-        if (focusable.length === 0) {
-            event.preventDefault();
-            container.focus();
-            return;
-        }
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        const active = document.activeElement as HTMLElement | null;
-
-        if (!active || !focusable.includes(active)) {
-            event.preventDefault();
-            first.focus();
-        } else if (event.shiftKey && active === first) {
-            event.preventDefault();
-            last.focus();
-        } else if (!event.shiftKey && active === last) {
-            event.preventDefault();
-            first.focus();
-        }
-    }
-
-    // ── End of the shared overlay contract ──────────────────────────────
-
     function close(reason: DrawerCloseReason) {
         if (!dismissible) return;
         isOpen = false;
@@ -177,15 +121,6 @@
             returnFocus();
         }
         onclose?.({ reason });
-    }
-
-    /** The `initialFocus` match if it can take focus, else the first control. */
-    function focusInitial(container: HTMLElement) {
-        const focusable = getFocusableElements(container);
-        const wanted = initialFocus
-            ? focusable.find((element) => element.matches(initialFocus))
-            : undefined;
-        (wanted ?? focusable[0])?.focus();
     }
 
     /** Slides the panel in from its edge. Skipped where motion is unwanted or unsupported. */
@@ -211,9 +146,11 @@
             saveFocus();
             focusActive = true;
             const unlockScroll = lockBodyScroll();
+            const overlay = joinOverlayStack(container);
+            depth = overlay.depth;
             slideIn(container);
             const t = setTimeout(() => {
-                focusInitial(container);
+                focusFirstElement(container, initialFocus);
             }, 0);
             // If the focused control is disabled or removed, focus lands on
             // `<body>`; take Tab and Escape back from there.
@@ -223,6 +160,7 @@
             return () => {
                 clearTimeout(t);
                 stopRecovery();
+                overlay.leave();
                 unlockScroll();
                 if (focusActive) {
                     focusActive = false;
@@ -251,6 +189,8 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
         class="fixed inset-0 z-modal overflow-hidden {dismissible ? 'cursor-pointer' : 'cursor-default'} bg-overlay"
+        style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
+        data-overlay-depth={depth}
         use:portalTo={portal}
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
@@ -271,7 +211,7 @@
             tabindex="-1"
             data-side={side}
             {...restProps}
-            onkeydown={handleTrapKeydown}
+            onkeydown={(event) => trapTabKey(panel, event)}
         >
             <div class="flex items-start justify-between gap-4 px-6 pb-3 pt-6">
                 <div class="min-w-0 flex-1">

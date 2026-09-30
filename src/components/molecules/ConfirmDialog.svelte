@@ -42,8 +42,9 @@
         onerror?: (error: unknown) => void;
         /**
          * Render in `document.body`, so a transformed or clipped ancestor
-         * cannot trap the dialog. A theme class set below `body` does not
-         * reach it; pass `false` to render in place.
+         * cannot trap the dialog; pass `false` to render in place. The theme
+         * class belongs on `<html>` or `<body>`; set lower, it does not reach
+         * a portalled dialog.
          */
         portal?: boolean;
         /** On the dialog panel (testing, analytics). */

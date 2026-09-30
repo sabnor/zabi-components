@@ -155,6 +155,9 @@ Whenever token or CSS import API surface changes, include:
   empty library shows an empty state or your `empty` snippet. Columns follow
   the width (`minTileSize`, default 96px), and every built-in string can be
   replaced through `strings`.
+- **Modal and SlideUp take `initialFocus`**, a CSS selector for the control
+  that takes focus on open, as Drawer does.
+- **SlideUp's close button can be renamed** with `closeLabel` (default "Close").
 
 ### Changed
 
@@ -264,6 +267,9 @@ Whenever token or CSS import API surface changes, include:
   only the first panel marked open is rendered open, on the server too, and
   `onopenchange` is not called for it. A disabled panel keeps its state: it is
   not closed when another panel opens.
+- **Drawer stacks with the other overlays.** A modal opened while a portalled
+  drawer is open, or a drawer opened while a portalled modal is open, is now
+  drawn on top of it.
 
 ### Documentation
 

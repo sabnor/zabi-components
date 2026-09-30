@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
+import { createRawSnippet } from "svelte";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import Alert from "../src/components/molecules/Alert.svelte";
@@ -353,6 +354,20 @@ describe("Modal role, close label and panel attributes", () => {
         expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
     });
 
+    it("starts on the control initialFocus selects, or the first one without a match", async () => {
+        const first = render(ModalCloseHarness, {
+            initialOpen: true,
+            initialFocus: '[data-testid="lock"]',
+        });
+        await waitFor(() => expect(document.activeElement).toBe(screen.getByTestId("lock")));
+        first.unmount();
+
+        render(ModalCloseHarness, { initialOpen: true, initialFocus: "#not-there" });
+        await waitFor(() =>
+            expect(document.activeElement).toBe(screen.getByRole("button", { name: "Close" })),
+        );
+    });
+
     it("puts extra attributes on the dialog panel", async () => {
         const user = userEvent.setup();
         render(ModalCloseHarness);
@@ -540,6 +555,31 @@ describe("SlideUp semantics", () => {
 
         unmount();
         expect(document.body.style.overflow).toBe("");
+    });
+
+    it("names the close button Close, or what closeLabel says", async () => {
+        const first = render(SlideUp, { isOpen: true, title: "Sheet" });
+        expect(await screen.findByRole("button", { name: "Close" })).toBeTruthy();
+        first.unmount();
+
+        render(SlideUp, { isOpen: true, title: "Sheet", closeLabel: "Stäng" });
+        expect(await screen.findByRole("button", { name: "Stäng" })).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
+    });
+
+    it("starts on the control initialFocus selects", async () => {
+        const field = createRawSnippet(() => ({
+            render: () => `<div><button type="button">First</button><input id="sheet-search" aria-label="Search" /></div>`,
+        }));
+        render(SlideUp, {
+            isOpen: true,
+            title: "Sheet",
+            initialFocus: "#sheet-search",
+            children: field,
+        });
+        await waitFor(() =>
+            expect(document.activeElement).toBe(screen.getByRole("textbox", { name: "Search" })),
+        );
     });
 
     it("takes Tab back when focus has fallen out of the sheet", async () => {
