@@ -1761,7 +1761,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "ImageUpload",
                 category: "molecules",
                 description:
-                    "File input with an image preview, an accept filter and a clear control.",
+                    "File input with an image or video preview, an accept filter, drag and drop and a clear control.",
                 props: [
                     {
                         name: "value",
@@ -1769,7 +1769,21 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "null",
                         description:
-                            "Data URL of the selected image. Bindable.",
+                            "Preview URL: a stored URL or the object URL of a picked file. Bindable.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Visible label that names the dropzone and its actions.",
+                    },
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of the control the label points at. Generated when omitted.",
                     },
                     {
                         name: "accept",
@@ -1777,7 +1791,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "image/*",
                         description:
-                            "File types the picker offers.",
+                            "File types the chooser offers and a drop accepts.",
                     },
                     {
                         name: "placeholder",
@@ -1788,12 +1802,72 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Text shown before a file is chosen.",
                     },
                     {
+                        name: "browseText",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Click to choose a file",
+                        description:
+                            "Second line of the dropzone.",
+                    },
+                    {
+                        name: "changeText",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Change",
+                        description:
+                            "Text of the Change action.",
+                    },
+                    {
+                        name: "removeText",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Remove",
+                        description:
+                            "Text of the Remove action.",
+                    },
+                    {
+                        name: "changeLabel",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name of the Change action. Defaults to changeText followed by label.",
+                    },
+                    {
+                        name: "removeLabel",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name of the Remove action. Defaults to removeText followed by label.",
+                    },
+                    {
+                        name: "alt",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Text alternative for the preview.",
+                    },
+                    {
+                        name: "previewType",
+                        type: '"image" | "video"',
+                        required: false,
+                        description:
+                            "Forces the preview kind. By default a video file or a URL with a video extension previews as a video.",
+                    },
+                    {
+                        name: "preview",
+                        type: "Snippet<[ImageUploadPreviewDetail]>",
+                        required: false,
+                        description:
+                            "Replaces the built-in preview. Receives the url, type and alt.",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Disable choosing and clearing.",
+                            "Disable choosing, dropping and clearing.",
                     },
                     {
                         name: "errorMessage",
@@ -1803,24 +1877,68 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Message shown beneath the preview.",
                     },
                     {
+                        name: "errorTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Image upload failed",
+                        description:
+                            "Heading of the error block.",
+                    },
+                    {
+                        name: "errorRecovery",
+                        type: "string | false",
+                        required: false,
+                        defaultValue: "Recovery action: try another file or retry upload.",
+                        description:
+                            "Closing line of the error block. Pass false to leave it out.",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(event: Event) => void",
+                        required: false,
+                        description:
+                            "Runs before the file chooser opens. Call event.preventDefault() to keep it closed.",
+                    },
+                    {
+                        name: "onbrowse",
+                        type: "(event: Event) => void",
+                        required: false,
+                        description:
+                            "Replaces the native file chooser, for a media library or another source.",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(event: Event) => void",
+                        required: false,
+                        description:
+                            "Native change event from the file input.",
+                    },
+                    {
                         name: "onfileselect",
                         type: "(detail: ImageUploadFileDetail) => void",
                         required: false,
                         description:
-                            "Runs with the chosen file's details.",
+                            "Runs with the picked or dropped file and its preview URL, and with nulls on remove.",
+                    },
+                    {
+                        name: "onfilereject",
+                        type: "(file: File) => void",
+                        required: false,
+                        description:
+                            "Runs with a dropped file that accept does not allow.",
                     },
                 ],
 
                 examples: [
                     {
                         title: "Basic Upload",
-                        description: "Simple image upload",
-                        code: "&lt;ImageUpload onUpload={handleUpload} /&gt;",
+                        description: "Labelled upload that reports the chosen file",
+                        code: '&lt;ImageUpload label="Logo" bind:value onfileselect={handleFile} /&gt;',
                     },
                     {
-                        title: "With Restrictions",
-                        description: "Upload with size and type restrictions",
-                        code: '&lt;ImageUpload maxSize={2097152} acceptedTypes={["image/jpeg", "image/png"]} /&gt;',
+                        title: "Media Library",
+                        description: "Open your own picker and accept video",
+                        code: '&lt;ImageUpload label="Hero" accept="image/*,video/*" bind:value onbrowse={openLibrary} /&gt;',
                     },
                 ],
             },

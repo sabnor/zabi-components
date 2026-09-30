@@ -10,6 +10,39 @@ Whenever token or CSS import API surface changes, include:
 - mapping rule updates (for example dark semantic mapping)
 - migration guidance when compatibility aliases remain temporarily
 
+## [Unreleased]
+
+### Added
+
+- **ImageUpload can open your own picker.** `onbrowse` replaces the native file
+  chooser, for a media library or another source, and `event.preventDefault()`
+  in `onclick` now keeps the chooser closed.
+- **ImageUpload previews video.** A value that is a video (by file type, by
+  extension, or forced with `previewType`) renders a `<video>` with controls; it
+  never autoplays. A `preview` snippet replaces the built-in preview.
+- **ImageUpload has a label.** `label` and `id` props; the dropzone is a native
+  `<button>` the label points at. Change and Remove take their accessible names
+  from the label ("Change logo"), or from `changeLabel` and `removeLabel`, and
+  the preview accepts `alt`.
+- **ImageUpload accepts a dropped file**, checked against `accept`; a file that
+  does not match is reported through `onfilereject`.
+- **ImageUpload copy is configurable**: `browseText`, `changeText`,
+  `removeText`, `errorTitle` and `errorRecovery` (`false` leaves the line out).
+  The defaults are the previous strings.
+
+### Changed
+
+- **ImageUpload no longer forces a 16rem minimum width**; it fills its
+  container. Set a width on the host with `class` if you relied on it.
+- **ImageUpload's `id` now names the control** the label points at, not the
+  host element.
+
+### Fixed
+
+- **ImageUpload's Change and Remove actions are reachable on touch screens.**
+  They were hidden until hover or focus; on coarse pointers, and where hover is
+  not available, they now stay visible.
+
 ## [8.0.1] - 2026-09-29
 
 Fixes the documented setup. In 8.0.0 (and 7.0.2) the three-line Tailwind setup

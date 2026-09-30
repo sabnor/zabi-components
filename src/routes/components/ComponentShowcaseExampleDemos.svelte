@@ -455,6 +455,7 @@
             {:else if component.name === "ImageUpload"}
                 <div class="w-full">
                     <ImageUpload
+                        label="Cover image"
                         accept="image/jpeg,image/png,image/gif"
                         placeholder="Choose an image"
                     />
