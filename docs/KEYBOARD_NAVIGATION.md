@@ -398,6 +398,7 @@ item whatever the Tab order.
 - Confirm a delete before removing the item (`ConfirmDialog`); the grid only reports it
 - When the item is removed, focus moves to the item that took its place, also when a confirmation dialog closes after the removal; with nothing left it moves to the grid itself
 - Inside a `Modal`, the arrow keys move between items instead of scrolling the dialog
+- The built-in empty state's title is an `<h3>`, to sit under a Modal or section title; set `emptyHeadingLevel` when the heading above the grid is at another level
 
 ---
 

@@ -18,6 +18,7 @@
         disabled?: boolean;
         strings?: Partial<MediaGridStrings>;
         customEmpty?: boolean;
+        emptyHeadingLevel?: 2 | 3 | 4 | 5 | 6;
         onselect?: (detail: MediaGridSelectDetail<Media>) => void;
         /**
          * `none`: no delete buttons. `report`: only calls `onremove`.
@@ -51,6 +52,7 @@
         disabled = false,
         strings,
         customEmpty = false,
+        emptyHeadingLevel,
         onselect,
         deleting = "none",
         onremove,
@@ -107,6 +109,7 @@
     ondelete={deleting === "none" ? undefined : handleDelete}
     isItemDeletable={(item) => item.id !== protectedId}
     empty={customEmpty ? emptySnippet : undefined}
+    {emptyHeadingLevel}
     aria-label="Media library"
     data-testid="grid"
 />

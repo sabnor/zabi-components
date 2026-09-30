@@ -5,6 +5,7 @@
     import Skeleton from "../atoms/Skeleton.svelte";
     import EmptyState from "./EmptyState.svelte";
     import { cn } from "../util/cn.js";
+    import type { CollapsibleHeadingLevel } from "../util/collapsible.js";
     import {
         MEDIA_GRID_STRINGS,
         columnCount,
@@ -58,6 +59,11 @@
         loadingCount?: number;
         /** Replaces the built-in empty state. */
         empty?: Snippet;
+        /**
+         * Heading element of the built-in empty state's title. 3 by default:
+         * the grid usually sits under a Modal or section title.
+         */
+        emptyHeadingLevel?: CollapsibleHeadingLevel;
         /** Disables selecting and deleting. */
         disabled?: boolean;
         /** Smallest tile edge, as px or any CSS length. The grid fits as many columns as that allows. */
@@ -85,6 +91,7 @@
         loading = false,
         loadingCount = 8,
         empty,
+        emptyHeadingLevel = 3,
         disabled = false,
         minTileSize = 96,
         strings,
@@ -305,7 +312,12 @@
         {#if empty}
             {@render empty()}
         {:else}
-            <EmptyState title={text.emptyTitle} description={text.emptyDescription} />
+            <EmptyState
+                title={text.emptyTitle}
+                description={text.emptyDescription}
+                size="compact"
+                headingLevel={emptyHeadingLevel}
+            />
         {/if}
     {:else}
         <!-- The reset removes the markers, and Safari then drops the list role. -->

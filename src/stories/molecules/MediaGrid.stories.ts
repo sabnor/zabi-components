@@ -96,7 +96,7 @@ export const Empty: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'An empty library shows an empty state. Change its text through strings, or replace it with the empty snippet to offer an upload button.'
+                story: 'An empty library shows a compact empty state. Change its text through strings and its heading level through emptyHeadingLevel, or replace it with the empty snippet to offer an upload button.'
             }
         }
     }

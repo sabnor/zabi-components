@@ -2219,6 +2219,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Replaces the built-in empty state.",
                     },
                     {
+                        name: "emptyHeadingLevel",
+                        type: "2 | 3 | 4 | 5 | 6",
+                        required: false,
+                        defaultValue: "3",
+                        description:
+                            "Heading element of the built-in empty state's title, to fit under the Modal or section title above the grid.",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,

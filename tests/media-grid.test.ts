@@ -536,6 +536,22 @@ describe("MediaGrid states", () => {
         expect(screen.getByText("Ladda upp en bild.")).toBeTruthy();
     });
 
+    it("uses a compact empty state under an h3, or the level asked for", () => {
+        const { unmount } = render(MediaGridHarness, { props: { initialItems: [] } });
+        const heading = screen.getByRole("heading", { name: "No media yet" });
+        expect(heading.tagName).toBe("H3");
+        // Compact: the tighter padding, not the page-sized default.
+        const section = heading.closest("section")!;
+        expect(section.className).toContain("py-6");
+        expect(section.className).not.toContain("py-12");
+        unmount();
+
+        render(MediaGridHarness, {
+            props: { initialItems: [], emptyHeadingLevel: 4 },
+        });
+        expect(screen.getByRole("heading", { name: "No media yet" }).tagName).toBe("H4");
+    });
+
     it("takes an empty snippet instead", () => {
         render(MediaGridHarness, { props: { initialItems: [], customEmpty: true } });
         expect(screen.getByTestId("custom-empty")).toBeTruthy();

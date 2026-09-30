@@ -152,7 +152,8 @@ Whenever token or CSS import API surface changes, include:
   by the columns on screen, Home and End within the row, and Delete asks to
   delete. A video is a still with a play badge (`getType`, `getPoster`), a file
   that fails to load shows a fallback, `loading` adds placeholder tiles, and an
-  empty library shows an empty state or your `empty` snippet. Columns follow
+  empty library shows a compact empty state (`emptyHeadingLevel`, default 3)
+  or your `empty` snippet. Columns follow
   the width (`minTileSize`, default 96px), and every built-in string can be
   replaced through `strings`.
 - **Modal and SlideUp take `initialFocus`**, a CSS selector for the control
