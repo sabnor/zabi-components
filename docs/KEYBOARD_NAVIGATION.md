@@ -582,6 +582,36 @@ hit area is 44px around the same 32px button.
 
 ---
 
+### UnsavedChangesBar Component
+
+**Current Keyboard Support:**
+- ✅ **Tab**: Reach the bar in document order: after the form's last field (`position="bottom"`) or before its first (`position="top"`)
+- ✅ **Enter / Space**: Activate Discard, Save or an extra action
+
+The bar never takes focus when it appears; its message is announced politely
+instead. While a save is in progress both buttons are disabled and focus is
+held on the bar, not dropped on the page. When the bar goes (after Save or
+Discard), focus returns to the element it came from, usually the field that was
+being edited; if that is gone, it stays on the bar's empty host, at the same
+place in the page.
+
+**Usage:**
+```svelte
+<form>
+    <Input label="Name" bind:value={draft.name} />
+    <UnsavedChangesBar {dirty} onsave={save} ondiscard={reset} />
+</form>
+```
+
+**Best Practices:**
+- Put the bar in the form, after the last field: it is sticky, so it keeps its place in the flow and the last field can always be scrolled clear of it
+- If you make it fixed instead (`class="fixed inset-x-0 bottom-0"`), set `scroll-padding-bottom` on the scroll container, or a focused field can end up underneath it
+- Clear `dirty` yourself when the save has gone through; the bar does not hide on its own
+- Return the promise from `onsave` so the saving state covers the whole request
+- Warning before the page is closed or left (`beforeunload`, a navigation guard) is your app's decision and is not part of the bar
+
+---
+
 ## Focus Management
 
 ### Focus Styles

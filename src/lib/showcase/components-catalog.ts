@@ -4025,6 +4025,149 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "UnsavedChangesBar",
+                category: "molecules",
+                description:
+                    "Sticky bar shown while a form has unsaved changes, with Save and Discard and a saving state.",
+                props: [
+                    {
+                        name: "dirty",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the bar. Set it while the form differs from what is saved.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        defaultValue: "You have unsaved changes",
+                        description:
+                            "Shown in the bar, and announced once when it appears.",
+                    },
+                    {
+                        name: "saveLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Save",
+                        description:
+                            "Text of the save button.",
+                    },
+                    {
+                        name: "discardLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Discard",
+                        description:
+                            "Text of the discard button.",
+                    },
+                    {
+                        name: "onsave",
+                        type: "() => void | Promise<unknown>",
+                        required: false,
+                        description:
+                            "Runs when Save is activated. Return a promise to keep the saving state until it settles. The bar does not hide itself: clear dirty once the save has gone through.",
+                    },
+                    {
+                        name: "ondiscard",
+                        type: "() => void",
+                        required: false,
+                        description:
+                            "Runs when Discard is activated.",
+                    },
+                    {
+                        name: "saving",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Save shows its loading state and Discard is disabled. Set by the bar itself while a promise from onsave is pending.",
+                    },
+                    {
+                        name: "onerror",
+                        type: "(error: unknown) => void",
+                        required: false,
+                        description:
+                            "Runs when the promise from onsave rejects; the bar stays. Without it the error goes to the global error handler.",
+                    },
+                    {
+                        name: "position",
+                        type: "'bottom' | 'top'",
+                        required: false,
+                        defaultValue: "bottom",
+                        description:
+                            "Which edge of its scroll container the bar sticks to. It is sticky, not fixed: put it after the last field, or before the first.",
+                    },
+                    {
+                        name: "actions",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Extra buttons, placed before Discard.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Unsaved changes",
+                        description:
+                            "Accessible name of the bar as a landmark.",
+                    },
+                ],
+                variants: [
+                    "bottom",
+                    "top",
+                    "saving",
+                ],
+                examples: [
+                    {
+                        title: "After a form",
+                        description:
+                            "Change a field to bring the bar in. Save waits for the request; Discard restores",
+                        code: `<script lang="ts">
+    import { Input, UnsavedChangesBar } from "zabi-components";
+
+    let saved = $state({ name: "Ada Lovelace" });
+    let draft = $state({ ...saved });
+    const dirty = $derived(JSON.stringify(draft) !== JSON.stringify(saved));
+
+    async function save() {
+        await api.save(draft);
+        saved = { ...draft };
+    }
+</script>
+
+<form>
+    <Input label="Name" bind:value={draft.name} />
+    <UnsavedChangesBar
+        {dirty}
+        onsave={save}
+        ondiscard={() => (draft = { ...saved })}
+    />
+</form>`,
+                    },
+                    {
+                        title: "At the top, with an extra action and a failing save",
+                        description:
+                            "A rejected save keeps the bar and reports through onerror",
+                        code: `<UnsavedChangesBar
+    dirty={title !== savedTitle}
+    position="top"
+    message="This page has changes that are not published"
+    saveLabel="Publish"
+    onsave={publish}
+    ondiscard={() => (title = savedTitle)}
+    onerror={(error) => (failure = error.message)}
+>
+    {#snippet actions()}
+        <Button variant="secondary" onclick={saveDraft}>Save as draft</Button>
+    {/snippet}
+</UnsavedChangesBar>`,
+                    },
+                ],
+            },
         ],
         organisms: [
             {

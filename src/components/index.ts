@@ -95,6 +95,7 @@ export type {
     DrawerSide,
     DrawerSize,
 } from './util/drawer.js';
+export { default as UnsavedChangesBar } from './molecules/UnsavedChangesBar.svelte';
 
 export {
     toastStore,

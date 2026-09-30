@@ -14,6 +14,7 @@ import CollapsibleDemo from "./CollapsibleDemo.svelte";
 import CollapsibleGroupDemo from "./CollapsibleGroupDemo.svelte";
 import ConfirmDialogDemo from "./ConfirmDialogDemo.svelte";
 import DrawerDemo from "./DrawerDemo.svelte";
+import UnsavedChangesBarDemo from "./UnsavedChangesBarDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -32,6 +33,7 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     CollapsibleGroup: CollapsibleGroupDemo,
     ConfirmDialog: ConfirmDialogDemo,
     Drawer: DrawerDemo,
+    UnsavedChangesBar: UnsavedChangesBarDemo,
 };
 
 export function getComponentDemo(

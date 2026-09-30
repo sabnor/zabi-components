@@ -171,6 +171,14 @@ Whenever token or CSS import API surface changes, include:
   text, and three sizes on the Input and Button height scale. `showValue`
   displays the value and `formatValue` adds a unit, which is also what
   assistive technology reads (`aria-valuetext`).
+- **UnsavedChangesBar**, a new molecule: a bar with Save and Discard that shows
+  while a form has unsaved changes (`dirty`). It is sticky (`position`
+  `bottom` or `top`), so it stays in view without covering the last field.
+  `onsave` may return a promise: the bar shows its saving state until it
+  settles, and a rejection keeps the bar and calls `onerror`. Its appearance
+  is announced politely and it never takes focus; when it goes, focus returns
+  to the field the user was editing. An `actions` snippet adds buttons.
+  Warning before the page is left is your app's job.
 
 ### Changed
 
