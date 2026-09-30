@@ -61,6 +61,13 @@ export type {
     SortableListRow,
     SortableListStrings,
 } from './util/sortable-list.js';
+export { default as Collapsible } from './molecules/Collapsible.svelte';
+export { default as CollapsibleGroup } from './molecules/CollapsibleGroup.svelte';
+export type {
+    CollapsibleHeadingLevel,
+    CollapsibleTriggerProps,
+    CollapsibleTriggerState,
+} from './util/collapsible.js';
 
 export {
     toastStore,

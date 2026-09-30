@@ -30,4 +30,11 @@ export type {
     SortableListRow,
     SortableListStrings,
 } from '../util/sortable-list.js';
+export { default as Collapsible } from './Collapsible.svelte';
+export { default as CollapsibleGroup } from './CollapsibleGroup.svelte';
+export type {
+    CollapsibleHeadingLevel,
+    CollapsibleTriggerProps,
+    CollapsibleTriggerState,
+} from '../util/collapsible.js';
 export * from './toast-store.js';

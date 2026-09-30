@@ -350,6 +350,56 @@ to the browser.
 
 ---
 
+### Collapsible and CollapsibleGroup
+
+**Current Keyboard Support** (on the trigger, a `<button>`):
+- ✅ **Tab**: Move to the trigger, then into the panel when it is open
+- ✅ **Enter / Space**: Open or close the panel
+
+Inside a `CollapsibleGroup`, on a header button:
+- ✅ **Arrow Down**: Move focus to the next header (wraps to the first)
+- ✅ **Arrow Up**: Move focus to the previous header (wraps to the last)
+- ✅ **Home**: Move focus to the first header
+- ✅ **End**: Move focus to the last header
+
+The arrow keys only move focus; they open nothing. Every header stays in the
+tab order, so the group works without them, and a disabled header is skipped.
+A closed panel is `hidden`: nothing in it takes focus or is read out. Arrow
+keys with Shift, Alt, Ctrl or Meta are left to the browser, and so are the keys
+on a Collapsible nested inside a panel, which is not part of the group.
+
+**Usage:**
+```svelte
+<Collapsible bind:open title="Billing details" headingLevel={3}>
+    <BillingForm />
+</Collapsible>
+
+<!-- Your own header: spread the props on a <button> -->
+<Collapsible bind:open>
+    {#snippet trigger(props, state)}
+        <div class="flex items-center gap-2">
+            <h3 class="flex-1">Billing details</h3>
+            <button {...props}>{state.open ? "Hide" : "Show"}</button>
+        </div>
+    {/snippet}
+    <BillingForm />
+</Collapsible>
+
+<CollapsibleGroup>
+    <Collapsible title="General" headingLevel={3}>…</Collapsible>
+    <Collapsible title="Members" headingLevel={3}>…</Collapsible>
+</CollapsibleGroup>
+```
+
+**Best Practices:**
+- Spread the `trigger` props on a real `<button>`: Enter and Space come from the element, and the props carry `type="button"`, `aria-expanded`, `aria-controls`, `disabled` and the click handler
+- Give a custom trigger a name that says what it shows, not only "Toggle"; the panel is labelled by it
+- Set `headingLevel` on accordion headers so they appear in the document outline
+- Keep the default closed behaviour for forms (the content stays mounted and keeps its values); use `unmountOnClose` for heavy or read-only content
+- Leave `region` alone unless the panel deserves a landmark: it is on by default only in a single-open group, where one panel is exposed at a time
+
+---
+
 ## Focus Management
 
 ### Focus Styles

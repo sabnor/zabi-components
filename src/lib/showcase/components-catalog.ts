@@ -2846,6 +2846,192 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "Collapsible",
+                category: "molecules",
+                description:
+                    "A trigger wired to a panel it shows and hides, with a built-in header button or your own, alone or as an accordion.",
+                props: [
+                    {
+                        name: "open",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Whether the panel is shown. Bindable.",
+                    },
+                    {
+                        name: "onopenchange",
+                        type: "(open: boolean) => void",
+                        required: false,
+                        description:
+                            "Runs when the user toggles the panel, or when a group closes it.",
+                    },
+                    {
+                        name: "title",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Text of the default trigger, a full-width header button with a chevron.",
+                    },
+                    {
+                        name: "trigger",
+                        type: "Snippet<[CollapsibleTriggerProps, CollapsibleTriggerState]>",
+                        required: false,
+                        description:
+                            "Your own header in place of the default trigger. Spread the first argument on a button; the second carries open and disabled.",
+                    },
+                    {
+                        name: "headingLevel",
+                        type: "1 | 2 | 3 | 4 | 5 | 6",
+                        required: false,
+                        description:
+                            "Wraps the default trigger in a heading of that level. No heading when omitted.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "The trigger cannot be activated. The panel keeps its current state.",
+                    },
+                    {
+                        name: "unmountOnClose",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Removes the content while closed. By default it stays in the DOM, hidden, so a form inside keeps its values.",
+                    },
+                    {
+                        name: "region",
+                        type: "boolean",
+                        required: false,
+                        description:
+                            "Makes the panel a landmark region. Defaults to true only inside a single-open CollapsibleGroup; otherwise the panel is a named group.",
+                    },
+                    {
+                        name: "triggerClass",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes for the default trigger button.",
+                    },
+                    {
+                        name: "panelClass",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes for the panel.",
+                    },
+                ],
+                variants: [
+                    "open",
+                    "disabled",
+                    "trigger",
+                    "unmountOnClose",
+                ],
+                examples: [
+                    {
+                        title: "Default trigger",
+                        description:
+                            "A title gives a full-width header button with a chevron, here inside an h3",
+                        code: `<script lang="ts">
+    import { Collapsible } from "zabi-components";
+
+    let open = $state(false);
+</script>
+
+<Collapsible bind:open title="Delivery notes" headingLevel={3}>
+    <p class="text-sm text-description">
+        Leave parcels with the front desk. The loading bay is closed on weekends.
+    </p>
+</Collapsible>`,
+                    },
+                    {
+                        title: "Your own header",
+                        description:
+                            "The trigger snippet puts the wiring on your button, next to the other controls of a section card",
+                        code: `<Card fullWidth={true}>
+    <Collapsible bind:open panelClass="pt-4">
+        {#snippet trigger(props, state)}
+            <div class="flex items-center gap-2">
+                <h3 class="flex-1 text-sm font-medium">Billing details</h3>
+                <Badge text="Draft" />
+                <Button variant="outline" size="sm" text="Preview" />
+                <button {...props} class="focus-ring size-8 rounded-control" aria-label="Billing details">
+                    <ChevronDown size={16} aria-hidden="true" class={state.open ? "rotate-180" : ""} />
+                </button>
+            </div>
+        {/snippet}
+        <Input label="Invoice reference" placeholder="PO-2041" />
+    </Collapsible>
+</Card>`,
+                    },
+                    {
+                        title: "Error details",
+                        description:
+                            "A small text trigger for the details of an error, with the content removed while closed",
+                        code: `<p class="text-sm font-medium">The import stopped at row 214.</p>
+<Collapsible unmountOnClose>
+    {#snippet trigger(props, state)}
+        <Button {...props} variant="link" size="sm">
+            Details
+            <ChevronDown size={16} aria-hidden="true" class={state.open ? "rotate-180" : ""} />
+        </Button>
+    {/snippet}
+    <pre class="text-sm text-description">{error.detail}</pre>
+</Collapsible>`,
+                    },
+                ],
+            },
+            {
+                name: "CollapsibleGroup",
+                category: "molecules",
+                description:
+                    "Coordinates the Collapsibles inside it as an accordion: one open at a time, or several, with arrow keys between the headers.",
+                props: [
+                    {
+                        name: "multiple",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Lets several panels be open at once. By default opening one closes the others.",
+                    },
+                ],
+                variants: ["multiple"],
+                examples: [
+                    {
+                        title: "Accordion",
+                        description:
+                            "Opening one panel closes the others, and the arrow keys move between the headers",
+                        code: `<script lang="ts">
+    import { Collapsible, CollapsibleGroup } from "zabi-components";
+</script>
+
+<CollapsibleGroup class="gap-1">
+    {#each questions as question (question.id)}
+        <Collapsible title={question.title} headingLevel={3}>
+            <p class="text-sm text-description">{question.answer}</p>
+        </Collapsible>
+    {/each}
+</CollapsibleGroup>`,
+                    },
+                    {
+                        title: "Several open at once",
+                        description:
+                            "With multiple the panels are independent, and two of them start open",
+                        code: `<CollapsibleGroup multiple class="gap-1">
+    {#each questions as question, index (question.id)}
+        <Collapsible title={question.title} headingLevel={3} open={index < 2}>
+            <p class="text-sm text-description">{question.answer}</p>
+        </Collapsible>
+    {/each}
+</CollapsibleGroup>`,
+                    },
+                ],
+            },
         ],
         organisms: [
             {

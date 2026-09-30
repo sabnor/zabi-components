@@ -7,6 +7,8 @@ import SidebarNavigationDemo from "./SidebarNavigationDemo.svelte";
 import SkeletonDemo from "./SkeletonDemo.svelte";
 import ListDemo from "./ListDemo.svelte";
 import SortableListDemo from "./SortableListDemo.svelte";
+import CollapsibleDemo from "./CollapsibleDemo.svelte";
+import CollapsibleGroupDemo from "./CollapsibleGroupDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -18,6 +20,8 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     SidebarNavigation: SidebarNavigationDemo,
     List: ListDemo,
     SortableList: SortableListDemo,
+    Collapsible: CollapsibleDemo,
+    CollapsibleGroup: CollapsibleGroupDemo,
 };
 
 export function getComponentDemo(

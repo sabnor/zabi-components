@@ -58,6 +58,18 @@ Whenever token or CSS import API surface changes, include:
   click and the close button do nothing (the close button stays focusable and
   is marked `aria-disabled`); setting `isOpen` yourself still closes it. Meant
   for a pending action.
+- **Collapsible**, a new molecule: a trigger wired to the panel it shows and
+  hides. It owns the ids, `aria-expanded`, `aria-controls` and the panel's name.
+  `title` gives a full-width header button with a chevron (`headingLevel` wraps
+  it in a real heading); a `trigger` snippet hands the same wiring to your own
+  `<button>` inside your own header. `bind:open` holds the state, `onopenchange`
+  reports a toggle, and `disabled` turns the trigger off. Closed content stays
+  in the DOM under `hidden`, so it takes no focus and a form inside it keeps its
+  values; `unmountOnClose` removes it instead.
+- **CollapsibleGroup** turns the Collapsibles inside it into an accordion:
+  opening one closes the others, or `multiple` lets several stay open. Arrow
+  Up, Arrow Down, Home and End move focus between the header buttons, and Tab
+  still reaches each of them.
 
 ### Changed
 
