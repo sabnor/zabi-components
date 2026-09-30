@@ -1,0 +1,107 @@
+import { devices, expect, test, type Page } from "@playwright/test";
+
+/**
+ * ImageUpload in a real browser (QA review of b76dace): the parts jsdom
+ * cannot show. jsdom evaluates no media queries, so the unit test for the
+ * touch layout can only compare class names; and it does not drop focus the
+ * way a browser does when the focused node is unmounted.
+ */
+
+const PATH = "/components/ImageUpload";
+/** 1x1 PNG. */
+const PNG = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+    "base64",
+);
+
+const dropzone = (page: Page) =>
+    page.getByRole("button", { name: "Cover image", exact: true }).first();
+const actions = (page: Page) => page.getByTestId("image-upload-actions").first();
+
+/** Picks a file through the real chooser, from the keyboard. */
+async function pickImage(page: Page): Promise<void> {
+    await page.goto(PATH, { waitUntil: "networkidle" });
+    await expect(async () => {
+        const chooser = page.waitForEvent("filechooser", { timeout: 2_000 });
+        await dropzone(page).focus();
+        await page.keyboard.press("Enter");
+        await (await chooser).setFiles({ name: "cover.png", mimeType: "image/png", buffer: PNG });
+    }, "The route must hydrate before the dropzone opens the chooser").toPass();
+    await expect(actions(page)).toBeAttached();
+}
+
+test.describe("ImageUpload — names, focus and the overlay", () => {
+    test("keyboard: Change and Remove are named after the label and focus reveals them", async ({
+        page,
+    }) => {
+        await pickImage(page);
+        const group = page.getByRole("group", { name: "Cover image" }).first();
+        const change = group.getByRole("button", { name: "Change Cover image" });
+        const remove = group.getByRole("button", { name: "Remove Cover image" });
+
+        await expect(
+            actions(page),
+            "With a mouse and nothing focused, the actions stay out of the way",
+        ).toHaveCSS("opacity", "0");
+        await change.focus();
+        await expect(actions(page)).toHaveCSS("opacity", "1");
+        await page.keyboard.press("Tab");
+        await expect(remove).toBeFocused();
+        await expect(actions(page)).toHaveCSS("opacity", "1");
+    });
+
+    // DEFECT (QA-IU-1): the empty and the filled state are different nodes,
+    // and the swap unmounts whichever had focus. Focus falls to <body>, so a
+    // keyboard user is sent back to the top of the page after every pick and
+    // every Remove. Focus should follow the control id: Change after a pick,
+    // the dropzone after Remove.
+    test.fixme("keyboard: focus follows the control across a pick and a Remove", async ({
+        page,
+    }) => {
+        await pickImage(page);
+        await expect(
+            page.getByRole("button", { name: "Change Cover image" }).first(),
+        ).toBeFocused();
+
+        await page.getByRole("button", { name: "Remove Cover image" }).first().focus();
+        await page.keyboard.press("Enter");
+        await expect(dropzone(page)).toBeFocused();
+    });
+});
+
+test.describe("ImageUpload — touch", () => {
+    const { defaultBrowserType: _browser, ...pixel } = devices["Pixel 7"];
+    test.use(pixel);
+
+    test("touch: the actions are visible as a strip, leave the preview in view, and respond to a tap", async ({
+        page,
+    }) => {
+        await pickImage(page);
+        expect(
+            await page.evaluate(() => matchMedia("(pointer: coarse)").matches),
+            "The emulated device must report a coarse pointer, or this test proves nothing",
+        ).toBe(true);
+
+        await expect(actions(page)).toHaveCSS("opacity", "1");
+        const strip = await actions(page).boundingBox();
+        const preview = await page.getByRole("group", { name: "Cover image" }).first().boundingBox();
+        expect(strip && preview).toBeTruthy();
+        expect(
+            strip!.height,
+            "A strip, not a full overlay: most of the preview stays uncovered",
+        ).toBeLessThan(preview!.height / 2);
+
+        for (const name of ["Change Cover image", "Remove Cover image"]) {
+            const box = await page.getByRole("button", { name }).first().boundingBox();
+            expect(box, name).toBeTruthy();
+            // WCAG 2.5.8 minimum; 44px is the comfortable size and these are 32px tall.
+            expect(Math.min(box!.width, box!.height), `${name} target size`).toBeGreaterThanOrEqual(24);
+            expect(box!.x, `${name} stays inside the preview`).toBeGreaterThanOrEqual(preview!.x);
+            expect(box!.x + box!.width).toBeLessThanOrEqual(preview!.x + preview!.width);
+        }
+
+        await page.getByRole("button", { name: "Remove Cover image" }).first().tap();
+        await expect(dropzone(page)).toBeVisible();
+        await expect(actions(page)).toHaveCount(0);
+    });
+});
