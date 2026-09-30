@@ -53,7 +53,7 @@ export const Stacked: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Each row becomes a block of label and value pairs and the minimum width is dropped, so nothing scrolls sideways. `stacked` stacks at every width; `stacked="sm"`, `"md"` or `"lg"` stacks only below that breakpoint. The label beside each value is the `data-label` attribute you put on the cell: `<td data-label="Role">Admin</td>`. A cell without one shows its value alone. Keep the `<thead>`: it is hidden from view when stacked but still gives each cell its column header.'
+                story: 'Each row becomes a block of label and value pairs and the minimum width is dropped, so nothing scrolls sideways. `stacked` stacks at every width; `stacked="sm"`, `"md"` or `"lg"` stacks only below that breakpoint. The label beside each value is the `data-label` attribute you put on the cell: `<td data-label="Role">Admin</td>`. A cell without one, such as the actions cell here, shows its content alone on the value side. Several children in one cell stay together, and an empty cell takes no room. Keep the `<thead>`: it is hidden from view when stacked but still gives each cell its column header.'
             }
         }
     }

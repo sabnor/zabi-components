@@ -50,9 +50,20 @@ describe("Table", () => {
                 // The header row stays in the DOM for its column headers.
                 `${prefix}[&>thead]:sr-only`,
                 `${prefix}[&>*>tr>*]:flex`,
-                `${prefix}[&>*>tr>[data-label]]:before:content-[attr(data-label)]`,
+                `${prefix}[&>*>tr>[data-label]:not(:empty)]:before:content-[attr(data-label)]`,
+                // The label takes the start; whatever the cell holds is packed
+                // at the end, one child or several, labelled or not.
+                `${prefix}[&>*>tr>[data-label]:not(:empty)]:before:me-auto`,
+                `${prefix}[&>*>tr>*]:justify-end`,
+                // An empty cell collapses instead of leaving a blank line.
+                `${prefix}[&>*>tr>:empty]:py-0`,
             ]),
         );
+        // `justify-between` spread a cell's own children to opposite ends.
+        expect(classes).not.toContain(`${prefix}[&>*>tr>*]:justify-between`);
+        // Collapsed, never `display: none`: a cell taken out of the tree would
+        // shift the cells after it under the wrong column headers.
+        expect(classes.some((name) => name.includes(":empty]:hidden"))).toBe(false);
         if (prefix) expect(classes).not.toContain("block");
     });
 

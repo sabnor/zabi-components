@@ -358,6 +358,10 @@ Whenever token or CSS import API surface changes, include:
 - **Dismissing the focused toast keeps focus in reach**: it moves to the next
   toast, or back to where it was before it entered the notifications.
 - **Toasts do not fly in or out under `prefers-reduced-motion`.**
+- **Stacked Table keeps a cell's content together.** A cell with several
+  children had them pushed to opposite ends of the line; they now sit together
+  on the value side. A cell with no `data-label` puts its content on the value
+  side too, and an empty cell no longer leaves a blank line.
 
 ### Documentation
 

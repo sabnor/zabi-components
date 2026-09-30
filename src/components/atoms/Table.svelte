@@ -42,49 +42,65 @@
      * `::before`; where the browser supports alternative text for generated
      * content it is given an empty one, so a screen reader reads the column
      * header once instead of the header and then the label.
+     *
+     * The label takes the start of the line with an auto margin after it, and
+     * the cell packs everything else at the end. So a cell's own children stay
+     * together however many there are, and a cell with no label still has its
+     * value on the value side. An empty cell collapses to nothing but is not
+     * hidden: taking it out of the tree would shift the cells after it under
+     * the wrong column headers.
      */
     const STACKED_CLASS = {
         always:
             "block min-w-0 [&>:not(thead)]:block [&>thead]:sr-only [&>*>tr]:block [&>*>tr]:py-2 " +
-            "[&>*>tr>*]:flex [&>*>tr>*]:items-baseline [&>*>tr>*]:justify-between [&>*>tr>*]:gap-4 " +
-            "[&>*>tr>*]:py-1 [&>*>tr>*]:text-right [&>*>tr>[data-label]]:before:shrink-0 " +
-            "[&>*>tr>[data-label]]:before:text-left [&>*>tr>[data-label]]:before:font-medium " +
-            "[&>*>tr>[data-label]]:before:text-headline " +
-            "[&>*>tr>[data-label]]:before:content-[attr(data-label)] " +
-            "supports-[content:'x'/'']:[&>*>tr>[data-label]]:before:content-[attr(data-label)/'']",
+            "[&>*>tr>*]:flex [&>*>tr>*]:items-baseline [&>*>tr>*]:justify-end " +
+            "[&>*>tr>*]:gap-4 [&>*>tr>*]:py-1 [&>*>tr>*]:text-end " +
+            "[&>*>tr>:empty]:py-0 [&>*>tr>[data-label]:not(:empty)]:before:me-auto " +
+            "[&>*>tr>[data-label]:not(:empty)]:before:shrink-0 " +
+            "[&>*>tr>[data-label]:not(:empty)]:before:text-start " +
+            "[&>*>tr>[data-label]:not(:empty)]:before:font-medium " +
+            "[&>*>tr>[data-label]:not(:empty)]:before:text-headline " +
+            "[&>*>tr>[data-label]:not(:empty)]:before:content-[attr(data-label)] " +
+            "supports-[content:'x'/'']:[&>*>tr>[data-label]:not(:empty)]:before:content-[attr(data-label)/'']",
         sm:
             "max-sm:block max-sm:min-w-0 max-sm:[&>:not(thead)]:block max-sm:[&>thead]:sr-only " +
             "max-sm:[&>*>tr]:block max-sm:[&>*>tr]:py-2 max-sm:[&>*>tr>*]:flex " +
-            "max-sm:[&>*>tr>*]:items-baseline max-sm:[&>*>tr>*]:justify-between " +
-            "max-sm:[&>*>tr>*]:gap-4 max-sm:[&>*>tr>*]:py-1 max-sm:[&>*>tr>*]:text-right " +
-            "max-sm:[&>*>tr>[data-label]]:before:shrink-0 " +
-            "max-sm:[&>*>tr>[data-label]]:before:text-left " +
-            "max-sm:[&>*>tr>[data-label]]:before:font-medium " +
-            "max-sm:[&>*>tr>[data-label]]:before:text-headline " +
-            "max-sm:[&>*>tr>[data-label]]:before:content-[attr(data-label)] " +
-            "max-sm:supports-[content:'x'/'']:[&>*>tr>[data-label]]:before:content-[attr(data-label)/'']",
+            "max-sm:[&>*>tr>*]:items-baseline " +
+            "max-sm:[&>*>tr>*]:justify-end max-sm:[&>*>tr>*]:gap-4 " +
+            "max-sm:[&>*>tr>*]:py-1 max-sm:[&>*>tr>*]:text-end max-sm:[&>*>tr>:empty]:py-0 " +
+            "max-sm:[&>*>tr>[data-label]:not(:empty)]:before:me-auto " +
+            "max-sm:[&>*>tr>[data-label]:not(:empty)]:before:shrink-0 " +
+            "max-sm:[&>*>tr>[data-label]:not(:empty)]:before:text-start " +
+            "max-sm:[&>*>tr>[data-label]:not(:empty)]:before:font-medium " +
+            "max-sm:[&>*>tr>[data-label]:not(:empty)]:before:text-headline " +
+            "max-sm:[&>*>tr>[data-label]:not(:empty)]:before:content-[attr(data-label)] " +
+            "max-sm:supports-[content:'x'/'']:[&>*>tr>[data-label]:not(:empty)]:before:content-[attr(data-label)/'']",
         md:
             "max-md:block max-md:min-w-0 max-md:[&>:not(thead)]:block max-md:[&>thead]:sr-only " +
             "max-md:[&>*>tr]:block max-md:[&>*>tr]:py-2 max-md:[&>*>tr>*]:flex " +
-            "max-md:[&>*>tr>*]:items-baseline max-md:[&>*>tr>*]:justify-between " +
-            "max-md:[&>*>tr>*]:gap-4 max-md:[&>*>tr>*]:py-1 max-md:[&>*>tr>*]:text-right " +
-            "max-md:[&>*>tr>[data-label]]:before:shrink-0 " +
-            "max-md:[&>*>tr>[data-label]]:before:text-left " +
-            "max-md:[&>*>tr>[data-label]]:before:font-medium " +
-            "max-md:[&>*>tr>[data-label]]:before:text-headline " +
-            "max-md:[&>*>tr>[data-label]]:before:content-[attr(data-label)] " +
-            "max-md:supports-[content:'x'/'']:[&>*>tr>[data-label]]:before:content-[attr(data-label)/'']",
+            "max-md:[&>*>tr>*]:items-baseline " +
+            "max-md:[&>*>tr>*]:justify-end max-md:[&>*>tr>*]:gap-4 " +
+            "max-md:[&>*>tr>*]:py-1 max-md:[&>*>tr>*]:text-end max-md:[&>*>tr>:empty]:py-0 " +
+            "max-md:[&>*>tr>[data-label]:not(:empty)]:before:me-auto " +
+            "max-md:[&>*>tr>[data-label]:not(:empty)]:before:shrink-0 " +
+            "max-md:[&>*>tr>[data-label]:not(:empty)]:before:text-start " +
+            "max-md:[&>*>tr>[data-label]:not(:empty)]:before:font-medium " +
+            "max-md:[&>*>tr>[data-label]:not(:empty)]:before:text-headline " +
+            "max-md:[&>*>tr>[data-label]:not(:empty)]:before:content-[attr(data-label)] " +
+            "max-md:supports-[content:'x'/'']:[&>*>tr>[data-label]:not(:empty)]:before:content-[attr(data-label)/'']",
         lg:
             "max-lg:block max-lg:min-w-0 max-lg:[&>:not(thead)]:block max-lg:[&>thead]:sr-only " +
             "max-lg:[&>*>tr]:block max-lg:[&>*>tr]:py-2 max-lg:[&>*>tr>*]:flex " +
-            "max-lg:[&>*>tr>*]:items-baseline max-lg:[&>*>tr>*]:justify-between " +
-            "max-lg:[&>*>tr>*]:gap-4 max-lg:[&>*>tr>*]:py-1 max-lg:[&>*>tr>*]:text-right " +
-            "max-lg:[&>*>tr>[data-label]]:before:shrink-0 " +
-            "max-lg:[&>*>tr>[data-label]]:before:text-left " +
-            "max-lg:[&>*>tr>[data-label]]:before:font-medium " +
-            "max-lg:[&>*>tr>[data-label]]:before:text-headline " +
-            "max-lg:[&>*>tr>[data-label]]:before:content-[attr(data-label)] " +
-            "max-lg:supports-[content:'x'/'']:[&>*>tr>[data-label]]:before:content-[attr(data-label)/'']",
+            "max-lg:[&>*>tr>*]:items-baseline " +
+            "max-lg:[&>*>tr>*]:justify-end max-lg:[&>*>tr>*]:gap-4 " +
+            "max-lg:[&>*>tr>*]:py-1 max-lg:[&>*>tr>*]:text-end max-lg:[&>*>tr>:empty]:py-0 " +
+            "max-lg:[&>*>tr>[data-label]:not(:empty)]:before:me-auto " +
+            "max-lg:[&>*>tr>[data-label]:not(:empty)]:before:shrink-0 " +
+            "max-lg:[&>*>tr>[data-label]:not(:empty)]:before:text-start " +
+            "max-lg:[&>*>tr>[data-label]:not(:empty)]:before:font-medium " +
+            "max-lg:[&>*>tr>[data-label]:not(:empty)]:before:text-headline " +
+            "max-lg:[&>*>tr>[data-label]:not(:empty)]:before:content-[attr(data-label)] " +
+            "max-lg:supports-[content:'x'/'']:[&>*>tr>[data-label]:not(:empty)]:before:content-[attr(data-label)/'']",
     } as const;
 
     const stackedClass = $derived(

@@ -1347,7 +1347,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Lay each row out as label and value pairs instead of scrolling sideways: always (true) or below a breakpoint. Each cell's label is its data-label attribute",
+                            "Lay each row out as label and value pairs instead of scrolling sideways: always (true) or below a breakpoint. Each cell's label is its data-label attribute; a cell without one shows its content on the value side with no label, and an empty cell takes no room",
                     },
                     {
                         name: "class",

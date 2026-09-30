@@ -75,4 +75,112 @@ test.describe("Table — stacked below the sm breakpoint", () => {
         await expect(table(page).getByRole("cell", { name: "North", exact: true })).toHaveCount(1);
         await expect(table(page).getByRole("cell", { name: "$9,200", exact: true })).toHaveCount(1);
     });
+
+    /**
+     * Appends one row to the demo table: a text value, an empty labelled
+     * cell, an empty unlabelled cell, and an unlabelled cell with three
+     * children. Table cannot wrap a caller's cell content, so these are the
+     * shapes the stacked rules have to cope with as they come.
+     */
+    async function addAwkwardRow(page: Page): Promise<void> {
+        await expect(table(page).locator("tbody tr").first()).toHaveAttribute("role", "row");
+        await table(page).evaluate((element) => {
+            const row = document.createElement("tr");
+            row.setAttribute("data-testid", "awkward");
+            row.innerHTML =
+                '<td class="px-4 py-3" data-label="Region">West</td>' +
+                '<td class="px-4 py-3" data-label="Revenue"></td>' +
+                '<td class="px-4 py-3"></td>' +
+                '<td class="px-4 py-3"><button type="button">Edit</button><a href="#open">Open</a><button type="button">Delete</button></td>';
+            element.querySelector("tbody")!.append(row);
+        });
+        await expect(page.getByTestId("awkward")).toHaveAttribute("role", "row");
+    }
+
+    /** Edges of a cell's content box and of each child in it, in page pixels. */
+    function cellGeometry(page: Page, index: number) {
+        return page
+            .getByTestId("awkward")
+            .locator("td")
+            .nth(index)
+            .evaluate((cell) => {
+                const style = getComputedStyle(cell);
+                const box = cell.getBoundingClientRect();
+                const range = document.createRange();
+                range.selectNodeContents(cell);
+                const content = range.getBoundingClientRect();
+                return {
+                    height: box.height,
+                    start: box.left + parseFloat(style.paddingLeft),
+                    end: box.right - parseFloat(style.paddingRight),
+                    contentLeft: content.left,
+                    contentRight: content.right,
+                    children: [...cell.children].map((child) => {
+                        const rect = child.getBoundingClientRect();
+                        return { left: rect.left, right: rect.right, top: rect.top };
+                    }),
+                    label: getComputedStyle(cell, "::before").content,
+                };
+            });
+    }
+
+    for (const dir of ["ltr", "rtl"] as const) {
+        test(`phone, ${dir}: a cell's children stay together at the value side, labelled or not`, async ({
+            page,
+        }) => {
+            await page.setViewportSize({ width: 390, height: 844 });
+            await page.goto(PATH, { waitUntil: "networkidle" });
+            await page.evaluate((value) => (document.documentElement.dir = value), dir);
+            await addAwkwardRow(page);
+
+            const text = await cellGeometry(page, 0);
+            const actions = await cellGeometry(page, 3);
+            // The value side is the inline end: right in LTR, left in RTL.
+            const valueEdge = (cell: typeof text) => (dir === "ltr" ? cell.end : cell.start);
+            const outer = (cell: typeof text) =>
+                dir === "ltr" ? cell.contentRight : cell.contentLeft;
+
+            expect(outer(text), "A text value sits at the value side").toBeCloseTo(
+                valueEdge(text),
+                0,
+            );
+
+            expect(actions.label, "No data-label, no generated label").toBe("none");
+            expect(actions.children).toHaveLength(3);
+            const ordered = [...actions.children].sort((a, b) => a.left - b.left);
+            expect(
+                dir === "ltr" ? ordered[2].right : ordered[0].left,
+                "The group ends at the value side, not at the label side",
+            ).toBeCloseTo(valueEdge(actions), 0);
+            for (const [a, b] of [
+                [ordered[0], ordered[1]],
+                [ordered[1], ordered[2]],
+            ]) {
+                expect(b.left - a.right, "Siblings sit one gap apart, not spread out").toBeCloseTo(
+                    16,
+                    0,
+                );
+                expect(b.top).toBeCloseTo(a.top, 0);
+            }
+        });
+    }
+
+    test("phone: an empty cell takes no room but keeps its place in the row", async ({ page }) => {
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.goto(PATH, { waitUntil: "networkidle" });
+        await addAwkwardRow(page);
+
+        const labelled = await cellGeometry(page, 1);
+        const unlabelled = await cellGeometry(page, 2);
+        expect(labelled.height, "No label with nothing beside it").toBe(0);
+        expect(labelled.label).toBe("none");
+        expect(unlabelled.height, "No blank line").toBe(0);
+
+        // Still four cells to assistive technology, so the actions stay in
+        // the fourth column and the columns before them keep their headers.
+        await expect(page.getByTestId("awkward").getByRole("cell")).toHaveCount(4);
+        await expect(
+            page.getByTestId("awkward").getByRole("cell", { name: "Edit Open Delete" }),
+        ).toHaveCount(1);
+    });
 });
