@@ -343,6 +343,14 @@ Whenever token or CSS import API surface changes, include:
   stop named by the title.
 - **Drawer's close button has a 44px hit area on touch screens**, around the
   same 32px button.
+- **Dropdown and Select return focus to the trigger** when the menu closes from
+  inside it (Escape, or choosing an item by keyboard or mouse), instead of
+  dropping it on `<body>`. Focus your own handler moved elsewhere is left alone.
+- **Dropdown follows the writing direction.** `bottom-start` and `top-start`
+  sit on the start edge and item text aligns to it, so a right-to-left page
+  gets the mirror image.
+- **A DropdownItem with custom children and a description** is named by its
+  content alone; the description is no longer read twice.
 
 ### Documentation
 

@@ -10,10 +10,27 @@
         /** Render the same items as `DropdownItem` children instead of `options`. */
         custom?: boolean;
         onOptionClick?: (value: string | number) => void;
+        /** What a real menu does: choosing an item closes it. */
+        closeOnChoose?: boolean;
+        /** The handler moves focus itself, as one that opens a dialog would. */
+        focusElsewhereOnChoose?: boolean;
     }
-    let { menuRole = "menu", custom = false, onOptionClick }: Props = $props();
+    let {
+        menuRole = "menu",
+        custom = false,
+        onOptionClick,
+        closeOnChoose = false,
+        focusElsewhereOnChoose = false,
+    }: Props = $props();
 
     let isOpen = $state(false);
+    let elsewhere = $state<HTMLButtonElement>();
+
+    function choose(value: string | number) {
+        onOptionClick?.(value);
+        if (focusElsewhereOnChoose) elsewhere?.focus();
+        if (closeOnChoose) isOpen = false;
+    }
 
     const options: DropdownOption[] = [
         { value: "edit", label: "Edit", icon: Pencil },
@@ -34,7 +51,7 @@
     {menuRole}
     selectedValue="rename"
     options={custom ? [] : options}
-    {onOptionClick}
+    onOptionClick={choose}
 >
     {#snippet trigger(props)}
         <button type="button" onclick={() => (isOpen = !isOpen)} {...props}>
@@ -50,8 +67,9 @@
                 icon={option.icon}
                 tone={option.tone}
                 disabled={option.disabled}
-                onclick={() => onOptionClick?.(option.value)}
+                onclick={() => choose(option.value)}
             />
         {/each}
     {/snippet}
 </Dropdown>
+<button type="button" bind:this={elsewhere}>Elsewhere</button>

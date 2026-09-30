@@ -66,11 +66,11 @@ describe("Dropdown items (QA-3)", () => {
         expect(description?.textContent?.trim()).toBe("Change the display name.");
     });
 
-    // DEFECT (QA3-D-1): closing the menu removes the focused item and
-    // nothing takes focus, so it falls to <body> (after Escape, and after an
-    // item is chosen). The menu-button pattern returns focus to the trigger;
-    // a Select loses the user's place in the form the same way.
-    it.skip("returns focus to the trigger on Escape from an item", async () => {
+    // Was DEFECT QA3-D-1: closing the menu removed the focused item and
+    // nothing took focus, so it fell to <body> (after Escape, and after an
+    // item was chosen). The menu-button pattern returns focus to the trigger;
+    // a Select lost the user's place in the form the same way.
+    it("returns focus to the trigger on Escape from an item", async () => {
         const { user } = await openByKeyboard();
         await user.keyboard("{ArrowDown}{Escape}");
         await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
@@ -78,16 +78,79 @@ describe("Dropdown items (QA-3)", () => {
         expect(document.activeElement).toBe(trigger());
     });
 
-    // DEFECT (QA3-D-2): with custom `children` there is no `aria-labelledby`,
-    // so the name is computed from the whole button, description included,
-    // and `aria-describedby` then reads the description a second time. The
-    // content wrapper should be the label when there is a description.
-    it.skip("does not put the description in the name of an item with custom children", () => {
+    // Was DEFECT QA3-D-2: with custom `children` there was no
+    // `aria-labelledby`, so the name was computed from the whole button,
+    // description included, and `aria-describedby` then read the description
+    // a second time. The content wrapper is the label when there is a description.
+    it("does not put the description in the name of an item with custom children", () => {
         const children = createRawSnippet(() => ({
             render: () => `<span><strong>Share</strong> settings</span>`,
         }));
         render(DropdownItem, { props: { description: "Shared with 3 people", children } });
 
         expect(screen.getByRole("menuitem", { name: "Share settings" })).toBeTruthy();
+    });
+
+    it("leaves an item with custom children and no description to name itself", () => {
+        const children = createRawSnippet(() => ({
+            render: () => `<span>Share settings</span>`,
+        }));
+        render(DropdownItem, { props: { children } });
+        const item = screen.getByRole("menuitem", { name: "Share settings" });
+        expect(item.hasAttribute("aria-labelledby")).toBe(false);
+        expect(item.hasAttribute("aria-describedby")).toBe(false);
+    });
+
+    it.each(["menu", "listbox"] as const)(
+        "returns focus to the trigger when an item of a %s is chosen with Enter or the mouse",
+        async (menuRole) => {
+            const { user, items, onOptionClick } = await openByKeyboard({
+                menuRole,
+                closeOnChoose: true,
+            });
+            await user.keyboard("{Enter}");
+            expect(onOptionClick).toHaveBeenCalledWith("edit");
+            await waitFor(() => expect(items[0].isConnected).toBe(false));
+            expect(document.activeElement).toBe(trigger());
+
+            await user.click(trigger());
+            const role = menuRole === "listbox" ? "option" : "menuitem";
+            await user.click((await screen.findAllByRole(role))[2]);
+            expect(onOptionClick).toHaveBeenLastCalledWith("rename");
+            expect(document.activeElement).toBe(trigger());
+        },
+    );
+
+    it("does not take focus from an element the choose handler focused", async () => {
+        const { user, items } = await openByKeyboard({
+            closeOnChoose: true,
+            focusElsewhereOnChoose: true,
+        });
+        await user.keyboard("{Enter}");
+        await waitFor(() => expect(items[0].isConnected).toBe(false));
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Elsewhere" }));
+    });
+
+    it("does not pull focus to the trigger when the menu closes while focus is outside it", async () => {
+        const user = userEvent.setup();
+        render(DropdownOptionsHarness);
+        await user.click(trigger());
+        await screen.findAllByRole("menuitem");
+        const elsewhere = screen.getByRole("button", { name: "Elsewhere" });
+
+        // A click outside closes the menu; focus belongs to what was clicked.
+        await user.click(elsewhere);
+        await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+        expect(document.activeElement).toBe(elsewhere);
+    });
+
+    it("aligns item text to the start edge, and places the popup on it", async () => {
+        const { items } = await openByKeyboard();
+        const classes = items[0].className.split(/\s+/);
+        expect(classes).toContain("text-start");
+        expect(classes).not.toContain("text-left");
+        const popup = screen.getByRole("menu").parentElement!.className.split(/\s+/);
+        expect(popup).toContain("start-0");
+        expect(popup).not.toContain("left-0");
     });
 });

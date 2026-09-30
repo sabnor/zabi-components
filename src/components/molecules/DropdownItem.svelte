@@ -67,7 +67,7 @@
 
     const itemClasses = $derived(
         cn(
-            "focus-ring flex w-full items-start justify-start gap-2 rounded-control px-3 py-2 text-left text-sm transition-colors focus:outline-none",
+            "focus-ring flex w-full items-start justify-start gap-2 rounded-control px-3 py-2 text-start text-sm transition-colors focus:outline-none",
             tone === "danger" ? "text-error focus-ring--danger" : "text-body",
             disabled
                 ? "cursor-not-allowed"
@@ -86,7 +86,7 @@
     role={itemRole}
     aria-selected={itemRole === "option" && selected ? true : undefined}
     aria-disabled={disabled ? "true" : undefined}
-    aria-labelledby={label && description ? labelId : undefined}
+    aria-labelledby={description && (label || children) ? labelId : undefined}
     aria-describedby={description ? descriptionId : undefined}
     class={itemClasses}
     onclick={handleClick}
@@ -99,7 +99,8 @@
     {/if}
     <span class="min-w-0 flex-1">
         {#if children}
-            <span class="block {dimmed}">{@render children()}</span>
+            <!-- The label when there is a description, so the name is the content alone. -->
+            <span id={labelId} class="block {dimmed}">{@render children()}</span>
         {:else}
             <span id={labelId} class="block {dimmed}">{label}</span>
         {/if}

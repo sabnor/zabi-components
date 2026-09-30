@@ -185,6 +185,41 @@
         }
     });
 
+    /**
+     * Closing removes the popup, and with it the focused item: the browser
+     * then drops focus on `<body>` and a keyboard user loses their place.
+     * Whether focus was in the popup has to be read before the DOM changes.
+     */
+    let focusWasInPopup = false;
+    $effect.pre(() => {
+        if (!isOpen) {
+            focusWasInPopup =
+                !!menuElement && menuElement.contains(document.activeElement);
+        }
+    });
+
+    /** The control that opened the menu: what `aria-controls` is spread on, else the first control. */
+    function triggerElement(): HTMLElement | null {
+        if (!rootEl) return null;
+        return (
+            rootEl.querySelector<HTMLElement>(`[aria-controls="${menuId}"]`) ??
+            rootEl.querySelector<HTMLElement>(
+                'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+            )
+        );
+    }
+
+    $effect(() => {
+        if (isOpen || !focusWasInPopup) return;
+        focusWasInPopup = false;
+        // Only when the close left focus nowhere. If the handler that closed
+        // the menu moved focus itself (it opened a dialog, say), that wins.
+        const active = document.activeElement;
+        if (!active || active === document.body) {
+            triggerElement()?.focus();
+        }
+    });
+
     $effect(() => {
         if (!isOpen) return;
         function onDocMouseDown(e: MouseEvent) {
@@ -200,10 +235,11 @@
     const placementClasses = $derived(() => {
         const base = 'absolute z-dropdown min-w-[12rem]';
         const positioning: Record<typeof placement, string> = {
-            'bottom-start': 'top-full left-0 mt-2',
-            'bottom-end': 'top-full right-0 mt-2',
-            'top-start': 'bottom-full left-0 mb-2',
-            'top-end': 'bottom-full right-0 mb-2',
+            // Logical: `start` is the left edge, and the right one in a right-to-left page.
+            'bottom-start': 'top-full start-0 mt-2',
+            'bottom-end': 'top-full end-0 mt-2',
+            'top-start': 'bottom-full start-0 mb-2',
+            'top-end': 'bottom-full end-0 mb-2',
         };
         return `${base} ${positioning[placement]}`;
     });
