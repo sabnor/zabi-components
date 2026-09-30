@@ -50,6 +50,15 @@ Whenever token or CSS import API surface changes, include:
   They were hidden until hover or focus; on coarse pointers, and where hover is
   not available, they now stay visible.
 
+### Documentation
+
+- **`docs/theme-imports.md` says what to expect when Tailwind and
+  `zabi-components/css` are combined.** The compiled stylesheet carries its own
+  copy of each utility, so the import order decides which copy wins: Tailwind
+  first, the package's `w-full` beats your `md:w-1/2`; `css` first, your `p-0`
+  beats Modal's `md:p-4`. With Tailwind in the app, import `theme-only` and
+  `theme-dark-only` instead. No CSS output changed.
+
 ## [8.0.1] - 2026-09-29
 
 Fixes the documented setup. In 8.0.0 (and 7.0.2) the three-line Tailwind setup

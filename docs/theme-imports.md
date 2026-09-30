@@ -32,6 +32,17 @@ Use short package exports by default. Legacy deep `dist` imports remain supporte
 
 The universal scrollbar rules are in the compiled `css` bundle only. Importing a theme does not restyle the scrollbars in your app; add `.scrollbar-semantic` where you want them.
 
+## Tailwind together with the compiled stylesheet
+
+`zabi-components/css` is a finished Tailwind build. It carries its own copy of every utility the components use, `w-full`, `px-6` and `mt-10` among them, in the same `utilities` layer your Tailwind build writes to. Two builds cannot be sorted into one order, so the import order decides which copy wins:
+
+- **Tailwind first, `css` second.** The package's plain utilities land after your variants. `w-full md:w-1/2` stays full width, and `px-6 md:px-8` keeps the narrow padding, wherever the package ships the plain class too.
+- **`css` first, Tailwind second.** Your plain utilities land after the package's variants. `Modal` declares `items-end md:items-center` and `p-0 md:p-4`; if your app uses `items-end` or `p-0` anywhere, the dialog stays at the bottom edge, without padding, on wide screens. A component's own `p-6 pt-0` loses its `pt-0` the same way.
+
+Neither order is right. With Tailwind in the app, import `theme-only` and `theme-dark-only` instead, as above: Tailwind then generates each utility once, in its own order, and both cases resolve. If you started on 8.0.0, where `css` was the only import that worked, switch when you upgrade.
+
+The hand-written colour classes (`bg-card`, `text-headline`, `border-border` and the rest) are outside every layer, in `css` and in the theme files alike, so they win over any utility on the same element: `bg-card md:bg-red-500` keeps the card colour. Change the colour by replacing the class, not by adding a variant next to it.
+
 ## Versions before 8.0.1
 
 In 8.0.0 and 7.0.2 the theme files were published without semicolons, without the `@source` directive and without the component rules, so they left components unstyled. Upgrade, or import `zabi-components/css`, which worked in those versions too.
