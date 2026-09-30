@@ -5,9 +5,11 @@ export type ToastLevel = 'success' | 'error' | 'warning' | 'info';
 /**
  * One action offered inside a toast, such as Undo.
  *
- * A toast closes on its own, so the action must not be the only way to do the
- * thing: offer it elsewhere in the page as well, and give an action toast a
- * long `duration`, or `0` to keep it until dismissed (WCAG 2.2.1).
+ * A toast with an action stays until it is dismissed, unless you give it a
+ * `duration`: a keyboard user has to reach the button first, and the toaster
+ * may be far away in the tab order (WCAG 2.2.1). `focusToasts()` moves focus
+ * there. The action must still not be the only way to do the thing: offer it
+ * elsewhere in the page as well.
  */
 export interface ToastAction {
     /** Button text, and its accessible name. */
@@ -27,7 +29,8 @@ export interface ToastItem {
     detail?: string;
     /**
      * Auto-dismiss duration in milliseconds.
-     * When omitted, the toaster uses 14s. Use `0` to keep the toast until dismissed manually.
+     * When omitted, the toaster uses 14s, or keeps a toast that has an
+     * `action` until it is dismissed. Use `0` to keep any toast until dismissed manually.
      */
     duration?: number;
     /** An action button in the toast, such as Undo. */
@@ -91,4 +94,24 @@ export function pushToast(options: {
 
 export function dismissToast(id: string): void {
     toastStore.dismiss(id);
+}
+
+/**
+ * Moves keyboard focus to the newest toast, so its action can be reached
+ * without tabbing through the page. Bind it to a shortcut of your own; the
+ * library registers none. Returns false when there is no toast to focus.
+ *
+ * Focus returns to where it was when that toast is dismissed.
+ */
+export function focusToasts(): boolean {
+    if (typeof document === 'undefined') return false;
+    const toasts = document.querySelectorAll<HTMLElement>('[data-zabi-toaster] [data-toast-id]');
+    const newest = toasts[toasts.length - 1];
+    // The action if the toast has one, else its first control.
+    const target =
+        newest?.querySelector<HTMLElement>('[data-toast-action]') ??
+        newest?.querySelector<HTMLElement>('button');
+    if (!target) return false;
+    target.focus();
+    return document.activeElement === target;
 }

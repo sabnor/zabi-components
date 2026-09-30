@@ -39,8 +39,7 @@
                     title: 'Project archived',
                     message: 'It is still in the archive, where you can restore it.',
                     type: 'success',
-                    // Long enough to reach the button; the timer also pauses on hover and focus.
-                    duration: 30000,
+                    // No duration: a toast with an action stays until it is dismissed.
                     action: {
                         label: 'Undo',
                         onclick: () =>

@@ -8,7 +8,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Fixed notification region; pair it with pushToast from the toast store. Mount once near the app root. A toast can carry one action, such as Undo: give that toast a long duration (or 0), and offer the same action elsewhere in the page, because a toast closes on its own.'
+                    'Fixed notification region; pair it with pushToast from the toast store. Mount once near the app root. A toast can carry one action, such as Undo: it then stays until it is dismissed unless you give it a duration, and focusToasts() moves keyboard focus to the newest toast. Offer the same action elsewhere in the page as well.'
             }
         }, layout: 'fullscreen' },
     tags: ['autodocs'],

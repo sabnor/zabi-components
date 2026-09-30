@@ -101,6 +101,7 @@ export {
     toastStore,
     pushToast,
     dismissToast,
+    focusToasts,
     type ToastItem,
     type ToastAction,
     type ToastLevel,

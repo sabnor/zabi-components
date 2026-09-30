@@ -2882,8 +2882,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Toast with an action",
                         description:
-                            "pushToast takes an optional action ({ label, onclick, dismissOnClick? }) that renders as a button and closes the toast after it runs. The countdown pauses on hover and focus; still give an action toast a long duration or 0, and offer the same action elsewhere in the page.",
-                        code: "pushToast({\n  message: 'Project archived',\n  type: 'success',\n  duration: 30000,\n  action: { label: 'Undo', onclick: () => restore(project) },\n});",
+                            "pushToast takes an optional action ({ label, onclick, dismissOnClick? }) that renders as a button and closes the toast after it runs. A toast with an action stays until it is dismissed, unless you pass a duration. Call focusToasts() from a shortcut of your own to move keyboard focus to the newest toast; focus returns to where it was when the toast is dismissed. Offer the same action elsewhere in the page as well.",
+                        code: "import { pushToast, focusToasts } from 'zabi-components';\n\npushToast({\n  message: 'Project archived',\n  type: 'success',\n  action: { label: 'Undo', onclick: () => restore(project) },\n});\n\n// e.g. on Alt+T\nfocusToasts();",
                     },
                 ],
             },

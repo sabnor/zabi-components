@@ -22,14 +22,18 @@
 
     let { class: className = "", toast }: Props = $props();
 
-    /** Seconds until auto-dismiss; `0` means no countdown (manual dismiss only). */
-    function autoDismissSeconds(duration: number | undefined): number {
-        if (duration === undefined) return 14;
+    /**
+     * Seconds until auto-dismiss; `0` means no countdown (manual dismiss only).
+     * A toast with an action and no duration of its own stays: the user has to
+     * be able to reach the button, and nothing pauses the timer on the way there.
+     */
+    function autoDismissSeconds(duration: number | undefined, hasAction: boolean): number {
+        if (duration === undefined) return hasAction ? 0 : 14;
         if (duration <= 0) return 0;
         return Math.max(1, Math.ceil(duration / 1000));
     }
 
-    const maxSeconds = $derived(autoDismissSeconds(toast.duration));
+    const maxSeconds = $derived(autoDismissSeconds(toast.duration, !!toast.action));
 
     let count = $state(0);
     let timerActive = $state(false);
@@ -97,7 +101,10 @@
         timerActive = true;
 
         intervalRef = setInterval(() => {
-            if (paused) return;
+            // The state, not the `paused` derived: a tick can land while the
+            // toast is animating out, and reading a derived then warns
+            // (`derived_inert`).
+            if (hovered || focusWithin) return;
             count -= 1;
             if (count <= 0) {
                 stopTimer();
@@ -141,8 +148,15 @@
         }
     }
 
-    const toastEnter = { y: 18, duration: 260, opacity: 0, easing: cubicOut };
-    const toastLeave = { y: 14, duration: 300, opacity: 0, easing: cubicOut };
+    /** No movement where motion is unwanted: the toast appears and goes at once. */
+    const reducedMotion =
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const motion = (duration: number) => (reducedMotion ? 0 : duration);
+
+    const toastEnter = { y: 18, duration: motion(260), opacity: 0, easing: cubicOut };
+    const toastLeave = { y: 14, duration: motion(300), opacity: 0, easing: cubicOut };
 </script>
 
 <div
@@ -155,6 +169,7 @@
     onfocusout={handleFocusOut}
     role="group"
     aria-label={headerTitle}
+    data-toast-id={toast.id}
     data-paused={paused}
 >
     <div class="p-4">
@@ -234,7 +249,7 @@
             <div
                 id="toaster-expand-{toast.id}"
                 class="mt-3"
-                transition:slide={{ duration: 200 }}
+                transition:slide={{ duration: motion(200) }}
             >
                 <p class="text-sm text-description">{expandableText}</p>
                 <Button
@@ -250,7 +265,7 @@
     </div>
 
     {#if timerActive}
-        <div class="px-4 pb-3" transition:fade={{ duration: 180 }}>
+        <div class="px-4 pb-3" transition:fade={{ duration: motion(180) }}>
             <p class="text-xs text-description" data-toast-countdown>
                 {paused ? 'Paused — closes' : 'This message will close'} in {count} seconds.
                 <button
@@ -267,7 +282,7 @@
     {#if timerActive}
         <div
             class="pointer-events-none absolute bottom-0 left-0 right-0 h-1 bg-border/70"
-            transition:fade={{ duration: 180 }}
+            transition:fade={{ duration: motion(180) }}
             aria-hidden="true"
         >
             <div

@@ -1686,7 +1686,6 @@
                             message:
                                 "It is still in the archive, where you can restore it.",
                             type: "success",
-                            duration: 30000,
                             action: {
                                 label: "Undo",
                                 onclick: () =>

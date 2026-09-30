@@ -179,6 +179,8 @@ Whenever token or CSS import API surface changes, include:
   is announced politely and it never takes focus; when it goes, focus returns
   to the field the user was editing. An `actions` snippet adds buttons.
   Warning before the page is left is your app's job.
+- **`focusToasts()`** moves keyboard focus to the newest toast, for a shortcut
+  of your own. Focus returns to where it was when that toast is dismissed.
 
 ### Changed
 
@@ -247,6 +249,8 @@ Whenever token or CSS import API surface changes, include:
   dashed empty states keep only their dashed border.
 - The rule under Tabs is `border-border`, and a selected pill uses
   `action-primary-subtle`, which shows on the light page.
+- **A toast with an action stays until it is dismissed**, unless you give it a
+  `duration`, so a keyboard user can reach the action.
 
 ### Deprecated
 
@@ -351,6 +355,9 @@ Whenever token or CSS import API surface changes, include:
   gets the mirror image.
 - **A DropdownItem with custom children and a description** is named by its
   content alone; the description is no longer read twice.
+- **Dismissing the focused toast keeps focus in reach**: it moves to the next
+  toast, or back to where it was before it entered the notifications.
+- **Toasts do not fly in or out under `prefers-reduced-motion`.**
 
 ### Documentation
 
