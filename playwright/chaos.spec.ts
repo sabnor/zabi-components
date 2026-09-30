@@ -6,6 +6,7 @@ import {
     panelLocator,
     readChaosTooltipDelayMs,
     waitForChaosLabHydrated,
+    waitForFocusInside,
 } from "./helpers/chaos-lab";
 
 /**
@@ -177,5 +178,87 @@ test.describe("Chaos lab — browser-only interaction risks", () => {
             dialog,
             "The chaos modal shell should remain mounted while tab-cycling",
         ).toBeVisible();
+    });
+
+    test("portalled modal: escapes a transformed, clipped ancestor, traps focus and restores it", async ({
+        page,
+    }) => {
+        const trap = page.getByTestId("chaos-portal-trap");
+        const trapBox = (await trap.boundingBox())!;
+        const viewport = page.viewportSize()!;
+
+        // Control: the ancestor really does trap an in-place modal, otherwise
+        // the portalled assertions below would pass without a portal.
+        await page.getByTestId("chaos-open-trapped").click();
+        const trapped = page.getByTestId("chaos-modal-trapped");
+        await expect(trapped).toBeAttached();
+        const trappedBackdrop = (await trapped.locator("..").boundingBox())!;
+        expect(
+            trappedBackdrop.width,
+            "An in-place backdrop is sized by the transformed ancestor, not the viewport",
+        ).toBeLessThanOrEqual(trapBox.width);
+        expect(trappedBackdrop.height).toBeLessThanOrEqual(trapBox.height);
+        await waitForFocusInside(
+            page,
+            trapped,
+            "Escape is handled by the modal, so focus has to be inside it first",
+        );
+        await page.keyboard.press("Escape");
+        await expect(trapped).not.toBeAttached();
+
+        const opener = page.getByTestId("chaos-open-portal");
+        await opener.click();
+        const dialog = page.getByTestId("chaos-modal-portal");
+        await expect(dialog).toBeVisible();
+
+        const placement = await dialog.evaluate((panel: HTMLElement) => {
+            const overlay = panel.parentElement!;
+            const rect = overlay.getBoundingClientRect();
+            const box = panel.getBoundingClientRect();
+            const hit = document.elementFromPoint(
+                box.left + box.width / 2,
+                box.top + 8,
+            );
+            return {
+                parentIsBody: overlay.parentElement === document.body,
+                insideTrap: !!panel.closest('[data-testid="chaos-portal-trap"]'),
+                overlay: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+                panelHeight: box.height,
+                hitInsidePanel: !!hit && panel.contains(hit),
+            };
+        });
+        expect(placement.parentIsBody, "The overlay should be a child of <body>").toBe(true);
+        expect(placement.insideTrap).toBe(false);
+        expect(
+            placement.overlay,
+            "The portalled backdrop should cover the viewport, not the ancestor's box",
+        ).toEqual({ x: 0, y: 0, width: viewport.width, height: viewport.height });
+        expect(
+            placement.panelHeight,
+            "The panel must not be clipped to the 96px ancestor",
+        ).toBeGreaterThan(trapBox.height);
+        expect(
+            placement.hitInsidePanel,
+            "The panel should be the topmost element where it is drawn",
+        ).toBe(true);
+
+        await waitForFocusInside(
+            page,
+            dialog,
+            "After opening the portalled modal, focus should move into it",
+        );
+        await assertTabStaysInTopDialog(page, 8);
+
+        await page.keyboard.press("Escape");
+        await expect(dialog).not.toBeAttached();
+        await expect(page.getByTestId("chaos-portal-last-close")).toHaveText("escape");
+        await expect(
+            opener,
+            "Focus must return to the opener inside the clipped ancestor",
+        ).toBeFocused();
+        expect(
+            await page.locator("body > [role='presentation']").count(),
+            "Nothing should be left behind in <body>",
+        ).toBe(0);
     });
 });

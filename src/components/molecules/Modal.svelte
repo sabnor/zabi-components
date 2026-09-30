@@ -7,6 +7,7 @@
         focusFirstElement,
     } from '../util/focus-utils.js';
     import { generateId } from "../util/ssr-safe.js";
+    import { portal as portalTo } from "../util/portal.js";
     import Card from '../atoms/Card.svelte';
     import CardHeader from '../atoms/CardHeader.svelte';
     import CardContent from '../atoms/CardContent.svelte';
@@ -14,6 +15,7 @@
 
     import { cn } from "../util/cn.js";
     type Size = 'sm' | 'md' | 'lg';
+    type CloseReason = 'escape' | 'backdrop' | 'close-button';
 
     interface Props {
         isOpen?: boolean;
@@ -22,6 +24,24 @@
         size?: Size;
         /** Render the close button even when there is no `title`. */
         showClose?: boolean;
+        /**
+         * Render the overlay in `document.body` instead of in place, so an
+         * ancestor with a transform, filter or clipped overflow cannot trap it.
+         * A theme class set below `body` does not reach a portalled modal.
+         */
+        portal?: boolean;
+        /**
+         * When false, Escape, a backdrop click and the close button do not
+         * close the modal (a pending confirm, say). Focus stays trapped, and
+         * setting `isOpen` yourself still closes it.
+         */
+        dismissible?: boolean;
+        /** Fired when the modal closes itself, with what the user did. */
+        onclose?: (detail: { reason: CloseReason }) => void;
+        /**
+         * @deprecated for close reporting: use `onclose`. Still called with the
+         * event on Escape, a backdrop click and the close button.
+         */
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
         /** On the `role="dialog"` panel (testing, analytics). */
@@ -38,7 +58,10 @@
         description = '',
         size = 'md',
         showClose = true,
+        portal = false,
+        dismissible = true,
         class: className = "",
+        onclose,
         onclick,
         onkeydown,
         "data-testid": dataTestId = undefined,
@@ -82,7 +105,8 @@
         };
     }
 
-    function closeModal(event?: Event) {
+    function closeModal(reason: CloseReason, event?: Event) {
+        if (!dismissible) return;
         isOpen = false;
         if (focusActive) {
             focusActive = false;
@@ -91,6 +115,7 @@
         if (onclick && event) {
             onclick(event);
         }
+        onclose?.({ reason });
     }
 
     $effect(() => {
@@ -102,8 +127,10 @@
             const t = setTimeout(() => {
                 focusFirstElement(container);
             }, 0);
+            document.addEventListener('keydown', handleStrayKeydown);
             return () => {
                 clearTimeout(t);
+                document.removeEventListener('keydown', handleStrayKeydown);
                 unlockScroll();
                 if (focusActive) {
                     focusActive = false;
@@ -143,18 +170,42 @@
         }
     }
 
+    /**
+     * Focus can leave the dialog without a Tab: the focused button is disabled
+     * or removed (a confirm that starts loading) and the browser drops focus on
+     * `<body>`, where the handlers on the overlay never hear the key. The
+     * topmost dialog takes Tab and Escape back from there.
+     */
+    function handleStrayKeydown(event: KeyboardEvent) {
+        const container = modalContainer;
+        if (!container || event.defaultPrevented) return;
+        if (event.key !== 'Tab' && event.key !== 'Escape') return;
+        // Inside a dialog, that dialog's own handlers deal with the key.
+        if (document.activeElement?.closest('[role="dialog"]')) return;
+        const dialogs = document.querySelectorAll('[role="dialog"][aria-modal="true"]');
+        if (dialogs[dialogs.length - 1] !== container) return;
+
+        event.preventDefault();
+        if (event.key === 'Escape') {
+            closeModal('escape', event);
+            return;
+        }
+        (getFocusableElements(container)[0] ?? container).focus();
+    }
+
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) {
-            closeModal(event);
+            closeModal('backdrop', event);
         }
     }
 
     function handleKeydown(event: Event) {
         const keyboardEvent = event as KeyboardEvent;
-        // `defaultPrevented` means a nested dialog already closed itself.
+        // `defaultPrevented` means a nested dialog already handled the key:
+        // it closed itself, or it is not dismissible and must keep its parent open.
         if (keyboardEvent.key === 'Escape' && !keyboardEvent.defaultPrevented) {
             keyboardEvent.preventDefault();
-            closeModal(event);
+            closeModal('escape', event);
         }
         onkeydown?.(event);
     }
@@ -163,7 +214,8 @@
 {#if isOpen}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
-        class="fixed inset-0 z-modal flex cursor-pointer items-end justify-center bg-overlay p-0 md:items-center md:p-4"
+        class="fixed inset-0 z-modal flex {dismissible ? 'cursor-pointer' : 'cursor-default'} items-end justify-center bg-overlay p-0 md:items-center md:p-4"
+        use:portalTo={portal}
         onclick={handleBackdropClick}
         onkeydown={handleKeydown}
         role="presentation"
@@ -202,11 +254,15 @@
                                 </h2>
                             {/if}
                             {#if showClose}
+                                <!-- `aria-disabled`, not `disabled` or removed: the button may hold focus when `dismissible` turns false, and a disabled or missing element would drop focus out of the trap. -->
                                 <button
                                     type="button"
-                                    onclick={closeModal}
-                                    class="focus-ring flex size-8 cursor-pointer items-center justify-center rounded-control text-2xl text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline"
+                                    onclick={(event) => closeModal('close-button', event)}
+                                    class="focus-ring flex size-8 items-center justify-center rounded-control text-2xl text-description transition-colors {dismissible
+                                        ? 'cursor-pointer hover:bg-surface-overlay-hover hover:text-headline'
+                                        : 'cursor-not-allowed opacity-50'}"
                                     aria-label="Close"
+                                    aria-disabled={dismissible ? undefined : "true"}
                                 >
                                     ×
                                 </button>

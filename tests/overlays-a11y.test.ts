@@ -6,6 +6,7 @@ import Alert from "../src/components/molecules/Alert.svelte";
 import SlideUp from "../src/components/molecules/SlideUp.svelte";
 import Toaster from "../src/components/molecules/Toaster.svelte";
 import { pushToast, toastStore } from "../src/components/molecules/toast-store.js";
+import ModalCloseHarness from "./fixtures/ModalCloseHarness.svelte";
 import ModalHarness from "./fixtures/ModalHarness.svelte";
 import ModalDynamicHarness from "./fixtures/ModalDynamicHarness.svelte";
 import NestedModalHarness from "./fixtures/NestedModalHarness.svelte";
@@ -128,6 +129,245 @@ describe("Modal semantics", () => {
         expect(document.activeElement).toBe(
             screen.getByRole("button", { name: "Close" }),
         );
+    });
+});
+
+describe("Modal closing", () => {
+    it.each([
+        ["escape", (dialog: HTMLElement) => fireEvent.keyDown(dialog, { key: "Escape" })],
+        ["backdrop", (dialog: HTMLElement) => fireEvent.click(dialog.parentElement!)],
+        [
+            "close-button",
+            () => fireEvent.click(screen.getByRole("button", { name: "Close" })),
+        ],
+    ] as const)("reports %s through onclose and still calls onclick", async (reason, close) => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        const onclick = vi.fn();
+        render(ModalCloseHarness, { onclose, onclick });
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+
+        await close(dialog);
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).toHaveBeenCalledTimes(1);
+        expect(onclose).toHaveBeenCalledWith({ reason });
+        // Backwards compatible: the event still reaches `onclick`.
+        expect(onclick).toHaveBeenCalledTimes(1);
+        expect(onclick.mock.calls[0][0]).toBeInstanceOf(Event);
+    });
+
+    it("does not fire onclose for a click inside the panel or a close by the parent", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        render(ModalCloseHarness, { onclose });
+        await user.click(screen.getByTestId("open-modal"));
+        await screen.findByRole("dialog");
+
+        await user.click(screen.getByTestId("modal-action"));
+        expect(screen.getByRole("dialog")).toBeTruthy();
+        await user.click(screen.getByTestId("close-from-parent"));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("ignores Escape, the backdrop and the close button when not dismissible", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        const onclick = vi.fn();
+        render(ModalCloseHarness, { dismissible: false, onclose, onclick });
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+
+        await fireEvent.keyDown(dialog, { key: "Escape" });
+        await fireEvent.click(dialog.parentElement!);
+        const close = screen.getByRole("button", { name: "Close" });
+        await user.click(close);
+
+        expect(screen.getByRole("dialog")).toBeTruthy();
+        expect(onclose).not.toHaveBeenCalled();
+        expect(onclick).not.toHaveBeenCalled();
+        expect(document.body.style.overflow).toBe("hidden");
+
+        // The parent still owns `isOpen`.
+        await user.click(screen.getByTestId("close-from-parent"));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    });
+
+    it("keeps the close button focusable and the Tab trap closed when not dismissible", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        await screen.findByRole("dialog");
+        const close = screen.getByRole("button", { name: "Close" });
+        expect(close.hasAttribute("aria-disabled")).toBe(false);
+
+        // Turns non-dismissible while open, as a confirm does when it starts loading.
+        close.focus();
+        await fireEvent.click(screen.getByTestId("lock"));
+        expect(close.getAttribute("aria-disabled")).toBe("true");
+        expect((close as HTMLButtonElement).disabled).toBe(false);
+        expect(document.activeElement).toBe(close);
+
+        await user.tab({ shift: true });
+        expect(document.activeElement).toBe(screen.getByTestId("close-from-parent"));
+        await user.tab();
+        expect(document.activeElement).toBe(close);
+    });
+
+    it("takes Tab and Escape back when focus has fallen out of the dialog", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        render(ModalCloseHarness, { onclose });
+        const opener = screen.getByTestId("open-modal");
+        await user.click(opener);
+        const dialog = await screen.findByRole("dialog");
+        await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+
+        // What a browser does when the focused button is disabled or removed.
+        (document.activeElement as HTMLElement).blur();
+        expect(document.activeElement).toBe(document.body);
+        await user.tab();
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Close" }));
+
+        (document.activeElement as HTMLElement).blur();
+        await user.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).toHaveBeenCalledTimes(1);
+        expect(onclose).toHaveBeenCalledWith({ reason: "escape" });
+        expect(document.activeElement).toBe(opener);
+    });
+
+    it("pulls stray focus into the innermost modal only", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { nested: true });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("dialog", { name: "Inner dialog" });
+        await waitFor(() => expect(inner.contains(document.activeElement)).toBe(true));
+
+        (document.activeElement as HTMLElement).blur();
+        await user.tab();
+        expect(inner.contains(document.activeElement)).toBe(true);
+
+        (document.activeElement as HTMLElement).blur();
+        await user.keyboard("{Escape}");
+        await waitFor(() =>
+            expect(screen.queryByRole("dialog", { name: "Inner dialog" })).toBeNull(),
+        );
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+    });
+
+    it("Escape in a non-dismissible inner modal leaves the outer one open", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { nested: true, innerDismissible: false });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("dialog", { name: "Inner dialog" });
+
+        await fireEvent.keyDown(inner, { key: "Escape" });
+        expect(screen.getByRole("dialog", { name: "Inner dialog" })).toBeTruthy();
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+    });
+});
+
+describe("Modal portal", () => {
+    it("renders in place by default", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+
+        expect(screen.getByTestId("host").contains(dialog)).toBe(true);
+    });
+
+    it("moves the overlay to document.body and removes it on close", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        render(ModalCloseHarness, { portal: true, onclose });
+        const opener = screen.getByTestId("open-modal");
+        await user.click(opener);
+        const dialog = await screen.findByRole("dialog", { name: "Closing dialog" });
+        const overlay = dialog.parentElement!;
+
+        expect(overlay.parentElement).toBe(document.body);
+        expect(screen.getByTestId("host").contains(dialog)).toBe(false);
+        expect(overlay.className).toContain("z-modal");
+        expect(document.body.style.overflow).toBe("hidden");
+        await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+
+        await fireEvent.keyDown(document.activeElement!, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(overlay.isConnected).toBe(false);
+        expect(onclose).toHaveBeenCalledWith({ reason: "escape" });
+        expect(document.activeElement).toBe(opener);
+        expect(document.body.style.overflow).toBe("");
+    });
+
+    it("keeps the Tab trap, the close button and the backdrop working outside the app root", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        render(ModalCloseHarness, { portal: true, onclose });
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+        const close = screen.getByRole("button", { name: "Close" });
+
+        close.focus();
+        await user.tab({ shift: true });
+        expect(document.activeElement).toBe(screen.getByTestId("close-from-parent"));
+        await user.tab();
+        expect(document.activeElement).toBe(close);
+
+        await user.click(close);
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).toHaveBeenLastCalledWith({ reason: "close-button" });
+
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click((await screen.findByRole("dialog")).parentElement!);
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).toHaveBeenLastCalledWith({ reason: "backdrop" });
+        expect(dialog.isConnected).toBe(false);
+    });
+
+    it("Escape in a portalled inner modal closes only the inner one", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { portal: true, nested: true });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("dialog", { name: "Inner dialog" });
+        const outer = screen.getByRole("dialog", { name: "Closing dialog" });
+
+        // Siblings under body, the inner one later and so on top at the same z-index.
+        expect(outer.contains(inner)).toBe(false);
+        expect(
+            outer.parentElement!.compareDocumentPosition(inner.parentElement!) &
+                Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+
+        await fireEvent.keyDown(inner, { key: "Escape" });
+        await waitFor(() =>
+            expect(screen.queryByRole("dialog", { name: "Inner dialog" })).toBeNull(),
+        );
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+        expect(document.body.style.overflow).toBe("hidden");
+
+        await fireEvent.keyDown(outer, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(document.body.style.overflow).toBe("");
+    });
+
+    it("leaves nothing in document.body when unmounted while open", async () => {
+        const { unmount } = render(ModalCloseHarness, {
+            portal: true,
+            initialOpen: true,
+        });
+        const dialog = await screen.findByRole("dialog");
+        expect(dialog.parentElement!.parentElement).toBe(document.body);
+
+        unmount();
+        expect(dialog.isConnected).toBe(false);
+        expect(document.querySelector('[role="dialog"]')).toBeNull();
+        expect(document.body.style.overflow).toBe("");
     });
 });
 

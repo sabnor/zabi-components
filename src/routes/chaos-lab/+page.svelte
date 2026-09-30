@@ -63,6 +63,10 @@
         { id: "faq", title: "FAQ", lines: 2 },
     ]);
     let sortableLastMove = $state("");
+
+    let portalOpen = $state(false);
+    let trappedOpen = $state(false);
+    let portalLastClose = $state("");
 </script>
 
 <svelte:head>
@@ -229,6 +233,59 @@
             >
             · Last move:
             <span data-testid="chaos-sortable-last-move">{sortableLastMove}</span>
+        </p>
+    </section>
+
+    <section class="space-y-3" aria-labelledby="chaos-portal-heading">
+        <h2 id="chaos-portal-heading" class="text-lg font-medium">
+            Portalled modal
+        </h2>
+        <!-- The transform makes this box the containing block of a fixed
+        descendant and the overflow clips it: the in-place modal is trapped
+        here, the portalled one must not be. -->
+        <div
+            class="h-24 overflow-hidden rounded-container border border-border p-3"
+            style="transform: translateZ(0)"
+            data-testid="chaos-portal-trap"
+        >
+            <div class="flex flex-wrap gap-2">
+                <button
+                    type="button"
+                    data-testid="chaos-open-portal"
+                    onclick={() => (portalOpen = true)}
+                >
+                    Open portalled modal
+                </button>
+                <button
+                    type="button"
+                    data-testid="chaos-open-trapped"
+                    onclick={() => (trappedOpen = true)}
+                >
+                    Open in-place modal
+                </button>
+            </div>
+            <Modal
+                bind:isOpen={portalOpen}
+                portal
+                title="Chaos portalled"
+                data-testid="chaos-modal-portal"
+                onclose={({ reason }) => (portalLastClose = reason)}
+            >
+                <button type="button" data-testid="chaos-portal-action">
+                    In-portal action
+                </button>
+            </Modal>
+            <Modal
+                bind:isOpen={trappedOpen}
+                title="Chaos trapped"
+                data-testid="chaos-modal-trapped"
+            >
+                <p class="text-sm text-description">Rendered in place.</p>
+            </Modal>
+        </div>
+        <p class="text-sm text-description">
+            Last close:
+            <span data-testid="chaos-portal-last-close">{portalLastClose}</span>
         </p>
     </section>
 </main>

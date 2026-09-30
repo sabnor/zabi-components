@@ -46,6 +46,18 @@ Whenever token or CSS import API surface changes, include:
 - **IconButton has a quiet destructive style.** `tone="danger"` on the `ghost`
   or `outline` variant gives a danger-coloured icon, a danger-tinted hover and
   the danger focus ring, for inline delete.
+- **Modal can render in `document.body`.** With `portal`, the overlay is moved
+  out of its ancestors on mount, so a transformed, filtered or clipped ancestor
+  can no longer position or clip it. Focus trap, focus restore, scroll lock and
+  nested modals work as before. A theme class set below `<body>` does not reach
+  a portalled modal.
+- **Modal reports why it closed.** `onclose` receives
+  `{ reason: "escape" | "backdrop" | "close-button" }` whenever the modal
+  closes itself.
+- **Modal can refuse to close.** With `dismissible={false}`, Escape, a backdrop
+  click and the close button do nothing (the close button stays focusable and
+  is marked `aria-disabled`); setting `isOpen` yourself still closes it. Meant
+  for a pending action.
 
 ### Changed
 
@@ -54,11 +66,19 @@ Whenever token or CSS import API surface changes, include:
 - **ImageUpload's `id` now names the control** the label points at, not the
   host element.
 
+### Deprecated
+
+- **Modal's `onclick` is deprecated as a close signal.** It is still called
+  with the event on Escape, a backdrop click and the close button; use
+  `onclose`.
+
 ### Fixed
 
 - **ImageUpload's Change and Remove actions are reachable on touch screens.**
   They were hidden until hover or focus; on coarse pointers, and where hover is
   not available, they now stay visible.
+- **Modal keeps Tab inside, and still closes on Escape, when focus has fallen
+  out of the dialog** because the focused control was disabled or removed.
 
 ### Documentation
 

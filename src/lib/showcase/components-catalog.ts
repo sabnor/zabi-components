@@ -2014,6 +2014,36 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Show the close button.",
                     },
+                    {
+                        name: "portal",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Render the overlay in document.body, so an ancestor with a transform, filter or clipped overflow cannot trap it. A theme class set below body does not reach a portalled modal.",
+                    },
+                    {
+                        name: "dismissible",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "When false, Escape, a backdrop click and the close button do not close the modal; the close button stays focusable and is marked aria-disabled. Setting isOpen yourself still closes it.",
+                    },
+                    {
+                        name: "onclose",
+                        type: "(detail: { reason: 'escape' | 'backdrop' | 'close-button' }) => void",
+                        required: false,
+                        description:
+                            "Called when the modal closes itself, with what the user did.",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(event: Event) => void",
+                        required: false,
+                        description:
+                            "Deprecated for close reporting; use onclose. Still called with the event on Escape, a backdrop click and the close button.",
+                    },
                 ],
                 variants: [
                     "sm",
@@ -2024,12 +2054,12 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Basic Modal",
                         description: "Simple modal dialog",
-                        code: "&lt;Modal isOpen={isOpen} onClose={() => isOpen = false}&gt;\n  &lt;p&gt;Modal content&lt;/p&gt;\n&lt;/Modal&gt;",
+                        code: "&lt;Modal bind:isOpen={isOpen}&gt;\n  &lt;p&gt;Modal content&lt;/p&gt;\n&lt;/Modal&gt;",
                     },
                     {
                         title: "With Title",
                         description: "Modal with title and close button",
-                        code: '&lt;Modal isOpen={isOpen} title="Confirm Action" onClose={handleClose}&gt;\n  &lt;p&gt;Are you sure?&lt;/p&gt;\n&lt;/Modal&gt;',
+                        code: '&lt;Modal bind:isOpen={isOpen} title="Confirm Action" onclose={({ reason }) => handleClose(reason)}&gt;\n  &lt;p&gt;Are you sure?&lt;/p&gt;\n&lt;/Modal&gt;',
                     },
                 ],
             },

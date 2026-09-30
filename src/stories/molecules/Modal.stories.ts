@@ -9,7 +9,8 @@ const meta = {
         layout: 'fullscreen',
         docs: {
             description: {
-                component: 'Modal component with focus trap and keyboard navigation. Press Escape to close, Tab to navigate within modal. Focus is automatically returned to the trigger element when closed.'
+                component:
+                    'Modal component with focus trap and keyboard navigation. Press Escape to close, Tab to navigate within modal. Focus is automatically returned to the trigger element when closed. Set portal to render the overlay in document.body, use onclose to learn why it closed, and set dismissible to false to block closing while an action is pending.'
             }
         }
     },
@@ -19,6 +20,14 @@ const meta = {
             control: 'select',
             options: ['sm', 'md', 'lg'],
             description: 'Size of the modal'
+        },
+        portal: {
+            control: 'boolean',
+            description: 'Render the overlay in document.body'
+        },
+        dismissible: {
+            control: 'boolean',
+            description: 'Let Escape, the backdrop and the close button close the modal'
         }
     }
 } satisfies Meta<typeof Modal>;
@@ -110,5 +119,31 @@ export const Large: Story = {
         Component: Modal,
         props: args,
         children: ['Large modal (max width 42rem on desktop). Perfect for displaying more content.']
+    })
+};
+
+/** Rendered in `document.body`, out of reach of a transformed or clipped ancestor. */
+export const Portalled: Story = {
+    args: {
+        isOpen: true,
+        title: 'Portalled modal',
+        portal: true
+    },
+    render: (args) => ({
+        Component: ModalWithContent,
+        props: args
+    })
+};
+
+/** Escape, the backdrop and the close button do nothing; the footer actions close it. */
+export const NotDismissible: Story = {
+    args: {
+        isOpen: true,
+        title: 'Saving changes',
+        dismissible: false
+    },
+    render: (args) => ({
+        Component: ModalWithContent,
+        props: args
     })
 };
