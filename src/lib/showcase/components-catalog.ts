@@ -2414,7 +2414,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "(detail: { item: T; selected: boolean; keys: (string | number)[] }) => void",
                         required: false,
                         description:
-                            "Runs when an item is selected or its selection is cleared.",
+                            "Runs when an item is selected, or, with multiple, when its selection is cleared. Pressing the one selected item again does nothing.",
                     },
                     {
                         name: "ondelete",

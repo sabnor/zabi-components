@@ -189,13 +189,12 @@ describe("MediaGrid selection", () => {
         expect(selected()).toBe("hero");
         expect(pressed()).toEqual(["hero.jpg"]);
 
-        // Activating the selected item clears it, as a toggle button does.
+        // A single choice is never cleared by a repeat press, and nothing fires.
+        const calls = onselect.mock.calls.length;
         await user.click(tile("hero.jpg"));
-        expect(selected()).toBe("");
-        expect(pressed()).toEqual([]);
-        expect(onselect).toHaveBeenLastCalledWith(
-            expect.objectContaining({ selected: false, keys: [] }),
-        );
+        expect(selected()).toBe("hero");
+        expect(pressed()).toEqual(["hero.jpg"]);
+        expect(onselect).toHaveBeenCalledTimes(calls);
     });
 
     it("shows a bound selection from the start", () => {
@@ -209,8 +208,12 @@ describe("MediaGrid selection", () => {
         tile("hero.jpg").focus();
         await user.keyboard("{Enter}");
         expect(selected()).toBe("hero");
+        // Space on the selected item leaves it selected.
         await user.keyboard(" ");
-        expect(selected()).toBe("");
+        expect(selected()).toBe("hero");
+        tile("logo.svg").focus();
+        await user.keyboard(" ");
+        expect(selected()).toBe("logo");
     });
 
     it("keeps several items selected when multiple", async () => {

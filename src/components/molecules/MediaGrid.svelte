@@ -179,8 +179,12 @@
                 : selectedKeys.filter((candidate) => candidate !== key);
             onselect?.({ item: entry, selected: on, keys: selectedKeys });
         } else {
-            selected = on ? key : null;
-            onselect?.({ item: entry, selected: on, keys: on ? [key] : [] });
+            // A single choice is never cleared by pressing it again; only the
+            // checkbox-like `multiple` mode toggles off. Removing the item, or
+            // the parent through the binding, still clears it.
+            if (!on) return;
+            selected = key;
+            onselect?.({ item: entry, selected: true, keys: [key] });
         }
     }
 

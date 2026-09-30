@@ -398,7 +398,7 @@ sentence for that reason; keep a translated one short too.
 - ✅ **Arrow Up / Arrow Down**: The item above / below, by the number of columns on screen
 - ✅ **Home / End**: First / last item in the row
 - ✅ **Ctrl + Home / Ctrl + End**: First / last item in the grid
-- ✅ **Enter / Space**: Select the item, or clear its selection
+- ✅ **Enter / Space**: Select the item. With `multiple`, pressing a selected item clears it; a single selection is only moved, never cleared, by a press
 - ✅ **Delete**: Ask to delete the focused item (the same as its delete button)
 
 Each item is a toggle button (`aria-pressed`) in a list, with its delete button

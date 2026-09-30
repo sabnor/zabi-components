@@ -146,7 +146,8 @@ Whenever token or CSS import API surface changes, include:
   and the data stay yours. Pass `getKey`, `getLabel` and `getUrl`. One item is
   selected at a time (`bind:selected`), or any number with `multiple`
   (`bind:selectedKeys`); the selected item has a thicker border and a check
-  mark. `ondelete` shows an always-visible delete button named after each item;
+  mark. A single selection moves when another item is pressed and is never
+  cleared by pressing it again; with `multiple` the items toggle. `ondelete` shows an always-visible delete button named after each item;
   the grid only reports the item, and when it is removed focus moves to the one
   that took its place. The grid is one Tab stop: arrow keys move between items
   by the columns on screen, Home and End within the row, and Delete asks to
