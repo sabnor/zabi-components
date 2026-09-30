@@ -524,7 +524,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Shows a spinner and disables interaction while true",
+                            "Shows a spinner in place of the tick and disables interaction while true",
                     },
                     {
                         name: "onChange",

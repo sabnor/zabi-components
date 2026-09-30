@@ -34,25 +34,35 @@
 </script>
 
 {#snippet mark(props: SelectionControlMarkProps)}
-    <!-- Under reduced motion the ring stops; it cannot take Spinner's pulse, because a pulse animates opacity and would override the `opacity-0` that hides the ring while idle. -->
-    <span
-        class="pointer-events-none absolute inline-block size-3 shrink-0 animate-spin motion-reduce:animate-none rounded-full border-2 border-brand-500 border-t-transparent z-10 opacity-0 group-has-[aria-busy=true]/control:opacity-100 group-has-checked/control:border-base-50"
-        aria-hidden="true"
-    ></span>
-    <svg
-        class="absolute w-3 h-3 text-action-primary pointer-events-none z-10 opacity-0 group-has-checked/control:opacity-100"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-    >
-        <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2.5"
-            d="M5 13l4 4L19 7"
-        />
-    </svg>
+    <!-- While loading the ring stands in for the tick, so the two never overlap;
+         the fill still says whether the box is checked. The ring is only in the
+         DOM while busy, which is what lets it take Spinner's reduced-motion
+         pulse: a pulse animates opacity and would un-hide a ring that was
+         merely transparent. It is drawn in the text colour so the gap in it
+         survives: a hand-written border colour class repaints all four sides. -->
+    {#if props.loading}
+        <span
+            class="pointer-events-none absolute z-10 inline-block size-3 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent motion-reduce:animate-pulse {props.checked
+                ? 'text-action-primary'
+                : 'text-brand-500'}"
+            aria-hidden="true"
+        ></span>
+    {:else}
+        <svg
+            class="absolute w-3 h-3 text-action-primary pointer-events-none z-10 opacity-0 group-has-checked/control:opacity-100"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M5 13l4 4L19 7"
+            />
+        </svg>
+    {/if}
 {/snippet}
 
 <SelectionControl

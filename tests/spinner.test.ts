@@ -90,11 +90,9 @@ describe("Spinner", () => {
             view.unmount();
         }
 
-        // Checkbox hides its ring with `opacity-0` until it is busy, and a
-        // pulse animates opacity, so there the ring stops instead of fading.
+        // Checkbox only renders its ring while busy, so it can fade like the rest.
         const checkbox = render(Checkbox, { props: { loading: true, label: "Agree" } });
-        expect(spinnerOf(checkbox.container)).toContain("motion-reduce:animate-none");
-        expect(spinnerOf(checkbox.container)).not.toContain("motion-reduce:animate-pulse");
+        expect(spinnerOf(checkbox.container)).toContain("motion-reduce:animate-pulse");
     });
 
     it("takes the text colour and does not spin under reduced motion", () => {

@@ -373,6 +373,10 @@ Whenever token or CSS import API surface changes, include:
   IconButton, Input, Textarea, ActionPanel and Toggle kept spinning under
   `prefers-reduced-motion`; they now fade in and out instead, as Spinner does.
   Checkbox's ring stops.
+- **Checkbox shows its loading ring.** `loading` disabled the box but the ring
+  never appeared. It now replaces the tick while loading, on the fill if the
+  box is checked, and fades instead of spinning under
+  `prefers-reduced-motion`.
 
 ### Documentation
 
