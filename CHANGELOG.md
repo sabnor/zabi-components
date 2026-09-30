@@ -251,6 +251,9 @@ Whenever token or CSS import API surface changes, include:
   `action-primary-subtle`, which shows on the light page.
 - **A toast with an action stays until it is dismissed**, unless you give it a
   `duration`, so a keyboard user can reach the action.
+- EmptyState at `size="compact"` is a plain `<div>`, not a named region, so a
+  page of cards with empty states is not a page of landmarks. The default size
+  is still a `<section>` named by its title.
 
 ### Deprecated
 

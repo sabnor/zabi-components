@@ -3039,7 +3039,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: '"default"',
                         description:
-                            "compact tightens padding and the title, for use inside a card",
+                            "compact tightens padding and the title, for use inside a card, and is a plain div where the default is a named region",
                     },
                 ],
                 variants: [],

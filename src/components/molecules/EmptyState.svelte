@@ -9,7 +9,10 @@
         description: string;
         /** Heading element of the title, to fit the outline of the page around it. */
         headingLevel?: CollapsibleHeadingLevel;
-        /** `compact` tightens the padding and the title to sit inside a card. */
+        /**
+         * `compact` tightens the padding and the title to sit inside a card,
+         * and is a plain `<div>`, not a landmark region like the default.
+         */
         size?: "default" | "compact";
         class?: string;
         action?: Snippet;
@@ -30,13 +33,16 @@
     const compact = $derived(size === "compact");
 </script>
 
-<section
+<!-- A named `<section>` is a landmark. One per page is a help; a compact empty
+     state in every card is a page of landmarks, so that size is a plain `<div>`. -->
+<svelte:element
+    this={compact ? "div" : "section"}
     class={cn(
         "mx-auto flex flex-col items-center justify-center text-center",
         compact ? "gap-3 px-4 py-6" : "gap-4 px-6 py-12",
         className,
     )}
-    aria-labelledby={titleId}
+    aria-labelledby={compact ? undefined : titleId}
 >
     {#if media}
         <div class="text-description" aria-hidden="true">
@@ -60,4 +66,4 @@
             {@render action()}
         </div>
     {/if}
-</section>
+</svelte:element>

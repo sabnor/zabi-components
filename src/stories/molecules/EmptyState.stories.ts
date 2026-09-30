@@ -96,7 +96,7 @@ export const Compact: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'The compact size has tighter padding and a smaller title, for an empty list inside a card. Set `headingLevel` so the title fits the heading outline around it; here it is an `h3` under the card\'s `h2`.'
+                story: 'The compact size has tighter padding and a smaller title, for an empty list inside a card. Set `headingLevel` so the title fits the heading outline around it; here it is an `h3` under the card\'s `h2`. The default size is a named region, a landmark; the compact size is a plain `div`, so a page of cards does not become a page of landmarks.'
             }
         }
     }

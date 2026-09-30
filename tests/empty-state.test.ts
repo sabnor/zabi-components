@@ -33,11 +33,28 @@ describe("EmptyState", () => {
     it("tightens padding, gaps and the title at the compact size", () => {
         render(EmptyState, { props: { ...props, size: "compact" } });
 
-        const region = screen.getByRole("region", { name: "No projects yet" });
-        expect(classesOf(region)).toEqual(expect.arrayContaining(["gap-3", "px-4", "py-6"]));
-        expect(classesOf(region)).not.toContain("py-12");
         const heading = screen.getByRole("heading", { name: "No projects yet" });
+        const root = heading.parentElement?.parentElement as HTMLElement;
+        expect(classesOf(root)).toEqual(expect.arrayContaining(["gap-3", "px-4", "py-6"]));
+        expect(classesOf(root)).not.toContain("py-12");
         expect(classesOf(heading)).toContain("text-base");
         expect(classesOf(heading)).not.toContain("text-lg");
+    });
+
+    it("is a landmark at the default size only", () => {
+        const { unmount } = render(EmptyState, { props });
+        expect(screen.getByRole("region", { name: "No projects yet" }).tagName).toBe("SECTION");
+        unmount();
+
+        // Compact empty states sit one per card; as regions they would fill
+        // the page's landmark list.
+        render(EmptyState, { props: { ...props, size: "compact", headingLevel: 3 } });
+        expect(screen.queryByRole("region")).toBeNull();
+        const heading = screen.getByRole("heading", { name: "No projects yet", level: 3 });
+        const root = heading.parentElement?.parentElement as HTMLElement;
+        expect(root.tagName).toBe("DIV");
+        expect(root.hasAttribute("aria-labelledby")).toBe(false);
+        // The heading keeps its id, for a caller that wants to point at it.
+        expect(heading.id).toMatch(/^empty-state-title/);
     });
 });
