@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import DropdownWithContent from './DropdownWithContent.svelte';
 import DropdownEmptyState from './DropdownEmptyState.svelte';
+import DropdownWithItems from './DropdownWithItems.svelte';
 
 const meta = {
     title: 'Design System/Molecules/Dropdown',
@@ -9,7 +10,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Menu anchored to your own trigger snippet, with arrow-key focus and four placements.'
+                    'Menu anchored to your own trigger snippet, with arrow-key focus and four placements. Items passed as options can carry an icon, a danger tone and a description; a disabled item stays focusable so its description can be read. DropdownItem renders the same item inside custom children.'
             }
         },
         layout: 'centered'
@@ -105,5 +106,29 @@ export const EmptyState: Story = {
     render: (args) => ({
         Component: DropdownEmptyState,
         props: args
+    })
+};
+
+/** `options` with an icon, a description, a disabled item that explains itself, and a danger item. */
+export const ItemsWithIconsAndDanger: Story = {
+    args: {
+        isOpen: true,
+        placement: 'bottom-start'
+    },
+    render: (args) => ({
+        Component: DropdownWithItems,
+        props: args
+    })
+};
+
+/** The same menu built from `DropdownItem` children, which take part in the arrow-key order. */
+export const DropdownItemChildren: Story = {
+    args: {
+        isOpen: true,
+        placement: 'bottom-start'
+    },
+    render: (args) => ({
+        Component: DropdownWithItems,
+        props: { ...args, custom: true }
     })
 };

@@ -65,6 +65,10 @@
     import Bold from "@lucide/svelte/icons/bold";
     import Italic from "@lucide/svelte/icons/italic";
     import Trash2 from "@lucide/svelte/icons/trash-2";
+    import Pencil from "@lucide/svelte/icons/pencil";
+    import Copy from "@lucide/svelte/icons/copy";
+    import Archive from "@lucide/svelte/icons/archive";
+    import type { DropdownOption } from "../../components/util/dropdown.js";
     import Zap from "@lucide/svelte/icons/zap";
     import ShieldCheck from "@lucide/svelte/icons/shield-check";
     import Sparkles from "@lucide/svelte/icons/sparkles";
@@ -123,6 +127,24 @@
 
     let dropdownDemoAOpen = $state(false);
     let dropdownDemoBOpen = $state(false);
+    let dropdownDemoCOpen = $state(false);
+    const dropdownDemoOptions: DropdownOption[] = [
+        { value: "edit", label: "Edit", icon: Pencil },
+        {
+            value: "duplicate",
+            label: "Duplicate",
+            icon: Copy,
+            description: "Copies the settings too.",
+        },
+        {
+            value: "archive",
+            label: "Archive",
+            icon: Archive,
+            disabled: true,
+            description: "Only an owner can archive a project.",
+        },
+        { value: "delete", label: "Delete", icon: Trash2, tone: "danger" },
+    ];
 
     let formFieldDemoEmail = $state("");
     let radioGroupDemoValue = $state("basic");
@@ -526,6 +548,22 @@
                                     >Green</button
                                 >
                             </div>
+                        {/snippet}
+                    </Dropdown>
+                    <Dropdown
+                        bind:isOpen={dropdownDemoCOpen}
+                        ariaLabel="Project actions"
+                        options={dropdownDemoOptions}
+                        onOptionClick={() => (dropdownDemoCOpen = false)}
+                    >
+                        {#snippet trigger(aria)}
+                            <Button
+                                text="Project actions"
+                                variant="secondary"
+                                onclick={() =>
+                                    (dropdownDemoCOpen = !dropdownDemoCOpen)}
+                                {...aria}
+                            />
                         {/snippet}
                     </Dropdown>
                 </div>

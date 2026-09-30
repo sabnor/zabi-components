@@ -1682,11 +1682,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "options",
-                        type: "Array<{ value, label, disabled? }>",
+                        type: "DropdownOption[] ({ value, label, disabled?, icon?, tone?, description? })",
                         required: false,
                         defaultValue: "[]",
                         description:
-                            "Menu items, when not supplying children.",
+                            "Menu items, when not supplying children. icon is a component such as a lucide icon, tone is default or danger, and description is a second line under the label. A disabled item stays focusable (aria-disabled) so its description can be read, but cannot be chosen.",
                     },
                     {
                         name: "isOpen",
@@ -1725,12 +1725,89 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Basic Dropdown",
                         description: "Simple dropdown with options",
-                        code: '&lt;Dropdown options={[{value: "1", label: "Option 1"}]} /&gt;',
+                        code: '&lt;Dropdown bind:isOpen options={[{ value: "1", label: "Option 1" }]} onOptionClick={choose}&gt;\n  {#snippet trigger(aria)}\n    &lt;Button text="Open" onclick={() => (isOpen = !isOpen)} {...aria} /&gt;\n  {/snippet}\n&lt;/Dropdown&gt;',
                     },
                     {
-                        title: "With Placeholder",
-                        description: "Dropdown with custom placeholder",
-                        code: '&lt;Dropdown placeholder="Choose..." options={options} /&gt;',
+                        title: "Icons, a danger item and a disabled reason",
+                        description:
+                            "Options with an icon, a danger tone, and a description that explains a disabled item",
+                        code: 'const options = [\n  { value: "edit", label: "Edit", icon: Pencil },\n  { value: "archive", label: "Archive", icon: Archive, disabled: true, description: "Only an owner can archive a project." },\n  { value: "delete", label: "Delete", icon: Trash2, tone: "danger" },\n];\n\n&lt;Dropdown bind:isOpen {options} onOptionClick={choose}&gt;\n  {#snippet trigger(aria)}\n    &lt;Button text="Project actions" onclick={() => (isOpen = !isOpen)} {...aria} /&gt;\n  {/snippet}\n&lt;/Dropdown&gt;',
+                    },
+                ],
+            },
+            {
+                name: "DropdownItem",
+                category: "molecules",
+                description:
+                    "One menu item for custom Dropdown children, with an icon, a danger tone and a description; it joins the arrow-key order.",
+                props: [
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The item's text and accessible name. Use children for custom content instead.",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Second line under the label, linked as the item's description; use it to say why an item is disabled.",
+                    },
+                    {
+                        name: "icon",
+                        type: "Component<{ size?: number; class?: string }>",
+                        required: false,
+                        description:
+                            "Icon component rendered before the label at 16px. Decorative.",
+                    },
+                    {
+                        name: "tone",
+                        type: "'default' | 'danger'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "danger for a destructive action such as Delete.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Rendered as aria-disabled: the item stays focusable so its description can be read, but a click does nothing.",
+                    },
+                    {
+                        name: "selected",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Marks the chosen option inside a listbox Dropdown (aria-selected).",
+                    },
+                    {
+                        name: "role",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Defaults to the role the surrounding Dropdown needs (menuitem, or option in a listbox); set menuitemradio or menuitemcheckbox yourself.",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(event: MouseEvent) => void",
+                        required: false,
+                        description:
+                            "Runs when the item is chosen. Not called while disabled. The Dropdown does not close itself; set isOpen.",
+                    },
+                ],
+                variants: ["default", "danger"],
+                examples: [
+                    {
+                        title: "Custom children",
+                        description:
+                            "DropdownItem inside the children snippet of a Dropdown",
+                        code: '&lt;Dropdown bind:isOpen ariaLabel="Project actions"&gt;\n  {#snippet trigger(aria)}\n    &lt;Button text="Project actions" onclick={() => (isOpen = !isOpen)} {...aria} /&gt;\n  {/snippet}\n  {#snippet children()}\n    &lt;DropdownItem label="Edit" icon={Pencil} onclick={edit} /&gt;\n    &lt;DropdownItem label="Delete" icon={Trash2} tone="danger" onclick={remove} /&gt;\n  {/snippet}\n&lt;/Dropdown&gt;',
                     },
                 ],
             },

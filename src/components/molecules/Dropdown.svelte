@@ -1,7 +1,13 @@
 <script lang="ts">
     import { generateId } from "../util/ssr-safe.js";
-    import type { Snippet } from 'svelte';
+    import { setContext, type Snippet } from 'svelte';
     import { cn } from "../util/cn.js";
+    import {
+        DROPDOWN_CONTEXT_KEY,
+        type DropdownContext,
+        type DropdownOption,
+    } from "../util/dropdown.js";
+    import DropdownItem from './DropdownItem.svelte';
 
     export type DropdownTriggerProps = {
         'aria-expanded': boolean;
@@ -18,11 +24,12 @@
         /** `listbox` for Select-style; `menu` for actions. */
         menuRole?: 'menu' | 'listbox';
         selectedValue?: string | number | null;
-        options?: Array<{
-            value: string | number;
-            label: string;
-            disabled?: boolean;
-        }>;
+        /**
+         * Menu items, when not supplying children. Each takes an optional
+         * `icon`, `tone` (`danger`) and `description`; a disabled item stays
+         * focusable so its description can be read.
+         */
+        options?: DropdownOption[];
         onOptionClick?: (value: string | number) => void;
         trigger: Snippet<[DropdownTriggerProps]>;
         /** Rendered in the popup above the menu/listbox, outside its role (e.g. a search field). */
@@ -44,6 +51,13 @@
         children,
         ...restProps
     }: Props = $props();
+
+    // `DropdownItem` reads its role from here, in `options` and in `children` alike.
+    setContext<DropdownContext>(DROPDOWN_CONTEXT_KEY, {
+        get itemRole() {
+            return menuRole === 'listbox' ? ('option' as const) : ('menuitem' as const);
+        },
+    });
 
     const menuId = generateId('dropdown-menu');
     let rootEl = $state<HTMLDivElement | null>(null);
@@ -217,11 +231,6 @@
             .replace(/\s+/g, ' ')
             .trim();
     });
-
-    const itemRole = $derived(menuRole === 'listbox' ? 'option' : 'menuitem');
-
-    const optionClasses =
-        'focus-ring flex w-full items-center justify-start rounded-control px-3 py-2 text-left text-sm text-body transition-colors hover:bg-surface-overlay-hover focus:outline-none disabled:cursor-not-allowed disabled:opacity-50';
 </script>
 
 <div
@@ -244,21 +253,17 @@
             {#if options.length > 0}
                 <div class="px-2 py-1">
                     {#each options as option (option.value)}
-                        <button
-                            type="button"
-                            role={itemRole}
-                            aria-selected={menuRole === 'listbox' &&
-                            selectedValue !== null &&
-                            String(selectedValue) === String(option.value)
-                                ? true
-                                : undefined}
-                            data-value={String(option.value)}
+                        <DropdownItem
+                            label={option.label}
+                            description={option.description}
+                            icon={option.icon}
+                            tone={option.tone}
                             disabled={option.disabled}
-                            class={optionClasses}
+                            selected={selectedValue !== null &&
+                                String(selectedValue) === String(option.value)}
+                            data-value={String(option.value)}
                             onclick={() => onOptionClick?.(option.value)}
-                        >
-                            {option.label}
-                        </button>
+                        />
                     {/each}
                 </div>
             {:else if children}

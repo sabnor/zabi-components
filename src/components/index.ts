@@ -33,6 +33,12 @@ export { default as Alert } from './molecules/Alert.svelte';
 export { default as ComponentDemo } from './molecules/ComponentDemo.svelte';
 export { default as ContactForm } from './molecules/ContactForm.svelte';
 export { default as Dropdown } from './molecules/Dropdown.svelte';
+export { default as DropdownItem } from './molecules/DropdownItem.svelte';
+export type {
+    DropdownItemIcon,
+    DropdownItemTone,
+    DropdownOption,
+} from './util/dropdown.js';
 export { default as Form } from './molecules/Form.svelte';
 export { default as FormField } from './molecules/FormField.svelte';
 export { default as Header } from './molecules/Header.svelte';

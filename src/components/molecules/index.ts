@@ -2,6 +2,12 @@ export { default as Alert } from './Alert.svelte';
 export { default as ComponentDemo } from './ComponentDemo.svelte';
 export { default as ContactForm } from './ContactForm.svelte';
 export { default as Dropdown } from './Dropdown.svelte';
+export { default as DropdownItem } from './DropdownItem.svelte';
+export type {
+    DropdownItemIcon,
+    DropdownItemTone,
+    DropdownOption,
+} from '../util/dropdown.js';
 export { default as Form } from './Form.svelte';
 export { default as ImageUpload } from './ImageUpload.svelte';
 export { default as Modal } from './Modal.svelte';

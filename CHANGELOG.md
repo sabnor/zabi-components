@@ -87,6 +87,12 @@ Whenever token or CSS import API surface changes, include:
   the action is announced with the message. Give an action toast a long
   `duration` (or `0`), and offer the same action elsewhere in the page. The
   `ToastAction` type is exported.
+- **Dropdown options can carry an icon, a danger tone and a description.**
+  Each item of `options` takes an optional `icon` (a component, such as a
+  lucide icon), `tone: "danger"` and `description`, shown under the label and
+  linked as the item's description. The `DropdownOption` type is exported.
+- **DropdownItem**, the same menu item as a component, for a Dropdown's custom
+  `children`. It takes its role from the Dropdown and joins the arrow-key order.
 
 ### Changed
 
@@ -97,6 +103,10 @@ Whenever token or CSS import API surface changes, include:
 - ImageUpload reveals Change and Remove on keyboard focus (`:focus-visible`)
   rather than on any focus, so they do not cover a preview just picked with a
   mouse. They wrap and truncate in a narrow container.
+- **A disabled Dropdown option stays focusable.** It is rendered with
+  `aria-disabled` instead of `disabled`, so the arrow keys reach it and move
+  past it, and a screen reader can read why it is unavailable; it still cannot
+  be chosen.
 
 ### Deprecated
 
