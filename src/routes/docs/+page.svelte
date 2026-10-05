@@ -1,8 +1,9 @@
 <script lang="ts">
     import CodeBlock from "../../components/atoms/CodeBlock.svelte";
     import Seo from "$lib/marketing/Seo.svelte";
+    import OnThisPage from "$lib/marketing/OnThisPage.svelte";
     import SiteFooter from "$lib/marketing/SiteFooter.svelte";
-    import { ChevronDown, ExternalLink } from "@lucide/svelte";
+    import { ExternalLink } from "@lucide/svelte";
     import { asset } from "$app/paths";
     import {
         GITHUB_URL,
@@ -95,49 +96,7 @@ import type { ButtonVariant } from "zabi-components/types";`;
         </header>
 
         <div class="mt-14 grid gap-12 lg:grid-cols-12">
-            <nav class="lg:col-span-3" aria-label="On this page">
-                <!-- Below lg there is no column for the sticky list, so the same
-                links fold into a disclosure ahead of the first section. -->
-                <details class="group rounded-2xl border border-border bg-card shadow-sm lg:hidden">
-                    <summary
-                        class="focus-ring flex h-12 cursor-pointer list-none items-center justify-between rounded-2xl px-5 text-sm font-semibold text-headline [&::-webkit-details-marker]:hidden"
-                    >
-                        On this page
-                        <ChevronDown
-                            size={16}
-                            class="shrink-0 text-description transition-transform group-open:rotate-180"
-                            aria-hidden="true"
-                        />
-                    </summary>
-                    <ul class="border-t border-border p-2 sm:grid sm:grid-cols-2">
-                        {#each sections as section (section.id)}
-                            <li>
-                                <a
-                                    href={`#${section.id}`}
-                                    class="focus-ring flex min-h-11 items-center rounded-xl px-3 text-sm text-description transition-colors hover:bg-surface-hover hover:text-headline"
-                                >
-                                    {section.label}
-                                </a>
-                            </li>
-                        {/each}
-                    </ul>
-                </details>
-                <div class="sticky top-28 hidden lg:block">
-                    <p class="text-sm font-semibold text-headline">On this page</p>
-                    <ul class="mt-4 space-y-1 border-l border-border">
-                        {#each sections as section (section.id)}
-                            <li>
-                                <a
-                                    href={`#${section.id}`}
-                                    class="focus-ring -ml-px block rounded-sm border-l border-transparent py-1 pl-4 text-sm text-description transition-colors hover:border-border-strong hover:text-headline"
-                                >
-                                    {section.label}
-                                </a>
-                            </li>
-                        {/each}
-                    </ul>
-                </div>
-            </nav>
+            <OnThisPage class="lg:col-span-3" {sections} />
 
             <div class="space-y-16 lg:col-span-9 xl:col-span-8">
                 <section id="requirements" aria-labelledby="requirements-title">
@@ -379,9 +338,11 @@ import type { ButtonVariant } from "zabi-components/types";`;
         min-width: 0;
     }
 
-    /* Anchored headings land below the sticky top bar. */
+    /* Anchored headings land below the sticky top bar, with room to spare.
+       OnThisPage reads this value as the line that decides which section is
+       current, so the entry that was followed is the one that is marked. */
     .guide section[id] {
-        scroll-margin-top: 6rem;
+        scroll-margin-top: calc(var(--site-header-height) + 2rem);
     }
 
     @media (prefers-reduced-motion: reduce) {

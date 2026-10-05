@@ -85,11 +85,14 @@ async function open(page: Page, path: string, brand: Brand, mode: Mode): Promise
         waitUntil: "domcontentloaded",
     });
     // The brand goes on after hydration, as ramp overrides on the root element.
+    // On a loaded machine hydration has taken more than the default 15s.
     await expect
-        .poll(() =>
-            page.evaluate(
-                () => document.documentElement.style.getPropertyValue("--zabi-brand-600") !== "",
-            ),
+        .poll(
+            () =>
+                page.evaluate(
+                    () => document.documentElement.style.getPropertyValue("--zabi-brand-600") !== "",
+                ),
+            { timeout: 60_000 },
         )
         .toBe(brand === "amber");
     await expect
@@ -184,6 +187,8 @@ for (const viewport of WIDTHS) {
 
         for (const path of PAGES) {
             test(`${path} follows the brand in light and dark`, async ({ page }) => {
+                // Four page loads; see the note on hydration in `open`.
+                test.setTimeout(240_000);
                 const readings = {} as Record<Mode, Record<Brand, Reading>>;
                 for (const mode of ["light", "dark"] as const) {
                     readings[mode] = {} as Record<Brand, Reading>;

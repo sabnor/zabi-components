@@ -46,6 +46,18 @@ Whenever token or CSS import API surface changes, include:
   page that uses only the class behaves as before.
 - A toggled-on danger-tone IconButton shows its pressed fill while held.
 - `npm run build:css` works in a fresh checkout with no `dist/`.
+- Site: the "On this page" list on the docs and theming pages marks the
+  section being read (`aria-current="location"`, a leading bar and heavier
+  text), while scrolling, after following an entry, and when the address has
+  a hash.
+- Site: `viewport-fit=cover` was missing, so the phone components' safe-area
+  insets were zero on a real phone. The site's own header, content and footer
+  now keep clear of a notch and the home indicator, the header folds into the
+  phone menu below 1024px, and the marketing headings follow
+  `--font-family-heading`.
+- docs/KEYBOARD_NAVIGATION.md and docs/ACCESSIBILITY.md described missing or
+  planned behaviour for Modal, Card, Dropdown, Select, Input, Alert, Tabs and
+  navigation; they now describe what the components do.
 
 ## [8.1.0-beta.0] - 2026-10-05
 
