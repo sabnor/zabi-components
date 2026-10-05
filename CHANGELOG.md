@@ -12,6 +12,55 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Upgrade notes (since 8.1.0-beta.0)
+
+Nothing exported was removed or renamed against 8.0.0, and no token name.
+These are visible without a code change, or change something that was new in
+8.1.0-beta.0:
+
+- **A tapped Tooltip stays open** until a second tap, a tap elsewhere, Escape
+  or a scroll (`touchDuration` defaults to `0`; it was 2500ms in beta.0). A
+  tooltip can now be hovered, so an open one takes presses: keep tooltips
+  clear of other controls.
+- **ThemeToggle, two modes:** its accessible name is the constant "Dark mode"
+  with `aria-pressed`, not "Switch to dark mode" / "Switch to light mode", and
+  it applies the stored choice when it mounts (`storageKey={null}` turns that
+  off). It no longer writes an inline `color-scheme`.
+- **`color-scheme` comes from the theme**: `light` by default and for
+  `data-theme="light"`, `dark` under `.dark` and `data-theme="dark"`. Native
+  controls and scrollbars follow the theme; a `<meta name="color-scheme">` tag
+  is not needed, and your own `color-scheme` rule must come after the theme
+  import.
+- **NavigationMenu is a list of links and disclosure buttons**, not a
+  `menubar`; screen readers announce it differently.
+- **Dropdown menus, Select lists, the ColorPicker popover and NavigationMenu
+  panels have 16px corners**, and other nested corners are concentric: the
+  Card in a Modal, MediaGrid's check mark (a rounded square), Alert's close
+  button, rows in a `.list-group`.
+- **Placeholder text is one step stronger** in both themes
+  (`--color-input-placeholder`: #61616a light, #a1a1aa dark).
+- **Dark focus rings and pressed fills** are unchanged from beta.0, but a
+  toggled-on ghost or danger-tone IconButton has a new held fill.
+- **Toasts move** while an overlay with a header and footer is open, and sit
+  above the on-screen keyboard.
+- **Overlays follow the on-screen keyboard** where it covers the page.
+- **Select's `maxMenuHeight` defaults to `60dvh`.**
+- **The package has no `prepare` script** and declares `sideEffects` (CSS
+  only). Icons are imported per file; import yours from
+  `@lucide/svelte/icons/<name>` too.
+- Beta-only names that are gone: Toaster's `data-at="top"`, ThemeToggle's
+  `labels.toLight` and `labels.toDark` (use `labels.darkMode`), and the
+  internal `util/viewport-fit` module (merged into `util/fit-in-viewport`).
+
+New surface, following the changelog policy above: no exported path added or
+removed since beta.0. Tokens added: `--color-input-active` was in beta.0;
+since then `--color-action-primary-subtle-active` and
+`--color-action-danger-subtle-active`, and `--zabi-list-row-radius`, which
+`.list-group` sets for its rows. Mapping rules: the light theme sets
+`color-scheme: light`; the dark block sets `color-scheme: dark`; a file
+generated with `zabi-theme --pin` adds role overrides under `:root` and under
+the dark selectors.
+
 ### Added
 
 - **`zabi-theme --pin`** (and `createTheme({ pin: true })`): the primary action
