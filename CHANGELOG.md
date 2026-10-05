@@ -12,6 +12,99 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [8.1.0-beta.0] - 2026-10-05
+
+A pre-release, published under the `beta` dist-tag:
+`npm install zabi-components@beta`. 8.0.1 was never published, so coming from
+8.0.0 you also get the changes listed under 8.0.1 below.
+
+### Upgrade notes
+
+Nothing was removed or renamed: every `exports` path and every token name of
+8.0.0 is still there. These changes are visible without a code change:
+
+- **Import the dark theme after a light one.** `theme-dark`,
+  `theme-dark-only` and the dark part of `colors` no longer carry the raw
+  `--zabi-*` ramps; they only remap roles. If you imported a dark file on its
+  own, add `theme` or `theme-only` before it:
+  `@import "zabi-components/theme-only"; @import "zabi-components/theme-dark-only";`
+- **Dark surfaces are `color-mix()` expressions** over `--zabi-base-*`. The
+  pixels are the same; `getComputedStyle` reports `color(srgb …)`, not
+  `rgb(…)`, so a test that compares the string needs updating.
+- **Every dark focus ring is one step lighter** (`brand-600`, #92a9ff by
+  default, was `brand-500`), and the muted ring in dark is `base-600`.
+- **The computed `box-shadow` of a focused element lists five shadows**, not
+  two, because the ring now composes with shadow utilities.
+- **Controls are at least 44px on touch screens** (`pointer: coarse`), so
+  layouts there get taller. Nothing changes with a mouse.
+- **Tabs with long labels scroll** instead of wrapping onto several lines.
+- **Page pads for the safe areas by default** (`safeArea`). An app that sets
+  `viewport-fit=cover` and already pads for the insets itself should pass
+  `safeArea={false}`.
+- **A Tooltip that would leave the viewport moves to stay inside it**, and
+  `data-placement` on its bubble reports the side used.
+- **`culori` is now a dependency**, used by the theme generator.
+
+New surface, following the changelog policy above:
+
+- Exported paths added: `zabi-components/create-theme`. A `bin` is added:
+  `zabi-theme`. None removed or deprecated.
+- Tokens added: `--zabi-accent-50` … `950`, `--color-accent-50` … `950`,
+  `--color-accent`, `-hover`, `-active`, `-subtle`, `-border`, `-text`,
+  `--color-on-accent`, `--zabi-on-accent`, `--zabi-on-accent-dark`,
+  `--color-on-brand`, `--zabi-on-brand`, `--zabi-on-brand-dark`,
+  `--font-family-heading`, `--font-family-mono`, `--font-weight-regular`,
+  `-normal`, `-medium`, `-semibold`, `-bold`, `--color-control-border`,
+  `--color-focus-ring-muted`, `--color-input-active`, and, from earlier in
+  this cycle, `--color-surface-inset` and `--color-input-border-hover`. None
+  renamed or removed.
+- Mapping rules: the dark block declares no raw palette and no hex value; dark
+  `--color-base-*` steps alias the mirrored `--zabi-base-*` step, and the dark
+  surface ladder is mixed from `--zabi-base-50` over `--zabi-base-900`.
+  `--color-action-primary-text` follows `--color-on-brand`. The dark block is
+  also published for `[data-theme="dark"]` and, under
+  `prefers-color-scheme: dark`, for `[data-theme="auto"]`.
+
+### Known limitations of this beta
+
+Everything was verified in desktop Chromium only, with phone widths, touch,
+safe areas and the on-screen keyboard emulated. None of the following has been
+checked, and each is worth a look on a real device:
+
+- **iOS Safari and Android Chrome** in general: taps and focus, the body scroll
+  lock behind overlays, swipe gestures on BottomSheet and SlideUp.
+- **The native date and time pickers** behind DateField and TimeField. The
+  fields rely on WebKit-specific CSS for iOS that has not been seen on a
+  device: an empty field keeping its height, the value's alignment, `readonly`,
+  `step`, `min` and `max`, and the picker in dark mode.
+- **The on-screen keyboard** with StickyActionBar (its lift was tested against
+  an emulated visual viewport), and with BottomSheet and a full-screen Modal,
+  whose footers are not lifted above the keyboard.
+- **Real safe-area insets** (they need `viewport-fit=cover`) and **`dvh` with
+  collapsing browser bars**, for AppShell, AppBar, BottomTabBar, Page, Toaster
+  and the full-screen Modal.
+- **Screen readers.** Names, roles and live regions were read from the
+  accessibility tree, not listened to: Calendar's day names and month changes,
+  Rating, the BottomSheet grip, the scrolling Tabs.
+- **Firefox and Safari on desktop.**
+
+Known issues in this beta:
+
+- A toast can cover the footer of a full-screen Modal or a bottom sheet, and
+  the focus trap keeps the keyboard from reaching the toast to dismiss it.
+- A Dropdown inside a scrolling or clipping container (a Modal's content, for
+  one) is kept inside the viewport, not inside that container, and can be
+  clipped.
+- Placeholder text in dark fields is 3.4:1, including the format hint of an
+  empty DateField or TimeField.
+- A Tooltip opened by a tap closes after 2.5 seconds (`touchDuration`), and a
+  tooltip cannot be hovered with a mouse.
+- Calendar marks unavailable days by colour only, and its built-in words
+  ("today", "selected", "unavailable") are English whatever `locale` is; pass
+  `strings`.
+- Not in this beta: the nested corner radius fixes, PhotoGrid and PhotoViewer,
+  and a touch mode for Select and Dropdown.
+
 ### Added
 
 - **SortableList**, a new molecule that reorders items and leaves their content
