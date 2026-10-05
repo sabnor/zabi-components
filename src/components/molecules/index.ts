@@ -106,3 +106,5 @@ export type {
     StepperStrings,
 } from '../util/stepper.js';
 export * from './toast-store.js';
+export { DEFAULT_TOASTER_STRINGS } from '../util/toaster.js';
+export type { ToasterStrings, ToastPauseChange } from '../util/toaster.js';

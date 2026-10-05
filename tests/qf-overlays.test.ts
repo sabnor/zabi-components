@@ -190,7 +190,14 @@ describe.each(["modal", "sheet", "drawer", "slide"] as const)(
         async function open() {
             const user = userEvent.setup();
             render(OverlayToastHarness, { kind });
-            pushToast({ message: "Saved", title: "Saved", type: "success", duration: 0 });
+            // With details: a toast then has two controls of its own to walk through.
+            pushToast({
+                message: "Saved",
+                title: "Saved",
+                detail: "Every answer of the round was saved.",
+                type: "success",
+                duration: 0,
+            });
             await waitFor(() => expect(toastButton("Dismiss notification")).toBeTruthy());
             await waitFor(() => expect(dialog().contains(active())).toBe(true));
             return user;
@@ -492,12 +499,12 @@ describe("ToasterToast and Toast at 320px", () => {
         expect(classesOf(toast)).toContain("shrink-0");
         const status = toast.querySelector('[role="status"]')!;
         expect(classesOf(status.parentElement)).toEqual(
-            expect.arrayContaining(["flex", "flex-wrap", "gap-x-3", "gap-y-1"]),
+            expect.arrayContaining(["flex", "flex-wrap", "gap-x-[12px]", "gap-y-[4px]"]),
         );
         expect(classesOf(status)).toContain("flex-[1_1_8rem]");
         const buttons = screen.getByRole("button", { name: "Dismiss notification" }).parentElement!;
         expect(classesOf(buttons)).toEqual(expect.arrayContaining(["ms-auto", "shrink-0"]));
-        expect(classesOf(toast.querySelector("h4"))).toContain("[overflow-wrap:anywhere]");
+        expect(classesOf(toast.querySelector("[data-toast-message]"))).toContain("[overflow-wrap:anywhere]");
     });
 
     it("the stack reads a footer's inset, and is at rest without one", () => {

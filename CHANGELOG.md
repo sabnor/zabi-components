@@ -12,6 +12,36 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- **Toaster takes `strings`**, every built-in word of a toast: the region
+  label, the default titles, the countdown sentences, "Click to stop", "Okay",
+  expand, collapse, dismiss and the "available" suffix. `aria-label` on Toaster
+  is accepted too. `ToasterStrings` and `DEFAULT_TOASTER_STRINGS` are exported.
+- Toaster takes `showCountdown` and `onpausechange({ id, paused })`;
+  `data-paused` on a toast is supported API.
+- `closeLabel` on Toast and Alert.
+
+### Changed
+
+- **A toast shows your message.** A toast pushed with a `message` and no
+  `title` shows the message as its text; before, it showed an English heading
+  by type ("Changes saved", "Something went wrong") and kept the message for
+  screen readers or behind "Expand details". With a `title` and a different
+  `message`, the message is a second line. The default headings are used only
+  for a toast with neither.
+- **Only a toast with `detail` can be expanded**; the expand button no longer
+  appears on every toast with a message.
+- **The countdown sentence and "Click to stop" are off by default**
+  (`showCountdown` brings them back). The progress bar, the pause on hover and
+  focus, and the default duration are unchanged; the time left stays readable
+  to assistive technology without being announced every second.
+- Padding, gaps and button targets inside a toast are in px, so at enlarged
+  text the words get the room: a two-sentence toast at 375px and 200% text is
+  at most 420px tall with no word broken (was 594px).
+
+### Fixed
+
 ## [8.1.0-beta.1] - 2026-10-06
 
 A pre-release under the `beta` dist-tag, following 8.1.0-beta.0.

@@ -165,6 +165,8 @@ export {
     type ToastAction,
     type ToastLevel,
 } from './molecules/toast-store.js';
+export { DEFAULT_TOASTER_STRINGS } from './util/toaster.js';
+export type { ToasterStrings, ToastPauseChange } from './util/toaster.js';
 
 export { default as TopNavbar } from './organisms/TopNavbar.svelte';
 export { default as SidebarNavigation } from './organisms/SidebarNavigation.svelte';

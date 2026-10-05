@@ -423,7 +423,9 @@ test.describe("A toast and an open overlay, on a phone", () => {
         });
         expect(hidden).toBe(false);
         await expect(toasts(page).last().getByRole("status")).toContainText("Saved");
-        // Both are above the footer.
+        // Both are above the footer (measured once the new one has flown in).
+        await expect(toasts(page).last()).toHaveCSS("opacity", "1");
+        await expect.poll(() => toasts(page).last().evaluate((el) => el.getAnimations().length)).toBe(0);
         const footer = await box(dialog(page, "New quiz round").locator("footer"));
         expect(await bottomOf(toasts(page).last())).toBeLessThanOrEqual(Math.round(footer.y));
     });

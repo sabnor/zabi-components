@@ -75,6 +75,7 @@ when it appears.
 **Best Practices:**
 - The role follows the variant: `status` for `success` and `info`, `alert` for the others. Both are live regions, so the text is announced when the alert appears
 - Use `bind:open` to know when the user has closed it
+- Name the close button in the app's language with `closeLabel` (default "Dismiss alert")
 
 ---
 
@@ -614,6 +615,20 @@ The content keeps 120px at least. When the header and the footer leave less
 sideways, where a 200px strip is all that is left), the panel scrolls as a
 whole instead: the footer is then reached by scrolling, or by Tab, and is not
 pinned.
+
+**Toasts** (Toaster): a toast is announced when it appears (`role="status"`,
+or `alert` for an error) with what it was pushed with: its title and its
+message, both of which are also its visible text. Its timer (14 seconds unless
+`duration` says otherwise; none for a toast with an action) stops while the
+pointer is over it or keyboard focus is inside it. The time left is shown by
+the bar along its bottom edge, and is in the toast as a sentence for a screen
+reader, outside the live region: it is found when the toast is read and is not
+spoken every second. `showCountdown` on the Toaster shows that sentence to
+everyone, with a button that stops the timer. Details that open and close are
+the `detail` of a toast; a toast without one has only its dismiss button.
+Every word the toaster says by itself is in `strings`, and the region's name
+is `aria-label` or `strings.regionLabel`. `data-paused` on a toast and
+`onpausechange` on the Toaster say when its timer is held.
 
 **Toasts while a modal is open:** a toast is drawn over a modal overlay
 (Modal, BottomSheet, SlideUp, Drawer, ConfirmDialog) and its controls are part

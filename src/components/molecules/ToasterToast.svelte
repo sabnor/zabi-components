@@ -11,14 +11,31 @@
     import Button from '../atoms/Button.svelte';
     import { toastStore, type ToastItem } from './toast-store.js';
     import { cn } from "../util/cn.js";
+    import {
+        DEFAULT_TOASTER_STRINGS,
+        type ToasterStrings,
+        type ToastPauseChange,
+    } from "../util/toaster.js";
 
     interface Props {
         /** Extra classes for the host element. */
         class?: string;
         toast: ToastItem;
+        /** Every word the toast says by itself; the Toaster passes its own. */
+        strings?: ToasterStrings;
+        /** Shows the time left as a sentence, with a button that stops the timer. */
+        showCountdown?: boolean;
+        /** Called when the pointer or focus starts or stops holding the timer. */
+        onpausechange?: (detail: ToastPauseChange) => void;
     }
 
-    let { class: className = "", toast }: Props = $props();
+    let {
+        class: className = "",
+        toast,
+        strings = DEFAULT_TOASTER_STRINGS,
+        showCountdown = false,
+        onpausechange,
+    }: Props = $props();
 
     /**
      * Seconds until auto-dismiss; `0` means no countdown (manual dismiss only).
@@ -43,23 +60,47 @@
 
     let intervalRef: ReturnType<typeof setInterval> | undefined;
 
-    const expandableText = $derived((toast.detail ?? toast.message).trim());
+    const title = $derived(toast.title?.trim() ?? "");
+    const message = $derived(toast.message.trim());
 
+    /**
+     * What a toast pushed with neither a title nor a message says: a word
+     * for its type. A toast with a message says the message.
+     */
+    const fallbackTitle = $derived(
+        toast.type === 'success'
+            ? strings.successTitle
+            : toast.type === 'error'
+              ? strings.errorTitle
+              : toast.type === 'warning'
+                ? strings.warningTitle
+                : strings.infoTitle,
+    );
+
+    /** The first line: the title, or the message when there is no title. */
+    const headerTitle = $derived(title || message || fallbackTitle);
+    /** The second line: the message, under a title that says something else. */
+    const secondLine = $derived(title && message && message !== title ? message : "");
+
+    /**
+     * The part that opens and closes is `detail`, when the toast was given
+     * one: the long version. The message is never folded away.
+     */
+    const expandableText = $derived((toast.detail ?? "").trim());
     const hasExpandable = $derived(expandableText.length > 0);
 
-    const headerTitle = $derived.by(() => {
-        const t = toast.title?.trim();
-        if (t) return t;
-        switch (toast.type) {
-            case 'success':
-                return 'Changes saved';
-            case 'error':
-                return 'Something went wrong';
-            case 'warning':
-                return 'Please review';
-            default:
-                return 'Notice';
-        }
+    /** The time left as words: for the sentence, or for a screen reader to find. */
+    const countdownText = $derived(
+        paused ? strings.pausedClosesIn(count) : strings.closesIn(count),
+    );
+
+    // Said to the app as well: `data-paused` is the same thing in the markup.
+    let reportedPause = false;
+    $effect(() => {
+        const now = paused;
+        if (now === reportedPause) return;
+        reportedPause = now;
+        onpausechange?.({ id: toast.id, paused: now });
     });
 
     const statusIconClass = $derived(
@@ -170,14 +211,16 @@
     data-toast-id={toast.id}
     data-paused={paused}
 >
-    <div class="p-4">
+    <!-- Padding and gaps in px: at 200% text on a phone, room that grew with
+    the text left the text itself a column too narrow for one long word. -->
+    <div class="p-[16px]">
         <!-- The title keeps 8rem at least, icon included. When the toast has
         less beside its buttons (320px with enlarged text), the buttons go to a
         line of their own under it, at the end. -->
-        <div class="flex flex-wrap items-start gap-x-3 gap-y-1">
+        <div class="flex flex-wrap items-start gap-x-[12px] gap-y-[4px]">
             <!-- Live region holds only title + message, so the countdown and buttons are never re-announced. -->
             <div
-                class="flex min-w-0 flex-[1_1_8rem] items-start gap-3"
+                class="flex min-w-0 flex-[1_1_8rem] items-start gap-[12px]"
                 role={toast.type === 'error' ? 'alert' : 'status'}
                 aria-atomic="true"
             >
@@ -192,25 +235,37 @@
                     <Info class="size-5 {statusIconClass}" aria-hidden="true" />
                 {/if}
             </div>
-            <h4 class="min-w-0 flex-1 text-base font-semibold text-headline [overflow-wrap:anywhere]">
-                {headerTitle}
-                {#if toast.message.trim() && toast.message.trim() !== headerTitle}
-                    <span class="sr-only">{toast.message}</span>
+            <div class="min-w-0 flex-1">
+                <!-- A heading when the app gave the toast a title (or nothing
+                at all); a message on its own is a sentence, not a heading. -->
+                {#if title || !message}
+                    <h4 class="text-base font-semibold text-headline [overflow-wrap:anywhere]">
+                        {headerTitle}
+                    </h4>
+                {:else}
+                    <p class="text-base font-medium text-headline [overflow-wrap:anywhere]" data-toast-message>
+                        {headerTitle}
+                    </p>
+                {/if}
+                {#if secondLine}
+                    <p class="mt-1 text-sm text-description [overflow-wrap:anywhere]" data-toast-message>
+                        {secondLine}
+                    </p>
                 {/if}
                 {#if toast.action}
                     <!-- The button sits outside the live region, so this is how a screen reader user hears that there is one. -->
-                    <span class="sr-only">{toast.action.label} available.</span>
+                    <span class="sr-only">{strings.actionAvailable(toast.action.label)}</span>
                 {/if}
-            </h4>
+            </div>
             </div>
             <div class="ms-auto flex shrink-0 items-center gap-1">
                 {#if hasExpandable}
                     <button
                         type="button"
-                        class="focus-ring cursor-pointer inline-flex items-center justify-center rounded-control p-1 pointer-coarse:min-h-11 pointer-coarse:min-w-11 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active focus:outline-none"
+                        class="focus-ring cursor-pointer inline-flex items-center justify-center rounded-control p-1 pointer-coarse:min-h-[44px] pointer-coarse:min-w-[44px] text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active focus:outline-none"
                         aria-expanded={isExpanded}
                         aria-controls="toaster-expand-{toast.id}"
-                        aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
+                        aria-label={isExpanded ? strings.collapse : strings.expand}
                         onclick={() => (isExpanded = !isExpanded)}
                     >
                         <ChevronDown
@@ -223,9 +278,9 @@
                 {/if}
                 <button
                     type="button"
-                    class="focus-ring cursor-pointer inline-flex items-center justify-center rounded-control p-1 pointer-coarse:min-h-11 pointer-coarse:min-w-11 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active focus:outline-none"
+                    class="focus-ring cursor-pointer inline-flex items-center justify-center rounded-control p-1 pointer-coarse:min-h-[44px] pointer-coarse:min-w-[44px] text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active focus:outline-none"
                     onclick={handleDismiss}
-                    aria-label="Dismiss notification"
+                    aria-label={strings.dismiss}
                 >
                     <X class="size-5" aria-hidden="true" />
                 </button>
@@ -234,7 +289,7 @@
 
         {#if toast.action}
             <!-- Indented to the title: past the 20px status icon and its gap. -->
-            <div class="mt-3 pl-8">
+            <div class="mt-3 pl-[calc(1.25rem+12px)]">
                 <Button
                     variant="secondary"
                     size="sm"
@@ -256,7 +311,7 @@
                 <Button
                     variant="primary"
                     size="sm"
-                    text="Okay"
+                    text={strings.okay}
                     type="button"
                     class="mt-3"
                     onclick={handleOkay}
@@ -265,19 +320,24 @@
         {/if}
     </div>
 
-    {#if timerActive}
-        <div class="px-4 pb-3" transition:fade={{ duration: motion(180) }}>
+    {#if timerActive && showCountdown}
+        <div class="px-[16px] pb-3" transition:fade={{ duration: motion(180) }}>
             <p class="text-xs text-description" data-toast-countdown>
-                {paused ? 'Paused — closes' : 'This message will close'} in {count} seconds.
+                {countdownText}
                 <button
                     type="button"
-                    class="focus-ring cursor-pointer rounded-control text-link underline-offset-2 hover:underline active:underline focus:outline-none pointer-coarse:inline-flex pointer-coarse:items-center pointer-coarse:min-h-11"
+                    class="focus-ring cursor-pointer rounded-control text-link underline-offset-2 hover:underline active:underline focus:outline-none pointer-coarse:inline-flex pointer-coarse:items-center pointer-coarse:min-h-[44px]"
                     onclick={stopTimer}
                 >
-                    Click to stop
+                    {strings.stop}
                 </button>
             </p>
         </div>
+    {:else if timerActive}
+        <!-- The bar below shows the time left to the eye. For a screen reader
+        it is here as words: outside the live region, so it is found when the
+        toast is read and is not spoken again every second. -->
+        <p class="sr-only" data-toast-countdown>{countdownText}</p>
     {/if}
 
     {#if timerActive}

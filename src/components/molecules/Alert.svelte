@@ -14,6 +14,8 @@
         title?: string;
         message?: string;
         closable?: boolean;
+        /** Accessible name of the dismiss button a `closable` alert has. */
+        closeLabel?: string;
         /** Visible state; `closable` dismiss sets it to `false`. Supports `bind:open`. */
         open?: boolean;
         /** Shrink to content instead of filling the container. */
@@ -29,6 +31,7 @@
         title = "",
         message = "",
         closable = false,
+        closeLabel = "Dismiss alert",
         open = $bindable(true),
         inline = false,
         class: classProp = "",
@@ -108,7 +111,7 @@
         <button
             onclick={handleDismiss}
             class="absolute end-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[calc(var(--radius-container)-0.5rem-1px)] text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring focus-ring--muted {TOUCH_HIT_AREA}"
-            aria-label="Dismiss alert"
+            aria-label={closeLabel}
             type="button"
         >
             <X size={16} aria-hidden="true" />

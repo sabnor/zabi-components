@@ -21,11 +21,18 @@ export interface ToastAction {
 
 export interface ToastItem {
     id: string;
-    /** Primary line (always shown). */
+    /**
+     * What the toast says. Always shown: as its one line, or under `title`
+     * when it has one.
+     */
     message: string;
     type: ToastLevel;
+    /** A heading over the message. Without it the message stands alone. */
     title?: string;
-    /** Expandable body; UI can fall back to `message`. */
+    /**
+     * The long version, kept behind a button that opens it. Only a toast
+     * with `detail` has that button.
+     */
     detail?: string;
     /**
      * Auto-dismiss duration in milliseconds.

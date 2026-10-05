@@ -57,13 +57,13 @@ describe("Toaster action (QA-3)", () => {
         render(Toaster);
         pushToast({ message: "File deleted", duration: 3000, action: undo() });
 
-        const toast = await screen.findByRole("group", { name: "Notice" });
+        const toast = await screen.findByRole("group", { name: "File deleted" });
         const action = screen.getByRole("button", { name: "Undo" });
         action.focus();
         await waitFor(() => expect(toast.getAttribute("data-paused")).toBe("true"));
         vi.advanceTimersByTime(6000);
         await waitFor(() => expect(toast.textContent).toContain("3 seconds"));
-        expect(screen.queryByRole("group", { name: "Notice" })).toBeTruthy();
+        expect(screen.queryByRole("group", { name: "File deleted" })).toBeTruthy();
 
         action.blur();
         await waitFor(() => expect(toast.getAttribute("data-paused")).toBe("false"));
@@ -75,7 +75,7 @@ describe("Toaster action (QA-3)", () => {
         render(Toaster);
         pushToast({ message: "File deleted", duration: 3000, action: undo() });
 
-        const toast = await screen.findByRole("group", { name: "Notice" });
+        const toast = await screen.findByRole("group", { name: "File deleted" });
         const dismiss = screen.getByRole("button", { name: "Dismiss notification" });
         const action = screen.getByRole("button", { name: "Undo" });
         dismiss.focus();
@@ -122,10 +122,8 @@ describe("Toaster action (QA-3)", () => {
             .getAllByRole("button")
             .map((button) => button.getAttribute("aria-label") ?? button.textContent?.trim());
         expect(names).toEqual([
-            "Expand details",
             "Dismiss notification",
             "Undo first",
-            "Expand details",
             "Dismiss notification",
             "Undo second",
         ]);

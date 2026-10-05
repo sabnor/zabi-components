@@ -48,6 +48,34 @@
     let textOpen = $state(false);
     let plainOpen = $state(false);
     let lastClose = $state("none");
+    let swedish = $state(false);
+    let pauses = $state<string[]>([]);
+
+    /** An app in another language: every word the toaster says by itself. */
+    const sv = {
+        regionLabel: "Aviseringar",
+        successTitle: "Sparat",
+        errorTitle: "Något gick fel",
+        warningTitle: "Kontrollera",
+        infoTitle: "Meddelande",
+        closesIn: (seconds: number) => `Stängs om ${seconds} sekunder.`,
+        pausedClosesIn: (seconds: number) => `Pausad. Stängs om ${seconds} sekunder.`,
+        stop: "Stoppa",
+        okay: "Okej",
+        expand: "Visa mer",
+        collapse: "Visa mindre",
+        dismiss: "Stäng aviseringen",
+        actionAvailable: (label: string) => `${label} finns.`,
+    };
+
+    function toastSwedish() {
+        // Pushed the obvious way: a message and a type, nothing else.
+        pushToast({
+            message: "Det gick inte att spara. Kolla uppkopplingen och försök igen.",
+            type: "error",
+            duration: 0,
+        });
+    }
     let sheetOpen = $state(false);
     let slideOpen = $state(false);
     let slideFormOpen = $state(false);
@@ -86,7 +114,11 @@
     <meta name="robots" content="noindex" />
 </svelte:head>
 
-<Toaster style={standaloneBar ? "--toaster-bottom-offset: calc(4rem + 1px)" : undefined} />
+<Toaster
+    style={standaloneBar ? "--toaster-bottom-offset: calc(4rem + 1px)" : undefined}
+    strings={swedish ? sv : undefined}
+    onpausechange={({ paused }) => (pauses = [...pauses, paused ? "paused" : "running"])}
+/>
 
 <main class="mx-auto max-w-3xl space-y-12 p-4" data-testid="phone-lab">
     {#if hydrated}
@@ -212,6 +244,17 @@
                 Undo toast
             </Button>
             <Button variant="secondary" data-testid="fab-toggle" onclick={() => (fab = !fab)}>FAB</Button>
+            <Button variant="secondary" data-testid="toast-sv-push" onclick={toastSwedish}>Fel</Button>
+            <Button variant="secondary" data-testid="toast-sv-toggle" onclick={() => (swedish = !swedish)}>
+                SV
+            </Button>
+            <Button
+                variant="secondary"
+                data-testid="toast-timed-push"
+                onclick={() => pushToast({ message: "Utkastet är sparat.", type: "success" })}
+            >
+                Utkast
+            </Button>
             <Button variant="secondary" data-testid="rows-open" onclick={() => (rowsOpen = true)}>Rows</Button>
             <Button
                 variant="secondary"
@@ -252,6 +295,7 @@
             </Button>
         </div>
         <p class="text-sm text-description" data-testid="toast-undone">Undone {undone}</p>
+        <p class="text-sm text-description" data-testid="toast-pauses">Pauses: {pauses.join(",")}</p>
         <p class="text-sm text-description" data-testid="modal-last-close">Last close: {lastClose}</p>
     </section>
 

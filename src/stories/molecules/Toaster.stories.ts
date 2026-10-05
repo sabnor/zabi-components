@@ -12,6 +12,16 @@ const meta = {
             }
         }, layout: 'fullscreen' },
     tags: ['autodocs'],
+    argTypes: {
+        swedish: {
+            control: 'boolean',
+            description: 'An app in Swedish: the toaster takes its own words through strings'
+        },
+        showCountdown: {
+            control: 'boolean',
+            description: 'Show the time a toast has left as a sentence, with a button that stops the timer'
+        }
+    }
 } satisfies Meta<typeof ToasterStory>;
 
 export default meta;
@@ -20,5 +30,28 @@ type Story = StoryObj<typeof meta>;
 export const Interactive: Story = {
     render: () => ({
         Component: ToasterStory,
+    }),
+};
+
+/**
+ * A toast shows what it was pushed with. Every word the toaster adds by itself
+ * (the region's name, the names of its buttons, the sentence about the time
+ * left, the default title of a toast pushed with no text) comes from
+ * `strings`, so an app in another language has none of the English.
+ */
+export const InSwedish: Story = {
+    args: { swedish: true },
+    render: (args) => ({
+        Component: ToasterStory,
+        props: args,
+    }),
+};
+
+/** The time a toast has left as a sentence under it, with a button that stops the timer. Off by default. */
+export const WithCountdown: Story = {
+    args: { showCountdown: true },
+    render: (args) => ({
+        Component: ToasterStory,
+        props: args,
     }),
 };

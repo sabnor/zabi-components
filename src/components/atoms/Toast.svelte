@@ -6,6 +6,8 @@
         message?: string;
         type?: 'success' | 'error' | 'warning' | 'info';
         closable?: boolean;
+        /** Accessible name of the close button. */
+        closeLabel?: string;
         onclick?: (event: Event) => void;
         class?: string;
         /** `viewport`: fixed corner; `inline`: block in flow (e.g. demos). */
@@ -16,6 +18,7 @@
         message = '',
         type = 'info',
         closable = true,
+        closeLabel = 'Close notification',
         onclick,
         class: className = '',
         layout = 'viewport',
@@ -55,7 +58,7 @@
                 type="button"
                 class="focus-ring pointer-coarse:relative shrink-0 cursor-pointer rounded-control text-description hover:text-headline active:text-headline focus:outline-none pointer-coarse:px-1 {TOUCH_HIT_AREA}"
                 onclick={closeToast}
-                aria-label="Close notification"
+                aria-label={closeLabel}
             >
                 ×
             </button>

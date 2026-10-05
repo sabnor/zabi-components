@@ -1407,6 +1407,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Show close button",
                     },
                     {
+                        name: "closeLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Close notification",
+                        description: "Accessible name of the close button, for translation.",
+                    },
+                    {
                         name: "class",
                         type: "string",
                         required: false,
@@ -2595,6 +2602,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "false",
                         description: "Show close button",
                     },
+                    {
+                        name: "closeLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Dismiss alert",
+                        description: "Accessible name of the close button a closable alert has, for translation.",
+                    },
                 ],
                 variants: ["info", "success", "warning", "error"],
                 examples: [
@@ -3624,6 +3638,36 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     "Fixed notification region for pushToast; mount once near the app root. On a phone it spans the width, clear of the home indicator and a tab bar.",
                 props: [
                     {
+                        name: "strings",
+                        type: "Partial<ToasterStrings>",
+                        required: false,
+                        description:
+                            "Every word the toaster says by itself, for an app in another language: regionLabel; successTitle, errorTitle, warningTitle and infoTitle (what a toast pushed with neither title nor message says); closesIn(seconds) and pausedClosesIn(seconds); stop; okay; expand; collapse; dismiss; actionAvailable(label). What is left out keeps its English default.",
+                    },
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Notifications",
+                        description:
+                            "Accessible name of the region. Wins over strings.regionLabel.",
+                    },
+                    {
+                        name: "showCountdown",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the time a toast has left as a sentence under it, with a button that stops the timer. Without it the bar along the bottom of the toast shows the time, and the sentence is in the toast for a screen reader only, outside the live region, so it is found when the toast is read and not spoken every second.",
+                    },
+                    {
+                        name: "onpausechange",
+                        type: "(detail: { id: string; paused: boolean }) => void",
+                        required: false,
+                        description:
+                            "Called when the pointer or keyboard focus starts or stops holding a toast's timer, with the toast's id. The same state is the data-paused attribute on the toast (data-toast-id), which is supported: an app with a timer of its own can read either.",
+                    },
+                    {
                         name: "class",
                         type: "string",
                         required: false,
@@ -3645,6 +3689,31 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "pushToast takes an optional action ({ label, onclick, dismissOnClick? }) that renders as a button and closes the toast after it runs. A toast with an action stays until it is dismissed, unless you pass a duration. Call focusToasts() from a shortcut of your own to move keyboard focus to the newest toast; focus returns to where it was when the toast is dismissed. Offer the same action elsewhere in the page as well.",
                         code: "import { pushToast, focusToasts } from 'zabi-components';\n\npushToast({\n  message: 'Project archived',\n  type: 'success',\n  action: { label: 'Undo', onclick: () => restore(project) },\n});\n\n// e.g. on Alt+T\nfocusToasts();",
+                    },
+                    {
+                        title: "In another language",
+                        description:
+                            "A toast shows what it was pushed with: the message, or the title with the message under it. Nothing English is put over it. The words the toaster adds itself come from strings; details that open are the detail field of a toast",
+                        code: `<Toaster
+    strings={{
+        regionLabel: "Aviseringar",
+        dismiss: "Stäng aviseringen",
+        expand: "Visa mer",
+        collapse: "Visa mindre",
+        okay: "Okej",
+        closesIn: (seconds) => \`Stängs om \${seconds} sekunder.\`,
+        pausedClosesIn: (seconds) => \`Pausad. Stängs om \${seconds} sekunder.\`,
+        actionAvailable: (label) => \`\${label} finns.\`,
+    }}
+/>
+
+pushToast({ message: "Utkastet är sparat.", type: "success" });
+pushToast({
+    message: "Det gick inte att spara. Kolla uppkopplingen och försök igen.",
+    detail: "Servern svarade inte inom tio sekunder.",
+    type: "error",
+    duration: 0,
+});`,
                     },
                 ],
             },

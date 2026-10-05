@@ -278,6 +278,8 @@ export interface AlertProps {
     title?: string;
     message?: string;
     closable?: boolean;
+    /** Accessible name of the dismiss button a `closable` alert has. */
+    closeLabel?: string;
     /** Visible state. Bindable. */
     open?: boolean;
     /** Shrink to content instead of filling the container. */

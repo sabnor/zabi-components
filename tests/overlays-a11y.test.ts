@@ -670,9 +670,10 @@ describe("Toaster live regions", () => {
         const region = screen.getByRole("region", { name: "Notifications" });
         expect(region.hasAttribute("aria-live")).toBe(false);
 
+        // The toast says what it was pushed with: the message, and no default heading over it.
         const status = screen.getByRole("status");
-        expect(status.textContent).toContain("Changes saved");
         expect(status.textContent).toContain("Profile updated");
+        expect(status.textContent).not.toContain("Changes saved");
     });
 
     it("pauses auto-dismiss while hovered", async () => {
@@ -680,11 +681,11 @@ describe("Toaster live regions", () => {
         render(Toaster);
         pushToast({ message: "Hold on", type: "info", duration: 3000 });
 
-        const toast = await screen.findByRole("group", { name: "Notice" });
+        const toast = await screen.findByRole("group", { name: "Hold on" });
         await fireEvent.mouseEnter(toast);
         vi.advanceTimersByTime(5000);
         await waitFor(() => expect(toast.textContent).toContain("3 seconds"));
-        expect(screen.queryByRole("group", { name: "Notice" })).toBeTruthy();
+        expect(screen.queryByRole("group", { name: "Hold on" })).toBeTruthy();
 
         await fireEvent.mouseLeave(toast);
         vi.advanceTimersByTime(1000);
@@ -716,7 +717,7 @@ describe("Toaster action", () => {
         render(Toaster);
         pushToast({ message: "Saved", type: "success", duration: 0 });
 
-        const toast = await screen.findByRole("group", { name: "Changes saved" });
+        const toast = await screen.findByRole("group", { name: "Saved" });
         expect(toast.querySelector("[data-toast-action]")).toBeNull();
         expect(screen.getByRole("status").textContent).not.toContain("available");
     });

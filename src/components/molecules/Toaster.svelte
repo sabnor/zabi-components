@@ -4,6 +4,11 @@
     import { cn } from "../util/cn.js";
     import { readKeyboardInset } from "../util/keyboard-inset.js";
     import { topOverlayFooter, topOverlayHeader, watchOverlayFooters } from "../util/overlay.js";
+    import {
+        DEFAULT_TOASTER_STRINGS,
+        type ToasterStrings,
+        type ToastPauseChange,
+    } from "../util/toaster.js";
     import type { HTMLAttributes } from "svelte/elements";
 
     /**
@@ -36,12 +41,58 @@
      * the room it has: with more toasts than fit, it scrolls. With an
      * overlay open, Tab goes from its last control into the toasts and back,
      * and Escape in a toast returns focus to where it came from.
+     *
+     * A toast shows what it was pushed with: its `title`, its `message`
+     * under it, or the message alone. Its timer stops while the pointer is
+     * over it or focus is inside it; `data-paused` on the toast says so, and
+     * `onpausechange` is called. Every word the toaster says by itself is in
+     * `strings`:
+     *
+     * ```svelte
+     * <Toaster
+     *     strings={{
+     *         regionLabel: "Aviseringar",
+     *         dismiss: "Stäng aviseringen",
+     *         closesIn: (seconds) => `Stängs om ${seconds} sekunder.`,
+     *     }}
+     * />
+     * ```
      */
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class" | "role" | "aria-label"> & {
+        /**
+         * The words the toaster says by itself, for an app in another
+         * language: the region's name, the buttons' names, the sentence about
+         * the time left. What is left out keeps its English default.
+         */
+        strings?: Partial<ToasterStrings>;
+        /** Accessible name of the region. Wins over `strings.regionLabel`. */
+        "aria-label"?: string;
+        /**
+         * Shows the time a toast has left as a sentence under it, with a
+         * button that stops the timer. Without it the bar along the bottom of
+         * the toast shows the time, and the sentence is there for a screen
+         * reader only.
+         */
+        showCountdown?: boolean;
+        /**
+         * Called when the pointer or focus starts or stops holding a toast's
+         * timer, with the toast's id. The same state is `data-paused` on the
+         * toast.
+         */
+        onpausechange?: (detail: ToastPauseChange) => void;
         class?: string;
     };
 
-    let { class: className = '', ...restProps }: Props = $props();
+    let {
+        strings,
+        "aria-label": ariaLabel,
+        showCountdown = false,
+        onpausechange,
+        class: className = '',
+        ...restProps
+    }: Props = $props();
+
+    const words = $derived<ToasterStrings>({ ...DEFAULT_TOASTER_STRINGS, ...strings });
 
     /**
      * One utility per property, so a class from the caller still replaces it
@@ -274,7 +325,7 @@
     {...restProps}
     class={cn("pointer-events-none fixed z-toast flex min-w-0 flex-col gap-2 overscroll-contain", placement, className)}
     role="region"
-    aria-label="Notifications"
+    aria-label={ariaLabel ?? words.regionLabel}
     data-zabi-toaster
     bind:this={region}
     onfocusin={handleFocusIn}
@@ -282,6 +333,6 @@
 >
     <!-- Each toast owns its role="status"/"alert"; a region-level aria-live would announce twice. -->
     {#each $toastStore as toast (toast.id)}
-        <ToasterToast {toast} />
+        <ToasterToast {toast} strings={words} {showCountdown} {onpausechange} />
     {/each}
 </div>

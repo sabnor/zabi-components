@@ -369,7 +369,8 @@ test.describe("Toaster and Toast at the other edges", () => {
         expect(Math.round(toast.x)).toBe(16);
         expect(Math.round(toast.x + toast.width)).toBe(NARROW.width - 16);
 
-        await page.getByTestId("top-toast-toggle").click();
+        // The toast shows its message now and lies over this button at this size: pressed from the page's side.
+        await page.getByTestId("top-toast-toggle").evaluate((el) => (el as HTMLElement).click());
         const top = await box(page.getByRole("alert").filter({ hasText: "The round starts" }));
         expect(top.x).toBeGreaterThanOrEqual(0);
         expect(top.x + top.width).toBeLessThanOrEqual(NARROW.width);

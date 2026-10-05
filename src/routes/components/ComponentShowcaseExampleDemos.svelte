@@ -180,6 +180,24 @@
     }
 
     const appShellMainTitle = $derived(appShellLeafTitle(appShellPath));
+
+    /** The Toaster example in Swedish switches the page's one Toaster to these. */
+    let toasterSwedish = $state(false);
+    const toasterSv = {
+        regionLabel: "Aviseringar",
+        successTitle: "Sparat",
+        errorTitle: "Något gick fel",
+        warningTitle: "Kontrollera",
+        infoTitle: "Meddelande",
+        closesIn: (seconds: number) => `Stängs om ${seconds} sekunder.`,
+        pausedClosesIn: (seconds: number) => `Pausad. Stängs om ${seconds} sekunder.`,
+        stop: "Stoppa",
+        okay: "Okej",
+        expand: "Visa mer",
+        collapse: "Visa mindre",
+        dismiss: "Stäng aviseringen",
+        actionAvailable: (label: string) => `${label} finns.`,
+    };
 </script>
 
 <div class="space-y-8">
@@ -1694,8 +1712,34 @@
                 <!-- One for the page. This branch runs once per example, and a
                 second Toaster drew every toast twice and announced it twice. -->
                 {#if exampleIndex === 0}
-                    <Toaster />
+                    <Toaster strings={toasterSwedish ? toasterSv : undefined} />
                 {/if}
+                {#if exampleIndex === 2}
+                    <!-- An app in Swedish: its own text in the toast, and the
+                    toaster's own words through `strings`. -->
+                    <div class="flex flex-wrap gap-2" lang="sv">
+                        <Button
+                            text="Spara utkast"
+                            onclick={() => {
+                                toasterSwedish = true;
+                                pushToast({ message: "Utkastet är sparat.", type: "success" });
+                            }}
+                        />
+                        <Button
+                            variant="outline"
+                            text="Fel"
+                            onclick={() => {
+                                toasterSwedish = true;
+                                pushToast({
+                                    message: "Det gick inte att spara. Kolla uppkopplingen och försök igen.",
+                                    detail: "Servern svarade inte inom tio sekunder.",
+                                    type: "error",
+                                    duration: 0,
+                                });
+                            }}
+                        />
+                    </div>
+                {:else}
                 <Button
                     text="Push sample toast"
                     onclick={() =>
@@ -1724,6 +1768,7 @@
                             },
                         })}
                 />
+                {/if}
             {:else if component.name === "RadioGroup"}
                 <RadioGroup
                     legend="Billing plan"
