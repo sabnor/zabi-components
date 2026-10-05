@@ -25,7 +25,7 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
         "--color-action-primary": "var(--color-brand-600)",
         "--color-action-primary-hover": "var(--color-brand-700)",
         "--color-action-primary-active": "var(--color-brand-800)",
-        "--color-action-primary-text": "#ffffff",
+        "--color-action-primary-text": "var(--color-on-brand)",
         "--color-action-primary-subtle": "var(--color-brand-200)",
         "--color-action-secondary": "rgba(9, 9, 11, 0.1)",
         "--color-action-secondary-hover": "rgba(9, 9, 11, 0.15)",
@@ -40,7 +40,7 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
     // Only what `.dark` actually restates; the rest resolves through
     // `--color-brand-*`, which is why the light entries above hold in dark too.
     dark: {
-        "--color-action-primary-text": "var(--zabi-brand-950)",
+        "--color-action-primary-text": "var(--color-on-brand)",
         "--color-action-primary-subtle": "var(--color-brand-100)",
         "--color-action-secondary": "rgba(250, 250, 250, 0.09)",
         "--color-action-secondary-hover": "rgba(250, 250, 250, 0.15)",

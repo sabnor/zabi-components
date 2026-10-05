@@ -53,7 +53,8 @@
 </script>
 
 <!--
-  The font family comes from `--font-family-sans`, applied on `body`. This
+  The font family comes from `--font-family-heading`, which the theme applies
+  to h1–h6 in its base layer and which defaults to `--font-family-sans`. This
   component used to carry its own `font-family: "Nunito Sans"` in a local
   <style> block, which meant a consumer who rebranded the font token got a
   rebranded body and Nunito Sans headings.

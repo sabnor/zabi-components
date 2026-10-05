@@ -28,7 +28,32 @@ Use short package exports by default. Legacy deep `dist` imports remain supporte
 2. The `@theme` block with every token.
 3. The hand-written component rules that Tailwind cannot generate from the tokens: `.focus-ring`, `.text-action-primary`, the action hover, active and disabled states, the semantic colour classes and the `z-*` scale.
 
-`theme-dark` and `theme-dark-only` hold the `.dark { … }` overrides.
+`theme-dark` and `theme-dark-only` hold the dark overrides, under three selectors:
+
+```css
+.dark, [data-theme="dark"] { … }
+@media (prefers-color-scheme: dark) { [data-theme="auto"] { … } }
+```
+
+Put `class="dark"` or `data-theme="dark"` on `<html>` for dark, `data-theme="auto"` to follow the system, and `data-theme="light"` (or nothing) for light. Following the system is opt-in.
+
+The dark files only remap roles. The raw palettes (`--zabi-brand-*`, `--zabi-accent-*`, `--zabi-base-*` and the rest) are declared once, in the light theme, so that an app's override of them on `:root` applies in both modes. Before 8.1.0 the dark files restated those ramps; they no longer do, so a dark file must be imported together with a light one (`theme`, `theme-only`, or `colors`, which has both).
+
+## Rebranding
+
+```css
+/* src/lib/theme.css */
+@import "zabi-components/theme-only";
+@import "zabi-components/theme-dark-only";
+
+:root {
+  --zabi-brand-600: #d97706;  /* … the whole 50–950 scale, likewise --zabi-accent-* and --zabi-base-* */
+  --zabi-on-brand: #451a03;   /* label on the primary fill, when white does not reach 4.5:1 */
+  --font-family-heading: "Your Display Font", var(--font-family-sans);
+}
+```
+
+One declaration covers light and dark. The tokens are listed in [THEMING.md](../THEMING.md), Rebranding Through Tokens.
 
 The universal scrollbar rules are in the compiled `css` bundle only. Importing a theme does not restyle the scrollbars in your app; add `.scrollbar-semantic` where you want them.
 
@@ -55,9 +80,9 @@ Use these subpaths with your bundler or `npm`/`pnpm` resolution:
 |--------|-------------|----------|
 | `zabi-components/theme` | `zabi-components-theme.css` | Tailwind **not** already in the project; ships `@import "tailwindcss"` + `@theme`. |
 | `zabi-components/theme-only` | `zabi-components-theme-only.css` | Tailwind **already** configured; merge only the `@theme` block. |
-| `zabi-components/theme-dark` | `zabi-components-theme-dark.css` | Same as `theme` but for **dark**; includes Tailwind import + `.dark { … }`. |
-| `zabi-components/theme-dark-only` | `zabi-components-theme-dark-only.css` | Tailwind present; **only** `.dark { … }` overrides (import after light theme). |
-| `zabi-components/colors` | `zabi-components-colors.css` | **No Tailwind**: `:root` + `.dark` CSS variables only. |
+| `zabi-components/theme-dark` | `zabi-components-theme-dark.css` | Tailwind import + the dark overrides (`.dark`, `[data-theme]`); import after `theme`. |
+| `zabi-components/theme-dark-only` | `zabi-components-theme-dark-only.css` | Tailwind present; **only** the dark overrides (import after light theme). |
+| `zabi-components/colors` | `zabi-components-colors.css` | **No Tailwind**: `:root` + dark (`.dark`, `[data-theme]`) CSS variables only. |
 | `zabi-components/css` | `zabi-components.css` | Full compiled CSS (utilities, components styles, dark). |
 
 ### Legacy export paths (supported, deprecated in docs)
@@ -76,7 +101,7 @@ These are still exported for backward compatibility but are not the recommended 
 ## Decision matrix
 
 1. **Vanilla CSS or no Tailwind** → `colors` (or full `css` if you need utility classes from the bundle).
-2. **Tailwind v4 app, extend design tokens** → `theme-only` (+ `theme-dark-only` if you use `class="dark"` / dark mode).
+2. **Tailwind v4 app, extend design tokens** → `theme-only` (+ `theme-dark-only` if you use `class="dark"` / `data-theme` / dark mode).
 3. **Minimal setup, one import for light** → `theme`.
 4. **Dark as a second file** → `theme` + `theme-dark`, or `theme-only` + `theme-dark-only`.
 
@@ -118,16 +143,17 @@ These are still exported for backward compatibility but are not the recommended 
 @import "zabi-components/colors";
 ```
 
-Toggle `.dark` at the root element to activate dark tokens:
+Toggle `.dark` at the root element to activate dark tokens, or use `data-theme`:
 
 ```html
 <html class="dark">
+<html data-theme="auto">
 ```
 
 ## Maintainer checklist (token changes)
 
-1. Edit **`src/app.css`** only (`@theme` for light tokens, `.dark` for overrides).
-2. If you change **physical base ramp** hexes, keep the **mirrored** `--zabi-base-*` block inside `.dark` in sync with `@theme` (required for standalone dark imports).
+1. Edit **`src/app.css`** only (`@theme` for light tokens, the single `.dark` rule for overrides).
+2. Physical ramps (`--zabi-*`) are declared in `@theme` only. `.dark` must not restate them or hold a hex literal; `validate-theme.js` fails the build if it does.
 3. Run **`npm run build:css`** (or **`npm run build:lib`** before publish).
 4. Confirm **`node scripts/verify-build.js`** passes in CI or locally after builds.
 
@@ -135,11 +161,13 @@ Toggle `.dark` at the root element to activate dark tokens:
 
 | File | Contents |
 |------|----------|
-| `zabi-components.css` | PostCSS/Tailwind output: utilities + theme + `.dark`. |
+| `zabi-components.css` | PostCSS/Tailwind output: utilities + theme + dark. |
 | `zabi-components-theme.css` | `@import tailwind` + `@theme`. |
 | `zabi-components-theme-only.css` | `@theme` only. |
-| `zabi-components-theme-dark.css` | `@import tailwind` + `.dark`. |
-| `zabi-components-theme-dark-only.css` | `.dark` only. |
-| `zabi-components-colors.css` | `:root` + `.dark` as plain custom properties. |
+| `zabi-components-theme-dark.css` | `@import tailwind` + dark. |
+| `zabi-components-theme-dark-only.css` | dark only. |
+| `zabi-components-colors.css` | `:root` + dark as plain custom properties. |
+
+"dark" is the `.dark` rule of `src/app.css`, published as `.dark, [data-theme="dark"]` and again as `[data-theme="auto"]` inside `@media (prefers-color-scheme: dark)`, plus `color-scheme` for the three `data-theme` values.
 
 Build logic lives in **`scripts/build-css.js`** (see file header for behavior).

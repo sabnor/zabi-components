@@ -29,6 +29,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import postcss from 'postcss';
 import { converter, wcagContrast, wcagLuminance } from 'culori';
+import { resolveTokenValue } from './resolve-tokens.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
@@ -77,17 +78,17 @@ function collectDeclarations(css) {
   return { light, dark };
 }
 
-function resolveVar(name, scopes, seen = new Set()) {
-  if (seen.has(name)) throw new Error(`circular var() reference at ${name}`);
-  seen.add(name);
-  let value;
-  for (const scope of scopes) {
-    if (scope.has(name)) { value = scope.get(name); break; }
+/**
+ * A token's computed value, with the first scope that declares a name winning.
+ * The dark levels are `color-mix()` over the neutral ramp; the shared resolver
+ * evaluates them to the hex a browser paints, so the steps are still measured.
+ */
+function resolveVar(name, scopes) {
+  const merged = {};
+  for (const scope of [...scopes].reverse()) {
+    for (const [prop, value] of scope) merged[prop] = value;
   }
-  if (value === undefined) return undefined;
-  const match = value.match(/^var\(\s*(--[\w-]+)\s*(?:,\s*(.+))?\)$/);
-  if (!match) return value;
-  return resolveVar(match[1], scopes, seen) ?? match[2]?.trim();
+  return resolveTokenValue(merged, name) ?? undefined;
 }
 
 function lightness(color) {

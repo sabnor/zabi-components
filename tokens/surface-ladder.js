@@ -13,20 +13,32 @@
  * (`--color-surface-hover` is `rgba(250, 250, 250, 0.08)`) — the same light,
  * applied at different strengths, whether it is a surface or a hover.
  *
- * The composite is baked to an opaque hex at build time rather than shipped as
- * `rgba()`. Flat colours keep the whole static toolchain working:
- * check-contrast.js can resolve every AA pair against a surface, and
- * check-surface-elevation.js can measure the steps. Opaque overlay surfaces
- * also mean a modal never lets the page bleed through it. The trade is that
+ * The ladder ships as `color-mix()` over the neutral ramp, not as baked hex:
+ * the page is `--zabi-base-900` and the wash is `--zabi-base-50`, so an app
+ * that overrides `--zabi-base-*` (warm greys, a tinted neutral) gets its own
+ * four dark levels with no further tokens. `color-mix(in srgb, wash p%, page)`
+ * of two opaque colours is the same arithmetic as the source-over composite
+ * below, so the default theme still resolves to the hex it always had
+ * (#18181b, #262629, #363638, #454547) and an overlay stays opaque.
+ *
+ * The static toolchain evaluates the mix itself (scripts/resolve-tokens.js):
+ * check-contrast.js still resolves every AA pair against a surface, and
+ * check-surface-elevation.js still measures the steps. The trade is unchanged:
  * nesting past the four levels is not automatic — a card inside a card does
  * not self-lighten; it picks the next level up by name.
  */
 
-/** The dark page itself. Every level is this with the wash over it. */
-export const DARK_BASE = '#18181b';
+import { FIXED_LIGHT_SCALE } from './base-scale.js';
 
-/** Same light as the dark hover tint, at surface strengths. */
-export const WASH = '#fafafa';
+/** The neutral step that is the dark page. Every level is this with the wash over it. */
+export const DARK_BASE_STEP = 900;
+
+/** The neutral step used as the wash: the same light as the dark hover tint. */
+export const WASH_STEP = 50;
+
+/** Default values of those two steps, for the checks and the build log. */
+export const DARK_BASE = FIXED_LIGHT_SCALE[DARK_BASE_STEP];
+export const WASH = FIXED_LIGHT_SCALE[WASH_STEP];
 
 /**
  * Opacity per level, solved so each step lands ~6 OKLCH lightness points above
@@ -57,11 +69,37 @@ export function composite(base, wash, alpha) {
     return toHex(b.map((channel, i) => channel * (1 - alpha) + w[i] * alpha));
 }
 
-/** The four dark surface levels, base first. */
-export function generateSurfaceLadder() {
-    const levels = { 'surface-base': DARK_BASE };
+/**
+ * The four dark surface levels as flat hex, base first.
+ *
+ * Pass another neutral scale (`{ 50: '#…', 900: '#…' }`) to get the levels an
+ * overridden `--zabi-base-*` produces; the default is the library's own greys.
+ */
+export function generateSurfaceLadder(scale = FIXED_LIGHT_SCALE) {
+    const base = scale[DARK_BASE_STEP];
+    const wash = scale[WASH_STEP];
+    const levels = { 'surface-base': base };
     for (const [name, alpha] of Object.entries(SURFACE_ALPHA)) {
-        levels[name] = composite(DARK_BASE, WASH, alpha);
+        levels[name] = composite(base, wash, alpha);
+    }
+    return levels;
+}
+
+/** `0.064` → `6.4%`, without floating-point noise (0.131 × 100 is 13.100000000000001). */
+function percent(alpha) {
+    return `${Number((alpha * 100).toFixed(4))}%`;
+}
+
+/**
+ * The same four levels as the CSS that ships: the page aliases its ramp step,
+ * and each level above it mixes the wash step into the page step.
+ */
+export function generateSurfaceLadderCss(prefix = '--zabi-base-') {
+    const base = `var(${prefix}${DARK_BASE_STEP})`;
+    const wash = `var(${prefix}${WASH_STEP})`;
+    const levels = { 'surface-base': base };
+    for (const [name, alpha] of Object.entries(SURFACE_ALPHA)) {
+        levels[name] = `color-mix(in srgb, ${wash} ${percent(alpha)}, ${base})`;
     }
     return levels;
 }

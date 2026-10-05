@@ -78,4 +78,9 @@ export function formatSemanticAliasLines(prefix = '--zabi-base-') {
   return BASE_STEPS.map((step) => `  --color-base-${step}: var(${prefix}${step});`).join('\n');
 }
 
-export { BASE_STEPS, PRIMARY_STEPS };
+/** `--color-base-<S>: var(--zabi-base-<1000 − S>);` — the dark mirror, as aliases. */
+export function formatDarkMirrorAliasLines(prefix = '--zabi-base-') {
+  return BASE_STEPS.map((step) => `  --color-base-${step}: var(${prefix}${1000 - step});`).join('\n');
+}
+
+export { BASE_STEPS, PRIMARY_STEPS, FIXED_LIGHT_SCALE };

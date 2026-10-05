@@ -189,6 +189,32 @@ Whenever token or CSS import API surface changes, include:
 - **TopNavbar nav items take `external`.** It marks the link and opens it in a
   new tab; it defaults to true for absolute URLs, and can be set on a
   same-origin link that leaves the app, or turned off.
+- **One brand override restyles light and dark.** The raw `--zabi-*` ramps are
+  declared once; the dark block only remaps roles and holds no palette and no
+  hex value. Override `--zabi-brand-*`, `--zabi-accent-*` or `--zabi-base-*` on
+  `:root` and both themes follow. The dark surfaces are mixed from the neutral
+  ramp, so warm or tinted greys carry through to cards and overlays.
+- **An accent colour.** `--zabi-accent-50` … `950` (the citron ramp by default)
+  and `--color-accent-50` … `950`, with the roles `--color-accent`, `-hover`,
+  `-active`, `-subtle`, `-border` and `-text`, `--color-on-accent` for a label
+  on the fill, and the classes `bg-accent`, `text-accent` and `border-accent`.
+  The `energetic` tokens are unchanged.
+- **The text on a primary fill can be set.** `--zabi-on-brand` (light, white)
+  and `--zabi-on-brand-dark` (dark, `brand-950`) feed the new role
+  `--color-on-brand`, which `--color-action-primary-text` now follows. A light
+  brand such as amber sets a dark label once. `--zabi-on-accent` and
+  `--zabi-on-accent-dark` do the same for the accent.
+- **Font tokens.** `--font-family-heading` (follows `--font-family-sans` until
+  set; applied to `h1`–`h6` and Heading), `--font-family-mono` (CodeBlock's
+  existing stack, which it now reads from the token), and
+  `--font-weight-regular`, `-normal`, `-medium`, `-semibold` and `-bold`, the
+  variables the `font-*` utilities read.
+- **Dark mode by attribute, and by the system setting.** The published dark
+  files apply to `.dark` and `[data-theme="dark"]`, and to
+  `[data-theme="auto"]` when `prefers-color-scheme` is dark;
+  `[data-theme="light"]` stays light. Following the system is opt-in: a page
+  with no class and no attribute is light, as before. Put the class or the
+  attribute on `<html>`.
 
 ### Changed
 
@@ -262,6 +288,16 @@ Whenever token or CSS import API surface changes, include:
 - EmptyState at `size="compact"` is a plain `<div>`, not a named region, so a
   page of cards with empty states is not a page of landmarks. The default size
   is still a `<section>` named by its title.
+- **The dark theme files need the light theme.** `theme-dark`,
+  `theme-dark-only` and the dark part of `colors` no longer restate the
+  `--zabi-*` ramps, so import them after `theme` or `theme-only`, as the docs
+  already said. No token was removed or renamed and every existing token
+  resolves to the same colour in both themes.
+- Dark surface tokens (`--color-surface-raised`, `-elevated`, `-overlay`) are
+  `color-mix()` expressions over `--zabi-base-*`. They paint the same pixels,
+  but `getComputedStyle` reports them as `color(srgb …)`, not `rgb(…)`.
+- The dark theme files are about 13 KB larger, because the block is published
+  once for the class and attribute and once for the system setting.
 
 ### Deprecated
 

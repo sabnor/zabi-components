@@ -54,8 +54,8 @@ Zabi Components provides multiple theme file variants:
 |------|-------------|----------|
 | `zabi-components/theme` | Full theme with Tailwind import | Standalone projects |
 | `zabi-components/theme-only` | Theme without Tailwind import | Projects with existing Tailwind |
-| `zabi-components/theme-dark` | Dark mode with Tailwind import | Standalone + dark mode |
-| `zabi-components/theme-dark-only` | Dark mode without Tailwind import | Existing Tailwind + dark mode |
+| `zabi-components/theme-dark` | Dark role remaps with Tailwind import; needs the light theme | Standalone + dark mode |
+| `zabi-components/theme-dark-only` | Dark role remaps without Tailwind import; needs the light theme | Existing Tailwind + dark mode |
 
 ### Direct Path Imports
 
@@ -148,50 +148,70 @@ This order ensures:
 
 ## Dark Mode
 
-Zabi Components supports dark mode through CSS custom properties in the `.dark` class.
-
-### Automatic Dark Mode (System Preference)
-
-```css
-@import "tailwindcss";
-@import 'zabi-components/theme-only';
-@import 'zabi-components/theme-dark-only'; /* Supports system preference */
-@import 'zabi-components/dist/zabi-components.css';
-```
-
-The dark theme file uses `@media (prefers-color-scheme: dark)` to automatically switch based on system preference.
-
-### Manual Dark Mode Toggle
-
-For manual dark mode toggling, add the `.dark` class to your HTML element:
-
-```javascript
-// Toggle dark mode
-document.documentElement.classList.toggle('dark');
-```
-
-The dark theme file also includes `.dark` class support, so both system preference and manual toggle work.
-
-### Custom Dark Mode Colors
-
-You can override dark mode colors in your custom theme:
+Import the dark theme file after the light one. It only remaps roles; the raw
+palettes (`--zabi-brand-*`, `--zabi-accent-*`, `--zabi-base-*` and the other
+ramps) are declared once, in the light theme, so the dark file does nothing on
+its own.
 
 ```css
 @import "tailwindcss";
 @import 'zabi-components/theme-only';
 @import 'zabi-components/theme-dark-only';
+```
 
-@theme {
-  /* Your light mode customizations */
-  --color-custom: #ff0000;
+Dark is switched on the `<html>` element, by a class or by an attribute:
+
+| On `<html>` | Result |
+|---|---|
+| nothing | light |
+| `class="dark"` | dark |
+| `data-theme="dark"` | dark (the same as the class) |
+| `data-theme="light"` | light, whatever the system says |
+| `data-theme="auto"` | follows the system (`prefers-color-scheme`) |
+
+Following the system is opt-in. A page with no class and no attribute stays
+light on a dark system, as it always has.
+
+```html
+<!-- Follow the phone's setting, with no script -->
+<html data-theme="auto">
+```
+
+The three `data-theme` values also set `color-scheme`, so native controls and
+scrollbars match. `.dark` does not; set `color-scheme` yourself if you use the
+class.
+
+Put the class or attribute on `<html>`. The role tokens are resolved on the
+root element, so a `.dark` further down the tree does not re-theme its subtree.
+
+`ThemeToggle` toggles the `dark` class, and Tailwind's `dark:` variant follows
+the system unless you redefine it; neither reads `data-theme`.
+
+### Manual Dark Mode Toggle
+
+```javascript
+document.documentElement.classList.toggle('dark');
+// or
+document.documentElement.dataset.theme = 'dark'; // 'light' | 'auto'
+```
+
+### Custom Dark Mode Colors
+
+A brand, accent or neutral override needs no dark counterpart (see
+[Customization Examples](#customization-examples)). To change one role in dark
+only, declare it under all three dark selectors, after the imports:
+
+```css
+.dark,
+[data-theme="dark"] {
+  --color-link: var(--zabi-brand-200);
 }
 
-/* Custom dark mode overrides */
-.dark {
-  --color-custom: #ff6666; /* Lighter red for dark mode */
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    --color-link: var(--zabi-brand-200);
+  }
 }
-
-@import 'zabi-components/dist/zabi-components.css';
 ```
 
 ## Color System
@@ -201,6 +221,7 @@ Zabi Components uses a semantic color system with the following color scales:
 ### Color Scales
 
 - **Brand** - Primary brand colors (blue palette)
+- **Accent** - Second brand colour for highlights, badges and celebrations (`--zabi-accent-*`, citron by default)
 - **Citron** - Energetic/yellow colors
 - **Pine** - Success/green colors
 - **Iris** - Info/purple colors
@@ -220,6 +241,9 @@ Semantic colors map to specific use cases:
 - `--color-surface-base` / `-raised` / `-elevated` / `-overlay` - Surface levels: page, cards, nested cards, floating panels
 - `--color-surface-inset` - A recessed area on a card (a well); see THEMING.md, Surface Elevation Levels
 - `--color-primary` - Primary actions
+- `--color-on-brand` - Text on a primary fill (`--color-action-primary-text` follows it)
+- `--color-accent`, `-hover`, `-active`, `-subtle`, `-border`, `-text` - The accent role
+- `--color-on-accent` - Text on a solid accent fill
 - `--color-secondary` - Secondary actions
 - `--color-success` - Success states
 - `--color-warning` - Warning states
@@ -257,30 +281,71 @@ Zabi Components provides utility classes:
 
 ## Customization Examples
 
-### Example 1: Custom Brand Colors
+### Example 1: A Brand From Tokens Alone
+
+Override the physical ramps on `:root`, once. Light and dark both follow; there
+is nothing to repeat under `.dark`.
 
 ```css
 @import "tailwindcss";
 @import 'zabi-components/theme-only';
+@import 'zabi-components/theme-dark-only';
 
+:root {
+  /* Primary actions, focus rings, links, brand tints */
+  --zabi-brand-50: #fffbeb;
+  /* … 100 to 900 … */
+  --zabi-brand-950: #451a03;
 
-@import 'zabi-components/dist/zabi-components.css';
+  /* Second brand colour: --color-accent and its roles */
+  --zabi-accent-50: #fdf2f8;
+  /* … */
+  --zabi-accent-950: #500724;
+
+  /* Neutrals: text, borders, page and card surfaces, the dark surface levels.
+     21 steps: 50, 75, 100, 150 … 900, 925, 950 */
+  --zabi-base-50: #fafaf9;
+  /* … */
+  --zabi-base-950: #0c0a09;
+}
 ```
+
+Each ramp runs light (50) to dark (950). Light mode puts fills on step 600
+with white text; dark mode mirrors the ramp, so the fill is step 400 with the
+950 step as its text. A ramp whose 600 is too light for white text needs the
+"on brand" knobs:
+
+```css
+:root {
+  --zabi-on-brand: #451a03;       /* label on the primary fill, light mode */
+  --zabi-on-brand-dark: #451a03;  /* the same, dark mode (default: brand-950) */
+  --zabi-on-accent: #ffffff;      /* and for a solid accent fill */
+  --zabi-on-accent-dark: #500724;
+}
+```
+
+Check the result: 4.5:1 for the label on the fill, its hover (700) and its
+active (800) step.
 
 ### Example 2: Custom Fonts
 
 ```css
-@import "tailwindcss";
-@import 'zabi-components/theme-only';
-
-@theme {
-  --font-family-title: 'Inter', 'Helvetica', sans-serif;
-  --font-family-body: 'Inter', 'Helvetica', sans-serif;
+:root {
   --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-}
+  /* Headings (h1–h6 and the Heading component). Defaults to the sans family. */
+  --font-family-heading: 'Fraunces', var(--font-family-sans);
+  /* CodeBlock */
+  --font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-@import 'zabi-components/dist/zabi-components.css';
+  /* What font-normal, font-medium, font-semibold and font-bold resolve to */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
 ```
+
+Loading the font files is up to the app.
 
 ### Example 3: Custom Semantic Colors
 
@@ -410,9 +475,9 @@ If you want dark mode support, you must import the dark theme file:
 ### Dark Mode Not Working
 
 1. Ensure dark theme file is imported
-2. Check that `.dark` class is applied to `<html>` or root element
-3. Verify system preference detection (if using automatic mode)
-4. Check that dark mode CSS custom properties are defined
+2. Check that `class="dark"` or `data-theme="dark"` is on `<html>`, not on an element inside it
+3. To follow the system, set `data-theme="auto"`; nothing follows it by default
+4. Check that the light theme is imported too: the dark file only remaps its tokens
 
 ### Colors Not Updating
 

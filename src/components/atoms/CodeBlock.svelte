@@ -80,8 +80,11 @@
 </div>
 
 <style>
+    /* The token's default is this same stack. It is repeated as the fallback
+       because Tailwind only emits theme variables it sees used, and it does
+       not read a component's scoped styles. */
     .code-block {
-        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-family: var(--font-family-mono, "Monaco", "Menlo", "Ubuntu Mono", monospace);
     }
 
     :global(.language-svelte .token.tag),

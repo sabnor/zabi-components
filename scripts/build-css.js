@@ -4,6 +4,7 @@ import autoprefixer from 'autoprefixer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { darkThemeCss, darkThemeCssMinified, expandDarkRule } from './dark-selectors.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,12 +13,16 @@ const __dirname = path.dirname(__filename);
  * CSS build: reads src/app.css and writes dist theme bundles for different consumers.
  *
  * Outputs (all under dist/):
- * - zabi-components.css — PostCSS/Tailwind full build (utilities + tokens + .dark)
+ * - zabi-components.css — PostCSS/Tailwind full build (utilities + tokens + dark)
  * - zabi-components-theme.css — @import tailwind + @theme (greenfield Tailwind)
  * - zabi-components-theme-only.css — @theme only (Tailwind already in app)
- * - zabi-components-theme-dark.css — @import tailwind + .dark
- * - zabi-components-theme-dark-only.css — .dark only (import after theme-only)
- * - zabi-components-colors.css — :root + .dark custom properties (no @theme; vanilla CSS)
+ * - zabi-components-theme-dark.css — @import tailwind + dark
+ * - zabi-components-theme-dark-only.css — dark only (import after theme-only)
+ * - zabi-components-colors.css — :root + dark custom properties (no @theme; vanilla CSS)
+ *
+ * "dark" is the source's single `.dark { … }` rule, published under `.dark`,
+ * `[data-theme="dark"]` and `[data-theme="auto"]` inside
+ * `@media (prefers-color-scheme: dark)`. See scripts/dark-selectors.js.
  *
  * Package exports: zabi-components/theme, theme-only, theme-dark, theme-dark-only, colors, css
  * See docs/theme-imports.md for which file to use.
@@ -158,13 +163,14 @@ async function buildCSS() {
   if (darkModeContent) {
     // Create dark mode theme file with Tailwind import
     // This file contains the .dark class with all dark mode CSS custom properties
-    const darkThemeBlock = `@import "tailwindcss";\n\n/* Dark Mode Theme - CSS Custom Properties */\n/* Import this file after the main theme to enable dark mode support */\n.dark {\n${darkModeContent}\n}`;
+    const darkBlocks = darkThemeCss(darkModeContent);
+    const darkThemeBlock = `@import "tailwindcss";\n\n/* Dark Mode Theme - CSS Custom Properties */\n/* Import this file after the main theme to enable dark mode support */\n${darkBlocks}\n`;
     const darkThemeOutputFile = path.join(__dirname, '../dist/zabi-components-theme-dark.css');
     fs.writeFileSync(darkThemeOutputFile, darkThemeBlock);
     console.log(`✓ Built dark theme CSS: ${darkThemeOutputFile}`);
     
     // Create dark theme-only version without Tailwind import
-    const darkThemeOnlyBlock = `/* Dark Mode Theme - CSS Custom Properties */\n/* Import this file after the main theme to enable dark mode support */\n.dark {\n${darkModeContent}\n}`;
+    const darkThemeOnlyBlock = `/* Dark Mode Theme - CSS Custom Properties */\n/* Import this file after the main theme to enable dark mode support */\n${darkBlocks}\n`;
     const darkThemeOnlyOutputFile = path.join(__dirname, '../dist/zabi-components-theme-dark-only.css');
     fs.writeFileSync(darkThemeOnlyOutputFile, darkThemeOnlyBlock);
     console.log(`✓ Built dark theme-only CSS: ${darkThemeOnlyOutputFile}`);
@@ -196,6 +202,14 @@ async function buildCSS() {
   // Any remaining @import statements are invalid and cause PostCSS errors
   css = css.replace(/@import\s+["'][^"']+["'];?\s*\n?/g, '');
 
+  // Publish the dark tokens under [data-theme] as well as .dark.
+  const compiled = postcss.parse(css, { from: outputFile });
+  const expanded = expandDarkRule(compiled, postcss);
+  if (expanded !== 1) {
+    throw new Error(`Expected one .dark token rule in the compiled CSS, found ${expanded}`);
+  }
+  css = compiled.toString();
+
   // Write the processed CSS (without :root block - colors.css is separate)
   fs.writeFileSync(outputFile, css);
   console.log(`✓ Built CSS: ${outputFile}`);
@@ -218,7 +232,7 @@ async function buildCSS() {
     darkChunks.push(minifyDeclarationsFromContainer(rule));
   });
   if (darkChunks.length > 0) {
-    colorsCss += '.dark{' + darkChunks.join('') + '}\n';
+    colorsCss += darkThemeCssMinified(darkChunks.join('')) + '\n';
   }
 
   const colorsOutputFile = path.join(__dirname, '../dist/zabi-components-colors.css');
@@ -226,5 +240,9 @@ async function buildCSS() {
   console.log(`✓ Built standalone colors CSS: ${colorsOutputFile}`);
 }
 
-buildCSS().catch(console.error);
+// A failed build must fail the command: this used to log the error and exit 0.
+buildCSS().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
 

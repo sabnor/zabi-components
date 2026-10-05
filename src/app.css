@@ -14,7 +14,7 @@
    ⚠️ IMPORTANT: This is the ONLY file you need to edit for theming!
    
    📍 QUICK REFERENCE - Where to change bg-action-primary:
-      → Physical brand ramp: --zabi-brand-* in @theme (duplicated in .dark for standalone imports)
+      → Physical brand ramp: --zabi-brand-* in @theme (declared once; .dark only remaps roles)
       → Semantic tokens: --color-action-primary uses --color-brand-* (see @theme / .dark)
       → Utility class: .bg-action-primary (utility section below)
    
@@ -34,7 +34,8 @@
 @theme {
   /*
    * Custom base (gray) ramp — single physical scale for --color-base-*.
-   * 21 stops: 50 … 950 (lightest → darkest). Edit hex here; mirror the same block in .dark for standalone imports.
+   * 21 stops: 50 … 950 (lightest → darkest). Declared ONCE, here: .dark holds no raw palette,
+   * so an app that overrides --zabi-base-* on :root restyles both themes.
    * Dark: semantic step S maps to physical (1000 − S), e.g. 50↔950, 75↔925; 500 stays fixed.
    * Midpoints are frozen hex values (default mode: fixed).
    */
@@ -62,6 +63,22 @@
 
   /* Typography - Nunito Sans font family */
   --font-family-sans: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
+  /* Headings follow the body face until an app sets this to a display font
+   * on :root. Applied to h1–h6 in the base layer below and by the Heading
+   * component. */
+  --font-family-heading: var(--font-family-sans);
+  /* Code. The stack CodeBlock has always used, now a token. */
+  --font-family-mono: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+
+  /* Font weights. These are the variables Tailwind's `font-normal`,
+   * `font-medium`, `font-semibold` and `font-bold` read, so every component
+   * weight follows an override here. `regular` is the name a brand uses for
+   * 400; `font-normal` resolves through it. */
+  --font-weight-regular: 400;
+  --font-weight-normal: var(--font-weight-regular);
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
   /* Brand Color Scale — physical ramp + semantic aliases (same mirror pattern as pine / base) */
   --zabi-brand-50: #f4f6ff;
@@ -112,6 +129,33 @@
   --color-citron-800: var(--zabi-citron-800);
   --color-citron-900: var(--zabi-citron-900);
   --color-citron-950: var(--zabi-citron-950);
+
+  /* Accent Color Scale — the second brand colour (highlights, badges,
+   * celebrations). Defaults to the citron ramp; an app overrides
+   * --zabi-accent-50 … 950 on :root, once, and both themes follow. */
+  --zabi-accent-50: var(--zabi-citron-50);
+  --zabi-accent-100: var(--zabi-citron-100);
+  --zabi-accent-200: var(--zabi-citron-200);
+  --zabi-accent-300: var(--zabi-citron-300);
+  --zabi-accent-400: var(--zabi-citron-400);
+  --zabi-accent-500: var(--zabi-citron-500);
+  --zabi-accent-600: var(--zabi-citron-600);
+  --zabi-accent-700: var(--zabi-citron-700);
+  --zabi-accent-800: var(--zabi-citron-800);
+  --zabi-accent-900: var(--zabi-citron-900);
+  --zabi-accent-950: var(--zabi-citron-950);
+
+  --color-accent-50: var(--zabi-accent-50);
+  --color-accent-100: var(--zabi-accent-100);
+  --color-accent-200: var(--zabi-accent-200);
+  --color-accent-300: var(--zabi-accent-300);
+  --color-accent-400: var(--zabi-accent-400);
+  --color-accent-500: var(--zabi-accent-500);
+  --color-accent-600: var(--zabi-accent-600);
+  --color-accent-700: var(--zabi-accent-700);
+  --color-accent-800: var(--zabi-accent-800);
+  --color-accent-900: var(--zabi-accent-900);
+  --color-accent-950: var(--zabi-accent-950);
 
   /* Pine Color Scale — physical ramp + semantic aliases (mirror pattern matches --zabi-base-* / --color-base-*) */
   --zabi-pine-50: #f0f8f5;
@@ -438,6 +482,22 @@
   --color-energetic-subtle: var(--color-citron-200);
   --color-energetic-border: var(--color-citron-300);
 
+  /* Accent Colors — the second brand colour, on --zabi-accent-* (citron by
+   * default). The same recipe as the primary action: fill at 600, hover 700,
+   * active 800, so "more pressed" is "more contrast" in both themes; tint,
+   * edge and text as in the families above. `energetic` keeps pointing at
+   * citron itself and does not move when an app re-colours the accent. */
+  --color-accent: var(--color-accent-600);
+  --color-accent-hover: var(--color-accent-700);
+  --color-accent-active: var(--color-accent-800);
+  --color-accent-subtle: var(--color-accent-200);
+  --color-accent-border: var(--color-accent-300);
+  --color-accent-text: var(--color-accent-700);
+  /* Label on a solid accent fill — see "on brand" below for the two knobs. */
+  --zabi-on-accent: #ffffff;
+  --zabi-on-accent-dark: var(--zabi-accent-950);
+  --color-on-accent: var(--zabi-on-accent);
+
   /* Neutral Colors
    * The base ramp is wider than the chromatic ones on purpose (it also drives
    * text, borders and surfaces), so neutral cannot sit on exactly the same
@@ -484,10 +544,21 @@
   --color-action-primary-active: var(--color-brand-800);
   --color-action-primary-subtle: var(--color-brand-200);
   --color-action-primary-subtle-hover: var(--color-brand-300);
-  /* Pinned rather than aliased to brand-50: the ramp's lightest tint lands at
-   * exactly 4.50:1 on brand-600 — passing, but with no margin. Pure white
-   * gives 4.86:1. The .dark block pins the inverse. */
-  --color-action-primary-text: #ffffff;
+  /* "On brand" — the label on a primary fill.
+   * White rather than brand-50: the ramp's lightest tint lands at exactly
+   * 4.50:1 on brand-600 — passing, but with no margin. Pure white gives 4.86:1.
+   * Dark uses the dark end of the ramp on the light fill (7.21:1).
+   *
+   * A light brand (amber, yellow) cannot carry white text, so both values are
+   * knobs an app sets once on :root, like the ramps:
+   *   --zabi-on-brand        label in light mode
+   *   --zabi-on-brand-dark   label in dark mode
+   * --color-on-brand is the role, remapped by .dark; components keep using
+   * --color-action-primary-text, which follows it. */
+  --zabi-on-brand: #ffffff;
+  --zabi-on-brand-dark: var(--zabi-brand-950);
+  --color-on-brand: var(--zabi-on-brand);
+  --color-action-primary-text: var(--color-on-brand);
 
   /* Secondary Actions - Used by bg-action-secondary utility class
    * A neutral alpha tint: reads as a real button on any surface level, and
@@ -620,46 +691,38 @@ body {
   font-family: var(--font-family-sans);
 }
 
+/* Headings take the heading face. In the base layer, so a utility on the
+ * element (`font-family-mono`, an app's own `font-*`) still wins. */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-family-heading);
+  }
+}
+
 /* ========================================
    DARK MODE THEME
-   ======================================== */
+   ========================================
+   This block only REMAPS ROLES. It declares no raw palette: every --zabi-*
+   ramp lives once, in @theme, so an app that overrides --zabi-brand-*,
+   --zabi-accent-* or --zabi-base-* on :root restyles light and dark with one
+   declaration. validate-theme.js fails the build if a --zabi-* token or a hex
+   literal comes back in here.
+
+   Put the class on <html>: the role tokens in @theme are resolved on the root
+   element, so a `.dark` further down does not re-resolve them.
+
+   The published dark files carry this block under three selectors, generated
+   by scripts/build-css.js (scripts/dark-selectors.js) — keep ONE `.dark` rule
+   here and do not write the others by hand:
+     .dark, [data-theme="dark"]                                   always dark
+     @media (prefers-color-scheme: dark) { [data-theme="auto"] }   follows the OS
+   [data-theme="light"], or no attribute and no class, stays light. */
 .dark {
-  /* Mirror @theme --zabi-base-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-base-50: #fafafa;
-  --zabi-base-75: #f7f7f7;
-  --zabi-base-100: #f4f4f5;
-  --zabi-base-150: #ececee;
-  --zabi-base-200: #e4e4e7;
-  --zabi-base-250: #dcdcdf;
-  --zabi-base-300: #d4d4d8;
-  --zabi-base-350: #babac1;
-  --zabi-base-400: #a1a1aa;
-  --zabi-base-450: #898992;
-  --zabi-base-500: #71717a;
-  --zabi-base-550: #61616a;
-  --zabi-base-600: #52525b;
-  --zabi-base-650: #484850;
-  --zabi-base-700: #3f3f46;
-  --zabi-base-750: #333338;
-  --zabi-base-800: #27272a;
-  --zabi-base-850: #1f1f22;
-  --zabi-base-900: #18181b;
-  --zabi-base-925: #101013;
-  --zabi-base-950: #09090b;
-
-  /* Mirror @theme --zabi-brand-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-brand-50: #f4f6ff;
-  --zabi-brand-100: #e9eeff;
-  --zabi-brand-200: #d3dcff;
-  --zabi-brand-300: #b5c6ff;
-  --zabi-brand-400: #92a9ff;
-  --zabi-brand-500: #6d87f1;
-  --zabi-brand-600: #4f68da;
-  --zabi-brand-700: #3c52ba;
-  --zabi-brand-800: #2b3e95;
-  --zabi-brand-900: #1c2c6d;
-  --zabi-brand-950: #111d49;
-
   /* Brand Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-brand-50: var(--zabi-brand-950);
   --color-brand-100: var(--zabi-brand-900);
@@ -672,19 +735,6 @@ body {
   --color-brand-800: var(--zabi-brand-200);
   --color-brand-900: var(--zabi-brand-100);
   --color-brand-950: var(--zabi-brand-50);
-
-  /* Mirror @theme --zabi-citron-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-citron-50: #f6f7ef;
-  --zabi-citron-100: #edefdf;
-  --zabi-citron-200: #dcdfbf;
-  --zabi-citron-300: #c5ca95;
-  --zabi-citron-400: #aab063;
-  --zabi-citron-500: #8c9027;
-  --zabi-citron-600: #707400;
-  --zabi-citron-700: #5a5d00;
-  --zabi-citron-800: #454700;
-  --zabi-citron-900: #313200;
-  --zabi-citron-950: #202100;
 
   /* Citron Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-citron-50: var(--zabi-citron-950);
@@ -699,18 +749,18 @@ body {
   --color-citron-900: var(--zabi-citron-100);
   --color-citron-950: var(--zabi-citron-50);
 
-  /* Mirror @theme --zabi-pine-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-pine-50: #f0f8f5;
-  --zabi-pine-100: #e2f1eb;
-  --zabi-pine-200: #c5e4d7;
-  --zabi-pine-300: #9fd1bd;
-  --zabi-pine-400: #70ba9e;
-  --zabi-pine-500: #399c7a;
-  --zabi-pine-600: #00805e;
-  --zabi-pine-700: #00674a;
-  --zabi-pine-800: #004f37;
-  --zabi-pine-900: #003826;
-  --zabi-pine-950: #002518;
+  /* Accent Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
+  --color-accent-50: var(--zabi-accent-950);
+  --color-accent-100: var(--zabi-accent-900);
+  --color-accent-200: var(--zabi-accent-800);
+  --color-accent-300: var(--zabi-accent-700);
+  --color-accent-400: var(--zabi-accent-600);
+  --color-accent-500: var(--zabi-accent-500);
+  --color-accent-600: var(--zabi-accent-400);
+  --color-accent-700: var(--zabi-accent-300);
+  --color-accent-800: var(--zabi-accent-200);
+  --color-accent-900: var(--zabi-accent-100);
+  --color-accent-950: var(--zabi-accent-50);
 
   /* Pine Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-pine-50: var(--zabi-pine-950);
@@ -725,19 +775,6 @@ body {
   --color-pine-900: var(--zabi-pine-100);
   --color-pine-950: var(--zabi-pine-50);
 
-  /* Mirror @theme --zabi-iris-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-iris-50: #f6f6fd;
-  --zabi-iris-100: #ecedfb;
-  --zabi-iris-200: #dadbf6;
-  --zabi-iris-300: #c1c4ef;
-  --zabi-iris-400: #a5a7e2;
-  --zabi-iris-500: #8486cd;
-  --zabi-iris-600: #6969b4;
-  --zabi-iris-700: #535397;
-  --zabi-iris-800: #3f3f78;
-  --zabi-iris-900: #2c2c58;
-  --zabi-iris-950: #1d1d3a;
-
   /* Iris Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-iris-50: var(--zabi-iris-950);
   --color-iris-100: var(--zabi-iris-900);
@@ -751,19 +788,6 @@ body {
   --color-iris-900: var(--zabi-iris-100);
   --color-iris-950: var(--zabi-iris-50);
 
-  /* Mirror @theme --zabi-warning-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-warning-50: #fbf6ed;
-  --zabi-warning-100: #f7ecda;
-  --zabi-warning-200: #f1d9b6;
-  --zabi-warning-300: #e8bf87;
-  --zabi-warning-400: #db9e4c;
-  --zabi-warning-500: #c17b00;
-  --zabi-warning-600: #9e6000;
-  --zabi-warning-700: #824c00;
-  --zabi-warning-800: #663800;
-  --zabi-warning-900: #4b2600;
-  --zabi-warning-950: #341800;
-
   /* Warning Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-warning-50: var(--zabi-warning-950);
   --color-warning-100: var(--zabi-warning-900);
@@ -776,19 +800,6 @@ body {
   --color-warning-800: var(--zabi-warning-200);
   --color-warning-900: var(--zabi-warning-100);
   --color-warning-950: var(--zabi-warning-50);
-
-  /* Mirror @theme --zabi-error-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-error-50: #fff4f3;
-  --zabi-error-100: #ffe9e6;
-  --zabi-error-200: #ffd2cd;
-  --zabi-error-300: #ffb2ab;
-  --zabi-error-400: #ff877d;
-  --zabi-error-500: #ed564e;
-  --zabi-error-600: #d22828;
-  --zabi-error-700: #b20912;
-  --zabi-error-800: #8c0006;
-  --zabi-error-900: #660002;
-  --zabi-error-950: #460202;
 
   /* Error Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-error-50: var(--zabi-error-950);
@@ -804,27 +815,27 @@ body {
   --color-error-950: var(--zabi-error-50);
 
   /* Base Color Scale — semantic → physical mirror (1000 − step); 500 is fixed point */
-  --color-base-50: #09090b;
-  --color-base-75: #101013;
-  --color-base-100: #18181b;
-  --color-base-150: #1f1f22;
-  --color-base-200: #27272a;
-  --color-base-250: #333338;
-  --color-base-300: #3f3f46;
-  --color-base-350: #484850;
-  --color-base-400: #52525b;
-  --color-base-450: #61616a;
-  --color-base-500: #71717a;
-  --color-base-550: #898992;
-  --color-base-600: #a1a1aa;
-  --color-base-650: #babac1;
-  --color-base-700: #d4d4d8;
-  --color-base-750: #dcdcdf;
-  --color-base-800: #e4e4e7;
-  --color-base-850: #ececee;
-  --color-base-900: #f4f4f5;
-  --color-base-925: #f7f7f7;
-  --color-base-950: #fafafa;
+  --color-base-50: var(--zabi-base-950);
+  --color-base-75: var(--zabi-base-925);
+  --color-base-100: var(--zabi-base-900);
+  --color-base-150: var(--zabi-base-850);
+  --color-base-200: var(--zabi-base-800);
+  --color-base-250: var(--zabi-base-750);
+  --color-base-300: var(--zabi-base-700);
+  --color-base-350: var(--zabi-base-650);
+  --color-base-400: var(--zabi-base-600);
+  --color-base-450: var(--zabi-base-550);
+  --color-base-500: var(--zabi-base-500);
+  --color-base-550: var(--zabi-base-450);
+  --color-base-600: var(--zabi-base-400);
+  --color-base-650: var(--zabi-base-350);
+  --color-base-700: var(--zabi-base-300);
+  --color-base-750: var(--zabi-base-250);
+  --color-base-800: var(--zabi-base-200);
+  --color-base-850: var(--zabi-base-150);
+  --color-base-900: var(--zabi-base-100);
+  --color-base-925: var(--zabi-base-75);
+  --color-base-950: var(--zabi-base-50);
 
   /* Background Colors - No dark mode overrides needed, base colors are already inverted */
 
@@ -834,15 +845,18 @@ body {
    * from the page background (L 21 → 27 → 33 → 39).
    *
    * GENERATED by scripts/generate-surfaces.js from tokens/surface-ladder.js — do not hand-edit.
-   * Each level is #fafafa (the same light as the dark hover tint) washed over the page at
-   * 6.4% / 13.1% / 19.7%, so every level is the one below it with more light on it. Baked to
-   * opaque hex so the static checks can still resolve them and a modal stays opaque.
+   * The page is --zabi-base-900. Each level above it is --zabi-base-50 (the same light as the
+   * dark hover tint) washed over the page at 6.4% / 13.1% / 19.7%, so every level is the one
+   * below it with more light on it, and a --zabi-base-* override carries the whole ladder.
+   * Mixing two opaque colours stays opaque, so a modal never lets the page through. With the
+   * default greys these resolve to #18181b / #262629 / #363638 / #454547.
    * Enforced by scripts/check-surface-elevation.js (strictly increasing, 5–8 points). */
-  --color-surface-base: #18181b;
-  --color-surface-raised: #262629;
-  --color-surface-elevated: #363638;
-  --color-surface-overlay: #454547;
-  --color-surface-overlay-hover: #52525b;
+  --color-surface-base: var(--zabi-base-900);
+  --color-surface-raised: color-mix(in srgb, var(--zabi-base-50) 6.4%, var(--zabi-base-900));
+  --color-surface-elevated: color-mix(in srgb, var(--zabi-base-50) 13.1%, var(--zabi-base-900));
+  --color-surface-overlay: color-mix(in srgb, var(--zabi-base-50) 19.7%, var(--zabi-base-900));
+  /* base-400 mirrors to --zabi-base-600 (#52525b), one step lighter than the overlay. */
+  --color-surface-overlay-hover: var(--color-base-400);
   /* Inset — the step between the page and the raised surface (L 24). The input
    * field is the library's own inset; see --color-input below. */
   --color-surface-inset: var(--color-base-150);
@@ -929,6 +943,10 @@ body {
   --color-error-border: var(--color-error-200);
   --color-energetic-subtle: var(--color-citron-100);
   --color-energetic-border: var(--color-citron-200);
+  --color-accent-subtle: var(--color-accent-100);
+  --color-accent-border: var(--color-accent-200);
+  /* Label on a solid accent fill: the dark end of the ramp on its light end. */
+  --color-on-accent: var(--zabi-on-accent-dark);
   --color-info-subtle: var(--color-iris-100);
   --color-info-border: var(--color-iris-200);
 
@@ -943,10 +961,14 @@ body {
      ======================================== */
   
   /* Primary Actions - Background adapts automatically via brand color inversion */
-  /* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit --zabi-brand-* physical ramp above (semantic --color-brand-* follows mirror) */
-  /* Text color - the physical dark end of the brand ramp, on the physical
-   * light end used as the dark-mode primary fill. 7.21:1. */
-  --color-action-primary-text: var(--zabi-brand-950);
+  /* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit the --zabi-brand-* physical ramp in @theme (semantic --color-brand-* follows the mirror) */
+  /* "On brand" in dark: --zabi-on-brand-dark, by default the physical dark end
+   * of the brand ramp on the physical light end used as the dark-mode primary
+   * fill (7.21:1). --color-action-primary-text is restated, as it always
+   * was here, so that an app's light-only override of it does not carry a
+   * white label onto the light dark-mode fill. */
+  --color-on-brand: var(--zabi-on-brand-dark);
+  --color-action-primary-text: var(--color-on-brand);
   /* Pinned like the other tints: light moved these a step darker. */
   --color-action-primary-subtle: var(--color-brand-100);
   --color-action-primary-subtle-hover: var(--color-brand-200);
@@ -1417,6 +1439,10 @@ body {
   color: var(--color-energetic-text);
 }
 
+.text-accent {
+  color: var(--color-accent-text);
+}
+
 .text-inverse {
   color: var(--color-inverse);
 }
@@ -1475,6 +1501,10 @@ body {
   background-color: var(--color-energetic);
 }
 
+.bg-accent {
+  background-color: var(--color-accent);
+}
+
 .bg-secondary {
   background-color: var(--color-secondary);
 }
@@ -1502,6 +1532,10 @@ body {
 
 .border-energetic {
   border-color: var(--color-energetic);
+}
+
+.border-accent {
+  border-color: var(--color-accent);
 }
 
 .border-secondary {

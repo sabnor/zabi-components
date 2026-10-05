@@ -18,6 +18,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { resolveTokenColor, resolveTokenValue } from './resolve-tokens.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Optional path, so the guard can be run against another revision of the stylesheet.
@@ -102,15 +103,14 @@ function parseTheme(css) {
     return { light, dark };
 }
 
-function resolve(map, token, depth = 0) {
-    if (depth > 20) return null;
-    let value = map[token];
-    if (!value) return null;
-    value = value.replace(/\/\*[\s\S]*?\*\//g, '').trim();
-    if (value.startsWith('#')) return value;
-    const varMatch = value.match(/^var\((--[\w-]+)\)$/);
-    if (varMatch) return resolve(map, varMatch[1], depth + 1);
-    return null; // rgba()/color-mix() — not a flat colour; see resolveOver()
+/**
+ * A token as one flat colour, or null. `var()` chains are followed and an
+ * opaque `color-mix()` is evaluated — the dark surface levels are mixes of two
+ * neutral steps, and returning null for them would skip every pair measured
+ * against a dark card instead of checking it.
+ */
+function resolve(map, token) {
+    return resolveTokenColor(map, token); // null: rgba() or a mix with transparent; see resolveOver()
 }
 
 function toHex(channels) {
@@ -124,13 +124,8 @@ function parseHex(hex) {
 }
 
 /** Follow `var()` chains to the literal value, whatever form it takes. */
-function resolveRaw(map, token, depth = 0) {
-    if (depth > 20) return null;
-    let value = map[token];
-    if (!value) return null;
-    value = value.replace(/\/\*[\s\S]*?\*\//g, '').trim();
-    const varMatch = value.match(/^var\((--[\w-]+)\)$/);
-    return varMatch ? resolveRaw(map, varMatch[1], depth + 1) : value;
+function resolveRaw(map, token) {
+    return resolveTokenValue(map, token);
 }
 
 /**
@@ -203,7 +198,7 @@ const INTERACTION_FILLS = [
     { name: 'secondary action', fill: '--color-action-secondary-subtle', on: '--color-card' },
 ];
 
-for (const family of ['success', 'warning', 'error', 'info', 'energetic', 'neutral']) {
+for (const family of ['success', 'warning', 'error', 'info', 'energetic', 'neutral', 'accent']) {
     // A subtle badge/alert fill sits on a card or on the page itself.
     INTERACTION_FILLS.push(
         { name: `${family} subtle fill · on card`, fill: `--color-${family}-subtle`, on: '--color-card' },
@@ -352,6 +347,23 @@ function buildPairs() {
         });
     }
 
+    // Accent — the second brand colour. Solid fills carry --color-on-accent
+    // (not the card surface, as a status badge does): an app that re-colours
+    // --zabi-accent-* sets the label with --zabi-on-accent / -dark.
+    pairs.push(
+        { name: 'accent fill', bg: '--color-accent', fg: '--color-on-accent', min: AA_NORMAL },
+        { name: 'accent fill :hover', bg: '--color-accent-hover', fg: '--color-on-accent', min: AA_NORMAL },
+        { name: 'accent fill :active', bg: '--color-accent-active', fg: '--color-on-accent', min: AA_NORMAL },
+        { name: 'accent subtle', bg: '--color-accent-subtle', fg: '--color-accent-text', min: AA_NORMAL },
+        { name: 'accent subtle body', bg: '--color-accent-subtle', fg: '--color-body', min: AA_NORMAL },
+        { name: 'accent text on page', bg: '--color-surface-base', fg: '--color-accent-text', min: AA_NORMAL },
+        { name: 'accent text on card', bg: '--color-surface-raised', fg: '--color-accent-text', min: AA_NORMAL },
+        // "On brand" — the role components reach through --color-action-primary-text.
+        { name: 'on-brand label on primary', bg: '--color-action-primary', fg: '--color-on-brand', min: AA_NORMAL },
+        { name: 'on-brand label on primary :hover', bg: '--color-action-primary-hover', fg: '--color-on-brand', min: AA_NORMAL },
+        { name: 'on-brand label on primary :active', bg: '--color-action-primary-active', fg: '--color-on-brand', min: AA_NORMAL },
+    );
+
     pairs.push(
         { name: 'button primary', bg: '--color-action-primary', fg: '--color-action-primary-text', min: AA_NORMAL },
         { name: 'button primary :hover', bg: '--color-action-primary-hover', fg: '--color-action-primary-text', min: AA_NORMAL },
@@ -412,6 +424,19 @@ function main() {
                     `${themeName} · ${pair.name}: ${fg} on ${bg} = ${ratio}:1 (needs ${pair.min}:1)`,
                 );
             }
+        }
+    }
+
+    // Components paint the label with --color-action-primary-text; apps set it
+    // through --color-on-brand (--zabi-on-brand / --zabi-on-brand-dark). If the
+    // two ever come apart, the documented knob stops reaching the button.
+    for (const themeName of ['light', 'dark']) {
+        const label = resolve(themes[themeName], '--color-action-primary-text');
+        const onBrand = resolve(themes[themeName], '--color-on-brand');
+        if (!label || label !== onBrand) {
+            failures.push(
+                `${themeName} · --color-action-primary-text (${label}) must follow --color-on-brand (${onBrand})`,
+            );
         }
     }
 

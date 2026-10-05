@@ -3,9 +3,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import {
   getLightBaseScale,
-  getMirroredDarkSemanticScale,
   formatCssVarLines,
   formatSemanticAliasLines,
+  formatDarkMirrorAliasLines,
 } from '../tokens/base-scale.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,12 +27,12 @@ function replaceSection(content, startMarker, endMarker, replacement) {
 async function syncThemeTokens() {
   const mode = process.env.ZABI_BASE_SCALE_MODE ?? 'fixed';
   const lightScale = await getLightBaseScale(mode);
-  const darkSemanticScale = getMirroredDarkSemanticScale(lightScale);
 
   const lightPhysicalBlock = [
     '  /*',
     '   * Custom base (gray) ramp — single physical scale for --color-base-*.',
-    '   * 21 stops: 50 … 950 (lightest → darkest). Edit hex here; mirror the same block in .dark for standalone imports.',
+    '   * 21 stops: 50 … 950 (lightest → darkest). Declared ONCE, here: .dark holds no raw palette,',
+    '   * so an app that overrides --zabi-base-* on :root restyles both themes.',
     '   * Dark: semantic step S maps to physical (1000 − S), e.g. 50↔950, 75↔925; 500 stays fixed.',
     mode === 'oklch'
       ? '   * Midpoints are generated in OKLCH from primary stops (50/100/200.../950).'
@@ -46,14 +46,11 @@ async function syncThemeTokens() {
     formatSemanticAliasLines(),
   ].join('\n');
 
-  const darkPhysicalBlock = [
-    '  /* Mirror @theme --zabi-base-* ramp (same physical hex; required for standalone dark import) */',
-    formatCssVarLines(lightScale),
-  ].join('\n');
-
+  // Aliases, not the mirrored hex: a literal here would pin dark to the default
+  // greys and undo an app's --zabi-base-* override.
   const darkSemanticBlock = [
     '  /* Base Color Scale — semantic → physical mirror (1000 − step); 500 is fixed point */',
-    formatCssVarLines(darkSemanticScale, '--color-base-'),
+    formatDarkMirrorAliasLines(),
   ].join('\n');
 
   let css = fs.readFileSync(appCssPath, 'utf8');
@@ -68,12 +65,6 @@ async function syncThemeTokens() {
     '  /* Base Color Scale — semantic tokens alias the physical ramp (light: 1:1) */',
     '  /* Background Colors */',
     lightSemanticBlock,
-  );
-  css = replaceSection(
-    css,
-    '  /* Mirror @theme --zabi-base-* ramp (same physical hex; required for standalone dark import) */',
-    '  /* Mirror @theme --zabi-brand-* ramp (same physical hex; required for standalone dark import) */',
-    darkPhysicalBlock,
   );
   css = replaceSection(
     css,

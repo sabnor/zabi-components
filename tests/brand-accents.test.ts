@@ -3,6 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { resolveTokenColor } from "../scripts/resolve-tokens.js";
+
 import {
     ACCENTS,
     IRIS,
@@ -101,17 +103,17 @@ const darkBlock = /\n\.dark\s*\{([\s\S]*?)\n\}/.exec(appCss)?.[1] ?? "";
 const lightTokens = declarations(themeBlock);
 const darkTokens = { ...lightTokens, ...declarations(darkBlock) };
 
-function resolve(map: Record<string, string>, token: string, depth = 0): string {
-    const value = map[token];
-    if (value === undefined || depth > 20) {
-        throw new Error(`${token} does not resolve to a colour`);
+/**
+ * Still throws on anything that is not one flat colour. The dark surface
+ * levels are an opaque `color-mix()` of two neutral steps, which the shared
+ * resolver evaluates to the hex the browser paints.
+ */
+function resolve(map: Record<string, string>, token: string): string {
+    const colour = resolveTokenColor(map, token);
+    if (!colour) {
+        throw new Error(`${token} (${map[token]}) does not resolve to a flat colour`);
     }
-    const reference = /^var\((--[\w-]+)\)$/.exec(value);
-    if (reference) return resolve(map, reference[1], depth + 1);
-    if (!/^#[0-9a-fA-F]{6}$/.test(value)) {
-        throw new Error(`${token} is ${value}, not a flat colour`);
-    }
-    return value;
+    return colour;
 }
 
 function luminance(hex: string): number {

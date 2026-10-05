@@ -3,6 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { resolveTokenColor } from "../scripts/resolve-tokens.js";
+
 /**
  * Storybook's manager is rendered outside the preview's stylesheet, so
  * `.storybook/zabi-theme.ts` has to copy its colours as hex values instead of
@@ -29,11 +31,9 @@ const themeColours = [...new Set(themeCode.match(hexPattern) ?? [])].map(
     (hex) => hex.toLowerCase(),
 );
 
-const stylesheetColours = new Set(
-    [...appCss.matchAll(/--[\w-]+\s*:\s*(#[0-9a-fA-F]{6})\s*;/g)].map(
-        ([, hex]) => hex.toLowerCase(),
-    ),
-);
+const literalColours = [
+    ...appCss.matchAll(/--[\w-]+\s*:\s*(#[0-9a-fA-F]{6})\s*;/g),
+].map(([, hex]) => hex.toLowerCase());
 
 describe("Storybook theme", () => {
     it("has colours to check", () => {
@@ -69,11 +69,22 @@ const darkTokens = {
     ...declarations(/\n\.dark\s*\{([\s\S]*?)\n\}/.exec(appCss)?.[1] ?? ""),
 };
 
-function resolveToken(map: Record<string, string>, token: string, depth = 0): string | undefined {
-    const value = map[token];
-    if (value === undefined || depth > 20) return undefined;
-    const reference = /^var\((--[\w-]+)\)$/.exec(value);
-    return reference ? resolveToken(map, reference[1], depth + 1) : value.toLowerCase();
+/**
+ * The colour a token computes to. The dark surface levels are `color-mix()`
+ * over the neutral ramp rather than hex literals, so they are evaluated the
+ * way the browser would, not read off the declaration.
+ */
+function resolveToken(map: Record<string, string>, token: string): string | undefined {
+    return resolveTokenColor(map, token) ?? undefined;
+}
+
+/** Every literal in the stylesheet, plus every colour a token resolves to. */
+const stylesheetColours = new Set<string>(literalColours);
+for (const map of [lightTokens, darkTokens]) {
+    for (const token of Object.keys(map)) {
+        const colour = resolveToken(map, token);
+        if (colour) stylesheetColours.add(colour);
+    }
 }
 
 /** [theme, property, hex, token] for every annotated line of one `create({ … })` call. */

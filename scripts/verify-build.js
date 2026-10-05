@@ -27,10 +27,12 @@ const requiredComponentFiles = [
 const maxFileSizes = {
   'zabi-components-theme.css': 50000, // ~50KB
   'zabi-components-theme-only.css': 50000,
-  'zabi-components-theme-dark.css': 30000, // ~30KB
-  'zabi-components-theme-dark-only.css': 30000,
+  // The dark block is published twice: once for .dark / [data-theme="dark"]
+  // and once for [data-theme="auto"] inside a media query.
+  'zabi-components-theme-dark.css': 45000, // ~45KB
+  'zabi-components-theme-dark-only.css': 45000,
   'zabi-components.css': 500000, // ~500KB
-  'zabi-components-colors.css': 30000, // ~30KB (grew with the per-family subtle/border/text tokens)
+  'zabi-components-colors.css': 45000, // ~45KB (the dark tokens appear twice, as above)
   'index.js': 10000, // ~10KB
   'index.d.ts': 8000 // ~8KB (grew with the new Sidebar/Tabs/Select/Toggle props)
 };

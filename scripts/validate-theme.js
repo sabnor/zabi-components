@@ -2,6 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import postcss from 'postcss';
+import {
+  DARK_CLASS,
+  DARK_ATTRIBUTE,
+  LIGHT_ATTRIBUTE,
+  AUTO_ATTRIBUTE,
+  AUTO_MEDIA,
+} from './dark-selectors.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,7 +19,9 @@ const BASE_STEPS = [
   550, 600, 650, 700, 750, 800, 850, 900, 925, 950,
 ];
 const SCALE_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
-const REQUIRED_COLOR_SCALES = ['brand', 'citron', 'pine', 'iris', 'warning', 'error'];
+const REQUIRED_COLOR_SCALES = ['brand', 'citron', 'accent', 'pine', 'iris', 'warning', 'error'];
+/** Physical ramps: declared once, in the light theme, and never in dark. */
+const PHYSICAL_SCALES = ['brand', 'citron', 'accent', 'pine', 'iris', 'warning', 'error'];
 const REQUIRED_LIGHT_SEMANTICS = [
   'color-background',
   'color-headline',
@@ -28,6 +37,26 @@ const REQUIRED_LIGHT_SEMANTICS = [
   'color-input',
   'color-card',
   'color-overlay',
+  // Theming foundation: the roles and knobs an app rebrands through.
+  'color-accent',
+  'color-accent-hover',
+  'color-accent-active',
+  'color-accent-subtle',
+  'color-accent-border',
+  'color-accent-text',
+  'color-on-accent',
+  'zabi-on-accent',
+  'zabi-on-accent-dark',
+  'color-on-brand',
+  'zabi-on-brand',
+  'zabi-on-brand-dark',
+  'color-action-primary-text',
+  'font-family-sans',
+  'font-family-heading',
+  'font-family-mono',
+  'font-weight-regular',
+  'font-weight-medium',
+  'font-weight-bold',
 ];
 const REQUIRED_DARK_OVERRIDES = [
   'color-input',
@@ -35,14 +64,21 @@ const REQUIRED_DARK_OVERRIDES = [
   'color-card',
   'color-overlay',
   'color-action-danger',
+  'color-surface-base',
+  'color-surface-raised',
+  'color-surface-elevated',
+  'color-surface-overlay',
+  'color-on-brand',
+  'color-on-accent',
+  'color-accent-subtle',
+  'color-accent-border',
+  // Dark REMAPS every semantic step; it must not restate a physical ramp.
+  // It used to be required to (--zabi-base-*, --zabi-brand-* …, "for
+  // standalone dark imports"), and that copy is what undid an app's :root
+  // override in dark mode. The requirement is now the opposite: see
+  // findRawPaletteInDark below.
   ...BASE_STEPS.map((step) => `color-base-${step}`),
-  ...BASE_STEPS.map((step) => `zabi-base-${step}`),
-  ...SCALE_STEPS.map((step) => `zabi-brand-${step}`),
-  ...SCALE_STEPS.map((step) => `zabi-pine-${step}`),
-  ...SCALE_STEPS.map((step) => `zabi-citron-${step}`),
-  ...SCALE_STEPS.map((step) => `zabi-iris-${step}`),
-  ...SCALE_STEPS.map((step) => `zabi-warning-${step}`),
-  ...SCALE_STEPS.map((step) => `zabi-error-${step}`),
+  ...REQUIRED_COLOR_SCALES.flatMap((scale) => SCALE_STEPS.map((step) => `color-${scale}-${step}`)),
 ];
 /** Dark-only tokens not present in light @theme (prefer defining in @theme + mirror instead). */
 const ALLOWED_DARK_ONLY_VARIABLES = new Set();
@@ -57,12 +93,17 @@ const ALLOWED_DARK_ONLY_VARIABLES = new Set();
  * properties of their own (`--zabi-focus-ring-color`), and those are not tokens.
  */
 function readTokenNames(content, isDarkTheme) {
+  return readTokenDeclarations(content, isDarkTheme).map(([name]) => name);
+}
+
+/** [name, value] for every token, in source order. */
+function readTokenDeclarations(content, isDarkTheme) {
   const root = postcss.parse(content);
   const names = [];
   const collect = (container) => {
     container.each((node) => {
       if (node.type === 'decl' && node.prop.startsWith('--')) {
-        names.push(node.prop.slice(2));
+        names.push([node.prop.slice(2), node.value.trim()]);
       }
     });
   };
@@ -79,6 +120,105 @@ function readTokenNames(content, isDarkTheme) {
 
 function extractCssVariables(content, isDarkTheme) {
   return new Set(readTokenNames(content, isDarkTheme));
+}
+
+/**
+ * Dark holds no raw palette.
+ *
+ * A `--zabi-*` declaration in the dark block re-pins a physical ramp, and a
+ * hex literal pins a role to the default greys. Either one means an app's
+ * single `:root` override of `--zabi-brand-*`, `--zabi-accent-*` or
+ * `--zabi-base-*` stops reaching dark mode. Dark may only point roles at the
+ * ramps (`var()`, `color-mix()` over them); the alpha tints and the shadow
+ * colour are `rgb()`/`rgba()` and are not ramp steps.
+ */
+function findRawPaletteInDark(content) {
+  const problems = [];
+  for (const [name, value] of readTokenDeclarations(content, true)) {
+    if (name.startsWith('zabi-')) {
+      problems.push(`--${name} is a physical token; declare it once, in @theme`);
+    } else if (/#[0-9a-fA-F]{3,8}\b/.test(value)) {
+      problems.push(`--${name}: ${value} is a hex literal; point it at a --zabi-* ramp step`);
+    }
+  }
+  return problems;
+}
+
+function declarationList(rule) {
+  const out = [];
+  rule.each((node) => {
+    if (node.type === 'decl') out.push(`${node.prop}:${node.value.trim()}`);
+  });
+  return out;
+}
+
+/**
+ * Every published file with dark tokens must carry them under all three
+ * selectors, with identical declarations: `.dark, [data-theme="dark"]`, and
+ * `[data-theme="auto"]` inside `@media (prefers-color-scheme: dark)`. The copy
+ * is generated (scripts/dark-selectors.js); this is what notices if one output
+ * stops getting it, or the two blocks drift apart.
+ */
+function validateDarkSelectors(filePath, fileName) {
+  const root = postcss.parse(fs.readFileSync(filePath, 'utf8'));
+  const errors = [];
+  let darkRule;
+  let autoRule;
+  const colorSchemes = new Map();
+
+  root.walkRules((rule) => {
+    const selectors = (rule.selectors ?? [rule.selector]).map((s) => s.trim());
+    const hasTokens = rule.some((node) => node.type === 'decl' && node.prop.startsWith('--'));
+    const inAutoMedia =
+      rule.parent?.type === 'atrule' &&
+      rule.parent.name === 'media' &&
+      rule.parent.params.replace(/\s+/g, ' ').trim() === AUTO_MEDIA;
+    if (hasTokens && selectors.includes(DARK_CLASS) && rule.parent?.type === 'root') {
+      if (darkRule) errors.push(`more than one ${DARK_CLASS} token rule`);
+      darkRule = rule;
+      if (!selectors.includes(DARK_ATTRIBUTE)) {
+        errors.push(`the ${DARK_CLASS} rule is not also published as ${DARK_ATTRIBUTE}`);
+      }
+      if (selectors.length !== 2) {
+        errors.push(`unexpected selectors on the dark rule: ${selectors.join(', ')}`);
+      }
+    }
+    if (hasTokens && inAutoMedia && selectors.length === 1 && selectors[0] === AUTO_ATTRIBUTE) {
+      if (autoRule) errors.push(`more than one ${AUTO_ATTRIBUTE} token rule`);
+      autoRule = rule;
+    }
+    if (rule.parent?.type === 'root' && selectors.length === 1) {
+      rule.each((node) => {
+        if (node.type === 'decl' && node.prop === 'color-scheme') colorSchemes.set(selectors[0], node.value.trim());
+      });
+    }
+  });
+
+  if (!darkRule) errors.push(`no ${DARK_CLASS} token rule`);
+  if (!autoRule) errors.push(`no ${AUTO_ATTRIBUTE} rule inside @media ${AUTO_MEDIA}`);
+  if (darkRule && autoRule) {
+    const dark = declarationList(darkRule);
+    const auto = declarationList(autoRule);
+    if (dark.length !== auto.length || dark.some((decl, i) => decl !== auto[i])) {
+      errors.push(`${AUTO_ATTRIBUTE} does not declare exactly what ${DARK_CLASS} declares (${auto.length} vs ${dark.length} declarations)`);
+    }
+  }
+  for (const [selector, scheme] of [[LIGHT_ATTRIBUTE, 'light'], [DARK_ATTRIBUTE, 'dark'], [AUTO_ATTRIBUTE, 'light dark']]) {
+    if (colorSchemes.get(selector) !== scheme) {
+      errors.push(`${selector} must set color-scheme: ${scheme} (found ${colorSchemes.get(selector) ?? 'nothing'})`);
+    }
+  }
+  if (colorSchemes.has(DARK_CLASS)) {
+    errors.push(`${DARK_CLASS} must not set color-scheme; it never has, and apps set their own`);
+  }
+
+  if (errors.length > 0) {
+    console.error(`❌ Dark selectors invalid in ${fileName}:`);
+    errors.forEach((error) => console.error(`   - ${error}`));
+    return false;
+  }
+  console.log(`✓ ${fileName} carries dark under ${DARK_CLASS}, ${DARK_ATTRIBUTE} and ${AUTO_ATTRIBUTE}`);
+  return true;
 }
 
 /** Classes the components need that Tailwind cannot generate from the tokens. */
@@ -152,42 +292,14 @@ function validateThemeFile(filePath, fileName) {
       errors,
       fileName,
     );
-    requireVariables(
-      variables,
-      SCALE_STEPS.map((step) => `zabi-brand-${step}`),
-      errors,
-      fileName,
-    );
-    requireVariables(
-      variables,
-      SCALE_STEPS.map((step) => `zabi-pine-${step}`),
-      errors,
-      fileName,
-    );
-    requireVariables(
-      variables,
-      SCALE_STEPS.map((step) => `zabi-citron-${step}`),
-      errors,
-      fileName,
-    );
-    requireVariables(
-      variables,
-      SCALE_STEPS.map((step) => `zabi-iris-${step}`),
-      errors,
-      fileName,
-    );
-    requireVariables(
-      variables,
-      SCALE_STEPS.map((step) => `zabi-warning-${step}`),
-      errors,
-      fileName,
-    );
-    requireVariables(
-      variables,
-      SCALE_STEPS.map((step) => `zabi-error-${step}`),
-      errors,
-      fileName,
-    );
+    for (const scale of PHYSICAL_SCALES) {
+      requireVariables(
+        variables,
+        SCALE_STEPS.map((step) => `zabi-${scale}-${step}`),
+        errors,
+        fileName,
+      );
+    }
     requireVariables(
       variables,
       BASE_STEPS.map((step) => `color-base-${step}`),
@@ -197,6 +309,10 @@ function validateThemeFile(filePath, fileName) {
     requireVariables(variables, REQUIRED_LIGHT_SEMANTICS, errors, fileName);
   } else {
     requireVariables(variables, REQUIRED_DARK_OVERRIDES, errors, fileName);
+    const raw = findRawPaletteInDark(content);
+    if (raw.length > 0) {
+      errors.push(`Dark must only remap roles, but ${fileName} holds raw palette values:\n   - ${raw.join('\n   - ')}`);
+    }
   }
 
   const seen = new Set();
@@ -231,21 +347,11 @@ function validateDarkThemeStructure(lightThemePath, darkThemePath) {
   const lightVars = extractCssVariables(lightContent, false);
   const darkVars = extractCssVariables(darkContent, true);
 
+  // Dark mirrors every semantic step the light theme has. The physical
+  // --zabi-* ramps are deliberately absent from dark (findRawPaletteInDark).
   const requiredParity = [
-    ...BASE_STEPS.map((step) => `zabi-base-${step}`),
     ...BASE_STEPS.map((step) => `color-base-${step}`),
-    ...SCALE_STEPS.map((step) => `zabi-brand-${step}`),
-    ...SCALE_STEPS.map((step) => `color-brand-${step}`),
-    ...SCALE_STEPS.map((step) => `zabi-pine-${step}`),
-    ...SCALE_STEPS.map((step) => `color-pine-${step}`),
-    ...SCALE_STEPS.map((step) => `zabi-citron-${step}`),
-    ...SCALE_STEPS.map((step) => `color-citron-${step}`),
-    ...SCALE_STEPS.map((step) => `zabi-iris-${step}`),
-    ...SCALE_STEPS.map((step) => `color-iris-${step}`),
-    ...SCALE_STEPS.map((step) => `zabi-warning-${step}`),
-    ...SCALE_STEPS.map((step) => `color-warning-${step}`),
-    ...SCALE_STEPS.map((step) => `zabi-error-${step}`),
-    ...SCALE_STEPS.map((step) => `color-error-${step}`),
+    ...REQUIRED_COLOR_SCALES.flatMap((scale) => SCALE_STEPS.map((step) => `color-${scale}-${step}`)),
   ];
   const missingParity = requiredParity.filter((name) => !darkVars.has(name));
   if (missingParity.length > 0) {
@@ -296,6 +402,22 @@ async function validateThemes() {
   );
   if (!structureValid) {
     allValid = false;
+  }
+
+  console.log('\n🔍 Validating dark selectors in every file that carries dark tokens...');
+  for (const name of [
+    'zabi-components-theme-dark.css',
+    'zabi-components-theme-dark-only.css',
+    'zabi-components-colors.css',
+    'zabi-components.css',
+  ]) {
+    const filePath = path.join(distDir, name);
+    if (!fs.existsSync(filePath)) {
+      console.error(`❌ ${name} not found`);
+      allValid = false;
+      continue;
+    }
+    if (!validateDarkSelectors(filePath, name)) allValid = false;
   }
 
   console.log('\n🔍 Validating surface elevation levels...');
