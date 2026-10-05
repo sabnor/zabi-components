@@ -7,6 +7,12 @@
         type DropdownContext,
         type DropdownOption,
     } from "../util/dropdown.js";
+    import {
+        measureFit,
+        unfitted,
+        watchViewport,
+        type PanelFit,
+    } from "../util/fit-in-viewport.js";
     import DropdownItem from './DropdownItem.svelte';
 
     export type DropdownTriggerProps = {
@@ -19,6 +25,11 @@
         /** Extra classes for the host element. */
         class?: string;
         isOpen?: boolean;
+        /**
+         * The side the menu opens on. It is where the menu goes whenever it
+         * fits there; near an edge of the screen it flips to the other side,
+         * and is narrowed or given its own scroll when neither side has room.
+         */
         placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
         ariaLabel?: string;
         /** `listbox` for Select-style; `menu` for actions. */
@@ -232,6 +243,50 @@
         return () => document.removeEventListener('mousedown', onDocMouseDown);
     });
 
+    /** Room kept between the menu and the edge of the screen. */
+    const VIEWPORT_MARGIN = 8;
+
+    /** The room between the menu and its trigger: `mt-2` or `mb-2`, so it grows with the text size. */
+    function triggerGap(panel: HTMLElement): number {
+        const style = getComputedStyle(panel);
+        const gap = Math.max(parseFloat(style.marginTop), parseFloat(style.marginBottom));
+        return Number.isFinite(gap) ? gap : 8;
+    }
+
+    const preferred = $derived({
+        block: placement.startsWith('top') ? ('top' as const) : ('bottom' as const),
+        inline: placement.endsWith('end') ? ('end' as const) : ('start' as const),
+    });
+
+    /**
+     * Where the menu actually is. It starts, and stays, on the side asked for
+     * whenever the menu fits there; `measureFit` only moves it when it would
+     * leave the screen.
+     */
+    let measured = $state<PanelFit | null>(null);
+    const fit = $derived(measured ?? unfitted(preferred.block, preferred.inline));
+    const resolvedPlacement = $derived(`${fit.block}-${fit.inline}` as typeof placement);
+
+    // Runs after the menu is in the DOM and before the browser paints it, so
+    // it is never seen on the wrong side; then again when the screen changes.
+    $effect(() => {
+        const side = preferred;
+        if (!isOpen || !menuElement || !rootEl) {
+            measured = null;
+            return;
+        }
+        const anchor = rootEl;
+        const panel = menuElement;
+        const update = () => {
+            measured = measureFit(anchor, panel, side, {
+                margin: VIEWPORT_MARGIN,
+                gap: triggerGap(panel),
+            });
+        };
+        update();
+        return watchViewport(update, panel);
+    });
+
     const placementClasses = $derived(() => {
         const base = 'absolute z-dropdown min-w-[12rem]';
         const positioning: Record<typeof placement, string> = {
@@ -241,7 +296,7 @@
             'top-start': 'bottom-full start-0 mb-2',
             'top-end': 'bottom-full end-0 mb-2',
         };
-        return `${base} ${positioning[placement]}`;
+        return `${base} ${positioning[resolvedPlacement]}`;
     });
 
     const transformClasses = $derived(() => {
@@ -260,7 +315,7 @@
     const dropdownContentClasses = $derived(() => {
         return [
             placementClasses(),
-            'rounded-control border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-all duration-200 ease-in-out',
+            'rounded-control border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-[opacity,translate] duration-200 ease-in-out',
             transformClasses(),
         ]
             .join(' ')
@@ -279,7 +334,26 @@
     {@render trigger(triggerAria)}
 
     {#if isOpen}
-        <div bind:this={menuElement} class={dropdownContentClasses()}>
+        <!-- The inline styles are only set when the menu would leave the screen.
+        `min-width`: `min-w-[12rem]` is wider than a 320px screen once the text
+        is at 200%, and a minimum beats `max-width`; a narrowed menu is exactly
+        as wide as the room there is. -->
+        <div
+            bind:this={menuElement}
+            class={dropdownContentClasses()}
+            data-resolved-placement={resolvedPlacement}
+            style:inset-inline-start={fit.inline === 'start' && fit.inlineOffset !== 0
+                ? `${fit.inlineOffset}px`
+                : undefined}
+            style:inset-inline-end={fit.inline === 'end' && fit.inlineOffset !== 0
+                ? `${fit.inlineOffset}px`
+                : undefined}
+            style:max-width={fit.maxWidth !== null ? `${fit.maxWidth}px` : undefined}
+            style:min-width={fit.maxWidth !== null ? `${fit.maxWidth}px` : undefined}
+            style:max-height={fit.maxHeight !== null ? `${fit.maxHeight}px` : undefined}
+            style:overflow={fit.maxWidth !== null || fit.maxHeight !== null ? 'auto' : undefined}
+            style:overscroll-behavior={fit.maxHeight !== null ? 'contain' : undefined}
+        >
             {@render header?.()}
             <div
                 id={menuId}
