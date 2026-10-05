@@ -315,7 +315,9 @@
     const dropdownContentClasses = $derived(() => {
         return [
             placementClasses(),
-            'rounded-control border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-[opacity,translate] duration-200 ease-in-out',
+            // A menu is an overlay (16px). Its items are 8px, 9px inside
+            // the corner: within a pixel of concentric.
+            'rounded-overlay border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-[opacity,translate] duration-200 ease-in-out',
             transformClasses(),
         ]
             .join(' ')

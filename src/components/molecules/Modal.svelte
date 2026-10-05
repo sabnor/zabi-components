@@ -146,7 +146,7 @@
             mobile: 'max-md:h-dvh max-md:max-h-none max-md:rounded-none max-md:border-0',
         },
         card: {
-            all: 'flex min-h-0 flex-1 flex-col rounded-none',
+            all: 'flex min-h-0 flex-1 flex-col rounded-none md:rounded-none',
             mobile: 'max-md:flex max-md:min-h-0 max-md:flex-1 max-md:flex-col max-md:rounded-none',
         },
         header: {
@@ -296,7 +296,18 @@
             {...restProps}
         >
             <!-- The panel owns padding: Card's own p-6 would stack with the header's px-6/pt-6 and indent the title 24px past the body. -->
-            <Card variant="flat" fullWidth={false} className={cn("bg-transparent! p-0!", full('card'))}>
+            <!-- And the corners: the Card sits 1px inside the panel (its
+            border), so its radius is the panel's less that pixel, not a
+            Card's own 12px. Below `md` the panel is a sheet with square
+            bottom corners, and so is the Card. -->
+            <Card
+                variant="flat"
+                fullWidth={false}
+                className={cn(
+                    "bg-transparent! p-0! rounded-b-none rounded-t-[calc(var(--radius-overlay)-1px)] md:rounded-[calc(var(--radius-overlay)-1px)]",
+                    full('card'),
+                )}
+            >
                 {#if title || description || showClose}
                     <CardHeader
                         {description}

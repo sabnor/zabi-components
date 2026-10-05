@@ -53,8 +53,10 @@
     const showFooter = $derived(showProfile || showLogout || showThemeToggle);
     const showPanelLauncher = $derived(showProfile);
 
+    // Nested corners: the avatar sits 0.5rem (`px-2 py-2`) inside the profile
+    // button, so its radius is the button's less that gap.
     const avatarClasses =
-        "size-10 rounded-container bg-action-primary text-action-primary flex items-center justify-center text-sm font-semibold shrink-0 ring-1 ring-border";
+        "size-10 rounded-[calc(var(--radius-container)-0.5rem)] bg-action-primary text-action-primary flex items-center justify-center text-sm font-semibold shrink-0 ring-1 ring-border";
 
     function getTextToneClass(isMuted = false): string {
         return isMuted ? "text-description" : "text-headline";

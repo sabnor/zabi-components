@@ -328,6 +328,12 @@
 
     const badgeClasses =
         "pointer-events-none absolute flex size-6 items-center justify-center";
+    // Nested corners: a mark in the corner of a tile is 0.25rem (`start-1
+    // top-1`) inside the tile's border, so its radius is the tile's less that
+    // gap. The border is 2px on a selected tile, where the check is, and 1px
+    // otherwise. A pill there would need a tile radius of 18px.
+    const CHECK_RADIUS = "rounded-[calc(var(--radius-container)-0.25rem-2px)]";
+    const VIDEO_RADIUS = "rounded-[calc(var(--radius-container)-0.25rem-1px)]";
 </script>
 
 <div
@@ -431,7 +437,8 @@
                             <span
                                 class={cn(
                                     badgeClasses,
-                                    "start-1 top-1 rounded-pill bg-action-primary text-action-primary",
+                                    CHECK_RADIUS,
+                                    "start-1 top-1 bg-action-primary text-action-primary",
                                 )}
                                 data-media-grid-check
                             >
@@ -444,7 +451,8 @@
                             <span
                                 class={cn(
                                     badgeClasses,
-                                    "bottom-1 start-1 rounded-control border border-border-overlay bg-surface-overlay text-body",
+                                    VIDEO_RADIUS,
+                                    "bottom-1 start-1 border border-border-overlay bg-surface-overlay text-body",
                                 )}
                                 data-media-grid-video
                             >

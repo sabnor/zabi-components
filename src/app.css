@@ -1695,6 +1695,10 @@ body {
   .list-group {
     @apply space-y-1 overflow-hidden rounded-xl border border-border p-1;
     background-color: var(--color-surface-1);
+    /* Nested corners: a row sits 0.25rem and the 1px border inside this
+       shell, so its radius is the shell's less that gap. List and ListItem
+       read it; outside a list group they keep the container radius. */
+    --zabi-list-row-radius: calc(var(--radius-container) - 0.25rem - 1px);
   }
 
   /**

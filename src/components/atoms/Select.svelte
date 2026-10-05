@@ -257,7 +257,10 @@
         {#snippet header()}
             {#if searchable && !isLoading}
                 <!-- Outside role="listbox": a textbox is not a valid listbox child. -->
-                <div class="px-3 pb-2 pt-1" style:width={menuWidth}>
+                <!-- 0.5rem and the panel's 1px border from the corner, as the
+                options below and a Dropdown's items are: an 8px field 9px
+                inside the panel's 16px corner is concentric with it. -->
+                <div class="px-2 pb-2 pt-1" style:width={menuWidth}>
                     <Input
                         type="text"
                         size="sm"
@@ -271,7 +274,10 @@
             {/if}
         {/snippet}
         {#snippet children()}
-            <div class="px-2 pb-2 pt-1" style:width={menuWidth}>
+            <!-- `px-1` twice: the inner one is room for an option's focus
+            ring inside the scrolling box, and together with the panel's
+            border they put the options 9px from its corner. -->
+            <div class="px-1 pb-2 pt-1" style:width={menuWidth}>
                 <div
                     class="overflow-y-auto px-1"
                     style:max-height={maxMenuHeight}

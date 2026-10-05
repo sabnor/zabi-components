@@ -32,7 +32,9 @@
     const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const listClasses = $derived(
-        cn(`space-y-1 overflow-hidden rounded-container ${className}`),
+        // The same radius as its rows: the list clips them, so a larger one
+        // here would cut the corners a `.list-group` gives them.
+        cn(`space-y-1 overflow-hidden rounded-[var(--zabi-list-row-radius,var(--radius-container))] ${className}`),
     );
 </script>
 

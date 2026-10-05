@@ -12,6 +12,22 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+- **Nested corners are concentric.** Where a rounded element sits closer to
+  its rounded container's corner than that corner's radius, its radius is now
+  the container's minus the gap: the Card inside a Modal, the avatar in
+  SidebarFooter's profile button, MediaGrid's check mark (now a rounded
+  square) and video badge, Alert's close button, and ListItem rows inside a
+  `.list-group`.
+- **Dropdown menus and Select lists use the overlay radius** (16px, was 8px).
+  Select's search field and options sit 4px closer to the edge of the list to
+  stay concentric with it.
+
+### Fixed
+
 ## [8.1.0-beta.0] - 2026-10-05
 
 A pre-release, published under the `beta` dist-tag:

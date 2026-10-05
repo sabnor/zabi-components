@@ -38,7 +38,9 @@
 
     const itemClasses = $derived.by(() => {
         const baseClasses =
-            "group focus-ring flex w-full items-center gap-3 rounded-container border px-4 py-3 pr-5 text-left transition-all duration-150";
+            // The container radius, or the one a `.list-group` shell around the list
+        // hands down so the row is concentric with it (see app.css).
+        "group focus-ring flex w-full items-center gap-3 rounded-[var(--zabi-list-row-radius,var(--radius-container))] border px-4 py-3 pr-5 text-left transition-all duration-150";
         const cursorClasses = item.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer";
         // A selected row keeps its fill under keyboard focus, which the focus
         // ring already shows; the hover tint is for rows with no fill. The two

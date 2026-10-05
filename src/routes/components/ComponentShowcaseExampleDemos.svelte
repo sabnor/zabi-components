@@ -489,6 +489,12 @@
                         title="Error"
                         message="Something went wrong. Please try again."
                     />
+                    <Alert
+                        variant="info"
+                        title="Closable"
+                        message="The close button in the corner dismisses this alert."
+                        closable
+                    />
                 </div>
             {:else if component.name === "ContactForm"}
                 <div class="w-full">
