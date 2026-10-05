@@ -38,3 +38,6 @@ dist-ssr
 # Storybook as served by the site at /storybook (copied in by `npm run build:site`)
 /static/storybook/
 /.lib-tmp/
+
+# Agent worktrees (also keeps Tailwind from scanning them)
+/.claude/worktrees/
