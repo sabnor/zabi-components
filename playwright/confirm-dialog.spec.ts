@@ -78,6 +78,9 @@ test.describe("ConfirmDialog — focus, loading and the backdrop", () => {
         const confirm = panel.getByRole("button", { name: "Delete" });
         const cancel = panel.getByRole("button", { name: "Cancel" });
 
+        // The dialog puts focus on Cancel a task after it opens; moved to
+        // Delete before that, it would be taken back and Enter would cancel.
+        await expect(cancel).toBeFocused();
         await confirm.focus();
         await page.keyboard.press("Enter");
 

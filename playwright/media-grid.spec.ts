@@ -281,6 +281,13 @@ test.describe("MediaGrid — layout, keyboard and focus", () => {
         const b = await box(tiles(dialog).nth(1));
         expect(b.y, "Two columns fit in the dialog on a phone").toBe(a.y);
 
+        // The modal moves focus in a task after it opens; an item focused
+        // before that would lose it to the modal's first control.
+        await expect
+            .poll(() => dialog.evaluate((el) => el.contains(document.activeElement)), {
+                message: "The modal takes focus when it opens",
+            })
+            .toBe(true);
         await first.focus();
         await page.keyboard.press("ArrowRight");
         await expect(item(dialog, "team.png")).toBeFocused();

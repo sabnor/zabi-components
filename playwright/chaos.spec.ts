@@ -309,6 +309,14 @@ test.describe("Chaos lab — browser-only interaction risks", () => {
         await page.getByTestId("chaos-open-portal").click();
         const dialog = page.getByTestId("chaos-modal-portal");
         await expect(dialog).toBeVisible();
+        // The modal moves focus to its first control a task after it opens.
+        // Focusing the action before that has happened loses it to the close
+        // button a moment later, so the modal's own focus move comes first.
+        await waitForFocusInside(
+            page,
+            dialog,
+            "The modal takes focus when it opens; the test moves it only after that",
+        );
         const action = page.getByTestId("chaos-portal-action");
         await action.focus();
         const tooltip = dialog.getByRole("tooltip", { includeHidden: true });

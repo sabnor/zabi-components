@@ -42,6 +42,30 @@ A killed run can leave Vite holding the port, and the next run then fails with
 lsof -nP -tiTCP:5180 -sTCP:LISTEN | xargs kill -9
 ```
 
+### If a Playwright test fails only now and then
+
+Two runs on one machine need a port each: `PLAYWRIGHT_PORT=5199 npm run test:e2e`.
+Stop a run by its own port or process id, never by name, or you stop the
+other one too.
+
+The suite is timed for a machine that is otherwise idle. With other runs or
+dev servers busy beside it, tests time out in places that have nothing wrong
+with them (a click that takes a minute, a page that does not hydrate in 30
+seconds). Run it again by itself before reading anything into such a failure.
+
+A failure that says a control is `inactive` where it should be focused is a
+different thing, and worth finding. Modal, Drawer, SlideUp and BottomSheet
+move focus to their first control a task after they open. A test that moves
+focus itself as soon as the panel is visible can be first, and then loses it:
+wait for focus to be inside the panel (`waitForFocusInside` in
+`playwright/helpers/chaos-lab.ts`, or `toBeFocused()` on the control that
+takes it) before you focus anything else in it.
+
+A dev server started in a checkout under `.claude/worktrees/` watches no
+files (`server.watch.ignored` in `vite.config.ts` matches the checkout's own
+path): nothing another checkout does reloads its pages, and it does not pick up
+your edits either. Restart it to see them.
+
 ## 2. Version and changelog
 
 Bump `package.json` and move the `[Unreleased]` section under the new version
