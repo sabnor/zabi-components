@@ -26,7 +26,7 @@ Options
   --neutral <hex>   Tints the 21-step neutral ramp, --zabi-base-50 … 950.
   --out <file>      Write the CSS here. Without it the CSS goes to stdout.
   --strict          Exit 1 when any role pair is below WCAG AA.
-  --set <t>=<v>     Also write this declaration, e.g. --set "--color-link=var(--zabi-brand-800)".
+  --set <t>=<v>     Also write this declaration, e.g. --set "--color-link=var(--color-brand-800)".
                     Repeatable. It applies in light and dark and is contrast-checked.
   --help            Show this text.
 
@@ -59,7 +59,7 @@ function parseArgs(argv) {
             // The value is itself a custom property name, so it starts with "--".
             const pair = inline !== undefined ? inline : argv[(i += 1)];
             const match = /^(--[\w-]+)\s*[=:]\s*(.+)$/s.exec(pair ?? '');
-            if (!match) usageError('--set needs <token>=<value>, for example --set "--color-link=var(--zabi-brand-800)"');
+            if (!match) usageError('--set needs <token>=<value>, for example --set "--color-link=var(--color-brand-800)"');
             options.overrides = { ...options.overrides, [match[1]]: match[2].trim() };
         } else if (FLAG_OPTIONS.includes(name)) {
             if (inline !== undefined) usageError(`--${name} takes no value`);

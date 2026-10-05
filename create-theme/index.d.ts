@@ -17,7 +17,7 @@ export interface CreateThemeOptions {
     neutral?: HexColor;
     /**
      * Extra declarations written after the ramps, for example
-     * `{ "--color-link": "var(--zabi-brand-800)" }`. They apply in light and in
+     * `{ "--color-link": "var(--color-brand-800)" }`. They apply in light and in
      * dark, and take part in the contrast check and in the choice of the "on"
      * colours.
      */
