@@ -127,7 +127,16 @@
         window.addEventListener("resize", measure);
         window.visualViewport?.addEventListener("resize", measure);
         window.visualViewport?.addEventListener("scroll", measure);
+        // An overlay moves itself up over the keyboard, and its content with
+        // it: the box then ends above the keyboard, and the bar is not raised
+        // a second time. That move is heard here, whichever came first.
+        const resized =
+            container && typeof ResizeObserver === "function"
+                ? new ResizeObserver(measure)
+                : undefined;
+        if (container) resized?.observe(container);
         return () => {
+            resized?.disconnect();
             window.removeEventListener("scroll", measure, true);
             window.removeEventListener("resize", measure);
             window.visualViewport?.removeEventListener("resize", measure);

@@ -7,7 +7,7 @@
         returnFocus,
         saveFocus,
     } from '../util/focus-utils.js';
-    import { lockBodyScroll, trapTabKey } from '../util/overlay.js';
+    import { followKeyboard, lockBodyScroll, trapTabKey } from '../util/overlay.js';
     import { TOUCH_HIT_AREA } from '../util/touch-target.js';
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
@@ -93,9 +93,15 @@
             const stopRecovery = recoverStrayFocus(container, {
                 onEscape: (event) => closeSlideUp(event),
             });
+            // Where the on-screen keyboard covers the page, the overlay
+            // keeps to what is left above it.
+            const stopKeyboard = container.parentElement
+                ? followKeyboard(container.parentElement)
+                : undefined;
             return () => {
                 clearTimeout(t);
                 stopRecovery();
+                stopKeyboard?.();
                 overlay.leave();
                 unlockScroll();
                 if (focusActive) {
@@ -154,7 +160,7 @@
 {#if isOpen}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
-        class="fixed inset-0 z-modal cursor-pointer bg-overlay"
+        class="group/overlay fixed inset-0 z-modal cursor-pointer bg-overlay"
         style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
         data-overlay-depth={depth}
         onclick={handleBackdropClick}
@@ -164,7 +170,8 @@
         <div
             bind:this={slideUpContainer}
             class={cn(
-                "fixed bottom-0 left-0 right-0 z-modal flex max-h-[90dvh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none",
+                "group-data-keyboard-open/overlay:max-h-full",
+                "absolute bottom-0 left-0 right-0 z-modal flex max-h-[90dvh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none",
                 // Back to rest after a swipe that did not close it.
                 swipeToClose &&
                     "overscroll-contain transition-transform duration-200 ease-out motion-reduce:transition-none",

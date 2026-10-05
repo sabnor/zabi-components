@@ -28,11 +28,13 @@
         fixed?: boolean;
         /**
          * On a touch screen a tap on the trigger opens the tooltip, and the
-         * trigger still does what it does. This is how long it then stays, in
-         * milliseconds; a second tap, a tap elsewhere, Escape or scrolling
-         * closes it sooner. `0` keeps it open until one of those happens: for
-         * a trigger that does nothing else, such as an info icon. A mouse and
-         * a keyboard are not affected.
+         * trigger still does what it does. It stays until a second tap, a tap
+         * elsewhere, Escape, scrolling or focus leaving: the tap also puts
+         * focus on the trigger, and a tooltip that went by itself while its
+         * trigger still had focus would be gone before it was read. Give a
+         * number of milliseconds to have it close by itself after that long
+         * as well, for a button whose tooltip is in the way of what the tap
+         * did. A mouse and a keyboard are not affected.
          */
         touchDuration?: number;
         class?: string;
@@ -42,6 +44,14 @@
     /** First matching focusable inside the slot receives `aria-describedby` (wrapper div is skipped). */
     const FOCUSABLE_SELECTOR =
         'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    /**
+     * With nothing focusable in the slot, the first control of any kind is
+     * described instead: a disabled button is where a tooltip most often says
+     * something that matters (why it is disabled). It cannot take focus, so
+     * the keyboard never opens that tooltip: `aria-disabled="true"` on a
+     * button that stays focusable is the pattern that reaches everyone.
+     */
+    const CONTROL_SELECTOR = 'button, a[href], input, select, textarea, [role="button"], [tabindex]';
 
     let {
         content = "",
@@ -50,7 +60,7 @@
         disabled = false,
         block = false,
         fixed = false,
-        touchDuration = 2500,
+        touchDuration = 0,
         class: className = "",
         children,
         ...restProps
@@ -220,6 +230,12 @@
     let touchHideTimeout: ReturnType<typeof setTimeout> | null = null;
     /** A tap also focuses the trigger; for this long that focus is the tap's, not new input. */
     const TOUCH_ECHO = 700;
+    /** True while a mouse is over the trigger, the bubble or the gap between them. */
+    let hovering = false;
+    /** The finger that is down on the trigger, and where it went down. */
+    let touchStart: { id: number; x: number; y: number } | null = null;
+    /** Further than this, in px, and it was a drag, not a tap. */
+    const TAP_SLOP = 10;
 
     function clearTouchHide(): void {
         if (touchHideTimeout !== null) {
@@ -274,7 +290,9 @@
     }
 
     function findDescribedTarget(root: HTMLElement): HTMLElement | null {
-        const found = root.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+        const found =
+            root.querySelector<HTMLElement>(FOCUSABLE_SELECTOR) ??
+            root.querySelector<HTMLElement>(CONTROL_SELECTOR);
         if (found) {
             return found;
         }
@@ -372,6 +390,10 @@
         // Defer hide so brief focus moves within the trigger subtree do not flash the tooltip off.
         hideBlurTimeout = setTimeout(() => {
             hideBlurTimeout = null;
+            // A press on the bubble itself (to select its text) takes focus
+            // off the trigger. The pointer is still on the tooltip: it stays,
+            // and leaving it, a press elsewhere or Escape closes it.
+            if (hovering || containerElement?.contains(document.activeElement)) return;
             hide();
         }, 100);
     }
@@ -381,6 +403,7 @@
         // undo a tap that closed the tooltip, and on iOS a hover handler that
         // shows something makes the first tap a hover and drops its click.
         if (isTouch(lastPointerType)) return;
+        hovering = true;
         clearShowDelay();
         clearHideBlurTimeout();
         if (!disabled && content) {
@@ -396,6 +419,7 @@
     }
 
     function handleMouseLeave() {
+        hovering = false;
         if (isTouch(lastPointerType)) return;
         clearShowDelay();
         clearHideBlurTimeout();
@@ -408,13 +432,37 @@
     }
 
     /**
-     * A finger or a pen on the trigger toggles the tooltip. Nothing is
-     * prevented: the tap goes on to become the trigger's own click.
+     * A tap of a finger or a pen on the trigger toggles the tooltip: when the
+     * finger comes up where it went down, not when it goes down. A finger
+     * that goes down to scroll the page would otherwise open the tooltip and
+     * close it again as the scroll began. Nothing is prevented: the tap goes
+     * on to become the trigger's own click.
      */
     function handlePointerDown(event: PointerEvent) {
         lastPointerType = event.pointerType;
         if (!isTouch(event.pointerType)) return;
         touchedAt = Date.now();
+        // On the bubble itself: neither a tap on the trigger nor one elsewhere.
+        if (bubbleElement?.contains(event.target as Node | null)) {
+            touchStart = null;
+            // It may take focus off the trigger; the tooltip stays, and from
+            // here on a tap elsewhere or scrolling is what closes it.
+            clearHideBlurTimeout();
+            hovering = true;
+            if (isVisible) openedByTouch = true;
+            return;
+        }
+        hovering = false;
+        touchStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    }
+
+    function handlePointerUp(event: PointerEvent) {
+        if (!isTouch(event.pointerType)) return;
+        touchedAt = Date.now();
+        const start = touchStart;
+        touchStart = null;
+        if (!start || start.id !== event.pointerId) return;
+        if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_SLOP) return;
         clearShowDelay();
         clearHideBlurTimeout();
         if (isVisible) {
@@ -433,8 +481,9 @@
         }
     }
 
-    function handlePointerUp(event: PointerEvent) {
-        if (isTouch(event.pointerType)) touchedAt = Date.now();
+    /** The browser took the touch for itself: to scroll, most often. */
+    function handlePointerCancel() {
+        touchStart = null;
     }
 </script>
 
@@ -455,6 +504,7 @@
     onpointerenter={handlePointerEnter}
     onpointerdown={handlePointerDown}
     onpointerup={handlePointerUp}
+    onpointercancel={handlePointerCancel}
     onfocusin={handleFocus}
     onfocusout={handleBlur}
     {...restProps}
@@ -562,6 +612,61 @@
         margin: 0 !important;
     }
 
+    /* Open, the bubble can be pointed at, so the pointer can move onto it and
+       its text can be selected (WCAG 1.4.13). The strip behind it covers the
+       gap to the trigger: the pointer never leaves the tooltip on the way
+       across. Closed or fading, neither takes the pointer. */
+    .tooltip[data-visible="true"] {
+        pointer-events: auto;
+    }
+
+    .tooltip::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .tooltip[data-visible="true"]::after {
+        pointer-events: auto;
+    }
+
+    .tooltip-container[data-placement="top"] .tooltip::after {
+        inset-inline: 0;
+        inset-block-start: 100%;
+        height: var(--tooltip-gap, 0.5rem);
+    }
+
+    .tooltip-container[data-placement="bottom"] .tooltip::after {
+        inset-inline: 0;
+        inset-block-end: 100%;
+        height: var(--tooltip-gap, 0.5rem);
+    }
+
+    .tooltip-container[data-placement="left"] .tooltip::after {
+        inset-block: 0;
+        inset-inline-start: 100%;
+        width: var(--tooltip-gap, 0.5rem);
+    }
+
+    .tooltip-container[data-placement="right"] .tooltip::after {
+        inset-block: 0;
+        inset-inline-end: 100%;
+        width: var(--tooltip-gap, 0.5rem);
+    }
+
+    /* The fixed strategy places the bubble by `left` and `top`, so in a
+       right-to-left page it is still on the side it is named after: the strip
+       is on the physical side, not the logical one. */
+    .tooltip-container[data-strategy="fixed"][data-placement="left"] .tooltip::after {
+        right: auto;
+        left: 100%;
+    }
+
+    .tooltip-container[data-strategy="fixed"][data-placement="right"] .tooltip::after {
+        right: 100%;
+        left: auto;
+    }
+
     .tooltip::before {
         content: "";
         position: absolute;
@@ -598,6 +703,18 @@
         inset-block-start: 50%;
         transform: translateY(-50%);
         clip-path: polygon(0 50%, 100% 0, 100% 100%);
+    }
+
+    /* As for the strip above: the fixed strategy is not mirrored, so its
+       arrow is on the physical side that faces the trigger. */
+    .tooltip-container[data-strategy="fixed"][data-placement="left"] .tooltip::before {
+        right: auto;
+        left: 100%;
+    }
+
+    .tooltip-container[data-strategy="fixed"][data-placement="right"] .tooltip::before {
+        right: 100%;
+        left: auto;
     }
 
     @media (max-width: 640px) {

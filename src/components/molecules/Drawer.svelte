@@ -11,7 +11,12 @@
         returnFocus,
         saveFocus,
     } from "../util/focus-utils.js";
-    import { lockBodyScroll, trapTabKey } from "../util/overlay.js";
+    import {
+        followKeyboard,
+        lockBodyScroll,
+        registerOverlayFooter,
+        trapTabKey,
+    } from "../util/overlay.js";
     import { TOUCH_HIT_AREA } from "../util/touch-target.js";
     import { portal as portalTo } from "../util/portal.js";
     import { generateId } from "../util/ssr-safe.js";
@@ -99,6 +104,7 @@
 
     let panel = $state<HTMLDivElement>();
     let scroller = $state<HTMLDivElement>();
+    let footerElement = $state<HTMLDivElement>();
     let focusActive = false;
     /**
      * True when the content is taller than its box and holds nothing that can
@@ -197,9 +203,15 @@
             const stopRecovery = recoverStrayFocus(container, {
                 onEscape: () => close("escape"),
             });
+            // Where the on-screen keyboard covers the page, the overlay
+            // keeps to what is left above it.
+            const stopKeyboard = container.parentElement
+                ? followKeyboard(container.parentElement)
+                : undefined;
             return () => {
                 clearTimeout(t);
                 stopRecovery();
+                stopKeyboard?.();
                 overlay.leave();
                 unlockScroll();
                 if (focusActive) {
@@ -208,6 +220,13 @@
                 }
             };
         }
+    });
+
+    // For the toast stack, which stays off a pinned footer.
+    $effect(() => {
+        const pinned = footerElement;
+        if (!isOpen || !pinned) return;
+        return registerOverlayFooter(pinned);
     });
 
     function handleBackdropClick(event: Event) {
@@ -231,7 +250,7 @@
 {#if isOpen}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
-        class="fixed inset-0 z-modal overflow-hidden {dismissible ? 'cursor-pointer' : 'cursor-default'} bg-overlay"
+        class="group/overlay fixed inset-0 z-modal overflow-hidden {dismissible ? 'cursor-pointer' : 'cursor-default'} bg-overlay"
         style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
         data-overlay-depth={depth}
         use:portalTo={portal}
@@ -308,6 +327,7 @@
 
             {#if footer}
                 <div
+                    bind:this={footerElement}
                     class="flex shrink-0 justify-end gap-3 border-t border-border-overlay px-6 py-4"
                 >
                     {@render footer()}

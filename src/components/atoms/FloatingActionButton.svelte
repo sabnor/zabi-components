@@ -2,8 +2,9 @@
     import type { Component } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import { Plus } from "@lucide/svelte";
-    import { isInsideAppShell } from "../util/app-shell.js";
+    import { findScrollParent, isInsideAppShell } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
+    import { reserveScrollPaddingBottom } from "../util/scroll-padding.js";
 
     /**
      * The one main thing to do on a screen, as a round button that floats over
@@ -26,6 +27,11 @@
      * It lies over the content, so the last row would stay under it at the
      * end of the page. Give the content room to scroll clear: `pb-24` (96px)
      * on the list covers the button and its margins.
+     *
+     * While it is mounted it sets `scroll-padding-bottom` on what scrolls
+     * under it (the shell's content, or the page) to the height it takes
+     * from the bottom, so a row that takes keyboard focus is scrolled clear
+     * of the button and not left half under it.
      */
     type Props = Omit<HTMLAttributes<HTMLElement>, "class"> & {
         /** What the button does. Its accessible name, and its text when `extended`. */
@@ -56,6 +62,40 @@
 
     const inShell = isInsideAppShell();
     const Icon = $derived(icon ?? Plus);
+
+    let host = $state<HTMLElement>();
+
+    /**
+     * The browser scrolls a focused control into view, to the edge of the
+     * scroll container: under this button, which lies over that edge. The
+     * room it takes, from its top edge to the bottom of the container, is
+     * reserved through the helper the bars use, so the largest request wins.
+     */
+    $effect(() => {
+        const button = host;
+        if (!button) return;
+        const scroller = findScrollParent(button);
+        const reservation = reserveScrollPaddingBottom(scroller ?? document.documentElement);
+        const reserve = () => {
+            const top = button.getBoundingClientRect().top;
+            const bottom = scroller
+                ? scroller.getBoundingClientRect().bottom
+                : document.documentElement.clientHeight;
+            // No layout (a test DOM, a hidden button): nothing to keep clear of.
+            reservation.set(button.offsetHeight > 0 ? Math.max(0, Math.ceil(bottom - top)) : 0);
+        };
+        reserve();
+        const observer =
+            typeof ResizeObserver === "function" ? new ResizeObserver(reserve) : undefined;
+        observer?.observe(button);
+        if (scroller) observer?.observe(scroller);
+        window.addEventListener("resize", reserve);
+        return () => {
+            observer?.disconnect();
+            window.removeEventListener("resize", reserve);
+            reservation.release();
+        };
+    });
 
     /**
      * 16px from the edges, in px: a margin that grew with the text size would
@@ -111,6 +151,7 @@
 
 {#if href !== undefined}
     <a
+        bind:this={host}
         {href}
         class={classes}
         aria-label={extended ? undefined : label}
@@ -121,6 +162,7 @@
     </a>
 {:else}
     <button
+        bind:this={host}
         type="button"
         class={classes}
         aria-label={extended ? undefined : label}

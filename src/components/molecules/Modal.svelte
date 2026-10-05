@@ -8,7 +8,13 @@
         joinOverlayStack,
         recoverStrayFocus,
     } from '../util/focus-utils.js';
-    import { lockBodyScroll, trapTabKey, watchScrollerNeedsFocus } from '../util/overlay.js';
+    import {
+        followKeyboard,
+        lockBodyScroll,
+        registerOverlayFooter,
+        trapTabKey,
+        watchScrollerNeedsFocus,
+    } from '../util/overlay.js';
     import { TOUCH_HIT_AREA } from '../util/touch-target.js';
     import { generateId } from "../util/ssr-safe.js";
     import { portal as portalTo } from "../util/portal.js";
@@ -173,8 +179,8 @@
             mobile: 'max-md:pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] md:pb-6',
         },
         footer: {
-            all: 'shrink-0 flex-wrap border-t border-border pr-[max(24px,env(safe-area-inset-right,0px))] pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] pl-[max(24px,env(safe-area-inset-left,0px))]',
-            mobile: 'max-md:shrink-0 max-md:flex-wrap max-md:border-t max-md:border-border max-md:pr-[max(24px,env(safe-area-inset-right,0px))] max-md:pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] max-md:pl-[max(24px,env(safe-area-inset-left,0px))]',
+            all: 'shrink-0 flex-wrap border-t border-border pr-[max(24px,env(safe-area-inset-right,0px))] pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] pl-[max(24px,env(safe-area-inset-left,0px))] group-data-keyboard-open/overlay:pb-[24px]',
+            mobile: 'max-md:shrink-0 max-md:flex-wrap max-md:border-t max-md:border-border max-md:pr-[max(24px,env(safe-area-inset-right,0px))] max-md:pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] max-md:pl-[max(24px,env(safe-area-inset-left,0px))] max-md:group-data-keyboard-open/overlay:pb-[24px]',
         },
     } as const;
 
@@ -231,9 +237,22 @@
             const stopRecovery = recoverStrayFocus(container, {
                 onEscape: (event) => closeModal('escape', event),
             });
+            // Where the on-screen keyboard covers the page, the overlay
+            // keeps to what is left above it.
+            const stopKeyboard = container.parentElement
+                ? followKeyboard(container.parentElement)
+                : undefined;
+            // The footer, for the toast stack to stay off it. The panel holds
+            // the Card, and the Card the footer: nothing in the content matches.
+            const pinned = footer
+                ? container.querySelector<HTMLElement>(':scope > div > footer')
+                : null;
+            const forgetFooter = pinned ? registerOverlayFooter(pinned) : undefined;
             return () => {
                 clearTimeout(t);
                 stopRecovery();
+                stopKeyboard?.();
+                forgetFooter?.();
                 overlay.leave();
                 unlockScroll();
                 if (focusActive) {
@@ -266,7 +285,7 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
         class={cn(
-            "fixed inset-0 z-modal flex items-end justify-center bg-overlay p-0 md:items-center md:p-4",
+            "group/overlay fixed inset-0 z-modal flex items-end justify-center bg-overlay p-0 md:items-center md:p-4",
             dismissible ? 'cursor-pointer' : 'cursor-default',
             full('backdrop'),
         )}
@@ -280,6 +299,8 @@
         <div
             bind:this={modalContainer}
             class={cn(
+                // With the keyboard up the root is what is left of the screen: never taller than that.
+                "group-data-keyboard-open/overlay:max-h-full",
                 "flex max-h-[90dvh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-overlay border border-border-overlay bg-surface-overlay p-0 shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none md:animate-none md:rounded-overlay",
                 sizeClasses,
                 full('panel'),

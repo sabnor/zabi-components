@@ -90,7 +90,7 @@ for (const viewport of [PHONE, NARROW]) {
             await expect(tooltip).toHaveText("Adds a question to the round");
             await expect(tooltip).toBeVisible();
 
-            // 2.5s by default; nothing has to be pressed for it to go.
+            // This one is given 2.5s (`touchDuration`); nothing has to be pressed for it to go.
             await expect(button).not.toHaveAttribute("aria-describedby", /.+/, { timeout: 5_000 });
             await expect(tooltip).toBeHidden();
             await expect(page.getByTestId("tip-count")).toHaveText("Added 1");

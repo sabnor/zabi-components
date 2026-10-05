@@ -292,8 +292,8 @@ that bar's height through its bottom-offset custom property (see the Toaster
 page of the docs). Full heights use `dvh`, so the browser's own bars do not
 cut content off.
 
-A `Tooltip` opens on a tap as well as on hover and focus, and closes again by
-itself. Do not put information the user needs in one.
+A `Tooltip` opens on a tap as well as on hover and focus, and stays until it is
+dismissed. Do not put information the user needs in one.
 
 ## Common pitfalls
 

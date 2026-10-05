@@ -485,6 +485,8 @@ an AppShell that puts it between the content and the tabs in the tab order.
 **Best Practices:**
 - One per screen, for the one main action
 - Give the scrolling content padding at the end (`pb-24`), so its last row and a focused control can scroll clear of the button
+- While it is mounted it reserves `scroll-padding-bottom` on what scrolls under it (the AppShell's content, or the page), so a row that takes keyboard focus is scrolled clear of the button, not left partly under it. The room is given back when the button goes
+- A `Toaster` on the same screen would cover it: set `--toaster-bottom-offset: 72px` (56px of button and 16px under it)
 
 ---
 
@@ -601,6 +603,22 @@ between them scrolls. Tab moves through the fields and the browser scrolls each
 into view; when the content holds nothing that takes focus (a long text), the
 scrolling area is a Tab stop itself, so the arrow keys, Page Up/Down, Home and
 End can scroll it. Escape, the close button and focus return are unchanged.
+
+**Toasts while a modal is open:** a toast is drawn over a modal overlay
+(Modal, BottomSheet, SlideUp, Drawer, ConfirmDialog) and its controls are part
+of that overlay's Tab cycle: Tab from the overlay's last control goes to the
+first toast control, and from the last toast control back to the overlay's
+first; Shift+Tab goes the other way. `focusToasts()` works with an overlay
+open. Escape in a toast returns focus to where it came from and leaves both
+the toast and the overlay as they are; dismissing the toast returns focus the
+same way. The overlays set no `aria-hidden` or `inert` on the page behind, so
+a toast raised while one is open is still in a live region.
+
+**The on-screen keyboard:** where it covers the page instead of shrinking it
+(iOS Safari, Chrome on Android), an open Modal, BottomSheet, SlideUp or Drawer
+keeps to the part of the screen above it: a footer stays above the keyboard, a
+BottomSheet's half and full heights are shares of what is left, and the
+focused field is scrolled into view.
 
 **Usage:**
 ```svelte
@@ -877,14 +895,15 @@ The tablist is still one Tab stop: the box that scrolls is not focusable.
 - ✅ **Tab** away: the tooltip closes
 
 **Pointer and touch:**
-- A mouse opens it on hover and closes it on leaving, after `delay` if one is set
-- A finger or a pen opens it with a tap on the trigger, and the trigger still does what it does: a tooltip never takes a button's click, and no long press is needed
-- After a tap it closes by itself after `touchDuration` (2.5 seconds by default), or sooner on a second tap, a tap elsewhere, Escape, scrolling or focus leaving. `touchDuration={0}` keeps it open until one of those
+- A mouse opens it on hover and closes it on leaving, after `delay` if one is set. The bubble can be pointed at: the pointer can move from the trigger onto it, across the gap, and it stays open for as long as the pointer is on either (WCAG 1.4.13). Escape closes it without moving the pointer or focus
+- A finger or a pen opens it with a tap on the trigger, and the trigger still does what it does: a tooltip never takes a button's click, and no long press is needed. It opens when the finger comes up where it went down; a finger that goes down to scroll the page opens nothing
+- After a tap it stays until a second tap, a tap elsewhere, Escape, scrolling or focus leaving. The tap leaves focus on the trigger, and a tooltip that went by itself while its trigger still had focus could be gone before it was read. `touchDuration={2500}` also closes it by itself after that many milliseconds, for a button whose tooltip is in the way of what the tap did
 
 **Best Practices:**
-- Never put information the user needs only in a tooltip. On a touch screen nothing shows that it exists, and it goes by itself: say it in the page, in a label or in a description
+- Never put information the user needs only in a tooltip. On a touch screen nothing shows that it exists: say it in the page, in a label or in a description
 - A tooltip is text only and cannot be focused or pressed; for content with links or controls use a Dropdown or a Modal
-- For an info icon whose only job is the tooltip, use a real button with an accessible name and `touchDuration={0}`
+- For an info icon whose only job is the tooltip, use a real button with an accessible name
+- To say why a control is unavailable, use `aria-disabled="true"` on a button that stays focusable, not `disabled`. A tooltip does describe a natively disabled button (`aria-describedby` is set on it while the tooltip is open), but that button takes no focus, so the keyboard never opens the tooltip, and some browsers send a disabled control no pointer events at all (it opens on hover and tap in Chromium; elsewhere it may not)
 - The bubble opens on the other side when there is no room on the one asked for, moves along its side to stay on screen, and at 640px and below is always above or below its trigger
 
 ---

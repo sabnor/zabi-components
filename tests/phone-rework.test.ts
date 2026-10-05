@@ -51,8 +51,17 @@ describe("Tooltip on a touch screen", () => {
     const trigger = () => screen.getByTestId("trigger");
     const bubble = () => screen.getByRole("tooltip", { hidden: true });
     const isOpen = () => bubble().getAttribute("data-visible") === "true";
-    const touch = (target: Element, pointerType = "touch") =>
-        fireEvent.pointerDown(target, { pointerId: 1, pointerType });
+    /**
+     * A tap: the finger goes down and comes up in the same place. The tooltip
+     * acts when it comes up. Resolves to what `pointerdown` returned, which is
+     * false when a handler called preventDefault.
+     */
+    const touch = async (target: Element, pointerType = "touch") => {
+        const at = { pointerId: 1, pointerType, clientX: 20, clientY: 20 };
+        const down = await fireEvent.pointerDown(target, at);
+        await fireEvent.pointerUp(target, at);
+        return down;
+    };
     /**
      * The pointer moving onto the tooltip's wrapper. Enter and leave events
      * do not bubble, and Testing Library's `mouseEnter` is a `mouseover`, so
@@ -106,7 +115,7 @@ describe("Tooltip on a touch screen", () => {
 
     it("goes by itself after touchDuration, and is then parked out of the layout", async () => {
         vi.useFakeTimers();
-        render(TooltipTouchHarness);
+        render(TooltipTouchHarness, { touchDuration: 2500 });
         expect(bubble().getAttribute("data-parked")).toBe("true");
 
         await touch(trigger());
@@ -213,7 +222,7 @@ describe("Tooltip on a touch screen", () => {
 
     it("a finger after a mouse, and a mouse after a finger, each work", async () => {
         vi.useFakeTimers();
-        render(TooltipTouchHarness);
+        render(TooltipTouchHarness, { touchDuration: 2500 });
         await touch(trigger());
         await vi.advanceTimersByTimeAsync(3000);
         expect(isOpen()).toBe(false);

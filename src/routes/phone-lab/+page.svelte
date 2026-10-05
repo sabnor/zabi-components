@@ -13,11 +13,14 @@
     import Toast from "../../components/atoms/Toast.svelte";
     import Tooltip from "../../components/atoms/Tooltip.svelte";
     import AppBar from "../../components/molecules/AppBar.svelte";
+    import BottomSheet from "../../components/molecules/BottomSheet.svelte";
     import BottomTabBar from "../../components/molecules/BottomTabBar.svelte";
+    import Drawer from "../../components/molecules/Drawer.svelte";
     import Modal from "../../components/molecules/Modal.svelte";
+    import SlideUp from "../../components/molecules/SlideUp.svelte";
     import Page from "../../components/molecules/Page.svelte";
     import Toaster from "../../components/molecules/Toaster.svelte";
-    import { pushToast } from "../../components/molecules/toast-store.js";
+    import { focusToasts, pushToast } from "../../components/molecules/toast-store.js";
     import AppShell from "../../components/organisms/AppShell.svelte";
     import type { BottomTabBarItem } from "../../components/util/bottom-tab-bar.js";
 
@@ -45,6 +48,13 @@
     let textOpen = $state(false);
     let plainOpen = $state(false);
     let lastClose = $state("none");
+    let sheetOpen = $state(false);
+    let slideOpen = $state(false);
+    let drawerOpen = $state(false);
+    let rowsOpen = $state(false);
+    let rowsExtended = $state(false);
+
+    const rows = Array.from({ length: 30 }, (_, index) => `Round ${index + 1}`);
 
     const fields = Array.from({ length: 14 }, (_, index) => `Question ${index + 1}`);
     const paragraphs = Array.from({ length: 30 }, (_, index) => index);
@@ -94,7 +104,7 @@
                     L
                 </button>
             </Tooltip>
-            <Tooltip content="Adds a question to the round">
+            <Tooltip content="Adds a question to the round" touchDuration={2500}>
                 <Button data-testid="tip-button" onclick={() => (added += 1)}>Add</Button>
             </Tooltip>
             <Tooltip content="Shown at the right edge of a narrow screen, where it has to move in">
@@ -131,6 +141,20 @@
             <Tooltip content="Placed against the viewport" fixed>
                 <button type="button" class="focus-ring rounded-control p-3 text-body" data-testid="tip-fixed">
                     Fixed
+                </button>
+            </Tooltip>
+        </div>
+        <div>
+            <!-- Unavailable, and still reachable: the keyboard gets the tooltip too. -->
+            <Tooltip content="Add a question first">
+                <Button aria-disabled="true" data-testid="tip-aria-disabled">Publish</Button>
+            </Tooltip>
+        </div>
+        <div class="flex justify-center">
+            <!-- Fixed and at the side: placed by `left`, so not mirrored in a right-to-left page. -->
+            <Tooltip content="Against the viewport, at the side" placement="right" fixed>
+                <button type="button" class="focus-ring rounded-control p-3 text-body" data-testid="tip-fixed-side">
+                    Fixed side
                 </button>
             </Tooltip>
         </div>
@@ -172,6 +196,17 @@
                 Undo toast
             </Button>
             <Button variant="secondary" data-testid="fab-toggle" onclick={() => (fab = !fab)}>FAB</Button>
+            <Button variant="secondary" data-testid="rows-open" onclick={() => (rowsOpen = true)}>Rows</Button>
+            <Button
+                variant="secondary"
+                data-testid="rows-open-extended"
+                onclick={() => {
+                    rowsExtended = true;
+                    rowsOpen = true;
+                }}
+            >
+                Rows+
+            </Button>
         </div>
     </section>
 
@@ -187,6 +222,11 @@
             </Button>
             <Button variant="secondary" data-testid="modal-plain-open" onclick={() => (plainOpen = true)}>
                 Plain
+            </Button>
+            <Button variant="secondary" data-testid="sheet-open" onclick={() => (sheetOpen = true)}>Sheet</Button>
+            <Button variant="secondary" data-testid="slide-open" onclick={() => (slideOpen = true)}>Slide</Button>
+            <Button variant="secondary" data-testid="drawer-open" onclick={() => (drawerOpen = true)}>
+                Drawer
             </Button>
         </div>
         <p class="text-sm text-description" data-testid="toast-undone">Undone {undone}</p>
@@ -215,6 +255,12 @@
     onclose={({ reason }) => (lastClose = reason)}
 >
     <div class="space-y-4">
+        <div class="flex flex-wrap gap-2">
+            <Button variant="secondary" size="sm" data-testid="modal-toast-push" onclick={toast}>Toast</Button>
+            <Button variant="secondary" size="sm" data-testid="modal-toast-focus" onclick={() => focusToasts()}>
+                To toasts
+            </Button>
+        </div>
         {#each fields as field (field)}
             <Input label={field} placeholder="Type the question" />
         {/each}
@@ -259,8 +305,79 @@
     {/snippet}
 </Modal>
 
+<BottomSheet bind:isOpen={sheetOpen} title="Filters" data-testid="lab-sheet">
+    <div class="space-y-4">
+        <Input label="Team" />
+        <Input label="City" />
+        <Input label="Pub" />
+        <Input label="Quizmaster" />
+    </div>
+    {#snippet footer()}
+        <Button variant="secondary" onclick={() => (sheetOpen = false)}>Reset</Button>
+        <Button data-testid="sheet-apply" onclick={() => (sheetOpen = false)}>Apply</Button>
+    {/snippet}
+</BottomSheet>
+
+<SlideUp bind:isOpen={slideOpen} title="Rename team">
+    <div class="space-y-4">
+        <Input label="Team name" />
+        <Button data-testid="slide-save" onclick={() => (slideOpen = false)}>Save</Button>
+    </div>
+</SlideUp>
+
+<Drawer bind:isOpen={drawerOpen} title="Team" data-testid="lab-drawer">
+    <div class="space-y-4">
+        <Input label="Name" />
+        <Input label="Captain" />
+    </div>
+    {#snippet footer()}
+        <Button variant="secondary" onclick={() => (drawerOpen = false)}>Cancel</Button>
+        <Button data-testid="drawer-save" onclick={() => (drawerOpen = false)}>Save</Button>
+    {/snippet}
+</Drawer>
+
 {#if topToast}
     <Toast message="The round starts in a minute." />
+{/if}
+
+{#if rowsOpen}
+    <!-- A list of full-width rows under a floating button: the keyboard walks down it. -->
+    <div class="fixed inset-0 z-modal" data-testid="rows-screen">
+        <AppShell contentElement="div" data-testid="rows-shell">
+            {#snippet header()}
+                <AppBar
+                    title="Rounds"
+                    headingLevel={2}
+                    onback={() => {
+                        rowsOpen = false;
+                        rowsExtended = false;
+                    }}
+                    backLabel="Close rounds"
+                />
+            {/snippet}
+            <ul class="m-0 list-none space-y-2 p-4 pb-24">
+                {#each rows as row (row)}
+                    <li>
+                        <button
+                            type="button"
+                            class="focus-ring block w-full rounded-container border border-border bg-card p-4 text-start text-body"
+                            data-row
+                        >
+                            {row}
+                        </button>
+                    </li>
+                {/each}
+            </ul>
+            <FloatingActionButton
+                label="Write a new question"
+                extended={rowsExtended}
+                data-testid="rows-fab"
+            />
+            {#snippet footer()}
+                <BottomTabBar items={tabs} active="/quiz" onclick={stayHere} />
+            {/snippet}
+        </AppShell>
+    </div>
 {/if}
 
 {#if fab}

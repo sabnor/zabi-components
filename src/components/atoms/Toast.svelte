@@ -48,9 +48,12 @@
         </div>
 
         {#if closable}
+            <!-- `px-1` on a touch screen: the 44px layer is centred on the
+            button, and around a button as narrow as the glyph it reached a
+            pixel past what the card clips. -->
             <button
                 type="button"
-                class="focus-ring pointer-coarse:relative shrink-0 cursor-pointer rounded-control text-description hover:text-headline active:text-headline focus:outline-none {TOUCH_HIT_AREA}"
+                class="focus-ring pointer-coarse:relative shrink-0 cursor-pointer rounded-control text-description hover:text-headline active:text-headline focus:outline-none pointer-coarse:px-1 {TOUCH_HIT_AREA}"
                 onclick={closeToast}
                 aria-label="Close notification"
             >

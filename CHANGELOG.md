@@ -52,6 +52,28 @@ Whenever token or CSS import API surface changes, include:
 - **ThemeToggle applies the stored choice when it mounts**, in both modes.
   Before, a stored choice was written but only a page script could apply it.
   Pass `storageKey={null}` to only read the page.
+- **A Tooltip can be hovered.** The pointer can move from the trigger onto the
+  open bubble, across the gap, and it stays open (WCAG 1.4.13). An open bubble
+  therefore takes presses; closed or fading it takes none.
+- **A tapped Tooltip stays open until dismissed.** `touchDuration` now
+  defaults to `0` (was 2500ms in 8.1.0-beta.0); a second tap, a tap elsewhere,
+  Escape or a scroll closes it. It opens when the finger comes up where it
+  went down, so a scroll that starts on the trigger no longer flashes it.
+- **Toasts keep clear of an overlay's footer.** While a Modal, BottomSheet or
+  Drawer with a pinned footer is open and that footer lies under the toast
+  stack, the stack sits 16px above it, or at the top of the screen when there
+  is no room. A centred desktop Modal changes nothing.
+- **Toasts can be reached from inside an open overlay.** Tab moves from the
+  overlay's last control to the toast controls and back, `focusToasts()` works
+  with a modal open, and Escape in a toast returns focus to where it came from
+  without closing the overlay.
+- **Overlays stay above the on-screen keyboard.** Where the keyboard covers
+  the page instead of shrinking it, an open Modal, BottomSheet, SlideUp or
+  Drawer keeps to the visible part of the screen: its footer stays above the
+  keyboard, a BottomSheet's half and full heights are shares of what is left,
+  and the focused field is scrolled into view.
+- FloatingActionButton reserves `scroll-padding-bottom` on what scrolls under
+  it, so a focused row is scrolled clear of the button.
 
 ### Fixed
 
@@ -87,6 +109,11 @@ Whenever token or CSS import API surface changes, include:
 - A disabled field's placeholder is no stronger than a disabled value.
 - Select's trigger placeholder uses the placeholder colour, so a chosen option
   can be told from "Choose an option" in dark.
+- A Tooltip on a disabled button is tied to it with `aria-describedby`.
+- A toast's buttons wrap under its title when the title would get less than
+  8rem, and the toast stack is capped to the screen and scrolls, so toasts
+  no longer run off the top at 320px with enlarged text.
+- Toast's close button takes taps in its full 44px area; the card clipped 1px.
 
 ## [8.1.0-beta.0] - 2026-10-05
 

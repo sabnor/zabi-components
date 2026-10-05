@@ -1507,9 +1507,9 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         name: "touchDuration",
                         type: "number",
                         required: false,
-                        defaultValue: "2500",
+                        defaultValue: "0",
                         description:
-                            "On a touch screen a tap on the trigger opens the tooltip and the trigger still acts. Milliseconds it then stays; a second tap, a tap elsewhere, Escape or scrolling closes it sooner. 0 keeps it open until then, for a trigger that does nothing else, such as an info icon. A mouse and a keyboard are not affected.",
+                            "On a touch screen a tap on the trigger opens the tooltip and the trigger still acts. By default (0) it stays until a second tap, a tap elsewhere, Escape, scrolling or focus leaving, because the tap also leaves focus on the trigger. Give milliseconds to have it close by itself after that long too. A mouse and a keyboard are not affected.",
                     },
                 ],
                 variants: [],
@@ -2171,7 +2171,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Above the tab bar",
                         description:
-                            "56px round at any text size, 16px above the tab bar and from the edge. It stays put while the content scrolls; the list has padding at the end so its last row can scroll clear",
+                            "56px round at any text size, 16px above the tab bar and from the edge. It stays put while the content scrolls; the list has padding at the end so its last row can scroll clear, and a row that takes keyboard focus is scrolled clear of the button. A Toaster on the same screen needs --toaster-bottom-offset: 72px to sit above it",
                         code: `<script lang="ts">
     import { AppShell, BottomTabBar, FloatingActionButton } from "zabi-components";
 </script>
@@ -3607,7 +3607,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: '""',
                         description:
-                            "Extra classes on the region. Other attributes are passed to it too: set --toaster-bottom-offset in style (or on any ancestor) to the height of a bar of your own that is fixed to the bottom.",
+                            "Extra classes on the region. Other attributes are passed to it too: set --toaster-bottom-offset in style (or on any ancestor) to the height of a bar of your own that is fixed to the bottom, or to 72px above a FloatingActionButton (56px of button and 16px under it).",
                     },
                 ],
                 variants: [],
@@ -3615,8 +3615,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Toaster",
                         description:
-                            "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset. The safe-area insets are zero until the page sets viewport-fit=cover",
-                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: calc(4rem + 1px)\" />",
+                            "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset: 72px for a FloatingActionButton, which it would otherwise cover. Over a modal overlay with a footer at the bottom of the screen the stack moves above that footer by itself, or to the top when there is no room; Tab goes from the overlay into the toasts and back. More toasts than fit scroll. The safe-area insets are zero until the page sets viewport-fit=cover",
+                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: calc(4rem + 1px)\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
                     },
                     {
                         title: "Toast with an action",

@@ -9,7 +9,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Tooltip on hover, focus or tap, on any of four sides and kept on screen. A hint only: on touch it is easy to miss, so never essential information. A tap on the trigger opens it and the trigger still acts; it closes after touchDuration, or on a second tap, a tap elsewhere, Escape or scrolling.'
+                    'Tooltip on hover, focus or tap, on any of four sides and kept on screen. A hint only: on touch it is easy to miss, so never essential information. A tap on the trigger opens it and the trigger still acts; it stays until a second tap, a tap elsewhere, Escape or scrolling, or for touchDuration milliseconds when that is set. With a mouse the bubble can be pointed at and stays open while the pointer is on it.'
             }
         },
         layout: 'centered'
@@ -26,7 +26,7 @@ const meta = {
         touchDuration: {
             control: 'number',
             description:
-                'Milliseconds the tooltip stays after a tap on a touch screen; 0 keeps it open until it is dismissed'
+                'Milliseconds after which a tooltip opened by a tap closes by itself; 0, the default, keeps it open until it is dismissed'
         }
     }
 } satisfies Meta<typeof Tooltip>;
@@ -107,15 +107,14 @@ export const Right: Story = {
 };
 
 /**
- * For a trigger that does nothing else, such as an info icon: on a touch
- * screen the tooltip stays until a second tap, a tap elsewhere, Escape or
- * scrolling. With a mouse or a keyboard nothing is different.
+ * The default: on a touch screen the tooltip stays until a second tap, a tap
+ * elsewhere, Escape or scrolling. With a mouse or a keyboard nothing is
+ * different.
  */
 export const StaysAfterATap: Story = {
     args: {
         content: 'One point for each right answer',
-        placement: 'top',
-        touchDuration: 0
+        placement: 'top'
     },
     render: (args) => ({
         Component: Tooltip,
@@ -145,6 +144,29 @@ export const ShortAfterATap: Story = {
                 Component: Button,
                 props: { variant: 'primary' },
                 children: ['Add question']
+            }
+        ]
+    })
+};
+
+/**
+ * It says why the button cannot be used. `aria-disabled` keeps the button in
+ * the tab order, so the keyboard opens the tooltip too; a natively disabled
+ * button takes no focus.
+ */
+export const OnAnUnavailableButton: Story = {
+    args: {
+        content: 'Add a question first',
+        placement: 'top'
+    },
+    render: (args) => ({
+        Component: Tooltip,
+        props: args,
+        children: [
+            {
+                Component: Button,
+                props: { variant: 'primary', 'aria-disabled': 'true' },
+                children: ['Publish']
             }
         ]
     })

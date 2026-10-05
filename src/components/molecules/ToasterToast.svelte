@@ -160,7 +160,7 @@
 </script>
 
 <div
-    class={cn("pointer-events-auto relative w-full min-w-[min(18rem,100%)] overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg", className)}
+    class={cn("pointer-events-auto relative w-full min-w-[min(18rem,100%)] shrink-0 overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg", className)}
     in:fly={toastEnter}
     out:fly={toastLeave}
     onmouseenter={() => (hovered = true)}
@@ -173,10 +173,13 @@
     data-paused={paused}
 >
     <div class="p-4">
-        <div class="flex items-start gap-3">
+        <!-- The title keeps 8rem at least, icon included. When the toast has
+        less beside its buttons (320px with enlarged text), the buttons go to a
+        line of their own under it, at the end. -->
+        <div class="flex flex-wrap items-start gap-x-3 gap-y-1">
             <!-- Live region holds only title + message, so the countdown and buttons are never re-announced. -->
             <div
-                class="flex min-w-0 flex-1 items-start gap-3"
+                class="flex min-w-0 flex-[1_1_8rem] items-start gap-3"
                 role={toast.type === 'error' ? 'alert' : 'status'}
                 aria-atomic="true"
             >
@@ -191,7 +194,7 @@
                     <Info class="size-5 {statusIconClass}" aria-hidden="true" />
                 {/if}
             </div>
-            <h4 class="min-w-0 flex-1 text-base font-semibold text-headline">
+            <h4 class="min-w-0 flex-1 text-base font-semibold text-headline [overflow-wrap:anywhere]">
                 {headerTitle}
                 {#if toast.message.trim() && toast.message.trim() !== headerTitle}
                     <span class="sr-only">{toast.message}</span>
@@ -202,7 +205,7 @@
                 {/if}
             </h4>
             </div>
-            <div class="flex shrink-0 items-center gap-1">
+            <div class="ms-auto flex shrink-0 items-center gap-1">
                 {#if hasExpandable}
                     <button
                         type="button"

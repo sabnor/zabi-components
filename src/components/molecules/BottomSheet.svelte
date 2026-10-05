@@ -17,7 +17,13 @@
         returnFocus,
         saveFocus,
     } from "../util/focus-utils.js";
-    import { lockBodyScroll, trapTabKey, watchScrollerNeedsFocus } from "../util/overlay.js";
+    import {
+        followKeyboard,
+        lockBodyScroll,
+        registerOverlayFooter,
+        trapTabKey,
+        watchScrollerNeedsFocus,
+    } from "../util/overlay.js";
     import { portal as portalTo } from "../util/portal.js";
     import { attachSheetDrag, FLICK_VELOCITY, prefersReducedMotion } from "../util/sheet-drag.js";
     import { generateId } from "../util/ssr-safe.js";
@@ -141,6 +147,7 @@
     let panel = $state<HTMLDivElement>();
     let header = $state<HTMLDivElement>();
     let scroller = $state<HTMLDivElement>();
+    let footerElement = $state<HTMLDivElement>();
     let focusActive = false;
     let scrollerNeedsFocus = $state(false);
     /** Position among the open overlays; lifts a sheet opened later above the earlier ones. */
@@ -205,6 +212,22 @@
             return;
         }
         return watchScrollerNeedsFocus(box, (needsFocus) => (scrollerNeedsFocus = needsFocus));
+    });
+
+    // Where the on-screen keyboard covers the page, the overlay keeps to what
+    // is left above it. The snap heights are shares of the overlay, so half
+    // is half of what can be seen, and the footer stays above the keyboard.
+    $effect(() => {
+        const overlay = root;
+        if (!isOpen || !overlay) return;
+        return followKeyboard(overlay);
+    });
+
+    // For the toast stack, which stays off a pinned footer.
+    $effect(() => {
+        const pinned = footerElement;
+        if (!isOpen || !pinned) return;
+        return registerOverlayFooter(pinned);
     });
 
     $effect(() => {
@@ -337,7 +360,7 @@ a background is dropped there, and the grip would be gone. -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
         bind:this={root}
-        class="fixed inset-0 z-modal overflow-hidden pt-[env(safe-area-inset-top)] {dismissible
+        class="group/overlay fixed inset-0 z-modal overflow-hidden pt-[env(safe-area-inset-top)] {dismissible
             ? 'cursor-pointer'
             : 'cursor-default'} bg-overlay"
         style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
@@ -352,6 +375,9 @@ a background is dropped there, and the grip would be gone. -->
             class={cn(
                 "absolute inset-x-0 bottom-0 mx-auto flex w-full cursor-default flex-col rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg",
                 "max-h-[calc(100dvh-env(safe-area-inset-top,0px))] pb-[env(safe-area-inset-bottom)]",
+                // Over the keyboard: no taller than what is left, and the home
+                // indicator it would clear is under the keyboard.
+                "group-data-keyboard-open/overlay:max-h-[calc(100%_-_env(safe-area-inset-top,0px))] group-data-keyboard-open/overlay:pb-0",
                 // Clear of the notch and the rounded corners in landscape.
                 "pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
                 "transition-[height,transform] duration-200 ease-out motion-reduce:transition-none",
@@ -443,6 +469,7 @@ a background is dropped there, and the grip would be gone. -->
 
             {#if footer}
                 <div
+                    bind:this={footerElement}
                     class="flex shrink-0 flex-wrap justify-end gap-[8px] border-t border-border-overlay px-4 py-3"
                 >
                     {@render footer()}

@@ -373,22 +373,31 @@ test.describe("StickyActionBar — the keyboard, and where the bar's own box end
         expect(Math.round(rest.x)).toBe(0);
         expect(Math.round(rest.width)).toBe(PHONE.width);
 
-        // A keyboard that covers the lower 140px of the sheet.
-        await setVisualViewportHeight(page, PHONE.height - 140);
+        // A keyboard over the lower 140px of the screen. The sheet itself now
+        // moves up to stand on the keyboard, and its content with it: the bar
+        // is where it rests in that content, 16px above the keyboard, and is
+        // not raised a second time on top of the sheet's own move.
+        for (const keyboardTop of [PHONE.height - 140, ABOVE_KEYBOARD]) {
+            await setVisualViewportHeight(page, keyboardTop);
+            await expect
+                .poll(async () => Math.round((await box(sheet)).y + (await box(sheet)).height), "The sheet")
+                .toBe(keyboardTop);
+            await expect
+                .poll(async () => Math.round((await box(inSheet)).y + (await box(inSheet)).height), "The bar")
+                .toBe(keyboardTop - 16);
+            expect(await inSheet.evaluate((el) => el.style.bottom), "No lift of its own").toBe("");
+            const now = await box(content);
+            const raised = await box(inSheet);
+            expect(raised.y).toBeGreaterThanOrEqual(now.y - tolerance);
+            expect(raised.y + raised.height).toBeLessThanOrEqual(now.y + now.height + tolerance);
+            await expect(inSheet.getByRole("button", { name: "Save visit" })).toBeVisible();
+        }
+        // The keyboard goes: the sheet and the bar are back where they were.
+        await setVisualViewportHeight(page, null);
         await expect
             .poll(async () => Math.round((await box(inSheet)).y + (await box(inSheet)).height))
-            .toBe(PHONE.height - 140);
-        expect((await box(inSheet)).y).toBeGreaterThanOrEqual(area.y);
-
-        // A keyboard taller than what the content can give: the bar stops at
-        // the top of the content, inside the sheet, and is not clipped away.
-        await setVisualViewportHeight(page, ABOVE_KEYBOARD);
-        // (4px down from it: the content's own top padding.)
-        await expect.poll(async () => Math.round((await box(inSheet)).y - area.y)).toBeLessThanOrEqual(5);
-        const clamped = await box(inSheet);
-        expect(clamped.y).toBeGreaterThanOrEqual(area.y - tolerance);
-        expect(clamped.y + clamped.height).toBeLessThanOrEqual(area.y + area.height + tolerance);
-        await expect(inSheet.getByRole("button", { name: "Save visit" })).toBeVisible();
+            .toBe(PHONE.height - 16);
+        expect((await box(content)).y).toBe(area.y);
     });
 
     test("in an AppShell with a tab bar: the bar lands on the keyboard, not a tab bar's height above it", async ({
