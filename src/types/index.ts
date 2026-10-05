@@ -237,6 +237,8 @@ export interface ModalProps
     portal?: boolean;
     /** When false, Escape, a backdrop click and the close button do not close the modal. */
     dismissible?: boolean;
+    /** Fills the screen: `true` at every width, `'mobile'` below 768px only. */
+    fullScreen?: boolean | 'mobile';
     onclose?: (detail: { reason: 'escape' | 'backdrop' | 'close-button' }) => void;
     /** @deprecated for close reporting: use `onclose`. Still called on close. */
     onclick?: (event: Event) => void;
@@ -340,6 +342,8 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'clas
     block?: boolean;
     /** Position the bubble against the viewport, so a scrolling ancestor cannot clip it. */
     fixed?: boolean;
+    /** Milliseconds a tooltip opened by a tap stays; `0` keeps it until it is dismissed. */
+    touchDuration?: number;
     class?: string;
     children?: Snippet;
     /** @deprecated never accepted by the component; use `placement`. */

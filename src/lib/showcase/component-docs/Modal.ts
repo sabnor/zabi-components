@@ -55,8 +55,25 @@ export const doc: ComponentDoc = makeDoc({
   {/snippet}
 </Modal>`,
         },
+        {
+            title: "Full screen on a phone",
+            description:
+                "With fullScreen=\"mobile\" the modal fills the screen below 768px and is the usual dialog from there up; fullScreen fills it at every width. The title and the close button stay at the top, the footer at the bottom, and the form scrolls between them.",
+            demoId: demoId("Modal", "full-screen"),
+            code: `<Modal fullScreen="mobile" title="New quiz round" bind:isOpen={open}>
+  <div class="space-y-4">
+    <Input label="Round name" />
+    <Input label="Question 1" />
+    <!-- … a long form … -->
+  </div>
+  {#snippet footer()}
+    <Button variant="secondary" onclick={() => (open = false)}>Cancel</Button>
+    <Button onclick={save}>Save round</Button>
+  {/snippet}
+</Modal>`,
+        },
     ],
-    variantsStates: ["sm", "md", "lg", "portal", "dismissible"],
+    variantsStates: ["sm", "md", "lg", "portal", "dismissible", "fullScreen"],
     props,
     guidelines: {
         whenToUse: [
@@ -69,12 +86,16 @@ export const doc: ComponentDoc = makeDoc({
             "Set `initialFocus` to a selector when the first control is not where a user should start (a search field, or the safe choice in a confirmation).",
             "A `keydown` listener of your own on `document` can run before the modal has handled Escape, and then sees `defaultPrevented` still false; for a portalled modal this is the usual order. Use `onclose` to learn that the modal closed, not your own Escape listener.",
             "Set `dismissible={false}` while an action is pending, so the dialog cannot be closed from under it. Keep a visible sign of progress in the dialog.",
+            "Set `fullScreen=\"mobile\"` for a form that is longer than a phone screen: the header and the footer stay in place inside the safe areas and only the form scrolls. Put the actions in the `footer` snippet, so they are the part that stays.",
+            "The safe-area insets a full-screen modal keeps clear of are zero until the page's viewport meta tag has `viewport-fit=cover`.",
         ],
         whenToAvoid: [
             "Avoid deep multi-step flows in a modal; use a dedicated page when complexity grows.",
             "Avoid opening modals without moving focus into the dialog.",
             "Avoid setting the theme class (`.dark`) on an element below `<body>`: put it on `<html>` or `<body>`. A portalled modal is outside such a subtree, and a modal rendered in place inside one does not get a consistent theme either.",
             "Avoid leaving a modal non-dismissible with no action inside that can end it.",
+            "Avoid `fullScreen` for a confirmation or a short message: a small dialog keeps the page behind it in view. `ConfirmDialog` is never full screen.",
+            "Avoid a long title in a full-screen modal. With very large text on a small screen the header and footer can leave the form less than 120px; the whole panel then scrolls, and the footer is no longer always in view.",
         ],
     },
 });

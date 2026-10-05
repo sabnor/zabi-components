@@ -100,10 +100,27 @@ async function read(page: Page): Promise<Reading> {
     await expect(primary).toBeVisible();
     // A key press first, so the focus that follows counts as keyboard focus
     // and the ring is drawn.
-    await page.keyboard.press("Shift");
-    await primary.focus();
-    await expect(primary).toBeFocused();
+    //
+    // The page can be read before it hydrates: for the default brand nothing
+    // in `open` waits for the client. Hydration then puts new elements in
+    // place of some that the server sent (EmptyState's root is a
+    // `<svelte:element>`, and its preview is built again), and a button
+    // focused before that is gone, with focus back on `<body>`. So the focus
+    // and the reading are taken together and repeated until they hold; what
+    // is read, and what it has to be, are the same as before.
+    let reading: Reading | undefined;
+    await expect(async () => {
+        await page.keyboard.press("Shift");
+        await primary.focus();
+        await expect(primary).toBeFocused({ timeout: 1_000 });
+        reading = await readFocused(page);
+    }, "The primary button must hold focus, with its ring, once the page has settled").toPass({
+        timeout: 15_000,
+    });
+    return reading!;
+}
 
+function readFocused(page: Page): Promise<Reading> {
     return page.evaluate(() => {
         const visible = (el: Element) => {
             const box = el.getBoundingClientRect();

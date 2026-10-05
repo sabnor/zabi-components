@@ -83,10 +83,6 @@
             // Extended: it holds text, so its height follows the text; it
             // grows sideways, and downwards if the label wraps.
             extended ? "min-h-14 min-w-14" : "size-[56px]",
-            // `shadow-lg` is a utility and beats the box-shadow `.focus-ring`
-            // draws its ring with, so the ring is drawn here, over the same
-            // elevation: 2px of the offset colour, then 2px of the ring colour.
-            "focus-visible:shadow-[0_0_0_2px_var(--zabi-focus-ring-offset-color),0_0_0_4px_var(--zabi-focus-ring-color),var(--shadow-lg)]",
             // Transparent until forced-colors mode draws it: the fill is gone there.
             "border border-transparent",
             "bg-action-primary text-action-primary",

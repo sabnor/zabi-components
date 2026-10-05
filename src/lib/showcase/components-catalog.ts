@@ -1454,7 +1454,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Tooltip",
                 category: "atoms",
                 description:
-                    "Hover and focus tooltip on any of four sides, with an optional delay.",
+                    "Tooltip on hover, focus or tap, on any of four sides and kept on screen. A hint only: on touch it is easy to miss, so never essential information.",
                 props: [
                     {
                         name: "content",
@@ -1503,18 +1503,27 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Position against the viewport, to escape a scrolling ancestor.",
                     },
+                    {
+                        name: "touchDuration",
+                        type: "number",
+                        required: false,
+                        defaultValue: "2500",
+                        description:
+                            "On a touch screen a tap on the trigger opens the tooltip and the trigger still acts. Milliseconds it then stays; a second tap, a tap elsewhere, Escape or scrolling closes it sooner. 0 keeps it open until then, for a trigger that does nothing else, such as an info icon. A mouse and a keyboard are not affected.",
+                    },
                 ],
                 variants: [],
                 examples: [
                     {
                         title: "Basic Tooltip",
-                        description: "Simple tooltip on hover",
+                        description:
+                            "Shown on hover, on keyboard focus and, on a touch screen, on a tap: the button still acts, and the tooltip goes again after a moment. It opens on another side or moves along its side when it would leave the screen. Say anything the user must know in the page itself",
                         code: '&lt;Tooltip content="This is a tooltip"&gt;\n  &lt;Button&gt;Hover me&lt;/Button&gt;\n&lt;/Tooltip&gt;',
                     },
                     {
                         title: "Positions",
                         description: "Tooltip with different positions",
-                        code: '&lt;Tooltip content="Top tooltip" position="top"&gt;\n  &lt;Button&gt;Top&lt;/Button&gt;\n&lt;/Tooltip&gt;',
+                        code: '&lt;Tooltip content="Top tooltip" placement="top"&gt;\n  &lt;Button&gt;Top&lt;/Button&gt;\n&lt;/Tooltip&gt;',
                     },
                 ],
             },
@@ -2960,6 +2969,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "When false, Escape, a backdrop click and the close button do not close the modal; the close button stays focusable and is marked aria-disabled. Setting isOpen yourself still closes it.",
                     },
                     {
+                        name: "fullScreen",
+                        type: "boolean | 'mobile'",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Fills the screen (100dvh, no rounding) for a long form on a phone: true at every width, 'mobile' below 768px with the usual dialog from there up. The title and close button stay at the top and the footer at the bottom, inside the safe areas, and the content scrolls between them.",
+                    },
+                    {
                         name: "onclose",
                         type: "(detail: { reason: 'escape' | 'backdrop' | 'close-button' }) => void",
                         required: false,
@@ -3184,22 +3201,24 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Toaster",
                 category: "molecules",
                 description:
-                    "Fixed notification region; pair it with pushToast from the toast store. Mount once near the app root.",
+                    "Fixed notification region for pushToast; mount once near the app root. On a phone it spans the width, clear of the home indicator and a tab bar.",
                 props: [
                     {
                         name: "class",
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Extra classes on the region",
+                        description:
+                            "Extra classes on the region. Other attributes are passed to it too: set --toaster-bottom-offset in style (or on any ancestor) to the height of a bar of your own that is fixed to the bottom.",
                     },
                 ],
                 variants: [],
                 examples: [
                     {
                         title: "Toaster",
-                        description: "Stacked toasts bottom-right",
-                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });",
+                        description:
+                            "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset. The safe-area insets are zero until the page sets viewport-fit=cover",
+                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: calc(4rem + 1px)\" />",
                     },
                     {
                         title: "Toast with an action",
@@ -3550,7 +3569,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Page",
                 category: "molecules",
                 description:
-                    "Vertical stack for doc-style pages. Apply reading width from the route via class (for example max-w-4xl).",
+                    "Vertical stack for doc-style pages; set the reading width via class (max-w-4xl). Keeps clear of a phone's notch and home indicator.",
                 props: [
                     {
                         name: "class",
@@ -3558,14 +3577,23 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: '""',
                         description:
-                            "Extra classes — include max-w-* here; Page does not set a default width.",
+                            "Extra classes — include max-w-* here; Page does not set a default width. Padding of your own on a side replaces the safe-area padding there: write it as max(), for example pl-[max(1rem,env(safe-area-inset-left))], or put it on a child.",
+                    },
+                    {
+                        name: "safeArea",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Pads the left, right and bottom by the safe-area insets, which are zero on a screen without them and until the page sets viewport-fit=cover. Inside an AppShell the page adds nothing, because the shell has done it. Set it to false when your own layout already keeps clear.",
                     },
                 ],
                 variants: [],
                 examples: [
                     {
                         title: "Page",
-                        description: "Wrap main doc content",
+                        description:
+                            'Wrap main doc content. For the safe areas to have a size, the app\'s viewport meta tag needs viewport-fit=cover: content="width=device-width, initial-scale=1, viewport-fit=cover"',
                         code: '<Page class="max-w-4xl">…</Page>',
                     },
                 ],
@@ -5736,7 +5764,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Phone layout",
                         description:
-                            "Only the middle scrolls. Scroll down and the top bar slides away; the tab bar and the floating button stay. Open it full screen on a phone to try it at size",
+                            "Only the middle scrolls. Scroll down and the top bar slides away; the tab bar and the floating button stay. Open it full screen on a phone to try it at size. The safe areas have a size only when the page's viewport meta tag has viewport-fit=cover",
                         code: `<script lang="ts">
     import {
         AppBar,

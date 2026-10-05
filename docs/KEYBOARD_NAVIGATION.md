@@ -141,6 +141,33 @@ function returnFocus(previousElement: HTMLElement) {
 - Focus first focusable element on open
 - Ensure close button is keyboard accessible
 
+**Full screen (`fullScreen`, or `fullScreen="mobile"` below 768px):** the same
+dialog, the same keys. The header and the footer stay in place and the content
+between them scrolls. Tab moves through the fields and the browser scrolls each
+into view; when the content holds nothing that takes focus (a long text), the
+scrolling area is a Tab stop itself, so the arrow keys, Page Up/Down, Home and
+End can scroll it. Escape, the close button and focus return are unchanged.
+
+---
+
+### Tooltip Component
+
+**Current Keyboard Support:**
+- ✅ **Tab** to the trigger: the tooltip opens, and the trigger is described by it (`aria-describedby`)
+- ✅ **Escape**: closes the tooltip and leaves focus on the trigger; inside a Modal or a menu the first Escape closes only the tooltip
+- ✅ **Tab** away: the tooltip closes
+
+**Pointer and touch:**
+- A mouse opens it on hover and closes it on leaving, after `delay` if one is set
+- A finger or a pen opens it with a tap on the trigger, and the trigger still does what it does: a tooltip never takes a button's click, and no long press is needed
+- After a tap it closes by itself after `touchDuration` (2.5 seconds by default), or sooner on a second tap, a tap elsewhere, Escape, scrolling or focus leaving. `touchDuration={0}` keeps it open until one of those
+
+**Best Practices:**
+- Never put information the user needs only in a tooltip. On a touch screen nothing shows that it exists, and it goes by itself: say it in the page, in a label or in a description
+- A tooltip is text only and cannot be focused or pressed; for content with links or controls use a Dropdown or a Modal
+- For an info icon whose only job is the tooltip, use a real button with an accessible name and `touchDuration={0}`
+- The bubble opens on the other side when there is no room on the one asked for, moves along its side to stay on screen, and at 640px and below is always above or below its trigger
+
 ---
 
 ### Dropdown Component
@@ -744,6 +771,7 @@ comes from `badgeLabel`.
 - Keep to three to five tabs with one-word labels; they wrap when the text is enlarged, they are not cut off
 - In SvelteKit pass `active={page.url.pathname}`, so the server renders `aria-current` too. Without `active` the bar reads the address once it runs in the browser
 - AppShell scrolls its own middle area, not the window: `scroll-padding-top` there keeps a focused field from landing under the AppBar
+- The safe-area insets the shell and its bars keep clear of are zero until the app's viewport meta tag has `viewport-fit=cover` (`<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />`). A `Page` inside the shell adds no safe-area padding of its own
 - Without AppShell nothing reserves room for the bars. A BottomTabBar on its own is fixed over the page: give the page `padding-bottom` and `scroll-padding-bottom` of the bar's height (`calc(4rem + 1px + env(safe-area-inset-bottom))` by default), and `scroll-padding-top` for a sticky AppBar, so focus is never hidden under a bar
 
 ---

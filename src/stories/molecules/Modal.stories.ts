@@ -10,7 +10,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Modal component with focus trap and keyboard navigation. Press Escape to close, Tab to navigate within modal. Focus is automatically returned to the trigger element when closed. Set portal to render the overlay in document.body, use onclose to learn why it closed, and set dismissible to false to block closing while an action is pending.'
+                    'Modal component with focus trap and keyboard navigation. Press Escape to close, Tab to navigate within modal. Focus is automatically returned to the trigger element when closed. Set portal to render the overlay in document.body, use onclose to learn why it closed, and set dismissible to false to block closing while an action is pending. Set fullScreen for a long form on a phone: the title and close button stay at the top, the footer at the bottom, inside the safe areas, and the content scrolls between them.'
             }
         }
     },
@@ -37,6 +37,12 @@ const meta = {
         dismissible: {
             control: 'boolean',
             description: 'Let Escape, the backdrop and the close button close the modal'
+        },
+        fullScreen: {
+            control: 'select',
+            options: [false, true, 'mobile'],
+            description:
+                "Fill the screen: true at every width, 'mobile' below 768px with the usual dialog from there up"
         }
     }
 } satisfies Meta<typeof Modal>;
@@ -150,6 +156,35 @@ export const NotDismissible: Story = {
         isOpen: true,
         title: 'Saving changes',
         dismissible: false
+    },
+    render: (args) => ({
+        Component: ModalWithContent,
+        props: args
+    })
+};
+
+/**
+ * Fills the screen at every width: 100dvh, no rounding, no margin. The header
+ * and the footer stay in place and the content scrolls between them.
+ */
+export const FullScreen: Story = {
+    args: {
+        isOpen: true,
+        title: 'Full-screen modal',
+        fullScreen: true
+    },
+    render: (args) => ({
+        Component: ModalWithContent,
+        props: args
+    })
+};
+
+/** Full screen below 768px; the usual dialog from there up. Narrow the window to see it change. */
+export const FullScreenOnMobile: Story = {
+    args: {
+        isOpen: true,
+        title: 'Full screen on a phone',
+        fullScreen: 'mobile'
     },
     render: (args) => ({
         Component: ModalWithContent,

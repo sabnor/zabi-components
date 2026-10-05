@@ -160,7 +160,7 @@
 </script>
 
 <div
-    class={cn("pointer-events-auto relative w-full min-w-[18rem] overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg", className)}
+    class={cn("pointer-events-auto relative w-full min-w-[min(18rem,100%)] overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg", className)}
     in:fly={toastEnter}
     out:fly={toastLeave}
     onmouseenter={() => (hovered = true)}

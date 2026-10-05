@@ -10,6 +10,7 @@
         size?: 'sm' | 'md' | 'lg';
         portal?: boolean;
         dismissible?: boolean;
+        fullScreen?: boolean | 'mobile';
     }
 
     let {
@@ -18,6 +19,7 @@
         size = 'md',
         portal = false,
         dismissible = true,
+        fullScreen = false,
     }: Props = $props();
 
     // Initial value only; the effect below syncs later prop changes.
@@ -54,6 +56,7 @@
     {size}
     {portal}
     {dismissible}
+    {fullScreen}
     onclose={({ reason }) => (lastClose = reason)}
 >
     <p class="mb-4 text-sm leading-5 text-body">

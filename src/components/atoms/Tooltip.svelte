@@ -1,8 +1,9 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { onDestroy } from "svelte";
+    import { onDestroy, untrack } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
+    import { pickSide, shiftIntoViewport, type FloatingSide } from "../util/viewport-fit.js";
 
     import { cn } from "../util/cn.js";
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class"> & {
@@ -25,6 +26,15 @@
          * at the rail edge and left only the arrow showing.
          */
         fixed?: boolean;
+        /**
+         * On a touch screen a tap on the trigger opens the tooltip, and the
+         * trigger still does what it does. This is how long it then stays, in
+         * milliseconds; a second tap, a tap elsewhere, Escape or scrolling
+         * closes it sooner. `0` keeps it open until one of those happens: for
+         * a trigger that does nothing else, such as an info icon. A mouse and
+         * a keyboard are not affected.
+         */
+        touchDuration?: number;
         class?: string;
         children?: Snippet;
     };
@@ -40,6 +50,7 @@
         disabled = false,
         block = false,
         fixed = false,
+        touchDuration = 2500,
         class: className = "",
         children,
         ...restProps
@@ -49,18 +60,123 @@
 
     /** Gap must match --tooltip-gap's default (0.5rem). */
     const FIXED_GAP = 8;
+    /** How close to the edge of the viewport the bubble may come, in px. */
+    const EDGE_MARGIN = 8;
+
+    /**
+     * The side the bubble is on when that is not `placement`: there was no
+     * room there, or the screen is too narrow to put anything beside the
+     * trigger. Decided each time the tooltip opens.
+     */
+    let flippedTo = $state<FloatingSide | null>(null);
+    const side = $derived(flippedTo ?? placement);
+    /** How far the bubble is moved along its side to stay on screen, in px. */
+    let shift = $state({ x: 0, y: 0 });
+    /** The arrow moves back by as much, so it still points at the trigger. */
+    let arrowShift = $state({ x: 0, y: 0 });
 
     function positionFixed(): void {
         if (!fixed || !triggerElement) return;
         const r = triggerElement.getBoundingClientRect();
+        // The styles centre the bubble on the cross axis only. Above and to
+        // the left it also has to clear the trigger by its own size, or it
+        // lies over it: `left` and `top` are where its near corner goes.
+        const width = bubbleElement?.offsetWidth ?? 0;
+        const height = bubbleElement?.offsetHeight ?? 0;
         const coords = {
-            top: [r.left + r.width / 2, r.top - FIXED_GAP],
+            top: [r.left + r.width / 2, r.top - FIXED_GAP - height],
             bottom: [r.left + r.width / 2, r.bottom + FIXED_GAP],
-            left: [r.left - FIXED_GAP, r.top + r.height / 2],
+            left: [r.left - FIXED_GAP - width, r.top + r.height / 2],
             right: [r.right + FIXED_GAP, r.top + r.height / 2],
-        }[placement];
+        }[side];
         fixedStyle = `left:${coords[0]}px;top:${coords[1]}px;`;
     }
+
+    /**
+     * Picks the side and the shift that keep the bubble in the viewport. It is
+     * worked out from the trigger's rectangle and the bubble's size, not from
+     * where the bubble is drawn: that is mid-transition when this runs.
+     */
+    function fitToViewport(): void {
+        const trigger = triggerElement;
+        const bubble = bubbleElement;
+        if (!trigger || !bubble) return;
+        const width = bubble.offsetWidth;
+        const height = bubble.offsetHeight;
+        // No layout (a test DOM, a hidden subtree): nothing to fit.
+        if (!width || !height) return;
+        const root = document.documentElement;
+        const viewport = {
+            width: root.clientWidth || window.innerWidth,
+            height: root.clientHeight || window.innerHeight,
+        };
+        const r = trigger.getBoundingClientRect();
+        // Below 640px nothing fits beside a trigger: above it, or below.
+        const narrow =
+            typeof window.matchMedia === "function" &&
+            window.matchMedia("(max-width: 640px)").matches;
+        const preferred: FloatingSide =
+            narrow && (placement === "left" || placement === "right") ? "top" : placement;
+        // `left` and `right` are the start and the end side in the styles
+        // below, so in a right-to-left page they are the other way round on
+        // screen. The fixed strategy places by `left` and `top` and is not.
+        const mirrored = !fixed && getComputedStyle(trigger).direction === "rtl";
+        const onScreen = (name: FloatingSide): FloatingSide =>
+            mirrored && name === "left" ? "right" : mirrored && name === "right" ? "left" : name;
+        const next = pickSide(onScreen(preferred), r, { width, height }, viewport, {
+            gap: FIXED_GAP,
+            margin: EDGE_MARGIN,
+        });
+        // Back to the name the styles know it by.
+        const named = onScreen(next);
+        flippedTo = named === placement ? null : named;
+
+        const centreX = r.left + r.width / 2;
+        const centreY = r.top + r.height / 2;
+        const [left, top] = {
+            top: [centreX - width / 2, r.top - FIXED_GAP - height],
+            bottom: [centreX - width / 2, r.bottom + FIXED_GAP],
+            left: [r.left - FIXED_GAP - width, centreY - height / 2],
+            right: [r.right + FIXED_GAP, centreY - height / 2],
+        }[next];
+        const move = shiftIntoViewport(
+            { left, top, right: left + width, bottom: top + height },
+            viewport,
+            EDGE_MARGIN,
+        );
+        // Rounded, so a sub-pixel difference does not blur the text.
+        const x = Math.round(move.x);
+        const y = Math.round(move.y);
+        if (x !== shift.x || y !== shift.y) shift = { x, y };
+        // The arrow stays on the bubble: 12px clear of its corners.
+        const reach = (extent: number) => Math.max(0, extent / 2 - 12);
+        const vertical = next === "top" || next === "bottom";
+        const arrowX = vertical ? -Math.max(-reach(width), Math.min(reach(width), x)) : 0;
+        const arrowY = vertical ? 0 : -Math.max(-reach(height), Math.min(reach(height), y));
+        if (arrowX !== arrowShift.x || arrowY !== arrowShift.y) {
+            arrowShift = { x: arrowX, y: arrowY };
+        }
+    }
+
+    $effect(() => {
+        if (!isVisible) return;
+        untrack(fitToViewport);
+        const onMove = () => fitToViewport();
+        window.addEventListener("scroll", onMove, true);
+        window.addEventListener("resize", onMove);
+        return () => {
+            window.removeEventListener("scroll", onMove, true);
+            window.removeEventListener("resize", onMove);
+        };
+    });
+
+    const bubbleStyle = $derived(
+        (fixed ? fixedStyle : "") +
+            (shift.x || shift.y ? `translate:${shift.x}px ${shift.y}px;` : "") +
+            (arrowShift.x || arrowShift.y
+                ? `--tooltip-arrow-shift:${arrowShift.x}px ${arrowShift.y}px;`
+                : ""),
+    );
 
     $effect(() => {
         if (!fixed || !isVisible) return;
@@ -78,9 +194,70 @@
     const triggerId = generateId("tooltip-trigger");
     const tooltipId = generateId("tooltip");
     let isVisible = $state(false);
+    let containerElement: HTMLElement | null = $state(null);
     let triggerElement: HTMLElement | null = $state(null);
+    let bubbleElement: HTMLElement | null = $state(null);
     let showDelayTimeout: ReturnType<typeof setTimeout> | null = null;
     let hideBlurTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    /**
+     * A hidden bubble still takes part in layout, and one that reaches past
+     * the right edge of a 320px screen makes the whole page scroll sideways.
+     * While it is closed it is parked in the corner of the viewport, where it
+     * widens nothing; it is parked once it has faded out, not before.
+     */
+    let parked = $state(true);
+    let parkTimeout: ReturnType<typeof setTimeout> | null = null;
+    /** Longer than the 200ms fade. */
+    const PARK_AFTER = 250;
+
+    /** The pointer that last touched the trigger: "mouse", "touch" or "pen". */
+    let lastPointerType = "";
+    /** When a finger last went down on, or came up from, the trigger. */
+    let touchedAt = 0;
+    /** Open because of a tap: closes on a tap elsewhere, on scroll, and after `touchDuration`. */
+    let openedByTouch = $state(false);
+    let touchHideTimeout: ReturnType<typeof setTimeout> | null = null;
+    /** A tap also focuses the trigger; for this long that focus is the tap's, not new input. */
+    const TOUCH_ECHO = 700;
+
+    function clearTouchHide(): void {
+        if (touchHideTimeout !== null) {
+            clearTimeout(touchHideTimeout);
+            touchHideTimeout = null;
+        }
+    }
+
+    function show(): void {
+        if (parkTimeout !== null) {
+            clearTimeout(parkTimeout);
+            parkTimeout = null;
+        }
+        // Placed before it is let out of the corner: laid out where the styles
+        // alone put it, a bubble near the edge would widen the page for a
+        // moment, and in a right-to-left page that moves what is under the finger.
+        if (!isVisible) fitToViewport();
+        parked = false;
+        isVisible = true;
+    }
+
+    function hide(): void {
+        clearTouchHide();
+        openedByTouch = false;
+        if (!isVisible) return;
+        isVisible = false;
+        if (parkTimeout !== null) clearTimeout(parkTimeout);
+        parkTimeout = setTimeout(() => {
+            parkTimeout = null;
+            parked = true;
+            flippedTo = null;
+            shift = { x: 0, y: 0 };
+            arrowShift = { x: 0, y: 0 };
+        }, PARK_AFTER);
+    }
+
+    const isTouch = (type: string) => type === "touch" || type === "pen";
+    const afterTouch = () => isTouch(lastPointerType) && Date.now() - touchedAt < TOUCH_ECHO;
 
     function clearShowDelay(): void {
         if (showDelayTimeout !== null) {
@@ -135,12 +312,33 @@
         if (!content || disabled) {
             clearShowDelay();
             clearHideBlurTimeout();
+            // Switched off while open: closed, and no longer listening for a tap elsewhere.
+            untrack(hide);
         }
     });
 
     onDestroy(() => {
         clearShowDelay();
         clearHideBlurTimeout();
+        clearTouchHide();
+        if (parkTimeout !== null) clearTimeout(parkTimeout);
+    });
+
+    // A tooltip opened by a tap has no hover to end and, where a tap does not
+    // focus a button (Safari), no blur either: a tap anywhere else closes it,
+    // and so does scrolling, which would otherwise carry it over other content.
+    $effect(() => {
+        if (!isVisible || !openedByTouch) return;
+        const onPointerDown = (event: PointerEvent) => {
+            if (!containerElement?.contains(event.target as Node | null)) hide();
+        };
+        const onScroll = () => hide();
+        document.addEventListener("pointerdown", onPointerDown, true);
+        window.addEventListener("scroll", onScroll, true);
+        return () => {
+            document.removeEventListener("pointerdown", onPointerDown, true);
+            window.removeEventListener("scroll", onScroll, true);
+        };
     });
 
     function handleKeydown(event: KeyboardEvent) {
@@ -150,7 +348,7 @@
             event.preventDefault();
             clearShowDelay();
             clearHideBlurTimeout();
-            isVisible = false;
+            hide();
             // Keep focus on the described control; never steal it when the tooltip was hover-only.
             const target = triggerElement ? findDescribedTarget(triggerElement) : null;
             if (target && triggerElement?.contains(document.activeElement)) {
@@ -162,8 +360,10 @@
     function handleFocus() {
         clearShowDelay();
         clearHideBlurTimeout();
+        // The focus a tap gives the trigger: the tap has already opened or closed it.
+        if (afterTouch()) return;
         if (!disabled && content) {
-            isVisible = true;
+            show();
         }
     }
 
@@ -172,29 +372,69 @@
         // Defer hide so brief focus moves within the trigger subtree do not flash the tooltip off.
         hideBlurTimeout = setTimeout(() => {
             hideBlurTimeout = null;
-            isVisible = false;
+            hide();
         }, 100);
     }
 
     function handleMouseEnter() {
+        // The mouse events a browser makes up after a tap. Opening here would
+        // undo a tap that closed the tooltip, and on iOS a hover handler that
+        // shows something makes the first tap a hover and drops its click.
+        if (isTouch(lastPointerType)) return;
         clearShowDelay();
         clearHideBlurTimeout();
         if (!disabled && content) {
             if (delay > 0) {
                 showDelayTimeout = setTimeout(() => {
                     showDelayTimeout = null;
-                    isVisible = true;
+                    show();
                 }, delay);
             } else {
-                isVisible = true;
+                show();
             }
         }
     }
 
     function handleMouseLeave() {
+        if (isTouch(lastPointerType)) return;
         clearShowDelay();
         clearHideBlurTimeout();
-        isVisible = false;
+        hide();
+    }
+
+    /** Which kind of pointer is over the trigger; a mouse arriving after a finger counts again. */
+    function handlePointerEnter(event: PointerEvent) {
+        lastPointerType = event.pointerType;
+    }
+
+    /**
+     * A finger or a pen on the trigger toggles the tooltip. Nothing is
+     * prevented: the tap goes on to become the trigger's own click.
+     */
+    function handlePointerDown(event: PointerEvent) {
+        lastPointerType = event.pointerType;
+        if (!isTouch(event.pointerType)) return;
+        touchedAt = Date.now();
+        clearShowDelay();
+        clearHideBlurTimeout();
+        if (isVisible) {
+            hide();
+            return;
+        }
+        if (disabled || !content) return;
+        show();
+        openedByTouch = true;
+        clearTouchHide();
+        if (touchDuration > 0) {
+            touchHideTimeout = setTimeout(() => {
+                touchHideTimeout = null;
+                hide();
+            }, touchDuration);
+        }
+    }
+
+    function handlePointerUp(event: PointerEvent) {
+        if (isTouch(event.pointerType)) touchedAt = Date.now();
     }
 </script>
 
@@ -206,11 +446,15 @@
         block ? "block w-full" : "inline-block",
         className,
     )}
-    data-placement={placement}
+    bind:this={containerElement}
+    data-placement={side}
     data-strategy={fixed ? "fixed" : "absolute"}
     data-disabled={disabled}
     onmouseenter={handleMouseEnter}
     onmouseleave={handleMouseLeave}
+    onpointerenter={handlePointerEnter}
+    onpointerdown={handlePointerDown}
+    onpointerup={handlePointerUp}
     onfocusin={handleFocus}
     onfocusout={handleBlur}
     {...restProps}
@@ -221,13 +465,15 @@
 
     {#if content && !disabled}
         <div
+            bind:this={bubbleElement}
             id={tooltipId}
             class="tooltip pointer-events-none invisible absolute z-tooltip whitespace-normal wrap-break-word rounded-control bg-tooltip-bg px-3 py-2 text-sm leading-5 text-tooltip-fg opacity-0 transition-[opacity,visibility,transform] duration-200 ease-in-out"
             role="tooltip"
             aria-hidden={!isVisible}
             data-visible={isVisible}
-            data-placement={placement}
-            style={fixed ? fixedStyle : undefined}
+            data-parked={parked}
+            data-placement={side}
+            style={bubbleStyle || undefined}
         >
             {content}
         </div>
@@ -242,9 +488,11 @@
         max-width: var(--tooltip-max-width, min(24rem, calc(100vw - 2rem)));
     }
 
+    /* Centred over the trigger with `left`, not `inset-inline-start`: the
+       shift back by half is to the left whichever way the text runs. */
     .tooltip-container[data-placement="top"] .tooltip {
         inset-block-end: 100%;
-        inset-inline-start: 50%;
+        left: 50%;
         transform: translateX(-50%) translateY(4px) scale(0.95);
         margin-block-end: var(--tooltip-gap, 0.5rem);
     }
@@ -257,7 +505,7 @@
 
     .tooltip-container[data-placement="bottom"] .tooltip {
         inset-block-start: 100%;
-        inset-inline-start: 50%;
+        left: 50%;
         transform: translateX(-50%) translateY(-4px) scale(0.95);
         margin-block-start: var(--tooltip-gap, 0.5rem);
     }
@@ -303,24 +551,37 @@
         margin: 0;
     }
 
+    /* Closed and faded out: parked in the corner of the viewport, so a bubble
+       that would reach past the edge of a narrow screen does not widen the
+       page while nobody can see it. The selector outweighs the placement
+       rules, the fixed strategy and the narrow-screen rules below. */
+    .tooltip-container[data-strategy] .tooltip[data-parked="true"] {
+        position: fixed !important;
+        inset-block: 0 auto !important;
+        inset-inline: 0 auto !important;
+        margin: 0 !important;
+    }
+
     .tooltip::before {
         content: "";
         position: absolute;
         width: calc(var(--tooltip-arrow-size, 4px) * 2);
         height: calc(var(--tooltip-arrow-size, 4px) * 2);
         background-color: var(--color-tooltip-bg);
+        /* Set when the bubble was moved to stay on screen: the arrow moves back. */
+        translate: var(--tooltip-arrow-shift, 0px 0px);
     }
 
     .tooltip-container[data-placement="top"] .tooltip::before {
         inset-block-start: 100%;
-        inset-inline-start: 50%;
+        left: 50%;
         transform: translateX(-50%);
         clip-path: polygon(50% 100%, 0 0, 100% 0);
     }
 
     .tooltip-container[data-placement="bottom"] .tooltip::before {
         inset-block-end: 100%;
-        inset-inline-start: 50%;
+        left: 50%;
         transform: translateX(-50%);
         clip-path: polygon(0 100%, 50% 0, 100% 100%);
     }
@@ -342,13 +603,18 @@
     @media (max-width: 640px) {
         .tooltip {
             --tooltip-max-width: calc(100vw - 2rem);
-            inset-inline-start: 50% !important;
-            inset-inline-end: auto !important;
+        }
+
+        /* Not the fixed strategy: its bubble is placed by inline left and top,
+           which an !important inset would override. */
+        .tooltip-container:not([data-strategy="fixed"]) .tooltip {
+            left: 50% !important;
+            right: auto !important;
             transform: translateX(-50%) scale(0.95) !important;
             margin: var(--tooltip-gap, 0.5rem) 0 !important;
         }
 
-        .tooltip[data-visible="true"] {
+        .tooltip-container:not([data-strategy="fixed"]) .tooltip[data-visible="true"] {
             transform: translateX(-50%) scale(1) !important;
         }
 
@@ -360,6 +626,15 @@
     @media (prefers-contrast: high) {
         .tooltip {
             padding: 0.75rem 1rem;
+        }
+    }
+
+    /* Forced colours repaint the fill as the page's own canvas, and the
+       bubble has no border: without an edge its text lies loose over the
+       content under it. An outline takes no room, so nothing moves. */
+    @media (forced-colors: active) {
+        .tooltip {
+            outline: 1px solid CanvasText;
         }
     }
 

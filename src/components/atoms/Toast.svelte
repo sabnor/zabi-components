@@ -31,8 +31,9 @@
         info: 'border-border bg-surface-overlay text-body',
     };
 
+    // `min(18rem, 100%)`: 18rem is wider than a 320px screen once the text is enlarged.
     const cardClasses =
-        'box-border w-full min-w-[18rem] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-control border p-4 shadow-lg';
+        'box-border w-full min-w-[min(18rem,100%)] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-control border p-4 shadow-lg';
 
     function closeToast(event: Event) {
         isVisible = false;
@@ -62,7 +63,7 @@
 {#if isVisible}
     {#if layout === 'viewport'}
         <div
-            class="pointer-events-none fixed top-4 right-4 left-4 z-toast flex justify-end sm:left-auto"
+            class="pointer-events-none fixed top-[calc(max(var(--app-shell-top-inset,0px),env(safe-area-inset-top,0px))_+_1rem)] right-[calc(env(safe-area-inset-right,0px)_+_1rem)] left-[calc(env(safe-area-inset-left,0px)_+_1rem)] z-toast flex justify-end sm:left-auto"
         >
             <div
                 class={cn("pointer-events-auto", cardClasses, typeClasses[type], className)}

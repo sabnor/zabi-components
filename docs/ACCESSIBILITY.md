@@ -142,6 +142,7 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 
 **Recommendations:**
 - None open. SlideUp and Drawer share the same behaviour; see [Library conventions](#library-conventions)
+- `fullScreen` (or `fullScreen="mobile"`) changes the layout only: role, name, focus handling and Escape are the same. The close button stays at the top inside the safe area and is a 44px target on a coarse pointer; scrolling content with nothing focusable in it becomes a Tab stop so the keyboard can scroll it
 
 **Priority:** Low
 
@@ -447,6 +448,8 @@ Rules every component follows, new ones included. Each names where it lives in t
 - **A hover style does not stay on after a tap.** A browser leaves `:hover` on the last element tapped until something else is tapped. Tailwind's `hover:` variant only applies where `(hover: hover)` holds; the hand-written `:hover` rules in `src/app.css` and in the components' own `<style>` blocks are inside the same media query (`tests/touch-targets.test.ts` fails on one that is not).
 - **A popup stays on screen.** Dropdown opens on the side its `placement` asks for whenever it fits there; near an edge it flips to the other side, and when neither has room it is limited to the viewport less 8px on each side and scrolls inside. NavigationMenuContent is slid back from the edge the same way. Both are measured before they are painted and again on resize and scroll (`src/components/util/fit-in-viewport.ts`); a popup that fits is not touched. Arrow-key order and where focus returns do not change.
 - **Nothing is reachable by hover alone.** Actions revealed on hover also appear when focus is inside the component, and are always visible where hover does not exist (touch). ImageUpload shows Change and Remove that way; MediaGrid keeps its remove button beside the item and always visible.
+- **A tooltip is never the only way to learn something.** Tooltip opens on hover, on keyboard focus and on a tap (the trigger's own click still happens), is tied to its trigger with `aria-describedby`, and closes on Escape, on a tap elsewhere, on scrolling and when focus leaves. On a touch screen nothing shows that a tooltip is there and it closes by itself after `touchDuration`: do not use it for essential information. Put that in the page, and keep the tooltip for a hint.
+- **Nothing sits under a notch or the home indicator.** AppShell, AppBar, BottomTabBar, BottomSheet, StickyActionBar, FloatingActionButton, a full-screen Modal, Toaster, Toast and Page read the safe-area insets (`env(safe-area-inset-*)`) and keep clear of them; Toaster also sits above an AppShell's tab bar (`--app-shell-bottom-inset`) and above a bar of your own (`--toaster-bottom-offset`). The insets are zero until the app asks for them: the viewport meta tag needs `viewport-fit=cover` (`<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />`). Full heights are `dvh`, so a mobile browser's own bars do not cut content off.
 - **Focus is visible in forced colours.** The focus ring is a box-shadow, which forced-colours mode (Windows High Contrast) drops. `src/app.css` restates it there as an outline for `.focus-ring`, the legacy `.focus-brand` and `.focus-nav`, and the checkbox and radio row.
 
 ## Summary

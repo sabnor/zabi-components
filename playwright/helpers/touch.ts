@@ -45,3 +45,23 @@ export async function touchDrag(
     await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
     await cdp.detach();
 }
+
+/**
+ * One tap of a finger at `point`, through the DevTools protocol: pointer and
+ * touch events of type "touch", then the mouse events and the click a browser
+ * makes of a tap. `hold` is how long the finger rests on the glass.
+ */
+export async function touchTap(
+    page: Page,
+    point: Point,
+    { hold = 60 }: { hold?: number } = {},
+): Promise<void> {
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Input.dispatchTouchEvent", {
+        type: "touchStart",
+        touchPoints: [{ x: Math.round(point.x), y: Math.round(point.y), id: 1 }],
+    });
+    await page.waitForTimeout(hold);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await cdp.detach();
+}

@@ -269,6 +269,30 @@ import type { Foo } from "../types/variants.js";
 
 ---
 
+## Phones: safe areas
+
+Components that touch the edge of a phone screen keep clear of the notch and
+the home indicator by reading `env(safe-area-inset-*)`: `AppShell`, `AppBar`,
+`BottomTabBar`, `BottomSheet`, `StickyActionBar`, `FloatingActionButton`,
+`Toaster`, a `Modal` with `fullScreen`, and `Page`. A browser reports those
+insets as zero until the page asks to be drawn under them, so add
+`viewport-fit=cover` to the viewport meta tag of the app:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+```
+
+`Page` pads its left, right and bottom by the insets; inside an `AppShell` it
+adds nothing, because the shell has already done it, and `safeArea={false}`
+turns it off where your own layout does. `Toaster` sits above an `AppShell`'s
+tab bar by itself; for a bar of your own that is fixed to the bottom, give it
+that bar's height through its bottom-offset custom property (see the Toaster
+page of the docs). Full heights use `dvh`, so the browser's own bars do not
+cut content off.
+
+A `Tooltip` opens on a tap as well as on hover and focus, and closes again by
+itself. Do not put information the user needs in one.
+
 ## Common pitfalls
 
 | Issue | What goes wrong | Fix |

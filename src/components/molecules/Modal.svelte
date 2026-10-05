@@ -8,7 +8,7 @@
         joinOverlayStack,
         recoverStrayFocus,
     } from '../util/focus-utils.js';
-    import { lockBodyScroll, trapTabKey } from '../util/overlay.js';
+    import { lockBodyScroll, trapTabKey, watchScrollerNeedsFocus } from '../util/overlay.js';
     import { TOUCH_HIT_AREA } from '../util/touch-target.js';
     import { generateId } from "../util/ssr-safe.js";
     import { portal as portalTo } from "../util/portal.js";
@@ -61,6 +61,15 @@
          * setting `isOpen` yourself still closes it.
          */
         dismissible?: boolean;
+        /**
+         * Fills the screen instead of floating over it: for a long form on a
+         * phone. `true` at every width; `"mobile"` below 768px only, with the
+         * usual dialog from there up. The title and the close button stay at
+         * the top, the footer at the bottom, both inside the safe areas, and
+         * the content scrolls between them. Everything else is the same
+         * dialog: focus, Escape, `dismissible`, `portal`.
+         */
+        fullScreen?: boolean | 'mobile';
         /** Fired when the modal closes itself, with what the user did. */
         onclose?: (detail: { reason: CloseReason }) => void;
         /**
@@ -88,6 +97,7 @@
         initialFocus,
         portal = false,
         dismissible = true,
+        fullScreen = false,
         class: className = "",
         onclose,
         onclick,
@@ -113,6 +123,83 @@
             lg: 'w-full md:w-[42rem]',
         }[size] || 'w-full md:w-[28rem]',
     );
+
+    /**
+     * What `fullScreen` adds to each part: `all` at every width, `mobile`
+     * below `md` only. Both are written out, because a class name put
+     * together at run time is one Tailwind never sees.
+     *
+     * The panel is as tall as the visible screen (`dvh`: the browser's own
+     * bars are not counted) and the content scrolls inside it, so the header
+     * and the footer stay where they are. The content keeps 120px at least:
+     * when the header and the footer leave less (a long title in very large
+     * text on a small screen), the panel scrolls as a whole instead, and the
+     * footer is reached by scrolling rather than not at all. The gutters are
+     * in px: at 320px with enlarged text, a gutter that grew with the text
+     * would leave a form no room. Each is at least the safe-area inset on its
+     * side.
+     */
+    const FULL_SCREEN = {
+        backdrop: { all: 'md:p-0', mobile: '' },
+        panel: {
+            all: 'h-dvh max-h-none rounded-none border-0 md:w-full md:rounded-none',
+            mobile: 'max-md:h-dvh max-md:max-h-none max-md:rounded-none max-md:border-0',
+        },
+        card: {
+            all: 'flex min-h-0 flex-1 flex-col rounded-none',
+            mobile: 'max-md:flex max-md:min-h-0 max-md:flex-1 max-md:flex-col max-md:rounded-none',
+        },
+        header: {
+            all: 'shrink-0 border-b border-border pt-[max(24px,calc(env(safe-area-inset-top,0px)_+_8px))] pr-[max(24px,env(safe-area-inset-right,0px))] pl-[max(24px,env(safe-area-inset-left,0px))]',
+            mobile: 'max-md:shrink-0 max-md:border-b max-md:border-border max-md:pt-[max(24px,calc(env(safe-area-inset-top,0px)_+_8px))] max-md:pr-[max(24px,env(safe-area-inset-right,0px))] max-md:pl-[max(24px,env(safe-area-inset-left,0px))]',
+        },
+        content: {
+            all: 'flex min-h-[120px] flex-col',
+            mobile: 'max-md:flex max-md:min-h-[120px] max-md:flex-col',
+        },
+        /** From `md` up, `mobile` restates the padding of the usual dialog. */
+        scroller: {
+            all: 'min-h-0 flex-1 overflow-y-auto overscroll-contain pr-[max(24px,env(safe-area-inset-right,0px))] pl-[max(24px,env(safe-area-inset-left,0px))]',
+            mobile: 'max-md:min-h-0 max-md:flex-1 max-md:overflow-y-auto max-md:overscroll-contain max-md:pr-[max(24px,env(safe-area-inset-right,0px))] max-md:pl-[max(24px,env(safe-area-inset-left,0px))] md:px-6',
+        },
+        scrollerBelowHeader: { all: 'pt-4', mobile: 'max-md:pt-4' },
+        scrollerAtTop: {
+            all: 'pt-[max(24px,calc(env(safe-area-inset-top,0px)_+_8px))]',
+            mobile: 'max-md:pt-[max(24px,calc(env(safe-area-inset-top,0px)_+_8px))] md:pt-6',
+        },
+        scrollerAboveFooter: { all: 'pb-4', mobile: 'max-md:pb-4' },
+        scrollerAtBottom: {
+            all: 'pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))]',
+            mobile: 'max-md:pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] md:pb-6',
+        },
+        footer: {
+            all: 'shrink-0 flex-wrap border-t border-border pr-[max(24px,env(safe-area-inset-right,0px))] pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] pl-[max(24px,env(safe-area-inset-left,0px))]',
+            mobile: 'max-md:shrink-0 max-md:flex-wrap max-md:border-t max-md:border-border max-md:pr-[max(24px,env(safe-area-inset-right,0px))] max-md:pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] max-md:pl-[max(24px,env(safe-area-inset-left,0px))]',
+        },
+    } as const;
+
+    const fullScreenMode = $derived(
+        fullScreen === 'mobile' ? 'mobile' : fullScreen ? 'all' : null,
+    );
+    const full = (part: keyof typeof FULL_SCREEN) =>
+        fullScreenMode ? FULL_SCREEN[part][fullScreenMode] : '';
+
+    /**
+     * The scrolling content of a full-screen modal. With nothing in it that
+     * takes focus (a long text), the keyboard could not scroll it, so it is a
+     * Tab stop itself for as long as that is true.
+     */
+    let scroller = $state<HTMLDivElement>();
+    let scrollerNeedsFocus = $state(false);
+
+    $effect(() => {
+        const box = scroller;
+        if (!isOpen || !box) {
+            scrollerNeedsFocus = false;
+            return;
+        }
+        return watchScrollerNeedsFocus(box, (needsFocus) => (scrollerNeedsFocus = needsFocus));
+    });
 
     function closeModal(reason: CloseReason, event?: Event) {
         if (!dismissible) return;
@@ -178,7 +265,11 @@
 {#if isOpen}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
-        class="fixed inset-0 z-modal flex {dismissible ? 'cursor-pointer' : 'cursor-default'} items-end justify-center bg-overlay p-0 md:items-center md:p-4"
+        class={cn(
+            "fixed inset-0 z-modal flex items-end justify-center bg-overlay p-0 md:items-center md:p-4",
+            dismissible ? 'cursor-pointer' : 'cursor-default',
+            full('backdrop'),
+        )}
         style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
         data-overlay-depth={depth}
         use:portalTo={portal}
@@ -189,8 +280,9 @@
         <div
             bind:this={modalContainer}
             class={cn(
-                "flex max-h-[90vh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-overlay border border-border-overlay bg-surface-overlay p-0 shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none md:animate-none md:rounded-overlay",
+                "flex max-h-[90dvh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-overlay border border-border-overlay bg-surface-overlay p-0 shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none md:animate-none md:rounded-overlay",
                 sizeClasses,
+                full('panel'),
                 className,
             )}
             {role}
@@ -199,22 +291,24 @@
             aria-describedby={description ? modalDescriptionId : undefined}
             tabindex="-1"
             data-testid={dataTestId}
+            data-full-screen={fullScreenMode === 'all' ? 'true' : (fullScreenMode ?? undefined)}
             onkeydown={(event) => trapTabKey(modalContainer, event)}
             {...restProps}
         >
             <!-- The panel owns padding: Card's own p-6 would stack with the header's px-6/pt-6 and indent the title 24px past the body. -->
-            <Card variant="flat" fullWidth={false} className="bg-transparent! p-0!">
+            <Card variant="flat" fullWidth={false} className={cn("bg-transparent! p-0!", full('card'))}>
                 {#if title || description || showClose}
                     <CardHeader
                         {description}
                         descriptionId={description ? modalDescriptionId : undefined}
-                        className="px-6 pt-6 pb-4"
+                        className={cn("px-6 pt-6 pb-4", full('header'))}
                     >
-                        <div class="flex items-center {title ? 'justify-between' : 'justify-end'}">
+                        <!-- 12px between a long title and the button: the title wraps, the button keeps its size. -->
+                        <div class="flex items-center gap-[12px] {title ? 'justify-between' : 'justify-end'}">
                             {#if title}
                                 <h2
                                     id={modalTitleId}
-                                    class="text-2xl font-normal leading-8 tracking-normal text-headline"
+                                    class="min-w-0 text-2xl font-normal leading-8 tracking-normal text-headline [overflow-wrap:anywhere]"
                                 >
                                     {title}
                                 </h2>
@@ -224,7 +318,7 @@
                                 <button
                                     type="button"
                                     onclick={(event) => closeModal('close-button', event)}
-                                    class="focus-ring pointer-coarse:relative flex size-8 items-center justify-center rounded-control text-2xl text-description transition-colors {TOUCH_HIT_AREA} {dismissible
+                                    class="focus-ring pointer-coarse:relative flex size-8 shrink-0 items-center justify-center rounded-control text-2xl text-description transition-colors {TOUCH_HIT_AREA} {dismissible
                                         ? 'cursor-pointer hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active'
                                         : 'cursor-not-allowed opacity-50'}"
                                     aria-label={closeLabel}
@@ -237,7 +331,28 @@
                     </CardHeader>
                 {/if}
 
-                {#if children}
+                {#if children && fullScreenMode}
+                    <!-- The padding is on the box that scrolls, so its scrollbar is at the edge of the screen. -->
+                    <CardContent className={cn("flex-1", full('content'))}>
+                        <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+                        <div
+                            bind:this={scroller}
+                            data-modal-content
+                            class={cn(
+                                full('scroller'),
+                                full(title || description || showClose ? 'scrollerBelowHeader' : 'scrollerAtTop'),
+                                full(footer ? 'scrollerAboveFooter' : 'scrollerAtBottom'),
+                                scrollerNeedsFocus &&
+                                    "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus-ring",
+                            )}
+                            tabindex={scrollerNeedsFocus ? 0 : undefined}
+                            role={scrollerNeedsFocus && title ? "group" : undefined}
+                            aria-labelledby={scrollerNeedsFocus && title ? modalTitleId : undefined}
+                        >
+                            {@render children?.()}
+                        </div>
+                    </CardContent>
+                {:else if children}
                     <CardContent
                         className="flex-1 px-6 {title || description || showClose ? '' : 'pt-6'} {footer ? '' : 'pb-6'}"
                     >
@@ -246,7 +361,7 @@
                 {/if}
 
                 {#if footer}
-                    <CardFooter className="flex justify-end gap-3 pt-4">
+                    <CardFooter className={cn("flex justify-end gap-3 pt-4", full('footer'))}>
                         {@render footer?.()}
                     </CardFooter>
                 {/if}

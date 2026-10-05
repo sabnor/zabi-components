@@ -1,5 +1,6 @@
 <script lang="ts">
     import Button from "../../../components/atoms/Button.svelte";
+    import Input from "../../../components/atoms/Input.svelte";
     import Modal from "../../../components/molecules/Modal.svelte";
     import type { DemoRendererProps } from "./types";
 
@@ -71,6 +72,26 @@
                 </Button>
                 <Button variant="danger" loading={saving} onclick={remove}>
                     Delete
+                </Button>
+            {/snippet}
+        </Modal>
+    </div>
+{:else if exampleIndex === 3}
+    <div class="w-full">
+        <Button onclick={() => (modalOpen = true)}>Open form</Button>
+        <Modal bind:isOpen={modalOpen} fullScreen="mobile" title="New quiz round">
+            <div class="space-y-4">
+                <Input label="Round name" />
+                {#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as number (number)}
+                    <Input label={`Question ${number}`} />
+                {/each}
+            </div>
+            {#snippet footer()}
+                <Button variant="secondary" onclick={() => (modalOpen = false)}>
+                    Cancel
+                </Button>
+                <Button variant="primary" onclick={() => (modalOpen = false)}>
+                    Save round
                 </Button>
             {/snippet}
         </Modal>

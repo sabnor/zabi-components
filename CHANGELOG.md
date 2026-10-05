@@ -331,6 +331,24 @@ Whenever token or CSS import API surface changes, include:
   your widest layout. The `TopNavbarCollapseAt` type is exported.
 - **Tabs take `fullWidth`**, which shares the row equally between the tabs. It
   is meant for two or three tabs.
+- **Tooltip opens on a tap.** A touch or pen press on the trigger toggles it,
+  and the trigger's own click still fires. It closes on a second tap, a tap
+  outside, Escape, a scroll, when focus leaves, or after `touchDuration`
+  (default 2500ms; `0` keeps it open until dismissed). With a mouse or the
+  keyboard it behaves as before. Do not put essential information in a
+  tooltip.
+- **Modal can fill the screen.** `fullScreen` makes the dialog fill the dynamic
+  viewport, with the title and close button pinned at the top and the footer
+  at the bottom, inside the safe areas, and the content scrolling between
+  them; `fullScreen="mobile"` does so below `md` only. Meant for long forms.
+- **Page keeps clear of the safe areas.** `safeArea` (default true) pads the
+  left, right and bottom by `env(safe-area-inset-*)`; it adds nothing inside an
+  AppShell, and nothing where the insets are zero. Your own `px-*` class on a
+  Page replaces the padding on that side. Safe areas need
+  `viewport-fit=cover` in the page's viewport meta tag.
+- **`--toaster-bottom-offset`** lifts the toast stack above a fixed bar or a
+  floating button of your own (72px clears a FloatingActionButton). Toaster
+  passes other attributes through to its region.
 
 ### Changed
 
@@ -439,6 +457,16 @@ Whenever token or CSS import API surface changes, include:
   view. Tab labels no longer wrap or squeeze to fit: a list with long labels
   in a narrow box that used to wrap onto several lines now stays on one line
   and scrolls. A list that fits looks as before.
+- **Toasts sit above the tab bar and the home indicator.** The stack's bottom
+  edge clears `--app-shell-bottom-inset` and the bottom safe area, and below
+  `sm` it spans the width with 16px gutters. From `sm` up it is where it was.
+  A `viewport` Toast at the top also clears the top safe area and an AppShell
+  header.
+- A Tooltip that would leave the viewport flips to the other side or slides
+  along its edge to stay 8px inside, also with a mouse; below 640px a `left`
+  or `right` tooltip opens above or below. `data-placement` on the bubble now
+  reports the side actually used.
+- Modal is at most `90dvh` tall (was `90vh`).
 
 ### Deprecated
 
@@ -448,6 +476,16 @@ Whenever token or CSS import API surface changes, include:
 
 ### Fixed
 
+- **A long Modal title no longer squeezes the close button or runs out of the
+  panel.** The title wraps, also inside a single long word, and the close
+  button keeps its 32px.
+- **A Tooltip with `strategy="fixed"` no longer covers its trigger** when it
+  opens above or to the left, and a closed tooltip no longer widens the page.
+- A Tooltip has an edge in forced-colours mode, and is centred correctly in
+  right-to-left layouts.
+- Toasts fit a 320px screen; their 18rem minimum width no longer overflows.
+- A disabled Checkbox or Radio no longer dips or changes fill when pressed or
+  hovered.
 - **A Dropdown stays on screen.** The menu is measured before it is painted:
   it flips to the other side when the preferred one does not fit, slides back
   when neither does, and is capped to the viewport with its own scroll only
