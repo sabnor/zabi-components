@@ -325,6 +325,12 @@ Whenever token or CSS import API surface changes, include:
   read them.
 - **`--color-input-active`** (`active:bg-input-active`), the fill of a pressed
   field. Select's trigger uses it.
+- **TopNavbar takes `collapseAt`** (`"sm"`, `"md"`, `"lg"` or `"xl"`; default
+  `"md"`, as before): the width at which the row of links gives way to the
+  menu button. Use a later one when the links do not fit between 768px and
+  your widest layout. The `TopNavbarCollapseAt` type is exported.
+- **Tabs take `fullWidth`**, which shares the row equally between the tabs. It
+  is meant for two or three tabs.
 
 ### Changed
 
@@ -428,6 +434,11 @@ Whenever token or CSS import API surface changes, include:
   one.
 - SlideUp pads its content for the bottom safe area and is at most `90dvh`
   tall (was `90vh`).
+- **Tabs scroll sideways when they do not fit**, with a fade on the edge that
+  has more to show, and bring the selected and the keyboard-focused tab into
+  view. Tab labels no longer wrap or squeeze to fit: a list with long labels
+  in a narrow box that used to wrap onto several lines now stays on one line
+  and scrolls. A list that fits looks as before.
 
 ### Deprecated
 
@@ -437,6 +448,27 @@ Whenever token or CSS import API surface changes, include:
 
 ### Fixed
 
+- **A Dropdown stays on screen.** The menu is measured before it is painted:
+  it flips to the other side when the preferred one does not fit, slides back
+  when neither does, and is capped to the viewport with its own scroll only
+  when it must be (8px margin). `placement` is still the preferred side, and a
+  menu that fits is positioned exactly as before. The menu box reports the
+  side used in `data-resolved-placement`.
+- **NavigationMenu fits a narrow screen.** The list wraps onto further rows
+  instead of overflowing, and a content panel slides back inside the viewport.
+  The `viewport` prop only sets `isMobile` on the context for your own
+  children; it has no effect of its own, and the docs now say so.
+- **TopNavbar's phone menu closes when it should**: after a link in it is
+  followed, when `currentPath` changes, on Escape (focus returns to the menu
+  button), on a click or a focus move outside the bar, and when the screen
+  widens past the breakpoint. A press on a control behind the open menu still
+  reaches that control.
+- **TopNavbar's phone menu can be reached on a short screen.** It is at most
+  as tall as the screen below the bar and scrolls on its own when it has to.
+- **TopNavbar's menu button stays on screen** with a long brand or enlarged
+  text; the brand shrinks and truncates below the breakpoint.
+- TopNavbar's phone-menu links fill the row, and `aria-controls` on the menu
+  button is set only while the menu it names exists.
 - **The focus ring shows on dark overlays.** The focus ring and the nav ring
   were 2.91:1 on the dark overlay surface (modals, menus, toasts). Dark
   `--color-focus` moves from `brand-500` to `brand-600` (#92a9ff by default),
