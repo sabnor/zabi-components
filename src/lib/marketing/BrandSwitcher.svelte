@@ -28,6 +28,27 @@
     let isDark = $state(false);
     let isOpen = $state(false);
 
+    /**
+     * Which edge of the trigger the menu lines up with.
+     *
+     * From `md` up the top bar puts this control at its right edge, where a
+     * menu opening to the right (the Dropdown default) ran past the viewport
+     * and widened the document: 626 to 818px on a 768px screen. Below `md`
+     * TopNavbar renders it again at the left edge of the mobile menu, where a
+     * menu opening to the left would be cut off instead. Same breakpoint as
+     * TopNavbar's `md:` classes.
+     */
+    let atEndOfBar = $state(true);
+
+    $effect(() => {
+        const wide = window.matchMedia?.("(min-width: 768px)");
+        if (!wide) return;
+        const sync = () => (atEndOfBar = wide.matches);
+        sync();
+        wide.addEventListener("change", sync);
+        return () => wide.removeEventListener("change", sync);
+    });
+
     const accent = $derived(brand.accent);
     const current = $derived(
         ACCENTS.find((item) => item.id === accent) ?? ACCENTS[0],
@@ -54,6 +75,7 @@
     bind:isOpen
     ariaLabel="Brand accent"
     menuRole="menu"
+    placement={atEndOfBar ? "bottom-end" : "bottom-start"}
 >
     {#snippet trigger(props)}
         <button

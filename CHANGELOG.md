@@ -382,6 +382,9 @@ Whenever token or CSS import API surface changes, include:
 
 ### Fixed
 
+- **The brand menu in the docs site header stays on screen.** It opened past
+  the right edge and widened the page at 768px and 1024px; it now opens toward
+  the side that has room.
 - **ImageUpload's Change and Remove actions are reachable on touch screens.**
   They were hidden until hover or focus; on coarse pointers, and where hover is
   not available, they now stay visible.
