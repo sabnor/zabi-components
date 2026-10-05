@@ -19,9 +19,17 @@
      *
      * On its own the bar is fixed over the page and reserves no room. Give the
      * page `padding-bottom` and `scroll-padding-bottom` of the bar's height
-     * (`calc(4rem + 1px + env(safe-area-inset-bottom))` by default), or the
-     * end of the content, and a focused control there, sits under it.
-     * `AppShell` does this for you.
+     * (`calc(65px + env(safe-area-inset-bottom))`), or the end of the
+     * content, and a focused control there, sits under it. `AppShell` does
+     * this for you.
+     *
+     * The bar is one row, 65px tall, at every width and text size. It is
+     * chrome: when the reader enlarges text, the room belongs to the page.
+     * So its sizes are in px; a label is one line, grows with the text only
+     * up to 1.3 times its size and no further than its tab has room for, and
+     * is cut with an ellipsis, never inside a word, when it still does not
+     * fit. Where a tab is narrower than 52px (five tabs below 260px) the bar
+     * shows icons only. The link is always named by its full label.
      *
      * ```svelte
      * <BottomTabBar
@@ -119,16 +127,15 @@
      * would beat it (see TopNavbar).
      */
     function linkClasses(isActive: boolean): string {
-        // The 44px floor and the side padding are in px on purpose: in rem
-        // they would double with the text size, and five tabs would no longer
-        // fit a 320px screen, or would leave a label one letter per line.
+        // Every size is in px (the nav sets `--spacing: 4px`): in rem they
+        // doubled with the text size, and the bar was 177px tall at 200%.
         //
-        // Radius: the active pill (2rem high, so 1rem at its ends) sits 4px
+        // Radius: the active pill (32px high, so 16px at its ends) sits 4px
         // inside this box on every side, so the box takes that radius plus
-        // the 4px. No gap between pill and label: 2rem + 1rem of content in a
-        // 3.5rem box leaves the same 4px above and below as at the sides.
+        // the 4px. No gap between pill and label: 32px and a 16px line in a
+        // 56px box leave the same 4px above and below as at the sides.
         const base =
-            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-[44px] flex-col items-center justify-center gap-0 rounded-[calc(1rem+4px)] px-[4px] text-center text-xs leading-4 no-underline transition-colors duration-150 motion-reduce:transition-none";
+            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-0 rounded-[20px] px-[4px] text-center no-underline transition-colors duration-150 motion-reduce:transition-none";
         return isActive
             ? cn(base, "font-semibold text-nav-menu-item-active")
             : cn(
@@ -142,22 +149,24 @@
     aria-label={label}
     data-position={resolvedPosition}
     class={cn(
-        "border-t border-border-weak bg-surface-elevated",
+        "tabbar border-t border-border-weak bg-surface-elevated [--spacing:4px]",
         // Clear of the home indicator, and of the rounded corners in landscape.
         "pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
         resolvedPosition === "fixed" && "fixed inset-x-0 bottom-0 z-sticky",
         className,
     )}
+    style:--tabbar-count={items.length}
     {...restProps}
 >
-    <!-- 8px between the tabs and at the sides, in px for the same reason as
-    the floor on each tab: the room belongs to the labels when text grows. -->
-    <ul class="m-0 flex list-none items-stretch gap-[8px] px-[8px] py-1">
+    <!-- 8px between the tabs and at the sides while every tab can be 52px
+    wide; less as the bar narrows, down to none, so the tabs keep the width a
+    label needs for as long as there is any. See the style block. -->
+    <ul class="tabbar-list m-0 flex list-none items-stretch py-1">
         {#each items as item (item.href)}
             {@const isActive = item.href === activeHref}
             {@const Icon = item.icon}
             {@const count = item.badge ?? 0}
-            <li class="flex min-w-0 flex-1">
+            <li class="tabbar-tab flex">
                 <!-- The name is spelled out when there is a count: built from
                 the content, a browser reads "Inbox , 3 new" or leaves the
                 count out, depending on how it treats the hidden text. It
@@ -176,24 +185,29 @@
                     <span
                         aria-hidden="true"
                         class={cn(
-                            "relative flex h-8 w-[min(3.5rem,100%)] items-center justify-center rounded-pill transition-colors duration-150 motion-reduce:transition-none",
+                            "flex h-8 w-[min(56px,100%)] shrink-0 items-center justify-center rounded-pill transition-colors duration-150 motion-reduce:transition-none",
                             isActive &&
                                 "bg-nav-menu-active text-(color:--color-action-primary) outline-2 -outline-offset-2 outline-transparent",
                         )}
                     >
-                        <Icon size={24} class="shrink-0" />
-                        {#if count > 0}
-                            <Badge
-                                size="sm"
-                                emphasis="solid"
-                                class="absolute -top-1 end-0 min-w-5 px-1"
-                            >
-                                {badgeText(count, badgeMax)}
-                            </Badge>
-                        {/if}
+                        <!-- The badge is placed against the icon's own 24px
+                        box, in px: from its upper end corner outwards. It
+                        covers that corner by 8px and no more, whatever the
+                        text size and however narrow the pill is. -->
+                        <span class="relative flex size-6 shrink-0 items-center justify-center">
+                            <Icon size={24} class="shrink-0" />
+                            {#if count > 0}
+                                <Badge
+                                    size="sm"
+                                    emphasis="solid"
+                                    class="tabbar-badge absolute start-4 bottom-4 h-[18px] min-w-[18px] px-[5px] text-[11px] leading-[18px]"
+                                >
+                                    {badgeText(count, badgeMax)}
+                                </Badge>
+                            {/if}
+                        </span>
                     </span>
-                    <!-- Wraps instead of being cut off when the text is enlarged. -->
-                    <span class="w-full min-w-0 hyphens-auto [overflow-wrap:anywhere]">
+                    <span class="tabbar-label">
                         {item.label}
                     </span>
                 </a>
@@ -201,3 +215,78 @@
         {/each}
     </ul>
 </nav>
+
+<style>
+    /*
+     * The bar measures itself: the tabs and the gaps are sized from its own
+     * width and the number of tabs, not from the screen, so a bar in a narrow
+     * column behaves like one on a narrow phone.
+     */
+    .tabbar {
+        container: tabbar / inline-size;
+    }
+
+    /*
+     * The room between the tabs and at the two sides is whatever is left
+     * when every tab is 52px wide, shared out, and never more than 8px. So
+     * the bar gives up its gaps before it gives up label room: five tabs are
+     * 8px apart from 308px up (a 320px phone included), closer below that,
+     * and touch at 260px.
+     */
+    .tabbar-list {
+        --tabbar-gap: clamp(
+            0px,
+            calc((100cqi - var(--tabbar-count) * 52px) / (var(--tabbar-count) + 1)),
+            8px
+        );
+        gap: var(--tabbar-gap);
+        padding-inline: var(--tabbar-gap);
+    }
+
+    /*
+     * A tab is at least 44px wide for as long as that many fit the bar. When
+     * they do not (five tabs below 220px), they share the bar edge to edge:
+     * narrower than a full target, but never on top of each other, and the
+     * bar never scrolls sideways. Each tab is a container too, so its label
+     * can follow its width.
+     */
+    .tabbar-tab {
+        flex: 1 1 0;
+        min-width: min(44px, calc(100cqi / var(--tabbar-count)));
+        container: tabbar-tab / inline-size;
+    }
+
+    /*
+     * One line. 0.75rem, so it follows the reader's text size, but never
+     * above 1.3 times its 12px, nor above what a nine-letter word needs to
+     * fit the tab (18.5% of its width), and never below 11px. A label longer
+     * than that is cut with an ellipsis, between letters but with the mark
+     * that says so; it is not broken over lines.
+     */
+    .tabbar-label {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: clamp(11px, 0.75rem, min(15.6px, 18.5cqi));
+        line-height: 16px;
+    }
+
+    /*
+     * Narrower than 52px, a tab has no room for a word: icons only, for every
+     * tab, the active one too, so the row reads as one thing. The label stays
+     * in the page for the link's name; it is only not drawn.
+     */
+    @container tabbar-tab (max-width: 51.9px) {
+        .tabbar-label {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+    }
+</style>

@@ -14,6 +14,9 @@
         closeOnChoose?: boolean;
         /** The handler moves focus itself, as one that opens a dialog would. */
         focusElsewhereOnChoose?: boolean;
+        presentation?: "auto" | "popover" | "sheet";
+        sheetTitle?: string;
+        initialOpen?: boolean;
     }
     let {
         menuRole = "menu",
@@ -21,9 +24,13 @@
         onOptionClick,
         closeOnChoose = false,
         focusElsewhereOnChoose = false,
+        presentation = undefined,
+        sheetTitle = undefined,
+        initialOpen = false,
     }: Props = $props();
 
-    let isOpen = $state(false);
+    // svelte-ignore state_referenced_locally
+    let isOpen = $state(initialOpen);
     let elsewhere = $state<HTMLButtonElement>();
 
     function choose(value: string | number) {
@@ -49,6 +56,8 @@
     bind:isOpen
     ariaLabel="Project actions"
     {menuRole}
+    {presentation}
+    {sheetTitle}
     selectedValue="rename"
     options={custom ? [] : options}
     onOptionClick={choose}

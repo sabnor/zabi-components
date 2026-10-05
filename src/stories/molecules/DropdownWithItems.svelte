@@ -14,12 +14,14 @@
         placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
         /** Render the items as `DropdownItem` children instead of `options`. */
         custom?: boolean;
+        presentation?: 'auto' | 'popover' | 'sheet';
     }
 
     let {
         isOpen: initialOpen = true,
         placement = 'bottom-start',
         custom = false,
+        presentation = 'popover',
     }: Props = $props();
 
     // Initial value only; the effect below syncs later prop changes.
@@ -54,6 +56,7 @@
     <Dropdown
         bind:isOpen
         {placement}
+        {presentation}
         ariaLabel="Project actions"
         options={custom ? [] : options}
         onOptionClick={choose}

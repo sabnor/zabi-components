@@ -179,9 +179,17 @@ describe("BottomTabBar badges", () => {
         expect(inbox.getAttribute("aria-label")!.startsWith("Inbox")).toBe(true);
         const badge = within(inbox).getByText("3");
         expect(badge.closest('[aria-hidden="true"]')).not.toBeNull();
-        // On the trailing side of the icon in either writing direction.
-        expect(badge.className).toContain("end-0");
-        expect(badge.className).not.toContain("right-0");
+        // From the icon's upper trailing corner outwards, in either writing
+        // direction, and sized in px: it does not grow over the icon with the text.
+        expect(badge.className).toContain("start-4");
+        expect(badge.className).toContain("bottom-4");
+        expect(badge.className).not.toMatch(/(?:^|\s)(?:left|right)-/);
+        expect(badge.className).toContain("h-[18px]");
+        expect(badge.className).toContain("text-[11px]");
+        // Against the icon's own box, not the pill.
+        expect(badge.parentElement!.className).toContain("relative");
+        expect(badge.parentElement!.className).toContain("size-6");
+        expect(badge.parentElement!.querySelector("svg")).not.toBeNull();
     });
 
     it("leaves a tab without a count, or with 0, alone", () => {
@@ -254,18 +262,25 @@ describe("BottomTabBar placement", () => {
         expect(nav().className).toContain("env(safe-area-inset-bottom)");
     });
 
-    it("keeps every tab at least 44px in both directions, with a gap between them", () => {
+    it("sizes the bar in px and from its own width, with one-line labels", () => {
         render(BottomTabBar, { props: { items, active: "/quiz" } });
-        // Layout is checked in the browser (playwright/app-shell.spec.ts);
-        // this pins the classes it comes from.
+        // Layout is checked in the browser (playwright/bars-text-size.spec.ts
+        // and playwright/app-shell.spec.ts); this pins what it comes from.
+        // The spacing scale is in px inside the bar: `min-h-14` is 56px at
+        // any text size, where it used to be 3.5rem.
+        expect(nav().className).toContain("[--spacing:4px]");
+        expect(nav().className).toContain("tabbar");
+        // The gaps and the 44px floor are worked out from the number of tabs.
+        expect(nav().style.getPropertyValue("--tabbar-count")).toBe(String(items.length));
+        expect(nav().querySelector("ul")!.className).toContain("tabbar-list");
         for (const link of links()) {
             expect(link.className).toContain("min-h-14");
-            expect(link.className).toContain("min-w-[44px]");
+            expect(link.parentElement!.className).toContain("tabbar-tab");
+            // The label is the link's name, on one line, in its own element.
+            const label = link.querySelector(".tabbar-label")!;
+            expect(label.textContent!.trim().length).toBeGreaterThan(0);
+            expect(label.className).not.toContain("hyphens-auto");
         }
-        // In px, like the floor: rem would double with the text size and
-        // take the room the labels need on a 320px screen.
-        expect(nav().querySelector("ul")!.className).toContain("gap-[8px]");
-        expect(nav().querySelector("ul")!.className).toContain("px-[8px]");
     });
 });
 

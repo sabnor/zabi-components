@@ -180,6 +180,8 @@ export interface SelectProps {
     searchPlaceholder?: string;
     maxMenuHeight?: string;
     menuWidth?: string;
+    /** `auto` (the default): a BottomSheet on a phone, under the field elsewhere. */
+    presentation?: "auto" | "popover" | "sheet";
     noResultsText?: string;
     isLoading?: boolean;
     loadingText?: string;

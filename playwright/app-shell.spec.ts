@@ -163,9 +163,12 @@ test.describe("AppShell on a phone", () => {
             expect(rect.x + rect.width).toBeLessThanOrEqual(NARROW.width);
             expect(
                 await link.evaluate((el) => el.scrollWidth <= el.clientWidth),
-                "An enlarged label wraps instead of being cut off",
+                "Nothing of a tab reaches outside it",
             ).toBe(true);
         }
+        // The bars are chrome: they keep their height, and the page gets the room.
+        expect(footer.height).toBe(65);
+        expect((await box(bar(page))).height).toBe(57);
         await expect(bar(page).getByRole("heading", { name: "Quiz" })).toBeVisible();
         // Some of the content is still visible between the bars.
         const header = await box(bar(page));
@@ -309,12 +312,13 @@ test.describe("AppShell on a phone", () => {
         expect((await box(floating(page))).y).toBe(button.y);
     });
 
-    test("the properties follow the bars when the text is enlarged", async ({ page }) => {
+    test("the bars and the properties stay as they are when the text is enlarged", async ({ page }) => {
+        // They used to grow with the text, and the properties followed them.
+        // The bars are sized in px now, so there is nothing to follow.
         const before = await box(tabs(page));
         await page.evaluate(() => (document.documentElement.style.fontSize = "200%"));
-        await expect
-            .poll(async () => (await box(tabs(page))).height)
-            .toBeGreaterThan(before.height);
+        await page.waitForTimeout(300);
+        expect((await box(tabs(page))).height).toBe(before.height);
         const footer = await box(tabs(page));
         await expect
             .poll(() =>
@@ -601,7 +605,7 @@ test.describe("AppShell: notch, writing direction, enlarged text and focus", () 
         }
     });
 
-    test("at 320px and 200% a label takes two lines at most, and half the screen is content", async ({
+    test("at 320px and 200% a label is one line, never broken in a word, and the bars leave the screen to the content", async ({
         page,
     }) => {
         await page.setViewportSize(NARROW);
@@ -624,8 +628,11 @@ test.describe("AppShell: notch, writing direction, enlarged text and focus", () 
                         el.getBoundingClientRect().height /
                         parseFloat(getComputedStyle(el).lineHeight),
                 );
-            expect(lines, `${name} is not broken letter by letter`).toBeLessThanOrEqual(2);
+            expect(Math.round(lines), `${name} is on one line`).toBe(1);
         }
+        // 65px of tab bar and 57px of top bar on a 568px screen, as at 100%.
+        expect((await box(tabs(page))).height).toBe(65);
+        expect((await box(bar(page))).height).toBe(57);
         // With the top bar away, as it is once the page scrolls.
         await scrollBy(page, 400);
         await expect(bar(page)).toHaveAttribute("data-collapsed", "true");

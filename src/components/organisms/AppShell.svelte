@@ -85,8 +85,9 @@
      * heights of AppBar and BottomTabBar. The real size replaces it once the
      * shell runs, which matters when the text is enlarged or a label wraps.
      */
-    const HEADER_ESTIMATE = "calc(3.5rem + 1px + env(safe-area-inset-top, 0px))";
-    const FOOTER_ESTIMATE = "calc(4rem + 1px + env(safe-area-inset-bottom, 0px))";
+    // In px: AppBar and BottomTabBar keep their height when the text is enlarged.
+    const HEADER_ESTIMATE = "calc(57px + env(safe-area-inset-top, 0px))";
+    const FOOTER_ESTIMATE = "calc(65px + env(safe-area-inset-bottom, 0px))";
 
     function track(region: HTMLElement | undefined, set: (height: number | null) => void) {
         if (!region) {

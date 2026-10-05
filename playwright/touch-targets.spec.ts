@@ -42,8 +42,8 @@ const EXCEPTIONS: { page: RegExp; match: RegExp; why: string }[] = [
     },
     {
         page: /^(BottomTabBar|AppShell)$/,
-        match: /\|[^|]*min-w-\[44px\]/,
-        why: "The docs card is 215px wide at this viewport, which is less than four 44px tabs and their gaps, so the tabs overlap by 2px there. playwright/app-shell.spec.ts measures the tabs at real phone widths, where they are 44px or more with 8px between them.",
+        match: /^a\|[^|]*\|focus-ring focus-ring--nav flex min-h-14 w-full min-w-0 flex-col/,
+        why: "The docs card is 215px wide at this viewport, 172px inside, which is less than four 44px tabs: they share it edge to edge at 43px each, 56px tall, without overlapping. That is the bar's rule for a bar too narrow for its tabs (playwright/bars-text-size.spec.ts). playwright/app-shell.spec.ts measures the tabs at real phone widths, where they are 44px or more with 8px between them.",
     },
 ];
 

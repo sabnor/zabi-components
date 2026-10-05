@@ -281,7 +281,9 @@ test.describe("SortableList: 8px between the move buttons on a touch screen", ()
 });
 
 test.describe("Select: the list's default height follows the visible viewport", () => {
-    test.use({ viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true });
+    // A touch screen 640px wide or more: narrower than that the list opens in a
+    // sheet (playwright/touch-menus.spec.ts), which has no height limit of its own.
+    test.use({ viewport: { width: 700, height: 667 }, hasTouch: true, isMobile: true });
 
     test("the default limit is 60dvh", async ({ page }) => {
         // Every Select on the docs page sets its own limit; the lab has one with the default.

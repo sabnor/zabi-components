@@ -116,11 +116,11 @@ comes from `badgeLabel`.
 
 **Best Practices:**
 - Use `IconButton` at `size="lg"` for the AppBar's actions, so each is a 48px target, and keep to two
-- Keep to three to five tabs with one-word labels; they wrap when the text is enlarged, they are not cut off
+- Keep to three to five tabs with one-word labels. A label is one line: it grows with the text size up to 1.3 times, is cut with an ellipsis when it does not fit its tab, and is not drawn at all where a tab is narrower than 52px (the link keeps its name). The bars keep their height when the text is enlarged
 - In SvelteKit pass `active={page.url.pathname}`, so the server renders `aria-current` too. Without `active` the bar reads the address once it runs in the browser
 - AppShell scrolls its own middle area, not the window: `scroll-padding-top` there keeps a focused field from landing under the AppBar
 - The safe-area insets the shell and its bars keep clear of are zero until the app's viewport meta tag has `viewport-fit=cover` (`<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />`). A `Page` inside the shell adds no safe-area padding of its own
-- Without AppShell nothing reserves room for the bars. A BottomTabBar on its own is fixed over the page: give the page `padding-bottom` and `scroll-padding-bottom` of the bar's height (`calc(4rem + 1px + env(safe-area-inset-bottom))` by default), and `scroll-padding-top` for a sticky AppBar, so focus is never hidden under a bar
+- Without AppShell nothing reserves room for the bars. A BottomTabBar on its own is fixed over the page: give the page `padding-bottom` and `scroll-padding-bottom` of the bar's height (`calc(65px + env(safe-area-inset-bottom))` by default), and `scroll-padding-top` for a sticky AppBar, so focus is never hidden under a bar
 
 ---
 
@@ -461,6 +461,14 @@ When the menu closes with focus inside it (Escape, or an item was chosen),
 focus returns to the trigger. A click elsewhere closes it and leaves focus
 where the click put it. Opened with the mouse, the menu does not move focus
 until a key is pressed.
+
+**In a sheet** (`presentation="sheet"`, or `"auto"` on a touch screen narrower
+than 640px; this is the action sheet) the menu is the same element with the
+same items, in a BottomSheet:
+- ✅ Focus moves into the sheet when it opens, however it was opened: to the chosen item, or the first
+- ✅ **Arrow Down / Arrow Up / Home / End / Enter / Space**: As above
+- ✅ **Tab / Shift + Tab**: Through the grip, the close button and the item that has focus; focus stays in the sheet and the menu stays open
+- ✅ **Escape**, the close button, the backdrop or a swipe down: Close; focus returns to the trigger
 
 The menu opens on the side `placement` asks for when it fits there, and is
 flipped or limited in size near an edge of the screen. That changes where it
@@ -832,6 +840,13 @@ Tabs when each choice shows a panel of its own.
 With `searchable` (the default) a search field sits above the options, outside
 the listbox. Typing in it filters the options, and Space types a space there
 instead of choosing.
+
+On a phone (`presentation="auto"`, the default: a touch screen narrower than
+640px) the list opens in a BottomSheet titled by the field's label, with the
+keys above and the sheet's own (see Dropdown, "In a sheet"). Focus starts on
+the chosen option, not on the search field, so the on-screen keyboard does not
+cover the list before it has been seen; choosing an option, the chosen one
+included, closes the sheet and returns focus to the field.
 
 The field carries `aria-expanded` and `aria-haspopup="listbox"`; each choice is
 `role="option"` with `aria-selected`. A disabled option is `aria-disabled` and

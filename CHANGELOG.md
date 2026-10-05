@@ -21,6 +21,12 @@ Whenever token or CSS import API surface changes, include:
 - Toaster takes `showCountdown` and `onpausechange({ id, paused })`;
   `data-paused` on a toast is supported API.
 - `closeLabel` on Toast and Alert.
+- **Select and Dropdown can open as a bottom sheet.** `presentation` is
+  `"auto"`, `"popover"` or `"sheet"`. In a sheet the same list or menu, with
+  its search field, descriptions and icons, opens in a BottomSheet titled by
+  the control's label; focus trap, Escape, swipe and stacking are the sheet's.
+  `<Dropdown presentation="sheet">` is the library's action sheet
+  (`sheetTitle`, `sheetSnap`, `sheetCloseLabel`).
 
 ### Changed
 
@@ -39,6 +45,21 @@ Whenever token or CSS import API surface changes, include:
 - Padding, gaps and button targets inside a toast are in px, so at enlarged
   text the words get the room: a two-sentence toast at 375px and 200% text is
   at most 420px tall with no word broken (was 594px).
+- **Select opens as a bottom sheet on a phone.** Its `presentation` defaults
+  to `"auto"`: on a touch screen narrower than 640px the list opens in a
+  sheet; everywhere else it is the pop-over as before. Pass
+  `presentation="popover"` to keep the pop-over. Dropdown defaults to
+  `"popover"`.
+- **AppBar stays one row.** The title truncates with an ellipsis instead of
+  wrapping, and the bar, its controls and icons are sized in px (57px tall),
+  so they no longer grow with the text size; the title's size is capped.
+- **BottomTabBar stays one row.** Labels are one line, never broken inside a
+  word, with a capped size; the bar is 65px tall at any text size. When tabs
+  are narrower than 52px the labels are hidden and the bar shows icons only
+  (the label remains the link's accessible name). Tabs go under 44px wide
+  only when five do not fit, and never overlap. The badge is anchored to the
+  icon.
+- AppShell's fallback insets are `57px` and `65px`.
 
 ### Fixed
 

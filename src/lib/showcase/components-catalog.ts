@@ -706,6 +706,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "60dvh",
                         description: "Max height for the options list. dvh follows a phone's collapsing browser bars.",
                     },
+                    {
+                        name: "presentation",
+                        type: "'auto' | 'popover' | 'sheet'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "How the list is shown. auto: in a BottomSheet on a phone (a touch screen narrower than 640px), under the field everywhere else, decided each time it opens. The sheet is titled by the label, keeps the search field under its header, has 48px rows and opens with the chosen option focused and in view; choosing closes it and returns focus to the field. The list, its roles, the keys and the form value are the same in both. popover and sheet are always the one or the other.",
+                    },
                 ],
                 variants: ["default", "success", "warning", "error"],
                 examples: [
@@ -2212,7 +2220,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 <FloatingActionButton
     label="New quiz"
     href="/quiz/new"
-    style="--fab-bottom-offset: calc(4rem + 1px)"
+    style="--fab-bottom-offset: 65px"
 />`,
                     },
                 ],
@@ -2699,6 +2707,38 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "bottom-start",
                         description:
                             "The side the menu opens on when it fits there. Near an edge of the screen, or of a box that scrolls around the trigger, it flips to the other side, and is narrowed or scrolls inside when the screen has room on neither. Inside a scrolling box with room on neither side it is placed against the viewport and reaches out of the box.",
+                    },
+                    {
+                        name: "presentation",
+                        type: "'auto' | 'popover' | 'sheet'",
+                        required: false,
+                        defaultValue: "popover",
+                        description:
+                            "How the menu is shown. popover: under its trigger. sheet: in a BottomSheet, with the same items, roles and arrow keys, 48px rows, and the sheet's focus trap, Escape, backdrop and swipe; this is the action sheet (Edit, Share, Delete from the bottom of the screen). auto: a sheet on a phone (a touch screen narrower than 640px), the pop-over elsewhere, decided each time it opens. Rendered on the server it is always the pop-over.",
+                    },
+                    {
+                        name: "sheetTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "ariaLabel",
+                        description:
+                            "Heading of the sheet, and its accessible name. Without it, ariaLabel is.",
+                    },
+                    {
+                        name: "sheetSnap",
+                        type: "'half' | 'full'",
+                        required: false,
+                        defaultValue: "half up to six options, else full",
+                        description:
+                            "The height the sheet opens at. The grip moves it between the two either way.",
+                    },
+                    {
+                        name: "sheetCloseLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Close",
+                        description:
+                            "Accessible name of the sheet's close button.",
                     },
                     {
                         name: "onOptionClick",
@@ -3682,7 +3722,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Toaster",
                         description:
                             "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset: 72px for a FloatingActionButton, which it would otherwise cover. That offset is for what is on the page: over a modal overlay the stack keeps off the overlay's header (and its close button) and off a pinned footer by itself, above the panel or between the two, and the offset is not added on top. Over the on-screen keyboard it sits above the keyboard. Tab goes from the overlay into the toasts and back. More toasts than fit scroll. The safe-area insets are zero until the page sets viewport-fit=cover",
-                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: calc(4rem + 1px)\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
+                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: 65px\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
                     },
                     {
                         title: "Toast with an action",
@@ -5179,7 +5219,7 @@ pushToast({
                 name: "AppBar",
                 category: "molecules",
                 description:
-                    "Top bar for a phone screen with a title, a back control and up to two actions; can hide while the page scrolls.",
+                    "Top bar for a phone screen with a title, a back control and up to two actions, always one 56px row; can hide while the page scrolls.",
                 props: [
                     {
                         name: "title",
@@ -5187,7 +5227,7 @@ pushToast({
                         required: false,
                         defaultValue: '""',
                         description:
-                            "The name of the screen, rendered as a heading. Wraps to two lines before it is cut.",
+                            "The name of the screen, rendered as a heading on one line. Too long for the row, it is cut with an ellipsis; the heading keeps its full text for a screen reader, so put what names the screen first. It grows with the reader's text size up to 1.3 times (23.4px).",
                     },
                     {
                         name: "headingLevel",
@@ -5294,7 +5334,7 @@ pushToast({
                         type: "BottomTabBarItem[]",
                         required: true,
                         description:
-                            "Three to five destinations, each { href, label, icon, badge? }. icon is a component such as a lucide icon; badge is a count. A development build warns outside three to five.",
+                            "Three to five destinations, each { href, label, icon, badge? }. icon is a component such as a lucide icon; badge is a count. A development build warns outside three to five. The bar is one 65px row at every text size: a label is one line, grows with the reader's text size up to 1.3 times and no further than its tab has room for, and is cut with an ellipsis, never inside a word, when it still does not fit. A tab narrower than 52px (five tabs below 260px) shows its icon only. The link is always named by the full label, so keep labels to one short word.",
                     },
                     {
                         name: "active",
@@ -5334,7 +5374,7 @@ pushToast({
                         required: false,
                         defaultValue: "fixed (static inside AppShell)",
                         description:
-                            "fixed pins the bar to the bottom of the screen; static leaves it where it is in the page. AppShell places the bar itself. A fixed bar on its own lies over the page: give the page padding-bottom and scroll-padding-bottom of the bar's height, calc(4rem + 1px + env(safe-area-inset-bottom)) by default, so the last content and a focused field are not under it.",
+                            "fixed pins the bar to the bottom of the screen; static leaves it where it is in the page. AppShell places the bar itself. A fixed bar on its own lies over the page: give the page padding-bottom and scroll-padding-bottom of the bar's height, calc(65px + env(safe-area-inset-bottom)) by default, so the last content and a focused field are not under it.",
                     },
                     {
                         name: "class",

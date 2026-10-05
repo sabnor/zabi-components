@@ -9,6 +9,14 @@
      * The bar at the top of a phone screen: where you are, the way back, and
      * at most two things to do here.
      *
+     * It is one row, 56px tall, at every width and text size. The bar is
+     * chrome: when the reader enlarges text, the room belongs to the page
+     * under it. So the controls are sized in px (48px targets), the title
+     * grows with the text only up to 1.3 times its size, and a title too long
+     * for the room it has is cut with an ellipsis. The heading keeps its full
+     * text for a screen reader; keep the visible start of it enough to name
+     * the screen.
+     *
      * ```svelte
      * <AppBar title="Round 3" backHref="/quiz" collapseOnScroll>
      *     {#snippet actions()}
@@ -47,7 +55,9 @@
         leading?: Snippet;
         /**
          * After the title. At most two icon buttons, at `size="lg"` so each is
-         * a 48px target; put anything more in a menu.
+         * a 48px target; put anything more in a menu. Their size does not
+         * grow with the text size here: inside the bar the spacing scale is
+         * in px.
          */
         actions?: Snippet;
         class?: string;
@@ -184,14 +194,17 @@
     )}
     {...restProps}
 >
-    <!-- Wraps as a last resort: with the text enlarged on a narrow phone the
-    controls alone can be wider than the screen.
+    <!-- One row, always. `--spacing: 4px`: Tailwind sizes everything from
+    `--spacing`, which is 0.25rem, so a 48px button was 96px with the text at
+    200% and the bar wrapped to 225px. In px here, the back control, the
+    actions and whatever `leading` holds keep their size, and the title has
+    the rest of the row. The same at 100%: 0.25rem is 4px.
     Fades out while the bar is away: under a status bar the strip that stays
     is the bottom of the bar, and the controls would show in it. They keep
     their place in the tab order; keyboard focus brings the bar back. -->
     <div
         class={cn(
-            "flex min-h-14 flex-wrap items-center gap-2 px-2 py-1",
+            "flex min-h-14 items-center gap-2 px-2 py-1 [--spacing:4px]",
             "transition-opacity duration-200 ease-out motion-reduce:transition-none",
             collapsed && "pointer-events-none opacity-0",
         )}
@@ -207,12 +220,13 @@
         {/if}
         {@render leading?.()}
         {#if title}
-            <!-- Two lines before it is cut: enlarged text has to stay readable. -->
+            <!-- One line, cut with an ellipsis. 1.125rem, and no more than
+            1.3 times that (23.4px) however large the text is set. -->
             <svelte:element
                 this={`h${headingLevel}`}
                 class={cn(
-                    "m-0 line-clamp-2 min-w-0 flex-[1_1_4rem] text-lg leading-6 font-semibold text-headline [overflow-wrap:anywhere]",
-                    !hasBack && !leading && "pl-2",
+                    "m-0 min-w-0 flex-1 truncate text-[length:min(1.125rem,23.4px)] leading-[1.34] font-semibold text-headline",
+                    !hasBack && !leading && "ps-2",
                 )}
             >
                 {title}

@@ -25,7 +25,7 @@
      * `--toaster-bottom-offset` on the Toaster or any ancestor:
      *
      * ```svelte
-     * <Toaster style="--toaster-bottom-offset: calc(4rem + 1px)" />
+     * <Toaster style="--toaster-bottom-offset: 65px" />
      * ```
      *
      * A `FloatingActionButton` is 56px with 16px under it: `72px` puts the

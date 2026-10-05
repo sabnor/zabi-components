@@ -1,18 +1,22 @@
 <script lang="ts">
     import { generateId } from "../util/ssr-safe.js";
-    import { setContext, type Snippet } from 'svelte';
+    import { onMount, setContext, type Snippet } from 'svelte';
     import { cn } from "../util/cn.js";
     import {
         DROPDOWN_CONTEXT_KEY,
+        opensAsSheet,
         type DropdownContext,
         type DropdownOption,
+        type DropdownPresentation,
     } from "../util/dropdown.js";
+    import type { BottomSheetSnap } from "../util/bottom-sheet.js";
     import {
         measurePlacement,
         unfitted,
         watchViewport,
         type PanelPlacement,
     } from "../util/fit-in-viewport.js";
+    import BottomSheet from './BottomSheet.svelte';
     import DropdownItem from './DropdownItem.svelte';
 
     export type DropdownTriggerProps = {
@@ -31,6 +35,24 @@
          * and is narrowed or given its own scroll when neither side has room.
          */
         placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
+        /**
+         * How the menu is shown. `popover`: under its trigger, as always.
+         * `sheet`: in a BottomSheet, with the same items, roles and keys; this
+         * is the action sheet ("Edit, Share, Delete" from the bottom of the
+         * screen). `auto`: a sheet on a phone (a touch screen narrower than
+         * 640px), the pop-over everywhere else. Decided each time the menu
+         * opens, in the browser.
+         */
+        presentation?: DropdownPresentation;
+        /** Heading of the sheet. Without it, `ariaLabel` is. */
+        sheetTitle?: string;
+        /**
+         * The height the sheet opens at. Without it: half the screen for up
+         * to six `options`, all of it for more. The grip moves it either way.
+         */
+        sheetSnap?: BottomSheetSnap;
+        /** Accessible name of the sheet's close button. */
+        sheetCloseLabel?: string;
         ariaLabel?: string;
         /** `listbox` for Select-style; `menu` for actions. */
         menuRole?: 'menu' | 'listbox';
@@ -52,6 +74,10 @@
         class: className = "",
         isOpen = $bindable(false),
         placement = 'bottom-start',
+        presentation = 'popover',
+        sheetTitle = undefined,
+        sheetSnap = undefined,
+        sheetCloseLabel = 'Close',
         ariaLabel = 'Menu',
         menuRole = 'menu',
         selectedValue = null,
@@ -72,6 +98,21 @@
 
     const menuId = generateId('dropdown-menu');
     let rootEl = $state<HTMLDivElement | null>(null);
+
+    /**
+     * Whether the open menu is in a sheet. Worked out when `isOpen` turns
+     * true and kept while it is open, so turning the phone does not swap one
+     * for the other under the finger. Never before the component has mounted:
+     * a menu rendered open on the server is a pop-over, and stays one through
+     * hydration.
+     */
+    let mounted = $state(false);
+    onMount(() => {
+        mounted = true;
+    });
+    const asSheet = $derived(isOpen && mounted && opensAsSheet(presentation));
+    /** The sheet's content, when the menu is in one: it is outside `rootEl`, in `<body>`. */
+    let sheetElement = $state<HTMLElement | null>(null);
 
     let openedViaKeyboard = $state(false);
 
@@ -109,6 +150,10 @@
             return;
         }
 
+        // In a sheet, Escape and Tab are the sheet's: it closes itself and
+        // keeps Tab inside, on its grip and close button too.
+        if (asSheet && (event.key === 'Escape' || event.key === 'Tab')) return;
+
         switch (event.key) {
             case 'Escape':
                 event.preventDefault();
@@ -140,8 +185,10 @@
     }
 
     let menuElement = $state<HTMLElement | null>(null);
+    const popoverElement = () => menuElement;
 
     function getMenuItems(): HTMLElement[] {
+        const menuElement = sheetElement ?? popoverElement();
         if (!menuElement) return [];
         // `menuitemradio` and `menuitemcheckbox` are menu items too. Matching
         // only `menuitem` left a menu built from them with nothing to focus:
@@ -209,6 +256,40 @@
         }
     });
 
+    /**
+     * In a sheet. Focus goes to the chosen item, or the first one, as soon as
+     * the sheet is in place: the sheet itself would start on its grip. (It
+     * leaves focus alone when something inside already has it.) Focusing also
+     * scrolls the chosen item into view.
+     */
+    let closedFromSheet = false;
+    $effect(() => {
+        if (!asSheet || !sheetElement) return;
+        closedFromSheet = true;
+        queueMicrotask(() => {
+            const items = getMenuItems();
+            const chosen = items.find(
+                (item) =>
+                    item.getAttribute('aria-selected') === 'true' ||
+                    item.getAttribute('aria-checked') === 'true',
+            );
+            (chosen ?? items[0])?.focus();
+        });
+    });
+
+    // Closed from a sheet, focus goes back to the trigger. The sheet returns
+    // it to whatever had focus when it opened, but a tap on a button does not
+    // focus it in every browser, and then that is `<body>`.
+    $effect(() => {
+        if (isOpen || !closedFromSheet) return;
+        closedFromSheet = false;
+        const timer = setTimeout(() => {
+            const active = document.activeElement;
+            if (!active || active === document.body) triggerElement()?.focus();
+        }, 0);
+        return () => clearTimeout(timer);
+    });
+
     /** The control that opened the menu: what `aria-controls` is spread on, else the first control. */
     function triggerElement(): HTMLElement | null {
         if (!rootEl) return null;
@@ -232,7 +313,8 @@
     });
 
     $effect(() => {
-        if (!isOpen) return;
+        // A sheet has a backdrop of its own, and is not inside `rootEl`.
+        if (!isOpen || asSheet) return;
         function onDocMouseDown(e: MouseEvent) {
             const t = e.target as Node;
             if (rootEl && !rootEl.contains(t)) {
@@ -348,7 +430,41 @@
 >
     {@render trigger(triggerAria)}
 
-    {#if isOpen}
+    {#if asSheet}
+        <!-- The same menu in a BottomSheet: the element with the menu or
+        listbox role, its items and the header are the ones the pop-over has,
+        so roles, names and the arrow keys are too. The sheet brings the focus
+        trap, Escape, the backdrop, the swipe and its place in the stack of
+        overlays. It is rendered in `<body>`, outside this component's root, so
+        the keys are listened to here as well. -->
+        <BottomSheet
+            bind:isOpen
+            snap={sheetSnap ?? (options.length > 6 ? 'full' : 'half')}
+            title={sheetTitle || ariaLabel}
+            closeLabel={sheetCloseLabel}
+        >
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div
+                bind:this={sheetElement}
+                class="dropdown-sheet"
+                data-dropdown-sheet
+                onkeydown={handleKeydown}
+            >
+                {#if header}
+                    <div class="dropdown-sheet-header">
+                        {@render header()}
+                    </div>
+                {/if}
+                <div
+                    id={menuId}
+                    role={menuRole === 'listbox' ? 'listbox' : 'menu'}
+                    aria-label={ariaLabel}
+                >
+                    {@render items()}
+                </div>
+            </div>
+        </BottomSheet>
+    {:else if isOpen}
         <!-- The inline styles are only set when the menu would leave the screen,
         or be cut off by a scrolling box around it (`fit.fixed`: placed against
         the viewport instead, with the classes' own offsets switched off).
@@ -395,26 +511,64 @@
                 style:overflow={fit.maxWidth !== null || fit.maxHeight !== null ? 'auto' : undefined}
                 style:overscroll-behavior={fit.maxHeight !== null ? 'contain' : undefined}
             >
-            {#if options.length > 0}
-                <div class="px-1 py-1">
-                    {#each options as option (option.value)}
-                        <DropdownItem
-                            label={option.label}
-                            description={option.description}
-                            icon={option.icon}
-                            tone={option.tone}
-                            disabled={option.disabled}
-                            selected={selectedValue !== null &&
-                                String(selectedValue) === String(option.value)}
-                            data-value={String(option.value)}
-                            onclick={() => onOptionClick?.(option.value)}
-                        />
-                    {/each}
-                </div>
-            {:else if children}
-                {@render children?.()}
-            {/if}
+            {@render items()}
             </div>
         </div>
     {/if}
 </div>
+
+{#snippet items()}
+    {#if options.length > 0}
+        <div class="px-1 py-1">
+            {#each options as option (option.value)}
+                <DropdownItem
+                    label={option.label}
+                    description={option.description}
+                    icon={option.icon}
+                    tone={option.tone}
+                    disabled={option.disabled}
+                    selected={selectedValue !== null &&
+                        String(selectedValue) === String(option.value)}
+                    data-value={String(option.value)}
+                    onclick={() => onOptionClick?.(option.value)}
+                />
+            {/each}
+        </div>
+    {:else if children}
+        {@render children?.()}
+    {/if}
+{/snippet}
+
+<style>
+    /*
+     * In a sheet the rows are 48px, for a thumb, and as wide as the sheet.
+     * px, not rem: a row that grows with the text grows anyway, by its text.
+     */
+    .dropdown-sheet :global(:is([role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"])) {
+        min-height: 48px;
+        align-items: center;
+    }
+
+    /* The sheet scrolls, so a list with a height limit and a scrollbar of its
+       own (Select's) has neither here, and a width set for the pop-over
+       (`menuWidth`) is the sheet's. */
+    .dropdown-sheet :global([data-menu-scroll]) {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    .dropdown-sheet :global([data-menu-width]) {
+        width: 100% !important;
+    }
+
+    /* A header (Select's search field) stays under the sheet's own header
+       while the list scrolls beneath it. Wider than the list by the room a
+       focus ring takes, so no ring shows beside it. */
+    .dropdown-sheet-header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        margin-inline: -4px;
+        padding-inline: 4px;
+        background-color: var(--color-surface-overlay);
+    }
+</style>

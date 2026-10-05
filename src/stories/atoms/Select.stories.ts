@@ -166,3 +166,25 @@ export const EmptyState: Story = {
         options: []
     }
 };
+
+/**
+ * Always in a BottomSheet, as `presentation="auto"` (the default) opens it on
+ * a phone: titled by the label, the search field under the header, 48px rows.
+ */
+export const InASheet: Story = {
+    args: {
+        label: 'Pub',
+        placeholder: 'Choose a pub',
+        presentation: 'sheet',
+        options: [
+            { value: '1', label: 'Akkurat' },
+            { value: '2', label: 'Bishops Arms' },
+            { value: '3', label: 'Carmen' },
+            { value: '4', label: 'Dovas', disabled: true },
+            { value: '5', label: 'Engelen' },
+            { value: '6', label: 'Flying Elk' },
+            { value: '7', label: 'Half Way Inn' },
+            { value: '8', label: 'Kvarnen' }
+        ]
+    }
+};

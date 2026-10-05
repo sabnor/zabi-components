@@ -21,6 +21,12 @@
         searchPlaceholder?: string;
         maxMenuHeight?: string;
         menuWidth?: string;
+        /**
+         * How the list is shown. `auto`: in a BottomSheet on a phone (a touch
+         * screen narrower than 640px), under the trigger everywhere else.
+         * `popover` and `sheet` are always the one or the other.
+         */
+        presentation?: "auto" | "popover" | "sheet";
         noResultsText?: string;
         isLoading?: boolean;
         loadingText?: string;
@@ -48,6 +54,7 @@
         searchPlaceholder = "Search options",
         maxMenuHeight = "60dvh",
         menuWidth = "100%",
+        presentation = "auto",
         noResultsText = "No results found",
         isLoading = false,
         loadingText = "Loading options...",
@@ -187,6 +194,9 @@
         if (!isOpen) return;
 
         const target = event.target as HTMLElement;
+        // The list in a sheet is in `<body>`, not in this container: a press
+        // in that sheet (an option, the grip, the search field) is not outside.
+        if (target.closest('[role="dialog"]')?.querySelector("[data-dropdown-sheet]")) return;
         const clickedSelectContainer = target.closest(".select-container");
 
         if (
@@ -218,6 +228,9 @@
         onOptionClick={handleOptionClick}
         ariaLabel="Select options"
         menuRole="listbox"
+        {presentation}
+        sheetTitle={label || placeholder}
+        sheetSnap={searchable && options.length > 6 ? "full" : "half"}
     >
         {#snippet trigger(aria)}
             <button
@@ -266,7 +279,7 @@
                 <!-- 0.5rem and the panel's 1px border from the corner, as the
                 options below and a Dropdown's items are: an 8px field 9px
                 inside the panel's 16px corner is concentric with it. -->
-                <div class="px-2 pb-2 pt-1" style:width={menuWidth}>
+                <div class="px-2 pb-2 pt-1" style:width={menuWidth} data-menu-width>
                     <Input
                         type="text"
                         size="sm"
@@ -283,9 +296,10 @@
             <!-- `px-1` twice: the inner one is room for an option's focus
             ring inside the scrolling box, and together with the panel's
             border they put the options 9px from its corner. -->
-            <div class="px-1 pb-2 pt-1" style:width={menuWidth}>
+            <div class="px-1 pb-2 pt-1" style:width={menuWidth} data-menu-width>
                 <div
                     class="overflow-y-auto px-1"
+                    data-menu-scroll
                     style:max-height={maxMenuHeight}
                 >
                     {#if isLoading}

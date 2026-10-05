@@ -10,7 +10,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Menu anchored to your own trigger snippet, with arrow-key focus and four placements. Items passed as options can carry an icon, a danger tone and a description; a disabled item stays focusable so its description can be read. DropdownItem renders the same item inside custom children.'
+                    'Menu anchored to your own trigger snippet, with arrow-key focus and four placements. Items passed as options can carry an icon, a danger tone and a description; a disabled item stays focusable so its description can be read. DropdownItem renders the same item inside custom children. With presentation="sheet" the same menu opens in a BottomSheet: the action sheet.'
             }
         },
         layout: 'centered'
@@ -130,5 +130,21 @@ export const DropdownItemChildren: Story = {
     render: (args) => ({
         Component: DropdownWithItems,
         props: { ...args, custom: true }
+    })
+};
+
+/**
+ * The action sheet: the same menu from the bottom of the screen, with 48px
+ * rows. Roles, names and the arrow keys are the pop-over's; the focus trap,
+ * Escape, the backdrop and the swipe are BottomSheet's.
+ */
+export const ActionSheet: Story = {
+    args: {
+        isOpen: false,
+        placement: 'bottom-start'
+    },
+    render: (args) => ({
+        Component: DropdownWithItems,
+        props: { ...args, presentation: 'sheet' }
     })
 };

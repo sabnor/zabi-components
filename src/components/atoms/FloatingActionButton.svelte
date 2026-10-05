@@ -20,7 +20,7 @@
      * <FloatingActionButton
      *     label="New quiz"
      *     onclick={create}
-     *     style="--fab-bottom-offset: calc(4rem + 1px)"
+     *     style="--fab-bottom-offset: 65px"
      * />
      * ```
      *
