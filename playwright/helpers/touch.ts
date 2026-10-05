@@ -22,16 +22,26 @@ export async function touchDrag(
 ): Promise<void> {
     const cdp = await page.context().newCDPSession(page);
     const at = (point: Point) => [{ x: Math.round(point.x), y: Math.round(point.y), id: 1 }];
-    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: at(from) });
+    // Each event carries the time the gesture says it happened at, not the
+    // time this process got round to sending it: on a loaded machine the
+    // sends are late and uneven, and a flick would arrive as a slow drag. A
+    // travel of no duration still takes a frame (8ms) a step.
+    const began = Date.now();
+    const stepMs = Math.max(duration / steps, 8);
+    let elapsed = 0;
+    const when = () => (began + elapsed) / 1000;
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: at(from), timestamp: when() });
     for (let step = 1; step <= steps; step += 1) {
         const progress = step / steps;
         await page.waitForTimeout(duration / steps);
+        elapsed += stepMs;
         await cdp.send("Input.dispatchTouchEvent", {
             type: "touchMove",
             touchPoints: at({
                 x: from.x + (to.x - from.x) * progress,
                 y: from.y + (to.y - from.y) * progress,
             }),
+            timestamp: when(),
         });
     }
     if (hold > 0) {
@@ -39,10 +49,15 @@ export async function touchDrag(
         const rests = 4;
         for (let rest = 0; rest < rests; rest += 1) {
             await page.waitForTimeout(hold / rests);
-            await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: at(to) });
+            elapsed += hold / rests;
+            await cdp.send("Input.dispatchTouchEvent", {
+                type: "touchMove",
+                touchPoints: at(to),
+                timestamp: when(),
+            });
         }
     }
-    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [], timestamp: when() });
     await cdp.detach();
 }
 

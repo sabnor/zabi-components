@@ -12,6 +12,7 @@
         followKeyboard,
         lockBodyScroll,
         registerOverlayFooter,
+        registerOverlayHeader,
         trapTabKey,
         watchScrollerNeedsFocus,
     } from '../util/overlay.js';
@@ -248,11 +249,15 @@
                 ? container.querySelector<HTMLElement>(':scope > div > footer')
                 : null;
             const forgetFooter = pinned ? registerOverlayFooter(pinned) : undefined;
+            // And the header, which holds the close button: toasts start below it.
+            const top = container.querySelector<HTMLElement>(':scope > div > header');
+            const forgetHeader = top ? registerOverlayHeader(top) : undefined;
             return () => {
                 clearTimeout(t);
                 stopRecovery();
                 stopKeyboard?.();
                 forgetFooter?.();
+                forgetHeader?.();
                 overlay.leave();
                 unlockScroll();
                 if (focusActive) {

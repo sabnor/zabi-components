@@ -1517,7 +1517,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Basic Tooltip",
                         description:
-                            "Shown on hover, on keyboard focus and, on a touch screen, on a tap: the button still acts, and the tooltip goes again after a moment. It opens on another side or moves along its side when it would leave the screen. Say anything the user must know in the page itself",
+                            "Shown on hover, on keyboard focus and, on a touch screen, on a tap: the button still acts, and the tooltip stays until it is dismissed. Only one tooltip is open at a time. It opens on another side or moves along its side when it would leave the screen. While it is open the bubble takes presses, so place it where it does not lie over another control: a click there goes to the tooltip. Say anything the user must know in the page itself",
                         code: '&lt;Tooltip content="This is a tooltip"&gt;\n  &lt;Button&gt;Hover me&lt;/Button&gt;\n&lt;/Tooltip&gt;',
                     },
                     {
@@ -3458,6 +3458,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Runs when the sheet closes itself, with the event that closed it: the click on the close button or the backdrop, the Escape keydown, or the end of a swipe.",
                     },
+                    {
+                        name: "footer",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Pinned to the bottom of the sheet, below the content, which then scrolls on its own: for the buttons of a form. It stays above the on-screen keyboard and toasts keep off it. Without it the sheet is one box that scrolls as a whole.",
+                    },
                 ],
 
                 examples: [
@@ -3478,6 +3485,19 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "A grip at the top; drag it down, or swipe down on the content while it is at its top. The sheet keeps clear of the home indicator",
                         code: `<SlideUp bind:isOpen title="Release notes" swipeToClose>
     …
+</SlideUp>`,
+                    },
+                    {
+                        title: "A form with its buttons in a footer",
+                        description:
+                            "With a footer the fields scroll and the buttons stay: above the on-screen keyboard, and clear of a toast",
+                        code: `<SlideUp bind:isOpen title="Edit note">
+    <Input label="Title" />
+    <Textarea label="Note" />
+    {#snippet footer()}
+        <Button variant="secondary" onclick={() => (isOpen = false)}>Cancel</Button>
+        <Button onclick={save}>Save note</Button>
+    {/snippet}
 </SlideUp>`,
                     },
                 ],
@@ -3615,7 +3635,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Toaster",
                         description:
-                            "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset: 72px for a FloatingActionButton, which it would otherwise cover. Over a modal overlay with a footer at the bottom of the screen the stack moves above that footer by itself, or to the top when there is no room; Tab goes from the overlay into the toasts and back. More toasts than fit scroll. The safe-area insets are zero until the page sets viewport-fit=cover",
+                            "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset: 72px for a FloatingActionButton, which it would otherwise cover. That offset is for what is on the page: over a modal overlay the stack keeps off the overlay's header (and its close button) and off a pinned footer by itself, above the panel or between the two, and the offset is not added on top. Over the on-screen keyboard it sits above the keyboard. Tab goes from the overlay into the toasts and back. More toasts than fit scroll. The safe-area insets are zero until the page sets viewport-fit=cover",
                         code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: calc(4rem + 1px)\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
                     },
                     {

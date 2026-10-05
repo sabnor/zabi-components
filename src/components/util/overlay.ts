@@ -153,29 +153,39 @@ export function followKeyboard(root: HTMLElement): () => void {
     };
 }
 
-/** The pinned footers of the open overlays, oldest first. */
-const overlayFooters: HTMLElement[] = [];
+/**
+ * The parts of the open overlays that must stay in reach while something is
+ * drawn over them: the header, with its close button, and a footer pinned to
+ * the bottom. One entry per overlay that has said so, oldest first.
+ */
+interface OverlayParts {
+    panel: Element | null;
+    header?: HTMLElement;
+    footer?: HTMLElement;
+}
+const overlayParts: OverlayParts[] = [];
 const footerListeners = new Set<() => void>();
 
 function notifyOverlayFooters(): void {
     for (const listener of footerListeners) listener();
 }
 
-/**
- * Says that `footer` is pinned to the bottom of an open overlay, so what is
- * drawn over the overlays (the toast stack) can stay off it. Call it when the
- * footer is rendered, in the browser; the returned function withdraws it.
- */
-export function registerOverlayFooter(footer: HTMLElement): () => void {
-    overlayFooters.push(footer);
+function registerOverlayPart(part: "header" | "footer", element: HTMLElement): () => void {
+    const panel = element.closest<HTMLElement>(DIALOG_SELECTOR);
+    let entry = panel ? overlayParts.find((candidate) => candidate.panel === panel) : undefined;
+    if (!entry) {
+        entry = { panel };
+        overlayParts.push(entry);
+    }
+    const mine = entry;
+    mine[part] = element;
     const observer =
         typeof ResizeObserver === "function" ? new ResizeObserver(notifyOverlayFooters) : undefined;
-    observer?.observe(footer);
+    observer?.observe(element);
     notifyOverlayFooters();
-    // An overlay that slides in is still on its way when its footer is
+    // An overlay that slides in is still on its way when its parts are
     // rendered, and a move is not a change of size: say so again once the
     // panel has come to rest.
-    const panel = footer.closest<HTMLElement>(DIALOG_SELECTOR);
     let frame = 0;
     const settle = () => {
         frame = 0;
@@ -189,21 +199,56 @@ export function registerOverlayFooter(footer: HTMLElement): () => void {
     return () => {
         if (frame) cancelAnimationFrame(frame);
         observer?.disconnect();
-        const index = overlayFooters.indexOf(footer);
-        if (index !== -1) overlayFooters.splice(index, 1);
+        if (mine[part] === element) delete mine[part];
+        if (!mine.header && !mine.footer) {
+            const index = overlayParts.indexOf(mine);
+            if (index !== -1) overlayParts.splice(index, 1);
+        }
         notifyOverlayFooters();
     };
 }
 
-/** The footer of the overlay opened last that has one, if any is open. */
-export function topOverlayFooter(): HTMLElement | null {
-    for (let index = overlayFooters.length - 1; index >= 0; index -= 1) {
-        if (overlayFooters[index].isConnected) return overlayFooters[index];
-    }
-    return null;
+/**
+ * Says that `footer` is pinned to the bottom of an open overlay, so what is
+ * drawn over the overlays (the toast stack) can stay off it. Call it when the
+ * footer is rendered, in the browser; the returned function withdraws it.
+ */
+export function registerOverlayFooter(footer: HTMLElement): () => void {
+    return registerOverlayPart("footer", footer);
 }
 
-/** Calls `listener` whenever a pinned footer appears, goes, moves or changes size. */
+/**
+ * Says that `header` is the top of an open overlay and holds its close
+ * button, so the toast stack starts below it and never lies over the one
+ * control that always closes the overlay. Call it when the header is
+ * rendered, in the browser; the returned function withdraws it.
+ */
+export function registerOverlayHeader(header: HTMLElement): () => void {
+    return registerOverlayPart("header", header);
+}
+
+/** The parts of the overlay opened last that has registered any. */
+function topOverlayParts(): OverlayParts | undefined {
+    for (let index = overlayParts.length - 1; index >= 0; index -= 1) {
+        const entry = overlayParts[index];
+        if (entry.header?.isConnected || entry.footer?.isConnected) return entry;
+    }
+    return undefined;
+}
+
+/** The footer of the overlay on top, if it has one. */
+export function topOverlayFooter(): HTMLElement | null {
+    const footer = topOverlayParts()?.footer;
+    return footer?.isConnected ? footer : null;
+}
+
+/** The header of the overlay on top, if it has one. */
+export function topOverlayHeader(): HTMLElement | null {
+    const header = topOverlayParts()?.header;
+    return header?.isConnected ? header : null;
+}
+
+/** Calls `listener` whenever a registered header or footer appears, goes, moves or changes size. */
 export function watchOverlayFooters(listener: () => void): () => void {
     footerListeners.add(listener);
     return () => {

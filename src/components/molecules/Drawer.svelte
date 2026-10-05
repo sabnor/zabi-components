@@ -15,6 +15,7 @@
         followKeyboard,
         lockBodyScroll,
         registerOverlayFooter,
+        registerOverlayHeader,
         trapTabKey,
     } from "../util/overlay.js";
     import { TOUCH_HIT_AREA } from "../util/touch-target.js";
@@ -105,6 +106,7 @@
     let panel = $state<HTMLDivElement>();
     let scroller = $state<HTMLDivElement>();
     let footerElement = $state<HTMLDivElement>();
+    let headerElement = $state<HTMLDivElement>();
     let focusActive = false;
     /**
      * True when the content is taller than its box and holds nothing that can
@@ -229,6 +231,13 @@
         return registerOverlayFooter(pinned);
     });
 
+    // And the header, with the close button, which the stack starts below.
+    $effect(() => {
+        const top = headerElement;
+        if (!isOpen || !top) return;
+        return registerOverlayHeader(top);
+    });
+
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) close("backdrop");
     }
@@ -275,7 +284,7 @@
             {...restProps}
             onkeydown={(event) => trapTabKey(panel, event)}
         >
-            <div class="flex items-start justify-between gap-4 px-6 pb-3 pt-6">
+            <div bind:this={headerElement} class="flex items-start justify-between gap-4 px-6 pb-3 pt-6">
                 <div class="min-w-0 flex-1">
                     <h2
                         id={titleId}

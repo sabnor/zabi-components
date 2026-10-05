@@ -68,6 +68,8 @@ Whenever token or CSS import API surface changes, include:
   (`active:bg-action-primary-subtle-active`,
   `active:bg-action-danger-subtle-active`): the held fill of a control whose
   resting fill is the subtle one.
+- **SlideUp takes a `footer` snippet**, pinned below the scrolling content and
+  kept above the on-screen keyboard, as Drawer's is.
 
 ### Changed
 
@@ -165,6 +167,20 @@ Whenever token or CSS import API surface changes, include:
 - A toggled-on ghost, outline, link or danger-tone IconButton shows a pressed
   fill that is distinct from its hover fill and 1.25:1 or more from its
   resting fill.
+- **Toasts no longer cover an overlay's title and close button.** With an
+  overlay open, the toast stack takes the larger free stretch, above the panel
+  or between its header and footer, and scrolls there. `--toaster-bottom-offset`
+  is no longer added on top of an overlay's footer, and a toast raised while
+  the on-screen keyboard is up sits above the keyboard.
+- **BottomSheet's grip answers a mouse click.** The header took pointer capture
+  on press, so a click never reached the button; a drag now captures only once
+  it has moved.
+- **A flick on a sheet is measured from the events' own times**, not from when
+  the page got round to handling them, so a busy page no longer turns a flick
+  into a slow drag.
+- Only one Tooltip is open at a time, the pointer can reach a tooltip's far
+  corner on a diagonal, and the arrow of a `left` or `right` tooltip points at
+  its trigger in right-to-left layouts.
 
 ## [8.1.0-beta.0] - 2026-10-05
 

@@ -82,3 +82,30 @@ export function shiftIntoViewport(
         y: along(box.top, box.bottom, viewport.height),
     };
 }
+
+export interface ViewportPoint {
+    x: number;
+    y: number;
+}
+
+/**
+ * True when `point` lies in the triangle `a`, `b`, `c`, edges included. For
+ * the path a pointer takes from a trigger to its floating box: as long as it
+ * stays in the triangle between where it left and the near edge of the box,
+ * it is on its way there.
+ */
+export function insideTriangle(
+    point: ViewportPoint,
+    a: ViewportPoint,
+    b: ViewportPoint,
+    c: ViewportPoint,
+): boolean {
+    const side = (p: ViewportPoint, q: ViewportPoint, r: ViewportPoint) =>
+        (p.x - r.x) * (q.y - r.y) - (q.x - r.x) * (p.y - r.y);
+    const first = side(point, a, b);
+    const second = side(point, b, c);
+    const third = side(point, c, a);
+    const negative = first < 0 || second < 0 || third < 0;
+    const positive = first > 0 || second > 0 || third > 0;
+    return !(negative && positive);
+}

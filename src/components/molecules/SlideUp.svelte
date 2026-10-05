@@ -7,7 +7,13 @@
         returnFocus,
         saveFocus,
     } from '../util/focus-utils.js';
-    import { followKeyboard, lockBodyScroll, trapTabKey } from '../util/overlay.js';
+    import {
+        followKeyboard,
+        lockBodyScroll,
+        registerOverlayFooter,
+        registerOverlayHeader,
+        trapTabKey,
+    } from '../util/overlay.js';
     import { TOUCH_HIT_AREA } from '../util/touch-target.js';
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
@@ -40,6 +46,13 @@
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
         children?: Snippet;
+        /**
+         * Pinned to the bottom of the sheet, below the content, which then
+         * scrolls on its own: for the buttons of a form. It stays above the
+         * on-screen keyboard, and toasts keep off it. Without it the sheet is
+         * as it always was: one box that scrolls as a whole.
+         */
+        footer?: Snippet;
     }
 
     let {
@@ -52,6 +65,7 @@
         onclick,
         onkeydown,
         children,
+        footer,
         ...restProps
     }: Props = $props();
 
@@ -59,6 +73,10 @@
 
     let slideUpContainer = $state<HTMLDivElement>();
     let grip = $state<HTMLDivElement>();
+    let headerElement = $state<HTMLDivElement>();
+    let footerElement = $state<HTMLDivElement>();
+    /** With a footer: the content, which is then what scrolls. */
+    let scroller = $state<HTMLDivElement>();
     /** How far a swipe has pulled the sheet down, in px. */
     let dragOffset = $state(0);
     let dragging = $state(false);
@@ -112,17 +130,32 @@
         }
     });
 
+    // For the toast stack: it starts below the header, which holds the close
+    // button, and stays off a pinned footer.
+    $effect(() => {
+        const top = headerElement;
+        if (!isOpen || !top) return;
+        return registerOverlayHeader(top);
+    });
+    $effect(() => {
+        const pinned = footerElement;
+        if (!isOpen || !pinned) return;
+        return registerOverlayFooter(pinned);
+    });
+
     $effect(() => {
         const container = slideUpContainer;
         const zone = grip;
-        if (!isOpen || !swipeToClose || !container || !zone) return;
+        // With a footer the content scrolls, not the panel.
+        const scrolls = footer ? scroller : container;
+        if (!isOpen || !swipeToClose || !container || !zone || !scrolls) return;
         const settle = () => {
             dragging = false;
             dragOffset = 0;
         };
         const stop = attachSheetDrag(
-            // The panel is its own scrolling box.
-            { handleZone: zone, scroller: container },
+            // Without a footer the panel is its own scrolling box.
+            { handleZone: zone, scroller: scrolls },
             {
                 onStart: () => (dragging = true),
                 // Down only: there is nowhere for it to go upwards.
@@ -172,6 +205,8 @@
             class={cn(
                 "group-data-keyboard-open/overlay:max-h-full",
                 "absolute bottom-0 left-0 right-0 z-modal flex max-h-[90dvh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none",
+                // With a footer the content scrolls between the header and it.
+                footer && "overflow-y-hidden",
                 // Back to rest after a swipe that did not close it.
                 swipeToClose &&
                     "overscroll-contain transition-transform duration-200 ease-out motion-reduce:transition-none",
@@ -205,7 +240,10 @@
                 </div>
             {/if}
             {#if title}
-                <div class="flex items-center justify-between px-6 pb-4 {swipeToClose ? 'pt-2' : 'pt-6'}">
+                <div
+                    bind:this={headerElement}
+                    class="flex shrink-0 items-center justify-between px-6 pb-4 {swipeToClose ? 'pt-2' : 'pt-6'}"
+                >
                     <h2
                         id={slideTitleId}
                         class="text-2xl font-normal leading-8 tracking-normal text-headline"
@@ -223,10 +261,31 @@
                 </div>
             {/if}
 
-            <!-- Clear of the home indicator on a phone. -->
-            <div class="flex-1 px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
-                {@render children?.()}
-            </div>
+            {#if footer}
+                <!-- `pt-1`: a scroll container clips, and the focus ring of a
+                first control needs the room. -->
+                <div
+                    bind:this={scroller}
+                    data-slide-up-content
+                    class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pt-1 pb-4"
+                >
+                    {@render children?.()}
+                </div>
+                <!-- Clear of the home indicator on a phone; over the keyboard
+                that is under the keyboard, and 16px is enough. -->
+                <div
+                    bind:this={footerElement}
+                    data-slide-up-footer
+                    class="flex shrink-0 flex-wrap justify-end gap-[8px] border-t border-border-overlay px-6 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] group-data-keyboard-open/overlay:pb-4"
+                >
+                    {@render footer()}
+                </div>
+            {:else}
+                <!-- Clear of the home indicator on a phone. -->
+                <div class="flex-1 px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
+                    {@render children?.()}
+                </div>
+            {/if}
         </div>
     </div>
 {/if}

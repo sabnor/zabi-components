@@ -50,6 +50,8 @@
     let lastClose = $state("none");
     let sheetOpen = $state(false);
     let slideOpen = $state(false);
+    let slideFormOpen = $state(false);
+    let slideSwipeOpen = $state(false);
     let drawerOpen = $state(false);
     let rowsOpen = $state(false);
     let rowsExtended = $state(false);
@@ -173,6 +175,20 @@
             <Checkbox label="Enabled box" />
             <Radio label="Disabled radio" name="lab-radio" value="a" disabled />
         </div>
+        <!-- Left and right, in both strategies: where the bubble and its arrow end up. -->
+        <div class="flex justify-center gap-6" data-testid="tip-sides">
+            {#each [["left", false], ["right", false], ["left", true], ["right", true]] as const as [at, isFixed] (`${at}-${isFixed}`)}
+                <Tooltip content="Beside" placement={at} fixed={isFixed}>
+                    <button
+                        type="button"
+                        class="focus-ring rounded-control p-3 text-body"
+                        data-testid={`tip-${isFixed ? "fixed" : "plain"}-${at}`}
+                    >
+                        {at}
+                    </button>
+                </Tooltip>
+            {/each}
+        </div>
     </section>
 
     <section class="space-y-3" aria-labelledby="lab-toaster">
@@ -225,6 +241,12 @@
             </Button>
             <Button variant="secondary" data-testid="sheet-open" onclick={() => (sheetOpen = true)}>Sheet</Button>
             <Button variant="secondary" data-testid="slide-open" onclick={() => (slideOpen = true)}>Slide</Button>
+            <Button variant="secondary" data-testid="slide-form-open" onclick={() => (slideFormOpen = true)}>
+                Slide+
+            </Button>
+            <Button variant="secondary" data-testid="slide-swipe-open" onclick={() => (slideSwipeOpen = true)}>
+                Swipe
+            </Button>
             <Button variant="secondary" data-testid="drawer-open" onclick={() => (drawerOpen = true)}>
                 Drawer
             </Button>
@@ -323,6 +345,23 @@
         <Input label="Team name" />
         <Button data-testid="slide-save" onclick={() => (slideOpen = false)}>Save</Button>
     </div>
+</SlideUp>
+
+<!-- With a footer: the content scrolls and the buttons stay. -->
+<SlideUp bind:isOpen={slideFormOpen} title="Edit note">
+    <div class="space-y-4">
+        {#each fields as field (field)}
+            <Input label={field} />
+        {/each}
+    </div>
+    {#snippet footer()}
+        <Button variant="secondary" onclick={() => (slideFormOpen = false)}>Cancel</Button>
+        <Button data-testid="slide-form-save" onclick={() => (slideFormOpen = false)}>Save note</Button>
+    {/snippet}
+</SlideUp>
+
+<SlideUp bind:isOpen={slideSwipeOpen} title="Swipe me" swipeToClose>
+    <p class="text-body">Drag the grip down to close.</p>
 </SlideUp>
 
 <Drawer bind:isOpen={drawerOpen} title="Team" data-testid="lab-drawer">

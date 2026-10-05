@@ -3,7 +3,13 @@
     import type { HTMLAttributes } from "svelte/elements";
     import { onDestroy, untrack } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
-    import { pickSide, shiftIntoViewport, type FloatingSide } from "../util/viewport-fit.js";
+    import { claimOpenTooltip, releaseOpenTooltip } from "../util/tooltip.js";
+    import {
+        insideTriangle,
+        pickSide,
+        shiftIntoViewport,
+        type FloatingSide,
+    } from "../util/viewport-fit.js";
 
     import { cn } from "../util/cn.js";
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class"> & {
@@ -131,6 +137,7 @@
         // below, so in a right-to-left page they are the other way round on
         // screen. The fixed strategy places by `left` and `top` and is not.
         const mirrored = !fixed && getComputedStyle(trigger).direction === "rtl";
+        isMirrored = mirrored;
         const onScreen = (name: FloatingSide): FloatingSide =>
             mirrored && name === "left" ? "right" : mirrored && name === "right" ? "left" : name;
         const next = pickSide(onScreen(preferred), r, { width, height }, viewport, {
@@ -244,7 +251,13 @@
         }
     }
 
+    /** True in a right-to-left page, where the start side is the right: the side arrows turn round. */
+    let isMirrored = $state(false);
+
     function show(): void {
+        stopCrossing();
+        // One at a time: the tooltip that was open closes.
+        claimOpenTooltip(hide);
         if (parkTimeout !== null) {
             clearTimeout(parkTimeout);
             parkTimeout = null;
@@ -259,7 +272,9 @@
 
     function hide(): void {
         clearTouchHide();
+        stopCrossing();
         openedByTouch = false;
+        releaseOpenTooltip(hide);
         if (!isVisible) return;
         isVisible = false;
         if (parkTimeout !== null) clearTimeout(parkTimeout);
@@ -336,6 +351,8 @@
     });
 
     onDestroy(() => {
+        stopCrossing();
+        releaseOpenTooltip(hide);
         clearShowDelay();
         clearHideBlurTimeout();
         clearTouchHide();
@@ -404,6 +421,7 @@
         // shows something makes the first tap a hover and drops its click.
         if (isTouch(lastPointerType)) return;
         hovering = true;
+        stopCrossing();
         clearShowDelay();
         clearHideBlurTimeout();
         if (!disabled && content) {
@@ -418,12 +436,72 @@
         }
     }
 
-    function handleMouseLeave() {
+    /** Stops watching a pointer that is on its way from the trigger to the bubble. */
+    let stopCrossing: () => void = () => {};
+    /** A pointer that has stopped short of the bubble is given this long without moving, in ms. */
+    const CROSSING_TIME = 300;
+
+    /**
+     * The pointer has left the tooltip. Straight across the gap it never
+     * does, but from a small trigger to the far corner of a wide bubble the
+     * way is diagonal and leaves through the side. While it stays in the
+     * triangle between where it left and the near edge of the bubble it is
+     * still coming, and the tooltip waits: until it arrives, strays, or stops.
+     */
+    function handleMouseLeave(event: MouseEvent) {
         hovering = false;
         if (isTouch(lastPointerType)) return;
         clearShowDelay();
         clearHideBlurTimeout();
-        hide();
+        const box = isVisible ? bubbleElement?.getBoundingClientRect() : undefined;
+        // No bubble on screen (or no layout to measure): nothing to cross to.
+        if (!box || box.width === 0 || box.height === 0) {
+            hide();
+            return;
+        }
+        const left = { x: event.clientX, y: event.clientY };
+        // The edge of the bubble that faces the trigger, a little wider than it is.
+        const reach = 4;
+        const [near, far] = {
+            top: [
+                { x: box.left - reach, y: box.bottom },
+                { x: box.right + reach, y: box.bottom },
+            ],
+            bottom: [
+                { x: box.left - reach, y: box.top },
+                { x: box.right + reach, y: box.top },
+            ],
+            left: [
+                { x: box.right, y: box.top - reach },
+                { x: box.right, y: box.bottom + reach },
+            ],
+            right: [
+                { x: box.left, y: box.top - reach },
+                { x: box.left, y: box.bottom + reach },
+            ],
+        }[
+            // On screen: the start side is the right in a right-to-left page.
+            isMirrored && side === "left" ? "right" : isMirrored && side === "right" ? "left" : side
+        ];
+        stopCrossing();
+        let timer = setTimeout(hide, CROSSING_TIME);
+        const onMove = (move: MouseEvent) => {
+            if (insideTriangle({ x: move.clientX, y: move.clientY }, left, near, far)) {
+                // Still coming: the wait starts again.
+                clearTimeout(timer);
+                timer = setTimeout(hide, CROSSING_TIME);
+                return;
+            }
+            // Not on the way: unless it has arrived, which `mouseenter` says.
+            if (containerElement?.contains(move.target as Node | null)) return;
+            hide();
+        };
+        document.addEventListener("mousemove", onMove, true);
+        stopCrossing = () => {
+            clearTimeout(timer);
+            document.removeEventListener("mousemove", onMove, true);
+            stopCrossing = () => {};
+        };
     }
 
     /** Which kind of pointer is over the trigger; a mouse arriving after a finger counts again. */
@@ -498,6 +576,7 @@
     bind:this={containerElement}
     data-placement={side}
     data-strategy={fixed ? "fixed" : "absolute"}
+    data-mirrored={isMirrored ? "true" : undefined}
     data-disabled={disabled}
     onmouseenter={handleMouseEnter}
     onmouseleave={handleMouseLeave}
@@ -703,6 +782,17 @@
         inset-block-start: 50%;
         transform: translateY(-50%);
         clip-path: polygon(0 50%, 100% 0, 100% 100%);
+    }
+
+    /* In a right-to-left page `left` is the start side, which is the right:
+       the bubble is on the other side of the trigger, and so is the arrow,
+       which has to point the other way too. */
+    .tooltip-container[data-mirrored="true"][data-placement="left"] .tooltip::before {
+        clip-path: polygon(0 50%, 100% 0, 100% 100%);
+    }
+
+    .tooltip-container[data-mirrored="true"][data-placement="right"] .tooltip::before {
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
     }
 
     /* As for the strip above: the fixed strategy is not mirrored, so its

@@ -147,6 +147,12 @@ and Drawer, so they nest in any order.
 A swipe on the content scrolls the content. It moves the sheet only when the
 content is at its top and the swipe goes down.
 
+The grip works with a mouse as with a finger: a click steps the sheet, a drag
+moves it. A press only becomes a drag once the pointer has moved 6px, so a
+click on the grip is a click. How fast a flick was is read from the events'
+own time, not from when the page got round to handling them, so a flick on a
+busy page is still a flick.
+
 **Usage:**
 ```svelte
 <BottomSheet bind:isOpen={open} bind:snap title="Filters">
@@ -161,7 +167,7 @@ content is at its top and the swipe goes down.
 - Give the sheet a `footer` for its main button: it stays in view at half height, clear of the home indicator
 - Keep `dismissible` true unless the sheet holds a step that must be finished; the grip still works when it is false
 - Use buttons of `size="lg"` inside it on a phone, so each is a 48px target
-- SlideUp with `swipeToClose` is the simpler sheet: one height, a decorative grip, swipe down to close
+- SlideUp with `swipeToClose` is the simpler sheet: one height, a decorative grip, swipe down to close. It takes a `footer` too: the content then scrolls and the buttons stay, above the on-screen keyboard and clear of a toast
 
 ---
 
@@ -603,6 +609,11 @@ between them scrolls. Tab moves through the fields and the browser scrolls each
 into view; when the content holds nothing that takes focus (a long text), the
 scrolling area is a Tab stop itself, so the arrow keys, Page Up/Down, Home and
 End can scroll it. Escape, the close button and focus return are unchanged.
+The content keeps 120px at least. When the header and the footer leave less
+(very large text on a small screen, or the on-screen keyboard on a phone held
+sideways, where a 200px strip is all that is left), the panel scrolls as a
+whole instead: the footer is then reached by scrolling, or by Tab, and is not
+pinned.
 
 **Toasts while a modal is open:** a toast is drawn over a modal overlay
 (Modal, BottomSheet, SlideUp, Drawer, ConfirmDialog) and its controls are part
@@ -612,7 +623,10 @@ first; Shift+Tab goes the other way. `focusToasts()` works with an overlay
 open. Escape in a toast returns focus to where it came from and leaves both
 the toast and the overlay as they are; dismissing the toast returns focus the
 same way. The overlays set no `aria-hidden` or `inert` on the page behind, so
-a toast raised while one is open is still in a live region.
+a toast raised while one is open is still in a live region. The stack never
+lies on the overlay's header, so the close button always takes a press, nor on
+a pinned footer: it sits above the panel where there is more room, otherwise
+between the header and the footer, and scrolls when it holds more than fits.
 
 **The on-screen keyboard:** where it covers the page instead of shrinking it
 (iOS Safari, Chrome on Android), an open Modal, BottomSheet, SlideUp or Drawer
@@ -1028,13 +1042,15 @@ The tablist is still one Tab stop: the box that scrolls is not focusable.
 - ✅ **Tab** away: the tooltip closes
 
 **Pointer and touch:**
-- A mouse opens it on hover and closes it on leaving, after `delay` if one is set. The bubble can be pointed at: the pointer can move from the trigger onto it, across the gap, and it stays open for as long as the pointer is on either (WCAG 1.4.13). Escape closes it without moving the pointer or focus
+- A mouse opens it on hover and closes it on leaving, after `delay` if one is set. The bubble can be pointed at: the pointer can move from the trigger onto it, across the gap, and it stays open for as long as the pointer is on either (WCAG 1.4.13). The way need not be straight: from a small trigger to the far end of a wide bubble the pointer leaves through the side, and the tooltip waits for as long as the pointer keeps to the triangle between where it left and the near edge of the bubble, and for 300ms if it stops there. Anywhere else, it closes at once. Escape closes it without moving the pointer or focus
+- One tooltip is open at a time: opening one closes any other. A mouse resting on one trigger while Tab moves focus to another shows the one that has focus
 - A finger or a pen opens it with a tap on the trigger, and the trigger still does what it does: a tooltip never takes a button's click, and no long press is needed. It opens when the finger comes up where it went down; a finger that goes down to scroll the page opens nothing
 - After a tap it stays until a second tap, a tap elsewhere, Escape, scrolling or focus leaving. The tap leaves focus on the trigger, and a tooltip that went by itself while its trigger still had focus could be gone before it was read. `touchDuration={2500}` also closes it by itself after that many milliseconds, for a button whose tooltip is in the way of what the tap did
 
 **Best Practices:**
 - Never put information the user needs only in a tooltip. On a touch screen nothing shows that it exists: say it in the page, in a label or in a description
-- A tooltip is text only and cannot be focused or pressed; for content with links or controls use a Dropdown or a Modal
+- A tooltip is text only and cannot be focused; for content with links or controls use a Dropdown or a Modal
+- An open bubble takes presses (that is what lets it be pointed at). One that lies over another control takes a click meant for that control, and a tooltip opened by keyboard focus stays open while a mouse clicks elsewhere under it. Choose a `placement` where the bubble covers no control; near the edges it flips and moves by itself, so check there too
 - For an info icon whose only job is the tooltip, use a real button with an accessible name
 - To say why a control is unavailable, use `aria-disabled="true"` on a button that stays focusable, not `disabled`. A tooltip does describe a natively disabled button (`aria-describedby` is set on it while the tooltip is open), but that button takes no focus, so the keyboard never opens the tooltip, and some browsers send a disabled control no pointer events at all (it opens on hover and tap in Chromium; elsewhere it may not)
 - The bubble opens on the other side when there is no room on the one asked for, moves along its side to stay on screen, and at 640px and below is always above or below its trigger

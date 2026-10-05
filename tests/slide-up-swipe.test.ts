@@ -29,10 +29,15 @@ function layOut() {
     );
 }
 
-/** A clock the test moves, so a drag has the speed the test gives it. */
+/**
+ * A clock the test moves, so a drag has the speed the test gives it. The
+ * speed is read from the events' own `timeStamp`, so that is what is moved;
+ * the page clock moves with it.
+ */
 function clock() {
     let time = 1000;
     vi.spyOn(performance, "now").mockImplementation(() => time);
+    vi.spyOn(Event.prototype, "timeStamp", "get").mockImplementation(() => time);
     return (ms: number) => {
         time += ms;
     };

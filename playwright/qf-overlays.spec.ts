@@ -430,7 +430,9 @@ test.describe("A toast and an open overlay, on a phone", () => {
 });
 
 test.describe("A toast and an open overlay, at the other sizes", () => {
-    test("no room above the footer (sideways, keyboard up): the stack goes to the top", async ({ browser }) => {
+    test("little room (sideways, keyboard up): the stack keeps between the header and the footer, and scrolls", async ({
+        browser,
+    }) => {
         const context = await browser.newContext({ viewport: LANDSCAPE, hasTouch: true, isMobile: true });
         const page = await context.newPage();
         await gotoLab(page);
@@ -443,22 +445,27 @@ test.describe("A toast and an open overlay, at the other sizes", () => {
         await expect(sheet).toBeVisible();
         await expect.poll(() => sheet.evaluate((el) => el.getAnimations().length)).toBe(0);
         const apply = page.getByTestId("sheet-apply");
-        // With the whole screen there is room above the footer: the stack is there.
-        await expect.poll(async () => (await bottomOf(toasts(page).last())) <= (await box(apply)).y).toBe(true);
-        await expect(stack(page)).not.toHaveAttribute("data-at", "top");
-        expect((await box(toasts(page).last())).y).toBeGreaterThan(100);
+        const close = sheet.getByRole("button", { name: "Close" });
+        const within = async () => {
+            const area = await box(stack(page));
+            const top = await box(close);
+            const end = await box(apply);
+            return area.y >= top.y + top.height && Math.round(area.y + area.height) <= Math.round(end.y);
+        };
+        await expect.poll(within, "Below Close and above Apply").toBe(true);
 
-        // A keyboard that leaves 200px: the footer is 140px from the top, with under 160px above it.
+        // A keyboard that leaves 200px: about 70px between the header and the footer.
         await setVisualViewportHeight(page, 200);
         await expect.poll(() => bottomOf(sheet)).toBe(200);
-        await expect(stack(page)).toHaveAttribute("data-at", "top");
-        const toast = await box(toasts(page).first());
-        expect(Math.round(toast.y), "16px from the top, with its own 16px of padding").toBe(32);
+        await expect.poll(within, "Still below Close and above Apply").toBe(true);
+        expect(await hitAtCentre(close), "Close takes a press").toBe(true);
         expect(await hitAtCentre(apply), "Nothing lies over Apply").toBe(true);
-        expect(toast.y + toast.height, "And the toast is on screen").toBeLessThanOrEqual(LANDSCAPE.height);
+        // What does not fit is scrolled to: the newest toast is the one in view.
+        await expect(stack(page)).toHaveCSS("overflow-y", "auto");
+        expect(await stack(page).evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
 
         await setVisualViewportHeight(page, null);
-        await expect(stack(page)).not.toHaveAttribute("data-at", "top");
+        await expect.poll(within).toBe(true);
         await context.close();
     });
 

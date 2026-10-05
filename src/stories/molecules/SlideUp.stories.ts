@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import SlideUp from '../../components/molecules/SlideUp.svelte';
+import SlideUpWithFooter from './SlideUpWithFooter.svelte';
 
 const meta = {
     title: 'Design System/Molecules/SlideUp',
@@ -81,4 +82,19 @@ export const SwipeToClose: Story = {
             }
         }
     }
+};
+
+/**
+ * With a `footer` the content scrolls and the buttons stay at the bottom of
+ * the panel: above the on-screen keyboard, and clear of a toast.
+ */
+export const WithFooter: Story = {
+    args: {
+        isOpen: true,
+        title: 'Edit note'
+    },
+    render: (args) => ({
+        Component: SlideUpWithFooter,
+        props: args
+    })
 };

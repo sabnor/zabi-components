@@ -39,11 +39,20 @@ export const DRAG_SLOP = 6;
 const INTERACTIVE = "button, a[href], input, select, textarea, [data-sheet-no-drag]";
 const GRIP = "[data-sheet-grip]";
 
-/**
- * The clock for velocity. Not `event.timeStamp`: some browsers hand every
- * event of one frame the same stamp, and a flick then has no duration.
- */
+/** The clock of this page, for when an event's own time cannot be used. */
 const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
+
+/**
+ * When a pointer or touch event happened: its own `timeStamp`, which is when
+ * the finger moved. The time the handler runs is later by however busy the
+ * page is, and unevenly so, which made a flick on a janky frame (or a loaded
+ * machine) measure slower than it was and spring back. An event without a
+ * usable stamp gets the clock.
+ */
+function timeOf(event: Event): number {
+    const stamp = event.timeStamp;
+    return typeof stamp === "number" && stamp > 0 ? stamp : now();
+}
 
 /** How far back the velocity looks, in ms. */
 const VELOCITY_WINDOW = 100;
@@ -53,20 +62,25 @@ const VELOCITY_WINDOW = 100;
  * axis. Also used by `PhotoViewer`, for both axes.
  */
 export function createVelocityTracker() {
-    let samples: { time: number; y: number }[] = [];
+    /** `time` is the event's; `clock` is when it was handled. */
+    let samples: { time: number; clock: number; y: number }[] = [];
     return {
         reset(y: number, time: number) {
-            samples = [{ time, y }];
+            samples = [{ time, clock: now(), y }];
         },
         add(y: number, time: number) {
-            samples.push({ time, y });
+            samples.push({ time, clock: now(), y });
             while (samples.length > 2 && time - samples[0].time > VELOCITY_WINDOW) samples.shift();
         },
         velocity(): number {
             if (samples.length < 2) return 0;
             const first = samples[0];
             const last = samples[samples.length - 1];
-            const elapsed = last.time - first.time;
+            // Some browsers hand every event of one frame the same stamp:
+            // such a flick has no duration by the events, and is timed by
+            // the clock instead.
+            const byEvents = last.time - first.time;
+            const elapsed = byEvents > 0 ? byEvents : last.clock - first.clock;
             return elapsed > 0 ? (last.y - first.y) / elapsed : 0;
         },
     };
@@ -103,12 +117,22 @@ export function attachSheetDrag(
         pointerId = event.pointerId;
         pointerStart = event.clientY;
         pointerDragging = false;
-        tracker.reset(event.clientY, now());
-        try {
-            handleZone.setPointerCapture(event.pointerId);
-        } catch {
-            /* a test DOM, or a pointer that is already gone */
-        }
+        tracker.reset(event.clientY, timeOf(event));
+        // Not captured yet. A captured pointer delivers its `pointerup` and
+        // the click that follows to the handle zone, not to what was
+        // pressed: a mouse click on the grip then never reached the grip's
+        // button. It is captured once the press has become a drag. A mouse
+        // can leave the zone before that, so its moves are followed on the
+        // window meanwhile; a finger stays with the element it went down on.
+        window.addEventListener("pointermove", onPointerMove);
+        window.addEventListener("pointerup", onPointerUp);
+        window.addEventListener("pointercancel", onPointerCancel);
+    }
+
+    function stopFollowing() {
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", onPointerUp);
+        window.removeEventListener("pointercancel", onPointerCancel);
     }
 
     function onPointerMove(event: PointerEvent) {
@@ -117,15 +141,20 @@ export function attachSheetDrag(
         if (!pointerDragging) {
             if (Math.abs(distance) < DRAG_SLOP) return;
             pointerDragging = true;
+            try {
+                handleZone.setPointerCapture(event.pointerId);
+            } catch {
+                /* a test DOM, or a pointer that is already gone */
+            }
             // Measured from where the drag was recognised, so the sheet does
             // not jump by the slop.
             pointerStart = event.clientY;
-            tracker.reset(event.clientY, now());
+            tracker.reset(event.clientY, timeOf(event));
             callbacks.onStart?.();
             callbacks.onMove(0);
             return;
         }
-        tracker.add(event.clientY, now());
+        tracker.add(event.clientY, timeOf(event));
         callbacks.onMove(distance);
     }
 
@@ -135,6 +164,7 @@ export function attachSheetDrag(
         const distance = event.clientY - pointerStart;
         pointerId = null;
         pointerDragging = false;
+        stopFollowing();
         try {
             handleZone.releasePointerCapture(event.pointerId);
         } catch {
@@ -145,7 +175,7 @@ export function attachSheetDrag(
             callbacks.onCancel?.();
             return;
         }
-        tracker.add(event.clientY, now());
+        tracker.add(event.clientY, timeOf(event));
         handleZone.addEventListener("click", swallowClick, { capture: true, once: true });
         // No click follows a drag that ends off the element it began on.
         setTimeout(() => handleZone.removeEventListener("click", swallowClick, true), 0);
@@ -185,7 +215,7 @@ export function attachSheetDrag(
             if (distance < DRAG_SLOP || !allowed()) return;
             touchDragging = true;
             touchStart = touch.clientY;
-            tracker.reset(touch.clientY, now());
+            tracker.reset(touch.clientY, timeOf(event));
             callbacks.onStart?.();
             if (event.cancelable) event.preventDefault();
             callbacks.onMove(0);
@@ -193,7 +223,7 @@ export function attachSheetDrag(
         }
         // Ours now: no scrolling, no pull-to-refresh.
         if (event.cancelable) event.preventDefault();
-        tracker.add(touch.clientY, now());
+        tracker.add(touch.clientY, timeOf(event));
         callbacks.onMove(distance);
     }
 
@@ -209,7 +239,7 @@ export function attachSheetDrag(
             callbacks.onCancel?.();
             return;
         }
-        tracker.add(touch.clientY, now());
+        tracker.add(touch.clientY, timeOf(event));
         callbacks.onEnd(distance, tracker.velocity(), event);
     }
 
@@ -217,9 +247,6 @@ export function attachSheetDrag(
     const onTouchCancel = (event: TouchEvent) => finishTouch(event, true);
 
     handleZone.addEventListener("pointerdown", onPointerDown);
-    handleZone.addEventListener("pointermove", onPointerMove);
-    handleZone.addEventListener("pointerup", onPointerUp);
-    handleZone.addEventListener("pointercancel", onPointerCancel);
     scroller?.addEventListener("touchstart", onTouchStart, { passive: true });
     scroller?.addEventListener("touchmove", onTouchMove, { passive: false });
     scroller?.addEventListener("touchend", onTouchEnd);
@@ -227,9 +254,7 @@ export function attachSheetDrag(
 
     return () => {
         handleZone.removeEventListener("pointerdown", onPointerDown);
-        handleZone.removeEventListener("pointermove", onPointerMove);
-        handleZone.removeEventListener("pointerup", onPointerUp);
-        handleZone.removeEventListener("pointercancel", onPointerCancel);
+        stopFollowing();
         handleZone.removeEventListener("click", swallowClick, true);
         scroller?.removeEventListener("touchstart", onTouchStart);
         scroller?.removeEventListener("touchmove", onTouchMove);

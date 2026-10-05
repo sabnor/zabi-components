@@ -2,7 +2,8 @@
     import ToasterToast from './ToasterToast.svelte';
     import { toastStore } from './toast-store.js';
     import { cn } from "../util/cn.js";
-    import { topOverlayFooter, watchOverlayFooters } from "../util/overlay.js";
+    import { readKeyboardInset } from "../util/keyboard-inset.js";
+    import { topOverlayFooter, topOverlayHeader, watchOverlayFooters } from "../util/overlay.js";
     import type { HTMLAttributes } from "svelte/elements";
 
     /**
@@ -25,11 +26,14 @@
      * A `FloatingActionButton` is 56px with 16px under it: `72px` puts the
      * stack above it.
      *
-     * Over a modal overlay with a footer at the bottom of the screen (a
-     * full-screen Modal, a Modal on a phone, a BottomSheet, a Drawer) the
-     * stack moves above that footer by itself, and to the top of the screen
-     * when there is no room above it. The stack is never taller than the
-     * screen allows: with more toasts than fit, it scrolls. With such an
+     * That offset is for what is on the page. Over a modal overlay (Modal,
+     * BottomSheet, SlideUp, Drawer) the stack minds the overlay instead: it
+     * never lies on the header, which holds the close button, nor on a
+     * footer pinned to the bottom, and the offset is not added on top. It
+     * sits above the panel when there is more room there, and otherwise
+     * between the header and the footer. Where the on-screen keyboard covers
+     * the page, the stack sits above the keyboard. It is never taller than
+     * the room it has: with more toasts than fit, it scrolls. With an
      * overlay open, Tab goes from its last control into the toasts and back,
      * and Escape in a toast returns focus to where it came from.
      */
@@ -51,7 +55,7 @@
         // In px below 640px: a gutter that grew with the text would take the room the text needs.
         "[--toaster-padding:16px] sm:[--toaster-padding:1rem]",
         // `--toaster-overlay-inset` is set below, while a footer of an open overlay is under the stack.
-        "bottom-[calc(max(max(var(--app-shell-bottom-inset,0px),env(safe-area-inset-bottom,0px)),var(--toaster-overlay-inset,0px))_+_var(--toaster-bottom-offset,0px)_+_var(--toaster-edge))]",
+        "bottom-[calc(max(max(var(--app-shell-bottom-inset,0px),env(safe-area-inset-bottom,0px))_+_var(--toaster-bottom-offset,0px),var(--toaster-overlay-inset,0px))_+_var(--toaster-edge))]",
         "right-[calc(env(safe-area-inset-right,0px)_+_var(--toaster-edge))]",
         "w-[min(var(--toaster-width),calc(100vw_-_env(safe-area-inset-left,0px)_-_env(safe-area-inset-right,0px)_-_2_*_var(--toaster-edge)))]",
         "p-(--toaster-padding)",
@@ -59,31 +63,38 @@
 
     let region = $state<HTMLDivElement>();
 
-    /** Where the stack starts when it is at the top of the screen: below the status bar or an AppShell's top bar. */
+    /** The highest the stack may reach: below the status bar or an AppShell's top bar. */
     const TOP = "calc(max(var(--app-shell-top-inset, 0px), env(safe-area-inset-top, 0px)) + var(--toaster-edge))";
-    /** With less room than this above a footer, in px, the stack goes to the top of the screen. */
-    const MIN_ROOM = 160;
-
     /**
      * Places the stack for what is on screen now. At rest it is where the
-     * classes put it. When the footer of an open overlay lies under it, it
-     * moves above that footer, or to the top when there is too little room
-     * there. Where it would be taller than the room it has, it gets that
-     * height and scrolls. Written straight to the element: it is measured
-     * between the steps, in one go, before anything is painted.
+     * classes put it, raised above the on-screen keyboard where that covers
+     * the page. The header (with its close button) and the pinned footer of
+     * the overlay on top are never covered: when the stack would lie on
+     * either, it takes the larger of the two free stretches, above the panel
+     * or between its header and its footer. Where it would be taller than
+     * the room it has, it gets that height and scrolls, with the newest toast
+     * in view.
+     * Written straight to the element: it is measured between the steps, in
+     * one go, before anything is painted.
      */
     function layout(): void {
         const stack = region;
         if (!stack) return;
+        // Taking the height off puts a stack that scrolls back at its start.
+        const scrolledTo = stack.style.overflowY === "auto" ? stack.scrollTop : null;
         stack.style.removeProperty("--toaster-overlay-inset");
         stack.style.top = "";
         stack.style.bottom = "";
         stack.style.maxHeight = "";
         stack.style.overflowY = "";
-        delete stack.dataset.at;
+        stack.style.paddingBlock = "";
         if (stack.childElementCount === 0) return;
 
         const viewportHeight = document.documentElement.clientHeight;
+        // Nothing where the page shrinks by itself: the classes already end above the keyboard there.
+        const keyboard = readKeyboardInset();
+        const raise = (px: number) => stack.style.setProperty("--toaster-overlay-inset", `${px}px`);
+        if (keyboard > 0) raise(keyboard);
         const rest = stack.getBoundingClientRect();
         // No layout (a test DOM): nothing to place.
         if (rest.width === 0 && rest.height === 0) return;
@@ -94,33 +105,46 @@
         stack.style.top = "";
         stack.style.bottom = "";
 
+        // Only what is in the same columns as the stack can be under it.
+        const beside = (part: HTMLElement | null) => {
+            const box = part?.getBoundingClientRect();
+            return box && box.height > 0 && box.left < rest.right && box.right > rest.left ? box : null;
+        };
+        const header = beside(topOverlayHeader());
+        const footer = beside(topOverlayFooter());
+        const under = (box: DOMRect | null) => !!box && box.top < rest.bottom && box.bottom > rest.top;
+
+        let ceiling = topLimit;
         let bottomEdge = rest.bottom;
-        const footer = topOverlayFooter()?.getBoundingClientRect();
-        const covered =
-            footer &&
-            footer.height > 0 &&
-            footer.left < rest.right &&
-            footer.right > rest.left &&
-            footer.top < rest.bottom &&
-            footer.bottom > rest.top;
-        if (footer && covered) {
-            const inset = Math.max(0, Math.ceil(viewportHeight - footer.top));
-            stack.style.setProperty("--toaster-overlay-inset", `${inset}px`);
+        if (under(header) || under(footer)) {
+            // Between the header and the footer (or the stack's own resting edge)...
+            const insideTop = header ? Math.max(topLimit, header.bottom) : topLimit;
+            const insideBottom = footer && footer.top > insideTop ? footer.top : rest.bottom;
+            // ...or above the panel, over the backdrop.
+            const aboveBottom = header ? header.top : topLimit;
+            const above = aboveBottom - topLimit > insideBottom - insideTop;
+            ceiling = above ? topLimit : insideTop;
+            const floor = above ? aboveBottom : insideBottom;
+            if (floor < rest.bottom) raise(Math.max(keyboard, Math.ceil(viewportHeight - floor)));
             bottomEdge = stack.getBoundingClientRect().bottom;
-            if (bottomEdge - topLimit < Math.min(stack.scrollHeight, MIN_ROOM)) {
-                stack.style.removeProperty("--toaster-overlay-inset");
-                stack.style.top = TOP;
-                stack.style.bottom = "auto";
-                stack.dataset.at = "top";
-                // Down to the footer; if that leaves nothing, to where it rests.
-                bottomEdge = footer.top - topLimit >= MIN_ROOM / 2 ? footer.top : rest.bottom;
-            }
+        } else if (header && header.bottom <= rest.top) {
+            // Clear of it now; it does not grow over it either.
+            ceiling = Math.max(topLimit, header.bottom);
         }
 
-        const room = Math.max(0, Math.floor(bottomEdge - topLimit));
+        const room = Math.max(0, Math.floor(bottomEdge - ceiling));
         if (stack.scrollHeight > room + 1) {
             stack.style.maxHeight = `${room}px`;
             stack.style.overflowY = "auto";
+            // A box is never shorter than its own padding. In a slit between
+            // a header and a footer (a small dialog over a keyboard, on a
+            // phone held sideways) the padding goes, or the stack would reach
+            // over the header after all.
+            const padding = parseFloat(getComputedStyle(stack).paddingTop) || 0;
+            if (room < 2 * padding + 44) stack.style.paddingBlock = "0px";
+            // Where it was, or at its end when it has only now begun to scroll:
+            // the newest toast is the last one.
+            stack.scrollTop = scrolledTo ?? stack.scrollHeight;
         }
     }
 
@@ -154,7 +178,9 @@
         children.observe(stack, { childList: true });
         window.addEventListener("resize", again);
         window.visualViewport?.addEventListener("resize", again);
+        window.visualViewport?.addEventListener("scroll", again);
         return () => {
+            window.visualViewport?.removeEventListener("scroll", again);
             stopFooters();
             observer?.disconnect();
             children.disconnect();

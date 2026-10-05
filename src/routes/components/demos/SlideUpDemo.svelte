@@ -33,6 +33,22 @@
             <Input id="slide-up-demo-search" label="Sök" />
         </SlideUp>
     </div>
+{:else if exampleIndex === 3}
+    <div class="space-y-4">
+        <Button onclick={() => (open = true)} text="Edit note" />
+        <SlideUp bind:isOpen={open} title="Edit note">
+            <div class="space-y-4">
+                <Input label="Title" />
+                {#each [1, 2, 3, 4, 5, 6, 7, 8] as line (line)}
+                    <Input label={`Line ${line}`} />
+                {/each}
+            </div>
+            {#snippet footer()}
+                <Button variant="secondary" onclick={() => (open = false)} text="Cancel" />
+                <Button onclick={() => (open = false)} text="Save note" />
+            {/snippet}
+        </SlideUp>
+    </div>
 {:else}
     <div class="space-y-4">
         <Button onclick={() => (open = true)} data-testid="slide-up-demo-swipe-open">

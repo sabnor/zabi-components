@@ -21,6 +21,7 @@
         followKeyboard,
         lockBodyScroll,
         registerOverlayFooter,
+        registerOverlayHeader,
         trapTabKey,
         watchScrollerNeedsFocus,
     } from "../util/overlay.js";
@@ -228,6 +229,13 @@
         const pinned = footerElement;
         if (!isOpen || !pinned) return;
         return registerOverlayFooter(pinned);
+    });
+
+    // And the header, with the close button, which the stack starts below.
+    $effect(() => {
+        const top = header;
+        if (!isOpen || !top) return;
+        return registerOverlayHeader(top);
     });
 
     $effect(() => {

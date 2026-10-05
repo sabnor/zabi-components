@@ -95,7 +95,7 @@ export const doc: ComponentDoc = makeDoc({
             "Avoid setting the theme class (`.dark`) on an element below `<body>`: put it on `<html>` or `<body>`. A portalled modal is outside such a subtree, and a modal rendered in place inside one does not get a consistent theme either.",
             "Avoid leaving a modal non-dismissible with no action inside that can end it.",
             "Avoid `fullScreen` for a confirmation or a short message: a small dialog keeps the page behind it in view. `ConfirmDialog` is never full screen.",
-            "Avoid a long title in a full-screen modal. With very large text on a small screen the header and footer can leave the form less than 120px; the whole panel then scrolls, and the footer is no longer always in view.",
+            "Avoid a long title in a full-screen modal. With very large text on a small screen, or over the on-screen keyboard on a phone held sideways, the header and footer can leave the form less than 120px; the whole panel then scrolls, and the footer is reached by scrolling instead of being always in view.",
         ],
     },
 });
