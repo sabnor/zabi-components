@@ -135,15 +135,16 @@ async function read(page: Page): Promise<Reading> {
         };
         const button = document.activeElement as HTMLElement;
         const style = getComputedStyle(button);
-        // `0 0 0 2px <gap>, 0 0 0 4px <ring>`: the ring is the last colour.
-        const shadowColours = style.boxShadow.match(/(?:rgba?|color)\([^)]+\)/g) ?? [];
+        // `… <gap> 0 0 0 2px, <ring> 0 0 0 4px, …`: the ring is the shadow with the
+        // 4px spread. It is no longer the last one: the list also carries the
+        // element's own shadow utilities, empty or not.
+        const ring = style.boxShadow.match(/((?:rgba?|color)\([^)]+\)) 0px 0px 0px 4px/)?.[1];
         // Marketing headings set their own display face; a component heading
         // takes --font-family-heading.
         const heading = [...document.querySelectorAll("main h1, main h2, main h3")]
             .filter(visible)
             .find((el) => !el.classList.contains("display"));
         if (!heading) throw new Error("no component heading on the page");
-        const ring = shadowColours[shadowColours.length - 1];
         if (!ring) throw new Error(`no focus ring on the primary button: ${style.boxShadow}`);
         return {
             fill: rgb(style.backgroundColor),

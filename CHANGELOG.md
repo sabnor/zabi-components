@@ -323,6 +323,8 @@ Whenever token or CSS import API surface changes, include:
 - AppShell also sets `--app-shell-top-inset` and `--app-shell-bottom-inset` on
   `<html>` while it is mounted, so overlays rendered in `document.body` can
   read them.
+- **`--color-input-active`** (`active:bg-input-active`), the fill of a pressed
+  field. Select's trigger uses it.
 
 ### Changed
 
@@ -435,6 +437,24 @@ Whenever token or CSS import API surface changes, include:
 
 ### Fixed
 
+- **The focus ring shows on dark overlays.** The focus ring and the nav ring
+  were 2.91:1 on the dark overlay surface (modals, menus, toasts). Dark
+  `--color-focus` moves from `brand-500` to `brand-600` (#92a9ff by default),
+  the step of the dark primary fill: 4.26:1 on the overlay and more elsewhere.
+  `--color-focus-weak`, `-medium` and `-strong` move one step with it. Light is
+  unchanged.
+- **The focus ring survives a shadow.** `.focus-ring` on an element with a
+  `shadow-*` or `ring-*` utility (also `shadow-none`) drew no ring, because the
+  utility replaced the box-shadow: the SidebarNavigation search field, the
+  selected SidebarPanel row, an interactive Card, any IconButton given a
+  shadow. The ring now composes with them. The computed `box-shadow` of a
+  focused element lists five shadows where it listed two; a test that reads
+  the ring colour from it should pick the 4px spread.
+- **Select's pressed trigger is visible**: 1.27:1 against its resting fill in
+  light and 1.31:1 in dark (was 1.10:1).
+- **A disabled Checkbox, Radio or RadioGroup row no longer shows the pressed
+  fill** on touch.
+- **Alert's close button shows the library's focus ring**, not the browser's.
 - **Hover colours no longer stick after a tap.** The hand-written `:hover`
   rules in the theme files (`.bg-action-primary:hover` and 41 more) applied on
   touch screens, so a tapped primary button stayed in its hover colour. They

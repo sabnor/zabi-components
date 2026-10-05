@@ -175,7 +175,8 @@ describe("pressed states of disabled controls", () => {
 
 describe("the state-variant guard and the hover query", () => {
     const appCss = fs.readFileSync(path.join(projectRoot, "src/app.css"), "utf-8");
-    const pressedRule = /\.active\\:bg-input-hover:active \{[^}]*\}\n/.exec(appCss)?.[0] ?? "";
+    // The Select trigger's pressed rule: \`.bg-input\` is unlayered, so only this hand-written rule can win.
+    const pressedRule = /\.active\\:bg-input-active:active \{[^}]*\}\n/.exec(appCss)?.[0] ?? "";
     const check = (css: string): string[] => {
         const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "zabi-state-variants-")), "app.css");
         fs.writeFileSync(file, css);
@@ -187,13 +188,13 @@ describe("the state-variant guard and the hover query", () => {
     };
 
     it("finds the pressed rule it moves", () => {
-        expect(pressedRule).toContain("--color-input-hover");
+        expect(pressedRule).toContain("--color-input-active");
         expect(check(appCss)).toEqual([]);
     });
 
     it("a pressed rule inside @media (hover: hover) does not count: it would do nothing on a touch screen", () => {
         const errors = check(appCss.replace(pressedRule, `@media (hover: hover) {\n${pressedRule}}\n`));
-        expect(errors.join("\n")).toContain("active:bg-input-hover");
+        expect(errors.join("\n")).toContain("active:bg-input-active");
     });
 
     it("a hover rule behind any other query does not count either", () => {

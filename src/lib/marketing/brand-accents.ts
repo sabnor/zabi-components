@@ -88,7 +88,7 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
         "--color-brand-100": "var(--zabi-brand-900)",
         "--color-brand-600": "var(--zabi-brand-400)",
         "--color-brand-700": "var(--zabi-brand-300)",
-        "--color-focus": "var(--color-brand-500)",
+        "--color-focus": "var(--color-brand-600)",
     },
 };
 

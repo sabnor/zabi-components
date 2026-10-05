@@ -14,27 +14,23 @@
 
 export const AA_NORMAL = 4.5;
 export const AA_LARGE = 3.0;
+/** A pressed fill against the fill it replaces: where the other pressed states start. */
+export const MIN_PRESSED = 1.25;
 
 const FAMILIES = ['success', 'warning', 'error', 'info', 'energetic', 'neutral'];
 
 /** Every surface a control can land on: the four levels and the inset well. */
 const SURFACE_TOKEN = { page: 'base', card: 'raised', inset: 'inset', elevated: 'elevated', overlay: 'overlay' };
 const EVERY_SURFACE = Object.keys(SURFACE_TOKEN);
-/**
- * KNOWN GAP, not a pass: the brand ring (--color-focus-ring, and the nav ring
- * that aliases it) is 2.91:1 on the dark overlay with the default theme
- * (#6d87f1 on #454547). Closing it means moving dark --color-focus, which
- * re-colours every focus ring in dark, so it waits for a decision. Until then
- * these two rings are held on the four surfaces they pass on; in light the
- * overlay is the card's white, so nothing light is left unchecked. Replace
- * this list with EVERY_SURFACE when the dark ring has moved.
- */
-const BRAND_RING_SURFACES = ['page', 'card', 'inset', 'elevated'];
 
-/** [name, token, surfaces] — parts that need 3:1 against what they sit on. */
+/**
+ * [name, token, surfaces] — parts that need 3:1 against what they sit on.
+ * The brand ring was held on four surfaces while dark kept it on brand-500:
+ * 2.91:1 on the dark overlay, where every modal and menu puts its controls.
+ */
 const UI_PARTS = [
-    ['focus ring', '--color-focus-ring', BRAND_RING_SURFACES],
-    ['nav focus ring', '--color-nav-menu-focus', BRAND_RING_SURFACES],
+    ['focus ring', '--color-focus-ring', EVERY_SURFACE],
+    ['nav focus ring', '--color-nav-menu-focus', EVERY_SURFACE],
     // `.focus-ring--danger` reads --color-error.
     ['danger focus ring', '--color-error', EVERY_SURFACE],
     ['muted focus ring', '--color-focus-ring-muted', EVERY_SURFACE],
@@ -108,6 +104,10 @@ export function buildPairs() {
         { name: 'link on page', bg: '--color-surface-base', fg: '--color-link', min: AA_NORMAL },
         { name: 'link on card', bg: '--color-surface-raised', fg: '--color-link', min: AA_NORMAL },
         { name: 'input value', bg: '--color-input', fg: '--color-body', min: AA_NORMAL },
+        // The pressed Select trigger. It borrowed the hover fill, 1.10:1 against
+        // the resting field, when every other pressed fill is 1.26:1 or more.
+        { name: 'input value on a pressed field', bg: '--color-input-active', fg: '--color-body', min: AA_NORMAL },
+        { name: 'pressed field against the resting field', bg: '--color-input', fg: '--color-input-active', min: MIN_PRESSED },
         // Placeholders are decorative-ish, but must stay readable — large-text bar.
         { name: 'input placeholder', bg: '--color-input', fg: '--color-input-placeholder', min: AA_LARGE },
         { name: 'tooltip', bg: '--color-tooltip-bg', fg: '--color-tooltip-fg', min: AA_NORMAL },

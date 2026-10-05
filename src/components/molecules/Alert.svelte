@@ -99,7 +99,7 @@
     {#if closable}
         <button
             onclick={handleDismiss}
-            class="absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring--muted {TOUCH_HIT_AREA}"
+            class="absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring focus-ring--muted {TOUCH_HIT_AREA}"
             aria-label="Dismiss alert"
             type="button"
         >

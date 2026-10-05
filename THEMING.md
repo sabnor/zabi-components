@@ -211,7 +211,7 @@ should too: `var(--color-action-primary)` or the `bg-action-primary` class, not
 | `--color-surface-base`, `-raised`, `-elevated`, `-overlay`, `-inset` | The page, cards, nested cards, floating panels, wells |
 | `--color-surface-hover`, `--color-surface-active`, `--color-surface-overlay-hover` | Hover and pressed fills |
 | `--color-border`, `-weak`, `-medium`, `-strong`, `--color-border-overlay` | Borders and dividers |
-| `--color-input`, `-border`, `-border-hover`, `-hover`, `-focus`, `-disabled`, `-placeholder` | Form fields |
+| `--color-input`, `-border`, `-border-hover`, `-hover`, `-active`, `-focus`, `-disabled`, `-placeholder` | Form fields; `-active` is the pressed Select trigger |
 | `--color-<family>`, `-weak`, `-medium`, `-strong`, `-subtle`, `-border`, `-text` | `success`, `warning`, `error`, `info`, `energetic`, `neutral` (see [Semantic families](#semantic-families)) |
 
 Aliases kept from earlier versions resolve to the same values: `--color-background`,
@@ -460,8 +460,8 @@ The brand scale is used throughout the system:
 
 - **brand-50 to brand-100**: Subtle backgrounds, hover states
 - **brand-300 to brand-400**: Light accents, disabled states
-- **brand-500**: Medium emphasis; the dark-mode focus ring
-- **brand-600**: **Primary buttons** (`action-primary`); the light-mode focus ring
+- **brand-500**: Medium emphasis
+- **brand-600**: **Primary buttons** (`action-primary`) and the focus ring, in both modes
 - **brand-700**: Primary hover, links
 - **brand-800**: Primary active, link hover
 - **brand-900 / 950**: Darkest brand shades
@@ -665,9 +665,8 @@ render — through the same token chain the CSS uses — in **both** themes, and
 fails below WCAG AA. It also holds the focus ring to 3:1 against the page, a
 card, and the offset gap that separates it from a primary button. The muted
 ring (`--color-focus-ring-muted`), the danger ring and the control boundary
-(`--color-control-border`) are held to 3:1 on all five surfaces: page, card,
-inset, elevated and overlay. The brand and nav rings are held on the first
-four; they are 2.91:1 on the dark overlay. The colour a focus-ring rule
+(`--color-control-border`), and the brand and nav rings, are held to 3:1 on
+all five surfaces: page, card, inset, elevated and overlay. The colour a focus-ring rule
 uses must be a token in that list (`scripts/contrast-pairs.js`), so a ring
 cannot read a raw ramp step. Run it after
 re-pointing any token:

@@ -363,6 +363,12 @@
   /* One step off white. It was base-150, which is now the page itself, and was
    * already greyer than the disabled fill. */
   --color-input-hover: var(--color-base-100);
+  /* Pressed, for a field that is pressed rather than typed in: the Select
+   * trigger. It borrowed the hover step, 1.10:1 against the resting field,
+   * when every other pressed fill is 1.26:1 or more. base-200 is 1.27:1 on the
+   * white field and a visible step past hover (1.15:1); body text is 11.7:1
+   * on it. */
+  --color-input-active: var(--color-base-200);
   --color-input-focus: var(--color-surface-raised);
   /* The page colour: a disabled field stops being a raised surface. Dark does
    * the same (base-100 is the dark page). */
@@ -418,7 +424,7 @@
    * around it, and brand-500 was 2.99:1 on the page. brand-600 is also the
    * primary button fill, so on a primary button the ring is separated by its
    * 2px offset gap (--color-focus-ring-offset), which .focus-ring always draws.
-   * .dark pins the previous steps: the mirrored brand-500 already clears 5:1. */
+   * .dark restates the same steps; the mirror makes them --zabi-brand-400 and up. */
   --color-focus: var(--color-brand-600);
   --color-focus-weak: var(--color-brand-700);
   --color-focus-medium: var(--color-brand-800);
@@ -925,6 +931,9 @@ body {
   --color-input-border: var(--color-base-300);
   --color-input-border-hover: var(--color-input-border);
   --color-input-hover: var(--color-base-200);
+  /* One step past hover, and one short of the border (base-300), so the
+   * pressed field keeps its edge: 1.31:1 against the resting field. */
+  --color-input-active: var(--color-base-250);
   --color-input-focus: var(--color-base-150);
   --color-input-disabled: var(--color-base-100);
   --color-input-placeholder: var(--color-base-500);
@@ -939,13 +948,18 @@ body {
    * surface, and more on every level below it. base-550 is 2.76:1 there. */
   --color-control-border: var(--color-base-600);
 
-  /* Focus Colors — pinned to the steps dark has always used. Light moved each
-   * one step darker to clear 3:1 on its page; the mirrored brand-500 is already
-   * 5.4:1 on the dark page. */
-  --color-focus: var(--color-brand-500);
-  --color-focus-weak: var(--color-brand-600);
-  --color-focus-medium: var(--color-brand-700);
-  --color-focus-strong: var(--color-brand-800);
+  /* Focus Colors — the same steps as light, through the mirror: brand-600 is
+   * --zabi-brand-400 here, which is also the dark primary fill, so on a
+   * primary button the ring is separated by its offset gap exactly as in light.
+   * Dark used to stay one step back, on brand-500, the mirror's fixed point.
+   * That is 5.4:1 on the dark page but only 2.91:1 on the overlay, the
+   * lightest surface (2.78:1 for an amber brand), and a ring in a modal or a
+   * menu needs 3:1 too. Restated rather than left to inherit, so an app's
+   * light-only override of --color-focus does not reach dark. */
+  --color-focus: var(--color-brand-600);
+  --color-focus-weak: var(--color-brand-700);
+  --color-focus-medium: var(--color-brand-800);
+  --color-focus-strong: var(--color-brand-900);
   /* The muted ring, for the same reason as the control boundary above: one
    * step lighter than the fixed point, 3.73:1 on the overlay. */
   --color-focus-ring-muted: var(--color-base-600);
@@ -1269,6 +1283,15 @@ body {
    in both themes, and on a touch screen there is no hover to confuse it with. */
 .active\:bg-input-hover:active {
   background-color: var(--color-input-hover);
+}
+
+/* That step was 1.10:1 against the resting field in both themes, too faint to
+   read as pressed. The Select trigger now uses a step of its own; the rule
+   above stays for apps that wrote the class. `.bg-input` is unlayered, so a
+   generated `active:bg-input-active` would lose to it. The fallback is for
+   an app whose own theme file predates the role. */
+.active\:bg-input-active:active {
+  background-color: var(--color-input-active, var(--color-input-hover));
 }
 
 /* `.bg-card` is unlayered, so the generated `active:bg-card-active` would lose to it. */
@@ -1615,6 +1638,18 @@ body {
    * Override ring/offset tokens by setting:
    * - `--zabi-focus-ring-color`
    * - `--zabi-focus-ring-offset-color`
+   *
+   * The ring is a box-shadow, and so is every Tailwind `shadow-*` and `ring-*`
+   * utility. Those live in `@layer utilities`, which beats this layer, so a
+   * card with `shadow-sm` (or `shadow-none`) and a row with `ring-1` replaced
+   * the ring outright and had no keyboard focus indicator. Tailwind builds
+   * its box-shadow from five custom properties; the gap and the ring are
+   * handed to one of them, `--tw-ring-offset-shadow`, which no utility in use
+   * sets (only `ring-offset-*` does). A utility's box-shadow then carries the
+   * focus ring with the elevation, and without one the declaration below
+   * paints the same list. The geometry is what it always was: a 2px gap, then
+   * a 2px ring. Do not put a `ring-offset-*` utility on a focus-ring element.
+   * Guarded by playwright/focus-ring.spec.ts.
    */
   .focus-ring {
     --zabi-focus-ring-color: var(--color-focus-ring);
@@ -1624,9 +1659,15 @@ body {
 
   .focus-ring:focus-visible {
     outline: none;
-    box-shadow:
+    --tw-ring-offset-shadow:
       0 0 0 2px var(--zabi-focus-ring-offset-color),
       0 0 0 4px var(--zabi-focus-ring-color);
+    box-shadow:
+      var(--tw-inset-shadow, 0 0 #0000),
+      var(--tw-inset-ring-shadow, 0 0 #0000),
+      var(--tw-ring-offset-shadow),
+      var(--tw-ring-shadow, 0 0 #0000),
+      var(--tw-shadow, 0 0 #0000);
   }
 
   /** Nav variant: same geometry, different token. */
@@ -1668,9 +1709,15 @@ body {
 
   .focus-brand:focus-visible {
     outline: none;
-    box-shadow:
+    --tw-ring-offset-shadow:
       0 0 0 2px var(--zabi-focus-ring-offset-color),
       0 0 0 4px var(--zabi-focus-ring-color);
+    box-shadow:
+      var(--tw-inset-shadow, 0 0 #0000),
+      var(--tw-inset-ring-shadow, 0 0 #0000),
+      var(--tw-ring-offset-shadow),
+      var(--tw-ring-shadow, 0 0 #0000),
+      var(--tw-shadow, 0 0 #0000);
   }
 
   .focus-nav {
@@ -1681,9 +1728,15 @@ body {
 
   .focus-nav:focus-visible {
     outline: none;
-    box-shadow:
+    --tw-ring-offset-shadow:
       0 0 0 2px var(--zabi-focus-ring-offset-color),
       0 0 0 4px var(--zabi-focus-ring-color);
+    box-shadow:
+      var(--tw-inset-shadow, 0 0 #0000),
+      var(--tw-inset-ring-shadow, 0 0 #0000),
+      var(--tw-ring-offset-shadow),
+      var(--tw-ring-shadow, 0 0 #0000),
+      var(--tw-shadow, 0 0 #0000);
   }
 
   /**
@@ -1691,7 +1744,11 @@ body {
    * Compose with layout utilities in `selection-control.styles.ts` (`p-2`, `flex`, etc.).
    */
   .selection-control-label-row-interaction {
-    @apply rounded-md transition-colors outline-none cursor-pointer hover:bg-surface-hover active:bg-surface-active has-disabled:opacity-50 has-disabled:cursor-not-allowed has-disabled:hover:bg-transparent;
+    @apply rounded-md transition-colors outline-none cursor-pointer hover:bg-surface-hover active:bg-surface-active has-disabled:opacity-50 has-disabled:cursor-not-allowed has-disabled:hover:bg-transparent has-disabled:active:bg-transparent;
+    /* The pressed fill is undone for a disabled row as the hover fill is:
+       `:active` matches a label around a disabled input, and on a touch screen
+       the hover rule above does not apply at all, so the row lit up under a
+       finger. */
     /* Mirror `.focus-ring` geometry on the label row when the control is keyboard-focused. */
     box-shadow: none;
   }

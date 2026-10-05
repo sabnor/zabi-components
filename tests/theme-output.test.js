@@ -231,6 +231,8 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-border-strong': '#71717a',
         '--color-control-border': '#71717a',
         '--color-focus-ring-muted': '#71717a',
+        // The pressed Select trigger: a step past hover (#f4f4f5).
+        '--color-input-active': '#e4e4e7',
         '--color-link': '#3c52ba',
         '--color-surface-base': '#ececee',
         '--color-surface-raised': '#ffffff',
@@ -243,13 +245,15 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-action-primary': '#92a9ff',
         '--color-action-primary-text': '#111d49',
         '--color-on-brand': '#111d49',
-        '--color-focus-ring': '#6d87f1',
+        '--color-focus-ring': '#92a9ff',
+        '--color-nav-menu-focus': '#92a9ff',
         // The decorative edge stays on the mirror's fixed point; the two roles
         // that need 3:1 on the dark elevated and overlay surfaces are pinned
         // one step lighter.
         '--color-border-strong': '#71717a',
         '--color-control-border': '#a1a1aa',
         '--color-focus-ring-muted': '#a1a1aa',
+        '--color-input-active': '#333338',
         '--color-link': '#b5c6ff',
         // The ladder was four baked hex values; it is now color-mix() over the
         // neutral ramp and has to land on exactly the same four.
@@ -295,8 +299,8 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-action-primary-active': amber[200],
         '--color-action-primary-subtle': amber[900],
         '--color-primary': amber[400],
-        '--color-focus-ring': amber[500],
-        '--color-nav-menu-focus': amber[500],
+        '--color-focus-ring': amber[400],
+        '--color-nav-menu-focus': amber[400],
         '--color-link': amber[300],
         '--color-link-hover': amber[200],
         '--color-nav-menu-active': amber[900],
@@ -480,6 +484,46 @@ test('the theme files apply the heading family to headings, below utilities', ()
       found = true;
     });
     assert.ok(found, `${file}: no h1–h6 rule using --font-family-heading`);
+  }
+});
+
+/**
+ * The focus ring composes with Tailwind's shadow and ring utilities.
+ *
+ * As a plain box-shadow in `@layer components` it lost to any `shadow-*` or
+ * `ring-*` utility on the same element. It is handed to
+ * `--tw-ring-offset-shadow`, one of the five properties those utilities build
+ * their box-shadow from, and painted from the same five when no utility is
+ * there. playwright/focus-ring.spec.ts measures the result in a browser; this
+ * holds the published rule to the shape that makes it work.
+ */
+test('the focus ring is drawn through the channel shadow utilities compose', () => {
+  const channel = ['--tw-inset-shadow', '--tw-inset-ring-shadow', '--tw-ring-offset-shadow', '--tw-ring-shadow', '--tw-shadow'];
+  for (const file of ['dist/zabi-components-theme.css', 'dist/zabi-components-theme-only.css', 'dist/zabi-components.css']) {
+    for (const selector of ['.focus-ring:focus-visible', '.focus-brand:focus-visible', '.focus-nav:focus-visible']) {
+      const rules = [];
+      postcss.parse(read(file)).walkRules((rule) => {
+        const selectors = (rule.selectors ?? [rule.selector]).map((s) => s.trim());
+        // The forced-colours rule lists the same selector; it sets an outline, not a shadow.
+        if (selectors.includes(selector) && rule.some((node) => node.type === 'decl' && node.prop === 'box-shadow')) rules.push(rule);
+      });
+      assert.equal(rules.length, 1, `${file}: one ${selector} rule with a box-shadow`);
+      const [rule] = rules;
+      // Below utilities, so that a utility's box-shadow is the one that carries the ring.
+      assert.equal(`${rule.parent.name} ${rule.parent.params}`, 'layer components', file);
+      const value = (prop) => rule.nodes.find((node) => node.type === 'decl' && node.prop === prop)?.value.replace(/\s+/g, ' ');
+      assert.equal(
+        value('--tw-ring-offset-shadow'),
+        '0 0 0 2px var(--zabi-focus-ring-offset-color), 0 0 0 4px var(--zabi-focus-ring-color)',
+        `${file} ${selector}: the 2px gap, then the 2px ring`,
+      );
+      const shadow = value('box-shadow');
+      const positions = channel.map((name) => shadow.indexOf(`var(${name}`));
+      assert.ok(positions.every((at) => at >= 0), `${file} ${selector}: box-shadow reads all five properties (${shadow})`);
+      assert.deepEqual([...positions].sort((a, b) => a - b), positions, `${file} ${selector}: in Tailwind's order`);
+      // A literal ring here would be dropped by the first utility on the element.
+      assert.ok(!/\d+px/.test(shadow), `${file} ${selector}: no ring written into box-shadow itself (${shadow})`);
+    }
   }
 });
 

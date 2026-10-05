@@ -284,6 +284,41 @@ test.describe("touch targets on a coarse pointer", () => {
         }
     });
 
+    for (const name of ["Checkbox", "Radio", "RadioGroup"]) {
+        test(`${name}: a disabled row shows no pressed fill, and an enabled one does`, async ({ page }) => {
+            // The row is a label: `:active` matches it around a disabled input,
+            // and without hover the rule that undid the hover fill never applied.
+            await openPage(page, name);
+            await page.addStyleTag({ content: "*, *::before, *::after { transition: none !important; }" });
+            const rows = page.locator(PREVIEWS).locator(".selection-control-label-row-interaction");
+            const pressed = async (row: Locator) => {
+                await row.scrollIntoViewIfNeeded();
+                const read = () => row.evaluate((node) => getComputedStyle(node).backgroundColor);
+                const rest = await read();
+                const box = (await row.boundingBox())!;
+                await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+                await page.mouse.down();
+                try {
+                    expect(await row.evaluate((node) => node.matches(":active"))).toBe(true);
+                    return { rest, held: await read() };
+                } finally {
+                    // Released off the row, so an enabled control is not toggled.
+                    await page.mouse.move(0, 0);
+                    await page.mouse.up();
+                }
+            };
+            // The RadioGroup examples have no disabled option; the rule is the
+            // stylesheet's (`:has(:disabled)`), so disabling one here tests the same thing.
+            if ((await rows.filter({ has: page.locator("input:disabled") }).count()) === 0) {
+                await rows.last().locator("input").evaluate((input: HTMLInputElement) => (input.disabled = true));
+            }
+            const disabled = await pressed(rows.filter({ has: page.locator("input:disabled") }).first());
+            expect(disabled.held).toBe(disabled.rest);
+            const enabled = await pressed(rows.filter({ hasNot: page.locator("input:disabled") }).first());
+            expect(enabled.held).not.toBe(enabled.rest);
+        });
+    }
+
     test("rows of same-size controls still line up", async ({ page }) => {
         // sm and md are both 44px here; what matters is that a Button, an Input and a Select agree.
         const heightOf = async (name: string, selector: string) => {
@@ -373,6 +408,50 @@ test.describe("touch targets on a coarse pointer", () => {
             try {
                 await expect.poll(read, { timeout: 5_000 }).not.toBe(rest);
             } finally {
+                await page.mouse.up();
+            }
+        });
+    }
+
+    for (const dark of [false, true]) {
+        test(`pressed: the Select trigger is 1.25:1 or more against its resting fill, ${dark ? "dark" : "light"}`, async ({
+            page,
+        }) => {
+            // "Changes" was true at 1.10:1, the hover step, which nobody could see under a thumb.
+            await openPage(page, "Select");
+            await page.evaluate((on) => document.documentElement.classList.toggle("dark", on), dark);
+            await page.addStyleTag({ content: "*, *::before, *::after { transition: none !important; }" });
+            const trigger = page.locator(PREVIEWS).locator("button").first();
+            await trigger.scrollIntoViewIfNeeded();
+            const read = () =>
+                trigger.evaluate((node) => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = canvas.height = 1;
+                    const context = canvas.getContext("2d", { willReadFrequently: true })!;
+                    const luminance = (colour: string) => {
+                        context.clearRect(0, 0, 1, 1);
+                        context.fillStyle = colour;
+                        context.fillRect(0, 0, 1, 1);
+                        const [r, g, b] = [...context.getImageData(0, 0, 1, 1).data].slice(0, 3).map((channel) => {
+                            const value = channel / 255;
+                            return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+                        });
+                        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                    };
+                    const style = getComputedStyle(node);
+                    return { fill: luminance(style.backgroundColor), text: luminance(style.color) };
+                });
+            const ratio = (a: number, b: number) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+            const rest = await read();
+            const box = (await trigger.boundingBox())!;
+            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+            await page.mouse.down();
+            try {
+                const held = await read();
+                expect(ratio(held.fill, rest.fill)).toBeGreaterThanOrEqual(1.25);
+                expect(ratio(held.text, held.fill)).toBeGreaterThanOrEqual(4.5);
+            } finally {
+                await page.mouse.move(0, 0);
                 await page.mouse.up();
             }
         });

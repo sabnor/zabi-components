@@ -194,6 +194,11 @@ const INTERACTION_FILLS = [
     { name: 'card :active', fill: '--color-card-active', on: '--color-card' },
     { name: 'overlay row :hover', fill: '--color-surface-overlay-hover', on: '--color-surface-overlay' },
     { name: 'input :hover', fill: '--color-input-hover', on: '--color-input' },
+    // Pressed has to be a step past hover too, or holding a hovered field shows nothing.
+    { name: 'input :active', fill: '--color-input-active', on: '--color-input' },
+    { name: 'input :active vs :hover', fill: '--color-input-active', on: '--color-input-hover' },
+    // And short of the border, or the pressed field loses its edge.
+    { name: 'input :active vs its border', fill: '--color-input-active', on: '--color-input-border' },
     { name: 'secondary action', fill: '--color-action-secondary-subtle', on: '--color-card' },
 ];
 
@@ -339,7 +344,7 @@ function checkFocusRingSources(css, themes, pairs) {
     }
     if (sources.size === 0) failures.push('no --zabi-focus-ring-color declaration found: the focus-ring rules have moved');
 
-    const SURFACES = ['base', 'raised', 'inset', 'elevated'].map((s) => `--color-surface-${s}`);
+    const SURFACES = ['base', 'raised', 'inset', 'elevated', 'overlay'].map((s) => `--color-surface-${s}`);
     for (const token of sources) {
         const missing = SURFACES.filter((bg) => !pairs.some((p) => p.fg === token && p.bg === bg && p.min >= 3));
         if (missing.length) {

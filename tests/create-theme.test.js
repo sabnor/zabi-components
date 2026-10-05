@@ -125,7 +125,8 @@ for (const brand of BRANDS) {
     assert.equal(resolveTokenColor(light, '--color-action-primary-text'), '#ffffff');
     assert.equal(resolveTokenColor(dark, '--color-action-primary'), step(400));
     assert.equal(resolveTokenColor(dark, '--color-action-primary-hover'), step(300));
-    assert.equal(resolveTokenColor(dark, '--color-focus-ring'), step(500));
+    // The same step as the dark primary fill: brand-500 was under 3:1 on the overlay.
+    assert.equal(resolveTokenColor(dark, '--color-focus-ring'), step(400));
     assert.equal(resolveTokenColor(dark, '--color-link'), step(300));
     assert.equal(resolveTokenColor(dark, '--color-action-primary-text'), step(950));
   });
