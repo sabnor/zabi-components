@@ -22,6 +22,19 @@ Whenever token or CSS import API surface changes, include:
   fails is a warning and the colour is never moved. `--pin-accent` /
   `pin: { accent: true }` does the same for the solid accent fill. Without the
   option the output is unchanged.
+- **ThemeToggle `modes="three"`**: steps through system, light and dark, writes
+  `data-theme` on `<html>`, shows a monitor, sun or moon, and names itself
+  "Theme: system. Switch to light". `labels` replaces the words for another
+  language.
+- **ThemeToggle `mode` (bindable), `onmodechange` and `storageKey`**: read or
+  drive the mode from the app, store the choice under your own key, or pass
+  `storageKey={null}` and store it yourself.
+- **Theme helpers** from the package root: `getThemeMode`, `setThemeMode`,
+  `isThemeDark`, `getStoredThemeMode`, `storeThemeMode`, `themeInitScript` and
+  the `ThemeMode` type. `themeInitScript()` returns a script for `<head>` that
+  applies the stored mode before first paint. An app's own control (a
+  SegmentedControl with three options) can drive the theme through them, and
+  ThemeToggle follows.
 
 ### Changed
 
@@ -36,6 +49,9 @@ Whenever token or CSS import API surface changes, include:
   stay concentric with it.
 - With both `class="dark"` and `data-theme="light"` on `<html>`, the colour
   scheme is now dark, matching the tokens.
+- **ThemeToggle applies the stored choice when it mounts**, in both modes.
+  Before, a stored choice was written but only a page script could apply it.
+  Pass `storageKey={null}` to only read the page.
 
 ### Fixed
 

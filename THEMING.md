@@ -27,6 +27,12 @@ docs site at [/theming](https://zabi-components.vercel.app/theming).
 
 ## The first thing to know: your colour is not pinned to a step
 
+**Need the exact brand colour on buttons? Use `--pin`.**
+`npx zabi-theme --brand "#0026EA" --pin` makes the primary button `#0026ea`
+itself in light, with a checked label colour. The rest of this section is what
+happens without it, and [`--pin`](#--pin-the-exact-brand-colour-on-buttons)
+has the trade-off.
+
 `zabi-theme` takes one brand colour and builds an 11-step ramp from it. The
 colour supplies the **hue and chroma**. The lightness of each step comes from
 the library's own curve (see [Calibrated colour ramps](#calibrated-colour-ramps)),
@@ -52,8 +58,10 @@ nearest step 300 at ΔE 14.8, and the generator says so:
 zabi-theme: warning: brand #ffe600 is not in the ramp built from it: the nearest step is 300 (#dcc600, ΔE 14.8). The ramp keeps its hue on the library's lightness curve; fills use step 600 in light and 400 in dark.
 ```
 
-If the brand colour itself has to appear somewhere, use the step the generator
-names (`var(--zabi-brand-500)` for the amber above), not the hex.
+If the brand colour itself has to be the button, use
+[`--pin`](#--pin-the-exact-brand-colour-on-buttons). If it only has to appear
+somewhere (a logo plate, a brand screen), use the step the generator names
+(`var(--zabi-brand-500)` for the amber above), not the hex.
 
 ## Quick start
 
@@ -272,11 +280,119 @@ The mode is chosen on the `<html>` element, by an attribute or a class:
   class and no attribute gets no `color-scheme` from the theme.
 - The dark file must be imported together with a light one. It only remaps
   roles onto ramps the light theme declares.
-- `ThemeToggle` reads the mode from the class or from `data-theme` (`auto`
-  included) and writes to whichever the page uses: `data-theme` when `<html>`
-  has the attribute, the `dark` class otherwise. Pressed on `auto`, it sets
-  `light` or `dark`. Tailwind's own `dark:` variant follows the system unless
-  you redefine it, and does not read `data-theme`.
+- Tailwind's own `dark:` variant follows the system unless you redefine it, and
+  does not read `data-theme`.
+
+### A theme control: system, light, dark
+
+`ThemeToggle` reads the mode from `<html>` and follows whatever else changes
+it.
+
+| | Press | Writes |
+|---|---|---|
+| `<ThemeToggle />` (`modes="two"`) | light ↔ dark | `data-theme` when `<html>` has the attribute, the `dark` class otherwise |
+| `<ThemeToggle modes="three" />` | system → light → dark → system | always `data-theme` (`auto`, `light` or `dark`); it adds the attribute and removes a leftover `dark` class |
+
+With two modes, a press on a page that is on `auto` sets `light` or `dark`, and
+there is no way back to `auto` from that button. An app whose default is
+`data-theme="auto"` wants three modes.
+
+The three-mode button shows a monitor, a sun or a moon, and its accessible name
+states the mode and what a press does: "Theme: system. Switch to light". The
+words are replaceable:
+
+```svelte
+<ThemeToggle
+  modes="three"
+  labels={{
+    auto: "följ telefonen",
+    light: "ljust",
+    dark: "mörkt",
+    describe: (current, next) => `Tema: ${current}. Byt till ${next}`,
+  }}
+/>
+```
+
+**Remembering the choice.** The choice is kept in `localStorage` under
+`storageKey` (default `"theme"`) and applied again when the button mounts.
+`storageKey={null}` keeps nothing. To store it in your own backend, bind the
+mode or listen for it:
+
+```svelte
+<ThemeToggle modes="three" storageKey={null} bind:mode onmodechange={(mode) => saveToProfile(mode)} />
+```
+
+`mode` is `"auto" | "light" | "dark"`. It follows the page, and assigning it
+switches the page.
+
+**No flash on load.** A component mounts after the first paint, so a visitor
+who chose dark would see light first. `themeInitScript(storageKey?)` returns a
+small script that applies the stored mode from `<head>`. It is a plain string
+with no dependencies. In SvelteKit, print it once and paste it into
+`src/app.html`, or inject it from `hooks.server.ts`:
+
+```html
+<!-- src/app.html -->
+<html lang="sv" data-theme="auto">
+  <head>
+    <script>
+      (function(){try{var m=localStorage.getItem("theme");if(m!=="auto"&&m!=="light"&&m!=="dark")return;var r=document.documentElement;if(r.hasAttribute("data-theme")||m==="auto"){r.setAttribute("data-theme",m);r.classList.remove("dark")}else{r.classList.toggle("dark",m==="dark")}}catch(e){}})();
+    </script>
+    %sveltekit.head%
+```
+
+```ts
+// src/hooks.server.ts: the same, generated, so it follows the package.
+// Put %theme-init% in the <head> of src/app.html where the script should go.
+import { themeInitScript } from "zabi-components";
+
+export const handle = ({ event, resolve }) =>
+  resolve(event, {
+    transformPageChunk: ({ html }) => html.replace("%theme-init%", `<script>${themeInitScript()}</script>`),
+  });
+```
+
+With nothing stored the script does nothing, and the `data-theme` in your
+markup stands.
+
+**Your own control.** A settings screen usually wants three labelled options,
+not a cycling button. Drive the theme with the same helpers and any
+`ThemeToggle` on the page follows:
+
+```svelte
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { SegmentedControl, getThemeMode, setThemeMode, type ThemeMode } from "zabi-components";
+
+  let mode = $state<ThemeMode>("auto");
+  onMount(() => (mode = getThemeMode()));
+</script>
+
+<SegmentedControl
+  label="Tema"
+  options={[
+    { value: "auto", label: "Följ telefonen" },
+    { value: "light", label: "Ljust" },
+    { value: "dark", label: "Mörkt" },
+  ]}
+  value={mode}
+  onchange={(value) => {
+    mode = value as ThemeMode;
+    setThemeMode(mode); // or setThemeMode(mode, { storageKey: null }) and save it yourself
+  }}
+/>
+```
+
+| Helper | |
+|---|---|
+| `getThemeMode()` | `"auto"`, `"light"` or `"dark"`, from `data-theme`; without the attribute, `"dark"` with the `dark` class and `"light"` without. |
+| `setThemeMode(mode, { storageKey? })` | Writes `data-theme`, removes a leftover `dark` class and inline `color-scheme`, stores the choice (`storageKey: null` stores nothing). |
+| `isThemeDark()` | Whether the page is dark right now; on `auto` that is the system's answer. |
+| `getStoredThemeMode(storageKey?)`, `storeThemeMode(mode, storageKey?)` | The stored choice. |
+| `themeInitScript(storageKey?)` | The `<head>` script above, as a string. |
+
+All of them are safe to call on the server, where they read `"light"` and
+write nothing.
 
 ```js
 document.documentElement.dataset.theme = "dark"; // "light" | "auto"
@@ -286,6 +402,14 @@ document.documentElement.classList.toggle("dark");
 
 ## The generator
 
+Exact brand colour on buttons: use `--pin`.
+
+```bash
+npx zabi-theme --brand "#0026EA" --pin --out src/lib/brand.generated.css
+```
+
+Without it, every fill is a step of a ramp built from the colour:
+
 ```bash
 npx zabi-theme --brand "#0026EA" --out src/lib/brand.generated.css
 npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out src/lib/brand.generated.css
@@ -294,7 +418,9 @@ npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out sr
 | Option | |
 |---|---|
 | `--brand <hex>` | Required. Builds `--zabi-brand-50 … 950`. |
+| `--pin` | The primary action is the exact brand colour in light. See [`--pin`](#--pin-the-exact-brand-colour-on-buttons). |
 | `--accent <hex>` | Builds `--zabi-accent-50 … 950`. Omitted: the library's citron. |
+| `--pin-accent` | The same for the solid accent fill. Needs `--accent`. |
 | `--neutral <hex>` | Tints the 21-step `--zabi-base-50 … 950`. Omitted: the library's greys. |
 | `--out <file>` | Where to write. Omitted: stdout. |
 | `--strict` | Exit 1 when a role pair is below WCAG AA. |
@@ -304,6 +430,53 @@ npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out sr
 Colours are hex, `#rgb` or `#rrggbb`. Warnings and the one-line summary go to
 stderr. Exit codes: 0 done, 1 `--strict` with a failed pair, 2 bad usage
 (missing `--brand`, not a hex colour).
+
+### `--pin`: the exact brand colour on buttons
+
+Unpinned, the primary button is step 600 of the ramp: for `#0026EA` that is
+`#2b65ff`, visibly lighter than the brand. With `--pin` the ramp is the same
+ramp, and the roles that *are* the brand colour are written as role overrides:
+
+| | Unpinned | `--pin` |
+|---|---|---|
+| Primary button, light | step 600, `#2b65ff` | the colour itself, `#0026ea` |
+| Its label | white, 4.76:1 | white, 8.52:1 |
+| Hover, pressed | steps 700, 800 | the same hue, darker by the same distances: `#0100c4`, `#000e78` |
+| Focus ring, links, checked boxes | steps 600 and 700 | the colour itself, because every guarded pair still passes |
+| Tints and borders (`-subtle`, `-border`), `--color-brand-*` | on the ramp | on the ramp, unchanged |
+| Dark | step 400, `#84acff` | step 400, `#84acff`: not pinned |
+
+What it decides, and how:
+
+- **The fill is never moved.** If the colour fails a pair, the pair is a
+  warning (and `--strict` exits 1). `#C17B00` pinned is 2.92:1 against the
+  light page, where a button needs 3:1, and the generator says so.
+- **The label** is white or the ramp's 950 step, whichever reaches 4.5:1 on the
+  fill and both its states. An amber gets the dark label, and its hover and
+  pressed states go lighter, since darker states would lose the label.
+- **Focus ring and links follow only if they pass.** The ring needs 3:1 on
+  every surface and a link 4.5:1 on the page and on a card. A yellow passes
+  neither, so both stay on the ramp. The header lists which followed.
+- **Dark is not pinned unless the colour passes there.** `#0026EA` is 2.08:1
+  against a dark page and 1.77:1 against a dark card, where a fill needs 3:1:
+  no label makes that a button. Dark keeps the
+  mirrored step 400, exactly as without `--pin`, and the header says so. A
+  colour that does pass in dark (the amber, the yellow) is pinned there too,
+  with lighter states.
+
+The trade-off: a ramp step is guaranteed to pass, in both modes, for any
+colour. A pinned colour is exact and passes only if the colour can. Unpinned,
+a brand rarely warns; pinned, read the warnings.
+
+The file then has three rules, not one: `:root` with the ramp and the light
+roles, and the dark values of those roles under `.dark, [data-theme="dark"]`
+and under `[data-theme="auto"]` in the dark media query. A role set on `:root`
+alone would be one value in both modes. To force a dark value the generator
+declined, write the role in your own dark rule after the file (see
+[One role in dark only](#one-role-in-dark-only)).
+
+A role you pass with `--set` is left to you in both modes: `--pin` does not
+write it.
 
 ### What it does
 
@@ -322,7 +495,8 @@ stderr. Exit codes: 0 done, 1 `--strict` with a failed pair, 2 bad usage
 
 ### What it does not do
 
-- It does not put your exact hex in the ramp.
+- It does not put your exact hex in the ramp. `--pin` puts it on the primary
+  action; the ramp steps stay on the curve.
 - It does not write fonts, radius or shadow unless you pass them with `--set`.
 - It does not check the hover, pressed and secondary-button alpha tints. They
   are not part of the contrast list.
@@ -341,7 +515,8 @@ An input that will not give the ramp its author probably expects:
 zabi-theme: warning: brand #808080 has almost no colour in it, so the ramp is a grey scale. Give a more saturated colour for a visible hue.
 ```
 
-A role pair below AA, which only happens when `--set` moves a role:
+A role pair below AA, which only happens when `--set` moves a role or `--pin`
+pins a colour that cannot carry it:
 
 ```
 zabi-theme: warning: light · on-brand label on primary: #2f1b00 on #9b6200 is 3.24:1, needs 4.5:1 (--color-on-brand on --color-action-primary)
@@ -389,6 +564,7 @@ const { css, tokens, warnings, closest } = createTheme({
   accent: "#ff3366", // optional
   neutral: "#78716c", // optional
   overrides: { "--color-link": "var(--color-brand-800)" }, // optional
+  pin: true, // optional: the exact brand on the primary action; or { brand: true, accent: true }
 });
 
 for (const warning of warnings) console.warn(warning.message);
@@ -400,12 +576,16 @@ writeFileSync("src/lib/brand.generated.css", css);
 
 | Returned | |
 |---|---|
-| `css` | The stylesheet: a header comment and one `:root { … }` rule. |
-| `tokens` | Every declaration in `css`, name to value. |
+| `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin`, two dark rules follow it. |
+| `tokens` | Every declaration of the `:root` rule, name to value. |
+| `darkTokens` | Only with `pin`: every declaration of the dark rules. |
+| `pinned` | Only with `pin`: `{ brand?, accent? }`, each `{ hex, light: { followed, onRamp, states }, dark: { pinned, followed, onRamp, states?, failed? } }`. |
 | `warnings` | `{ type: "contrast", pair, mode, ratio, required, foreground, background, message }` for each role pair below AA, and `{ type: "input", option, message }` notes about the colours given. Empty when everything passes. |
 | `closest` | `{ brand, accent?, neutral? }`, each `{ step, hex, deltaE, exact }`: where the input landed in its ramp. |
 
-It throws a `TypeError` when `brand` is missing or a colour is not hex.
+It throws a `TypeError` when `brand` is missing, a colour is not hex, or
+`pin.accent` is set without `accent`. Without `pin` the result and the file are
+exactly what they were before the option existed.
 
 ## What does not follow an override
 

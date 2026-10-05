@@ -15,6 +15,18 @@ export { default as List } from './atoms/List.svelte';
 export { default as ListItem } from './atoms/ListItem.svelte';
 export { default as Heading } from './atoms/Heading.svelte';
 export { default as ThemeToggle } from './atoms/ThemeToggle.svelte';
+export {
+    DEFAULT_THEME_STORAGE_KEY,
+    THEME_MODES,
+    getStoredThemeMode,
+    getThemeMode,
+    isThemeDark,
+    isThemeMode,
+    setThemeMode,
+    storeThemeMode,
+    themeInitScript,
+} from './util/theme-mode.js';
+export type { SetThemeModeOptions, ThemeMode, ThemeToggleLabels } from './util/theme-mode.js';
 export { default as Divider } from './atoms/Divider.svelte';
 export { default as Container } from './atoms/Container.svelte';
 export { default as Text } from './atoms/Text.svelte';

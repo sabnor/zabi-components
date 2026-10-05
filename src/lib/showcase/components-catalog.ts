@@ -1816,8 +1816,51 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "ThemeToggle",
                 category: "atoms",
                 description:
-                    "Sun and moon control that switches light and dark and stores the choice. It writes data-theme where the page uses it, the dark class otherwise.",
+                    "Button that switches light and dark, or steps through system, light and dark, and stores the choice. It reads and writes the theme on the html element.",
                 props: [
+                    {
+                        name: "modes",
+                        type: "'two' | 'three'",
+                        required: false,
+                        defaultValue: "two",
+                        description:
+                            "two flips light and dark, through data-theme where the page has it and the dark class otherwise. three steps system, light, dark and always writes data-theme.",
+                    },
+                    {
+                        name: "mode",
+                        type: "'auto' | 'light' | 'dark'",
+                        required: false,
+                        description:
+                            "The page's mode; supports bind:mode. It follows the page, and assigning it switches the page.",
+                    },
+                    {
+                        name: "onmodechange",
+                        type: "(mode: 'auto' | 'light' | 'dark') => void",
+                        required: false,
+                        description: "Called with the new mode when a press changes it.",
+                    },
+                    {
+                        name: "storageKey",
+                        type: "string | null",
+                        required: false,
+                        defaultValue: '"theme"',
+                        description:
+                            "localStorage key the choice is kept under and restored from on mount. null keeps nothing.",
+                    },
+                    {
+                        name: "labels",
+                        type: "Partial<ThemeToggleLabels>",
+                        required: false,
+                        description:
+                            "Texts of the accessible name: auto, light, dark and describe(current, next) for three modes, toLight and toDark for two, beforeMount.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "A disabled button changes nothing.",
+                    },
                     {
                         name: "size",
                         type: "'sm' | 'md' | 'lg'",
@@ -1839,6 +1882,12 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Theme toggle",
                         description: "Toggles light/dark theme",
                         code: "<ThemeToggle />",
+                    },
+                    {
+                        title: "System, light and dark",
+                        description:
+                            "Steps through the three modes and writes data-theme. Its name says the mode and what a press does.",
+                        code: '<ThemeToggle modes="three" bind:mode onmodechange={(mode) => save(mode)} />',
                     },
                 ],
             },

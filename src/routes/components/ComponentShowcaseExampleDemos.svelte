@@ -1641,11 +1641,21 @@
                     </Card>
                 </div>
             {:else if component.name === "ThemeToggle"}
-                <div class="flex items-center gap-3">
-                    <ThemeToggle />
-                    <Text tone="description" size="sm"
-                        >Syncs with the site theme.</Text
-                    >
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <ThemeToggle />
+                        <Text tone="description" size="sm"
+                            >Syncs with the site theme.</Text
+                        >
+                    </div>
+                    <!-- A key of its own: this demo must not overwrite the
+                    choice the site's own toggle stores under "theme". -->
+                    <div class="flex items-center gap-3" data-testid="theme-toggle-three">
+                        <ThemeToggle modes="three" storageKey="zabi-docs-theme-demo" />
+                        <Text tone="description" size="sm"
+                            >System, light, dark: writes data-theme.</Text
+                        >
+                    </div>
                 </div>
             {:else if component.name === "Divider"}
                 <div class="space-y-4">
