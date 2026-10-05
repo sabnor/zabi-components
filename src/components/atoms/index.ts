@@ -25,3 +25,5 @@ export { default as Spinner } from './Spinner.svelte';
 export { default as Rating } from './Rating.svelte';
 export type { RatingStrings } from '../util/rating.js';
 export { default as FloatingActionButton } from './FloatingActionButton.svelte';
+export { default as DateField } from './DateField.svelte';
+export { default as TimeField } from './TimeField.svelte';

@@ -76,6 +76,7 @@ The rest of this file is reference: import paths, the two component styles, toke
 | **Category** `zabi-components/atoms`, `/molecules`, `/organisms` | Larger bundles where you want imports to mirror structure, or you only pull one layer in a given file. |
 | **Types** `zabi-components/types` | Shared prop unions / enums in your app code. |
 | **Helpers** `zabi-components`, `zabi-components/lib/ssr-safe`, `lib/variant-utils` | Utilities the package publishes — not app internals. |
+| **Dates** `import { formatDate, formatTime } from "zabi-components"` | The value of a DateField or TimeField (`2026-10-06`, `19:00`) as text in a named language: `formatDate("2026-10-06", "sv")` is "6 okt. 2026". Never shifted by a time zone. |
 
 Stick to **documented package subpaths** from `package.json` `exports`. Do not reach into `node_modules/zabi-components/dist/...` by hand.
 

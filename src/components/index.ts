@@ -33,6 +33,8 @@ export { default as Spinner } from './atoms/Spinner.svelte';
 export { default as Rating } from './atoms/Rating.svelte';
 export type { RatingStrings } from './util/rating.js';
 export { default as FloatingActionButton } from './atoms/FloatingActionButton.svelte';
+export { default as DateField } from './atoms/DateField.svelte';
+export { default as TimeField } from './atoms/TimeField.svelte';
 
 export { default as Alert } from './molecules/Alert.svelte';
 export { default as ComponentDemo } from './molecules/ComponentDemo.svelte';
@@ -116,6 +118,12 @@ export type {
     BottomSheetSnap,
 } from './util/bottom-sheet.js';
 export { default as StickyActionBar } from './molecules/StickyActionBar.svelte';
+export { default as Calendar } from './molecules/Calendar.svelte';
+export type {
+    CalendarEvent,
+    CalendarStrings,
+    CalendarTone,
+} from './util/calendar.js';
 
 export {
     toastStore,
@@ -137,6 +145,12 @@ export { default as AppShell } from './organisms/AppShell.svelte';
 import { generateId } from './util/ssr-safe.js';
 
 export { generateId };
+
+/**
+ * Dates and times for reading, in the page's language: what a DateField or a
+ * TimeField holds (`2026-10-06`, `19:00`) as "6 okt. 2026" and "19:00".
+ */
+export { formatDate, formatTime } from './util/date.js';
 
 export const createId = (prefix: string = 'id'): string => generateId(prefix);
 

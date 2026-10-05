@@ -8,8 +8,9 @@ export * from './page.types.js';
 // Component type definitions
 // Enhanced component type with proper event handling for Svelte 5
 import type { Component, Snippet } from 'svelte';
-import type { HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
+import type { HTMLAttributes, HTMLButtonAttributes, HTMLInputAttributes } from 'svelte/elements';
 import type { BottomTabBarItem } from '../components/util/bottom-tab-bar.js';
+import type { CalendarEvent, CalendarStrings } from '../components/util/calendar.js';
 import type {
     BottomSheetCloseReason,
     BottomSheetSnap,
@@ -518,6 +519,104 @@ export interface BottomSheetProps
     footer?: Snippet;
 }
 
+// DateField component props
+export interface DateFieldProps
+    extends Omit<
+        HTMLInputAttributes,
+        'class' | 'type' | 'value' | 'size' | 'min' | 'max' | 'step' | 'required' | 'disabled' | 'readonly' | 'id' | 'name'
+    > {
+    /** Omit to auto-generate; pair with FormField's `id` when used inside FormField. */
+    id?: string;
+    /** The date as `YYYY-MM-DD`, or `""` while empty. Supports `bind:value`. */
+    value?: string;
+    /** Name the value is submitted under in a form. */
+    name?: string;
+    label?: string;
+    /** True when FormField supplies the visible `<label>`. */
+    hideLabel?: boolean;
+    /** Help text under the field, read out with it. */
+    hint?: string;
+    /** An error under the field. It marks the field invalid and is announced. */
+    error?: string;
+    /** Earliest value that can be picked, in the format of `value`. */
+    min?: string;
+    /** Latest value that can be picked, in the format of `value`. */
+    max?: string;
+    /** Steps between dates that can be picked, in days. */
+    step?: number | 'any';
+    required?: boolean;
+    disabled?: boolean;
+    /** Shows the value without letting it be changed; it is still submitted. */
+    readonly?: boolean;
+    /** Height, on the scale Input and Button use. At least 44px on a touch screen. */
+    size?: SizeVariant;
+    /** Extra classes for the `<input>`. */
+    class?: string;
+}
+
+// TimeField component props
+export interface TimeFieldProps
+    extends Omit<
+        HTMLInputAttributes,
+        'class' | 'type' | 'value' | 'size' | 'min' | 'max' | 'step' | 'required' | 'disabled' | 'readonly' | 'id' | 'name'
+    > {
+    /** Omit to auto-generate; pair with FormField's `id` when used inside FormField. */
+    id?: string;
+    /** The time as 24-hour `HH:mm`, or `""` while empty. Supports `bind:value`. */
+    value?: string;
+    /** Name the value is submitted under in a form. */
+    name?: string;
+    label?: string;
+    /** True when FormField supplies the visible `<label>`. */
+    hideLabel?: boolean;
+    /** Help text under the field, read out with it. */
+    hint?: string;
+    /** An error under the field. It marks the field invalid and is announced. */
+    error?: string;
+    /** Earliest value that can be picked, in the format of `value`. */
+    min?: string;
+    /** Latest value that can be picked, in the format of `value`. */
+    max?: string;
+    /** Steps between times that can be picked, in seconds. */
+    step?: number | 'any';
+    required?: boolean;
+    disabled?: boolean;
+    /** Shows the value without letting it be changed; it is still submitted. */
+    readonly?: boolean;
+    /** Height, on the scale Input and Button use. At least 44px on a touch screen. */
+    size?: SizeVariant;
+    /** Extra classes for the `<input>`. */
+    class?: string;
+}
+
+// Calendar component props
+export interface CalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'onselect'> {
+    /** The month shown, as `YYYY-MM`. Supports `bind:month`. */
+    month?: string;
+    /** The selected day, as `YYYY-MM-DD`, or null. Supports `bind:selected`. */
+    selected?: string | null;
+    /** What happens on which day. A day shows a dot per event, three at most. */
+    events?: CalendarEvent[];
+    /** First day of the week: 0 for Sunday to 6 for Saturday. */
+    weekStartsOn?: number;
+    /** Language of the month and day names, as a BCP 47 tag. */
+    locale?: string;
+    /** Earliest day that can be selected, as `YYYY-MM-DD`. */
+    min?: string;
+    /** Latest day that can be selected, as `YYYY-MM-DD`. */
+    max?: string;
+    /** Return true for a day that cannot be selected. */
+    isDateDisabled?: (date: string) => boolean;
+    /** The words the calendar says; replace any of them to translate. */
+    strings?: Partial<CalendarStrings>;
+    /** Called with the day when the user selects another one. */
+    onselect?: (date: string) => void;
+    /** Called with the month when the user moves to another one. */
+    onmonthchange?: (month: string) => void;
+    /** Extra classes for the host element. */
+    class?: string;
+}
+
 // Component type definitions
 export type Button = ZabiComponent<ButtonProps, ButtonEvents>;
 export type Heading = ZabiComponent<HeadingProps>;
@@ -541,3 +640,6 @@ export type SegmentedControl = ZabiComponent<SegmentedControlProps>;
 export type FloatingActionButton = ZabiComponent<FloatingActionButtonProps>;
 export type StickyActionBar = ZabiComponent<StickyActionBarProps>;
 export type BottomSheet = ZabiComponent<BottomSheetProps>;
+export type DateField = ZabiComponent<DateFieldProps>;
+export type TimeField = ZabiComponent<TimeFieldProps>;
+export type Calendar = ZabiComponent<CalendarProps>;

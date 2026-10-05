@@ -80,4 +80,10 @@ export type {
     BottomSheetSnap,
 } from '../util/bottom-sheet.js';
 export { default as StickyActionBar } from './StickyActionBar.svelte';
+export { default as Calendar } from './Calendar.svelte';
+export type {
+    CalendarEvent,
+    CalendarStrings,
+    CalendarTone,
+} from '../util/calendar.js';
 export * from './toast-store.js';

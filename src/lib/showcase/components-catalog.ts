@@ -2159,6 +2159,355 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "DateField",
+                category: "atoms",
+                description:
+                    "Date field that opens the device's own date picker, styled like Input; the value is an ISO date.",
+                props: [
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "The date as YYYY-MM-DD, or an empty string while empty. Bindable. It is this format whatever the field shows.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Label above the field.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Help text under the field, read out with it.",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "An error under the field. It marks the field invalid and is announced.",
+                    },
+                    {
+                        name: "min",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Earliest date that can be picked, as YYYY-MM-DD. Enforced by the browser's picker and its validation.",
+                    },
+                    {
+                        name: "max",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Latest date that can be picked, as YYYY-MM-DD.",
+                    },
+                    {
+                        name: "step",
+                        type: "number | 'any'",
+                        required: false,
+                        description:
+                            "Steps between dates that can be picked, in days.",
+                    },
+                    {
+                        name: "required",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "The field must be filled in.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Cannot be changed, and is not submitted.",
+                    },
+                    {
+                        name: "readonly",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the value without letting it be changed; it is still submitted.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Height, on the scale Input and Button use: 32, 40 and 48px, and at least 44px on a touch screen.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Name the value is submitted under in a form.",
+                    },
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        defaultValue: "generated",
+                        description:
+                            "Id of the input. Inside FormField, spread the props it hands to its control.",
+                    },
+                    {
+                        name: "hideLabel",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "True when FormField supplies the visible label.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the input. Other attributes land on the input too.",
+                    },
+                ],
+                variants: [
+                    "sm",
+                    "md",
+                    "lg",
+                    "disabled",
+                    "readonly",
+                ],
+                examples: [
+                    {
+                        title: "The device's picker, and the value as text",
+                        description:
+                            "The field shows the date in the format of the browser or device, not of the page: no attribute changes that. formatDate turns the value into text in the language you name, for the places that only show it",
+                        code: `<script lang="ts">
+    import { DateField, formatDate } from "zabi-components";
+
+    let value = $state("2026-10-06");
+</script>
+
+<DateField label="Quiz date" name="date" bind:value required />
+
+<!-- 6 okt. 2026 -->
+<p>{formatDate(value, "sv")}</p>`,
+                    },
+                    {
+                        title: "Limits, a hint, an error, and inside FormField",
+                        description:
+                            "min and max are the browser's to enforce. The hint and the error are read out with the field. In a FormField, hide the field's own label and spread the props the FormField hands over",
+                        code: `<DateField
+    label="Last day to sign up"
+    hint="Teams can join until the end of this day."
+    error={error}
+    min="2026-10-01"
+    max="2026-12-31"
+    bind:value
+/>
+
+<FormField label="Played on" required>
+    {#snippet control(props)}
+        <DateField hideLabel bind:value {...props} />
+    {/snippet}
+</FormField>`,
+                    },
+                    {
+                        title: "Sizes and states",
+                        description:
+                            "The three sizes of Input, read only and disabled. On a touch screen sm and md are both 44px tall",
+                        code: `<DateField label="Small" size="sm" bind:value />
+<DateField label="Medium" size="md" bind:value />
+<DateField label="Large" size="lg" bind:value />
+<DateField label="Read only" readonly bind:value />
+<DateField label="Disabled" disabled bind:value />`,
+                    },
+                ],
+            },
+            {
+                name: "TimeField",
+                category: "atoms",
+                description:
+                    "Time field that opens the device's own time picker, styled like Input; the value is 24-hour HH:mm.",
+                props: [
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "The time as HH:mm, or an empty string while empty. Bindable. It is this format whatever the field shows.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Label above the field.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Help text under the field, read out with it.",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "An error under the field. It marks the field invalid and is announced.",
+                    },
+                    {
+                        name: "min",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Earliest time that can be picked, as HH:mm. Enforced by the browser's picker and its validation.",
+                    },
+                    {
+                        name: "max",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Latest time that can be picked, as HH:mm.",
+                    },
+                    {
+                        name: "step",
+                        type: "number | 'any'",
+                        required: false,
+                        description:
+                            "Steps between times that can be picked, in seconds: 300 for five minutes, 1 to ask for seconds.",
+                    },
+                    {
+                        name: "required",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "The field must be filled in.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Cannot be changed, and is not submitted.",
+                    },
+                    {
+                        name: "readonly",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the value without letting it be changed; it is still submitted.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Height, on the scale Input and Button use: 32, 40 and 48px, and at least 44px on a touch screen.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Name the value is submitted under in a form.",
+                    },
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        defaultValue: "generated",
+                        description:
+                            "Id of the input. Inside FormField, spread the props it hands to its control.",
+                    },
+                    {
+                        name: "hideLabel",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "True when FormField supplies the visible label.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the input. Other attributes land on the input too.",
+                    },
+                ],
+                variants: [
+                    "sm",
+                    "md",
+                    "lg",
+                    "disabled",
+                    "readonly",
+                ],
+                examples: [
+                    {
+                        title: "The device's picker, and the value as text",
+                        description:
+                            "The field shows the time in the format of the browser or device, not of the page: no attribute changes that. formatTime turns the value into text in the language you name, for the places that only show it",
+                        code: `<script lang="ts">
+    import { TimeField, formatTime } from "zabi-components";
+
+    let value = $state("19:00");
+</script>
+
+<TimeField label="Starts" name="time" bind:value required />
+
+<!-- 19:00 -->
+<p>{formatTime(value, "sv")}</p>`,
+                    },
+                    {
+                        title: "Limits, a hint, an error, and inside FormField",
+                        description:
+                            "min and max are the browser's to enforce. The hint and the error are read out with the field. In a FormField, hide the field's own label and spread the props the FormField hands over",
+                        code: `<TimeField
+    label="Doors open"
+    hint="In steps of 15 minutes."
+    error={error}
+    min="17:00"
+    max="23:00"
+    step={900}
+    bind:value
+/>
+
+<FormField label="First question" required>
+    {#snippet control(props)}
+        <TimeField hideLabel bind:value {...props} />
+    {/snippet}
+</FormField>`,
+                    },
+                    {
+                        title: "Sizes and states",
+                        description:
+                            "The three sizes of Input, read only and disabled. On a touch screen sm and md are both 44px tall",
+                        code: `<TimeField label="Small" size="sm" bind:value />
+<TimeField label="Medium" size="md" bind:value />
+<TimeField label="Large" size="lg" bind:value />
+<TimeField label="Read only" readonly bind:value />
+<TimeField label="Disabled" disabled bind:value />`,
+                    },
+                ],
+            },
         ],
         molecules: [
             {
@@ -5159,6 +5508,164 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
         </StickyActionBar>
     </form>
 </BottomSheet>`,
+                    },
+                ],
+            },
+            {
+                name: "Calendar",
+                category: "molecules",
+                description:
+                    "Month grid that marks today and the days with events, for picking a day and listing what happens on it.",
+                props: [
+                    {
+                        name: "month",
+                        type: "string",
+                        required: false,
+                        defaultValue: "the month of selected, or of today",
+                        description:
+                            "The month shown, as YYYY-MM. Bindable. On the server, with neither month nor selected, it is the current month in UTC: pass month to decide it yourself.",
+                    },
+                    {
+                        name: "selected",
+                        type: "string | null",
+                        required: false,
+                        defaultValue: "null",
+                        description:
+                            "The selected day, as YYYY-MM-DD, or null. Bindable. Pressing the selected day again changes nothing.",
+                    },
+                    {
+                        name: "events",
+                        type: "Array<{ date, label, tone? }>",
+                        required: false,
+                        defaultValue: "[]",
+                        description:
+                            "What happens on which day: date as YYYY-MM-DD, a label, and a tone of default, success, warning, danger or accent for the dot. A day shows a dot per event, three at most; its name counts and lists them all.",
+                    },
+                    {
+                        name: "weekStartsOn",
+                        type: "number",
+                        required: false,
+                        defaultValue: "1",
+                        description:
+                            "First day of the week: 0 for Sunday to 6 for Saturday.",
+                    },
+                    {
+                        name: "locale",
+                        type: "string",
+                        required: false,
+                        defaultValue: "the page's language",
+                        description:
+                            "Language of the month and day names, as a BCP 47 tag such as sv or en-GB. Left out, it is the lang of the html element, then the browser's; on the server it is English, so pass it when you render on the server.",
+                    },
+                    {
+                        name: "min",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Earliest day that can be selected, as YYYY-MM-DD. Earlier days are unavailable and earlier months cannot be reached.",
+                    },
+                    {
+                        name: "max",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Latest day that can be selected, as YYYY-MM-DD.",
+                    },
+                    {
+                        name: "isDateDisabled",
+                        type: "(date: string) => boolean",
+                        required: false,
+                        description:
+                            "Return true for a day that cannot be selected. It can still be focused and read.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<CalendarStrings>",
+                        required: false,
+                        description:
+                            "The words the calendar says: previousMonth, nextMonth, today, selected, unavailable, and events, a function from a day's events to the text read out for them.",
+                    },
+                    {
+                        name: "onselect",
+                        type: "(date: string) => void",
+                        required: false,
+                        description:
+                            "Runs with the day when the user selects another one.",
+                    },
+                    {
+                        name: "onmonthchange",
+                        type: "(month: string) => void",
+                        required: false,
+                        description:
+                            "Runs with the month when the user moves to another one, with the buttons or the keyboard.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the host element. The calendar is as wide as its container: give it a width where the container is wide.",
+                    },
+                ],
+                variants: [
+                    "selected",
+                    "events",
+                    "min",
+                    "max",
+                ],
+                examples: [
+                    {
+                        title: "Days with events, and the selected day's list",
+                        description:
+                            "In Swedish, weeks from Monday. A day shows a dot per event, three at most. Press a day and its events are listed below; press it again and nothing changes. The arrow keys move between days and on into the next month",
+                        code: `<script lang="ts">
+    import { Calendar, type CalendarEvent } from "zabi-components";
+
+    const events: CalendarEvent[] = [
+        { date: "2026-10-06", label: "Quiz på The Crown" },
+        { date: "2026-10-06", label: "Musikquiz", tone: "accent" },
+        { date: "2026-10-10", label: "Lagträff", tone: "success" },
+    ];
+
+    let month = $state("2026-10");
+    let selected = $state<string | null>("2026-10-06");
+    const dayEvents = $derived(events.filter((event) => event.date === selected));
+</script>
+
+<Calendar
+    bind:month
+    bind:selected
+    {events}
+    locale="sv"
+    strings={{
+        previousMonth: "Föregående månad",
+        nextMonth: "Nästa månad",
+        today: "i dag",
+        selected: "vald",
+        events: (list) => \`\${list.length} händelser: \${list.map((event) => event.label).join(", ")}\`,
+    }}
+/>
+
+<ul>
+    {#each dayEvents as event}
+        <li>{event.label}</li>
+    {/each}
+</ul>`,
+                    },
+                    {
+                        title: "Limits, closed days and weeks from Sunday",
+                        description:
+                            "Days before min and after max are unavailable and the months beyond them cannot be reached; isDateDisabled closes single days, here every Monday. Unavailable days can still be focused and read",
+                        code: `<Calendar
+    bind:selected
+    locale="en-GB"
+    weekStartsOn={0}
+    min="2026-10-05"
+    max="2026-11-20"
+    isDateDisabled={(date) => new Date(\`\${date}T00:00:00Z\`).getUTCDay() === 1}
+    onselect={(date) => book(date)}
+/>`,
                     },
                 ],
             },

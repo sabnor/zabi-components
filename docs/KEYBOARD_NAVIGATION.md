@@ -874,6 +874,82 @@ an AppShell that puts it between the content and the tabs in the tab order.
 
 ---
 
+### DateField and TimeField
+
+**Current Keyboard Support:**
+- ✅ **Tab**: Reach the field; in a desktop browser, Tab also steps through its parts (day, month, year; hours, minutes)
+- ✅ **Arrow Up / Down**: Change the focused part
+- ✅ **Digits**: Type into the focused part
+- ✅ **Space / Enter / Alt + Arrow Down**: Open the browser's picker, where it has one
+
+These are native `<input type="date">` and `<input type="time">`: the keys,
+the picker and how the value is read out are the browser's and the device's.
+On a phone, a tap opens the system picker. The library adds the label, the
+hint and the error, wired to the field as in Input, and nothing in between the
+user and the native control.
+
+The value is always `YYYY-MM-DD` or 24-hour `HH:mm` (an empty string while
+empty), whatever the field shows. The field shows the browser's or the
+device's own format, not the page's, and cannot be told otherwise. Use
+`formatDate` and `formatTime` to show a value as text in the page's language.
+
+**Usage:**
+```svelte
+<DateField label="Quiz date" bind:value={date} min="2026-10-01" />
+<TimeField label="Starts" bind:value={time} step={300} />
+<p>{formatDate(date, "sv")} {formatTime(time, "sv")}</p>
+```
+
+**Best Practices:**
+- Give every field a `label`, or put it in a FormField with `hideLabel` and the props FormField hands over
+- Say what `min` and `max` are in the `hint`: the browser enforces them, but only tells the user after the fact
+- Use `size="lg"` in a phone-first form
+
+---
+
+### Calendar Component
+
+**Current Keyboard Support:**
+- ✅ **Tab**: To the previous and next buttons, then to one day in the grid, then on: the grid is one Tab stop
+- ✅ **Arrow Left / Right**: The day before / after (swapped in a right-to-left page)
+- ✅ **Arrow Up / Down**: The same weekday a week before / after
+- ✅ **Home / End**: The first / last day of the week
+- ✅ **Page Up / Page Down**: The same day a month before / after
+- ✅ **Shift + Page Up / Page Down**: The same day a year before / after
+- ✅ **Enter / Space**: Select the focused day
+
+Moving past the first or last day of the month changes the month and keeps
+focus on the day arrived at. A day the target month does not have becomes its
+last one (31 October, Page Down: 30 November). The keys stop at `min` and
+`max`. Moving does not select.
+
+The day that takes Tab is the one the keyboard was last on; before that, the
+selected day, else today, else the first day that can be selected.
+
+It is an ARIA grid (`role="grid"` on a table) named by the month title. The
+title is a polite live region, so a change of month is announced whether it
+comes from a button or from the keys. Each day is a button in a grid cell. Its
+name is the full date, then what is true of it, then its events: "Tuesday, 6
+October 2026, today, selected, 2 events: Quiz at The Crown, Music quiz". The
+selected cell also has `aria-selected`, and today `aria-current="date"`. A day
+that cannot be selected is `aria-disabled` and says "unavailable": it can
+still be focused and read. The same goes for a month button with nowhere to
+go, so focus is never dropped. All of these words come from `strings`.
+
+Pressing the selected day again does nothing: the selection is never cleared.
+
+**Usage:**
+```svelte
+<Calendar bind:month bind:selected {events} locale="sv" strings={swedish} />
+```
+
+**Best Practices:**
+- List the selected day's events under the grid; the dots only say that there are some
+- Pass `locale`, and translate `strings` with it: the date names come from the locale, the added words from `strings`
+- Do not rely on a dot's colour: a tone is decoration, and the event's label is what is read out
+
+---
+
 ## Focus Management
 
 ### Focus Styles

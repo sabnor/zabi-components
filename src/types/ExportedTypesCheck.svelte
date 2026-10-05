@@ -30,6 +30,9 @@
     import FloatingActionButton from "../components/atoms/FloatingActionButton.svelte";
     import BottomSheet from "../components/molecules/BottomSheet.svelte";
     import StickyActionBar from "../components/molecules/StickyActionBar.svelte";
+    import DateField from "../components/atoms/DateField.svelte";
+    import TimeField from "../components/atoms/TimeField.svelte";
+    import Calendar from "../components/molecules/Calendar.svelte";
     import type {
         AlertProps,
         BadgeProps,
@@ -53,6 +56,9 @@
         FloatingActionButtonProps,
         BottomSheetProps,
         StickyActionBarProps,
+        DateFieldProps,
+        TimeFieldProps,
+        CalendarProps,
     } from "./index";
 
     interface Props {
@@ -79,6 +85,9 @@
         floatingActionButton?: FloatingActionButtonProps;
         bottomSheet?: BottomSheetProps;
         stickyActionBar?: StickyActionBarProps;
+        dateField?: DateFieldProps;
+        timeField?: TimeFieldProps;
+        calendar?: CalendarProps;
     }
 
     let {
@@ -104,6 +113,9 @@
         floatingActionButton = { label: "" },
         bottomSheet = { title: "" },
         stickyActionBar = {},
+        dateField = {},
+        timeField = {},
+        calendar = {},
     }: Props = $props();
 </script>
 
@@ -129,3 +141,6 @@
 <FloatingActionButton {...floatingActionButton} />
 <BottomSheet {...bottomSheet} />
 <StickyActionBar {...stickyActionBar} />
+<DateField {...dateField} />
+<TimeField {...timeField} />
+<Calendar {...calendar} />

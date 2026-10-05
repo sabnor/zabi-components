@@ -24,6 +24,9 @@ import BottomSheetDemo from "./BottomSheetDemo.svelte";
 import FloatingActionButtonDemo from "./FloatingActionButtonDemo.svelte";
 import SlideUpDemo from "./SlideUpDemo.svelte";
 import StickyActionBarDemo from "./StickyActionBarDemo.svelte";
+import CalendarDemo from "./CalendarDemo.svelte";
+import DateFieldDemo from "./DateFieldDemo.svelte";
+import TimeFieldDemo from "./TimeFieldDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -52,6 +55,9 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     FloatingActionButton: FloatingActionButtonDemo,
     SlideUp: SlideUpDemo,
     StickyActionBar: StickyActionBarDemo,
+    Calendar: CalendarDemo,
+    DateField: DateFieldDemo,
+    TimeField: TimeFieldDemo,
 };
 
 export function getComponentDemo(

@@ -131,6 +131,8 @@ them:
 - **Drawer** takes `sm` | `md` | `lg` for the width of the panel, not a control height.
 - **SegmentedControl** is 32, 40 and 48px tall as the controls above, and never less than 44px a segment on a touch screen, where the three sizes therefore look alike.
 - **Rating** takes `sm` | `md` | `lg` for the star (20, 24 and 32px); the target around an interactive star stays at 44px or more.
+- **DateField** and **TimeField** take the three sizes of Input and are exactly as tall, on a touch screen too.
+- **Calendar** has no `size`: it is as wide as its container, in seven equal columns, with days at least 44px tall. Give it a width where the container is wide.
 
 ## Usage Guidelines
 
@@ -221,6 +223,14 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 ### Slider
 - Variants: `default`, `success`, `warning`, `error`, `info`
 - Sizes: `sm`, `md`, `lg`
+
+### DateField and TimeField
+- Sizes: `sm`, `md`, `lg`
+- States: `error` (with a message), `readonly`, `disabled`, `required`
+
+### Calendar
+- Event tones: `default`, `success`, `warning`, `danger`, `accent` (the colour of a day's dot)
+- States of a day: today, selected, unavailable (`min`, `max`, `isDateDisabled`)
 
 ### Rating
 - Sizes: `sm`, `md`, `lg`

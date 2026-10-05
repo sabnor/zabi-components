@@ -349,6 +349,27 @@ Whenever token or CSS import API surface changes, include:
 - **`--toaster-bottom-offset`** lifts the toast stack above a fixed bar or a
   floating button of your own (72px clears a FloatingActionButton). Toaster
   passes other attributes through to its region.
+- **DateField and TimeField**, two new atoms: the browser's own date and time
+  inputs in the library's Input, so a phone shows its native picker.
+  `bind:value` is a string, `YYYY-MM-DD` or 24-hour `HH:mm`, and `""` while
+  empty. `label`, `hint`, `error`, `min`, `max`, `step`, `required`,
+  `disabled`, `readonly`, `size`, `name`; they work inside FormField. The
+  field shows the date in the device's format, which a page cannot change.
+- **`formatDate` and `formatTime`**, exported from the package root, format
+  those strings for display in a given locale (`formatDate("2026-10-06", "sv")`
+  is "6 okt. 2026"). They never shift a date by the time zone, and return `""`
+  for an empty or invalid value.
+- **Calendar**, a new molecule: one month as a grid, with dots on the days
+  that have events. `bind:month` (`YYYY-MM`), `bind:selected` (`YYYY-MM-DD` or
+  `null`), `events` (`date`, `label`, optional `tone`; up to three dots a
+  day), `weekStartsOn` (default Monday), `locale`, `min`, `max`,
+  `isDateDisabled`, `onselect`, `onmonthchange`. Pressing the selected day
+  again does nothing. It is an ARIA grid with one Tab stop: arrow keys move by
+  day and week, Home and End within the week, Page Up and Page Down by month
+  (with Shift, by year). Each day is named in full with its state and events
+  ("Tuesday, 6 October 2026, today, 2 events: …"); `locale` translates the
+  dates, and `strings` the words around them. Days are 44px tall and share
+  the width, 41px each on a 320px screen.
 
 ### Changed
 
