@@ -231,11 +231,15 @@
                 {...aria}
                 aria-describedby={message ? `${selectId}-message` : undefined}
             >
+                <!-- An empty trigger shows its placeholder in the placeholder
+                colour, as Input does. It was `text-description`, which in
+                dark is 1.16:1 from the value text: a chosen option and
+                "Choose an option" could not be told apart by colour. -->
                 <span
                     class="text-left flex-1 truncate {isLoading
                         ? 'text-description'
                         : isEmpty()
-                        ? 'text-description'
+                        ? 'text-input-placeholder'
                         : 'text-body'}"
                 >
                     {#if isLoading}

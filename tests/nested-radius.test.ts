@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 
+import List from "../src/components/atoms/List.svelte";
 import ListItem from "../src/components/atoms/ListItem.svelte";
 import Alert from "../src/components/molecules/Alert.svelte";
 import SidebarFooter from "../src/components/molecules/SidebarFooter.svelte";
@@ -97,5 +98,13 @@ describe("nested corner radii", () => {
         render(ListItem, { props: { item: { id: "inbox", label: "Inbox" } } });
         const row = screen.getByText("Inbox").closest("[class*='focus-ring']")!;
         expect(row.className).toContain("rounded-[var(--zabi-list-row-radius,var(--radius-container))]");
+    });
+
+    it("List: takes the same radius as its rows and does not clip them, so a row's focus ring is whole", () => {
+        render(List, { props: { items: [{ id: "inbox", label: "Inbox" }] } });
+        const list = screen.getByText("Inbox").closest("ul")!;
+        expect(classes(list)).toContain("rounded-[var(--zabi-list-row-radius,var(--radius-container))]");
+        // The rows fill the list edge to edge: clipping here cuts the ring drawn around a focused row.
+        expect(classes(list)).not.toContain("overflow-hidden");
     });
 });

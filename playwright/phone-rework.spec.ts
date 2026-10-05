@@ -767,10 +767,19 @@ test.describe("Toaster on a desktop", () => {
 
     test("in the corner it was in, the size it was", async ({ page }) => {
         await page.goto("/components/Toaster", { waitUntil: "domcontentloaded" });
-        await expect(async () => {
-            await page.getByRole("button", { name: "Push sample toast" }).first().click({ timeout: 1_000 });
-            await expect(firstToast(page)).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        // One press, once the page can hear it. Pressing again until a toast
+        // shows pushed two when the first press was heard and its toast took
+        // more than a second to appear: the first toast in the region is then
+        // the upper one, 130px from the bottom, until both time out. The
+        // site's ThemeToggle only names its action once it has mounted, which
+        // is after the page has hydrated.
+        await expect(
+            page.getByRole("button", { name: /^Switch to (dark|light) mode$/ }).first(),
+            "The page must hydrate before the button is pressed",
+        ).toBeAttached({ timeout: 30_000 });
+        await page.getByRole("button", { name: "Push sample toast" }).first().click();
+        await expect(firstToast(page)).toBeVisible();
+        await expect(toasterRegion(page).first().locator("[data-toast-id]")).toHaveCount(1);
         await expect(firstToast(page)).toHaveCSS("opacity", "1");
 
         // Measured before the phone work: 16px from the bottom and the right, 24rem wide.

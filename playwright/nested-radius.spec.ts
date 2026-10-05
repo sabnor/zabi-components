@@ -283,4 +283,40 @@ test.describe("nested corner radii", () => {
             expect(report(await page.evaluate(scan))).toEqual([]);
         });
     }
+
+    /**
+     * A row fills its list edge to edge, and in a `.list-group` it is the
+     * shell's padding from the shell's edge. Its focus ring is drawn outside
+     * the row, so anything on the way out that clips has to leave room for
+     * it: the list used to be `overflow-hidden` and left none, and the ring
+     * of the first row showed only in the gap under it.
+     */
+    test("List: a row's focus ring is not cut by the list or its group", async ({ page }) => {
+        await openPage(page, "List");
+        const group = page.locator(PREVIEWS).locator(".list-group").first();
+        const rows = group.locator(".focus-ring");
+        expect(await rows.count()).toBeGreaterThan(1);
+        for (const row of [rows.first(), rows.last()]) {
+            const room = await row.evaluate((element) => {
+                const box = element.getBoundingClientRect();
+                let least = Infinity;
+                for (let ancestor = element.parentElement; ancestor && ancestor !== document.body; ancestor = ancestor.parentElement) {
+                    const style = getComputedStyle(ancestor);
+                    if (style.overflowX === "visible" && style.overflowY === "visible") continue;
+                    const outer = ancestor.getBoundingClientRect();
+                    const border = parseFloat(style.borderTopWidth) || 0;
+                    least = Math.min(
+                        least,
+                        box.left - outer.left - border,
+                        box.top - outer.top - border,
+                        outer.right - border - box.right,
+                        outer.bottom - border - box.bottom,
+                    );
+                }
+                return { least };
+            });
+            // `.focus-ring` is 2px of offset and 2px of ring.
+            expect(room.least).toBeGreaterThanOrEqual(4);
+        }
+    });
 });

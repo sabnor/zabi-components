@@ -340,3 +340,73 @@ test.describe("data-theme on the dev site", () => {
         expect(forced.page).toBe(light.page);
     });
 });
+
+/**
+ * Placeholder text against the value text of the same kind of field.
+ *
+ * `--color-input-placeholder` is held to 4.5:1 on every fill of a field, which
+ * made it stronger than the text of a disabled field
+ * (`--color-action-disabled-text`): an empty disabled field then read as the
+ * filled one. And Select wrote its placeholder in `text-description`, which
+ * in dark is 1.16:1 from the value text.
+ */
+test.describe("placeholder against value", () => {
+    const PREVIEWS = "main .min-h-\\[100px\\]";
+
+    for (const mode of ["light", "dark"] as const) {
+        test(`${mode}: a disabled field's placeholder is the disabled text colour`, async ({ page }) => {
+            // The disabled example has a hex field with a placeholder and no value.
+            await open(page, "/components/ColorPicker", "default", mode);
+            const field = page.locator(`${PREVIEWS} input[type="text"]:disabled`).first();
+            await expect(field).toBeVisible();
+            const colours = await field.evaluate((input) => {
+                // What a token resolves to here, in the form computed styles are given in.
+                const token = (host: Element, name: string) => {
+                    const probe = document.createElement("span");
+                    probe.style.color = `var(${name})`;
+                    host.append(probe);
+                    const colour = getComputedStyle(probe).color;
+                    probe.remove();
+                    return colour;
+                };
+                return {
+                    text: (input as HTMLInputElement).placeholder,
+                    value: (input as HTMLInputElement).value,
+                    placeholder: getComputedStyle(input, "::placeholder").color,
+                    field: getComputedStyle(input).color,
+                    disabled: token(input.parentElement!, "--color-action-disabled-text"),
+                    enabled: token(input.parentElement!, "--color-input-placeholder"),
+                };
+            });
+            expect(colours.text).not.toBe("");
+            expect(colours.value).toBe("");
+            expect(colours.placeholder).toBe(colours.disabled);
+            // The colour a value would have in this field.
+            expect(colours.placeholder).toBe(colours.field);
+            expect(colours.placeholder).not.toBe(colours.enabled);
+        });
+
+        test(`${mode}: an empty Select shows its placeholder in the placeholder colour`, async ({ page }) => {
+            await open(page, "/components/Select", "default", mode);
+            const trigger = page.locator(`${PREVIEWS} button[aria-haspopup="listbox"]`).first();
+            await expect(trigger).toHaveText("Choose an option");
+            const colours = await trigger.evaluate((button) => {
+                const token = (host: Element, name: string) => {
+                    const probe = document.createElement("span");
+                    probe.style.color = `var(${name})`;
+                    host.append(probe);
+                    const colour = getComputedStyle(probe).color;
+                    probe.remove();
+                    return colour;
+                };
+                return {
+                    shown: getComputedStyle(button.querySelector("span")!).color,
+                    placeholder: token(button.parentElement!, "--color-input-placeholder"),
+                    value: token(button.parentElement!, "--color-body"),
+                };
+            });
+            expect(colours.shown).toBe(colours.placeholder);
+            expect(colours.shown).not.toBe(colours.value);
+        });
+    }
+});

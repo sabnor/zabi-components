@@ -1467,6 +1467,15 @@ body {
   color: var(--color-input-placeholder);
 }
 
+/* In a disabled field the placeholder takes the disabled text colour, as it
+   did while both were base-500. Left at --color-input-placeholder it is
+   stronger than the value of the disabled field beside it (5.19:1 against
+   4.10:1 in light, 6.91:1 against 3.67:1 in dark): the empty field reads as
+   the filled one. */
+.placeholder\:text-input-placeholder:disabled::placeholder {
+  color: var(--color-action-disabled-text);
+}
+
 .text-label {
   color: var(--color-label);
 }

@@ -58,6 +58,10 @@ Whenever token or CSS import API surface changes, include:
 - docs/KEYBOARD_NAVIGATION.md and docs/ACCESSIBILITY.md described missing or
   planned behaviour for Modal, Card, Dropdown, Select, Input, Alert, Tabs and
   navigation; they now describe what the components do.
+- A List no longer clips the focus ring of its rows.
+- A disabled field's placeholder is no stronger than a disabled value.
+- Select's trigger placeholder uses the placeholder colour, so a chosen option
+  can be told from "Choose an option" in dark.
 
 ## [8.1.0-beta.0] - 2026-10-05
 

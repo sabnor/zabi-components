@@ -189,6 +189,17 @@ test.describe("StickyActionBar — in a form of its own, and display modes", () 
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize(PHONE);
         await page.goto("/components/StickyActionBar", { waitUntil: "domcontentloaded" });
+        // The site's fonts are `font-display: swap`. When they arrive, a line
+        // of text above the example re-wraps and everything below it moves up
+        // 24px. A position read before that and one read after it differ by
+        // those 24px, whatever the bar does: wait until the fonts are in. The
+        // first read of a box is what makes the browser ask for them.
+        await frame(page).boundingBox();
+        await page.waitForFunction(
+            () =>
+                document.fonts.status === "loaded" &&
+                [...document.fonts].some((face) => face.status === "loaded" || face.status === "error"),
+        );
         await frame(page).scrollIntoViewIfNeeded();
     });
 
@@ -201,6 +212,13 @@ test.describe("StickyActionBar — in a form of its own, and display modes", () 
         expect(await plain(page).getAttribute("role")).toBeNull();
         await frame(page).evaluate((el) => (el.scrollTop = el.scrollHeight));
         expect(Math.round((await box(plain(page))).y)).toBe(Math.round(inner.y));
+        // And against its own box, read in one go: still one border above the bottom of it.
+        expect(
+            await frame(page).evaluate((el) => {
+                const bar = el.querySelector('[data-testid="sticky-action-bar-demo"]')!;
+                return Math.round(el.getBoundingClientRect().bottom - bar.getBoundingClientRect().bottom);
+            }),
+        ).toBe(1);
         const notes = await box(frame(page).getByLabel("Notes"));
         expect(notes.y + notes.height).toBeLessThanOrEqual(inner.y);
     });
