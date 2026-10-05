@@ -188,17 +188,43 @@ Link component for navigation.
 
 ## Keyboard Navigation
 
-- **Enter/Space** - Open/close dropdown
-- **Arrow Down** - Open dropdown (when closed)
-- **Escape** - Close dropdown
-- **Tab** - Navigate between items
+- **Tab** - Through the triggers and links, and through the links of an open panel
+- **Enter/Space** on a trigger - Open or close its panel
+- **Arrow Down** on a closed trigger - Open its panel
+- **Escape** - Close the panel; from inside it, focus returns to its trigger
+
+There are no arrow keys between the top-level items. That is deliberate: see below.
 
 ## Accessibility
 
-- Proper ARIA attributes (`aria-expanded`, `aria-haspopup`, `role="menubar"`, etc.)
-- Keyboard navigation support
-- Focus management
-- Semantic HTML structure
+NavigationMenu is the **disclosure navigation** pattern, which the WAI-ARIA
+Authoring Practices recommend for site navigation: a `<nav>` landmark holding a
+list of links and of buttons that each show or hide a panel of links.
+
+- `<nav aria-label="…">` - the landmark; name it with `ariaLabel`
+- `NavigationMenuList` - a `<ul role="list">`; each `NavigationMenuItem` is an `<li>`
+- `NavigationMenuTrigger` - a `<button>` with `aria-expanded` and `aria-controls`
+- `NavigationMenuContent` - the panel the trigger names; its links are plain links
+- `NavigationMenuLink` - an `<a>`
+
+It is not a menu bar. Until 8.1.0 the list had `role="menubar"` and its items
+`role="none"`, but nothing had `role="menuitem"` and the arrow keys did
+nothing, so assistive technology announced a menu bar that did not behave like
+one. What changed for a screen reader user:
+
+| | Before | Now |
+|---|---|---|
+| The list | "menu bar" (often with no items counted) | "list, N items" inside the navigation landmark |
+| Each item | not announced (presentational) | a list item |
+| A trigger | "button, collapsed / expanded" | the same |
+| A link | "link" | the same |
+| Arrow keys | expected by the role, did nothing | not expected; Tab moves between items |
+
+Nothing changed for the keyboard or the mouse, and no prop changed. If you
+need a real menu bar (an application's File / Edit / View), build it on
+`Dropdown`, whose menu has the `menu` and `menuitem` roles and the arrow keys.
+`NavigationMenuList` passes other attributes through, so a `role` of your own
+still wins.
 
 ## Styling
 
@@ -216,7 +242,8 @@ See the Storybook stories in `src/stories/molecules/NavigationMenu.stories.ts` f
 
 - **The list wraps.** `NavigationMenuList` is a wrapping row: triggers that do not fit go onto a further row instead of running out of the container. Nothing scrolls sideways.
 - **A panel stays on screen.** `NavigationMenuContent` opens below its item from the item's left edge, as before. When that would put it past the edge of the viewport it is slid back, to 8px from the edge, and a panel wider than the screen is limited to the viewport less 16px. It is measured before it is painted and again when the window is resized or scrolled. A panel that fits is not touched: it has no inline style.
-- This uses the same helper as Dropdown, `src/components/util/fit-in-viewport.ts`.
+- **A box that scrolls does not cut it off.** When the menu sits in a box that scrolls (a header strip that scrolls sideways, say) and the panel would be clipped by it, the panel is placed against the viewport with `position: fixed` and reaches out of the box. It stays where it is in the DOM, so Escape, an outside press and focus work as before. It cannot leave an ancestor that has a `transform`, a `filter` or `contain`; there it is cut where the box ends.
+- This uses the same helper as Dropdown and Tooltip, `src/components/util/fit-in-viewport.ts`.
 
 ## Differences from shadcn/ui
 

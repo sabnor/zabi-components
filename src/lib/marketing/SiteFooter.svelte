@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ExternalLink } from "@lucide/svelte";
+    import ExternalLink from "@lucide/svelte/icons/external-link";
     import { GITHUB_URL, NPM_URL, STORYBOOK_URL } from "./content";
 </script>
 

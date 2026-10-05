@@ -1,5 +1,9 @@
 <script lang="ts">
-    import { Check, TriangleAlert, X, Info, Zap } from "@lucide/svelte";
+    import Check from "@lucide/svelte/icons/check";
+    import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+    import X from "@lucide/svelte/icons/x";
+    import Info from "@lucide/svelte/icons/info";
+    import Zap from "@lucide/svelte/icons/zap";
     import type { ExtendedSemanticVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
     import { TOUCH_HIT_AREA } from "../util/touch-target.js";
@@ -97,11 +101,13 @@
     {...restProps}
 >
     {#if closable}
-        <!-- Nested corners: 0.5rem (`right-2 top-2`) and the 1px border inside
+        <!-- At the end edge (`end-2`), so it is on the left in a right-to-left
+        layout, and the text keeps clear of it on that side (`pe-8`).
+        Nested corners: 0.5rem (`end-2 top-2`) and the 1px border inside
         the alert's corner, so the radius is the alert's less that gap. -->
         <button
             onclick={handleDismiss}
-            class="absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[calc(var(--radius-container)-0.5rem-1px)] text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring focus-ring--muted {TOUCH_HIT_AREA}"
+            class="absolute end-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[calc(var(--radius-container)-0.5rem-1px)] text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring focus-ring--muted {TOUCH_HIT_AREA}"
             aria-label="Dismiss alert"
             type="button"
         >
@@ -109,7 +115,7 @@
         </button>
     {/if}
 
-    <div class="flex items-start gap-3 {closable ? 'pr-8' : ''}">
+    <div class="flex items-start gap-3 {closable ? 'pe-8' : ''}">
         <div class="shrink-0 mt-0.5">
             {@render icon()}
         </div>

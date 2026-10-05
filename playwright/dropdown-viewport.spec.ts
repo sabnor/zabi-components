@@ -111,12 +111,14 @@ for (const width of [375, 320]) {
             await gotoLab(page);
             const panel = await open(page, "long");
             await expectInside(page, panel);
-            const scroll = await panel.evaluate((element) => ({
+            // The list inside the menu is what scrolls, not the panel with the round corners.
+            const scroll = await panel.locator("[data-dropdown-scroller]").evaluate((element) => ({
                 scrolls: element.scrollHeight > element.clientHeight,
                 overflowY: getComputedStyle(element).overflowY,
             }));
             expect(scroll.scrolls).toBe(true);
             expect(scroll.overflowY).toBe("auto");
+            expect(await panel.evaluate((element) => getComputedStyle(element).overflowY)).toBe("visible");
 
             // The keyboard still reaches every item, and the focused one is brought into view.
             await page.keyboard.press("End");
@@ -143,6 +145,10 @@ for (const width of [375, 320]) {
             page,
         }) => {
             await gotoLab(page);
+            // Mid-screen, so there is room below whatever else is on the lab page.
+            await trigger(page, "rtl-fits").evaluate((element) =>
+                element.scrollIntoView({ block: "center", behavior: "instant" }),
+            );
             const fits = await open(page, "rtl-fits");
             await expect(fits).toHaveAttribute("data-resolved-placement", "bottom-start");
             const rect = await box(fits);
@@ -184,9 +190,82 @@ test.describe("Dropdown on a short, wide screen", () => {
         await gotoLab(page);
         const panel = await open(page, "long");
         await expectInside(page, panel);
-        expect(await panel.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
+        expect(
+            await panel
+                .locator("[data-dropdown-scroller]")
+                .evaluate((element) => element.scrollHeight > element.clientHeight),
+        ).toBe(true);
     });
 });
+
+/**
+ * A menu limited in height used to scroll as a whole: the panel itself had
+ * `overflow: auto`, so its scrollbar was drawn in the panel's square box, on
+ * and outside the 16px corners, and over the focus ring of the first and the
+ * last item. The list inside the panel scrolls now, and that box is clear of
+ * the corners and has room for a ring.
+ */
+for (const size of [
+    { width: 1280, height: 420 },
+    { width: 320, height: 568 },
+]) {
+    test.describe(`A menu limited in height, ${size.width} by ${size.height}`, () => {
+        test.use({ viewport: size });
+
+        test("the box that scrolls is inside the panel's corners, with room for a focus ring", async ({
+            page,
+        }) => {
+            await gotoLab(page);
+            const panel = await open(page, "long");
+            const scroller = panel.locator("[data-dropdown-scroller]");
+            expect(await scroller.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
+
+            for (const key of ["End", "Home"]) {
+                await page.keyboard.press(key);
+                const geometry = await panel.evaluate((element) => {
+                    const list = element.querySelector<HTMLElement>("[data-dropdown-scroller]")!;
+                    const item = document.activeElement as HTMLElement;
+                    const style = getComputedStyle(item);
+                    const side = (box: DOMRect) => ({
+                        left: box.left,
+                        right: box.right,
+                        top: box.top,
+                        bottom: box.bottom,
+                    });
+                    return {
+                        panel: side(element.getBoundingClientRect()),
+                        list: side(list.getBoundingClientRect()),
+                        item: side(item.getBoundingClientRect()),
+                        focused: item.getAttribute("role"),
+                        radius: parseFloat(getComputedStyle(element).borderTopRightRadius),
+                        // How far the ring reaches past the item's own box.
+                        ring: parseFloat(style.outlineWidth) + parseFloat(style.outlineOffset),
+                    };
+                });
+                expect(geometry.focused, key).toBe("menuitem");
+                expect(geometry.radius, key).toBe(16);
+
+                // A scrollbar is drawn at the right edge of the box that scrolls. Where that
+                // box begins and ends, the panel's curve has to have come in less than the box has.
+                const inset = geometry.panel.right - geometry.list.right;
+                for (const fromCorner of [
+                    geometry.list.top - geometry.panel.top,
+                    geometry.panel.bottom - geometry.list.bottom,
+                ]) {
+                    const short = Math.max(0, geometry.radius - fromCorner);
+                    const curve = geometry.radius - Math.sqrt(geometry.radius ** 2 - short ** 2);
+                    expect(inset, `${key}: scroll box ${inset}px in, curve ${curve}px in`).toBeGreaterThan(curve);
+                }
+
+                // The focused item's ring is inside the box that scrolls, on every side it is near.
+                expect(geometry.item.right + geometry.ring, key).toBeLessThanOrEqual(geometry.list.right + 0.5);
+                expect(geometry.item.left - geometry.ring, key).toBeGreaterThanOrEqual(geometry.list.left - 0.5);
+                expect(geometry.item.bottom + geometry.ring, key).toBeLessThanOrEqual(geometry.list.bottom + 0.5);
+                expect(geometry.item.top - geometry.ring, key).toBeGreaterThanOrEqual(geometry.list.top - 0.5);
+            }
+        });
+    });
+}
 
 test.describe("Dropdown at 320px with text at 200%", () => {
     test.use({ viewport: { width: 320, height: 568 } });

@@ -8,10 +8,10 @@
         type DropdownOption,
     } from "../util/dropdown.js";
     import {
-        measureFit,
+        measurePlacement,
         unfitted,
         watchViewport,
-        type PanelFit,
+        type PanelPlacement,
     } from "../util/fit-in-viewport.js";
     import DropdownItem from './DropdownItem.svelte';
 
@@ -248,8 +248,13 @@
 
     /** The room between the menu and its trigger: `mt-2` or `mb-2`, so it grows with the text size. */
     function triggerGap(panel: HTMLElement): number {
+        // A menu placed with `position: fixed` has its margin taken away inline:
+        // read the one its classes give it, or the gap would be 0 from then on.
+        const inline = panel.style.margin;
+        panel.style.margin = '';
         const style = getComputedStyle(panel);
         const gap = Math.max(parseFloat(style.marginTop), parseFloat(style.marginBottom));
+        panel.style.margin = inline;
         return Number.isFinite(gap) ? gap : 8;
     }
 
@@ -260,11 +265,17 @@
 
     /**
      * Where the menu actually is. It starts, and stays, on the side asked for
-     * whenever the menu fits there; `measureFit` only moves it when it would
-     * leave the screen.
+     * whenever the menu fits there; `measurePlacement` only moves it when it
+     * would leave the screen, or be cut off by a box that scrolls around it
+     * (a Modal's body, say). In the second case it may be given
+     * `position: fixed` (`fit.fixed`), which such a box does not clip. It
+     * never leaves its place in the DOM, so the keys, focus and a dialog's
+     * focus trap all still see it as part of this Dropdown.
      */
-    let measured = $state<PanelFit | null>(null);
-    const fit = $derived(measured ?? unfitted(preferred.block, preferred.inline));
+    let measured = $state<PanelPlacement | null>(null);
+    const fit = $derived<PanelPlacement>(
+        measured ?? { ...unfitted(preferred.block, preferred.inline), fixed: null },
+    );
     const resolvedPlacement = $derived(`${fit.block}-${fit.inline}` as typeof placement);
 
     // Runs after the menu is in the DOM and before the browser paints it, so
@@ -278,7 +289,7 @@
         const anchor = rootEl;
         const panel = menuElement;
         const update = () => {
-            measured = measureFit(anchor, panel, side, {
+            measured = measurePlacement(anchor, panel, side, {
                 margin: VIEWPORT_MARGIN,
                 gap: triggerGap(panel),
             });
@@ -317,7 +328,9 @@
             placementClasses(),
             // A menu is an overlay (16px). Its items are 8px, 9px inside
             // the corner: within a pixel of concentric.
-            'rounded-overlay border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-[opacity,translate] duration-200 ease-in-out',
+            // A column, so that the list below can be the part that scrolls
+            // when the menu is limited in height.
+            'flex flex-col rounded-overlay border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-[opacity,translate] duration-200 ease-in-out',
             transformClasses(),
         ]
             .join(' ')
@@ -336,34 +349,54 @@
     {@render trigger(triggerAria)}
 
     {#if isOpen}
-        <!-- The inline styles are only set when the menu would leave the screen.
+        <!-- The inline styles are only set when the menu would leave the screen,
+        or be cut off by a scrolling box around it (`fit.fixed`: placed against
+        the viewport instead, with the classes' own offsets switched off).
         `min-width`: `min-w-[12rem]` is wider than a 320px screen once the text
         is at 200%, and a minimum beats `max-width`; a narrowed menu is exactly
-        as wide as the room there is. -->
+        as wide as the room there is.
+        A menu limited in height does not scroll itself: the list inside it
+        does. A scrollbar on the panel was drawn in the panel's square box, on
+        and outside its 16px corners; the list is 9px inside them (the panel's
+        padding and border), and a header (Select's search field) stays put. -->
         <div
             bind:this={menuElement}
             class={dropdownContentClasses()}
             data-resolved-placement={resolvedPlacement}
-            style:inset-inline-start={fit.inline === 'start' && fit.inlineOffset !== 0
+            style:inset-inline-start={!fit.fixed && fit.inline === 'start' && fit.inlineOffset !== 0
                 ? `${fit.inlineOffset}px`
                 : undefined}
-            style:inset-inline-end={fit.inline === 'end' && fit.inlineOffset !== 0
+            style:inset-inline-end={!fit.fixed && fit.inline === 'end' && fit.inlineOffset !== 0
                 ? `${fit.inlineOffset}px`
                 : undefined}
+            style:position={fit.fixed ? 'fixed' : undefined}
+            style:top={fit.fixed ? `${fit.fixed.top}px` : undefined}
+            style:left={fit.fixed ? `${fit.fixed.left}px` : undefined}
+            style:right={fit.fixed ? 'auto' : undefined}
+            style:bottom={fit.fixed ? 'auto' : undefined}
+            style:margin={fit.fixed ? '0' : undefined}
+            style:width={fit.fixed ? `${fit.fixed.width}px` : undefined}
             style:max-width={fit.maxWidth !== null ? `${fit.maxWidth}px` : undefined}
             style:min-width={fit.maxWidth !== null ? `${fit.maxWidth}px` : undefined}
             style:max-height={fit.maxHeight !== null ? `${fit.maxHeight}px` : undefined}
-            style:overflow={fit.maxWidth !== null || fit.maxHeight !== null ? 'auto' : undefined}
-            style:overscroll-behavior={fit.maxHeight !== null ? 'contain' : undefined}
+            style:overflow={fit.maxWidth !== null ? 'hidden' : undefined}
         >
             {@render header?.()}
+            <!-- `mx-1` and `px-1` are the 0.5rem the items always had from the
+            panel's edge, split so that the scrolling box is 4px in from it:
+            room for an item's focus ring inside the box, and a scrollbar
+            clear of the corners. -->
             <div
                 id={menuId}
                 role={menuRole === 'listbox' ? 'listbox' : 'menu'}
                 aria-label={ariaLabel}
+                class={options.length > 0 ? 'mx-1 min-h-0' : 'min-h-0'}
+                data-dropdown-scroller
+                style:overflow={fit.maxWidth !== null || fit.maxHeight !== null ? 'auto' : undefined}
+                style:overscroll-behavior={fit.maxHeight !== null ? 'contain' : undefined}
             >
             {#if options.length > 0}
-                <div class="px-2 py-1">
+                <div class="px-1 py-1">
                     {#each options as option (option.value)}
                         <DropdownItem
                             label={option.label}

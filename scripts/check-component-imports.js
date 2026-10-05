@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 /**
- * Fail if packaged library components use ../../types (escapes dist/ after svelte-package).
+ * Fail if packaged library components use ../../types (escapes dist/ after svelte-package),
+ * or import an icon from the `@lucide/svelte` barrel instead of its own file
+ * (see scripts/lucide-barrel.js for what that costs an app).
  * Run via: npm run check
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { findLucideBarrelImports, lucideBarrelLines } from './lucide-barrel.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,3 +49,34 @@ if (violations.length > 0) {
   process.exit(1);
 }
 console.log('✓ Component import paths (types) OK');
+
+// Everything a consumer may copy from, not only what is packaged: the catalog's
+// code samples, the stories, the docs site and the written docs.
+const repoRoot = path.join(__dirname, '..');
+const barrelAllowed = new Set([
+  // The type test that proves an icon from the barrel is still accepted by every icon prop.
+  'src/types/IconPropsCheck.svelte',
+  // Says in prose what not to write.
+  'docs/lucide-icons.md',
+]);
+const barrelImports = [
+  ...findLucideBarrelImports(path.join(repoRoot, 'src'), ['.svelte', '.ts', '.js', '.md', '.mdx'], repoRoot),
+  ...findLucideBarrelImports(path.join(repoRoot, 'docs'), ['.md', '.mdx'], repoRoot),
+  ...findLucideBarrelImports(path.join(repoRoot, '.storybook'), ['.svelte', '.ts', '.js', '.mdx'], repoRoot),
+  ...lucideBarrelLines(fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8')).map(
+    (line) => `README.md:${line}`,
+  ),
+].filter((where) => !barrelAllowed.has(where.replace(/:\d+$/, '').split(path.sep).join('/')));
+if (barrelImports.length > 0) {
+  console.error(
+    '❌ Import each icon from its own file (`import X from "@lucide/svelte/icons/x"`), not from the `@lucide/svelte` barrel:',
+  );
+  for (const where of barrelImports) {
+    console.error(`   - ${where}`);
+  }
+  console.error(
+    '   The barrel re-exports every icon, and a bundler compiles all of them to find the one that is used.',
+  );
+  process.exit(1);
+}
+console.log('✓ Icons are imported per file, not from the @lucide/svelte barrel');

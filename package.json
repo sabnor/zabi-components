@@ -60,6 +60,9 @@
   "bin": {
     "zabi-theme": "./dist/create-theme/cli.js"
   },
+  "sideEffects": [
+    "**/*.css"
+  ],
   "files": [
     "dist",
     "README.md",
@@ -121,7 +124,7 @@
     "test:e2e:smoke": "playwright test --grep @smoke",
     "test:playwright": "npm run test:e2e",
     "test:themes": "node --test --test-concurrency=1 tests/theme-output.test.js tests/create-theme.test.js",
-    "prepare": "node scripts/fix-lucide-svelte-icon-dts.js",
+    "fix:lucide-types": "node scripts/fix-lucide-svelte-icon-dts.js",
     "prepublishOnly": "npm run build:lib",
     "publish:npm": "npm publish --access public --registry https://registry.npmjs.org/",
     "check:ramps": "node scripts/check-ramp-lightness.js",

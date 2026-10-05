@@ -230,6 +230,12 @@
             const overlay = joinOverlayStack(container);
             depth = overlay.depth;
             const t = setTimeout(() => {
+                // Something inside has taken focus already (a field that
+                // focuses itself as it mounts): leave it there. `initialFocus`
+                // is the consumer saying where focus goes, so it still decides.
+                const active = document.activeElement;
+                const inside = !!active && active !== container && container.contains(active);
+                if (inside && !(initialFocus && container.querySelector(initialFocus))) return;
                 focusFirstElement(container, initialFocus);
             }, 0);
             // Focus can leave the dialog without a Tab (a confirm that starts

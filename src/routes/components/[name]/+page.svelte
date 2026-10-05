@@ -6,7 +6,7 @@
     import Section from "../../../components/molecules/Section.svelte";
     import type { PageData } from "./$types";
 
-    import { ExternalLink } from "@lucide/svelte";
+    import ExternalLink from "@lucide/svelte/icons/external-link";
     import { GITHUB_URL, layerPath, layers } from "$lib/marketing/content";
     import Seo from "$lib/marketing/Seo.svelte";
     let { data }: { data: PageData } = $props();

@@ -1,7 +1,9 @@
 <script lang="ts">
     import ThemeToggle from "../atoms/ThemeToggle.svelte";
     import IconButton from "../atoms/IconButton.svelte";
-    import { ExternalLink, Menu, X } from "@lucide/svelte";
+    import ExternalLink from "@lucide/svelte/icons/external-link";
+    import Menu from "@lucide/svelte/icons/menu";
+    import X from "@lucide/svelte/icons/x";
     import type { Component, Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
@@ -453,14 +455,17 @@
      * below the fold. It takes what is left of the screen under the 4rem bar
      * (and its 1px border) and scrolls on its own, without handing the scroll
      * on to the page when it reaches an end. `dvh` follows a phone's
-     * collapsing address bar; `vh` is for browsers without it.
+     * collapsing address bar; `vh` is for browsers without it. In a web app
+     * installed to the home screen the bar starts below the status bar, so
+     * that inset comes off as well, or the menu's end would be under the
+     * bottom of the screen by as much.
      *
      * Only a menu that does not fit scrolls (`data-scrolls`, set by the
      * script): a scrolling box would clip a Dropdown that opens out of it.
      */
     .topnavbar-menu {
-        max-height: calc(100vh - 4rem - 1px);
-        max-height: calc(100dvh - 4rem - 1px);
+        max-height: calc(100vh - 4rem - 1px - env(safe-area-inset-top, 0px));
+        max-height: calc(100dvh - 4rem - 1px - env(safe-area-inset-top, 0px));
     }
 
     .topnavbar-menu[data-scrolls] {

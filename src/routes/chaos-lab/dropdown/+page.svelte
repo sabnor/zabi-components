@@ -1,7 +1,10 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Button from "../../../components/atoms/Button.svelte";
+    import Select from "../../../components/atoms/Select.svelte";
     import Dropdown from "../../../components/molecules/Dropdown.svelte";
+    import Modal from "../../../components/molecules/Modal.svelte";
+    import NavigationMenu from "../../../components/molecules/NavigationMenu.svelte";
     import type { DropdownOption } from "../../../components/util/dropdown.js";
 
     /**
@@ -35,7 +38,11 @@
         "rtl-fits": false,
         "rtl-at-end": false,
         bottom: false,
+        "in-scroller": false,
+        "in-modal": false,
+        "in-transformed": false,
     });
+    let modalOpen = $state(false);
 </script>
 
 <svelte:head>
@@ -82,12 +89,84 @@
         {@render menu("long", "Twenty-four", "bottom-start", many)}
     </div>
 
+    <!-- A Select with every default, `maxMenuHeight` among them. -->
+    <div class="mt-4 max-w-xs" data-testid="lab-select-default">
+        <Select
+            label="Team"
+            options={many.map((team) => ({ value: String(team.value), label: team.label }))}
+        />
+    </div>
+
     <div class="mt-4" dir="rtl">
         <div class="flex items-center justify-between">
             {@render menu("rtl-fits", "RTL fits", "bottom-start", options)}
             {@render menu("rtl-at-end", "RTL at the end", "bottom-start", options)}
         </div>
     </div>
+
+    <!-- Clipping ancestors: a box that scrolls is what cuts a menu off, not the screen. -->
+    <div
+        class="mt-4 h-40 w-64 overflow-y-auto border border-border p-2"
+        data-testid="lab-scroller"
+    >
+        <p class="text-sm text-description">A 160px box that scrolls.</p>
+        <div class="mt-16">
+            {@render menu("in-scroller", "In a scroller", "bottom-start", options)}
+        </div>
+        <!-- Room to scroll the trigger out of the box. -->
+        <div class="h-64"></div>
+    </div>
+
+    <div class="mt-4 max-w-xs" data-testid="lab-select-in-scroller-host">
+        <div class="h-32 overflow-y-auto border border-border p-2" data-testid="lab-select-scroller">
+            <Select
+                label="Team"
+                options={many.slice(0, 6).map((team) => ({ value: String(team.value), label: team.label }))}
+            />
+        </div>
+    </div>
+
+    <!-- A transformed box is the containing block of anything fixed inside it:
+    there is no way out of this one, so the menu flips to its roomier side. -->
+    <div
+        class="mt-4 h-40 w-64 overflow-y-auto border border-border p-2"
+        style="transform: translateZ(0)"
+        data-testid="lab-transformed"
+    >
+        <div class="mt-20">
+            {@render menu("in-transformed", "In a transformed box", "bottom-start", options)}
+        </div>
+    </div>
+
+    <div class="mt-4 w-72 overflow-x-auto border border-border p-2" data-testid="lab-nav-scroller">
+        <NavigationMenu
+            menuId="lab-nav"
+            ariaLabel="Lab menu"
+            items={[
+                {
+                    value: "teams",
+                    label: "Teams",
+                    content: [
+                        { href: "#a", label: "All teams", description: "Everyone who has played this season." },
+                        { href: "#b", label: "My team" },
+                        { href: "#c", label: "Invitations" },
+                    ],
+                },
+            ]}
+        />
+    </div>
+
+    <div class="mt-4">
+        <Button size="sm" variant="secondary" onclick={() => (modalOpen = true)} data-testid="lab-open-modal">
+            Open the dialog
+        </Button>
+    </div>
+    <Modal bind:isOpen={modalOpen} title="A short dialog">
+        <p class="text-sm text-description">The menu below has no room inside this dialog.</p>
+        <div class="mt-2">
+            {@render menu("in-modal", "In a dialog", "bottom-start", options)}
+        </div>
+    </Modal>
 
     <!-- Far enough down that the last menu has no room below it. -->
     <div style="height: 100vh" aria-hidden="true"></div>

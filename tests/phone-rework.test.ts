@@ -9,7 +9,6 @@ import Toast from "../src/components/atoms/Toast.svelte";
 import Toaster from "../src/components/molecules/Toaster.svelte";
 import { pushToast, toastStore } from "../src/components/molecules/toast-store";
 import { TOUCH_HIT_AREA } from "../src/components/util/touch-target";
-import { pickSide, shiftIntoViewport } from "../src/components/util/viewport-fit";
 import ConfirmDialogHarness from "./fixtures/ConfirmDialogHarness.svelte";
 import ModalFullScreenHarness from "./fixtures/ModalFullScreenHarness.svelte";
 import PageSafeAreaHarness from "./fixtures/PageSafeAreaHarness.svelte";
@@ -240,65 +239,6 @@ describe("Tooltip on a touch screen", () => {
         await touch(trigger());
         expect(screen.queryByRole("tooltip", { hidden: true })).toBeNull();
         expect(trigger().hasAttribute("aria-describedby")).toBe(false);
-    });
-});
-
-describe("viewport-fit", () => {
-    const viewport = { width: 320, height: 568 };
-    const size = { width: 200, height: 40 };
-    const at = (left: number, top: number, width = 40, height = 40) => ({
-        left,
-        top,
-        right: left + width,
-        bottom: top + height,
-    });
-
-    it("keeps the preferred side when there is room", () => {
-        expect(pickSide("top", at(140, 300), size, viewport)).toBe("top");
-        expect(pickSide("bottom", at(140, 300), size, viewport)).toBe("bottom");
-    });
-
-    it("takes the opposite side when only that has room", () => {
-        // 10px above: a 40px box with its 8px gap and 8px margin does not fit.
-        expect(pickSide("top", at(140, 10), size, viewport)).toBe("bottom");
-        expect(pickSide("bottom", at(140, 520), size, viewport)).toBe("top");
-        expect(pickSide("left", at(10, 300), size, viewport)).toBe("right");
-    });
-
-    it("with room on neither side, takes the one with more", () => {
-        const tall = { width: 200, height: 400 };
-        expect(pickSide("top", at(140, 100), tall, viewport)).toBe("bottom");
-        expect(pickSide("top", at(140, 400), tall, viewport)).toBe("top");
-        // On a 320px screen a 200px box fits on neither side of a centred trigger.
-        expect(pickSide("left", at(140, 300), size, viewport)).toBe("left");
-    });
-
-    it("counts the gap and the margin", () => {
-        // 56px above: exactly the 40px box, 8px gap and 8px margin.
-        expect(pickSide("top", at(140, 56), size, viewport)).toBe("top");
-        expect(pickSide("top", at(140, 55), size, viewport)).toBe("bottom");
-        expect(pickSide("top", at(140, 55), size, viewport, { gap: 0, margin: 0 })).toBe("top");
-    });
-
-    it("moves a box back on screen, by no more than it takes", () => {
-        expect(shiftIntoViewport({ left: 60, right: 260, top: 100, bottom: 140 }, viewport)).toEqual({
-            x: 0,
-            y: 0,
-        });
-        expect(shiftIntoViewport({ left: -84, right: 116, top: 100, bottom: 140 }, viewport)).toEqual({
-            x: 92,
-            y: 0,
-        });
-        expect(shiftIntoViewport({ left: 204, right: 404, top: 100, bottom: 140 }, viewport)).toEqual({
-            x: -92,
-            y: 0,
-        });
-        expect(shiftIntoViewport({ left: 60, right: 260, top: -20, bottom: 20 }, viewport).y).toBe(28);
-        expect(shiftIntoViewport({ left: 60, right: 260, top: 540, bottom: 580 }, viewport, 0).y).toBe(-12);
-    });
-
-    it("starts a box wider than the screen at the start edge", () => {
-        expect(shiftIntoViewport({ left: -40, right: 360, top: 100, bottom: 140 }, viewport).x).toBe(48);
     });
 });
 

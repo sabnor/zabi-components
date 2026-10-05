@@ -1,7 +1,11 @@
 <script lang="ts">
     import { tick, untrack } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { ChevronLeft, ChevronRight, Ellipsis, ImageOff, X } from "@lucide/svelte";
+    import ChevronLeft from "@lucide/svelte/icons/chevron-left";
+    import ChevronRight from "@lucide/svelte/icons/chevron-right";
+    import Ellipsis from "@lucide/svelte/icons/ellipsis";
+    import ImageOff from "@lucide/svelte/icons/image-off";
+    import X from "@lucide/svelte/icons/x";
     import Button from "../atoms/Button.svelte";
     import IconButton from "../atoms/IconButton.svelte";
     import Spinner from "../atoms/Spinner.svelte";
@@ -49,7 +53,7 @@
     import { portal as portalTo } from "../util/portal.js";
     import { generateId } from "../util/ssr-safe.js";
     import { isRtl } from "../util/radio-keys.js";
-    import { createVelocityTracker, FLICK_VELOCITY } from "../util/sheet-drag.js";
+    import { createVelocityTracker, FLICK_VELOCITY, timeOf } from "../util/sheet-drag.js";
 
     /**
      * Photos one at a time, on the whole screen: swipe or use the arrows to
@@ -349,8 +353,8 @@
                 if (axis === null) return;
                 // Measured from where the drag was recognised, so nothing jumps by the slop.
                 gesture = { kind: axis === "x" ? "swipe" : "close", start: point };
-                speedX.reset(point.x, now());
-                speedY.reset(point.y, now());
+                speedX.reset(point.x, timeOf(event));
+                speedY.reset(point.y, timeOf(event));
             }
             return;
         }
@@ -359,13 +363,13 @@
         if (gesture.kind === "pan") {
             zoom = panBy(gesture.base, delta, fit(), viewSize());
         } else if (gesture.kind === "swipe") {
-            speedX.add(point.x, now());
+            speedX.add(point.x, timeOf(event));
             // Towards a photo that is not there, the photo only gives a little.
             const towards = (delta.x < 0 ? 1 : -1) * (rtl ? -1 : 1);
             const exists = current + towards >= 0 && current + towards < count;
             dragX = exists ? delta.x : resist(delta.x);
         } else if (gesture.kind === "close") {
-            speedY.add(point.y, now());
+            speedY.add(point.y, timeOf(event));
             dragY = Math.max(0, delta.y);
         }
     }
@@ -407,7 +411,7 @@
                 break;
             }
             case "swipe": {
-                speedX.add(lifted.x, now());
+                speedX.add(lifted.x, timeOf(event));
                 const turn = swipeTurn({
                     distance: lifted.x - ended.start.x,
                     velocity: speedX.velocity(),
@@ -421,7 +425,7 @@
                 break;
             }
             case "close": {
-                speedY.add(lifted.y, now());
+                speedY.add(lifted.y, timeOf(event));
                 const closes = swipeCloses({
                     distance: lifted.y - ended.start.y,
                     velocity: speedY.velocity(),
@@ -706,8 +710,16 @@
 
     const atFirst = $derived(current <= 0);
     const atLast = $derived(current >= count - 1);
-    /** `aria-disabled`, not `disabled` or removed: the button may hold focus when the end is reached. */
-    const ended = "cursor-not-allowed opacity-40 active:scale-100";
+    /**
+     * `aria-disabled`, not `disabled` or removed: the button may hold focus
+     * when the end is reached. Only the arrow is dimmed, to the colour a
+     * control's edge has (3:1 on the plate). The plate and its edge stay
+     * opaque: `opacity` on the whole button let the photo through and left
+     * the arrow at 1:1 to 2.5:1 over one. No hover or pressed fill either:
+     * nothing happens there.
+     */
+    const endedButton =
+        "border border-control-border bg-surface-overlay text-control-border hover:bg-surface-overlay active:bg-surface-overlay cursor-not-allowed active:scale-100";
 </script>
 
 {#snippet slide(item: Photo, at: number, isCurrent: boolean)}
@@ -886,7 +898,7 @@
                         variant="outline"
                         size="lg"
                         label={text.previous}
-                        class={cn(plateButton, "pointer-events-auto", atFirst && ended)}
+                        class={cn(atFirst ? endedButton : plateButton, "pointer-events-auto")}
                         aria-disabled={atFirst ? "true" : undefined}
                         onclick={() => !atFirst && showPhoto(-1)}
                     >
@@ -896,7 +908,7 @@
                         variant="outline"
                         size="lg"
                         label={text.next}
-                        class={cn(plateButton, "pointer-events-auto", atLast && ended)}
+                        class={cn(atLast ? endedButton : plateButton, "pointer-events-auto")}
                         aria-disabled={atLast ? "true" : undefined}
                         onclick={() => !atLast && showPhoto(1)}
                     >

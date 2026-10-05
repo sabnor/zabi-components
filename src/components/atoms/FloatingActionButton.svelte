@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Component } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { Plus } from "@lucide/svelte";
+    import Plus from "@lucide/svelte/icons/plus";
     import { findScrollParent, isInsideAppShell } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
     import { reserveScrollPaddingBottom } from "../util/scroll-padding.js";

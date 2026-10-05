@@ -1,7 +1,9 @@
 <script lang="ts" generics="T">
     import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { ChevronDown, ChevronUp, GripVertical } from "@lucide/svelte";
+    import ChevronDown from "@lucide/svelte/icons/chevron-down";
+    import ChevronUp from "@lucide/svelte/icons/chevron-up";
+    import GripVertical from "@lucide/svelte/icons/grip-vertical";
     import { cn } from "../util/cn.js";
     import { generateId } from "../util/ssr-safe.js";
     import {
@@ -553,7 +555,8 @@
             {/snippet}
 
             {#snippet moveButtons()}
-                <span class="flex shrink-0 items-center">
+                <!-- 8px between two 44px targets on a touch screen; side by side as they were with a mouse. -->
+                <span class="flex shrink-0 items-center pointer-coarse:gap-2">
                     <button
                         type="button"
                         class={cn(controlClasses, "cursor-pointer")}

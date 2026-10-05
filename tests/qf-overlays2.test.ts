@@ -12,7 +12,7 @@ import {
 } from "../src/components/util/overlay";
 import { attachSheetDrag, FLICK_VELOCITY } from "../src/components/util/sheet-drag";
 import { claimOpenTooltip, releaseOpenTooltip } from "../src/components/util/tooltip";
-import { insideTriangle } from "../src/components/util/viewport-fit";
+import { insideTriangle } from "../src/components/util/fit-in-viewport";
 import BottomSheetHarness from "./fixtures/BottomSheetHarness.svelte";
 import OverlayToastHarness from "./fixtures/OverlayToastHarness.svelte";
 import SlideUpFooterHarness from "./fixtures/SlideUpFooterHarness.svelte";

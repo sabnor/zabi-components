@@ -26,6 +26,15 @@ import { componentsCatalog } from "../src/lib/showcase/components-catalog";
  * rest: its hover fill, pressed fill and focus ring all draw its shape. A pill or a round mark needs `outer >= inner + gap`; anything else
  * needs the two to be equal. Both within 1px.
  *
+ * A square corner is checked as well: it is a radius of 0, and the same rule
+ * holds for it. A square element that draws its own box, inside the curve of
+ * its container (flush with the edge included) and not clipped by it
+ * (`overflow` other than `visible` on the container, or on something rounded
+ * in between), is a nested pair like any other, so it fails unless the gap is
+ * the whole outer radius. Drawing its own box means a fill, a background
+ * image, a border on every side or a shadow at rest, or being a native control
+ * (a link, a button, a field), whose hover and pressed fills draw it.
+ *
  * Where an element comes from is read from Svelte's dev metadata, so this
  * needs the dev server, which is what the Playwright config starts. Layout
  * needs a real browser: jsdom has none.
@@ -50,6 +59,8 @@ interface Pair {
     iCls: string;
     oCls: string;
     iSize: [number, number];
+    /** The inner corner is square (a radius of 0) and nothing clips it. */
+    square?: boolean;
 }
 
 /**
@@ -74,6 +85,10 @@ function scan(): Pair[] {
         radii: number[];
         round: boolean[];
         painted: boolean;
+        /** Draws its own box whatever its radius: something at rest, or a native control's states. */
+        paintsBox: boolean;
+        /** Cuts its content off at its own (rounded) edge. */
+        clips: boolean;
         file: string | null;
         cls: string;
     }
@@ -94,6 +109,11 @@ function scan(): Pair[] {
                 const first = value.split(" ")[0];
                 return first.endsWith("%") ? (parseFloat(first) / 100) * Math.min(box.width, box.height) : parseFloat(first) || 0;
             });
+            const everyBorder = ["top", "right", "bottom", "left"].every(
+                (side) =>
+                    parseFloat(style.getPropertyValue(`border-${side}-width`)) > 0 &&
+                    alpha(style.getPropertyValue(`border-${side}-color`)) > 0,
+            );
             const border = ["Top", "Right", "Bottom", "Left"].some(
                 (side) =>
                     parseFloat(style.getPropertyValue(`border-${side.toLowerCase()}-width`)) > 0 &&
@@ -114,6 +134,17 @@ function scan(): Pair[] {
                     style.boxShadow !== "none" ||
                     (raw.some((value) => value > 0) &&
                         element.matches("a, button, input, select, textarea, label, [role], [tabindex]")),
+                paintsBox:
+                    parseFloat(style.opacity) > 0 &&
+                    // A visually hidden input (1 by 1px, clipped away) draws nothing.
+                    box.width > 2 &&
+                    box.height > 2 &&
+                    (alpha(style.backgroundColor) > 0 ||
+                        style.backgroundImage !== "none" ||
+                        everyBorder ||
+                        style.boxShadow !== "none" ||
+                        element.matches("a[href], button, input, select, textarea")),
+                clips: style.overflowX !== "visible" || style.overflowY !== "visible",
                 file: meta ? meta.file.replace(/^.*?src\//, "src/") : null,
                 cls: (typeof element.className === "string" ? element.className : "").slice(0, 140),
             };
@@ -126,12 +157,17 @@ function scan(): Pair[] {
     for (const element of document.querySelectorAll("body *")) {
         const inner = describe(element);
         if (!inner || !inner.file || !inner.file.startsWith("src/components/")) continue;
-        if (!inner.painted || !inner.radii.some((radius) => radius > 0)) continue;
+        const rounded = inner.radii.some((radius) => radius > 0);
+        const square = inner.radii.some((radius) => radius === 0) && inner.paintsBox;
+        if (!(inner.painted && rounded) && !square) continue;
 
         let ancestor = element.parentElement;
         let outer: Described | null = null;
+        // Something rounded between the two, or the outer element itself, cuts the inner one off.
+        let clipped = false;
         while (ancestor && ancestor !== document.documentElement) {
             const candidate = describe(ancestor);
+            if (candidate && candidate.clips && candidate.radii.some((radius) => radius > 0)) clipped = true;
             if (candidate && candidate.painted) {
                 outer = candidate;
                 break;
@@ -139,6 +175,34 @@ function scan(): Pair[] {
             ancestor = ancestor.parentElement;
         }
         if (!outer || !outer.radii.some((radius) => radius > 0)) continue;
+
+        if (square && !clipped) {
+            const squareCorners: [number, number, number][] = [
+                [inner.box.left - outer.box.left, inner.box.top - outer.box.top, 0],
+                [outer.box.right - inner.box.right, inner.box.top - outer.box.top, 1],
+                [outer.box.right - inner.box.right, outer.box.bottom - inner.box.bottom, 2],
+                [inner.box.left - outer.box.left, outer.box.bottom - inner.box.bottom, 3],
+            ];
+            for (const [dx, dy, index] of squareCorners) {
+                const radius = outer.radii[index];
+                if (radius <= 0 || inner.radii[index] !== 0) continue;
+                // Outside the outer box, or past where its curve has cut in.
+                if (dx < -0.5 || dy < -0.5 || dx >= radius || dy >= radius) continue;
+                pairs.push({
+                    gap: Math.round(Math.max(0, Math.min(dx, dy)) * 10) / 10,
+                    inner: 0,
+                    outer: Math.round(radius * 10) / 10,
+                    innerRound: false,
+                    iFile: inner.file,
+                    oFile: outer.file,
+                    iCls: inner.cls,
+                    oCls: outer.cls,
+                    iSize: [Math.round(inner.box.width), Math.round(inner.box.height)],
+                    square: true,
+                });
+            }
+        }
+        if (!(inner.painted && rounded)) continue;
 
         const corners: [number, number, number][] = [
             [inner.box.left - outer.box.left, inner.box.top - outer.box.top, 0],
@@ -193,6 +257,14 @@ function report(pairs: Pair[]): string[] {
         if (!libraryOuter) continue;
         if (!broken(pair) || excepted(pair)) continue;
         const file = (path: string) => path.replace("src/components/", "");
+        if (pair.square) {
+            lines.add(
+                `${file(pair.iFile)} (square, ${pair.iSize.join("x")}) in ${file(pair.oFile ?? "a library shell")} (${pair.outer}px) at ${pair.gap}px: ` +
+                    `a square corner inside the curve that nothing clips, needs ${Math.round((pair.outer - pair.gap) * 10) / 10}px` +
+                    ` | ${pair.iCls.slice(0, 70)} | ${pair.oCls.slice(0, 50)}`,
+            );
+            continue;
+        }
         lines.add(
             `${file(pair.iFile)} (${pair.inner}px${pair.innerRound ? ", round" : ""}, ${pair.iSize.join("x")}) in ${file(pair.oFile ?? "a library shell")} (${pair.outer}px) at ${pair.gap}px: ` +
                 `needs ${pair.innerRound ? "at most" : ""} ${Math.round((pair.outer - pair.gap) * 10) / 10}px inside` +
@@ -219,7 +291,9 @@ test.describe("nested corner radii", () => {
         const pairs = await page.evaluate(scan);
         const segments = pairs.filter(
             (pair) =>
-                pair.iFile.endsWith("SegmentedControl.svelte") && pair.oFile?.endsWith("SegmentedControl.svelte"),
+                !pair.square &&
+                pair.iFile.endsWith("SegmentedControl.svelte") &&
+                pair.oFile?.endsWith("SegmentedControl.svelte"),
         );
         expect(segments.length).toBeGreaterThan(0);
         // The pair the rule was first written down for: 5px in 8px at 3px.
@@ -243,6 +317,41 @@ test.describe("nested corner radii", () => {
         expect(broken(pair(6, 12, 12, true))).toBe(true);
         expect(broken(pair(4, 4, 12, true))).toBe(false);
         expect(broken(pair(4, 8, 12, true))).toBe(false);
+        // A square corner is a radius of 0: wrong anywhere inside the curve.
+        expect(broken(pair(0, 0, 12))).toBe(true);
+        expect(broken(pair(5, 0, 12))).toBe(true);
+        expect(broken(pair(11.5, 0, 12))).toBe(false);
+    });
+
+    test("a square, painted corner in a library curve is seen, unless the curve clips it", async ({
+        page,
+    }) => {
+        // Guards the guard. Rows with `rounded-none` inside the 12px group used to pass:
+        // an element without a radius was skipped altogether.
+        // The segments of a SegmentedControl sit 3px inside its 8px corner.
+        await openPage(page, "SegmentedControl");
+        expect(report(await page.evaluate(scan))).toEqual([]);
+        const squared = await page.evaluate(() => {
+            const segments = [...document.querySelectorAll<HTMLElement>("main [role='radiogroup'] .segment-face")];
+            for (const segment of segments) {
+                segment.style.borderRadius = "0";
+                // Every face, not only the selected one, draws its box.
+                segment.style.backgroundColor = "rgb(128, 128, 128)";
+            }
+            return segments.length;
+        });
+        expect(squared).toBeGreaterThan(0);
+        const found = report(await page.evaluate(scan));
+        expect(found.length).toBeGreaterThan(0);
+        expect(found.join("\n")).toContain("SegmentedControl.svelte (square");
+
+        // With the control clipping its content, the same corners are cut at the curve: nothing to report.
+        await page.evaluate(() => {
+            for (const group of document.querySelectorAll<HTMLElement>("main [role='radiogroup']")) {
+                group.style.overflow = "hidden";
+            }
+        });
+        expect(report(await page.evaluate(scan))).toEqual([]);
     });
 
     for (const name of pages) {

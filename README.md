@@ -158,10 +158,11 @@ Components use **DOM-style props** (`onclick`, `oninput`), not legacy `on:click`
 ```svelte
 <script lang="ts">
     import { List } from "zabi-components"; // or …/atoms
-    import { Home } from "@lucide/svelte";
+    // One file per icon: the `@lucide/svelte` barrel makes a bundler compile every icon.
+    import House from "@lucide/svelte/icons/house";
 
     const items = [
-        { id: "1", label: "Home", icon: Home },
+        { id: "1", label: "Home", icon: House },
         { id: "2", label: "Settings", href: "/settings" },
     ];
 </script>

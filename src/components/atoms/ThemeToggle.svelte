@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount, untrack } from "svelte";
-    import { Sun, Moon } from "@lucide/svelte";
+    import Sun from "@lucide/svelte/icons/sun";
+    import Moon from "@lucide/svelte/icons/moon";
     import Monitor from "@lucide/svelte/icons/monitor";
     import { FOCUS_BRAND_CLASS } from "../util/focus-utils.js";
     import { cn } from "../util/cn.js";

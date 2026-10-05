@@ -59,7 +59,8 @@ export const doc: ComponentDoc = makeDoc({
                 "Pass a Lucide icon on rows that need one; omit it where plain text is enough.",
             demoId: demoId("List", "leadingIcon"),
             code: `<script lang="ts">
-  import { Bell, Shield } from "@lucide/svelte";
+  import Bell from "@lucide/svelte/icons/bell";
+  import Shield from "@lucide/svelte/icons/shield";
 
   const items = [
     {
@@ -122,7 +123,8 @@ export const doc: ComponentDoc = makeDoc({
                 "selectedId marks the current row. Wrap the list in list-group for border, padding, and surface styling.",
             demoId: demoId("List", "selectedAndChrome"),
             code: `<script lang="ts">
-  import { Bell, Shield } from "@lucide/svelte";
+  import Bell from "@lucide/svelte/icons/bell";
+  import Shield from "@lucide/svelte/icons/shield";
 
   const items = [
     {
@@ -179,7 +181,7 @@ export const doc: ComponentDoc = makeDoc({
                 "Set icon on the item; add currency, totals, or labels in trailing only.",
             demoId: demoId("List", "combined"),
             code: `<script lang="ts">
-  import { CreditCard } from "@lucide/svelte";
+  import CreditCard from "@lucide/svelte/icons/credit-card";
   import { ListItem } from "zabi-components/atoms";
 
   const invoice = {

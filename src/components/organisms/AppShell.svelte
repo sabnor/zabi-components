@@ -135,6 +135,14 @@
     $effect(() => {
         published?.update(topInset, bottomInset);
     });
+
+    const contentClasses = $derived(
+        cn(
+            "min-w-0 flex-1 pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
+            !header && "pt-[env(safe-area-inset-top)]",
+            !footer && "pb-[env(safe-area-inset-bottom)]",
+        ),
+    );
 </script>
 
 <div
@@ -166,17 +174,18 @@
                 {@render header()}
             </div>
         {/if}
-        <svelte:element
-            this={contentElement}
-            data-app-shell-content
-            class={cn(
-                "min-w-0 flex-1 pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-                !header && "pt-[env(safe-area-inset-top)]",
-                !footer && "pb-[env(safe-area-inset-bottom)]",
-            )}
-        >
-            {@render children?.()}
-        </svelte:element>
+        <!-- Two branches, not `<svelte:element>`: hydration takes a dynamic
+        element out and puts it back, which blurs a control inside it that the
+        user had already tabbed to, and the whole page is inside this one. -->
+        {#if contentElement === "div"}
+            <div data-app-shell-content class={contentClasses}>
+                {@render children?.()}
+            </div>
+        {:else}
+            <main data-app-shell-content class={contentClasses}>
+                {@render children?.()}
+            </main>
+        {/if}
     </div>
     {#if footer}
         <div bind:this={footerRegion} data-app-shell-footer class="shrink-0">

@@ -40,10 +40,15 @@ function drag(): { x: number; y: number } {
     return match ? { x: Number(match[1]), y: Number(match[2]) } : { x: 0, y: 0 };
 }
 
-/** A clock the test moves, so a gesture has the speed the test gives it. */
+/**
+ * A clock the test moves, so a gesture has the speed the test gives it. The
+ * speed is read from the events' own `timeStamp`, as a sheet's drag is, so
+ * that moves with it.
+ */
 function clock() {
     let time = 1000;
     vi.spyOn(performance, "now").mockImplementation(() => time);
+    vi.spyOn(Event.prototype, "timeStamp", "get").mockImplementation(() => time);
     return (ms: number) => {
         time += ms;
     };
@@ -338,7 +343,11 @@ describe("PhotoViewer moving between photos", () => {
         const previous = button("Previous photo");
         expect(previous.getAttribute("aria-disabled")).toBe("true");
         expect((previous as HTMLButtonElement).disabled).toBe(false);
-        expect(previous.className).toContain("opacity-40");
+        // Only the arrow is dimmed: the plate stays opaque over the photo.
+        expect(previous.className).not.toContain("opacity-");
+        expect(previous.className).toContain("text-control-border");
+        expect(previous.className).toContain("bg-surface-overlay");
+        expect(previous.className).not.toContain("hover:bg-surface-overlay-hover");
         expect(document.activeElement, "Focus is not dropped at the end").toBe(previous);
         await user.click(previous);
         expect(state().index).toBe(0);

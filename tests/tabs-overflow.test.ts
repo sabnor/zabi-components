@@ -70,7 +70,7 @@ describe("Tabs structure", () => {
     it("fullWidth shares the row between the tabs", () => {
         render(Tabs, { props: { tabs, activeTab: "a", fullWidth: true } });
         for (const tab of screen.getAllByRole("tab")) {
-            expect(classes(tab)).toEqual(expect.arrayContaining(["flex-1", "basis-0", "min-w-0", "text-center"]));
+            expect(classes(tab)).toEqual(expect.arrayContaining(["flex-1", "basis-0", "min-w-min", "text-center"]));
             expect(classes(tab)).not.toContain("shrink-0");
             expect(classes(tab)).not.toContain("whitespace-nowrap");
         }

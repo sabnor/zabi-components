@@ -29,7 +29,7 @@ describe("nested corner radii", () => {
         expect(classes(close)).toContain("rounded-[calc(var(--radius-container)-0.5rem-1px)]");
         expect(classes(close)).not.toContain("rounded-control");
         // The inset the radius is computed from.
-        expect(classes(close)).toEqual(expect.arrayContaining(["right-2", "top-2"]));
+        expect(classes(close)).toEqual(expect.arrayContaining(["end-2", "top-2"]));
         expect(classes(close.parentElement!)).toEqual(expect.arrayContaining(["rounded-container", "border"]));
     });
 

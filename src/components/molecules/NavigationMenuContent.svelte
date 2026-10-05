@@ -2,7 +2,7 @@
     import type { Snippet } from "svelte";
     import { getContext } from "svelte";
     import { cn } from "../util/cn.js";
-    import { measureFit, watchViewport } from "../util/fit-in-viewport.js";
+    import { measurePlacement, watchViewport } from "../util/fit-in-viewport.js";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
         navigationMenuPanelId,
@@ -53,12 +53,20 @@
      */
     let leftOffset = $state(0);
     let maxWidth = $state<number | null>(null);
+    /**
+     * Set when a box that scrolls around the menu would cut the panel off: it
+     * is then placed against the viewport with `position: fixed`, which such
+     * a box does not clip, at these coordinates. It stays where it is in the
+     * DOM, so Escape, the outside press and focus work as before.
+     */
+    let fixedAt = $state<{ left: number; top: number; width: number } | null>(null);
 
     // After the panel is in the DOM and before it is painted, then whenever the screen changes.
     $effect(() => {
         if (!isActive || !contentElement) {
             leftOffset = 0;
             maxWidth = null;
+            fixedAt = null;
             return;
         }
         const panel: HTMLElement = contentElement;
@@ -67,7 +75,7 @@
             // The panel always opens below, from the left edge of its item
             // (`left-0`, in either writing direction, as it always has), and
             // is slid along that edge only as far as it takes to fit.
-            const fit = measureFit(
+            const fit = measurePlacement(
                 anchor,
                 panel,
                 { block: "bottom", inline: "start" },
@@ -75,6 +83,7 @@
             );
             leftOffset = fit.inlineOffset;
             maxWidth = fit.maxWidth;
+            fixedAt = fit.fixed;
         };
         update();
         return watchViewport(update, panel);
@@ -118,8 +127,12 @@
     <div
         bind:this={contentElement}
         id={panelId || undefined}
-        class={cn("absolute left-0 top-full mt-2 bg-surface-overlay rounded-control shadow-lg border border-border-overlay p-4 z-dropdown min-w-[200px] transition-[opacity,translate] duration-200 ease-in-out", className)}
-        style:left={leftOffset !== 0 ? `${leftOffset}px` : undefined}
+        class={cn("absolute left-0 top-full mt-2 bg-surface-overlay rounded-overlay shadow-lg border border-border-overlay p-4 z-dropdown min-w-[200px] transition-[opacity,translate] duration-200 ease-in-out", className)}
+        style:position={fixedAt ? "fixed" : undefined}
+        style:top={fixedAt ? `${fixedAt.top}px` : undefined}
+        style:left={fixedAt ? `${fixedAt.left}px` : leftOffset !== 0 ? `${leftOffset}px` : undefined}
+        style:margin={fixedAt ? "0" : undefined}
+        style:width={fixedAt ? `${fixedAt.width}px` : undefined}
         style:max-width={maxWidth !== null ? `${maxWidth}px` : undefined}
         style:min-width={maxWidth !== null ? "0" : undefined}
         data-navigation-menu-content

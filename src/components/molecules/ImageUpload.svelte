@@ -2,7 +2,7 @@
     import { onDestroy, tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Button from "../atoms/Button.svelte";
-    import { Image } from "@lucide/svelte";
+    import Image from "@lucide/svelte/icons/image";
     import { cn } from "../util/cn.js";
     import { isVideoPath, isVideoUrl } from "../util/media.js";
     import { generateId } from "../util/ssr-safe.js";

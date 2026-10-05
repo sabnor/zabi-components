@@ -1,6 +1,7 @@
 <script lang="ts">
     import Dropdown from "../../components/molecules/Dropdown.svelte";
-    import { Check, Palette } from "@lucide/svelte";
+    import Check from "@lucide/svelte/icons/check";
+    import Palette from "@lucide/svelte/icons/palette";
     import {
         ACCENTS,
         applyAccent,

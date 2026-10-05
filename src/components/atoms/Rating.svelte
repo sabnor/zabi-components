@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Star, X } from "@lucide/svelte";
+    import Star from "@lucide/svelte/icons/star";
+    import X from "@lucide/svelte/icons/x";
     import type { HTMLAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";

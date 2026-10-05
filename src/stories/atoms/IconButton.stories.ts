@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import { Bold, Heart, Trash2 } from '@lucide/svelte';
+import Bold from '@lucide/svelte/icons/bold';
+import Heart from '@lucide/svelte/icons/heart';
+import Trash2 from '@lucide/svelte/icons/trash-2';
 import IconButton from '../../components/atoms/IconButton.svelte';
 
 const iconSizeByButtonSize = {

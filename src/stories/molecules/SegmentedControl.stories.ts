@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import { CalendarDays, List } from '@lucide/svelte';
+import CalendarDays from '@lucide/svelte/icons/calendar-days';
+import List from '@lucide/svelte/icons/list';
 import SegmentedControl from '../../components/molecules/SegmentedControl.svelte';
 
 const meta = {

@@ -1,6 +1,11 @@
 <script lang="ts">
     import Input from "./Input.svelte";
     import { onMount, tick } from "svelte";
+    import {
+        measurePlacement,
+        watchViewport,
+        type PanelPlacement,
+    } from "../util/fit-in-viewport.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -25,6 +30,39 @@
     let isOpen = $state(false);
     let isDragging = $state(false);
     let pickerContainer: HTMLDivElement | undefined;
+
+    /**
+     * Where the popover is. It hangs from the right edge of the swatch and is
+     * 20rem wide, so with the swatch in the left half of a phone screen it ran
+     * off the left edge. It is slid back to 8px from the edge, narrowed when
+     * it is wider than the screen, and placed against the viewport when a box
+     * that scrolls around it would cut it off (`fixed`). A popover that fits
+     * is not touched.
+     */
+    let popoverElement = $state<HTMLDivElement | null>(null);
+    let placed = $state<PanelPlacement | null>(null);
+
+    $effect(() => {
+        const panel = popoverElement;
+        const anchor = panel?.parentElement;
+        if (!isOpen || !panel || !anchor) {
+            placed = null;
+            return;
+        }
+        const update = () => {
+            // `top-12` less the 2.75rem swatch: 0.25rem, at the text size in use.
+            const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            placed = measurePlacement(
+                anchor,
+                panel,
+                { block: "bottom", inline: "end" },
+                // Placed with `right`, in either writing direction, and always below.
+                { margin: 8, gap: rem / 4, flipBlock: false, flipInline: false, rtl: false },
+            );
+        };
+        update();
+        return watchViewport(update, panel);
+    });
     let colorMap: HTMLCanvasElement | undefined;
     let colorMapContainer: HTMLDivElement | undefined;
 
@@ -304,7 +342,18 @@
             {#if isOpen}
                 <div
                     use:setPickerContainer
-                    class="absolute top-12 right-0 z-popover border border-border-overlay bg-surface-overlay rounded-container shadow-lg p-4 w-80"
+                    bind:this={popoverElement}
+                    class="absolute top-12 right-0 z-popover border border-border-overlay bg-surface-overlay rounded-overlay shadow-lg p-4 w-80"
+                    style:position={placed?.fixed ? "fixed" : undefined}
+                    style:top={placed?.fixed ? `${placed.fixed.top}px` : undefined}
+                    style:left={placed?.fixed ? `${placed.fixed.left}px` : undefined}
+                    style:right={placed?.fixed
+                        ? "auto"
+                        : placed && placed.inlineOffset !== 0
+                          ? `${placed.inlineOffset}px`
+                          : undefined}
+                    style:width={placed?.fixed ? `${placed.fixed.width}px` : undefined}
+                    style:max-width={placed && placed.maxWidth !== null ? `${placed.maxWidth}px` : undefined}
                     role="dialog"
                     aria-label="Color picker"
                 >

@@ -121,6 +121,22 @@ Whenever token or CSS import API surface changes, include:
 - ThemeToggle no longer writes an inline `color-scheme` on `<html>`, and
   removes a stale `light` or `dark` one. Adding or removing `class="dark"`
   from your own script now moves native controls with the tokens.
+- **Icons are imported one file at a time.** Every component, and the icons
+  the package root re-exports, now import from `@lucide/svelte/icons/<name>`
+  and no longer from the `@lucide/svelte` barrel. An app that imports one
+  Button from the root compiles 366 modules where it compiled 3,800 (233 from
+  `zabi-components/atoms`). The re-exported icons keep their names.
+  `sideEffects` is declared (CSS only), and the `prepare` script is gone, so
+  installing the package prints no install-scripts notice; maintainers run
+  `npm run fix:lucide-types` if their editor needs it.
+- **NavigationMenu is a list of links and disclosure buttons**, not a
+  `menubar`: the list has `role="list"`, items carry no menu roles, and a
+  screen reader announces triggers as buttons that expand, without entering a
+  menu mode. Keyboard use is unchanged (Tab between triggers).
+- ColorPicker's popover and NavigationMenu's panels use the overlay radius,
+  as Dropdown and Select do.
+- Select's `maxMenuHeight` defaults to `60dvh` (was `60vh`).
+- SortableList's handle and move buttons sit 8px apart on touch screens.
 
 ### Fixed
 
@@ -181,6 +197,26 @@ Whenever token or CSS import API surface changes, include:
 - Only one Tooltip is open at a time, the pointer can reach a tooltip's far
   corner on a diagonal, and the arrow of a `left` or `right` tooltip points at
   its trigger in right-to-left layouts.
+- **A Dropdown, Select list or NavigationMenu panel is no longer cut off by a
+  scrolling or clipping ancestor** such as a Modal's content. The nearest
+  clipping ancestor decides which side it opens on, and when it fits on
+  neither it is positioned against the viewport. An ancestor with a transform
+  or filter cannot be escaped; the menu then opens on the roomier side.
+- A height-capped Dropdown scrolls inside its rounded panel, so the scrollbar
+  no longer pokes past the corner or covers the focus ring.
+- `fullWidth` Tabs scroll when a tab's share is too small for its longest
+  word, instead of breaking the word.
+- A disabled Select dims its value.
+- Modal, Drawer, SlideUp and BottomSheet no longer take focus away from
+  content that focused itself inside the panel as it opened.
+- EmptyState, Container, AppShell and Collapsible no longer drop keyboard
+  focus from a control inside them when the page hydrates.
+- TopNavbar's phone menu allows for the top safe-area inset.
+- Alert's close button mirrors in right-to-left layouts; MediaGrid's remove
+  button shows a pressed state on touch.
+- PhotoViewer's Previous and Next at the first and last photo keep their
+  plate and dim only the arrow, so they stay visible over a light photo.
+- SidebarNavigation's search placeholder keeps 4.5:1 on hover.
 
 ## [8.1.0-beta.0] - 2026-10-05
 

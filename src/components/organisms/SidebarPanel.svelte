@@ -1,7 +1,8 @@
 <script lang="ts">
     import Input from "../atoms/Input.svelte";
     import Badge from "../atoms/Badge.svelte";
-    import { Search, X } from "@lucide/svelte";
+    import Search from "@lucide/svelte/icons/search";
+    import X from "@lucide/svelte/icons/x";
     import type { Component } from "svelte";
     import { cn } from "../util/cn.js";
 

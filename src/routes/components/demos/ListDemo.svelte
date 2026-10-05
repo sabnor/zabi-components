@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { Bell, CreditCard, Shield } from "@lucide/svelte";
+    import Bell from "@lucide/svelte/icons/bell";
+    import CreditCard from "@lucide/svelte/icons/credit-card";
+    import Shield from "@lucide/svelte/icons/shield";
     import Badge from "../../../components/atoms/Badge.svelte";
     import List from "../../../components/atoms/List.svelte";
     import { ListItem } from "../../../components/atoms/index.js";

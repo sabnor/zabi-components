@@ -1,7 +1,7 @@
 <script lang="ts">
     import EmptyState from '../../components/molecules/EmptyState.svelte';
     import Button from '../../components/atoms/Button.svelte';
-    import { FolderPlus } from '@lucide/svelte';
+    import FolderPlus from '@lucide/svelte/icons/folder-plus';
 
     interface Props {
         title?: string;

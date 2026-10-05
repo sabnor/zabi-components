@@ -9,7 +9,7 @@
         pickSide,
         shiftIntoViewport,
         type FloatingSide,
-    } from "../util/viewport-fit.js";
+    } from "../util/fit-in-viewport.js";
 
     import { cn } from "../util/cn.js";
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class"> & {

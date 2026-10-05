@@ -18,6 +18,13 @@ npm run build:lib    # also runs prepublishOnly's work + verify-build.js
 
 `npm pack --dry-run` is a useful last look at what will actually ship.
 
+The package lists no install scripts. `prepare` used to patch `@lucide/svelte`'s
+typings in `node_modules`, and npm named it in an `install-scripts` notice for
+anyone installing a tarball; it is now `npm run fix:lucide-types`, which nobody
+has to run for the gates (see docs/lucide-icons.md). One consequence: `npm pack`
+now runs no script at all, so it packs whatever `dist/` holds; run
+`npm run build:lib` first. `npm publish` still builds through `prepublishOnly`.
+
 ### If a theme test fails on the frozen hashes
 
 The `test:themes` snapshot pins the built CSS. When a token change is

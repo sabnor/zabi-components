@@ -1,12 +1,10 @@
 <script lang="ts">
     import Dropdown from "../molecules/Dropdown.svelte";
     import Input from "./Input.svelte";
-    import {
-        ChevronDown,
-        CheckCircle,
-        AlertTriangle,
-        AlertCircle,
-    } from "@lucide/svelte";
+    import ChevronDown from "@lucide/svelte/icons/chevron-down";
+    import CheckCircle from "@lucide/svelte/icons/circle-check-big";
+    import AlertTriangle from "@lucide/svelte/icons/triangle-alert";
+    import AlertCircle from "@lucide/svelte/icons/circle-alert";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
 
@@ -48,7 +46,7 @@
         options = [],
         searchable = true,
         searchPlaceholder = "Search options",
-        maxMenuHeight = "60vh",
+        maxMenuHeight = "60dvh",
         menuWidth = "100%",
         noResultsText = "No results found",
         isLoading = false,
@@ -232,15 +230,19 @@
                 aria-describedby={message ? `${selectId}-message` : undefined}
             >
                 <!-- An empty trigger shows its placeholder in the placeholder
-                colour, as Input does. It was `text-description`, which in
-                dark is 1.16:1 from the value text: a chosen option and
-                "Choose an option" could not be told apart by colour. -->
+                colour, as Input does. A value has no colour class of its own,
+                and a disabled trigger none at all: the button's `text-body`
+                and its disabled colour are inherited. A colour class here
+                beat the button's `disabled:` one, and a disabled Select read
+                as enabled. -->
                 <span
-                    class="text-left flex-1 truncate {isLoading
-                        ? 'text-description'
-                        : isEmpty()
-                        ? 'text-input-placeholder'
-                        : 'text-body'}"
+                    class="text-left flex-1 truncate {disabled
+                        ? ''
+                        : isLoading
+                          ? 'text-description'
+                          : isEmpty()
+                            ? 'text-input-placeholder'
+                            : ''}"
                 >
                     {#if isLoading}
                         {loadingText}

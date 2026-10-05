@@ -2,7 +2,13 @@ import { cleanup, render, screen, waitFor } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { fitPanel, measureFit, unfitted } from "../src/components/util/fit-in-viewport";
+import {
+    fitPanel,
+    measureFit,
+    pickSide,
+    shiftIntoViewport,
+    unfitted,
+} from "../src/components/util/fit-in-viewport";
 import DropdownOptionsHarness from "./fixtures/DropdownOptionsHarness.svelte";
 
 /**
@@ -28,7 +34,9 @@ describe("fitPanel", () => {
             block: "bottom",
             inline: "start",
         });
-        expect(fit).toEqual(unfitted("bottom", "start"));
+        expect(fit).toMatchObject({ block: "bottom", inline: "start", inlineOffset: 0, maxWidth: null, maxHeight: null, visible: true });
+        // And it says where that is: under the anchor, 8px down, from its left edge.
+        expect([fit.left, fit.top]).toEqual([20, 148]);
     });
 
     it("opens from the other edge when the panel would leave the screen", () => {
@@ -165,7 +173,9 @@ describe("fitPanel", () => {
             inline: "start",
             rtl: true,
         });
-        expect(fits).toEqual(unfitted("bottom", "start"));
+        expect(fits).toMatchObject({ block: "bottom", inline: "start", inlineOffset: 0, maxWidth: null, maxHeight: null, visible: true });
+        // From the anchor's right edge leftwards: 360 - 200.
+        expect(fits.left).toBe(160);
     });
 
     it("honours the margin and the gap", () => {
@@ -179,6 +189,108 @@ describe("fitPanel", () => {
         });
         // 170 + 200 = 370 > 359: flipped, and 270 - 200 = 70 is inside.
         expect(fit.inline).toBe("end");
+    });
+});
+
+describe("fitPanel inside a clipping ancestor", () => {
+    // A 160px-tall box that scrolls, with the anchor near its bottom.
+    const clip = { left: 10, top: 300, right: 266, bottom: 460 };
+
+    it("is unchanged when the panel fits inside it on the side asked for", () => {
+        const fit = fitPanel({
+            anchor: box(20, 310),
+            panel: { width: 200, height: 90 },
+            viewport: phone,
+            block: "bottom",
+            inline: "start",
+            clip,
+        });
+        expect(fit).toMatchObject({ block: "bottom", inline: "start", inlineOffset: 0, visible: true });
+    });
+
+    it("lets the box decide the side: no room below inside it, so it opens above", () => {
+        // On the screen there are 250px below the anchor; inside the box there are 30.
+        const fit = fitPanel({
+            anchor: box(20, 390),
+            panel: { width: 200, height: 70 },
+            viewport: phone,
+            block: "bottom",
+            inline: "start",
+            clip,
+        });
+        expect(fit.block).toBe("top");
+        expect(fit.visible).toBe(true);
+        // Without the box it would have stayed below.
+        expect(
+            fitPanel({
+                anchor: box(20, 390),
+                panel: { width: 200, height: 70 },
+                viewport: phone,
+                block: "bottom",
+                inline: "start",
+            }).block,
+        ).toBe("bottom");
+    });
+
+    it("never limits the size by the box, and says when the panel cannot be seen whole", () => {
+        // 160px of panel in a box with 30px below the anchor and 82 above.
+        const fit = fitPanel({
+            anchor: box(20, 390),
+            panel: { width: 200, height: 160 },
+            viewport: phone,
+            block: "bottom",
+            inline: "start",
+            clip,
+        });
+        // The roomier side of the box.
+        expect(fit.block).toBe("top");
+        // The screen has room for 160px above the anchor, so there is no limit.
+        expect(fit.maxHeight).toBeNull();
+        expect(fit.visible).toBe(false);
+    });
+
+    it("lets the box decide the inline edge, and slides inside it when the panel is narrow enough", () => {
+        // 200px from x 100 would end at 300, past the box's right edge at 266.
+        const flipped = fitPanel({
+            anchor: box(100, 310, 160),
+            panel: { width: 200, height: 60 },
+            viewport: phone,
+            block: "bottom",
+            inline: "start",
+            clip,
+        });
+        // From the anchor's right edge (260) leftwards: 60, inside the box.
+        expect(flipped.inline).toBe("end");
+        expect(flipped.left).toBe(60);
+        expect(flipped.visible).toBe(true);
+
+        // Neither edge: slid back to end at the box's edge.
+        const slid = fitPanel({
+            anchor: box(120, 310, 60),
+            panel: { width: 240, height: 60 },
+            viewport: phone,
+            block: "bottom",
+            inline: "start",
+            clip,
+        });
+        expect(slid.inline).toBe("start");
+        expect(slid.left).toBe(26);
+        expect(slid.visible).toBe(true);
+    });
+
+    it("slides inside the screen only when the panel is wider than the box", () => {
+        const fit = fitPanel({
+            anchor: box(20, 310),
+            panel: { width: 300, height: 60 },
+            viewport: phone,
+            block: "bottom",
+            inline: "start",
+            clip,
+        });
+        // 20 + 300 = 320 fits a 375px screen: not moved, and not narrowed to the 256px box.
+        expect(fit.left).toBe(20);
+        expect(fit.maxWidth).toBeNull();
+        expect(fit.visible).toBe(false);
     });
 });
 
@@ -318,5 +430,83 @@ describe("Dropdown near the edge of the screen", () => {
         expect(popup().getAttribute("data-resolved-placement")).toBe("bottom-start");
         expect(popup().className).toContain("start-0");
         expect(popup().getAttribute("style") ?? "").toBe("");
+    });
+});
+
+describe("pickSide and shiftIntoViewport", () => {
+    const viewport = { width: 320, height: 568 };
+    const size = { width: 200, height: 40 };
+    const at = (left: number, top: number, width = 40, height = 40) => ({
+        left,
+        top,
+        right: left + width,
+        bottom: top + height,
+    });
+
+    it("keeps the preferred side when there is room", () => {
+        expect(pickSide("top", at(140, 300), size, viewport)).toBe("top");
+        expect(pickSide("bottom", at(140, 300), size, viewport)).toBe("bottom");
+    });
+
+    it("takes the opposite side when only that has room", () => {
+        // 10px above: a 40px box with its 8px gap and 8px margin does not fit.
+        expect(pickSide("top", at(140, 10), size, viewport)).toBe("bottom");
+        expect(pickSide("bottom", at(140, 520), size, viewport)).toBe("top");
+        expect(pickSide("left", at(10, 300), size, viewport)).toBe("right");
+    });
+
+    it("with room on neither side, takes the one with more", () => {
+        const tall = { width: 200, height: 400 };
+        expect(pickSide("top", at(140, 100), tall, viewport)).toBe("bottom");
+        expect(pickSide("top", at(140, 400), tall, viewport)).toBe("top");
+        // On a 320px screen a 200px box fits on neither side of a centred trigger.
+        expect(pickSide("left", at(140, 300), size, viewport)).toBe("left");
+    });
+
+    it("counts the gap and the margin", () => {
+        // 56px above: exactly the 40px box, 8px gap and 8px margin.
+        expect(pickSide("top", at(140, 56), size, viewport)).toBe("top");
+        expect(pickSide("top", at(140, 55), size, viewport)).toBe("bottom");
+        expect(pickSide("top", at(140, 55), size, viewport, { gap: 0, margin: 0 })).toBe("top");
+    });
+
+    it("moves a box back on screen, by no more than it takes", () => {
+        expect(shiftIntoViewport({ left: 60, right: 260, top: 100, bottom: 140 }, viewport)).toEqual({
+            x: 0,
+            y: 0,
+        });
+        expect(shiftIntoViewport({ left: -84, right: 116, top: 100, bottom: 140 }, viewport)).toEqual({
+            x: 92,
+            y: 0,
+        });
+        expect(shiftIntoViewport({ left: 204, right: 404, top: 100, bottom: 140 }, viewport)).toEqual({
+            x: -92,
+            y: 0,
+        });
+        expect(shiftIntoViewport({ left: 60, right: 260, top: -20, bottom: 20 }, viewport).y).toBe(28);
+        expect(shiftIntoViewport({ left: 60, right: 260, top: 540, bottom: 580 }, viewport, 0).y).toBe(-12);
+    });
+
+    it("starts a box wider than the screen at the start edge", () => {
+        expect(shiftIntoViewport({ left: -40, right: 360, top: 100, bottom: 140 }, viewport).x).toBe(48);
+    });
+    it("an ancestor that clips counts as well as the screen", () => {
+        // 300px above on screen, but the box the trigger is in starts 20px above it.
+        const clip = { left: 0, right: 320, top: 280, bottom: 568 };
+        expect(pickSide("top", at(140, 300), size, viewport)).toBe("top");
+        expect(pickSide("top", at(140, 300), size, viewport, { clip })).toBe("bottom");
+    });
+
+    it("fitPanel opens on the side pickSide gives", () => {
+        for (const top of [10, 100, 300, 400, 520]) {
+            for (const height of [40, 400]) {
+                for (const block of ["top", "bottom"] as const) {
+                    const anchor = at(140, top);
+                    const panel = { width: 200, height };
+                    const fit = fitPanel({ anchor, panel, viewport, block, inline: "start" });
+                    expect(fit.block).toBe(pickSide(block, anchor, panel, viewport));
+                }
+            }
+        }
     });
 });

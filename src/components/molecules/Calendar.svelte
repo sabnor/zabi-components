@@ -1,7 +1,8 @@
 <script lang="ts">
     import { tick } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { ChevronLeft, ChevronRight } from "@lucide/svelte";
+    import ChevronLeft from "@lucide/svelte/icons/chevron-left";
+    import ChevronRight from "@lucide/svelte/icons/chevron-right";
     import IconButton from "../atoms/IconButton.svelte";
     import {
         calendarDayName,

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ChevronDown } from "@lucide/svelte";
+    import ChevronDown from "@lucide/svelte/icons/chevron-down";
 
     /**
      * The "On this page" list of a guide: links to the page's sections, with

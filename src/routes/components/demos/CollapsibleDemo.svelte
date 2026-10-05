@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ChevronDown } from "@lucide/svelte";
+    import ChevronDown from "@lucide/svelte/icons/chevron-down";
     import Badge from "../../../components/atoms/Badge.svelte";
     import Button from "../../../components/atoms/Button.svelte";
     import Card from "../../../components/atoms/Card.svelte";

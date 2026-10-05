@@ -33,6 +33,8 @@
     let shared = $state("list");
     let rtl = $state("overview");
     let pills = $state("overview");
+    let sharedFive = $state("overview");
+    let sharedTwo = $state("upcoming");
 </script>
 
 <svelte:head>
@@ -67,6 +69,26 @@
     <section data-testid="lab-shared">
         <Tabs tabs={three} bind:activeTab={shared} fullWidth>
             {#snippet children({ activeTab })}<p data-testid="lab-shared-panel">{activeTab}</p>{/snippet}
+        </Tabs>
+    </section>
+
+    <!-- `fullWidth` outside the two or three tabs it is meant for. -->
+    <section data-testid="lab-shared-five">
+        <Tabs tabs={many.slice(0, 5)} bind:activeTab={sharedFive} fullWidth>
+            {#snippet children({ activeTab })}<p>{activeTab}</p>{/snippet}
+        </Tabs>
+    </section>
+
+    <section data-testid="lab-shared-two">
+        <Tabs
+            tabs={[
+                { id: "upcoming", label: "Upcoming quizzes" },
+                { id: "past", label: "Past" },
+            ]}
+            bind:activeTab={sharedTwo}
+            fullWidth
+        >
+            {#snippet children({ activeTab })}<p>{activeTab}</p>{/snippet}
         </Tabs>
     </section>
 

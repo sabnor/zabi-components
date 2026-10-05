@@ -5,7 +5,8 @@
     import OnThisPage from "$lib/marketing/OnThisPage.svelte";
     import SiteFooter from "$lib/marketing/SiteFooter.svelte";
     import ThemeDemo from "$lib/marketing/ThemeDemo.svelte";
-    import { ChevronDown, ExternalLink } from "@lucide/svelte";
+    import ChevronDown from "@lucide/svelte/icons/chevron-down";
+    import ExternalLink from "@lucide/svelte/icons/external-link";
     import { asset } from "$app/paths";
     import { GITHUB_URL } from "$lib/marketing/content";
     import { generatedTheme } from "$lib/marketing/brand-accents";

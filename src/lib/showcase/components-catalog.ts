@@ -408,7 +408,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Optional icon per ListItemData entry (Lucide or compatible component)",
                         code: `<script lang="ts">
-  import { User, CreditCard } from "@lucide/svelte";
+  import User from "@lucide/svelte/icons/user";
+  import CreditCard from "@lucide/svelte/icons/credit-card";
   const items = [
     { id: "profile", label: "Profile", icon: User, href: "/profile" },
     { id: "billing", label: "Billing", icon: CreditCard, href: "/billing" },
@@ -702,8 +703,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         name: "maxMenuHeight",
                         type: "string",
                         required: false,
-                        defaultValue: "60vh",
-                        description: "Max height for the options list",
+                        defaultValue: "60dvh",
+                        description: "Max height for the options list. dvh follows a phone's collapsing browser bars.",
                     },
                 ],
                 variants: ["default", "success", "warning", "error"],
@@ -1193,7 +1194,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "With Lucide Icon",
                         description:
                             "Pass a Lucide icon component directly via the icon prop",
-                        code: 'import { ShieldCheck } from "@lucide/svelte";\n\n&lt;FeatureCard icon={ShieldCheck} title="Secure" description="End-to-end encryption." /&gt;',
+                        code: 'import ShieldCheck from "@lucide/svelte/icons/shield-check";\n\n&lt;FeatureCard icon={ShieldCheck} title="Secure" description="End-to-end encryption." /&gt;',
                     },
                 ],
             },
@@ -1610,7 +1611,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Visible label",
+                        description:
+                            "Visible label. On a touch screen the switch takes taps a little past its edge: give two toggles side by side 16px between them, or a row each.",
                     },
                     {
                         name: "disabled",
@@ -2682,7 +2684,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "bottom-start",
                         description:
-                            "The side the menu opens on when it fits there. Near an edge of the screen it flips to the other side, and is narrowed or scrolls inside when neither side has room.",
+                            "The side the menu opens on when it fits there. Near an edge of the screen, or of a box that scrolls around the trigger, it flips to the other side, and is narrowed or scrolls inside when the screen has room on neither. Inside a scrolling box with room on neither side it is placed against the viewport and reaches out of the box.",
                     },
                     {
                         name: "onOptionClick",
@@ -3340,7 +3342,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         description:
-                            "CSS selector, looked up inside the panel, of the control that takes focus on open. Without it, or with no match, the first control does.",
+                            "CSS selector, looked up inside the panel, of the control that takes focus on open. Without it, or with no match, the first control does. A control inside that has already taken focus when the overlay opens (a search field that focuses itself) keeps it.",
                     },
                     {
                         name: "role",
@@ -3441,7 +3443,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         description:
-                            "CSS selector, looked up inside the sheet, of the control that takes focus on open. Without it, or with no match, the first control does.",
+                            "CSS selector, looked up inside the sheet, of the control that takes focus on open. Without it, or with no match, the first control does. A control inside that has already taken focus when the overlay opens (a search field that focuses itself) keeps it.",
                     },
                     {
                         name: "swipeToClose",
@@ -3537,7 +3539,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "The tabs share the row equally; meant for two or three tabs on a phone. Without it a tab is as wide as its label, and a row that does not fit scrolls sideways with a fade at the edge that has more.",
+                            "The tabs share the row equally; meant for two or three tabs on a phone. A tab is never narrower than its longest word, so with more tabs or longer labels than fit the row scrolls sideways instead. Without it a tab is as wide as its label, and a row that does not fit scrolls sideways with a fade at the edge that has more.",
                     },
                     {
                         name: "onclick",
@@ -4057,7 +4059,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "NavigationMenuList",
                 category: "molecules",
                 description:
-                    "Horizontal menubar list; use it inside NavigationMenu with items and triggers.",
+                    "The row of links and triggers, a plain list; use it inside NavigationMenu with items and triggers.",
                 props: [
                     {
                         name: "class",
@@ -4881,7 +4883,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         description:
-                            "CSS selector, inside the panel, of the control that takes focus on open. Without a match the first control does: the close button.",
+                            "CSS selector, inside the panel, of the control that takes focus on open. Without a match the first control does: the close button. A control inside that has already taken focus when the overlay opens (a search field that focuses itself) keeps it.",
                     },
                     {
                         name: "onkeydown",
@@ -5189,7 +5191,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "A header landmark with the title as a heading. The back control and each action are 48px targets",
                         code: `<script lang="ts">
     import { AppBar, IconButton } from "zabi-components";
-    import { EllipsisVertical, Share2 } from "@lucide/svelte";
+    import EllipsisVertical from "@lucide/svelte/icons/ellipsis-vertical";
+    import Share2 from "@lucide/svelte/icons/share-2";
 </script>
 
 <AppBar title="Round 3" backHref="/quiz">
@@ -5284,7 +5287,9 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "With no active tab passed, the bar marks the section this page is in. A page below a tab keeps that tab marked",
                         code: `<script lang="ts">
     import { BottomTabBar } from "zabi-components";
-    import { BookOpen, House, LayoutGrid } from "@lucide/svelte";
+    import BookOpen from "@lucide/svelte/icons/book-open";
+    import House from "@lucide/svelte/icons/house";
+    import LayoutGrid from "@lucide/svelte/icons/layout-grid";
     import { page } from "$app/state";
 
     const items = [
@@ -5387,7 +5392,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         description:
-                            "CSS selector, looked up inside the sheet, of the control that takes focus on open. Without it, or with no match, the first control does: the grip, or the close button. For a form or a picker, point it at the first field.",
+                            "CSS selector, looked up inside the sheet, of the control that takes focus on open. Without it, or with no match, the first control does: the grip, or the close button. For a form or a picker, point it at the first field. A control inside that has already taken focus when the overlay opens (a search field that focuses itself) keeps it.",
                     },
                     {
                         name: "closeLabel",
@@ -5969,7 +5974,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Swipe sideways or use the arrow keys to change photo, pinch or double tap to zoom and drag to pan, swipe down or press Escape to close. Share uses the browser's share sheet where there is one; Delete asks first, and the viewer moves to the photo that takes its place",
                         code: `<script lang="ts">
     import { ConfirmDialog, PhotoGrid, PhotoViewer, type PhotoViewerAction } from "zabi-components";
-    import { Share2, Trash2 } from "@lucide/svelte";
+    import Share2 from "@lucide/svelte/icons/share-2";
+    import Trash2 from "@lucide/svelte/icons/trash-2";
 
     let index = $state(0);
     let open = $state(false);
@@ -6805,7 +6811,10 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
         FloatingActionButton,
         IconButton,
     } from "zabi-components";
-    import { Bell, House, Search, Trophy } from "@lucide/svelte";
+    import Bell from "@lucide/svelte/icons/bell";
+    import House from "@lucide/svelte/icons/house";
+    import Search from "@lucide/svelte/icons/search";
+    import Trophy from "@lucide/svelte/icons/trophy";
     import { page } from "$app/state";
 
     const items = [

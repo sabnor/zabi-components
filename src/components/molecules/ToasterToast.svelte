@@ -2,14 +2,12 @@
     import { onMount } from 'svelte';
     import { cubicOut } from 'svelte/easing';
     import { slide, fade, fly } from 'svelte/transition';
-    import {
-        AlertCircle,
-        AlertTriangle,
-        CheckCircle,
-        ChevronDown,
-        Info,
-        X,
-    } from '@lucide/svelte';
+    import AlertCircle from '@lucide/svelte/icons/circle-alert';
+    import AlertTriangle from '@lucide/svelte/icons/triangle-alert';
+    import CheckCircle from '@lucide/svelte/icons/circle-check-big';
+    import ChevronDown from '@lucide/svelte/icons/chevron-down';
+    import Info from '@lucide/svelte/icons/info';
+    import X from '@lucide/svelte/icons/x';
     import Button from '../atoms/Button.svelte';
     import { toastStore, type ToastItem } from './toast-store.js';
     import { cn } from "../util/cn.js";

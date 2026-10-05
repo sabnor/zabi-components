@@ -8,7 +8,8 @@
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
     import Tooltip from "../atoms/Tooltip.svelte";
     import SidebarShell from "./SidebarShell.svelte";
-    import { Command, Search } from "@lucide/svelte";
+    import Command from "@lucide/svelte/icons/command";
+    import Search from "@lucide/svelte/icons/search";
     import type { Snippet } from "svelte";
     import type { Component } from "svelte";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
@@ -349,7 +350,7 @@
                             bind:value={searchValue}
                             placeholder={searchPlaceholder}
                             aria-label={searchPlaceholder}
-                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent"
+                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-input-hover focus:!bg-transparent"
                         />
                     </div>
                 {/if}

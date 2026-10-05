@@ -49,7 +49,7 @@ const now = () => (typeof performance !== "undefined" ? performance.now() : Date
  * machine) measure slower than it was and spring back. An event without a
  * usable stamp gets the clock.
  */
-function timeOf(event: Event): number {
+export function timeOf(event: Event): number {
     const stamp = event.timeStamp;
     return typeof stamp === "number" && stamp > 0 ? stamp : now();
 }

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { findLucideBarrelImports } from './lucide-barrel.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
@@ -491,6 +492,17 @@ async function verifyBuild() {
   const typesImportsValid = verifyPackagedTypesImports();
   if (!typesImportsValid) {
     allValid = false;
+  }
+
+  // What is published must not reach the `@lucide/svelte` barrel either: an
+  // app's bundler reads dist/, not src/.
+  const barrelImports = findLucideBarrelImports(distDir, ['.svelte', '.js', '.d.ts']);
+  if (barrelImports.length > 0) {
+    console.error('❌ dist imports icons from the @lucide/svelte barrel:');
+    barrelImports.forEach((where) => console.error(`   - ${where}`));
+    allValid = false;
+  } else {
+    console.log('✓ Packaged files import icons per file, not from the @lucide/svelte barrel');
   }
 
   console.log('\n📦 Verifying dist/components/types runtime modules...');

@@ -3,7 +3,10 @@
         type SidebarPanelItem,
     } from "./SidebarPanel.svelte";
     import { generateId } from "../util/ssr-safe.js";
-    import { LogOut, Moon, Sun, User } from "@lucide/svelte";
+    import LogOut from "@lucide/svelte/icons/log-out";
+    import Moon from "@lucide/svelte/icons/moon";
+    import Sun from "@lucide/svelte/icons/sun";
+    import User from "@lucide/svelte/icons/user";
 
     interface Props {
         /** Extra classes for the host element. */

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getContext, onDestroy, setContext, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { ChevronDown } from "@lucide/svelte";
+    import ChevronDown from "@lucide/svelte/icons/chevron-down";
     import { cn } from "../util/cn.js";
     import { generateId } from "../util/ssr-safe.js";
     import {
@@ -195,10 +195,21 @@
 >
     {#if trigger}
         {@render trigger(triggerProps, { open: isOpen, disabled })}
-    {:else if headingLevel}
-        <svelte:element this={`h${headingLevel}`} class="m-0">
-            {@render defaultTrigger()}
-        </svelte:element>
+    {:else if headingLevel === 1}
+        <!-- One branch per level, not `<svelte:element>`: hydration takes a
+        dynamic element out and puts it back, which blurs the trigger inside
+        it if the user had already tabbed to it. -->
+        <h1 class="m-0">{@render defaultTrigger()}</h1>
+    {:else if headingLevel === 2}
+        <h2 class="m-0">{@render defaultTrigger()}</h2>
+    {:else if headingLevel === 3}
+        <h3 class="m-0">{@render defaultTrigger()}</h3>
+    {:else if headingLevel === 4}
+        <h4 class="m-0">{@render defaultTrigger()}</h4>
+    {:else if headingLevel === 5}
+        <h5 class="m-0">{@render defaultTrigger()}</h5>
+    {:else if headingLevel === 6}
+        <h6 class="m-0">{@render defaultTrigger()}</h6>
     {:else}
         {@render defaultTrigger()}
     {/if}

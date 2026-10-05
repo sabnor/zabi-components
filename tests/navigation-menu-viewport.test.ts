@@ -48,8 +48,23 @@ describe("NavigationMenu at a narrow width", () => {
         expect(list.className.split(/\s+/)).toEqual(
             expect.arrayContaining(["flex", "flex-row", "flex-wrap"]),
         );
-        // Still a menubar: wrapping is layout only.
-        expect(list.getAttribute("role")).toBe("menubar");
+        // A list of links and disclosure buttons, not a menu bar: there are no arrow keys.
+        expect(list.getAttribute("role")).toBe("list");
+        expect(list.hasAttribute("aria-orientation")).toBe(false);
+        const items = [...list.children];
+        expect(items.length).toBeGreaterThan(0);
+        for (const item of items) {
+            expect(item.tagName).toBe("LI");
+            // Not presentational any more: each is a list item.
+            expect(item.hasAttribute("role")).toBe(false);
+        }
+        // The triggers are plain buttons that say whether their panel is open.
+        for (const trigger of list.querySelectorAll("[data-navigation-menu-trigger]")) {
+            expect(trigger.tagName).toBe("BUTTON");
+            expect(trigger.getAttribute("aria-expanded")).toBe("false");
+            expect(trigger.hasAttribute("role")).toBe(false);
+        }
+        expect(list.closest("nav")).not.toBeNull();
     });
 
     it("moves a panel that would leave the screen back inside it", async () => {

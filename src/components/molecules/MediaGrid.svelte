@@ -1,7 +1,10 @@
 <script lang="ts" generics="T">
     import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { Check, ImageOff, Play, Trash2 } from "@lucide/svelte";
+    import Check from "@lucide/svelte/icons/check";
+    import ImageOff from "@lucide/svelte/icons/image-off";
+    import Play from "@lucide/svelte/icons/play";
+    import Trash2 from "@lucide/svelte/icons/trash-2";
     import Skeleton from "../atoms/Skeleton.svelte";
     import EmptyState from "./EmptyState.svelte";
     import { cn } from "../util/cn.js";
@@ -453,7 +456,7 @@
                         miss no longer toggles the selection. -->
                         <button
                             type="button"
-                            class="focus-ring focus-ring--danger absolute end-1 top-1 flex size-7 cursor-pointer before:absolute before:hidden before:-inset-[9px] before:content-[''] pointer-coarse:before:block items-center justify-center rounded-control border border-border-overlay bg-surface-overlay text-body transition-colors duration-150 enabled:hover:text-error-text motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50"
+                            class="media-grid-delete focus-ring focus-ring--danger absolute end-1 top-1 flex size-7 cursor-pointer before:absolute before:hidden before:-inset-[9px] before:content-[''] pointer-coarse:before:block items-center justify-center rounded-control border border-border-overlay bg-surface-overlay text-body transition-colors duration-150 enabled:hover:text-error-text motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50"
                             aria-label={text.deleteLabel(label)}
                             {tabindex}
                             {disabled}
@@ -490,3 +493,19 @@
         {loading ? text.loading : ""}
     </div>
 </div>
+
+<style>
+    /*
+     * The remove button's pressed state. Hover only changed its text colour,
+     * so on a touch screen a press showed nothing. The button is an opaque
+     * plate over an image: a translucent pressed tint would let the image
+     * through and read as weaker, so it steps to the next opaque overlay fill
+     * and takes the error text colour. Written here, not as utilities: the
+     * resting `bg-surface-overlay` and `text-body` are unlayered classes in
+     * app.css, which a generated `active:` variant cannot beat.
+     */
+    .media-grid-delete:enabled:active {
+        background-color: var(--color-surface-overlay-hover);
+        color: var(--color-error-text);
+    }
+</style>

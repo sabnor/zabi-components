@@ -1,13 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import {
-    House,
-    BarChart3,
-    Bell,
-    PieChart,
-    Package,
-    Settings,
-    Calendar
-} from '@lucide/svelte';
+import House from '@lucide/svelte/icons/house';
+import BarChart3 from '@lucide/svelte/icons/chart-column';
+import Bell from '@lucide/svelte/icons/bell';
+import PieChart from '@lucide/svelte/icons/chart-pie';
+import Package from '@lucide/svelte/icons/package';
+import Settings from '@lucide/svelte/icons/settings';
+import Calendar from '@lucide/svelte/icons/calendar';
 import SidebarNavigation from '../../components/organisms/SidebarNavigation.svelte';
 
 const sidebarItems = [

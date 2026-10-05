@@ -5,7 +5,7 @@
     import RebrandDemo from "$lib/marketing/RebrandDemo.svelte";
     import Seo from "$lib/marketing/Seo.svelte";
     import SiteFooter from "$lib/marketing/SiteFooter.svelte";
-    import { ExternalLink } from "@lucide/svelte";
+    import ExternalLink from "@lucide/svelte/icons/external-link";
     import { asset } from "$app/paths";
     import {
         GITHUB_URL,

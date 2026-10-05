@@ -1,7 +1,10 @@
 <script lang="ts">
     import { untrack } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { Check, ImageOff, Maximize2, Plus } from "@lucide/svelte";
+    import Check from "@lucide/svelte/icons/check";
+    import ImageOff from "@lucide/svelte/icons/image-off";
+    import Maximize2 from "@lucide/svelte/icons/maximize-2";
+    import Plus from "@lucide/svelte/icons/plus";
     import Skeleton from "../atoms/Skeleton.svelte";
     import { isDevBuild } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";

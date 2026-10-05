@@ -1,7 +1,11 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { Check, TriangleAlert, X, Info, Zap } from "@lucide/svelte";
+    import Check from "@lucide/svelte/icons/check";
+    import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+    import X from "@lucide/svelte/icons/x";
+    import Info from "@lucide/svelte/icons/info";
+    import Zap from "@lucide/svelte/icons/zap";
     import { cn } from "../util/cn.js";
     import type {
         ExtendedSemanticVariant,

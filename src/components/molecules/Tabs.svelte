@@ -16,7 +16,9 @@
         variant?: "default" | "pills";
         /**
          * The tabs share the row equally. Meant for two or three tabs on a
-         * phone; a label too long for its share wraps.
+         * phone. A label too long for its share wraps between words; when a
+         * word does not fit, the tabs keep their words whole and the row
+         * scrolls sideways instead.
          */
         fullWidth?: boolean;
         onclick?: (event: Event) => void;
@@ -201,7 +203,10 @@
         "focus-ring cursor-pointer border-b-2 px-4 py-2 pointer-coarse:min-h-11 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed";
     // A tab keeps its width and the list scrolls; sharing the row, it may shrink and its label wrap.
     const TAB_NATURAL = "shrink-0 whitespace-nowrap";
-    const TAB_SHARED = "min-w-0 flex-1 basis-0 text-center [overflow-wrap:anywhere]";
+    // `min-w-min` is the tab's longest word: a label wraps between words, never
+    // inside one, and when the words do not fit the shares the row scrolls like
+    // any other.
+    const TAB_SHARED = "min-w-min flex-1 basis-0 text-center";
     // A disabled tab is never the selected one, so only this arm carries the disabled state.
     const TAB_IDLE =
         "border-transparent text-description hover:border-border-medium hover:text-body active:bg-surface-active disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description disabled:active:bg-transparent";

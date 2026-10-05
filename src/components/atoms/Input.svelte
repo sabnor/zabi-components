@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { CheckCircle, AlertTriangle, AlertCircle } from "@lucide/svelte";
+    import CheckCircle from "@lucide/svelte/icons/circle-check-big";
+    import AlertTriangle from "@lucide/svelte/icons/triangle-alert";
+    import AlertCircle from "@lucide/svelte/icons/circle-alert";
     import type { SemanticVariant, SizeVariant } from "../types/variants.js";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";

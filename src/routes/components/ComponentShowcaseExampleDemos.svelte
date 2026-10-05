@@ -504,26 +504,30 @@
                 <div class="w-full space-y-4">
                     <Dropdown bind:isOpen={dropdownDemoAOpen}>
                         {#snippet trigger(aria)}
-                            <Button text="Select an option" {...aria} />
+                            <Button
+                                text="Select an option"
+                                onclick={() => (dropdownDemoAOpen = !dropdownDemoAOpen)}
+                                {...aria}
+                            />
                         {/snippet}
                         {#snippet children()}
                             <div class="space-y-1 p-2">
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Option 1</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Option 2</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Option 3</button
                                 >
                             </div>
@@ -531,26 +535,30 @@
                     </Dropdown>
                     <Dropdown bind:isOpen={dropdownDemoBOpen}>
                         {#snippet trigger(aria)}
-                            <Button text="Choose a color" {...aria} />
+                            <Button
+                                text="Choose a color"
+                                onclick={() => (dropdownDemoBOpen = !dropdownDemoBOpen)}
+                                {...aria}
+                            />
                         {/snippet}
                         {#snippet children()}
                             <div class="space-y-1 p-2">
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Red</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Blue</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-surface-overlay-hover"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Green</button
                                 >
                             </div>
@@ -1683,7 +1691,11 @@
                     badgeText="New"
                 />
             {:else if component.name === "Toaster"}
-                <Toaster />
+                <!-- One for the page. This branch runs once per example, and a
+                second Toaster drew every toast twice and announced it twice. -->
+                {#if exampleIndex === 0}
+                    <Toaster />
+                {/if}
                 <Button
                     text="Push sample toast"
                     onclick={() =>

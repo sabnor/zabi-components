@@ -1,6 +1,8 @@
 <script lang="ts">
     import { untrack, type Snippet } from "svelte";
-    import { Info, OctagonAlert, TriangleAlert } from "@lucide/svelte";
+    import Info from "@lucide/svelte/icons/info";
+    import OctagonAlert from "@lucide/svelte/icons/octagon-alert";
+    import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
     import Button from "../atoms/Button.svelte";
     import Modal from "./Modal.svelte";
     import { cn } from "../util/cn.js";

@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import { CreditCard, Shield, User } from '@lucide/svelte';
+import CreditCard from '@lucide/svelte/icons/credit-card';
+import Shield from '@lucide/svelte/icons/shield';
+import User from '@lucide/svelte/icons/user';
 import List from '../../components/atoms/List.svelte';
 
 const itemsWithLeadingVisuals = [

@@ -1077,7 +1077,8 @@ trapped and the page behind is not locked.
 It also closes on a press outside the bar, when `currentPath` changes, and
 when the screen becomes wide enough for the row (`collapseAt`, `md` by default).
 
-**NavigationMenu** (a row of triggers, each with a panel of links):
+**NavigationMenu** (a list of links and of triggers, each with a panel of links;
+the disclosure pattern, not a menu bar, so there are no arrow keys between the items):
 - ✅ **Tab**: Through the triggers, and through the links of an open panel
 - ✅ **Enter / Space** on a trigger: Open or close its panel
 - ✅ **Arrow Down** on a closed trigger: Open its panel
