@@ -2,6 +2,7 @@
     import { Check, TriangleAlert, X, Info, Zap } from "@lucide/svelte";
     import type { ExtendedSemanticVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
+    import { TOUCH_HIT_AREA } from "../util/touch-target.js";
     type AlertVisualVariant = Exclude<ExtendedSemanticVariant, "default">;
 
     interface Props {
@@ -98,7 +99,7 @@
     {#if closable}
         <button
             onclick={handleDismiss}
-            class="absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body motion-reduce:transition-none focus-ring--muted"
+            class="absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring--muted {TOUCH_HIT_AREA}"
             aria-label="Dismiss alert"
             type="button"
         >

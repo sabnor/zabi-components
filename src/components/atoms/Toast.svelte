@@ -1,5 +1,6 @@
 <script lang="ts">
     import { cn } from "../util/cn.js";
+    import { TOUCH_HIT_AREA } from "../util/touch-target.js";
 
     interface Props {
         message?: string;
@@ -48,7 +49,7 @@
         {#if closable}
             <button
                 type="button"
-                class="focus-ring shrink-0 cursor-pointer rounded-control text-description hover:text-headline focus:outline-none"
+                class="focus-ring pointer-coarse:relative shrink-0 cursor-pointer rounded-control text-description hover:text-headline active:text-headline focus:outline-none {TOUCH_HIT_AREA}"
                 onclick={closeToast}
                 aria-label="Close notification"
             >

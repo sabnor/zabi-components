@@ -70,6 +70,10 @@
      * button sits flush in a toolbar beside a text button of the same size.
      * Previously these were 8–16px shorter than their own Button.
      *
+     * On a coarse pointer `sm` and `md` are 44 by 44px, as Button, Input and
+     * Select are 44px tall there, so the toolbar still lines up and the box
+     * itself is the touch target. `lg` is 48px already.
+     *
      * `xs` sits below that scale on purpose: no text control is 24px. Its
      * target is the box itself on every pointer type. An invisible larger hit
      * area was tried and removed: on touch it covered the visible edge of the
@@ -77,9 +81,9 @@
      */
     const sizeClass = $derived.by(() => {
         if (size === "xs") return { box: "size-6", spinner: "size-3" };
-        if (size === "sm") return { box: "size-8", spinner: "size-3.5" };
+        if (size === "sm") return { box: "size-8 pointer-coarse:min-h-11 pointer-coarse:min-w-11", spinner: "size-3.5" };
         if (size === "lg") return { box: "size-12", spinner: "size-5" };
-        return { box: "size-10", spinner: "size-4" };
+        return { box: "size-10 pointer-coarse:min-h-11 pointer-coarse:min-w-11", spinner: "size-4" };
     });
 
     const disabledClass =

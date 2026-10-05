@@ -1119,7 +1119,14 @@ body {
   background-color: var(--color-base-950);
 }
 
-/* Hover utilities for base colors */
+/* Hover utilities for base colors.
+ *
+ * Every hand-written `:hover` rule in this file sits in `@media (hover: hover)`,
+ * as Tailwind's own `hover:` variant does. On a touch screen `:hover` stays on
+ * the last element tapped until something else is tapped, so an ungated rule
+ * left a button in its hover colour after every press. The rules inside keep
+ * their indentation: only the two wrapper lines were added around each. */
+@media (hover: hover) {
 .hover\:bg-base-50:hover {
   background-color: var(--color-base-50);
 }
@@ -1203,14 +1210,17 @@ body {
 .hover\:bg-base-950:hover {
   background-color: var(--color-base-950);
 }
+}
 
 /* Card utilities */
 .bg-card {
   background-color: var(--color-card);
 }
 
+@media (hover: hover) {
 .hover\:bg-card-hover:hover {
   background-color: var(--color-card-hover);
+}
 }
 
 /* Surface utilities */
@@ -1240,8 +1250,10 @@ body {
   background-color: var(--color-input);
 }
 
+@media (hover: hover) {
 .hover\:bg-input-hover:hover {
   background-color: var(--color-input-hover);
+}
 }
 
 .focus-visible\:bg-input-focus:focus-visible {
@@ -1250,6 +1262,18 @@ body {
 
 .active\:bg-input-focus:active {
   background-color: var(--color-input-focus);
+}
+
+/* The pressed Select trigger. `--color-input-focus` is the resting fill in the
+   light theme, so pressing showed nothing; the hover step is one away from it
+   in both themes, and on a touch screen there is no hover to confuse it with. */
+.active\:bg-input-hover:active {
+  background-color: var(--color-input-hover);
+}
+
+/* `.bg-card` is unlayered, so the generated `active:bg-card-active` would lose to it. */
+.active\:bg-card-active:active {
+  background-color: var(--color-card-active);
 }
 
 .disabled\:bg-input-disabled:disabled {
@@ -1305,6 +1329,7 @@ body {
   background-color: var(--color-brand-950);
 }
 
+@media (hover: hover) {
 .hover\:bg-brand-50:hover {
   background-color: var(--color-brand-50);
 }
@@ -1315,6 +1340,7 @@ body {
 
 .hover\:bg-brand-200:hover {
   background-color: var(--color-brand-200);
+}
 }
 
 .text-brand-50 {
@@ -1406,7 +1432,14 @@ body {
   color: var(--color-link);
 }
 
+@media (hover: hover) {
 .text-link:hover {
+  color: var(--color-link-hover);
+}
+}
+
+/* Pressed, on every pointer: the link variants of Button and IconButton have no fill to darken. */
+.text-link:active {
   color: var(--color-link-hover);
 }
 
@@ -1414,8 +1447,10 @@ body {
   color: var(--color-nav-menu-item);
 }
 
+@media (hover: hover) {
 .hover\:text-nav-menu-item-hover:hover {
   color: var(--color-nav-menu-item-hover);
+}
 }
 
 .text-nav-menu-item-active {
@@ -1492,8 +1527,10 @@ body {
   border-color: var(--color-border-secondary);
 }
 
+@media (hover: hover) {
 .border-hover:hover {
   border-color: var(--color-border-hover);
+}
 }
 
 .border-disabled:disabled {
@@ -1713,8 +1750,10 @@ body {
   background-color: var(--color-action-primary);
 }
 
+@media (hover: hover) {
 .bg-action-primary:hover {
   background-color: var(--color-action-primary-hover);
+}
 }
 
 .bg-action-primary:active {
@@ -1730,8 +1769,10 @@ body {
   background-color: var(--color-action-primary-subtle);
 }
 
+@media (hover: hover) {
 .bg-action-primary-subtle:hover {
   background-color: var(--color-action-primary-subtle-hover);
+}
 }
 
 .text-action-primary {
@@ -1743,8 +1784,10 @@ body {
   background-color: var(--color-action-secondary);
 }
 
+@media (hover: hover) {
 .bg-action-secondary:hover {
   background-color: var(--color-action-secondary-hover);
+}
 }
 
 .bg-action-secondary:active {
@@ -1760,8 +1803,10 @@ body {
   background-color: var(--color-action-secondary-subtle);
 }
 
+@media (hover: hover) {
 .bg-action-secondary-subtle:hover {
   background-color: var(--color-action-secondary-subtle-hover);
+}
 }
 
 /* Danger Actions */
@@ -1769,8 +1814,10 @@ body {
   background-color: var(--color-action-danger);
 }
 
+@media (hover: hover) {
 .bg-action-danger:hover {
   background-color: var(--color-action-danger-hover);
+}
 }
 
 .bg-action-danger:active {
@@ -1786,8 +1833,10 @@ body {
   background-color: var(--color-action-danger-subtle);
 }
 
+@media (hover: hover) {
 .bg-action-danger-subtle:hover {
   background-color: var(--color-action-danger-subtle-hover);
+}
 }
 
 /* `bg-action-disabled`, `text-action-disabled-text`, `bg-surface-hover` and
@@ -1817,6 +1866,7 @@ body {
    rule also beats `.bg-action-*:hover`. */
 
 /* Text */
+@media (hover: hover) {
 .hover\:text-body:hover {
   color: var(--color-body);
 }
@@ -1836,6 +1886,15 @@ body {
 .group:hover .group-hover\:text-headline\/90 {
   color: color-mix(in oklab, var(--color-headline) 90%, transparent);
 }
+}
+
+.active\:text-headline:active {
+  color: var(--color-headline);
+}
+
+.active\:text-link:active {
+  color: var(--color-link);
+}
 
 .disabled\:text-action-disabled-text:disabled {
   color: var(--color-action-disabled-text);
@@ -1846,12 +1905,14 @@ body {
 }
 
 /* Border */
+@media (hover: hover) {
 .hover\:border-border-medium:hover {
   border-color: var(--color-border-medium);
 }
 
 .enabled\:hover\:border-border-medium:enabled:hover {
   border-color: var(--color-border-medium);
+}
 }
 
 .disabled\:border-transparent:disabled {

@@ -93,10 +93,10 @@
     }
 
     const TAB_BASE =
-        "focus-ring cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed";
+        "focus-ring cursor-pointer border-b-2 px-4 py-2 pointer-coarse:min-h-11 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed";
     // A disabled tab is never the selected one, so only this arm carries the disabled state.
     const TAB_IDLE =
-        "border-transparent text-description hover:border-border-medium hover:text-body active:bg-surface-active disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description";
+        "border-transparent text-description hover:border-border-medium hover:text-body active:bg-surface-active disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description disabled:active:bg-transparent";
     const TAB_SELECTED = "border-brand-500 text-body active:bg-surface-active";
     // The pill has a fill of its own, so its pressed state is the next step of
     // that fill; a translucent tint in its place would be a weaker fill, not a

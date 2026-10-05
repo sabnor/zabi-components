@@ -222,8 +222,8 @@
     function getNavItemClasses(item: SidebarNavigationItem): string {
         const isActive = isItemActive(item);
         const layoutClasses = isCollapsed
-            ? "flex min-h-10 items-center justify-center px-0 py-2"
-            : "flex min-h-10 items-center gap-3 px-2 py-2";
+            ? "flex min-h-10 pointer-coarse:min-h-11 items-center justify-center px-0 py-2"
+            : "flex min-h-10 pointer-coarse:min-h-11 items-center gap-3 px-2 py-2";
         const structural =
             "focus-ring focus-ring--nav relative w-full cursor-pointer rounded-control no-underline transition-colors duration-150 outline-none";
 
@@ -349,7 +349,7 @@
                             bind:value={searchValue}
                             placeholder={searchPlaceholder}
                             aria-label={searchPlaceholder}
-                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent"
+                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent"
                         />
                     </div>
                 {/if}
@@ -505,7 +505,7 @@
                 {#if !(normalizedSearchTerm && searchMode === "input")}
                     <button
                         type="button"
-                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
+                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 pointer-coarse:min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
                         onclick={handleEmptyStateAction}
                     >
                         {emptyStateActionLabel}

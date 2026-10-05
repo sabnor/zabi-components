@@ -40,7 +40,7 @@
                     <Button variant="outline" size="sm" text="Preview" />
                     <button
                         {...props}
-                        class="focus-ring flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-control text-description transition-colors hover:bg-surface-hover hover:text-body motion-reduce:transition-none"
+                        class="focus-ring flex size-8 pointer-coarse:min-h-11 pointer-coarse:min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-control text-description transition-colors hover:bg-surface-hover hover:text-body motion-reduce:transition-none"
                         aria-label="Billing details"
                     >
                         <ChevronDown

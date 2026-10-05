@@ -117,10 +117,16 @@ Size variants are consistent across the components that take `SizeVariant`:
 Button, IconButton, Input, Select and Slider share one height per size (32, 40
 and 48px), so controls of the same size line up in a row.
 
+On a touch screen (`pointer: coarse`) `sm` and `md` are 44px tall in all of
+them, and an IconButton is 44px wide as well, so the row still lines up and
+each control is a full touch target. Nothing changes with a mouse. `sm` and
+`md` therefore look alike on a phone; use `lg` (48px) for the main action
+there.
+
 A few components have sizes of their own, because the shared three do not fit
 them:
 
-- **IconButton** and **Spinner** add **`xs`** (IconButton: a 24px box for dense, pointer-first layouts).
+- **IconButton** and **Spinner** add **`xs`** (IconButton: a 24px box for dense, pointer-first layouts; it stays 24px on a touch screen, so use `sm` or larger there).
 - **EmptyState** takes `default` | `compact`.
 - **Drawer** takes `sm` | `md` | `lg` for the width of the panel, not a control height.
 - **SegmentedControl** is 32, 40 and 48px tall as the controls above, and never less than 44px a segment on a touch screen, where the three sizes therefore look alike.

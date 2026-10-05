@@ -61,11 +61,11 @@
      */
     const sizeClass = $derived(() => {
         if (size === "sm") {
-            return { box: "h-8 px-3", text: "text-sm max-sm:text-base", spinner: "size-3.5" };
+            return { box: "h-8 px-3 pointer-coarse:min-h-11", text: "text-sm max-sm:text-base", spinner: "size-3.5" };
         } else if (size === "lg") {
             return { box: "h-12 px-4", text: "text-base", spinner: "size-5" };
         } else {
-            return { box: "h-10 px-3", text: "text-sm max-sm:text-base", spinner: "size-4" };
+            return { box: "h-10 px-3 pointer-coarse:min-h-11", text: "text-sm max-sm:text-base", spinner: "size-4" };
         }
     });
 

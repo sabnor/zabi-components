@@ -412,7 +412,7 @@
                 type="button"
                 id={controlId}
                 class={cn(
-                    "focus-ring block w-full border-2 border-dashed border-input-border rounded-container p-6 text-center enabled:hover:border-action-primary transition-colors",
+                    "focus-ring block w-full border-2 border-dashed border-input-border rounded-container p-6 text-center enabled:hover:border-action-primary enabled:active:bg-surface-active transition-colors",
                     // Disabled form controls can swallow pointer events; let a
                     // drag land on the wrapper, which cancels it.
                     disabled ? "pointer-events-none opacity-50" : "cursor-pointer",

@@ -82,7 +82,7 @@
     const sizeClass = $derived(() => {
         if (size === "sm") {
             return {
-                button: "w-8 h-8",
+                button: "w-8 h-8 pointer-coarse:min-h-11 pointer-coarse:min-w-11",
                 icon: 16
             };
         } else if (size === "lg") {
@@ -92,7 +92,7 @@
             };
         } else {
             return {
-                button: "w-10 h-10",
+                button: "w-10 h-10 pointer-coarse:min-h-11 pointer-coarse:min-w-11",
                 icon: 20
             };
         }

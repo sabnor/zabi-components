@@ -67,13 +67,13 @@
 
     const itemClasses = $derived(
         cn(
-            "focus-ring flex w-full items-start justify-start gap-2 rounded-control px-3 py-2 text-start text-sm transition-colors focus:outline-none",
+            "focus-ring flex w-full items-start justify-start gap-2 rounded-control px-3 py-2 pointer-coarse:py-3 text-start text-sm transition-colors focus:outline-none",
             tone === "danger" ? "text-error focus-ring--danger" : "text-body",
             disabled
                 ? "cursor-not-allowed"
                 : tone === "danger"
-                  ? "cursor-pointer hover:bg-action-danger-subtle"
-                  : "cursor-pointer hover:bg-surface-overlay-hover",
+                  ? "cursor-pointer hover:bg-action-danger-subtle active:bg-action-danger-subtle-hover"
+                  : "cursor-pointer hover:bg-surface-overlay-hover active:bg-surface-active",
             className,
         ),
     );

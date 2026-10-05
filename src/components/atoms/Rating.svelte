@@ -236,7 +236,7 @@
                 <button
                     type="button"
                     class={cn(
-                        "focus-ring focus-ring--muted flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body motion-reduce:transition-none disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-description",
+                        "focus-ring focus-ring--muted flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-description",
                         value === null && "invisible",
                     )}
                     aria-label={text.clearLabel}

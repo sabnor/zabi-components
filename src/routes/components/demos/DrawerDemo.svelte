@@ -61,7 +61,7 @@
                 <li>
                     <button
                         type="button"
-                        class="focus-ring flex w-full cursor-pointer items-center justify-between rounded-control px-3 py-2 text-left text-sm text-body transition-colors hover:bg-surface-overlay-hover motion-reduce:transition-none"
+                        class="focus-ring flex w-full cursor-pointer items-center justify-between rounded-control px-3 py-2 pointer-coarse:min-h-11 text-left text-sm text-body transition-colors hover:bg-surface-overlay-hover active:bg-surface-active motion-reduce:transition-none"
                         aria-current={name === selected ? "true" : undefined}
                         onclick={() => choose(name)}
                     >

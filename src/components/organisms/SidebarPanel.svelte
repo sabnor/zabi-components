@@ -124,7 +124,7 @@
         </div>
         <button
             type="button"
-            class="-mr-0.5 -mt-0.5 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-control text-nav-menu-item transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover focus-ring focus-ring--nav"
+            class="-mr-0.5 -mt-0.5 inline-flex size-9 pointer-coarse:min-h-11 pointer-coarse:min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-control text-nav-menu-item transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-nav-menu-active focus-ring focus-ring--nav"
             aria-label={closeLabel}
             onclick={handleClose}
         >
@@ -145,7 +145,7 @@
                 bind:value={searchValue}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                class="w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
+                class="w-full min-w-0 min-h-10 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
             />
         </div>
     {/if}
@@ -204,7 +204,7 @@
             {#if emptyStateActionLabel.trim() && onEmptyStateAction}
                 <button
                     type="button"
-                    class="mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary transition-colors hover:bg-action-primary-hover focus-ring focus-ring--nav"
+                    class="mt-3 inline-flex min-h-10 pointer-coarse:min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary transition-colors hover:bg-action-primary-hover focus-ring focus-ring--nav"
                     onclick={handleEmptyStateAction}
                 >
                     {emptyStateActionLabel.trim()}

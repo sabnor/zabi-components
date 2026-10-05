@@ -44,13 +44,17 @@
      * to font-normal, so the biggest button had the lightest label.
      */
     const sizeClass = $derived.by(() => {
+        // sm and md are 44px tall on a coarse pointer, like Input, Select and
+        // IconButton, so a row still lines up and the box is the touch target.
+        // No minimum width: text and padding make a button wide enough, and one
+        // would stop the actions of an ImageUpload shrinking in a narrow space.
         if (size === "sm") {
-            return { box: "h-8 px-3", text: "text-sm", gap: "gap-2", spinner: "size-3.5" };
+            return { box: "h-8 px-3 pointer-coarse:min-h-11", text: "text-sm", gap: "gap-2", spinner: "size-3.5" };
         }
         if (size === "lg") {
             return { box: "h-12 px-5", text: "text-base", gap: "gap-2", spinner: "size-4" };
         }
-        return { box: "h-10 px-4", text: "text-sm", gap: "gap-2", spinner: "size-4" };
+        return { box: "h-10 px-4 pointer-coarse:min-h-11", text: "text-sm", gap: "gap-2", spinner: "size-4" };
     });
 
     /**

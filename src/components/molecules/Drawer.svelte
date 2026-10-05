@@ -12,6 +12,7 @@
         saveFocus,
     } from "../util/focus-utils.js";
     import { lockBodyScroll, trapTabKey } from "../util/overlay.js";
+    import { TOUCH_HIT_AREA } from "../util/touch-target.js";
     import { portal as portalTo } from "../util/portal.js";
     import { generateId } from "../util/ssr-safe.js";
     import {
@@ -276,8 +277,8 @@
                 <button
                     type="button"
                     onclick={() => close("close-button")}
-                    class="focus-ring relative flex size-8 shrink-0 items-center justify-center rounded-control text-description transition-colors motion-reduce:transition-none pointer-coarse:before:absolute pointer-coarse:before:-inset-1.5 pointer-coarse:before:content-[''] {dismissible
-                        ? 'cursor-pointer hover:bg-surface-overlay-hover hover:text-headline'
+                    class="focus-ring relative flex size-8 shrink-0 items-center justify-center rounded-control text-description transition-colors motion-reduce:transition-none {TOUCH_HIT_AREA} {dismissible
+                        ? 'cursor-pointer hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active'
                         : 'cursor-not-allowed opacity-50'}"
                     aria-label={closeLabel}
                     aria-disabled={dismissible ? undefined : "true"}

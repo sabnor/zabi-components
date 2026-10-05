@@ -20,7 +20,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: "md",
-                        description: "Button size",
+                        description:
+                            "sm, md or lg: 32, 40 or 48px tall. On a touch screen sm and md are 44px tall, so a row of controls still lines up. Use lg for the main action on a phone.",
                     },
                     {
                         name: "disabled",
@@ -77,7 +78,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "md",
                         description:
-                            "Icon button size: xs (24px), sm, md or lg. xs is for dense pointer-first layouts and is the minimum target size; use sm or larger where the primary input is touch",
+                            "Icon button size: xs (24px), sm (32px), md (40px) or lg (48px). On a touch screen sm and md are 44 by 44px. xs stays 24px on every pointer: it is for dense pointer-first layouts, so use sm or larger where the primary input is touch",
                     },
                     {
                         name: "tone",
@@ -189,6 +190,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "default",
                         description: "Input variant",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "32, 40 or 48px tall, as Button and Select. On a touch screen sm and md are 44px tall, so a row of controls still lines up.",
                     },
                 ],
                 variants: ["default", "success", "warning", "error"],
@@ -661,6 +670,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Selected value",
                     },
                     {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Height of the trigger: 32, 40 or 48px, as Button and Input. On a touch screen sm and md are 44px tall, so a row of controls still lines up. The options are 44px rows there too.",
+                    },
+                    {
                         name: "placeholder",
                         type: "string",
                         required: false,
@@ -773,7 +790,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "md",
                         description:
-                            "Height of the row, on the scale Input and Button use.",
+                            "Height of the row, on the scale Input and Button use. The thumb takes a touch across 44px at every size.",
                     },
                     {
                         name: "disabled",
@@ -3981,7 +3998,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 <h3 class="flex-1 text-sm font-medium">Billing details</h3>
                 <Badge text="Draft" />
                 <Button variant="outline" size="sm" text="Preview" />
-                <button {...props} class="focus-ring size-8 rounded-control" aria-label="Billing details">
+                <button {...props} class="focus-ring size-8 pointer-coarse:min-h-11 pointer-coarse:min-w-11 rounded-control" aria-label="Billing details">
                     <ChevronDown size={16} aria-hidden="true" class={state.open ? "rotate-180" : ""} />
                 </button>
             </div>

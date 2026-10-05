@@ -206,7 +206,7 @@
                 {#if hasExpandable}
                     <button
                         type="button"
-                        class="focus-ring cursor-pointer rounded-control p-1 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline focus:outline-none"
+                        class="focus-ring cursor-pointer inline-flex items-center justify-center rounded-control p-1 pointer-coarse:min-h-11 pointer-coarse:min-w-11 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active focus:outline-none"
                         aria-expanded={isExpanded}
                         aria-controls="toaster-expand-{toast.id}"
                         aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
@@ -222,7 +222,7 @@
                 {/if}
                 <button
                     type="button"
-                    class="focus-ring cursor-pointer rounded-control p-1 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline focus:outline-none"
+                    class="focus-ring cursor-pointer inline-flex items-center justify-center rounded-control p-1 pointer-coarse:min-h-11 pointer-coarse:min-w-11 text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active focus:outline-none"
                     onclick={handleDismiss}
                     aria-label="Dismiss notification"
                 >
@@ -270,7 +270,7 @@
                 {paused ? 'Paused — closes' : 'This message will close'} in {count} seconds.
                 <button
                     type="button"
-                    class="focus-ring cursor-pointer rounded-control text-link underline-offset-2 hover:underline focus:outline-none"
+                    class="focus-ring cursor-pointer rounded-control text-link underline-offset-2 hover:underline active:underline focus:outline-none pointer-coarse:inline-flex pointer-coarse:items-center pointer-coarse:min-h-11"
                     onclick={stopTimer}
                 >
                     Click to stop

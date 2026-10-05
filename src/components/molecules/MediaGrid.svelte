@@ -385,7 +385,7 @@
                             "focus-ring relative block size-full cursor-pointer overflow-hidden rounded-container border bg-surface-2 transition-colors duration-150 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50",
                             on
                                 ? "border-2 border-action-primary"
-                                : "border-border enabled:hover:border-border-medium",
+                                : "border-border enabled:hover:border-border-medium enabled:active:scale-[0.98]",
                         )}
                         aria-pressed={on}
                         aria-label={video ? text.videoLabel(label) : label}

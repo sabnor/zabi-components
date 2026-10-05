@@ -382,6 +382,19 @@ Whenever token or CSS import API surface changes, include:
 - The dev site and Storybook honour `data-theme` like the published files.
 - `THEME.md` no longer tells apps to import the compiled stylesheet after
   `theme-only`, or to use `theme()` for a colour.
+- **Controls are 44px on a touch screen.** Behind `@media (pointer: coarse)`,
+  Button, IconButton, Input and the Select trigger are at least 44px tall at
+  `sm` and `md` (`lg` is 48px already; use it for the main action on a phone),
+  and so are Slider rows, Checkbox, Radio and Toggle rows, Tabs, Collapsible
+  triggers, Dropdown items, Select options (48px), NavigationMenu, TopNavbar
+  and Sidebar items, SortableList controls and toast buttons. The close
+  buttons of Alert, Toast, Modal, SlideUp and Drawer and the Toggle switch
+  keep their size and take taps in a 44px area. Layouts on touch get taller
+  where controls grew: a checkbox list at an 8px gap is 52px a row. IconButton
+  `xs` stays 24px. Nothing changes with a mouse.
+- **Every pressable control shows a pressed state** (`:active`) that does not
+  depend on hover, in both themes. A disabled Toggle or Tab no longer shows
+  one.
 
 ### Deprecated
 
@@ -391,6 +404,13 @@ Whenever token or CSS import API surface changes, include:
 
 ### Fixed
 
+- **Hover colours no longer stick after a tap.** The hand-written `:hover`
+  rules in the theme files (`.bg-action-primary:hover` and 41 more) applied on
+  touch screens, so a tapped primary button stayed in its hover colour. They
+  now sit in `@media (hover: hover)`, as Tailwind's own `hover:` does.
+- **The Select trigger's pressed state shows in light mode**; it was the
+  resting fill.
+- **Stacked checkbox and radio rows no longer overlap** on touch screens.
 - **The muted focus ring shows in dark.** `.focus-ring--muted` (ghost and link
   buttons, the AppBar back control, the SortableList handle) read
   `--color-base-500`, the same grey in both themes: 2.49:1 on the dark elevated

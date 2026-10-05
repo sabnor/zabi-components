@@ -8,6 +8,7 @@
         saveFocus,
     } from '../util/focus-utils.js';
     import { lockBodyScroll, trapTabKey } from '../util/overlay.js';
+    import { TOUCH_HIT_AREA } from '../util/touch-target.js';
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
 
@@ -134,7 +135,7 @@
                     <button
                         type="button"
                         onclick={closeSlideUp}
-                        class="focus-ring flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-2xl text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline"
+                        class="focus-ring pointer-coarse:relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-2xl text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active {TOUCH_HIT_AREA}"
                         aria-label={closeLabel}
                     >
                         ×

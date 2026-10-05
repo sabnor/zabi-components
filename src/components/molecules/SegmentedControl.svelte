@@ -144,8 +144,10 @@ one changes nothing, and the value goes with a form. -->
         --zabi-segment-pad: 12px;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(min(100%, 3.5rem), 1fr));
-        gap: 0.125rem;
-        padding: 0.125rem;
+        /* One value for the padding and the gap, and for the segments' corner radius below. */
+        --zabi-segment-inset: 0.125rem;
+        gap: var(--zabi-segment-inset);
+        padding: var(--zabi-segment-inset);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-control);
         background: var(--color-action-secondary);
@@ -199,7 +201,9 @@ one changes nothing, and the value goes with a form. -->
         min-width: 0;
         min-height: var(--zabi-segment-height);
         padding: 0.25rem var(--zabi-segment-pad);
-        border-radius: calc(var(--radius-control) - 0.1875rem);
+        /* Nested corners: the track's radius less what lies between its edge and
+           the segment, which is the track's padding and its 1px border. */
+        border-radius: calc(var(--radius-control) - var(--zabi-segment-inset) - 1px);
         color: var(--color-body);
         line-height: 1.25;
         text-align: center;
@@ -215,8 +219,11 @@ one changes nothing, and the value goes with a form. -->
         hyphens: auto;
     }
 
-    .segment:hover input:enabled:not(:checked) + .segment-face {
-        background: var(--color-surface-hover);
+    /* Only where a pointer can hover: after a tap, `:hover` stays on the segment until the next tap elsewhere. */
+    @media (hover: hover) {
+        .segment:hover input:enabled:not(:checked) + .segment-face {
+            background: var(--color-surface-hover);
+        }
     }
 
     .segment:active input:enabled:not(:checked) + .segment-face {

@@ -10,7 +10,14 @@
  *      38/46/50 and 32/40/48 respectively, so a `lg` Button stood 14px taller
  *      than the `lg` Input beside it.
  *
- *   2. RADIUS — no component may use `rounded-{xs,sm,md,lg,xl,2xl,3xl}`.
+ *   2. TOUCH — on a coarse pointer the same controls must be at least 44px tall at
+ *      `sm` and `md` (`pointer-coarse:min-h-11` in the size's `box`), and the
+ *      square IconButton 44px wide as well. They all grow together, so a row
+ *      still lines up on a phone. `lg` is 48px already. Without this a `md`
+ *      Button was a 40px target on a touch screen, and an Input that grew
+ *      alone would no longer line up with the Button beside it.
+ *
+ *   3. RADIUS — no component may use `rounded-{xs,sm,md,lg,xl,2xl,3xl}`.
  *      Radius is chosen by role (`rounded-control` / `rounded-container` /
  *      `rounded-overlay` / `rounded-pill`), never by size. The library
  *      previously had eight radii in play, from a 2px Badge to a 24px Modal.
@@ -43,6 +50,13 @@ const CONTROLS = [
     'atoms/Slider.svelte',
 ];
 
+/** Sizes below 44px, which have to grow on a coarse pointer. `lg` (48px) does not. */
+const TOUCH_SIZES = ['sm', 'md'];
+const TOUCH_MIN_HEIGHT = 'pointer-coarse:min-h-11';
+const TOUCH_MIN_WIDTH = 'pointer-coarse:min-w-11';
+/** Controls that are as wide as they are tall, so the width needs the minimum too. */
+const SQUARE_CONTROLS = new Set(['atoms/IconButton.svelte']);
+
 const BANNED_RADII = /(?<![\w-])rounded(-[trblxy]{1,2})?-(xs|sm|md|lg|xl|2xl|3xl)(?![\w-])/g;
 
 /**
@@ -52,27 +66,35 @@ const BANNED_RADII = /(?<![\w-])rounded(-[trblxy]{1,2})?-(xs|sm|md|lg|xl|2xl|3xl
  * for the square IconButton), so the height is read from the `box` value only
  * — never from a spinner or icon class that happens to sit nearby.
  */
-function heightsBySize(source, extraSizes = []) {
+function boxesBySize(source, extraSizes = []) {
     const found = { sm: null, md: null, lg: null };
     for (const size of extraSizes) found[size] = null;
-    const heightOf = (box) => {
-        const m = box.match(/(?<![\w-])(?:h|size)-(\d+(?:\.\d+)?)(?![\w-])/);
-        return m ? `h-${m[1]}` : null;
-    };
 
     // Arms are written as: if (size === "sm") ... box: "..."   / "lg" likewise.
     for (const size of ['sm', 'lg', ...extraSizes]) {
         const arm = new RegExp(`size === "${size}"[\\s\\S]{0,240}?box:\\s*"([^"]+)"`);
         const m = source.match(arm);
-        if (m) found[size] = heightOf(m[1]);
+        if (m) found[size] = m[1];
     }
 
     // md is the fall-through arm: the last `box:` after the "lg" branch.
     const tail = source.split(/size === "lg"/).pop() || '';
     const boxes = [...tail.matchAll(/box:\s*"([^"]+)"/g)];
-    if (boxes.length) found.md = heightOf(boxes[boxes.length - 1][1]);
+    if (boxes.length) found.md = boxes[boxes.length - 1][1];
 
     return found;
+}
+
+/** The fine-pointer height in a `box` value; a `min-h-*` or a variant-prefixed class does not count. */
+function heightOf(box) {
+    if (!box) return null;
+    const m = box.match(/(?<![\w:-])(?:h|size)-(\d+(?:\.\d+)?)(?![\w-])/);
+    return m ? `h-${m[1]}` : null;
+}
+
+function heightsBySize(source, extraSizes = []) {
+    const boxes = boxesBySize(source, extraSizes);
+    return Object.fromEntries(Object.entries(boxes).map(([size, box]) => [size, heightOf(box)]));
 }
 
 function walk(dir) {
@@ -99,8 +121,26 @@ function main() {
             continue;
         }
         const extra = EXTRA_HEIGHT[rel] ?? {};
-        const heights = heightsBySize(fs.readFileSync(full, 'utf8'), Object.keys(extra));
+        const source = fs.readFileSync(full, 'utf8');
+        const heights = heightsBySize(source, Object.keys(extra));
         table[rel] = heights;
+
+        // Touch: sm and md grow to 44px on a coarse pointer, in every control alike.
+        const boxes = boxesBySize(source);
+        for (const size of TOUCH_SIZES) {
+            const classes = (boxes[size] ?? '').split(/\s+/);
+            if (!classes.includes(TOUCH_MIN_HEIGHT)) {
+                failures.push(
+                    `${rel}: size "${size}" is under 44px and its box has no ${TOUCH_MIN_HEIGHT} ` +
+                    '(a touch target must be at least 44px tall on a coarse pointer)',
+                );
+            }
+            if (SQUARE_CONTROLS.has(rel) && !classes.includes(TOUCH_MIN_WIDTH)) {
+                failures.push(
+                    `${rel}: size "${size}" is under 44px wide and its box has no ${TOUCH_MIN_WIDTH}`,
+                );
+            }
+        }
         for (const size of ['sm', 'md', 'lg']) {
             if (!heights[size]) {
                 failures.push(`${rel}: could not find a height utility for size "${size}"`);
@@ -128,7 +168,7 @@ function main() {
         );
     }
 
-    // 2. Radii
+    // 3. Radii
     const radiusOffenders = [];
     for (const file of walk(componentsDir)) {
         const source = fs.readFileSync(file, 'utf8');
@@ -151,7 +191,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log('✓ Controls share one height scale; radii are role-based\n');
+    console.log('✓ Controls share one height scale and reach 44px on a coarse pointer; radii are role-based\n');
 }
 
 main();

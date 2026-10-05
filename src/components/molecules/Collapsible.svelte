@@ -171,7 +171,7 @@
     <button
         {...triggerProps}
         class={cn(
-            "focus-ring flex w-full cursor-pointer items-center justify-between gap-2 rounded-control px-3 py-2 text-start text-sm font-medium text-headline transition-colors duration-150 hover:bg-surface-hover motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent",
+            "focus-ring flex w-full cursor-pointer items-center justify-between gap-2 rounded-control px-3 py-2 text-start text-sm font-medium text-headline transition-colors duration-150 hover:bg-surface-hover active:bg-surface-active motion-reduce:transition-none pointer-coarse:min-h-11 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:active:bg-transparent",
             triggerClass,
         )}
     >

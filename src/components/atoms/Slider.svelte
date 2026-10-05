@@ -75,9 +75,9 @@
      * the touch target, and the row does not grow for it.
      */
     const sizeClass = $derived.by(() => {
-        if (size === "sm") return { box: "h-8", input: "h-11 -my-1.5" };
+        if (size === "sm") return { box: "h-8 pointer-coarse:min-h-11", input: "h-11 -my-1.5" };
         if (size === "lg") return { box: "h-12", input: "h-12" };
-        return { box: "h-10", input: "h-11 -my-0.5" };
+        return { box: "h-10 pointer-coarse:min-h-11", input: "h-11 -my-0.5" };
     });
 
     /** Where the thumb sits, 0 to 1; drives the filled part of the track. */
@@ -196,10 +196,13 @@
         --zabi-slider-track: 0.5rem;
     }
 
-    .slider:hover {
-        --zabi-slider-fill: var(--color-action-primary-hover);
-        --zabi-slider-rest: var(--color-control-track-hover);
-        --zabi-slider-halo: 0 0 0 4px var(--color-surface-hover);
+    /* Only where a pointer can hover: after a tap, `:hover` stays on the slider until the next tap elsewhere. */
+    @media (hover: hover) {
+        .slider:hover {
+            --zabi-slider-fill: var(--color-action-primary-hover);
+            --zabi-slider-rest: var(--color-control-track-hover);
+            --zabi-slider-halo: 0 0 0 4px var(--color-surface-hover);
+        }
     }
 
     .slider:active {

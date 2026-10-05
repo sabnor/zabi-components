@@ -10,15 +10,21 @@ export const SELECTION_CONTROL_LABEL_ROW_INTERACTION =
 /** With `app.css`: `:checked` ring for radio list rows. */
 export const SELECTION_CONTROL_OPTION_ROW = "selection-control-option-row";
 
-/** Control + label row; `p-2 -m-2` aligns hit area with text; `group` is not valid inside `@apply`. */
+/**
+ * Control + label row; `p-2 -m-2` aligns hit area with text; `group` is not valid inside `@apply`.
+ *
+ * On a coarse pointer the row is 44px tall and takes that room in the layout
+ * (`my-0`): with the negative margin kept, two rows 8px apart overlapped by
+ * 8px, and a tap in the overlap went to the lower one.
+ */
 export const SELECTION_CONTROL_LABEL_ROW_BASE =
-    `p-2 -m-2 group ${SELECTION_CONTROL_LABEL_ROW_INTERACTION}`.trim();
+    `p-2 -m-2 pointer-coarse:my-0 pointer-coarse:min-h-11 group ${SELECTION_CONTROL_LABEL_ROW_INTERACTION}`.trim();
 
 export const SELECTION_CONTROL_LABEL_ROW = `flex items-center gap-2 ${SELECTION_CONTROL_LABEL_ROW_BASE}`;
 
 /** Radio option row: stacked label/description; `p-2` only (no `-m-2`) so vertical gaps stay even. */
 export const RADIO_GROUP_OPTION_LABEL_ROW =
-    `flex items-start gap-2 p-2 group ${SELECTION_CONTROL_LABEL_ROW_INTERACTION} ${SELECTION_CONTROL_OPTION_ROW}`.trim();
+    `flex items-start gap-2 p-2 pointer-coarse:min-h-11 group ${SELECTION_CONTROL_LABEL_ROW_INTERACTION} ${SELECTION_CONTROL_OPTION_ROW}`.trim();
 
 /**
  * Control shell: border/fill/hover/checked/disabled. `group/control` drives inner mark states.

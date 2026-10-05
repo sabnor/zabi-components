@@ -127,12 +127,12 @@
             ? cn(base, "bg-nav-menu-active text-nav-menu-item-active")
             : cn(
                   base,
-                  "text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover",
+                  "text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-nav-menu-active",
               );
     }
 
     function getStateLayerClasses(): string {
-        return "box-border flex gap-1 h-10 items-center px-4 py-2 relative shrink-0";
+        return "box-border flex gap-1 h-10 pointer-coarse:h-11 items-center px-4 py-2 relative shrink-0";
     }
 
     function getLabelClasses(): string {
@@ -212,7 +212,7 @@
                     {#if brandHref}
                         <a
                             href={brandHref}
-                            class="focus-ring text-xl font-bold text-headline transition-colors hover:text-link"
+                            class="focus-ring text-xl font-bold text-headline transition-colors hover:text-link active:text-link pointer-coarse:inline-flex pointer-coarse:items-center pointer-coarse:min-h-11"
                         >
                             {brand}
                         </a>

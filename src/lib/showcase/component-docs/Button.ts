@@ -47,6 +47,7 @@ export const doc: ComponentDoc = makeDoc({
         whenToUse: [
             "Use for actions that change state (submit, save, delete, open dialog).",
             "Prefer one primary button per view to keep the main action obvious.",
+            "Use size lg (48px) for the main action on a phone. sm and md are 44px tall on a touch screen and 32 and 40px with a mouse.",
         ],
         whenToAvoid: [
             "Avoid using buttons for navigation — use links for route changes.",

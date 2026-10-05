@@ -75,9 +75,29 @@ function readStylesheet(cssPath) {
     /** `base|state` for rules such as `.bg-action-primary:hover` */
     const baseStateRules = new Set();
 
+    // Top-level rules, and the ones inside `@media (hover: hover)`: the
+    // hand-written hover rules are gated there so a tap does not leave them
+    // on, and a rule in a media query is as unlayered as one outside it.
+    const rules = [];
+    /** Rules that only apply where a pointer can hover. */
+    const hoverOnly = new Set();
     ast.each((node) => {
-        if (node.type !== 'rule') return;
+        if (node.type === 'rule') rules.push(node);
+        else if (node.type === 'atrule' && node.name === 'media' && /^\(\s*hover:\s*hover\s*\)$/.test(node.params.trim())) {
+            node.each((child) => {
+                if (child.type !== 'rule') return;
+                rules.push(child);
+                hoverOnly.add(child);
+            });
+        }
+    });
+
+    for (const node of rules) {
         for (const selector of node.selectors) {
+            // Only a hover rule may sit in the hover query. A pressed, focus or
+            // disabled rule there would do nothing on a touch screen, so it does
+            // not count as the rule that wins.
+            if (hoverOnly.has(node) && !/:hover(?![\w-])/.test(selector)) continue;
             // The subject is the last compound: `.group:hover .group-hover\:x` → `.group-hover\:x`.
             const subject = selector.trim().split(/\s+/).pop();
             const m = /^\.((?:\\.|[\w-])+)((?::[\w-]+)*)$/.exec(subject);
@@ -96,7 +116,7 @@ function readStylesheet(cssPath) {
                 for (const state of states) baseStateRules.add(`${name}|${state}`);
             }
         }
-    });
+    }
 
     return { colourTokens, baseClasses, variantRules, baseStateRules };
 }

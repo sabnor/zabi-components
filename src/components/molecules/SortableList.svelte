@@ -503,7 +503,7 @@
     $effect(() => stopSession);
 
     const controlClasses =
-        "focus-ring focus-ring--muted flex size-8 shrink-0 items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-description";
+        "focus-ring focus-ring--muted flex size-8 pointer-coarse:min-h-11 pointer-coarse:min-w-11 shrink-0 items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-description disabled:active:bg-transparent";
 </script>
 
 <div
@@ -598,7 +598,8 @@
                     })}
                 {:else}
                     {@render handle()}
-                    <div class="min-w-0 flex-1">
+                    <!-- The controls are 44px on a coarse pointer and the row is top-aligned: 6px puts a 32px first line back on their centre. -->
+                    <div class="min-w-0 flex-1 pointer-coarse:mt-1.5">
                         {@render item(entry, {
                             index,
                             dragging,

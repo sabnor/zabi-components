@@ -1,6 +1,7 @@
 <script lang="ts">
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
+    import { TOUCH_HIT_AREA } from "../util/touch-target.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -46,10 +47,13 @@
 
     const toggleButtonClasses = $derived(() => {
         const base =
-            "focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:outline-none";
+            `focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:outline-none ${TOUCH_HIT_AREA}`;
+        // A disabled switch has no hover or pressed fill: `:active` still matches a disabled button.
         const colorClass = checked
             ? "bg-action-primary hover:bg-action-primary-hover active:bg-action-primary-active"
-            : "bg-control-track hover:bg-control-track-hover active:bg-control-track-active";
+            : isDisabled
+              ? "bg-control-track"
+              : "bg-control-track hover:bg-control-track-hover active:bg-control-track-active";
         const stateClass = isDisabled
             ? "opacity-50 cursor-not-allowed"
             : "cursor-pointer";
@@ -64,7 +68,10 @@
     });
 </script>
 
-<div class={cn("flex items-center gap-3", className)}>
+<!-- On a coarse pointer the row is 44px tall, so the switch's hit area (44px, around a
+     24px switch) has room of its own: stacked 8px apart, the layer of one switch lay
+     over the visible edge of the one above it and took its taps. -->
+<div class={cn("flex items-center gap-3 pointer-coarse:min-h-11", className)}>
     <button
         type="button"
         role="switch"

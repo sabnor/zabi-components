@@ -9,6 +9,7 @@
         recoverStrayFocus,
     } from '../util/focus-utils.js';
     import { lockBodyScroll, trapTabKey } from '../util/overlay.js';
+    import { TOUCH_HIT_AREA } from '../util/touch-target.js';
     import { generateId } from "../util/ssr-safe.js";
     import { portal as portalTo } from "../util/portal.js";
     import Card from '../atoms/Card.svelte';
@@ -223,8 +224,8 @@
                                 <button
                                     type="button"
                                     onclick={(event) => closeModal('close-button', event)}
-                                    class="focus-ring flex size-8 items-center justify-center rounded-control text-2xl text-description transition-colors {dismissible
-                                        ? 'cursor-pointer hover:bg-surface-overlay-hover hover:text-headline'
+                                    class="focus-ring pointer-coarse:relative flex size-8 items-center justify-center rounded-control text-2xl text-description transition-colors {TOUCH_HIT_AREA} {dismissible
+                                        ? 'cursor-pointer hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active'
                                         : 'cursor-not-allowed opacity-50'}"
                                     aria-label={closeLabel}
                                     aria-disabled={dismissible ? undefined : "true"}

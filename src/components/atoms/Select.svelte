@@ -76,9 +76,9 @@
     // Same fixed height scale as Button, IconButton and Input (32 / 40 / 48),
     // and the same 16px text below `sm`, so a Select beside an Input matches it.
     const sizeClass = $derived(() => {
-        if (size === "sm") return { box: "h-8 px-3", text: "text-sm max-sm:text-base" };
+        if (size === "sm") return { box: "h-8 px-3 pointer-coarse:min-h-11", text: "text-sm max-sm:text-base" };
         if (size === "lg") return { box: "h-12 px-4", text: "text-base" };
-        return { box: "h-10 px-3", text: "text-sm max-sm:text-base" };
+        return { box: "h-10 px-3 pointer-coarse:min-h-11", text: "text-sm max-sm:text-base" };
     });
 
     const variantClass = $derived(() => {
@@ -94,7 +94,7 @@
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
         const baseClasses =
-            "focus-ring flex w-full cursor-pointer items-center justify-between gap-2 rounded-control border bg-input text-body transition-colors duration-150 hover:bg-input-hover active:bg-input-focus focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text";
+            "focus-ring flex w-full cursor-pointer items-center justify-between gap-2 rounded-control border bg-input text-body transition-colors duration-150 hover:bg-input-hover active:bg-input-hover focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text";
 
         return cn(`${baseClasses} ${sizeStyles.box} ${sizeStyles.text} ${variantClass()}`);
     });
@@ -295,14 +295,14 @@
                                     aria-selected={isSameValue(value, option.value)
                                         ? true
                                         : undefined}
-                                    class="focus-ring flex w-full items-center justify-start rounded-control border-2 px-3 py-2 text-left text-sm font-medium transition-colors focus:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 {isSameValue(
+                                    class="focus-ring flex w-full items-center justify-start rounded-control border-2 px-3 py-2 pointer-coarse:py-3 text-left text-sm font-medium transition-colors focus:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 {isSameValue(
                                         value,
                                         option.value,
                                     )
                                         ? 'border-action-primary bg-transparent text-headline'
                                         : option.disabled
                                           ? 'border-transparent bg-transparent text-body'
-                                          : 'border-transparent bg-transparent text-body hover:bg-surface-overlay-hover'}"
+                                          : 'border-transparent bg-transparent text-body hover:bg-surface-overlay-hover active:bg-surface-active'}"
                                     aria-disabled={option.disabled ? "true" : undefined}
                                     {...buttonRestProps}
                                     onclick={() =>
