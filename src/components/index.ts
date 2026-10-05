@@ -30,6 +30,8 @@ export { default as FeatureCard } from './atoms/FeatureCard.svelte';
 export { default as OptimizedImage } from './atoms/OptimizedImage.svelte';
 export { default as ActionPanel } from './atoms/ActionPanel.svelte';
 export { default as Spinner } from './atoms/Spinner.svelte';
+export { default as Rating } from './atoms/Rating.svelte';
+export type { RatingStrings } from './util/rating.js';
 
 export { default as Alert } from './molecules/Alert.svelte';
 export { default as ComponentDemo } from './molecules/ComponentDemo.svelte';
@@ -58,6 +60,11 @@ export { default as Modal } from './molecules/Modal.svelte';
 export { default as SlideUp } from './molecules/SlideUp.svelte';
 export { default as Tabs } from './molecules/Tabs.svelte';
 export { default as RadioGroup } from './molecules/RadioGroup.svelte';
+export { default as SegmentedControl } from './molecules/SegmentedControl.svelte';
+export type {
+    SegmentedControlIcon,
+    SegmentedControlOption,
+} from './util/segmented-control.js';
 export { default as NavigationMenu } from './molecules/NavigationMenu.svelte';
 export { default as NavigationMenuList } from './molecules/NavigationMenuList.svelte';
 export { default as NavigationMenuItem } from './molecules/NavigationMenuItem.svelte';

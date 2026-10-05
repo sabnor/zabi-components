@@ -238,6 +238,24 @@ Whenever token or CSS import API surface changes, include:
   server (`active={page.url.pathname}`). It is fixed to the bottom on its own
   and in the flow inside an AppShell (`position`), and keeps clear of the home
   indicator. Tabs are at least 44px with 8px between them.
+- **Rating**, a new atom: one to `max` stars (default 5) that can be left
+  empty. `bind:value` is a number or `null`. It is a radio group named by
+  `label`, each star reads "4 of 5 stars", the arrow keys, Home and End change
+  the value, and `name` submits it with a form. Pressing the selected star
+  again never clears it; `clearable` adds a clear button, and Delete or
+  Backspace clears too. `readonly` shows a score as one image with one name
+  ("Quiz, 3.5 of 5 stars"), fills stars by any fraction and prints the number
+  beside them (`showValue`, `formatValue`); it submits nothing. Each star is a
+  44px target at every `size`. The texts are replaceable through `strings`.
+  An empty star is drawn in `--color-border-strong`, 3:1 or more on the page,
+  card and inset surfaces; it is weaker on the dark elevated surface.
+- **SegmentedControl**, a new molecule: two to four choices in one row, such as
+  List / Month. `options` take `value`, `label`, an optional `icon` and
+  `disabled`; `bind:value` holds the choice and `onchange` reports it. It is a
+  radio group, not tabs: one Tab stop, arrow keys move and select, `name`
+  submits it, and a repeat press on the selected segment does nothing.
+  Segments share the row equally (`fullWidth`, default true), labels wrap
+  before they are cut, and every segment is 44px tall on a touch screen.
 
 ### Changed
 

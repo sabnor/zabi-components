@@ -123,6 +123,8 @@ them:
 - **IconButton** and **Spinner** add **`xs`** (IconButton: a 24px box for dense, pointer-first layouts).
 - **EmptyState** takes `default` | `compact`.
 - **Drawer** takes `sm` | `md` | `lg` for the width of the panel, not a control height.
+- **SegmentedControl** is 32, 40 and 48px tall as the controls above, and never less than 44px a segment on a touch screen, where the three sizes therefore look alike.
+- **Rating** takes `sm` | `md` | `lg` for the star (20, 24 and 32px); the target around an interactive star stays at 44px or more.
 
 ## Usage Guidelines
 
@@ -213,6 +215,14 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 ### Slider
 - Variants: `default`, `success`, `warning`, `error`, `info`
 - Sizes: `sm`, `md`, `lg`
+
+### Rating
+- Sizes: `sm`, `md`, `lg`
+- States: `readonly`, `clearable`, `disabled`
+
+### SegmentedControl
+- Sizes: `sm`, `md`, `lg`
+- Width: `fullWidth` (default) or as wide as its labels
 
 ### Spinner
 - Sizes: `xs`, `sm`, `md`, `lg`

@@ -316,6 +316,74 @@ function handleKeydown(event: KeyboardEvent) {
 
 ---
 
+### Rating Component
+
+**Current Keyboard Support** (native `<input type="radio">`, one per star):
+- ✅ **Tab**: Into the stars (the selected star, else the first), then to the clear button when `clearable` and there is a rating, then out
+- ✅ **Arrow Right / Arrow Down**: The next star, selected as focus moves; wraps from the last to the first (left and right swap in a right-to-left layout)
+- ✅ **Arrow Left / Arrow Up**: The previous star; wraps from the first to the last
+- ✅ **Home / End**: The first / last star
+- ✅ **Space**: Select the focused star. On the selected star it does nothing: a single selection is never cleared by a repeat press
+- ✅ **Delete / Backspace**: Clear the rating, only with `clearable`
+
+The arrow keys move from the star that has focus, which need not be the
+selected one: a screen reader's cursor can put focus on any radio. While the
+rating is empty, a forward key selects the focused star itself, so Right on an
+empty rating gives one star, not two.
+
+It is a radio group named by `label`, and each star is named "4 of 5 stars", so
+it reads "Quiz, 4 of 5 stars". With `readonly` there is nothing to operate: it
+is one image named "Quiz, 3.5 of 5 stars" and takes no focus.
+
+**Usage:**
+```svelte
+<Rating label="Quiz" bind:value={quiz} clearable />
+```
+
+**Best Practices:**
+- Give it a `label`, or `aria-label` / `aria-labelledby` when the row has its own heading (`hideLabel` keeps `label` as the name only)
+- Set `clearable` when a rating may be withdrawn; without it a rating can be changed but not removed by the user
+- After the clear button is used it hides, and focus moves to the first star
+- Translate the names through `strings` (`starLabel`, `clearLabel`, `noRating`) and the number through `formatValue`
+- The focus ring is drawn around the star's 44px target
+
+---
+
+### SegmentedControl Component
+
+**Current Keyboard Support** (native `<input type="radio">`, one per segment):
+- ✅ **Tab**: Into the control (the selected segment, else the first that can be chosen), then out
+- ✅ **Arrow Right / Arrow Down**: The next segment, selected as focus moves; wraps (left and right swap in a right-to-left layout)
+- ✅ **Arrow Left / Arrow Up**: The previous segment; wraps
+- ✅ **Home / End**: The first / last segment
+- ✅ **Space**: Select the focused segment. On the selected segment it does nothing: a single selection is never cleared by a repeat press
+
+The arrow keys move from the segment that has focus, which need not be the
+selected one, and skip a disabled segment. While nothing is selected, a
+forward key selects the focused segment itself.
+
+It is a radio group, not a tab list: it sets a value and has no panels. Use
+Tabs when each choice shows a panel of its own.
+
+**Usage:**
+```svelte
+<SegmentedControl
+    label="View"
+    options={[
+        { value: "list", label: "List" },
+        { value: "month", label: "Month" },
+    ]}
+    bind:value={view}
+/>
+```
+
+**Best Practices:**
+- Give the group a name with `label`, or `aria-labelledby` when a visible heading already says it
+- Keep to two to four options with short labels; an icon is decorative and the label names the segment
+- Leave `value` undefined for a question that starts unanswered; the first segment still takes Tab
+
+---
+
 ### Alert Component
 
 **Keyboard Support:**

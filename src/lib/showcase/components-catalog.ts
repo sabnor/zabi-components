@@ -881,6 +881,187 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "Rating",
+                category: "atoms",
+                description:
+                    "Star rating from 1 to 5 that can be left empty, with a read-only mode that shows averages with half stars.",
+                props: [
+                    {
+                        name: "value",
+                        type: "number | null",
+                        required: false,
+                        defaultValue: "null",
+                        description:
+                            "Stars given, or null for no rating. Bindable.",
+                    },
+                    {
+                        name: "max",
+                        type: "number",
+                        required: false,
+                        defaultValue: "5",
+                        description:
+                            "Number of stars.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Names the rating. Shown above the stars unless hideLabel is set.",
+                    },
+                    {
+                        name: "hideLabel",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Keeps the label as the accessible name only.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Size of a star. An interactive star is a 44px target at every size. Meant for page, card and inset surfaces: on the dark elevated surface the empty star's outline is 2.49:1, under the 3:1 it has everywhere else.",
+                    },
+                    {
+                        name: "readonly",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows a score as one image with one name; a star can be partly filled. A read-only rating has no inputs, so it submits nothing, even with name.",
+                    },
+                    {
+                        name: "clearable",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Adds a clear button beside the stars, because pressing the selected star again never clears; Delete or Backspace clears too. Without it a rating can be changed but not removed.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Disables every star and the clear button.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Name the value is submitted under in a form. Nothing is submitted without a rating, or when readonly.",
+                    },
+                    {
+                        name: "showValue",
+                        type: "boolean",
+                        required: false,
+                        description:
+                            "Shows the number beside the stars. On by default when readonly.",
+                    },
+                    {
+                        name: "formatValue",
+                        type: "(value: number) => string",
+                        required: false,
+                        description:
+                            "Turns the value into text for a locale. At most one decimal by default.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<RatingStrings>",
+                        required: false,
+                        description:
+                            "Overrides for the built-in strings: starLabel, clearLabel and noRating.",
+                    },
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Names the rating when there is no label.",
+                    },
+                    {
+                        name: "aria-labelledby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of the element that names the rating, when there is no label.",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(value: number | null) => void",
+                        required: false,
+                        description:
+                            "Called when the user changes the rating; null when it was cleared.",
+                    },
+                ],
+                variants: [
+                    "sm",
+                    "md",
+                    "lg",
+                    "readonly",
+                    "clearable",
+                    "disabled",
+                ],
+                examples: [
+                    {
+                        title: "Basic rating",
+                        description:
+                            "Starts empty; a tap or the arrow keys give a rating. Place it on a page, card or inset surface",
+                        code: `<Rating label="Quiz" bind:value={quiz} name="quiz" />`,
+                    },
+                    {
+                        title: "Clearable",
+                        description:
+                            "A repeat press on the selected star never clears, so clearable adds a clear button beside the stars",
+                        code: `<Rating label="Food" bind:value={food} clearable />`,
+                    },
+                    {
+                        title: "Read-only",
+                        description:
+                            "Half stars and the number beside them, formatted for a locale, and a score that is missing; a read-only rating submits nothing",
+                        code: `<Rating label="Pub score" value={3.5} readonly />
+<Rating
+    label="Snitt"
+    value={4.3}
+    readonly
+    formatValue={(value) => value.toFixed(1).replace(".", ",")}
+    strings={{ starLabel: (value, max) => \`\${value} av \${max} stjärnor\` }}
+/>
+<Rating label="Not rated yet" value={null} readonly />`,
+                    },
+                    {
+                        title: "Sizes",
+                        description:
+                            "Stars of 20, 24 and 32px; the tap target stays at 44px or more",
+                        code: `<Rating label="Small" size="sm" bind:value={small} />
+<Rating label="Medium" bind:value={medium} />
+<Rating label="Large" size="lg" bind:value={large} />`,
+                    },
+                    {
+                        title: "Translated",
+                        description:
+                            "A disabled rating, and one with Swedish names for the stars and the clear button",
+                        code: `<Rating label="Locked" value={3} disabled />
+<Rating
+    label="Stämning"
+    bind:value={mood}
+    clearable
+    strings={{
+        starLabel: (value, max) => \`\${value} av \${max} stjärnor\`,
+        clearLabel: "Rensa betyg",
+    }}
+/>`,
+                    },
+                ],
+            },
+            {
                 name: "CodeBlock",
                 category: "atoms",
                 description:
@@ -3003,6 +3184,174 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Header",
                         description: "Use at the top of component docs",
                         code: '<Header title="Button" description="…" category="atoms" />',
+                    },
+                ],
+            },
+            {
+                name: "SegmentedControl",
+                category: "molecules",
+                description:
+                    "Two to four choices in one row, such as List and Month; a radio group, so one is selected and the arrow keys move between them.",
+                props: [
+                    {
+                        name: "options",
+                        type: "SegmentedControlOption[]",
+                        required: true,
+                        description:
+                            "Two to four choices, each with a value, a label and optionally an icon and disabled.",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Selected value. Bindable. Undefined for no selection.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Accessible name of the group. Not shown.",
+                    },
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name of the group, the same as label.",
+                    },
+                    {
+                        name: "aria-labelledby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of a visible element that names the group, in place of label.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Height, on the scale Input and Button use. At least 44px on a touch screen.",
+                    },
+                    {
+                        name: "fullWidth",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Equal-width segments that fill the row. Off: each segment is as wide as its label.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Name the value is submitted under in a form.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Disables every segment.",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(value: string) => void",
+                        required: false,
+                        description:
+                            "Called with the new value when the user picks another segment.",
+                    },
+                ],
+                variants: [
+                    "sm",
+                    "md",
+                    "lg",
+                    "fullWidth",
+                    "disabled",
+                ],
+                examples: [
+                    {
+                        title: "View switch",
+                        description:
+                            "Two segments bound to a value; pressing the selected one again changes nothing",
+                        code: `<SegmentedControl
+    label="View"
+    options={[
+        { value: "list", label: "List" },
+        { value: "month", label: "Month" },
+    ]}
+    bind:value={view}
+/>`,
+                    },
+                    {
+                        title: "Answer",
+                        description:
+                            "Starts with nothing selected, is named by the visible question and submits with a form",
+                        code: `<p id="answer-label">Are you coming on Thursday?</p>
+<SegmentedControl
+    aria-labelledby="answer-label"
+    name="answer"
+    options={[
+        { value: "going", label: "Going" },
+        { value: "maybe", label: "Maybe" },
+        { value: "no", label: "Can't" },
+    ]}
+    bind:value={answer}
+/>`,
+                    },
+                    {
+                        title: "Four options",
+                        description:
+                            "Four segments still share one row on a phone; an icon sits before its label",
+                        code: `<SegmentedControl
+    label="Period"
+    options={[
+        { value: "day", label: "Day" },
+        { value: "week", label: "Week" },
+        { value: "month", label: "Month" },
+        { value: "year", label: "This year" },
+    ]}
+    bind:value={period}
+/>
+<SegmentedControl
+    label="View"
+    options={[
+        { value: "list", label: "List", icon: List },
+        { value: "month", label: "Month", icon: CalendarDays },
+    ]}
+    bind:value={view}
+/>`,
+                    },
+                    {
+                        title: "Sizes",
+                        description:
+                            "32, 40 and 48px tall, as Input and Button; never under 44px on a touch screen",
+                        code: `<SegmentedControl label="Small" size="sm" options={views} bind:value={small} />
+<SegmentedControl label="Medium" options={views} bind:value={medium} />
+<SegmentedControl label="Large" size="lg" options={views} bind:value={large} />`,
+                    },
+                    {
+                        title: "Content width",
+                        description:
+                            "Segments as wide as their labels, one disabled option, and a disabled control",
+                        code: `<SegmentedControl label="View" fullWidth={false} options={views} bind:value={view} />
+<SegmentedControl
+    label="Plan"
+    options={[
+        { value: "free", label: "Free" },
+        { value: "team", label: "Team" },
+        { value: "enterprise", label: "Enterprise", disabled: true },
+    ]}
+    bind:value={plan}
+/>
+<SegmentedControl label="View" options={views} value="month" disabled />`,
                     },
                 ],
             },

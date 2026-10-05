@@ -17,6 +17,8 @@ import type {
     SemanticVariant,
     SizeVariant,
 } from './variants.js';
+import type { RatingStrings } from '../components/util/rating.js';
+import type { SegmentedControlOption } from '../components/util/segmented-control.js';
 
 export type ZabiComponent<T extends Record<string, any> = Record<string, any>, E extends Record<string, any> = Record<string, any>> = Component<T, E>;
 
@@ -397,6 +399,58 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'cla
     style?: string;
 }
 
+// Rating component props
+export interface RatingProps
+    extends Omit<
+        HTMLAttributes<HTMLDivElement>,
+        'class' | 'onchange' | 'aria-label' | 'aria-labelledby'
+    > {
+    class?: string;
+    /** Stars given, or `null` for no rating. Bindable. */
+    value?: number | null;
+    max?: number;
+    /** Names the rating. Shown above the stars unless `hideLabel`. */
+    label?: string;
+    hideLabel?: boolean;
+    'aria-label'?: string;
+    'aria-labelledby'?: string;
+    size?: SizeVariant;
+    /** Shows a score: one image with one name, and stars can be partly filled. */
+    readonly?: boolean;
+    /** Adds a clear button; pressing the selected star again never clears. */
+    clearable?: boolean;
+    disabled?: boolean;
+    name?: string;
+    /** On by default when `readonly`. */
+    showValue?: boolean;
+    formatValue?: (value: number) => string;
+    strings?: Partial<RatingStrings>;
+    onchange?: (value: number | null) => void;
+}
+
+// SegmentedControl component props
+export interface SegmentedControlProps
+    extends Omit<
+        HTMLAttributes<HTMLDivElement>,
+        'class' | 'onchange' | 'aria-label' | 'aria-labelledby'
+    > {
+    class?: string;
+    /** Two to four choices. */
+    options: SegmentedControlOption[];
+    /** Selected value. Bindable. */
+    value?: string | undefined;
+    /** Accessible name of the group. Not shown. */
+    label?: string;
+    'aria-label'?: string;
+    'aria-labelledby'?: string;
+    size?: SizeVariant;
+    /** Equal-width segments that fill the row. */
+    fullWidth?: boolean;
+    name?: string;
+    disabled?: boolean;
+    onchange?: (value: string) => void;
+}
+
 // Component type definitions
 export type Button = ZabiComponent<ButtonProps, ButtonEvents>;
 export type Heading = ZabiComponent<HeadingProps>;
@@ -415,3 +469,5 @@ export type Tooltip = ZabiComponent<TooltipProps>;
 export type BottomTabBar = ZabiComponent<BottomTabBarProps>;
 export type AppBar = ZabiComponent<AppBarProps>;
 export type AppShell = ZabiComponent<AppShellProps>;
+export type Rating = ZabiComponent<RatingProps>;
+export type SegmentedControl = ZabiComponent<SegmentedControlProps>;

@@ -36,6 +36,11 @@ export { default as Header } from './Header.svelte';
 export { default as EmptyState } from './EmptyState.svelte';
 export { default as Toaster } from './Toaster.svelte';
 export { default as RadioGroup } from './RadioGroup.svelte';
+export { default as SegmentedControl } from './SegmentedControl.svelte';
+export type {
+    SegmentedControlIcon,
+    SegmentedControlOption,
+} from '../util/segmented-control.js';
 export { default as SortableList } from './SortableList.svelte';
 export type {
     SortableListAnnouncement,

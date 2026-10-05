@@ -22,3 +22,5 @@ export { default as Text } from './Text.svelte';
 export { default as Table } from './Table.svelte';
 export { default as Radio } from './Radio.svelte';
 export { default as Spinner } from './Spinner.svelte';
+export { default as Rating } from './Rating.svelte';
+export type { RatingStrings } from '../util/rating.js';

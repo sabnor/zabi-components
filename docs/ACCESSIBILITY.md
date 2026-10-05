@@ -318,6 +318,54 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 
 ---
 
+### Rating Component
+
+**Status:** ✅ Compliant in automated checks; not yet read with a screen reader
+
+**Current Features:**
+- ✅ A radio group of native radio inputs named by `label`; each star is named "4 of 5 stars", so it reads "Quiz, 4 of 5 stars"
+- ✅ One Tab stop, also while empty; arrow keys, Home and End change the value
+- ✅ Every star is a 44px target at every size
+- ✅ A single selection is never cleared by a repeat press; `clearable` adds a named clear button, and Delete or Backspace clears
+- ✅ Focus moves to the first star when the clear button hides
+- ✅ Filled and empty stars differ by shape (filled against outlined), not by colour alone
+- ✅ `readonly` is one image with one name ("Quiz, 3.5 of 5 stars"); it has no inputs, so it takes no focus and submits nothing, even with `name`
+- ✅ Focus is an outline in forced colours; the pressed star does not animate under `prefers-reduced-motion`
+
+**Issues Found:**
+- ⚠️ The outline of an empty star (`--color-border-strong`) is 3:1 or better on the page, card and inset surfaces of both themes, and 2.49:1 on the dark elevated surface
+
+**Recommendations:**
+- Use it on page, card and inset surfaces
+- Test with a screen reader on a phone
+
+**Priority:** Low
+
+---
+
+### SegmentedControl Component
+
+**Status:** ✅ Compliant in automated checks; not yet read with a screen reader
+
+**Current Features:**
+- ✅ A radio group of native radio inputs, named by `label` or `aria-labelledby`; each segment is named by its visible label
+- ✅ One Tab stop, also with nothing selected; arrow keys, Home and End move and select, and skip a disabled segment
+- ✅ A single selection is never cleared by a repeat press
+- ✅ Segments are at least 44px tall on a touch screen at every size
+- ✅ The selected segment is the primary action fill with its text colour, a pair `scripts/check-contrast.js` holds to 4.5:1
+- ✅ Labels wrap, and segments fold into rows, instead of being cut off at 320px or with text at 200%
+- ✅ The selection keeps a fill of its own and focus is an outline in forced colours; the fill does not animate under `prefers-reduced-motion`
+
+**Issues Found:**
+- ✅ No critical issues
+
+**Recommendations:**
+- Test with a screen reader on a phone
+
+**Priority:** Low
+
+---
+
 ## Color Contrast Audit
 
 ### Current Status
@@ -384,6 +432,7 @@ Rules every component follows, new ones included. Each names where it lives in t
   Modal, SlideUp and Drawer cover the case they cannot prevent, content inside them that disables or removes its own focused control: the next Tab goes to the first control in the panel and Escape still closes it (`recoverStrayFocus` in `src/components/util/focus-utils.ts`).
 - **Modal overlays share one stack and one scroll lock.** Modal, SlideUp and Drawer (and ConfirmDialog, which is a Modal) join the same stack, so the overlay opened last is on top whatever the DOM order, and only it acts on Tab and Escape (`joinOverlayStack` in `focus-utils.ts`). The scroll lock on `<body>` is counted, so the page scrolls again only when the last overlay has closed (`lockBodyScroll` in `src/components/util/overlay.ts`).
 - **Disabled options stay reachable.** A disabled Dropdown item or Select option is `aria-disabled`, not `disabled`. It keeps its place in the arrow-key order and is announced as unavailable, and activating it does nothing. A natively disabled button cannot take focus, so the arrow keys used to stop at the option before it.
+- **A single selection is never cleared by a repeat press.** Pressing the selected item again does nothing; only checkbox-like controls toggle off. MediaGrid without `multiple`, SegmentedControl and Rating follow it. Where a selection may be withdrawn there is a control for that: Rating's `clearable` adds a clear button beside the stars.
 - **Nothing is reachable by hover alone.** Actions revealed on hover also appear when focus is inside the component, and are always visible where hover does not exist (touch). ImageUpload shows Change and Remove that way; MediaGrid keeps its remove button beside the item and always visible.
 - **Focus is visible in forced colours.** The focus ring is a box-shadow, which forced-colours mode (Windows High Contrast) drops. `src/app.css` restates it there as an outline for `.focus-ring`, the legacy `.focus-brand` and `.focus-nav`, and the checkbox and radio row.
 

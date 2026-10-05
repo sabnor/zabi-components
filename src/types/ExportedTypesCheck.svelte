@@ -15,6 +15,7 @@
     import Heading from "../components/atoms/Heading.svelte";
     import Input from "../components/atoms/Input.svelte";
     import Progress from "../components/atoms/Progress.svelte";
+    import Rating from "../components/atoms/Rating.svelte";
     import Select from "../components/atoms/Select.svelte";
     import Skeleton from "../components/atoms/Skeleton.svelte";
     import Textarea from "../components/atoms/Textarea.svelte";
@@ -22,6 +23,7 @@
     import Tooltip from "../components/atoms/Tooltip.svelte";
     import Alert from "../components/molecules/Alert.svelte";
     import Modal from "../components/molecules/Modal.svelte";
+    import SegmentedControl from "../components/molecules/SegmentedControl.svelte";
     import AppBar from "../components/molecules/AppBar.svelte";
     import BottomTabBar from "../components/molecules/BottomTabBar.svelte";
     import AppShell from "../components/organisms/AppShell.svelte";
@@ -35,6 +37,8 @@
         InputProps,
         ModalProps,
         ProgressProps,
+        RatingProps,
+        SegmentedControlProps,
         SelectProps,
         SkeletonProps,
         TextareaProps,
@@ -56,6 +60,8 @@
         input?: InputProps;
         modal?: ModalProps;
         progress?: ProgressProps;
+        rating?: RatingProps;
+        segmentedControl?: SegmentedControlProps;
         select?: SelectProps;
         skeleton?: SkeletonProps;
         textarea?: TextareaProps;
@@ -76,6 +82,8 @@
         input = {},
         modal = {},
         progress = {},
+        rating = {},
+        segmentedControl = { options: [] },
         select = {},
         skeleton = {},
         textarea = {},
@@ -96,6 +104,8 @@
 <Input {...input} />
 <Modal {...modal} />
 <Progress {...progress} />
+<Rating {...rating} />
+<SegmentedControl {...segmentedControl} />
 <Select {...select} />
 <Skeleton {...skeleton} />
 <Textarea {...textarea} />
