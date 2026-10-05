@@ -23,7 +23,7 @@ The NavigationMenu consists of several sub-components that work together:
 
 - **Compound Component Pattern** - Flexible composition with multiple sub-components
 - **Keyboard Navigation** - Full keyboard support (Arrow keys, Enter, Escape, etc.)
-- **Mobile Responsive** - Automatic mobile viewport detection
+- **Fits narrow screens** - The list wraps onto further rows, and an open panel is kept inside the screen
 - **Click Outside to Close** - Automatically closes when clicking outside
 - **Accessible** - ARIA attributes and semantic HTML
 - **TypeScript** - Fully typed with TypeScript
@@ -143,7 +143,7 @@ The NavigationMenu consists of several sub-components that work together:
 Root container component.
 
 **Props:**
-- `viewport?: boolean | "mobile"` - Enable viewport for mobile responsiveness (default: `true`)
+- `viewport?: boolean | "mobile"` - Sets `isMobile` on the menu's context: `true` (the default) makes it true while the window is under 768px wide, `"mobile"` always, `false` never. **It has no effect of its own.** No component in the library reads `isMobile`; it is there for your own children to read with `getContext`. What the menu does on a narrow screen (below) does not depend on it.
 - `className?: string` - Additional CSS classes
 
 ### NavigationMenuList
@@ -211,6 +211,12 @@ See the Storybook stories in `src/stories/molecules/NavigationMenu.stories.ts` f
 - Simple list menu
 - Menu with icons
 - Menu with descriptions
+
+## Narrow screens
+
+- **The list wraps.** `NavigationMenuList` is a wrapping row: triggers that do not fit go onto a further row instead of running out of the container. Nothing scrolls sideways.
+- **A panel stays on screen.** `NavigationMenuContent` opens below its item from the item's left edge, as before. When that would put it past the edge of the viewport it is slid back, to 8px from the edge, and a panel wider than the screen is limited to the viewport less 16px. It is measured before it is painted and again when the window is resized or scrolled. A panel that fits is not touched: it has no inline style.
+- This uses the same helper as Dropdown, `src/components/util/fit-in-viewport.ts`.
 
 ## Differences from shadcn/ui
 

@@ -21,8 +21,10 @@
     const className = $derived(cn(`${classAttr} ${legacyClass}`));
 </script>
 
+<!-- `flex-wrap`: a list that does not fit goes onto a further row. It used
+to run out of its container (310px of items in a 215px box at 375px). -->
 <ul
-    class={cn("flex flex-row items-center gap-1 list-none m-0 p-0", className)}
+    class={cn("flex flex-row flex-wrap items-center gap-1 list-none m-0 p-0", className)}
     role="menubar"
     aria-orientation="horizontal"
     data-navigation-menu-list
