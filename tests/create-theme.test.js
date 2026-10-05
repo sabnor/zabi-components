@@ -175,11 +175,13 @@ test('the "on" colours are chosen so the label passes on the fill', () => {
 test('a role pair below WCAG AA comes back as a structured warning, per mode', () => {
   const result = createTheme({ brand: '#0026EA', overrides: { '--color-link': 'var(--zabi-brand-400)' } });
   const warnings = contrastWarnings(result);
-  // The link colour is also the icon of a toggled-on ghost IconButton, held down.
+  // The link colour is also the icon of a toggled-on ghost IconButton, held
+  // down, and the label of a selected pill Tab.
   assert.deepEqual(warnings.map((w) => `${w.mode} ${w.pair}`), [
     'light link on page',
     'light link on card',
     'light icon on a held toggled-on fill',
+    'light label on a selected pill tab',
   ]);
   const [onPage] = warnings;
   assert.equal(onPage.required, 4.5);
@@ -188,7 +190,7 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#ececee' });
   assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #ececee is [\d.]+:1, needs 4\.5:1/);
   // The failure is in the file too, so it is not lost when stderr is.
-  assert.match(result.css, /Contrast: 3 of \d+ role pairs are below WCAG AA:/);
+  assert.match(result.css, /Contrast: 4 of \d+ role pairs are below WCAG AA:/);
 
   // 3:1 pairs are checked as well: a focus ring too pale for the page.
   const ring = createTheme({ brand: '#0026EA', overrides: { '--color-focus': 'var(--zabi-brand-300)' } });
@@ -321,7 +323,7 @@ test('the bin warns on stderr, and --strict turns a failed pair into exit 1', ()
   const lenient = run(...args);
   assert.equal(lenient.status, 0);
   assert.match(lenient.stderr, /warning: light · link on page: .* needs 4\.5:1/);
-  assert.match(lenient.stderr, /3 role pairs below WCAG AA\./);
+  assert.match(lenient.stderr, /4 role pairs below WCAG AA\./);
   assert.match(lenient.stdout, /--color-link: var\(--zabi-brand-400\);/);
 
   const strict = run(...args, '--strict');
@@ -553,4 +555,56 @@ test('the bin takes --pin and --pin-accent, says what it pinned, and --strict st
     assert.equal(result.stdout, '');
   }
   assert.match(run('--help').stdout, /--pin {13}Put the exact brand colour on primary buttons/);
+});
+
+/* ---------- a light accent: the label on Button variant="accent" ---------- */
+
+test('a yellow accent gets a label that can be read on it, unpinned and pinned', () => {
+  // Unpinned, the accent fill is step 600 of the yellow's ramp, a dark olive: white passes.
+  const ramp = createTheme({ brand: '#0026EA', accent: '#FDD715' });
+  const onRamp = themed(ramp.tokens).light;
+  assert.equal(resolveTokenColor(onRamp, '--color-accent'), ramp.tokens['--zabi-accent-600']);
+  assert.equal(resolveTokenColor(onRamp, '--color-on-accent'), '#ffffff');
+  assert.ok(ratio('#ffffff', ramp.tokens['--zabi-accent-600']) >= 4.5);
+  assert.deepEqual(contrastWarnings(ramp), []);
+
+  // Pinned, the fill is the yellow itself, and white on it is about 1.4:1.
+  const pinned = createTheme({ brand: '#0026EA', accent: '#FDD715', pin: { brand: true, accent: true } });
+  const { light, dark } = themedPinned(pinned);
+  for (const map of [light, dark]) {
+    const fills = ['', '-hover', '-active'].map((suffix) => resolveTokenColor(map, `--color-accent${suffix}`));
+    const label = resolveTokenColor(map, '--color-on-accent');
+    assert.equal(fills[0], '#fdd715');
+    assert.equal(label, pinned.tokens['--zabi-accent-950']);
+    for (const fill of fills) assert.ok(ratio(label, fill) >= 4.5, `${label} on ${fill}`);
+  }
+  // What a yellow cannot do on a light surface is said, and nothing about its label is.
+  assert.deepEqual(contrastWarnings(pinned).map((w) => `${w.mode} ${w.pair}`), [
+    'light pinned accent fill against the page',
+    'light pinned accent fill against a card',
+  ]);
+  // Focused, an accent button is ringed in the brand: 6:1 against the yellow, so the white gap is not needed.
+  assert.ok(ratio(resolveTokenColor(light, '--color-focus-ring'), '#fdd715') >= 3);
+  assert.ok(ratio(resolveTokenColor(light, '--color-focus-ring-offset'), '#fdd715') < 3);
+  // The outline of an accent Rating star is the accent's text step, which stays on the ramp.
+  assert.equal(resolveTokenColor(light, '--color-accent-text'), pinned.tokens['--zabi-accent-700']);
+  for (const surface of ['--color-surface-base', '--color-surface-raised', '--color-surface-inset']) {
+    for (const map of [light, dark]) {
+      assert.ok(ratio(resolveTokenColor(map, '--color-accent-text'), resolveTokenColor(map, surface)) >= 3, surface);
+    }
+  }
+});
+
+test('a pair with a second foreground passes on either, and fails when both fail', () => {
+  const data = buildThemeData();
+  const either = data.pairs.filter((pair) => pair.orFg);
+  assert.deepEqual(either.map((pair) => pair.name), ['focus ring or its offset gap on an accent button']);
+  // Both fail: an accent pinned to white-ish yellow with the ring forced to the same yellow.
+  const both = createTheme({
+    brand: '#0026EA',
+    accent: '#FDD715',
+    pin: { accent: true },
+    overrides: { '--color-focus': '#fdd715', '--color-focus-ring-offset': '#fff8c4' },
+  });
+  assert.ok(contrastWarnings(both).some((w) => w.mode === 'light' && w.pair === 'focus ring or its offset gap on an accent button'));
 });

@@ -180,7 +180,7 @@ describe("state variants that used to lose to a hand-written colour class", () =
         expect(disabled.filter((name) => /^(hover|active):/.test(name))).toEqual([]);
     });
 
-    it("Tabs: the selected pill presses to the next step of its own fill", () => {
+    it("Tabs: the selected pill presses to the pressed step of its own fill", () => {
         render(LightModeHarness);
         const [selected, idle] = Array.from(
             screen.getByTestId("pills").querySelectorAll('[role="tab"]'),
@@ -190,7 +190,8 @@ describe("state variants that used to lose to a hand-written colour class", () =
             expect.arrayContaining([
                 "bg-action-primary-subtle",
                 "text-link",
-                "active:bg-action-primary-subtle-hover",
+                // Not the hover step: that is 1.24:1 from the resting fill in light.
+                "active:bg-action-primary-subtle-active",
             ]),
         );
         expect(selected).not.toContain("bg-brand-100");

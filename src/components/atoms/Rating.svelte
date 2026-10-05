@@ -37,6 +37,12 @@
         /** Size of a star. An interactive star is a 44px target at every size. */
         size?: SizeVariant;
         /**
+         * Colour of a filled star: the primary action colour, or the app's
+         * accent (`--color-accent`). An app can also set the colours itself:
+         * `--zabi-rating-on` and `--zabi-rating-off`, see THEMING.md.
+         */
+        tone?: "primary" | "accent";
+        /**
          * Shows a score instead of asking for one: one image with one name,
          * and a star can be partly filled (3.5 fills half of the fourth).
          */
@@ -68,6 +74,7 @@
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledby,
         size = "md",
+        tone = "primary",
         readonly = false,
         clearable = false,
         disabled = false,
@@ -168,6 +175,7 @@
     <div
         class={cn("rating", className)}
         data-size={size}
+        data-tone={tone}
         data-readonly
         role="img"
         aria-label={ariaLabelledby
@@ -197,6 +205,7 @@
     <div
         class={cn("rating", disabled && "opacity-50", className)}
         data-size={size}
+        data-tone={tone}
         {...restProps}
     >
         {#if labelVisible}
@@ -267,14 +276,45 @@
         /* A finger is the same size whatever the text size is, so the target
            is in px; it only grows to keep room around a star enlarged by zoom. */
         --zabi-rating-target: max(44px, var(--zabi-rating-star) + 8px);
-        --zabi-rating-on: var(--color-action-primary);
+        /*
+         * The star colours an app may set, on the component or on anything
+         * around it (they inherit):
+         *   --zabi-rating-on         a filled star
+         *   --zabi-rating-on-hover   the same under the pointer; default: --zabi-rating-on
+         *   --zabi-rating-on-active  the same while pressed; default: --zabi-rating-on
+         *   --zabi-rating-on-edge    the outline of a filled star; default: its fill
+         *   --zabi-rating-off        the outline of an empty star
+         * They are read with a fallback and never declared here. Declared on
+         * `.rating`, they could only be overridden by an inline style: this
+         * rule would beat any class or ancestor an app set them on.
+         * The defaults below are the component's own and are not for apps.
+         */
+        --_rating-on: var(--color-action-primary);
+        --_rating-on-hover: var(--color-action-primary-hover);
+        --_rating-on-active: var(--color-action-primary-active);
+        --_rating-on-edge: currentColor;
         /* The outline is all there is of an empty star, so it needs 3:1 against
            what it sits on (WCAG 1.4.11). `--color-border-medium` is 2.2:1 on
            the light page and 1.9:1 on a dark card, and `--color-border-strong`
            2.49:1 on the dark elevated surface; the control boundary is held to
            3:1 on every surface level of both themes. The fallback is for an
            app whose own theme file predates the role. */
-        --zabi-rating-off: var(--color-control-border, var(--color-border-strong));
+        --_rating-off: var(--color-control-border, var(--color-border-strong));
+    }
+
+    /*
+     * The app's accent. An accent can be a light colour: a yellow fill is
+     * about 1.3:1 on a white card, and no star made of it alone can be seen
+     * there. So the filled star is outlined in the accent's text step, which
+     * is held to 4.5:1 on the page and a card and 3:1 on the inset surface in
+     * both themes. The outline carries the shape whatever the accent is; the
+     * fill carries the colour.
+     */
+    .rating[data-tone="accent"] {
+        --_rating-on: var(--color-accent);
+        --_rating-on-hover: var(--color-accent-hover);
+        --_rating-on-active: var(--color-accent-active);
+        --_rating-on-edge: var(--color-accent-text);
     }
 
     .rating[data-size="sm"] {
@@ -336,7 +376,7 @@
     }
 
     .rating-glyph :global(.rating-glyph-empty) {
-        color: var(--zabi-rating-off);
+        color: var(--zabi-rating-off, var(--_rating-off));
     }
 
     /* Anchored at the start, so the filled part is on the right in a right-to-left layout. */
@@ -346,14 +386,19 @@
         inset-inline-start: 0;
         width: calc(var(--zabi-rating-fill, 0) * 100%);
         overflow: hidden;
-        color: var(--zabi-rating-on);
+        color: var(--_rating-on-now, var(--zabi-rating-on, var(--_rating-on)));
+    }
+
+    .rating-glyph-fill :global(svg) {
+        stroke: var(--zabi-rating-on-edge, var(--_rating-on-edge));
     }
 
     /* A preview of the rating a click would give, where a pointer can hover. */
     @media (hover: hover) {
         .rating-stars:not([aria-disabled="true"]):hover .rating-star {
             --zabi-rating-fill: 1;
-            --zabi-rating-on: var(--color-action-primary-hover);
+            /* An app that set only --zabi-rating-on keeps that colour here. */
+            --_rating-on-now: var(--zabi-rating-on-hover, var(--zabi-rating-on, var(--_rating-on-hover)));
         }
 
         .rating-stars:not([aria-disabled="true"]) .rating-star:hover ~ .rating-star {
@@ -364,7 +409,7 @@
     /* Pressed, on every pointer: the star under the finger fills and dips. */
     .rating-stars:not([aria-disabled="true"]) .rating-star:active {
         --zabi-rating-fill: 1;
-        --zabi-rating-on: var(--color-action-primary-active);
+        --_rating-on-now: var(--zabi-rating-on-active, var(--zabi-rating-on, var(--_rating-on-active)));
     }
 
     .rating-stars:not([aria-disabled="true"]) .rating-star:active .rating-glyph {

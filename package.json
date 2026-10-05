@@ -66,6 +66,7 @@
   "files": [
     "dist",
     "README.md",
+    "CHANGELOG.md",
     "THEME.md",
     "THEMING.md",
     "docs/theme-imports.md",

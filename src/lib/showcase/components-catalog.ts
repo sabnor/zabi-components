@@ -6,14 +6,15 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Button",
                 category: "atoms",
                 description:
-                    "Six variants from primary to link, three sizes, with loading and disabled states.",
+                    "Seven variants from primary to link, with accent for the app's second colour; three sizes, loading and disabled states.",
                 props: [
                     {
                         name: "variant",
                         type: "string",
                         required: false,
                         defaultValue: "primary",
-                        description: "Button style variant",
+                        description:
+                            "primary | secondary | danger | ghost | outline | link | accent. accent is the fill --color-accent with the label --color-on-accent.",
                     },
                     {
                         name: "size",
@@ -45,6 +46,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     "ghost",
                     "outline",
                     "link",
+                    "accent",
                 ],
                 examples: [
                     {
@@ -70,7 +72,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: "primary",
-                        description: "Icon button style variant",
+                        description:
+                            "primary | secondary | danger | ghost | outline | link | accent",
                     },
                     {
                         name: "size",
@@ -124,6 +127,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     "ghost",
                     "outline",
                     "link",
+                    "accent",
                 ],
                 examples: [
                     {
@@ -434,7 +438,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Badge",
                 category: "atoms",
                 description:
-                    "Small status label in the semantic tones, plus neutral and energetic.",
+                    "Small status label in the semantic tones, plus neutral, energetic and the app's accent.",
                 props: [
                     {
                         name: "text",
@@ -458,7 +462,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Badge size",
                     },
                 ],
-                variants: ["default", "success", "warning", "error", "info"],
+                variants: ["default", "success", "warning", "error", "info", "neutral", "energetic", "accent"],
                 examples: [
                     {
                         title: "Basic Badge",
@@ -945,6 +949,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Keeps the label as the accessible name only.",
                     },
                     {
+                        name: "tone",
+                        type: "'primary' | 'accent'",
+                        required: false,
+                        defaultValue: "primary",
+                        description:
+                            "Colour of a filled star: the primary action colour or the app's accent. For any other colour set --zabi-rating-on (and --zabi-rating-off for the empty star) on the component or around it.",
+                    },
+                    {
                         name: "size",
                         type: "'sm' | 'md' | 'lg'",
                         required: false,
@@ -1233,6 +1245,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         description:
                             "Heading text. Ignored when children are provided.",
+                    },
+                    {
+                        name: "tone",
+                        type: "'headline' | 'inherit' | 'on-brand' | 'on-accent'",
+                        required: false,
+                        defaultValue: "headline",
+                        description:
+                            "Text colour. On a filled block: inherit takes the block's own colour, on-brand and on-accent are the label colours of the primary and accent fills.",
                     },
                 ],
 
@@ -2000,7 +2020,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: "body",
-                        description: "body | description | caption | headline | label | error",
+                        description:
+                            "body | description | caption | headline | label | error, and for a filled block inherit | on-brand | on-accent",
                     },
                     {
                         name: "size",

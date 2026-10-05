@@ -2,7 +2,8 @@
     import type { Snippet } from 'svelte';
 
     import { cn } from "../util/cn.js";
-    type Tone = 'body' | 'description' | 'caption' | 'headline' | 'label' | 'error';
+    import type { OnFillTone } from "../types/variants.js";
+    type Tone = 'body' | 'description' | 'caption' | 'headline' | 'label' | 'error' | OnFillTone;
     type Size = 'xs' | 'sm' | 'md' | 'lg';
     type Weight = 'normal' | 'medium' | 'semibold' | 'bold';
 
@@ -35,6 +36,9 @@
         headline: 'text-headline',
         label: 'text-label',
         error: 'text-error',
+        inherit: 'text-inherit',
+        'on-brand': 'text-on-brand',
+        'on-accent': 'text-on-accent',
     };
 
     /**

@@ -245,6 +245,7 @@
                         <Button variant="ghost" text="Ghost" />
                         <Button variant="link" text="Link" />
                         <Button variant="danger" text="Danger" />
+                        <Button variant="accent" text="Accent" />
                     </div>
                     <div class="flex flex-wrap gap-4 items-center">
                         <Button
@@ -1342,6 +1343,8 @@
                     <Badge variant="warning" text="Warning" />
                     <Badge variant="error" text="Error" />
                     <Badge variant="info" text="Info" />
+                    <Badge variant="accent" text="Accent" />
+                    <Badge variant="accent" emphasis="solid" text="Accent solid" />
                 </div>
             {:else if component.name === "Checkbox"}
                 <div class="w-full space-y-4">

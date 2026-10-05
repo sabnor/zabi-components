@@ -37,6 +37,7 @@
             strings={{ starLabel: (value, max) => `${value} av ${max} stjärnor` }}
         />
         <Rating label="Not rated yet" value={null} readonly />
+        <Rating label="Favourites" value={3.5} readonly tone="accent" data-testid="rating-demo-accent" />
     </div>
 {:else if exampleIndex === 3}
     <div class="w-full space-y-4">

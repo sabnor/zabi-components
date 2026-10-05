@@ -17,6 +17,7 @@
         <Button variant="ghost">Ghost</Button>
         <Button variant="link">Link</Button>
         <Button variant="danger">Delete</Button>
+        <Button variant="accent">Accent</Button>
     </div>
 {:else if exampleIndex === 2}
     <div class="flex flex-wrap items-center gap-2">

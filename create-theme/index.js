@@ -209,6 +209,9 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = []) {
             checked += 1;
             const ratio = contrast(bg, fg);
             if (ratio >= pair.min) continue;
+            // A pair with a second foreground passes when either one does.
+            const other = pair.orFg ? resolveTokenColor(maps[mode], pair.orFg) : null;
+            if (other && contrast(bg, other) >= pair.min) continue;
             warnings.push({
                 type: 'contrast',
                 pair: pair.name,

@@ -1,9 +1,9 @@
 <script lang="ts">
     import Badge from '../../components/atoms/Badge.svelte';
-    import type { ExtendedSemanticVariant } from '../../components/types/variants.js';
+    import type { BadgeVariant } from '../../components/types/variants.js';
 
     interface Props {
-        variant?: ExtendedSemanticVariant;
+        variant?: BadgeVariant;
         showIcon?: boolean;
     }
 

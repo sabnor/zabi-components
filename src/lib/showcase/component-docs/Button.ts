@@ -28,6 +28,7 @@ export const doc: ComponentDoc = makeDoc({
   <Button variant="ghost">Ghost</Button>
   <Button variant="link">Link</Button>
   <Button variant="danger">Delete</Button>
+  <Button variant="accent">Accent</Button>
 </div>`,
         },
         {
@@ -41,7 +42,7 @@ export const doc: ComponentDoc = makeDoc({
 </div>`,
         },
     ],
-    variantsStates: ["primary", "secondary", "outline", "ghost", "link", "danger", "disabled"],
+    variantsStates: ["primary", "secondary", "outline", "ghost", "link", "danger", "accent", "disabled"],
     props,
     guidelines: {
         whenToUse: [

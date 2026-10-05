@@ -52,7 +52,7 @@ describe("IconButton", () => {
             ).toBe(String(pressed));
         });
 
-        it.each(["primary", "secondary", "danger", "ghost", "outline", "link"] as const)(
+        it.each(["primary", "secondary", "danger", "ghost", "outline", "link", "accent"] as const)(
             "gives a pressed %s button an outline and a fill that hover does not use",
             (variant) => {
                 render(IconButton, { label: "Off", variant, pressed: false });

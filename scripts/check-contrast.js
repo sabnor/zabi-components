@@ -381,7 +381,7 @@ function main() {
             const fg = resolve(map, pair.fg);
             // A token that is not declared at all is a renamed or deleted role,
             // not an alpha value: skipping it would drop its pairs silently.
-            const undeclared = [pair.bg, pair.fg].find((token) => !(token in map));
+            const undeclared = [pair.bg, pair.fg, ...(pair.orFg ? [pair.orFg] : [])].find((token) => !(token in map));
             if (undeclared) {
                 failures.push(`${themeName} · ${pair.name}: ${undeclared} is not declared, so the pair cannot be checked`);
                 continue;
@@ -391,9 +391,14 @@ function main() {
                 continue;
             }
             const ratio = contrast(bg, fg);
-            if (ratio < pair.min) {
+            // `orFg`: a second foreground that may carry the pair instead.
+            const other = pair.orFg ? resolve(map, pair.orFg) : null;
+            const otherRatio = other ? contrast(bg, other) : 0;
+            if (Math.max(ratio, otherRatio) < pair.min) {
                 failures.push(
-                    `${themeName} · ${pair.name}: ${fg} on ${bg} = ${ratio}:1 (needs ${pair.min}:1)`,
+                    `${themeName} · ${pair.name}: ${fg} on ${bg} = ${ratio}:1` +
+                        (other ? ` and ${other} on ${bg} = ${otherRatio}:1` : '') +
+                        ` (needs ${pair.min}:1)`,
                 );
             }
         }

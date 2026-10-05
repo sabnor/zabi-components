@@ -112,6 +112,8 @@
                 return "bg-transparent border border-border text-headline hover:bg-surface-hover hover:border-border-medium active:bg-surface-active active:scale-[0.98]";
             case "link":
                 return "bg-transparent text-link hover:text-link-hover focus-ring--muted";
+            case "accent":
+                return "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98]";
             case "primary":
             default:
                 return "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98]";
@@ -144,6 +146,8 @@
             case "outline":
             case "link":
                 return `bg-action-primary-subtle text-link hover:bg-action-primary-subtle-hover active:bg-action-primary-subtle-active ${outline}`;
+            case "accent":
+                return `bg-accent-active hover:bg-accent-active ${outline}`;
             case "primary":
             default:
                 return `bg-action-primary-active hover:bg-action-primary-active ${outline}`;

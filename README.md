@@ -21,6 +21,14 @@ npm install zabi-components
 
 Ensure `svelte@^5.43.8` is installed — SvelteKit apps usually already match; add `@sveltejs/kit@^2` only for Kit. The package is Svelte-only (the unmaintained `zabi-components/react` export was removed in 8.0.0).
 
+**Icons.** The library uses [`@lucide/svelte`](https://lucide.dev) for its own icons and re-exports only the dozen it needs. For your own tab, navigation and action icons, install it in your app at the range the library depends on, so both use one copy:
+
+```bash
+npm install @lucide/svelte@"^0.544.0"
+```
+
+Import each icon from its own file, `import House from "@lucide/svelte/icons/house"`, not from the package's barrel, which makes a bundler compile every icon. See [docs/lucide-icons.md](./docs/lucide-icons.md).
+
 **2. Global CSS** (e.g. SvelteKit `src/app.css` — adjust for your bundler entry)
 
 ```css
@@ -329,13 +337,13 @@ dismissed. Do not put information the user needs in one.
 | Theme output | `npm run test:themes` | Built CSS is reproducible and matches the frozen hashes |
 
 There is no CI: every gate runs locally, and releases are published by hand. See
-[RELEASING.md](./RELEASING.md) for the order to run them in.
+[RELEASING.md](https://github.com/sabnor/zabi-components/blob/main/RELEASING.md) in the repository for the order to run them in.
 
 ---
 
 ## More documentation
 
-[THEME.md](./THEME.md) · [THEMING.md](./THEMING.md) · [docs/theme-imports.md](./docs/theme-imports.md) · [RELEASING.md](./RELEASING.md) · [CHANGELOG.md](./CHANGELOG.md)
+[THEME.md](./THEME.md) · [THEMING.md](./THEMING.md) · [docs/theme-imports.md](./docs/theme-imports.md) · [docs/lucide-icons.md](./docs/lucide-icons.md) · [CHANGELOG.md](./CHANGELOG.md) · [RELEASING.md](https://github.com/sabnor/zabi-components/blob/main/RELEASING.md) (in the repository; it is not part of the package)
 
 ## License
 

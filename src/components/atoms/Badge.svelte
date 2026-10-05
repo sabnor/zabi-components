@@ -8,7 +8,7 @@
     import Zap from "@lucide/svelte/icons/zap";
     import { cn } from "../util/cn.js";
     import type {
-        ExtendedSemanticVariant,
+        BadgeVariant,
         SizeVariant,
     } from "../types/variants.js";
 
@@ -20,7 +20,7 @@
     type BadgeEmphasis = "subtle" | "solid";
 
     type Props = Omit<HTMLAttributes<HTMLSpanElement>, "class"> & {
-        variant?: ExtendedSemanticVariant;
+        variant?: BadgeVariant;
         size?: SizeVariant;
         emphasis?: BadgeEmphasis;
         /** Label text. Ignored when `children` is provided. */
@@ -76,6 +76,13 @@
                 return solid
                     ? "bg-energetic text-card border-transparent"
                     : "bg-energetic-subtle text-energetic-text border-energetic-border";
+            // The app's second brand colour. Its solid label is the "on accent"
+            // role, not the card surface: an app with a light accent (a
+            // yellow) sets a dark label there, and white would be unreadable.
+            case "accent":
+                return solid
+                    ? "bg-accent text-on-accent border-transparent"
+                    : "bg-accent-subtle text-accent-text border-accent-border";
             case "neutral":
             case "default":
             default:

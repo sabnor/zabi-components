@@ -2,6 +2,7 @@
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import { cn } from "../util/cn.js";
+    import type { OnFillTone } from "../types/variants.js";
 
     /** Semantic heading level — also the default visual size. */
     type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
@@ -16,6 +17,12 @@
         size?: HeadingLevel;
         /** Heading text. Ignored when `children` is provided. */
         text?: string;
+        /**
+         * Text colour. `headline` (the default) is for a page or a card. On a
+         * filled block use `inherit` (the block's own colour), `on-brand` or
+         * `on-accent`.
+         */
+        tone?: "headline" | OnFillTone;
         class?: string;
         children?: Snippet;
     };
@@ -24,10 +31,18 @@
         level = 1,
         size,
         text = "",
+        tone = "headline",
         class: className = "",
         children,
         ...restProps
     }: Props = $props();
+
+    const toneClasses: Record<"headline" | OnFillTone, string> = {
+        headline: "text-headline",
+        inherit: "text-inherit",
+        "on-brand": "text-on-brand",
+        "on-accent": "text-on-accent",
+    };
 
     const visualSize = $derived(size ?? level);
     const Tag = $derived(`h${level}`);
@@ -48,7 +63,7 @@
     };
 
     const headingClasses = $derived(
-        cn(`text-headline ${sizeClasses[visualSize] ?? sizeClasses[6]} ${className}`),
+        cn(`${toneClasses[tone] ?? toneClasses.headline} ${sizeClasses[visualSize] ?? sizeClasses[6]} ${className}`),
     );
 </script>
 

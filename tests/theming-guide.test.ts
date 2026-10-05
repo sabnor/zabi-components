@@ -56,10 +56,26 @@ const NOT_TOKENS = new Set([
     "--color-quiz-gold",
 ]);
 
+/**
+ * Custom properties a component reads for itself, which the guide documents
+ * under "Component-level properties". They are not tokens of the theme, so
+ * they are not in the published list, and they are allowed here on one
+ * condition, checked below: the component named really reads them. A property
+ * the guide promises and no component reads is as wrong as an unpublished
+ * token.
+ */
+const COMPONENT_PROPERTIES: Record<string, string> = {
+    "--zabi-rating-on": "src/components/atoms/Rating.svelte",
+    "--zabi-rating-on-hover": "src/components/atoms/Rating.svelte",
+    "--zabi-rating-on-active": "src/components/atoms/Rating.svelte",
+    "--zabi-rating-on-edge": "src/components/atoms/Rating.svelte",
+    "--zabi-rating-off": "src/components/atoms/Rating.svelte",
+};
+
 function mentioned(text: string): string[] {
     // Not after `#`: `#--set-and-overrides` is a link to a heading.
     const names = text.match(/(?<![\w#-])--[a-z][a-z0-9-]*/g) ?? [];
-    return [...new Set(names)].filter((name) => !NOT_TOKENS.has(name));
+    return [...new Set(names)].filter((name) => !NOT_TOKENS.has(name) && !(name in COMPONENT_PROPERTIES));
 }
 
 /**
@@ -76,6 +92,25 @@ describe.each(DOCS)("%s", (file) => {
     it("names only tokens the theme publishes", () => {
         const unknown = mentioned(read(file)).filter((name) => !exists(name));
         expect(unknown).toEqual([]);
+    });
+});
+
+describe("component-level properties in the guide", () => {
+    const guide = read("THEMING.md");
+
+    it.each(Object.entries(COMPONENT_PROPERTIES))("%s is read by %s with a fallback, and is not declared there", (name, file) => {
+        const source = read(file);
+        // Read with a fallback: an app's value, from the component or from around it, wins.
+        expect(source).toContain(`var(${name},`);
+        // Declared on the component it could only be overridden by an inline style.
+        expect(new RegExp(`(?<![\\w-])${name}\\s*:`).test(source)).toBe(false);
+    });
+
+    it("documents every one of them, and none is a published token", () => {
+        for (const name of Object.keys(COMPONENT_PROPERTIES)) {
+            expect(guide, name).toContain(`\`${name}\``);
+            expect(published.has(name), name).toBe(false);
+        }
     });
 });
 

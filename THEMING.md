@@ -19,6 +19,8 @@ docs site at [/theming](https://zabi-components.vercel.app/theming).
 - [Tokens an app may set](#tokens-an-app-may-set)
 - [Roles: read them, do not set them](#roles-read-them-do-not-set-them)
 - [Light, dark and auto](#light-dark-and-auto)
+- [Text and controls on a brand or accent block](#text-and-controls-on-a-brand-or-accent-block)
+- [Component-level properties](#component-level-properties)
 - [The generator](#the-generator)
 - [What does not follow an override](#what-does-not-follow-an-override)
 - [Stability](#stability)
@@ -169,6 +171,14 @@ contrast the roles were designed with is gone. Run it through
 
 Loading the font files is up to the app. The heading face is applied in the
 base layer, so a `font-*` utility on a heading still wins.
+
+Tailwind's own font utilities follow these tokens: `font-sans` is
+`--font-family-sans`, `font-mono` is `--font-family-mono`, and `font-heading`
+is `--font-family-heading`. The theme maps Tailwind's `--font-sans` and
+`--font-mono` (and a `--font-heading` of its own) onto them. Before 8.1
+`font-sans` was Tailwind's system stack, so `class="font-sans"` on a heading
+dropped it out of the brand face. Set the `--font-family-*` tokens, not the
+short names: the short ones follow.
 
 ### Shape, depth and stacking
 
@@ -405,6 +415,139 @@ document.documentElement.dataset.theme = "dark"; // "light" | "auto"
 // or
 document.documentElement.classList.toggle("dark");
 ```
+
+## Text and controls on a brand or accent block
+
+A block filled with the brand colour (`bg-action-primary`) or the accent
+(`bg-accent`) is not a surface level: the text roles (`--color-headline`,
+`--color-body`) are chosen for the page and for cards, and on a brand fill
+they are about 2:1 to 3.7:1. Three things make a block work.
+
+**1. Say what the block is.** Add `on-brand` beside `bg-action-primary`, or
+`on-accent` beside `bg-accent`:
+
+```svelte
+<section class="bg-action-primary on-brand rounded-container p-6">
+  <Heading level={2} tone="inherit">Dagens quiz</Heading>
+  <Text tone="inherit">Tio frågor om Sverige.</Text>
+  <Button variant="accent">Spela</Button>
+</section>
+```
+
+The class sets the block's text colour to the fill's label colour
+(`--color-on-brand` or `--color-on-accent`) and re-points the focus ring for
+everything inside it.
+
+**2. Give text a tone that belongs on a fill.** `Heading` and `Text` take:
+
+| `tone` | Colour | Use |
+|---|---|---|
+| `inherit` | the block's own text colour | inside `on-brand` / `on-accent`, or any block that sets a colour |
+| `on-brand` | `--color-on-brand` | on `bg-action-primary`, wherever the element is |
+| `on-accent` | `--color-on-accent` | on `bg-accent` |
+
+`Heading` is `tone="headline"` by default and `Text` `tone="body"`; those are
+for the page and cards. A `Card` placed inside a block is a surface again:
+give its text the usual tones.
+
+**3. Use a control that carries its own label.** Only the solid variants bring
+a label colour with them. `secondary`, `outline`, `ghost` and `link` use the
+page's text colours and are not legible on a fill. Measured: the label on the
+control's own fill (4.5:1 needed), and the control's fill against the block
+(3:1 for the button to be seen as a shape).
+
+On a brand block, `bg-action-primary`:
+
+| `Button variant` | Default theme, light | Default theme, dark | `#0026EA` pinned + `#FDD715` pinned accent, light | The same, dark |
+|---|---|---|---|---|
+| `accent` | label 5.02, fill 1.03 against the block | label 7.11, fill 1.03 | label 11.66, fill 6.05 | label 11.66, fill 1.60 |
+| `danger` | label 4.78, fill 1.06 | label 7.10, fill 1.04 | label 4.78, fill 1.65 | label 7.10, fill 1.03 |
+| `primary` | the block's own colour: invisible | invisible | invisible | invisible |
+| `secondary` | label 3.14 | label 1.90 | label 1.85 | label 1.90 |
+| `outline`, `ghost` | label 3.65 | label 2.05 | label 2.08 | label 2.05 |
+| `link` | label 1.39 | label 1.34 | label 1.00 | label 1.34 |
+
+On an accent block, `bg-accent`:
+
+| `Button variant` | Default theme, light | Default theme, dark | `#0026EA` + `#FDD715` pinned, light | The same, dark |
+|---|---|---|---|---|
+| `primary` | label 4.86, fill 1.03 | label 7.21, fill 1.03 | label 8.52, fill 6.05 | label 7.07, fill 1.60 |
+| `danger` | label 4.78, fill 1.03 | label 7.10, fill 1.01 | label 4.78, fill 3.66 | label 7.10, fill 1.65 |
+| `accent` | invisible | invisible | invisible | invisible |
+| `secondary`, `outline`, `ghost` | label 3.03 to 3.53 | label 1.93 to 2.10 | label 10.17 to 12.58 | label 1.25 to 1.28 |
+| `link` | label 1.35 | label 1.37 | label 6.05 | label 1.19 |
+
+So: on a brand block use `variant="accent"`, and on an accent block
+`variant="primary"`. The label always passes. Whether the button also stands
+out as a shape depends on how far apart the two brand colours are: an
+ultramarine and a yellow are 6:1 apart in light, the library's own blue and
+citron 1.03:1. Where they are close, the label is what shows the button; give
+it room, or put the action on a card. The quiet variants are legible on a
+block only by accident of the colours (a dark-text accent in light), not by
+design.
+
+**The focus ring.** The default ring (`--color-focus-ring`) is the primary
+fill, so on a brand block it measures 1.00:1 against the background and only
+its 2px gap shows. Inside `on-brand` the ring is `--color-on-brand` and the gap
+is the block's colour: 4.86:1 (default, light), 7.21:1 (default, dark), 8.52:1
+(`#0026EA` pinned). Inside `on-accent` it is `--color-on-accent`: 5.02:1,
+7.11:1, and 11.66:1 on the pinned yellow. The muted and nav rings follow. The
+danger ring keeps `--color-error`, which is 1.0:1 to 1.7:1 on a brand block:
+do not put a destructive action there.
+
+To do the same on a block of another colour, set the two tokens on it
+yourself:
+
+```css
+.my-block {
+  color: #ffffff;
+  --color-focus-ring: #ffffff;
+  --color-focus-ring-offset: #7a1f5c; /* the block's own colour */
+}
+```
+
+## Component-level properties
+
+A few components read custom properties of their own, for colours that are not
+roles of the theme. They are not tokens: the theme does not declare them, and
+they do not appear in the generated files. Set them on the component, or on
+anything around it; they inherit.
+
+| Component | Property | What it colours | Default |
+|---|---|---|---|
+| `Rating` | `--zabi-rating-on` | a filled star | `--color-action-primary`; `--color-accent` with `tone="accent"` |
+| `Rating` | `--zabi-rating-on-hover`, `--zabi-rating-on-active` | the same under the pointer and while pressed | `--zabi-rating-on` if you set it, else the tone's hover and pressed roles |
+| `Rating` | `--zabi-rating-on-edge` | the outline of a filled star | the fill; `--color-accent-text` with `tone="accent"` |
+| `Rating` | `--zabi-rating-off` | the outline of an empty star | `--color-control-border` |
+
+```svelte
+<Rating label="Betyg" tone="accent" bind:value />
+
+<!-- or a colour of your own, here for every rating in a block -->
+<section class="bg-action-primary on-brand" style="--zabi-rating-on: var(--color-accent); --zabi-rating-off: var(--color-on-brand)">
+  <Rating label="Betyg" bind:value />
+</section>
+```
+
+A star is a control whose shape has to be seen (3:1 against what it sits on).
+`tone="accent"` fills the star with the accent and outlines it in the accent's
+text step, because an accent can be a colour no fill can show on white:
+
+| Filled star, `tone="accent"` | page | card | inset |
+|---|---|---|---|
+| Default accent, light: fill / outline | 4.25 / 5.93 | 5.02 / 7.00 | 4.56 / 6.37 |
+| Default accent, dark: fill / outline | 7.68 / 10.34 | 6.54 / 8.81 | 7.12 / 9.60 |
+| `#FDD715` pinned, light: fill / outline | 1.19 / 5.94 | 1.41 / 7.01 | 1.28 / 6.38 |
+| `#FDD715` pinned, dark: fill / outline | 12.58 / 10.27 | 10.71 / 8.75 | 11.67 / 9.53 |
+
+A yellow star cannot reach 3:1 on a white card: its fill is 1.41:1 there. The
+outline keeps the star's shape at 7:1, so the stars are always there to see.
+What tells a filled star from an empty one on white is then the yellow inside
+the outline and the outline's own colour, which is less than 3:1; the rating
+also has its value as text (`showValue`, on by default when `readonly`) and in
+its accessible name. On a dark or a brand block the yellow fill itself is
+6:1 or more. If you set `--zabi-rating-on` to a light colour yourself, set
+`--zabi-rating-on-edge` too.
 
 ## The generator
 

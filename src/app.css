@@ -69,6 +69,15 @@
   --font-family-heading: var(--font-family-sans);
   /* Code. The stack CodeBlock has always used, now a token. */
   --font-family-mono: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  /* Tailwind's own names for the same three faces. Its `font-sans` and
+   * `font-mono` utilities read --font-sans and --font-mono, which were its
+   * system stacks: `class="font-sans"` on a heading left the brand face, and
+   * nothing said so. They follow the tokens above now, and `font-heading` is
+   * the utility for the heading face. An app sets --font-family-*; these
+   * follow. */
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+  --font-heading: var(--font-family-heading);
 
   /* Font weights. These are the variables Tailwind's `font-normal`,
    * `font-medium`, `font-semibold` and `font-bold` read, so every component
@@ -1746,6 +1755,38 @@ body {
   }
 
   /**
+   * A block filled with the brand or the accent colour: put `on-brand` beside
+   * `bg-action-primary`, or `on-accent` beside `bg-accent`.
+   *
+   * It does two things for everything inside the block. Text that takes the
+   * block's colour (`Heading tone="inherit"`, `Text tone="inherit"`, plain
+   * markup) gets the fill's label colour. And the focus ring is re-pointed:
+   * the default ring IS the primary fill, so on a brand block it disappears
+   * into the background and only its 2px gap is left. Here the ring is the
+   * label colour and the gap is the block's own colour, so a focused control
+   * is ringed in the one colour that is held to 4.5:1 against the block.
+   *
+   * The ring tokens are re-pointed as tokens, so they reach every ring in the
+   * block: `.focus-ring`, its muted and nav variants, and the rings components
+   * draw themselves. `.focus-ring--danger` keeps `--color-error`.
+   */
+  .on-brand {
+    color: var(--color-on-brand);
+    --color-focus-ring: var(--color-on-brand);
+    --color-focus-ring-muted: var(--color-on-brand);
+    --color-nav-menu-focus: var(--color-on-brand);
+    --color-focus-ring-offset: var(--color-action-primary);
+  }
+
+  .on-accent {
+    color: var(--color-on-accent);
+    --color-focus-ring: var(--color-on-accent);
+    --color-focus-ring-muted: var(--color-on-accent);
+    --color-nav-menu-focus: var(--color-on-accent);
+    --color-focus-ring-offset: var(--color-accent);
+  }
+
+  /**
    * Bordered surface shell for a block of list rows (iOS-style “list group”).
    * Use on a wrapper around `<List />` or on a manual `<ul role="list">`.
    */
@@ -2039,6 +2080,58 @@ body {
 
 .disabled\:hover\:border-transparent:disabled:hover {
   border-color: transparent;
+}
+
+/* Roles that have states of their own.
+   A role with a `-hover` or `-active` token is one an app will write the
+   states of: `bg-accent hover:bg-accent-hover active:bg-accent-active`. The
+   base classes are hand-written and unlayered, so the generated variants lost
+   to them: an accent button stayed on its resting fill under the pointer and
+   under a finger. No component of the library used the pair, so the reading
+   of src/components had nothing to notice. check-state-variants.js now holds
+   every hand-written class to its role's states, whoever uses them.
+   Hover first and inside the hover query, then active, and all of it before
+   the disabled rules below, which have to win over both. */
+@media (hover: hover) {
+.hover\:bg-accent-hover:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.hover\:text-accent-hover:hover {
+  color: var(--color-accent-hover);
+}
+
+.hover\:border-accent-hover:hover {
+  border-color: var(--color-accent-hover);
+}
+
+.hover\:bg-nav-menu-active-hover:hover {
+  background-color: var(--color-nav-menu-active-hover);
+}
+}
+
+.active\:bg-accent-active:active {
+  background-color: var(--color-accent-active);
+}
+
+.active\:text-accent-active:active {
+  color: var(--color-accent-active);
+}
+
+.active\:border-accent-active:active {
+  border-color: var(--color-accent-active);
+}
+
+.active\:bg-info-active:active {
+  background-color: var(--color-info-active);
+}
+
+.active\:text-info-active:active {
+  color: var(--color-info-active);
+}
+
+.active\:border-info-active:active {
+  border-color: var(--color-info-active);
 }
 
 /* Background */

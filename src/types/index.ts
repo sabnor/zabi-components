@@ -25,8 +25,10 @@ import type {
     BottomSheetSnap,
 } from '../components/util/bottom-sheet.js';
 import type {
+    BadgeVariant,
     ButtonVariant,
     CardVariant,
+    OnFillTone,
     ExtendedSemanticVariant,
     SemanticVariant,
     SizeVariant,
@@ -98,6 +100,8 @@ export interface HeadingProps extends Omit<HTMLAttributes<HTMLHeadingElement>, '
     size?: 1 | 2 | 3 | 4 | 5 | 6;
     /** Heading text. Ignored when `children` is provided. */
     text?: string;
+    /** Text colour: `headline` by default; `inherit`, `on-brand` or `on-accent` on a filled block. */
+    tone?: 'headline' | OnFillTone;
     class?: string;
     children?: Snippet;
     /** @deprecated never accepted by the component; use `class`. */
@@ -297,7 +301,7 @@ export interface AlertProps {
 
 // Badge component props
 export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'class'> {
-    variant?: ExtendedSemanticVariant;
+    variant?: BadgeVariant;
     size?: SizeVariant;
     emphasis?: 'subtle' | 'solid';
     /** Label text. Ignored when `children` is provided. */
@@ -442,6 +446,8 @@ export interface RatingProps
     'aria-label'?: string;
     'aria-labelledby'?: string;
     size?: SizeVariant;
+    /** Colour of a filled star: the primary action colour, or the app's accent. */
+    tone?: 'primary' | 'accent';
     /** Shows a score: one image with one name, and stars can be partly filled. */
     readonly?: boolean;
     /** Adds a clear button; pressing the selected star again never clears. */

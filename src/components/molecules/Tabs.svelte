@@ -211,11 +211,14 @@
     const TAB_IDLE =
         "border-transparent text-description hover:border-border-medium hover:text-body active:bg-surface-active disabled:opacity-50 disabled:hover:border-transparent disabled:hover:text-description disabled:active:bg-transparent";
     const TAB_SELECTED = "border-brand-500 text-body active:bg-surface-active";
-    // The pill has a fill of its own, so its pressed state is the next step of
+    // The pill has a fill of its own, so its pressed state is a further step of
     // that fill; a translucent tint in its place would be a weaker fill, not a
-    // stronger one.
+    // stronger one. It is the pressed role, not the hover step: the hover step
+    // is 1.24:1 from the resting fill in light, under the 1.25:1 a pressed fill
+    // is held to. The label darkens with it (`.text-link:active` in app.css)
+    // and keeps 4.89:1 on the pressed fill.
     const TAB_SELECTED_PILL =
-        "border-brand-500 bg-action-primary-subtle text-link active:bg-action-primary-subtle-hover";
+        "border-brand-500 bg-action-primary-subtle text-link active:bg-action-primary-subtle-active";
 
     function tabClasses(tabId: string): string {
         const base = `${TAB_BASE} ${fullWidth ? TAB_SHARED : TAB_NATURAL}`;

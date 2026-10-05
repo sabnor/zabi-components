@@ -3,6 +3,7 @@ import { findLucideBarrelImports } from './lucide-barrel.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
+import { findDeadPackageLinks } from './check-package-links.js';
 import {
   GENERATOR_FILES,
   THEME_DATA_FILE,
@@ -503,6 +504,17 @@ async function verifyBuild() {
     allValid = false;
   } else {
     console.log('✓ Packaged files import icons per file, not from the @lucide/svelte barrel');
+  }
+
+  console.log('\n📦 Verifying links in the published documents...');
+  const { dead, documents } = findDeadPackageLinks();
+  if (dead.length > 0) {
+    console.error('❌ A published document links to a file that is not in the package:');
+    dead.forEach((where) => console.error(`   - ${where}`));
+    console.error('   Add the file to "files" in package.json, or link to it in the repository.');
+    allValid = false;
+  } else {
+    console.log(`✓ Relative links in ${documents.join(', ')} all lead to packaged files`);
   }
 
   console.log('\n📦 Verifying dist/components/types runtime modules...');

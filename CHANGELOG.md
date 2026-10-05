@@ -27,6 +27,19 @@ Whenever token or CSS import API surface changes, include:
   the control's label; focus trap, Escape, swipe and stacking are the sheet's.
   `<Dropdown presentation="sheet">` is the library's action sheet
   (`sheetTitle`, `sheetSnap`, `sheetCloseLabel`).
+- **`Button` and `IconButton` `variant="accent"`**: the app's second brand
+  colour as a solid fill, with its own hover and pressed fills and the
+  `--color-on-accent` label. **`Badge variant="accent"`**, subtle and solid.
+- **`Heading` and `Text` `tone="inherit" | "on-brand" | "on-accent"`** for
+  text on a filled block, and the classes `on-brand` and `on-accent` for the
+  block itself: they set its text colour and make the focus ring visible on
+  it. THEMING.md, "Text and controls on a brand or accent block", says which
+  button variants stay legible there.
+- **`Rating tone="accent"`**, and documented star colours an app may set:
+  `--zabi-rating-on`, `--zabi-rating-off`, `--zabi-rating-on-hover`,
+  `--zabi-rating-on-active`, `--zabi-rating-on-edge`.
+- A `font-heading` utility for `--font-family-heading`.
+- `CHANGELOG.md` is in the package.
 
 ### Changed
 
@@ -60,8 +73,23 @@ Whenever token or CSS import API surface changes, include:
   only when five do not fit, and never overlap. The badge is anchored to the
   icon.
 - AppShell's fallback insets are `57px` and `65px`.
+- **`font-sans` and `font-mono` follow the theme.** They compute to
+  `--font-family-sans` and `--font-family-mono`; before, they were Tailwind's
+  system stacks. If you used `font-sans` to get the system font, write the
+  stack yourself.
 
 ### Fixed
+
+- **Accent hover and pressed states work.** `hover:bg-accent-hover` and
+  `active:bg-accent-active` (and the text and border forms) did nothing next
+  to `bg-accent`. The same for `active:bg-info-active` and
+  `hover:bg-nav-menu-active-hover`.
+- Rating's `--zabi-rating-on` and `--zabi-rating-off` apply when set on an
+  ancestor or by a class.
+- The selected pill Tab's pressed fill is 1.42:1 from its resting fill (was
+  1.24:1) and its label keeps 4.89:1 on it (was 4.02:1).
+- README links to RELEASING.md point at the repository, and the README says
+  to install `@lucide/svelte` and import icons per file.
 
 ## [8.1.0-beta.1] - 2026-10-06
 

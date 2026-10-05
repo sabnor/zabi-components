@@ -21,7 +21,23 @@ export type ExtendedSemanticVariant = SemanticVariant | 'neutral' | 'energetic';
  * Button style variants - used for different button styles
  * These are style-based variants, not semantic color variants
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link' | 'accent';
+
+/**
+ * Badge variants: the semantic families, and `accent`, the app's second brand
+ * colour (`--color-accent`). `energetic` is a family of its own and stays on
+ * the library's citron when an app changes its accent.
+ */
+export type BadgeVariant = ExtendedSemanticVariant | 'accent';
+
+/**
+ * Text colour of a Heading or Text that sits on a filled block.
+ * - `inherit`: the block's own text colour (`currentColor`), for a block that
+ *   sets one, such as `class="bg-action-primary text-on-brand"`.
+ * - `on-brand` / `on-accent`: the label colour of the primary and of the solid
+ *   accent fill (`--color-on-brand`, `--color-on-accent`).
+ */
+export type OnFillTone = 'inherit' | 'on-brand' | 'on-accent';
 
 /**
  * Card style variants - used for different card appearances

@@ -90,7 +90,21 @@ const ICON_BUTTON_DANGER_TONE =
     'bg-action-danger-subtle is the held fill of the danger tone (ghost or outline); this pressed rule is in variantClass for ';
 const ICON_BUTTON_TOGGLED =
     'bg-action-primary-subtle is the held fill of a toggled-on ghost, outline or link button; this pressed rule is in variantClass for ';
+const ICON_BUTTON_ACCENT =
+    'bg-accent is the resting fill of variant="accent"; this hover rule is in pressedClass for ';
 export const NEVER_TOGETHER = new Map([
+    [`${ICON_BUTTON}: bg-accent + hover:bg-action-danger-subtle-hover`, `${ICON_BUTTON_ACCENT}the danger tone`],
+    [`${ICON_BUTTON}: bg-accent + hover:bg-action-secondary-active`, `${ICON_BUTTON_ACCENT}secondary`],
+    [`${ICON_BUTTON}: bg-accent + hover:bg-action-danger-active`, `${ICON_BUTTON_ACCENT}the solid danger variant`],
+    [`${ICON_BUTTON}: bg-accent + hover:bg-action-primary-subtle-hover`, `${ICON_BUTTON_ACCENT}ghost, outline and link`],
+    [`${ICON_BUTTON}: bg-accent + hover:bg-action-primary-active`, `${ICON_BUTTON_ACCENT}primary`],
+    [
+        // Its own variant, toggled on: pressedClass also sets the fill, and
+        // `cn()` keeps the later of two fills, so `bg-accent` is not on the
+        // element that carries this hover rule.
+        `${ICON_BUTTON}: bg-accent + hover:bg-accent-active`,
+        'a toggled-on accent button has bg-accent-active as its fill (the later bg- class wins the merge), so bg-accent is not on the element',
+    ],
     [`${ICON_BUTTON}: bg-action-danger-subtle + active:bg-action-secondary-active`, `${ICON_BUTTON_DANGER_TONE}secondary`],
     [`${ICON_BUTTON}: bg-action-danger-subtle + active:bg-action-danger-active`, `${ICON_BUTTON_DANGER_TONE}the solid danger variant`],
     [`${ICON_BUTTON}: bg-action-danger-subtle + active:bg-action-primary-active`, `${ICON_BUTTON_DANGER_TONE}primary`],
@@ -109,7 +123,7 @@ export const NEVER_TOGETHER = new Map([
     ],
     [
         'src/components/molecules/Tabs.svelte: bg-action-primary-subtle + active:bg-surface-active',
-        'bg-action-primary-subtle is the selected tab of the pill variant, which carries active:bg-action-primary-subtle-hover; active:bg-surface-active is on an unselected tab and on the selected tab of the default variant',
+        'bg-action-primary-subtle is the selected tab of the pill variant, which carries active:bg-action-primary-subtle-active; active:bg-surface-active is on an unselected tab and on the selected tab of the default variant',
     ],
 ]);
 
@@ -306,6 +320,63 @@ function parseVariant(token, colourTokens) {
     return { states: parts.map((p) => p.replace(/^group-/, '')), group: GROUPS[m[1]] };
 }
 
+/**
+ * A role with a `-hover` or `-active` sibling is a role that has those states,
+ * and an app will write them: `bg-accent hover:bg-accent-hover`. If the base
+ * class is one of the hand-written ones, the generated variant loses to it
+ * whether or not a component of the library happens to use the pair. That is
+ * how `.bg-accent` shipped with no working hover: nothing here used it, so
+ * the reading of src/components above had nothing to pair.
+ *
+ * So this half does not read components. For every hand-written colour class
+ * whose role has a `-hover` or `-active` token, the stylesheet must have the
+ * rule that wins: the variant itself (`.hover\:bg-accent-hover:hover`) or a
+ * state rule on the base class (`.bg-action-primary:hover`).
+ */
+const ROLE_STATES = ['hover', 'active'];
+
+/**
+ * `role-state` tokens that are not the state of `role`, with what they are.
+ * `--color-nav-menu-item-active` is the colour of the CURRENT item, a state
+ * the markup sets with a class of its own (`text-nav-menu-item-active`), not
+ * what a nav item looks like while it is held down.
+ */
+export const NOT_A_STATE = new Map([
+    ['text-nav-menu-item|active', 'nav-menu-item-active is the current item, applied with its own class, not the pressed state'],
+    // `.text-action-primary` is the LABEL on the primary fill (it reads
+    // --color-action-primary-text). The fill's hover and pressed colours are
+    // states of `.bg-action-primary`, which has its own state rules.
+    ['text-action-primary|hover', 'text-action-primary is the label on the primary fill; action-primary-hover is a state of the fill'],
+    ['text-action-primary|active', 'text-action-primary is the label on the primary fill; action-primary-active is a state of the fill'],
+]);
+
+function roleSiblingErrors({ colourTokens, baseClasses, variantRules, baseStateRules }) {
+    const errors = [];
+    const used = new Set();
+    for (const [base, properties] of baseClasses) {
+        const match = /^(bg|text|border)-(.+)$/.exec(base);
+        if (!match || !properties.has(GROUPS[match[1]])) continue;
+        const [, prefix, role] = match;
+        for (const state of ROLE_STATES) {
+            if (!colourTokens.has(`${role}-${state}`)) continue;
+            const variant = `${state}:${prefix}-${role}-${state}`;
+            if (variantRules.has(variant) || baseStateRules.has(`${base}|${state}`)) continue;
+            if (NOT_A_STATE.has(`${base}|${state}`)) {
+                used.add(`${base}|${state}`);
+                continue;
+            }
+            errors.push(
+                `${base} + ${variant}: --color-${role}-${state} exists, so apps will write this pair, and the unlayered ` +
+                    `.${base} beats the generated variant; add a hand-written rule for it to src/app.css`,
+            );
+        }
+    }
+    for (const entry of NOT_A_STATE.keys()) {
+        if (!used.has(entry)) errors.push(`${entry}: listed in NOT_A_STATE but no longer needed; remove the entry`);
+    }
+    return errors;
+}
+
 export function checkStateVariants({ cssPath = defaultCssPath } = {}) {
     const { colourTokens, baseClasses, variantRules, baseStateRules } = readStylesheet(cssPath);
     const dead = new Map();
@@ -369,6 +440,7 @@ export function checkStateVariants({ cssPath = defaultCssPath } = {}) {
             `${pair} (${[...files].join(', ')}): the unlayered base class beats the generated variant; ` +
             `add a hand-written rule for the variant to src/app.css`,
     );
+    errors.push(...roleSiblingErrors({ colourTokens, baseClasses, variantRules, baseStateRules }));
     for (const entry of NEVER_TOGETHER.keys()) {
         if (!apart.has(entry)) errors.push(`${entry}: listed in NEVER_TOGETHER but the reader no longer pairs them; remove the entry`);
     }

@@ -9,7 +9,8 @@
  * there is no second hand-kept list to forget.
  *
  * Each pair is token names only (`bg`, `fg`) and a minimum; resolving them is
- * the reader's job.
+ * the reader's job. A pair may name a second foreground, `orFg`: it passes when
+ * either foreground reaches the minimum against `bg`.
  */
 
 export const AA_NORMAL = 4.5;
@@ -84,6 +85,17 @@ export function buildPairs() {
         { name: 'accent subtle body', bg: '--color-accent-subtle', fg: '--color-body', min: AA_NORMAL },
         { name: 'accent text on page', bg: '--color-surface-base', fg: '--color-accent-text', min: AA_NORMAL },
         { name: 'accent text on card', bg: '--color-surface-raised', fg: '--color-accent-text', min: AA_NORMAL },
+        // A filled Rating star in the accent tone is outlined in the accent's
+        // text step, because an accent may be a yellow that no fill of its own
+        // can show on a white card. The outline is the star's boundary (WCAG
+        // 1.4.11): 3:1 on the inset surface too; page and card are above.
+        { name: 'accent star outline on inset', bg: '--color-surface-inset', fg: '--color-accent-text', min: AA_LARGE },
+        // Button variant="accent", focused. The ring is the brand colour and the
+        // fill is the accent, two colours an app chooses freely: the library's
+        // own are 1.03:1 apart, an app's blue and yellow 6:1. So either the
+        // 2px gap or the ring itself has to show against the fill. One is
+        // enough, which is what `orFg` says.
+        { name: 'focus ring or its offset gap on an accent button', bg: '--color-accent', fg: '--color-focus-ring-offset', orFg: '--color-focus-ring', min: AA_LARGE },
         // "On brand" — the role components reach through --color-action-primary-text.
         { name: 'on-brand label on primary', bg: '--color-action-primary', fg: '--color-on-brand', min: AA_NORMAL },
         { name: 'on-brand label on primary :hover', bg: '--color-action-primary-hover', fg: '--color-on-brand', min: AA_NORMAL },
@@ -119,6 +131,12 @@ export function buildPairs() {
         { name: 'icon on a held toggled-on fill', bg: '--color-action-primary-subtle-active', fg: '--color-link', min: AA_LARGE },
         { name: 'held toggled-on danger fill against its resting fill', bg: '--color-action-danger-subtle', fg: '--color-action-danger-subtle-active', min: MIN_PRESSED },
         { name: 'icon on a held toggled-on danger fill', bg: '--color-action-danger-subtle-active', fg: '--color-error', min: AA_LARGE },
+        // The selected pill Tab is the same fill with a text label. The label
+        // is the link colour at rest and the link's own pressed colour while
+        // held (`.text-link:active`); on the old pressed fill, the hover step,
+        // the resting link colour was 4.02:1.
+        { name: 'label on a selected pill tab', bg: '--color-action-primary-subtle', fg: '--color-link', min: AA_NORMAL },
+        { name: 'label on a held selected pill tab', bg: '--color-action-primary-subtle-active', fg: '--color-link-hover', min: AA_NORMAL },
         // Placeholders are decorative-ish, but must stay readable — large-text bar.
         // Placeholder text is read: an example, or the format hint of an empty
         // DateField ("dd/mm/yyyy"). It was held to 3:1 on the resting field only,
