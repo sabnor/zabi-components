@@ -55,6 +55,8 @@ The dark files only remap roles. The raw palettes (`--zabi-brand-*`, `--zabi-acc
 
 One declaration covers light and dark. The tokens are listed in [THEMING.md](../THEMING.md), Rebranding Through Tokens.
 
+To generate that file from a brand colour, run `npx zabi-theme --brand "#0026EA" --out src/lib/brand.generated.css`, or call `createTheme()` from `zabi-components/create-theme`. See [THEMING.md](../THEMING.md), Generating a Theme.
+
 The universal scrollbar rules are in the compiled `css` bundle only. Importing a theme does not restyle the scrollbars in your app; add `.scrollbar-semantic` where you want them.
 
 ## Tailwind together with the compiled stylesheet
@@ -84,6 +86,7 @@ Use these subpaths with your bundler or `npm`/`pnpm` resolution:
 | `zabi-components/theme-dark-only` | `zabi-components-theme-dark-only.css` | Tailwind present; **only** the dark overrides (import after light theme). |
 | `zabi-components/colors` | `zabi-components-colors.css` | **No Tailwind**: `:root` + dark (`.dark`, `[data-theme]`) CSS variables only. |
 | `zabi-components/css` | `zabi-components.css` | Full compiled CSS (utilities, components styles, dark). |
+| `zabi-components/create-theme` | `create-theme/index.js` | Not CSS: the `createTheme()` function behind the `zabi-theme` command. |
 
 ### Legacy export paths (supported, deprecated in docs)
 

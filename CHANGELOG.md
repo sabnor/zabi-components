@@ -256,6 +256,22 @@ Whenever token or CSS import API surface changes, include:
   submits it, and a repeat press on the selected segment does nothing.
   Segments share the row equally (`fullWidth`, default true), labels wrap
   before they are cut, and every segment is 44px tall on a touch screen.
+- **A theme generator.** `npx zabi-theme --brand "#0026EA"` writes a CSS file
+  with the full `--zabi-brand-*` ramp, and with `--accent` and `--neutral` the
+  `--zabi-accent-*` ramp and all 21 `--zabi-base-*` steps; `--out` names the
+  file. Import it after `theme-only` and `theme-dark-only` and it covers light
+  and dark. The same is available in code as `createTheme({ brand, accent,
+  neutral })` from the new export `zabi-components/create-theme`, which returns
+  `{ css, tokens, warnings, closest }`. The ramps sit on the library's
+  lightness curve: your colour gives the hue and the chroma and is not pinned
+  to a step, so the exact hex may not appear, and the file header names the
+  closest step. The generator picks the text colour for the brand and accent
+  fills.
+- **The generator checks contrast.** Every role pair the library's own guard
+  checks is resolved with the generated ramps in light and dark, and a pair
+  below WCAG AA (4.5:1 for text, 3:1 for UI parts) is reported on stderr, in
+  the file header and in `warnings`. `--strict` exits 1 on a failed pair.
+  `--set <token>=<value>` (or `overrides`) moves a role, and is checked too.
 
 ### Changed
 
@@ -339,6 +355,8 @@ Whenever token or CSS import API surface changes, include:
   but `getComputedStyle` reports them as `color(srgb …)`, not `rgb(…)`.
 - The dark theme files are about 13 KB larger, because the block is published
   once for the class and attribute and once for the system setting.
+- `culori` is now a dependency, not a development dependency: the theme
+  generator uses it at run time. The package gains a `bin`, `zabi-theme`.
 
 ### Deprecated
 

@@ -175,6 +175,9 @@ An app rebrands from one file of overrides on `:root`, with no component CSS.
 Nothing has to be repeated for dark mode, because `.dark` declares no raw
 palette. It only says which step of a ramp each role uses.
 
+`zabi-theme` generates the ramps and the "on" colours from one brand colour;
+see [Generating a Theme](#-generating-a-theme).
+
 | Override on `:root` | What follows, in both themes |
 |---|---|
 | `--zabi-brand-50 … 950` | primary actions, focus, links, brand tints, `--color-primary*` |
@@ -214,6 +217,84 @@ of the ink is not visible; override those tokens directly if it matters.
 Proved from the built CSS by `tests/theme-output.test.js` (`npm run test:themes`),
 which also keeps a list of every published token name and fails if one
 disappears.
+
+## 🛠️ Generating a Theme
+
+`zabi-theme` writes that file of overrides from one brand colour.
+
+```bash
+npx zabi-theme --brand "#0026EA" --out src/lib/brand.generated.css
+npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out src/lib/brand.generated.css
+```
+
+```css
+@import "zabi-components/theme-only";
+@import "zabi-components/theme-dark-only";
+@import "./brand.generated.css";
+```
+
+| Option | |
+|---|---|
+| `--brand <hex>` | Required. Builds `--zabi-brand-50 … 950`. |
+| `--accent <hex>` | Builds `--zabi-accent-50 … 950`. Omitted: the library's citron. |
+| `--neutral <hex>` | Tints the 21-step `--zabi-base-50 … 950`. Omitted: the library's greys. |
+| `--out <file>` | Where to write. Omitted: stdout. |
+| `--strict` | Exit 1 when a role pair is below WCAG AA. |
+| `--set <token>=<value>` | Also write this declaration; repeatable. |
+
+Warnings and the one-line summary go to stderr. Exit codes: 0 done, 1 `--strict`
+with a failed pair, 2 bad usage (missing `--brand`, not a hex colour).
+
+The same thing as a function, for a build script:
+
+```js
+import { createTheme } from "zabi-components/create-theme";
+
+const { css, tokens, warnings, closest } = createTheme({
+  brand: "#0026EA",
+  accent: "#ff3366",     // optional
+  neutral: "#78716c",    // optional
+  overrides: { "--color-link": "var(--zabi-brand-800)" }, // optional
+});
+```
+
+`tokens` is the name-to-value map that `css` declares. `warnings` holds
+`{ type: "contrast", pair, mode, ratio, required, foreground, background, message }`
+for each role pair below AA, and `{ type: "input", option, message }` notes about
+the colours given. `closest` says which step each input landed nearest.
+
+**Your colour is not pinned to a step.** Each ramp is built on the library's
+lightness curve (see Calibrated Colour Ramps), so step 600 is as dark as every
+built-in 600 and every role keeps its contrast. The colour supplies hue and
+chroma. Its exact hex may not appear in the ramp; the file header and `closest`
+name the nearest step. `#C17B00` lands exactly on step 500. `#0026EA` is darker
+than a 600 and lands nearest step 800, and the primary button uses step 600,
+`#2b65ff`. A very bright colour such as `#FFE600` has no step that bright at
+its chroma, and the generator says so.
+
+**Neutral** keeps the base scale's own 21 lightness steps and takes only the
+hue, at low chroma. A saturated colour gives a tinted grey, not a coloured page.
+
+**"On" colours.** The file sets `--zabi-on-brand` and `--zabi-on-brand-dark`
+(and the accent pair when `--accent` is given) to white or the ramp's 950 step,
+whichever reaches 4.5:1 on the fill, its hover and its active step.
+
+**Contrast check.** Every pair `check-contrast.js` holds the library to is
+resolved in light and dark with the new ramps in place: 4.5:1 for text, 3:1 for
+focus rings and UI parts. Because the ramps share the library's curve, a plain
+brand passes. Failures come from `overrides` / `--set` that move a role to
+another step. The hover and pressed alpha tints are not part of this check.
+
+The output is deterministic: the same input gives the same bytes, and there is
+no timestamp, so the file can be committed and diffed.
+
+For maintainers: the generator's source is `create-theme/`. It ships as plain
+ESM in `dist/create-theme/` and needs `culori` at runtime, so `culori` is a
+dependency. `scripts/build-create-theme.js` copies it and writes
+`theme-data.js`, the default theme and the pair list, from `src/app.css` and
+`scripts/contrast-pairs.js` on every build. `verify-build.js` fails if that
+file differs from its sources, and runs the bin from `dist/`. Tests:
+`tests/create-theme.test.js`, part of `npm run test:themes`.
 
 ## 🌗 Dark Mode Selectors
 
@@ -273,8 +354,10 @@ as one family instead of six unrelated colours.
 Step **600** is the solid-fill step: dark enough to clear 4.5:1 against white,
 light enough to still read as a colour. Every semantic token points at it.
 
-- **Source of truth:** `tokens/chromatic-scales.js` — hue, peak chroma, the
-  chroma envelope, and the target curve.
+- **Source of truth:** `tokens/chromatic-scales.js` — hue and peak chroma per
+  ramp. The target curve, the chroma envelope and the solver are in
+  `create-theme/lib/ramp-math.js`, which the theme generator ships, so a
+  generated brand sits on the same curve.
 - **Regenerate:** `node scripts/generate-ramps.js` (runs inside `npm run sync:tokens`).
 - **Verify:** `node scripts/check-ramp-lightness.js` — fails if any step drifts
   more than ±1.5 L\* off the curve, or if two adjacent steps differ by more than

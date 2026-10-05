@@ -39,6 +39,10 @@
       "types": "./dist/routes/lib/variant-utils.d.ts",
       "import": "./dist/routes/lib/variant-utils.js"
     },
+    "./create-theme": {
+      "types": "./dist/create-theme/index.d.ts",
+      "import": "./dist/create-theme/index.js"
+    },
     "./dist/zabi-components.css": "./dist/zabi-components.css",
     "./dist/zabi-components-colors.css": "./dist/zabi-components-colors.css",
     "./dist/zabi-components-theme.css": "./dist/zabi-components-theme.css",
@@ -52,6 +56,9 @@
     "./colors": "./dist/zabi-components-colors.css",
     "./css": "./dist/zabi-components.css",
     "./package.json": "./package.json"
+  },
+  "bin": {
+    "zabi-theme": "./dist/create-theme/cli.js"
   },
   "files": [
     "dist",
@@ -95,7 +102,8 @@
     "build:components": "svelte-package -o dist --input src/components",
     "build:lib-files": "mkdir -p dist/routes/lib dist/types && cp src/components/types/variants.ts dist/types/ && cp src/components/types/page.types.ts dist/types/ && tsc src/routes/lib/variant-utils.ts --declaration --module esnext --target es2020 --moduleResolution bundler --skipLibCheck --rootDir src --outDir .lib-tmp && cp .lib-tmp/routes/lib/variant-utils.js .lib-tmp/routes/lib/variant-utils.d.ts dist/routes/lib/ && rm -rf .lib-tmp",
     "build:fix-imports": "node scripts/fix-package-imports.js",
-    "build:lib": "npm run build:css && npm run build:components && npm run build:lib-files && npm run build:fix-imports && npm run build:types && npm run build:css && node scripts/verify-build.js",
+    "build:lib": "npm run build:css && npm run build:components && npm run build:lib-files && npm run build:fix-imports && npm run build:types && npm run build:css && npm run build:create-theme && node scripts/verify-build.js",
+    "build:create-theme": "node scripts/build-create-theme.js",
     "sync:tokens": "node scripts/sync-theme-tokens.js && node scripts/generate-ramps.js && node scripts/generate-surfaces.js",
     "build:css": "npm run sync:tokens && node scripts/build-css.js && node scripts/validate-theme.js && npm run check:design",
     "check:tokens": "node scripts/check-token-violations.js",
@@ -112,7 +120,7 @@
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test --grep @smoke",
     "test:playwright": "npm run test:e2e",
-    "test:themes": "node --test tests/theme-output.test.js",
+    "test:themes": "node --test --test-concurrency=1 tests/theme-output.test.js tests/create-theme.test.js",
     "prepare": "node scripts/fix-lucide-svelte-icon-dts.js",
     "prepublishOnly": "npm run build:lib",
     "publish:npm": "npm publish --access public --registry https://registry.npmjs.org/",
@@ -137,7 +145,6 @@
     "@tsconfig/svelte": "^5.0.5",
     "@types/node": "^24.5.2",
     "autoprefixer": "^10.4.17",
-    "culori": "^4.0.2",
     "jsdom": "^29.0.2",
     "postcss": "^8.4.35",
     "storybook": "^10.2.19",
@@ -150,6 +157,7 @@
   },
   "dependencies": {
     "@lucide/svelte": "^0.544.0",
+    "culori": "^4.0.2",
     "tailwind-merge": "^3.7.0"
   },
   "peerDependencies": {
