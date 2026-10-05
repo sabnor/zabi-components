@@ -54,7 +54,8 @@
     />
 </svelte:head>
 
-{#if $page.url.pathname !== "/chaos-lab"}
+<!-- The labs under /chaos-lab that test a TopNavbar of their own leave this one out. -->
+{#if $page.url.pathname !== "/chaos-lab" && $page.url.pathname !== "/chaos-lab/top-navbar"}
     <TopNavbar
         brand="Zabi Components"
         brandHref="/"

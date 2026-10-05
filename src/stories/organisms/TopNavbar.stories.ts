@@ -22,6 +22,11 @@ const meta = {
         showThemeToggle: {
             control: 'boolean',
             description: 'Show theme toggle button'
+        },
+        collapseAt: {
+            control: 'inline-radio',
+            options: ['sm', 'md', 'lg', 'xl'],
+            description: 'Breakpoint at which the links move from the phone menu into the bar'
         }
     }
 } satisfies Meta<typeof TopNavbarDemo>;
@@ -33,6 +38,21 @@ export const Default: Story = {
     args: {
         brand: 'MyApp',
         showThemeToggle: true
+    }
+};
+
+export const ManyItemsCollapseAtXl: Story = {
+    args: {
+        brand: 'MyApp',
+        manyItems: true,
+        collapseAt: 'xl'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Eight links do not fit a row at 768px. collapseAt="xl" keeps them in the menu until the screen is 1280px wide; the default, md, is unchanged. In the menu each link is a full row, the menu scrolls on its own on a short screen, and it closes on a link, on Escape (focus returns to the menu button), on a press or a focus move outside the bar, and when the screen passes the breakpoint.'
+            }
+        }
     }
 };
 

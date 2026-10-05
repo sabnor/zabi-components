@@ -6,20 +6,36 @@
         brand?: string;
         showThemeToggle?: boolean;
         customActions?: boolean;
+        collapseAt?: "sm" | "md" | "lg" | "xl";
+        /** Eight links instead of four, to show a row that needs a later switch. */
+        manyItems?: boolean;
     }
 
     let {
         brand = "MyApp",
         showThemeToggle = true,
         customActions = false,
+        collapseAt,
+        manyItems = false,
     }: Props = $props();
 
-    const navItems = [
+    const fourItems = [
         { label: "Home", href: "/" },
         { label: "About", href: "/about" },
         { label: "Services", href: "/services" },
         { label: "Contact", href: "/contact" },
     ];
+    const navItems = $derived(
+        manyItems
+            ? [
+                  ...fourItems,
+                  { label: "Pricing", href: "/pricing" },
+                  { label: "Customers", href: "/customers" },
+                  { label: "Changelog", href: "/changelog" },
+                  { label: "Support", href: "/support" },
+              ]
+            : fourItems,
+    );
 
     function handleNavClick(event: Event) {
         console.log("Navigation clicked", event);
@@ -35,6 +51,7 @@
     {showThemeToggle}
     items={navItems}
     currentPath="/"
+    {collapseAt}
     navVariant="header"
     onclick={handleNavClick}
 >
