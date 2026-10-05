@@ -13,16 +13,21 @@
 
     let { children }: Props = $props();
 
-    // No "Home" item: the brand link already goes there, and with Storybook
-    // added the bar was 44px wider than a 768px screen. The theming guide is
-    // not here for the same reason: a fifth item is 50px too wide at 768px.
-    // It is linked from Docs, the home page and the footer.
+    // No "Home" item: the brand link already goes there. Five items, the
+    // brand menu and the theme toggle need about 820px, so the bar folds into
+    // the phone menu below `lg` (see `collapseAt` on the TopNavbar below).
     const navItems: TopNavbarNavItem[] = [
         { label: "Components", href: "/components" },
         { label: "Docs", href: "/docs" },
+        { label: "Theming", href: "/theming" },
         { label: "Storybook", href: STORYBOOK_URL, external: true },
         { label: "GitHub", href: GITHUB_URL },
     ];
+
+    /** QA pages that render whole app screens; see the note on safe areas below. */
+    const isLab = $derived(
+        $page.url.pathname.startsWith("/chaos-lab") || $page.url.pathname.startsWith("/phone-lab"),
+    );
 
     /** The page background of each theme: `--color-surface-base`. */
     const THEME_COLOR = { light: "#ececee", dark: "#18181b" };
@@ -60,9 +65,10 @@
         brand="Zabi Components"
         brandHref="/"
         ariaLabel="Main navigation"
-        className="bg-surface-raised supports-[backdrop-filter]:bg-surface-raised/90 backdrop-blur"
+        className="bg-surface-raised supports-[backdrop-filter]:bg-surface-raised/90 backdrop-blur pt-[env(safe-area-inset-top,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]"
         items={navItems}
         navVariant="header"
+        collapseAt="lg"
         currentPath={$page.url.pathname}
     >
         {#snippet actions()}
@@ -71,4 +77,53 @@
     </TopNavbar>
 {/if}
 
-{@render children()}
+{#if isLab}
+    {@render children()}
+{:else}
+    <div class="site-content">
+        {@render children()}
+    </div>
+{/if}
+
+<style>
+    /*
+     * Safe areas. src/app.html asks for the whole screen (viewport-fit=cover),
+     * so on a phone with a notch or a home indicator the page reaches under
+     * them and has to keep its own content clear.
+     *
+     * - The header's bar runs edge to edge; its content is padded by the top,
+     *   left and right insets (classes on the TopNavbar above).
+     * - Page content is padded left and right here. The strips beside it show
+     *   the document background, which is the page surface.
+     * - The footer and the component catalog's scroll area add the bottom
+     *   inset themselves.
+     *
+     * The labs are left alone: they render app screens that keep clear on
+     * their own (AppShell, Page), which is what they test.
+     */
+    :global(html) {
+        background-color: var(--color-surface-base);
+    }
+
+    /*
+     * The site's heading face, set the way an app sets it: through the token.
+     * Marketing headings (`.display`) and every component heading read it, so
+     * a brand that sets --font-family-heading restyles all of them. The inline
+     * values a generated brand puts on <html> win over this rule.
+     */
+    :global(:root) {
+        --font-family-heading:
+            "Familjen Grotesk", "Familjen Grotesk Fallback", "Nunito Sans", ui-sans-serif,
+            system-ui, sans-serif;
+    }
+
+    /* The header's height, for layouts that fill the rest of the screen. */
+    :global(:root) {
+        --site-header-height: calc(4rem + 1px + env(safe-area-inset-top, 0px));
+    }
+
+    .site-content {
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
+    }
+</style>

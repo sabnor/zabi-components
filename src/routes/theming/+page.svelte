@@ -458,7 +458,7 @@ writeFileSync("src/lib/brand.generated.css", css);`;
                     <p class="mt-4 max-w-3xl text-lg leading-8 text-description">
                         <code class={inlineCode}>zabi-theme</code> builds the brand ramp, an
                         optional accent ramp and optional tinted neutrals, picks the text color
-                        for the fills, and checks 116 color pairs against WCAG AA in light and
+                        for the fills, and checks every color pair the library guards against WCAG AA in light and
                         dark.
                     </p>
                     <h3 class="display mt-10 text-xl font-bold text-headline">Fail the build on low contrast</h3>
@@ -549,9 +549,9 @@ writeFileSync("src/lib/brand.generated.css", css);`;
 
 <style>
     .guide :global(.display) {
-        font-family:
-            "Familjen Grotesk", "Familjen Grotesk Fallback", "Nunito Sans", ui-sans-serif,
-            system-ui, sans-serif;
+        /* The site sets this token to its display face in +layout.svelte; a
+           brand that sets it (Amber does) changes these headings too. */
+        font-family: var(--font-family-heading);
         letter-spacing: -0.02em;
         text-wrap: balance;
     }

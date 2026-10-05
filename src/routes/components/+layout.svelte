@@ -123,19 +123,19 @@
 
 <div class="bg-background">
     <main
-        class="flex h-[calc(100dvh-4rem-1px)] min-h-0 w-full max-w-screen"
+        class="flex h-[calc(100dvh-var(--site-header-height))] min-h-0 w-full max-w-screen"
     >
         {#if sidebarOpen}
             <button
                 type="button"
-                class="fixed inset-x-0 bottom-0 top-16 z-20 bg-black/30 md:hidden"
+                class="fixed inset-x-0 bottom-0 top-[var(--site-header-height)] z-20 bg-black/30 md:hidden"
                 onclick={() => (sidebarOpen = false)}
                 aria-label="Close the component sidebar"
             ></button>
         {/if}
 
         <div
-            class="fixed left-0 top-16 z-30 flex h-[calc(100dvh-4rem)] min-h-0 w-[min(100vw-1rem,266px)] max-w-[266px] flex-col transform bg-background transition-transform duration-200 md:static md:z-10 md:h-full md:w-auto md:max-w-none md:min-h-0 md:shrink-0 md:translate-x-0 {sidebarOpen
+            class="fixed left-0 top-[var(--site-header-height)] z-30 flex h-[calc(100dvh-var(--site-header-height))] min-h-0 w-[min(100vw-1rem,266px)] max-w-[266px] flex-col transform bg-background pb-[env(safe-area-inset-bottom,0px)] transition-transform duration-200 md:static md:z-10 md:h-full md:w-auto md:max-w-none md:min-h-0 md:shrink-0 md:translate-x-0 {sidebarOpen
                 ? 'translate-x-0'
                 : '-translate-x-full'}"
         >
@@ -163,7 +163,7 @@
             content is not clipped by this scroller, and it stretches the
             document itself: blank space to scroll through under the page. -->
             <div
-                class="relative min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8"
+                class="relative min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8 pb-[calc(2rem+env(safe-area-inset-bottom,0px))]"
             >
                 <div class="mb-6 flex items-center gap-3 md:hidden">
                     <button

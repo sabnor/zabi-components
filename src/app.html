@@ -6,7 +6,12 @@
     <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- viewport-fit=cover gives env(safe-area-inset-*) a size on a phone with a
+    notch or a home indicator. The phone components (AppShell, BottomTabBar,
+    Page and the rest) read those insets; without this they are all zero. The
+    site keeps its own header, content and footer clear in
+    src/routes/+layout.svelte. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
     <script>
         (function () {

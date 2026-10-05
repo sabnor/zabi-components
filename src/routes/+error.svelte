@@ -11,7 +11,7 @@
 </svelte:head>
 
 <!-- The top bar is 4rem plus a 1px border; without the pixel the page scrolls by one. -->
-<div class="error-page flex min-h-[calc(100dvh-4rem-1px)] flex-col bg-background text-body">
+<div class="error-page flex min-h-[calc(100dvh-var(--site-header-height))] flex-col bg-background text-body">
     <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <p class="text-sm font-semibold text-description">Error {$page.status}</p>
         <h1 class="mt-3 max-w-3xl text-4xl font-bold leading-tight text-headline sm:text-5xl">

@@ -307,9 +307,9 @@
 
 <style>
     .landing :global(.display) {
-        font-family:
-            "Familjen Grotesk", "Familjen Grotesk Fallback", "Nunito Sans", ui-sans-serif,
-            system-ui, sans-serif;
+        /* The site sets this token to its display face in +layout.svelte; a
+           brand that sets it (Amber does) changes these headings too. */
+        font-family: var(--font-family-heading);
         letter-spacing: -0.02em;
         text-wrap: balance;
     }

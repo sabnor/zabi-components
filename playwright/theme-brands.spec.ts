@@ -46,6 +46,8 @@ interface Reading {
     page: string;
     /** Font family of the first component heading. */
     headingFont: string;
+    /** Font family of the first marketing heading (`.display`), where the page has one. */
+    displayFont: string | null;
 }
 
 type Rgb = [number, number, number];
@@ -156,11 +158,12 @@ function readFocused(page: Page): Promise<Reading> {
         // 4px spread. It is no longer the last one: the list also carries the
         // element's own shadow utilities, empty or not.
         const ring = style.boxShadow.match(/((?:rgba?|color)\([^)]+\)) 0px 0px 0px 4px/)?.[1];
-        // Marketing headings set their own display face; a component heading
-        // takes --font-family-heading.
-        const heading = [...document.querySelectorAll("main h1, main h2, main h3")]
-            .filter(visible)
-            .find((el) => !el.classList.contains("display"));
+        // Both kinds of heading take --font-family-heading: a component
+        // heading through the base layer, a marketing heading (`.display`)
+        // through the site's own rule.
+        const headings = [...document.querySelectorAll("main h1, main h2, main h3")].filter(visible);
+        const heading = headings.find((el) => !el.classList.contains("display"));
+        const display = headings.find((el) => el.classList.contains("display"));
         if (!heading) throw new Error("no component heading on the page");
         if (!ring) throw new Error(`no focus ring on the primary button: ${style.boxShadow}`);
         return {
@@ -170,6 +173,7 @@ function readFocused(page: Page): Promise<Reading> {
             card: rgb(getComputedStyle(first("main .bg-card, main .bg-surface-raised")).backgroundColor),
             page: rgb(getComputedStyle(first(".bg-background, .bg-surface-base")).backgroundColor),
             headingFont: getComputedStyle(heading).fontFamily,
+            displayFont: display ? getComputedStyle(display).fontFamily : null,
         };
     });
 }
@@ -211,6 +215,15 @@ for (const viewport of WIDTHS) {
                     expect(distance(base.page, amber.page), `${where}: page surface`).toBeGreaterThan(1);
                     expect(amber.headingFont, `${where}: heading font`).not.toBe(base.headingFont);
                     expect(amber.headingFont).toContain("Georgia");
+                    // The site's own display face is its value for the same
+                    // token, so the marketing headings follow the brand too.
+                    expect(base.headingFont, `${where}: default heading font`).toContain("Familjen Grotesk");
+                    if (path === "/theming") {
+                        expect(base.displayFont, `${where}: default marketing heading`).toContain("Familjen Grotesk");
+                        expect(amber.displayFont, `${where}: marketing heading`).toContain("Georgia");
+                    } else {
+                        expect(base.displayFont).toBeNull();
+                    }
                 }
 
                 // Two roles are the same in light whatever the brand: a raised

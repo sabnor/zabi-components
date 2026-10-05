@@ -1,13 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * The brand menu in the site's top bar must open inside the viewport.
+ * The brand menu in the site's header must open inside the viewport.
  *
- * The control sits at the right edge of the bar from 768px up. With the
- * Dropdown's default placement its menu opened to the right and ran past the
- * viewport, 626 to 818px on a 768px screen, so the whole document gained a
- * horizontal scrollbar while the menu was open. Below 768px the same control
- * is rendered at the left edge of the mobile menu, where the opposite
+ * From 1024px up (`collapseAt="lg"` on the site's TopNavbar) the control sits
+ * at the right edge of the bar. With the Dropdown's default placement its menu
+ * opened to the right and ran past the viewport, so the whole document gained
+ * a horizontal scrollbar while the menu was open. Below 1024px the same
+ * control is rendered at the left edge of the phone menu, where the opposite
  * placement would be cut off instead.
  */
 
@@ -21,6 +21,16 @@ async function openMenu(page: Page): Promise<void> {
     await expect(async () => {
         if ((await menu(page).count()) === 0) await trigger(page).click();
         await expect(menu(page)).toBeVisible({ timeout: 1_000 });
+    }).toPass({ timeout: 30_000 });
+}
+
+/** Below the header's breakpoint the control is inside the phone menu. */
+async function revealTrigger(page: Page): Promise<void> {
+    await expect(async () => {
+        if ((await trigger(page).count()) === 0) {
+            await page.getByRole("button", { name: "Open menu" }).click();
+        }
+        await expect(trigger(page)).toBeVisible({ timeout: 1_000 });
     }).toPass({ timeout: 30_000 });
 }
 
@@ -39,27 +49,14 @@ async function expectMenuInsideViewport(page: Page, width: number): Promise<void
     ).toBeLessThanOrEqual(width);
 }
 
-for (const width of [768, 1024]) {
-    test(`the brand menu does not widen the document at ${width}px`, async ({ page }) => {
+for (const width of [375, 768, 1023, 1024, 1280]) {
+    test(`the brand menu stays inside the viewport at ${width}px`, async ({ page }) => {
         await page.setViewportSize({ width, height: 800 });
         await page.goto("/docs", { waitUntil: "domcontentloaded" });
         expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
 
+        await revealTrigger(page);
         await openMenu(page);
         await expectMenuInsideViewport(page, width);
     });
 }
-
-test("the brand menu stays inside a 375px screen", async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 800 });
-    await page.goto("/docs", { waitUntil: "domcontentloaded" });
-    await expect(async () => {
-        if ((await trigger(page).count()) === 0) {
-            await page.getByRole("button", { name: "Open menu" }).click();
-        }
-        await expect(trigger(page)).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
-
-    await openMenu(page);
-    await expectMenuInsideViewport(page, 375);
-});
