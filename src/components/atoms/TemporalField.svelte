@@ -134,8 +134,8 @@
         padding: 0;
     }
 
-    /* The browser's calendar or clock button. It follows `color-scheme`, so
-       it has to be told when the page is dark, or it stays dark on dark. */
+    /* The browser's calendar or clock button. It follows `color-scheme`,
+       which the theme's dark block sets (see app.css); nothing here has to. */
     :global(.zabi-temporal-field::-webkit-calendar-picker-indicator) {
         cursor: pointer;
     }
@@ -144,14 +144,4 @@
         cursor: default;
     }
 
-    /* The three ways the theme is switched to dark (see app.css). */
-    :global(.dark .zabi-temporal-field),
-    :global([data-theme="dark"] .zabi-temporal-field) {
-        color-scheme: dark;
-    }
-    @media (prefers-color-scheme: dark) {
-        :global([data-theme="auto"] .zabi-temporal-field) {
-            color-scheme: dark;
-        }
-    }
 </style>

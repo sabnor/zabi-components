@@ -37,6 +37,22 @@ describe("ThemeToggle on the server", () => {
         expect(moon).toContain("[.dark_&]:block");
     });
 
+    /**
+     * A page switched with `data-theme` has no `dark` class, so with only the
+     * class variant it showed the Sun on a dark page until the button mounted.
+     * The same three selectors the dark tokens are published under choose now.
+     * playwright/theme-toggle.spec.ts checks, without script, that they work.
+     */
+    it("lets data-theme choose as well: dark, and auto on a dark system", () => {
+        const { body } = renderOnServer(ThemeToggle, { props: {} });
+        const sun = iconClass(body, "lucide-sun").split(/\s+/);
+        const moon = iconClass(body, "lucide-moon").split(/\s+/);
+        for (const variant of ["[[data-theme=dark]_&]", "[@media(prefers-color-scheme:dark)]:[[data-theme=auto]_&]"]) {
+            expect(sun).toContain(`${variant}:hidden`);
+            expect(moon).toContain(`${variant}:block`);
+        }
+    });
+
     it("keeps one button with a name before it mounts", () => {
         const { body } = renderOnServer(ThemeToggle, { props: { size: "sm" } });
         expect(body.match(/<button/g)?.length).toBe(1);

@@ -208,8 +208,17 @@ function validateDarkSelectors(filePath, fileName) {
       errors.push(`${selector} must set color-scheme: ${scheme} (found ${colorSchemes.get(selector) ?? 'nothing'})`);
     }
   }
-  if (colorSchemes.has(DARK_CLASS)) {
-    errors.push(`${DARK_CLASS} must not set color-scheme; it never has, and apps set their own`);
+  // The class must say it too. It did not before 8.1, and a page switched
+  // with `.dark` kept light date pickers and scrollbars on dark surfaces.
+  for (const [name, rule] of [[`${DARK_CLASS}, ${DARK_ATTRIBUTE}`, darkRule], [`${AUTO_ATTRIBUTE} (in the dark media query)`, autoRule]]) {
+    if (!rule) continue;
+    const schemes = [];
+    rule.each((node) => {
+      if (node.type === 'decl' && node.prop === 'color-scheme') schemes.push(node.value.trim());
+    });
+    if (schemes.length !== 1 || schemes[0] !== 'dark') {
+      errors.push(`${name} must set color-scheme: dark once, with its tokens (found ${schemes.join(', ') || 'nothing'})`);
+    }
   }
 
   if (errors.length > 0) {

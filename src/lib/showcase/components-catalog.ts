@@ -1816,7 +1816,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "ThemeToggle",
                 category: "atoms",
                 description:
-                    "Sun and moon control that syncs the dark class on the document element with storage.",
+                    "Sun and moon control that switches light and dark and stores the choice. It writes data-theme where the page uses it, the dark class otherwise.",
                 props: [
                     {
                         name: "size",

@@ -379,7 +379,13 @@
   --color-body: var(--color-base-800);
   --color-description: var(--color-base-600);
   --color-caption: var(--color-base-550); /* ≥ 4.5:1 on every surface level (base-500 was 4.40 on surface-base) */
-  --color-input-placeholder: var(--color-base-500);
+  /* Placeholder text, and the format hint of an empty DateField or TimeField.
+   * It is text someone has to read, so it is held to 4.5:1 on every fill a
+   * field can show: resting, hover, focus and pressed. base-500 was 4.83:1 on
+   * the white field but 4.40:1 on the hover fill and 3.81:1 on the pressed
+   * one; base-550 is 6.13, 5.58 and 4.83. The value text (--color-body) stays
+   * 2.4:1 stronger, so an empty field still reads as empty. */
+  --color-input-placeholder: var(--color-base-550);
   --color-label: var(--color-base-700);
   /* brand-600 clears 4.5:1 on a card but only 4.42:1 on the page surface, so
    * links sit one step darker. */
@@ -936,7 +942,12 @@ body {
   --color-input-active: var(--color-base-250);
   --color-input-focus: var(--color-base-150);
   --color-input-disabled: var(--color-base-100);
-  --color-input-placeholder: var(--color-base-500);
+  /* base-500 is the mirror's fixed point, the same grey as it was in light,
+   * and a dark field is a far lighter ground for it than a white one is dark:
+   * 3.40:1 at rest, 3.08:1 on hover, 2.60:1 pressed. base-600 mirrors to
+   * --zabi-base-400 (#a1a1aa): 6.41, 5.81 and 4.90. base-550 would be 4.74
+   * at rest but under 4.5 on hover. The value text is 2.0:1 stronger. */
+  --color-input-placeholder: var(--color-base-600);
 
   /* Text Colors - No dark mode overrides needed, base colors are already inverted */
 
@@ -1042,6 +1053,15 @@ body {
   --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
+
+  /* Not a token: tells the browser the page is dark, so what it draws itself
+   * (date and time pickers, scrollbars, autofill, the caret of a native
+   * select) is dark too. It is the last declaration on purpose:
+   * scripts/sync-theme-tokens.js rewrites the ramp aliases at the top of this
+   * rule. The build publishes this rule under [data-theme="dark"] and, inside
+   * the dark media query, [data-theme="auto"], and every one of them carries
+   * it. Until 8.1 only the attributes set it and the class did not. */
+  color-scheme: dark;
 }
 
 /* ========================================
@@ -1987,6 +2007,14 @@ body {
 /* Background */
 .active\:bg-action-primary-subtle-hover:active {
   background-color: var(--color-action-primary-subtle-hover);
+}
+
+/* A pressed (toggled-on) danger-tone IconButton holds `.bg-action-danger-subtle`,
+   in one string, and takes this from another, joined by `cn()`. The guard read
+   one string at a time and did not see the pair: held down, the button kept
+   its resting fill. */
+.active\:bg-action-danger-subtle-hover:active {
+  background-color: var(--color-action-danger-subtle-hover);
 }
 
 .disabled\:bg-action-disabled:disabled {

@@ -265,14 +265,18 @@ The mode is chosen on the `<html>` element, by an attribute or a class:
   not supported. It re-themes the roles the dark file restates (the card
   surface, the label on a primary button) and leaves the rest (text, borders,
   the primary fill) light, so the subtree comes out half dark.
-- The three `data-theme` values also set `color-scheme`, so native controls and
-  scrollbars match. `.dark` does not; set `color-scheme` yourself if you use
-  the class.
+- `color-scheme` comes with the theme, so what the browser draws itself (date
+  and time pickers, scrollbars, autofill) matches: dark under `.dark`,
+  `data-theme="dark"` and `data-theme="auto"` on a dark system, light under
+  `data-theme="light"`. Before 8.1 the class did not set it. A page with no
+  class and no attribute gets no `color-scheme` from the theme.
 - The dark file must be imported together with a light one. It only remaps
   roles onto ramps the light theme declares.
-- `ThemeToggle` toggles the `dark` class and reads only that class. Tailwind's
-  own `dark:` variant follows the system unless you redefine it. Neither reads
-  `data-theme`.
+- `ThemeToggle` reads the mode from the class or from `data-theme` (`auto`
+  included) and writes to whichever the page uses: `data-theme` when `<html>`
+  has the attribute, the `dark` class otherwise. Pressed on `auto`, it sets
+  `light` or `dark`. Tailwind's own `dark:` variant follows the system unless
+  you redefine it, and does not read `data-theme`.
 
 ```js
 document.documentElement.dataset.theme = "dark"; // "light" | "auto"
@@ -834,14 +838,17 @@ Before a release, `npm run build:css` regenerates the `dist/` files and
 in every file that carries dark tokens, as:
 
 ```css
-.dark, [data-theme="dark"] { … }
-@media (prefers-color-scheme: dark) { [data-theme="auto"] { … } }
 [data-theme="light"] { color-scheme: light; }
 [data-theme="dark"]  { color-scheme: dark; }
 [data-theme="auto"]  { color-scheme: light dark; }
+.dark, [data-theme="dark"] { …; color-scheme: dark; }
+@media (prefers-color-scheme: dark) { [data-theme="auto"] { …; color-scheme: dark; } }
 ```
 
-- `.dark` behaves exactly as before, and still sets no `color-scheme`.
+- `color-scheme: dark` is the last declaration of the source `.dark` rule, so
+  every dark selector carries it. The three attribute rules come first: with
+  `class="dark" data-theme="light"` the class brings the dark tokens, and so
+  the dark scheme with them.
 - All selectors have the specificity of `.dark`.
 - Keep it as one `.dark` rule in the source and do not write the others by
   hand; `scripts/dark-selectors.js` generates them.

@@ -16,6 +16,8 @@ export const AA_NORMAL = 4.5;
 export const AA_LARGE = 3.0;
 /** A pressed fill against the fill it replaces: where the other pressed states start. */
 export const MIN_PRESSED = 1.25;
+/** Value text against placeholder text: enough to tell a filled field from an empty one. */
+export const MIN_VALUE_OVER_PLACEHOLDER = 1.75;
 
 const FAMILIES = ['success', 'warning', 'error', 'info', 'energetic', 'neutral'];
 
@@ -109,7 +111,16 @@ export function buildPairs() {
         { name: 'input value on a pressed field', bg: '--color-input-active', fg: '--color-body', min: AA_NORMAL },
         { name: 'pressed field against the resting field', bg: '--color-input', fg: '--color-input-active', min: MIN_PRESSED },
         // Placeholders are decorative-ish, but must stay readable — large-text bar.
-        { name: 'input placeholder', bg: '--color-input', fg: '--color-input-placeholder', min: AA_LARGE },
+        // Placeholder text is read: an example, or the format hint of an empty
+        // DateField ("dd/mm/yyyy"). It was held to 3:1 on the resting field only,
+        // and dark sat at 3.40:1 there and 2.60:1 on the pressed fill. It is
+        // held to 4.5:1 on every fill a field can show.
+        { name: 'input placeholder', bg: '--color-input', fg: '--color-input-placeholder', min: AA_NORMAL },
+        { name: 'input placeholder on a hovered field', bg: '--color-input-hover', fg: '--color-input-placeholder', min: AA_NORMAL },
+        { name: 'input placeholder on a focused field', bg: '--color-input-focus', fg: '--color-input-placeholder', min: AA_NORMAL },
+        { name: 'input placeholder on a pressed field', bg: '--color-input-active', fg: '--color-input-placeholder', min: AA_NORMAL },
+        // And it must not become the value: an empty field has to look empty.
+        { name: 'input value against its placeholder', bg: '--color-input-placeholder', fg: '--color-body', min: MIN_VALUE_OVER_PLACEHOLDER },
         { name: 'tooltip', bg: '--color-tooltip-bg', fg: '--color-tooltip-fg', min: AA_NORMAL },
         // Disabled controls are exempt from WCAG, but should still be legible.
         { name: 'disabled control', bg: '--color-action-disabled', fg: '--color-action-disabled-text', min: 3.0 },

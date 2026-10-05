@@ -243,7 +243,7 @@ for (const field of fields) {
                 document.documentElement.style.colorScheme = "";
             });
             expect(await scheme()).not.toBe("dark");
-            // Only the class the theme uses: nothing sets `color-scheme` on the page.
+            // Only the class: the theme's dark block sets `color-scheme` itself.
             await page.evaluate(() => document.documentElement.classList.add("dark"));
             expect(await scheme()).toBe("dark");
             await page.evaluate(() => {

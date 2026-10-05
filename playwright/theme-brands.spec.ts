@@ -291,4 +291,47 @@ test.describe("data-theme on the dev site", () => {
         await page.emulateMedia({ colorScheme: "light" });
         expect(await withRoot(page, { dataTheme: "auto" })).toEqual(bare);
     });
+
+    /**
+     * `color-scheme` is what turns the browser's own parts dark: a date
+     * picker, a scrollbar, autofill. The dark class did not set it, so a page
+     * switched with `.dark` kept light ones on dark surfaces. It now comes
+     * with the dark tokens, under every selector they are published under.
+     */
+    test("color-scheme goes wherever the dark tokens go", async ({ page }) => {
+        const scheme = async (root: { darkClass?: boolean; dataTheme?: string }) => {
+            await withRoot(page, root);
+            return page.evaluate(() => {
+                // The dev site's own inline style, set before first paint (src/app.html).
+                document.documentElement.style.colorScheme = "";
+                const html = getComputedStyle(document.documentElement).colorScheme;
+                // What a native control resolves: `light dark` means "follow the system".
+                const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                const used = html === "light dark" ? (dark ? "dark" : "light") : html;
+                const page = getComputedStyle(document.documentElement).getPropertyValue("--color-surface-base").trim();
+                return { used, page };
+            });
+        };
+
+        await page.emulateMedia({ colorScheme: "light" });
+        const light = await scheme({ dataTheme: "light" });
+        const dark = await scheme({ darkClass: true });
+        expect(light.used).toBe("light");
+        expect(dark.used).toBe("dark");
+        expect((await scheme({ dataTheme: "dark" })).used).toBe("dark");
+        expect((await scheme({ dataTheme: "auto" })).used).toBe("light");
+        // Both at once: the class brings the dark tokens, so it brings the dark scheme.
+        for (const dataTheme of ["light", "auto"]) {
+            const both = await scheme({ darkClass: true, dataTheme });
+            expect(both.page, dataTheme).toBe(dark.page);
+            expect(both.used, dataTheme).toBe("dark");
+        }
+
+        await page.emulateMedia({ colorScheme: "dark" });
+        expect((await scheme({ dataTheme: "auto" })).used).toBe("dark");
+        // Asking for light holds on a dark system.
+        const forced = await scheme({ dataTheme: "light" });
+        expect(forced.used).toBe("light");
+        expect(forced.page).toBe(light.page);
+    });
 });

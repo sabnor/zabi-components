@@ -25,8 +25,27 @@ Whenever token or CSS import API surface changes, include:
 - **Dropdown menus and Select lists use the overlay radius** (16px, was 8px).
   Select's search field and options sit 4px closer to the edge of the list to
   stay concentric with it.
+- With both `class="dark"` and `data-theme="light"` on `<html>`, the colour
+  scheme is now dark, matching the tokens.
 
 ### Fixed
+
+- **Placeholder contrast.** Placeholder text, and the format hint of an empty
+  DateField or TimeField, was 3.40:1 on a dark field and 4.40:1 on a hovered
+  light one. `--color-input-placeholder` moves one step in each theme (light
+  #61616a, dark #a1a1aa) and is 4.5:1 or more on the resting, hovered, focused
+  and pressed field.
+- **Native controls follow the dark theme.** The dark theme now sets
+  `color-scheme: dark` itself, under `.dark` as well as `data-theme`. On a page
+  switched with the `dark` class, scrollbars, date and time pickers, other
+  native form controls and autofill turn dark. A page that sets `color-scheme`
+  on `<html>` itself keeps its value.
+- **ThemeToggle works with `data-theme`.** It reads `dark`, `light` and `auto`,
+  writes the attribute where the page uses it and the `dark` class otherwise,
+  follows changes made elsewhere, and shows the right icon before it mounts. A
+  page that uses only the class behaves as before.
+- A toggled-on danger-tone IconButton shows its pressed fill while held.
+- `npm run build:css` works in a fresh checkout with no `dist/`.
 
 ## [8.1.0-beta.0] - 2026-10-05
 

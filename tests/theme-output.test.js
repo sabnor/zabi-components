@@ -214,6 +214,35 @@ test('dark is published under .dark, [data-theme="dark"] and an opt-in [data-the
     });
 
     assert.deepEqual(effectiveDeclarations(auto), effectiveDeclarations(dark), `${file}: the two dark blocks differ`);
+
+    // color-scheme travels with the tokens: the class did not set it before
+    // 8.1, and a `.dark` page kept light date pickers and scrollbars.
+    const schemeOf = (rule) => {
+      const found = [];
+      rule.walkDecls('color-scheme', (decl) => found.push(decl.value.trim()));
+      return found;
+    };
+    assert.deepEqual(schemeOf(dark), ['dark'], `${file}: .dark, [data-theme="dark"] sets color-scheme: dark`);
+    assert.deepEqual(schemeOf(auto), ['dark'], `${file}: [data-theme="auto"] sets it in the dark media query`);
+
+    // The attribute-only rules say what the tokens cannot, and come first, so
+    // that on `class="dark" data-theme="light"` the rule with the tokens wins.
+    const order = [];
+    root.walkRules((rule) => {
+      if (rule.some((node) => node.type === 'decl' && node.prop === 'color-scheme')) {
+        order.push(`${rule.selectors.map((s) => s.trim()).join(', ')} = ${schemeOf(rule).join('/')}`);
+      }
+    });
+    assert.deepEqual(
+      order.slice(0, 4),
+      [
+        '[data-theme="light"] = light',
+        '[data-theme="dark"] = dark',
+        '[data-theme="auto"] = light dark',
+        '.dark, [data-theme="dark"] = dark',
+      ],
+      file,
+    );
   }
 });
 

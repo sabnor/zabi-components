@@ -13,9 +13,16 @@
  * `[data-theme="light"]`, or no attribute and no class, matches none of them
  * and stays light — following the OS is opt-in through `data-theme="auto"`.
  *
- * `color-scheme` is set for the three attribute values so native controls and
- * scrollbars agree with the tokens without any script. `.dark` is left exactly
- * as it was: it sets no `color-scheme`, as before.
+ * `color-scheme` goes with the tokens, so what the browser draws itself (date
+ * and time pickers, scrollbars, autofill) agrees with them without any script.
+ * The source `.dark` rule declares `color-scheme: dark` among its tokens, so
+ * all three dark selectors carry it. The class did not set it before 8.1; a
+ * dark page then showed light native controls unless the app set it itself.
+ * The three attribute rules add what the tokens cannot say: light when light
+ * is asked for, and `light dark` for auto while the system is light. They are
+ * written BEFORE the token rules, which have the same specificity: where a
+ * page carries both (`class="dark" data-theme="light"`), the rule that brings
+ * the dark tokens also brings the dark scheme, so the two cannot disagree.
  *
  * All of them have the specificity of `.dark` (0,1,0), so anything that
  * overrode `.dark` before overrides these the same way.
@@ -44,21 +51,21 @@ function indent(text, spaces) {
 /** The dark files: `body` is the declarations of the source `.dark` rule. */
 export function darkThemeCss(body) {
     return [
-        `${DARK_CLASS},\n${DARK_ATTRIBUTE} {\n${body}\n}`,
-        `/* The same declarations again, for data-theme="auto" when the system is dark. */\n` +
-            `@media ${AUTO_MEDIA} {\n  ${AUTO_ATTRIBUTE} {\n${indent(body, 2)}\n  }\n}`,
         COLOR_SCHEMES.map(
             ([selector, scheme]) => `${selector} {\n  color-scheme: ${scheme};\n}`,
         ).join('\n\n'),
+        `${DARK_CLASS},\n${DARK_ATTRIBUTE} {\n${body}\n}`,
+        `/* The same declarations again, for data-theme="auto" when the system is dark. */\n` +
+            `@media ${AUTO_MEDIA} {\n  ${AUTO_ATTRIBUTE} {\n${indent(body, 2)}\n  }\n}`,
     ].join('\n\n');
 }
 
 /** The standalone colours file: one line per rule, `declarations` already minified. */
 export function darkThemeCssMinified(declarations) {
     return [
+        COLOR_SCHEMES.map(([selector, scheme]) => `${selector}{color-scheme:${scheme}}`).join(''),
         `${DARK_CLASS},${DARK_ATTRIBUTE}{${declarations}}`,
         `@media ${AUTO_MEDIA}{${AUTO_ATTRIBUTE}{${declarations}}}`,
-        COLOR_SCHEMES.map(([selector, scheme]) => `${selector}{color-scheme:${scheme}}`).join(''),
     ].join('\n');
 }
 
@@ -87,7 +94,9 @@ export function expandDarkRule(root, postcss) {
         const schemes = COLOR_SCHEMES.map(([selector, scheme]) =>
             postcss.rule({ selector }).append(postcss.decl({ prop: 'color-scheme', value: scheme })),
         );
-        rule.after([media, ...schemes]);
+        // Before the token rule: see the note on order at the top of this file.
+        rule.before(schemes);
+        rule.after(media);
     }
     return targets.length;
 }

@@ -128,6 +128,9 @@ function minifyDeclarationsFromContainer(container) {
 async function buildCSS() {
   let css = fs.readFileSync(inputFile, 'utf8');
 
+  // A fresh checkout has no dist/ yet, and this is the first step that writes there.
+  fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+
   // Extract @theme and .dark block(s) for generated bundles using AST parsing.
   const { themeBlocks, darkModeContent } = extractThemeAndDarkBlocks(css, inputFile);
   
