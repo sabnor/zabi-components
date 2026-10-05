@@ -3,6 +3,7 @@ import { svelteTesting } from '@testing-library/svelte/vite';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { defineConfig } from 'vitest/config';
+import { brandThemes } from './vite-plugin-brand-themes.js';
 
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 const testingLibraryVitestSetup = join(
@@ -11,7 +12,7 @@ const testingLibraryVitestSetup = join(
 );
 
 export default defineConfig({
-    plugins: [sveltekit(), svelteTesting()],
+    plugins: [sveltekit(), svelteTesting(), brandThemes()],
     test: {
         environment: 'jsdom',
         globals: false,

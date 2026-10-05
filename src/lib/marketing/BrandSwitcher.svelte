@@ -7,6 +7,7 @@
         watchDarkMode,
         type Accent,
     } from "./brand-accents";
+    import { brand, isAccent } from "./brand-state.svelte";
 
     /**
      * Site-wide accent switcher for the marketing header.
@@ -17,18 +18,25 @@
      * rather than inside a single specimen. Both read the same map from
      * `brand-accents.ts`.
      *
-     * Not persisted: it survives client-side navigation because the layout
-     * keeps this component mounted, and a reload returns to Iris, which is what
-     * a first-time visitor sees.
+     * Not persisted: the choice lives in `brand-state.svelte.ts`, so it
+     * survives client-side navigation and is shared with the mobile-menu copy
+     * of this component and the theming page. A reload returns to Iris, which
+     * is what a first-time visitor sees, unless the address says otherwise:
+     * `?brand=amber` opens any page in that brand.
      */
 
-    let accent = $state<Accent>("iris");
     let isDark = $state(false);
     let isOpen = $state(false);
 
+    const accent = $derived(brand.accent);
     const current = $derived(
         ACCENTS.find((item) => item.id === accent) ?? ACCENTS[0],
     );
+
+    $effect(() => {
+        const requested = new URLSearchParams(window.location.search).get("brand");
+        if (isAccent(requested)) brand.accent = requested;
+    });
 
     $effect(() => watchDarkMode((dark) => (isDark = dark)));
 
@@ -37,7 +45,7 @@
     });
 
     function selectAccent(value: Accent) {
-        accent = value;
+        brand.accent = value;
         isOpen = false;
     }
 </script>

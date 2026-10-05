@@ -5,7 +5,7 @@
     import Progress from "../../components/atoms/Progress.svelte";
 
     import {
-        ACCENTS as accents,
+        SCOPABLE_ACCENTS as accents,
         SNIPPET_TOKENS as snippetTokens,
         styleFor,
         tokensFor,
@@ -72,7 +72,7 @@
         <Input label="Project name" placeholder="Northwind" class="min-w-0" />
         <div class="flex flex-wrap items-center gap-6">
             <Checkbox label="Notify the team" bind:checked />
-            <a class="relative rounded-sm text-sm font-semibold text-link underline underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-3 focus-ring" href="/docs#theming">
+            <a class="relative rounded-sm text-sm font-semibold text-link underline underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-3 focus-ring" href="/theming">
                 Theming guide
             </a>
         </div>

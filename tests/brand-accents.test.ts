@@ -9,6 +9,7 @@ import {
     ACCENTS,
     IRIS,
     applyAccent,
+    generatedTheme,
     tokensFor,
 } from "../src/lib/marketing/brand-accents";
 
@@ -153,5 +154,42 @@ describe.each(ACCENTS.map((accent) => accent.id))("%s accent contrast", (id) => 
             const ratio = contrast(resolve(map, foreground), resolve(map, background));
             expect(Math.round(ratio * 100) / 100).toBeGreaterThanOrEqual(minimum);
         });
+    });
+});
+
+/**
+ * Amber is a generated brand: the site applies whatever `createTheme` returns
+ * for the inputs in brand-inputs.ts. The contrast block above already runs
+ * over it; this holds it to being a clean result of the generator.
+ */
+describe("the generated Amber brand", () => {
+    const amber = generatedTheme("amber");
+
+    it("comes from createTheme with no warnings", () => {
+        expect(amber).toBeDefined();
+        expect(amber!.warnings).toEqual([]);
+        expect(amber!.options.brand).toBe("#C17B00");
+    });
+
+    it("overrides the physical ramps, not the roles", () => {
+        const names = Object.keys(tokensFor("amber", false));
+        expect(names).toContain("--zabi-brand-600");
+        expect(names).toContain("--zabi-base-900");
+        expect(names.filter((name) => name.startsWith("--color-"))).toEqual([]);
+    });
+
+    it("is one map for light and dark", () => {
+        expect(tokensFor("amber", true)).toEqual(tokensFor("amber", false));
+    });
+
+    it("clears back to the stylesheet", () => {
+        const root = document.documentElement;
+        applyAccent(root, "amber", false);
+        expect(root.style.getPropertyValue("--zabi-brand-600")).toBe(
+            amber!.tokens["--zabi-brand-600"],
+        );
+        applyAccent(root, "iris", false);
+        expect(root.style.getPropertyValue("--zabi-brand-600")).toBe("");
+        expect(root.style.getPropertyValue("--zabi-base-900")).toBe("");
     });
 });

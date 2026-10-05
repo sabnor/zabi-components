@@ -272,6 +272,19 @@ Whenever token or CSS import API surface changes, include:
   below WCAG AA (4.5:1 for text, 3:1 for UI parts) is reported on stderr, in
   the file header and in `warnings`. `--strict` exits 1 on a failed pair.
   `--set <token>=<value>` (or `overrides`) moves a role, and is checked too.
+- **A theming guide.** `THEMING.md` is now the documented token API: a quick
+  start with `zabi-theme`, the import order, tables of the tokens an app may
+  set (the brand, accent and neutral ramps, the "on" colours, fonts and
+  weights, radius, shadow, z-index) and the roles it should read, light, dark
+  and auto, what the generator does and does not do, and what does not follow
+  an override. Renaming or removing a documented token is a breaking change;
+  the token-name snapshot in `npm run test:themes` enforces it.
+- **A theming page on the docs site** (`/theming`) with a brand switcher. Amber
+  is generated with `createTheme` from `#C17B00` and a warm neutral when the
+  site builds; `?brand=amber` opens any page in it.
+- **Two-brand tests.** `playwright/theme-brands.spec.ts` checks component pages
+  under the default brand and Amber, in light and dark, at desktop width and
+  375px, from computed styles.
 
 ### Changed
 
@@ -357,6 +370,9 @@ Whenever token or CSS import API surface changes, include:
   once for the class and attribute and once for the system setting.
 - `culori` is now a dependency, not a development dependency: the theme
   generator uses it at run time. The package gains a `bin`, `zabi-theme`.
+- The dev site and Storybook honour `data-theme` like the published files.
+- `THEME.md` no longer tells apps to import the compiled stylesheet after
+  `theme-only`, or to use `theme()` for a colour.
 
 ### Deprecated
 

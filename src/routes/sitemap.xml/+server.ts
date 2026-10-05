@@ -7,6 +7,7 @@ export const GET: RequestHandler = () => {
     const paths = [
         "/",
         "/docs",
+        "/theming",
         ...layers.flatMap((layer) =>
             layer.names.map((name) => `/components/${name}`),
         ),

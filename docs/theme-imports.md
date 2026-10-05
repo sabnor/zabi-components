@@ -35,27 +35,33 @@ Use short package exports by default. Legacy deep `dist` imports remain supporte
 @media (prefers-color-scheme: dark) { [data-theme="auto"] { … } }
 ```
 
-Put `class="dark"` or `data-theme="dark"` on `<html>` for dark, `data-theme="auto"` to follow the system, and `data-theme="light"` (or nothing) for light. Following the system is opt-in.
+Put `class="dark"` or `data-theme="dark"` on `<html>` for dark, `data-theme="auto"` to follow the system, and `data-theme="light"` (or nothing) for light. Following the system is opt-in. See [THEMING.md](../THEMING.md#light-dark-and-auto).
 
 The dark files only remap roles. The raw palettes (`--zabi-brand-*`, `--zabi-accent-*`, `--zabi-base-*` and the rest) are declared once, in the light theme, so that an app's override of them on `:root` applies in both modes. Before 8.1.0 the dark files restated those ramps; they no longer do, so a dark file must be imported together with a light one (`theme`, `theme-only`, or `colors`, which has both).
 
 ## Rebranding
 
+Generate one file from your brand colour and import it after the theme files:
+
+```bash
+npx zabi-theme --brand "#C17B00" --neutral "#78716c" --out src/lib/brand.generated.css
+```
+
 ```css
 /* src/lib/theme.css */
 @import "zabi-components/theme-only";
 @import "zabi-components/theme-dark-only";
+@import "./brand.generated.css"; /* --zabi-brand-*, --zabi-accent-*, --zabi-base-* */
 
 :root {
-  --zabi-brand-600: #d97706;  /* … the whole 50–950 scale, likewise --zabi-accent-* and --zabi-base-* */
-  --zabi-on-brand: #451a03;   /* label on the primary fill, when white does not reach 4.5:1 */
   --font-family-heading: "Your Display Font", var(--font-family-sans);
 }
 ```
 
-One declaration covers light and dark. The tokens are listed in [THEMING.md](../THEMING.md), Rebranding Through Tokens.
-
-To generate that file from a brand colour, run `npx zabi-theme --brand "#0026EA" --out src/lib/brand.generated.css`, or call `createTheme()` from `zabi-components/create-theme`. See [THEMING.md](../THEMING.md), Generating a Theme.
+One file covers light and dark. Which tokens an app may set, the generator's
+options and what does not follow an override are in the theming guide,
+[THEMING.md](../THEMING.md). The same function is exported as `createTheme()`
+from `zabi-components/create-theme`.
 
 The universal scrollbar rules are in the compiled `css` bundle only. Importing a theme does not restyle the scrollbars in your app; add `.scrollbar-semantic` where you want them.
 

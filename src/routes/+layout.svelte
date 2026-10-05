@@ -14,7 +14,9 @@
     let { children }: Props = $props();
 
     // No "Home" item: the brand link already goes there, and with Storybook
-    // added the bar was 44px wider than a 768px screen.
+    // added the bar was 44px wider than a 768px screen. The theming guide is
+    // not here for the same reason: a fifth item is 50px too wide at 768px.
+    // It is linked from Docs, the home page and the footer.
     const navItems: TopNavbarNavItem[] = [
         { label: "Components", href: "/components" },
         { label: "Docs", href: "/docs" },

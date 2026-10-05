@@ -54,8 +54,16 @@ npm version <major|minor|patch> --no-git-tag-version
 Judge the bump against **what is published on npm**, not against the previous
 commit — a version prepared but never published means consumers skip it
 entirely. Check with `npm view zabi-components version`. Removing an `exports`
-subpath or a `--color-*` token, or regenerating the ramps, is breaking for them
-even if it looks minor in the diff.
+subpath, renaming or removing a token the theme publishes, or regenerating the
+ramps, is breaking for them even if it looks minor in the diff.
+
+"A token the theme publishes" is every name in
+`tests/__snapshots__/theme-token-names.snap.json`: the `--color-*` roles, the
+`--zabi-*` ramps and the font, radius, shadow and z-index tokens. `THEMING.md`
+documents them as the token API. `npm run test:themes` fails when one of those
+names is missing from the built CSS, and refreshing the snapshots only ever
+adds names, so the only way to remove one is to edit that file by hand. If a
+commit does, the release is a major.
 
 Grep the docs for the old version afterwards: `README.md` and `docs/` have
 referred to versions that never reached npm.

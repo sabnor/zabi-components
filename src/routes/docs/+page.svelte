@@ -32,27 +32,14 @@
 
     const darkToggleCode = `document.documentElement.classList.toggle("dark");`;
 
+    const generateCode = `npx zabi-theme --brand "#C17B00" --out src/lib/brand.generated.css`;
+
     const themingCode = `@import "tailwindcss";
 @import "zabi-components/theme-only";
 @import "zabi-components/theme-dark-only";
 
-/* Your brand, after the theme imports. */
-:root {
-  --color-action-primary: #0f766e;
-  --color-action-primary-hover: #115e59;
-  --color-action-primary-text: #ffffff;
-  --color-focus-ring: #0d9488;
-  --color-link: #0f766e;
-}
-
-/* Dark values for the same tokens. */
-.dark {
-  --color-action-primary: #5eead4;
-  --color-action-primary-hover: #99f6e4;
-  --color-action-primary-text: #042f2e;
-  --color-focus-ring: #2dd4bf;
-  --color-link: #5eead4;
-}`;
+/* Your brand, after the theme imports. One file covers light and dark. */
+@import "./lib/brand.generated.css";`;
 
     const scopedCode = `.checkout {
   --color-action-primary: #b45309;
@@ -249,6 +236,12 @@ import type { ButtonVariant } from "zabi-components/types";`;
                         site does exactly this.
                     </p>
                     <CodeBlock class="mt-4" code={darkToggleCode} language="javascript" />
+                    <p class="mt-6 max-w-3xl text-base leading-7 text-description">
+                        To follow the system setting without a script, set
+                        <code class={inlineCode}>data-theme="auto"</code> on the
+                        <code class={inlineCode}>html</code> element instead. See
+                        <a href="/theming#modes" class={textLink}>light, dark and auto</a>.
+                    </p>
                 </section>
 
                 <section id="theming" aria-labelledby="theming-title">
@@ -257,10 +250,16 @@ import type { ButtonVariant } from "zabi-components/types";`;
                     </h2>
                     <p class="mt-4 max-w-3xl text-lg leading-8 text-description">
                         Components read semantic tokens and never hardcode a color. To rebrand,
-                        override the tokens after the theme imports. Try it with the accent
-                        menu in the top bar.
+                        generate one file from your brand color and import it after the theme.
+                        Try it with the brand menu in the top bar.
                     </p>
-                    <CodeBlock class="mt-6" code={themingCode} language="css" />
+                    <CodeBlock class="mt-6" code={generateCode} language="bash" />
+                    <CodeBlock class="mt-4" code={themingCode} language="css" />
+                    <p class="mt-6 max-w-3xl text-base leading-7 text-description">
+                        The <a href="/theming" class={textLink}>theming guide</a> lists the tokens
+                        an app may set, explains light, dark and auto, and has a brand switcher
+                        to try on real components.
+                    </p>
 
                     <h3 class="display mt-10 text-xl font-bold text-headline">
                         Theme one section
@@ -283,14 +282,14 @@ import type { ButtonVariant } from "zabi-components/types";`;
                                 aria-hidden="true"
                             /><span class="sr-only">(opens in a new tab)</span></a
                         >
-                        lists every token: surfaces, radius, shadows, spacing and type.
+                        has the full reference: every role, surfaces, radius, shadows and type.
                     </p>
                     <p
                         class="mt-6 max-w-3xl rounded-2xl border border-border bg-card shadow-sm p-5 text-base leading-7 text-body"
                     >
                         <strong class="font-semibold text-headline">Check the colors you change.</strong>
-                        The colors that ship are contrast checked before every release. Colors
-                        you override are not, so test the pairs you change, such as the button
+                        The generator checks the contrast of the brand it writes. Tokens you set
+                        by hand are not checked, so test the pairs you change, such as the button
                         label against its fill.
                     </p>
                 </section>

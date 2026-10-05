@@ -8,20 +8,61 @@
  *
  * Iris is the default theme, so it has no overrides — switching to it means
  * removing the custom properties rather than writing different ones.
+ *
+ * There are two kinds. Pine and Citron re-point roles at another built-in
+ * ramp, per theme, and can be scoped to one element. Amber is a whole brand
+ * from `createTheme`: it replaces the physical ramps (`--zabi-brand-*`,
+ * `--zabi-base-*`) and the heading face, the way an app's generated file
+ * does, with one set of values for light and dark. The roles are resolved on
+ * the root element, so a brand of that kind only works on the document.
  */
 
-export type Accent = "iris" | "pine" | "citron";
+import generatedThemes, { defaultBrandRamp } from "virtual:zabi-brand-themes";
+
+export type Accent = "iris" | "pine" | "citron" | "amber";
 export type TokenMap = Record<string, string>;
 
-export const ACCENTS: { id: Accent; label: string; swatch: string }[] = [
-    { id: "iris", label: "Iris", swatch: "var(--zabi-brand-500)" },
-    { id: "pine", label: "Pine", swatch: "var(--zabi-pine-500)" },
-    { id: "citron", label: "Citron", swatch: "var(--zabi-citron-500)" },
+export interface AccentOption {
+    id: Accent;
+    label: string;
+    swatch: string;
+    /**
+     * `roles`: re-points roles, can be scoped to an element.
+     * `generated`: a `createTheme` result, applied to the document only.
+     */
+    kind: "default" | "roles" | "generated";
+}
+
+export const ACCENTS: AccentOption[] = [
+    // A fixed value, not var(--zabi-brand-500): with a generated brand on the
+    // document that variable is the other brand's colour.
+    { id: "iris", label: "Iris", swatch: defaultBrandRamp["--zabi-brand-500"], kind: "default" },
+    { id: "pine", label: "Pine", swatch: "var(--zabi-pine-500)", kind: "roles" },
+    { id: "citron", label: "Citron", swatch: "var(--zabi-citron-500)", kind: "roles" },
+    {
+        id: "amber",
+        label: "Amber",
+        swatch: generatedThemes.amber.tokens["--zabi-brand-500"],
+        kind: "generated",
+    },
 ];
+
+/** The accents that can be scoped to one element (RebrandDemo). */
+export const SCOPABLE_ACCENTS = ACCENTS.filter((item) => item.kind !== "generated");
+
+/** What `createTheme` returned for a generated brand: css, tokens, warnings, closest. */
+export function generatedTheme(id: string) {
+    return id in generatedThemes
+        ? generatedThemes[id as keyof typeof generatedThemes]
+        : undefined;
+}
 
 /** The stylesheet's own values, for scoping a card back to the default theme. */
 export const IRIS: { light: TokenMap; dark: TokenMap } = {
     light: {
+        // The ramp itself, so a card scoped to Iris stays Iris while a
+        // generated brand has replaced --zabi-brand-* on the document.
+        ...defaultBrandRamp,
         "--color-action-primary": "var(--color-brand-600)",
         "--color-action-primary-hover": "var(--color-brand-700)",
         "--color-action-primary-active": "var(--color-brand-800)",
@@ -138,6 +179,11 @@ export const ACCENT_OVERRIDES: Record<
             "--color-focus-ring": "var(--zabi-citron-400)",
         },
     },
+    // One map for both themes: `.dark` only remaps roles onto these ramps.
+    amber: {
+        light: generatedThemes.amber.tokens,
+        dark: {},
+    },
 };
 
 /** Tokens worth printing in the RebrandDemo snippet; the full map is applied. */
@@ -165,8 +211,8 @@ export function tokensFor(id: Accent, dark: boolean): TokenMap {
 }
 
 /**
- * Call `onChange` with the current theme, then on every change to the dark
- * class. Returns the teardown, so it drops straight into an `$effect`.
+ * Call `onChange` with the current theme, then on every change to it.
+ * Returns the teardown, so it drops straight into an `$effect`.
  *
  * The accent maps differ per theme, so anything scoping an accent has to
  * re-apply when the theme flips.
@@ -175,11 +221,26 @@ export function watchDarkMode(
     onChange: (dark: boolean) => void,
 ): () => void {
     const root = document.documentElement;
-    const sync = () => onChange(root.classList.contains("dark"));
+    const system = window.matchMedia?.("(prefers-color-scheme: dark)");
+    // The same three ways the stylesheet goes dark: the class,
+    // data-theme="dark", and data-theme="auto" on a dark system.
+    const sync = () =>
+        onChange(
+            root.classList.contains("dark") ||
+                root.dataset.theme === "dark" ||
+                (root.dataset.theme === "auto" && !!system?.matches),
+        );
     sync();
     const observer = new MutationObserver(sync);
-    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
+    observer.observe(root, {
+        attributes: true,
+        attributeFilter: ["class", "data-theme"],
+    });
+    system?.addEventListener?.("change", sync);
+    return () => {
+        observer.disconnect();
+        system?.removeEventListener?.("change", sync);
+    };
 }
 
 /** Inline `style` string, for scoping an accent to one element. */

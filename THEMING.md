@@ -1,150 +1,458 @@
-# Theming Guide
+# Theming guide
 
-## 🎨 Single Source of Truth
+An app gives the whole library its own brand from one generated file of token
+overrides. There is no component CSS to write and nothing to repeat for dark
+mode.
 
-**All theming is done in one file: `src/app.css`**
+This guide is the token API. The tokens under
+[Tokens an app may set](#tokens-an-app-may-set) and
+[Roles: read them, do not set them](#roles-read-them-do-not-set-them) are
+public: renaming or removing one is a breaking change (see
+[Stability](#stability)).
 
-This file contains:
-- All color scales (brand, accent, citron, pine, iris, base)
-- Semantic color tokens (primary, secondary, success, error, etc.)
-- Action colors (for buttons and interactive elements)
-- Dark mode overrides
-- Typography settings
-- Spacing, border radius, and z-index values
+The same guide, with a brand switcher to try it on real components, is on the
+docs site at [/theming](https://zabi-components.vercel.app/theming).
 
-## 📍 Where to Make Changes
+- [The first thing to know: your colour is not pinned to a step](#the-first-thing-to-know-your-colour-is-not-pinned-to-a-step)
+- [Quick start](#quick-start)
+- [Import order](#import-order)
+- [Tokens an app may set](#tokens-an-app-may-set)
+- [Roles: read them, do not set them](#roles-read-them-do-not-set-them)
+- [Light, dark and auto](#light-dark-and-auto)
+- [The generator](#the-generator)
+- [What does not follow an override](#what-does-not-follow-an-override)
+- [Stability](#stability)
+- [Reference: how the theme is built](#reference-how-the-theme-is-built)
+- [For maintainers](#for-maintainers)
 
-### Main Theme (Light Mode)
-Edit the `@theme` block in `src/app.css`.
+## The first thing to know: your colour is not pinned to a step
 
-### Dark Mode Theme
-Edit the `.dark` block in `src/app.css`. It only remaps roles: no `--zabi-*`
-token and no hex literal belongs in it (`validate-theme.js` fails the build on
-either). Keep it as one `.dark { … }` rule; the build publishes it under
-`[data-theme="dark"]` and `[data-theme="auto"]` as well (see
-[Dark Mode Selectors](#-dark-mode-selectors)).
+`zabi-theme` takes one brand colour and builds an 11-step ramp from it. The
+colour supplies the **hue and chroma**. The lightness of each step comes from
+the library's own curve (see [Calibrated colour ramps](#calibrated-colour-ramps)),
+so step 600 is as dark as every built-in 600 and every role keeps the contrast
+it was designed with.
 
-## ⚠️ Important: Don't Edit These Files
+So the exact hex you give may not be in the ramp, and it is usually not the
+colour of the primary button:
 
-### Generated Files (in `dist/` folder)
-These files are **automatically generated** from `src/app.css` by the build script:
-- ❌ `dist/zabi-components.css` - Full compiled CSS (generated)
-- ❌ `dist/zabi-components-theme.css` - Theme with Tailwind import (generated)
-- ❌ `dist/zabi-components-theme-only.css` - Theme only, no Tailwind (generated)
-- ❌ `dist/zabi-components-theme-dark.css` - Dark mode theme (generated)
-- ❌ `dist/zabi-components-theme-dark-only.css` - Dark mode theme only (generated)
-- ❌ `dist/zabi-components-colors.css` - Standalone colors (generated from app.css)
+| You give | Nearest step | Primary button, light (step 600) | Primary button, dark (step 400) |
+|---|---|---|---|
+| `#0026EA` | 800, `#0024e1` (ΔE 3.5) | `#2b65ff` | `#84acff` |
+| `#C17B00` | 500, exact | `#9b6200` | `#d99f58` |
 
-**These files are overwritten every time you run `npm run build:css`**
+`#0026EA` is darker than a 600, so it lands near step 800 and the button is the
+lighter `#2b65ff`. The header of the generated file, the command's summary line
+and `closest` from `createTheme()` all name the nearest step.
 
-### Example Files
-- ❌ `examples/theme-extensions/02-custom-brand-colors.css` - Just an example, not your actual theme
-- ❌ `examples/theme-extensions/03-custom-semantic-colors.css` - Just an example, not your actual theme
+A very bright colour has no step that bright at its chroma. `#FFE600` lands
+nearest step 300 at ΔE 14.8, and the generator says so:
 
-### Source Files (Edit These)
-- ✅ `src/app.css` - **THIS IS THE ONLY FILE YOU NEED TO EDIT**
-- ✅ Removed deprecated files (`src/styles/colors.css`, `src/styles/base.css`, `src/styles/simple.css`, `src/app-simple.css`)
-
-## 📦 What Are the Dist Files For?
-
-The `dist/` files are **for consumers** of your library who want to import the theme separately.
-
-**Full import matrix, export paths, and examples:** [docs/theme-imports.md](./docs/theme-imports.md)
-
-### For Library Developers (You)
-- **Edit**: `src/app.css` only
-- **Build**: Run `npm run build:css` to regenerate all dist files (or `npm run build:lib` before publish)
-- **After token edits**: run `node scripts/verify-build.js` to confirm outputs (also runs as part of `build:lib`)
-- **Base scale source**: use `tokens/base-scale.js`; run `npm run sync:tokens` (or `npm run build:css`) to render token blocks back into `src/app.css`
-
-### For Library Consumers
-
-Use **package exports** (preferred):
-
-| Need | Import |
-|------|--------|
-| Tailwind + full `@theme` (app has no Tailwind yet) | `zabi-components/theme` |
-| Tailwind already in app — merge `@theme` only | `zabi-components/theme-only` |
-| Dark overrides (+ Tailwind import in file) | `zabi-components/theme-dark` |
-| Dark overrides only (Tailwind already loaded) | `zabi-components/theme-dark-only` |
-| CSS variables only, no Tailwind | `zabi-components/colors` |
-| Full compiled CSS (utilities + everything) | `zabi-components/css` |
-
-Examples:
-
-```css
-@import "zabi-components/theme-only";
-@import "zabi-components/theme-dark-only";
+```
+zabi-theme: warning: brand #ffe600 is not in the ramp built from it: the nearest step is 300 (#dcc600, ΔE 14.8). The ramp keeps its hue on the library's lightness curve; fills use step 600 in light and 400 in dark.
 ```
 
-```css
-@import "zabi-components/colors";
-```
+If the brand colour itself has to appear somewhere, use the step the generator
+names (`var(--zabi-brand-500)` for the amber above), not the hex.
+
+## Quick start
+
+1. Generate the brand file. Commit it; the output has no timestamp, and the
+   same input gives the same bytes.
+
+   ```bash
+   npx zabi-theme --brand "#C17B00" --neutral "#78716c" --out src/lib/brand.generated.css
+   ```
+
+2. Import it after the theme files.
+
+   ```css
+   /* src/lib/theme.css — the app's brand */
+   @import "zabi-components/theme-only";
+   @import "zabi-components/theme-dark-only";
+   @import "./brand.generated.css"; /* --zabi-brand-*, --zabi-accent-*, --zabi-base-* */
+
+   :root {
+     --font-family-heading: "Your Display Font", var(--font-family-sans);
+   }
+   ```
+
+   ```css
+   /* src/app.css */
+   @import "tailwindcss";
+   @import "./lib/theme.css";
+   ```
+
+3. Choose how dark mode is selected, on `<html>`.
+
+   ```html
+   <html lang="en" data-theme="auto">
+   ```
+
+That is the whole rebrand: primary actions, focus rings, links, tints, text,
+borders, the page, cards and the dark surface levels follow, in light and dark.
+
+## Import order
+
+| Order | Import | Why here |
+|---|---|---|
+| 1 | `tailwindcss` | The theme files are Tailwind v4 `@theme` blocks. |
+| 2 | `zabi-components/theme-only` | Declares every token, light values, and the raw ramps. |
+| 3 | `zabi-components/theme-dark-only` | Only remaps roles for dark. It declares no ramp, so it does nothing without the light theme. |
+| 4 | your generated file | `:root` overrides. After both theme files, so they win in dark as well. |
+| 5 | your own `:root { … }` | Fonts, radius and anything else from the tables below. |
+
+Keep the brand file last. `:root`, `.dark` and `[data-theme="dark"]` have the
+same specificity, so between them the later rule wins: a brand file imported
+before the dark theme loses, in dark, every token the dark file restates (a
+role moved with `--set`, `--shadow-color`). The ramps happen to apply from
+either position in a Tailwind build, because Tailwind puts the theme's own
+values in a cascade layer and your `:root` rule is outside it. With
+`zabi-components/colors`, which is plain CSS, an override placed before the
+import does nothing at all.
+
+If the app has no Tailwind, `zabi-components/css` replaces steps 1 to 3 (see
+[docs/theme-imports.md](./docs/theme-imports.md)); the brand file still goes
+after it.
+
+Set the overrides on `:root`, not on an element further down. The roles are
+resolved on the root element, so `--zabi-brand-600` set on a `<section>`
+changes nothing inside it.
+
+## Tokens an app may set
+
+Set these on `:root`, after the imports. One declaration covers light and dark
+unless the table says otherwise. All of them were checked in a browser against
+the built theme files.
+
+### Colour
+
+`zabi-theme` writes every token in this table. Write them by hand only if you
+have your own ramps.
+
+| Token | Steps | What follows |
+|---|---|---|
+| `--zabi-brand-50` … `--zabi-brand-950` | 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950 | Primary actions, focus rings, links, brand tints, `--color-primary*` |
+| `--zabi-accent-50` … `--zabi-accent-950` | the same 11 | `--color-accent` and its roles: `bg-accent`, `text-accent`, `border-accent`. Defaults to the citron ramp. |
+| `--zabi-base-50` … `--zabi-base-950` | 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 925, 950 | Text, borders, inputs, the page, cards and the four dark surface levels |
+| `--zabi-on-brand` | | Label on a primary fill in light. Default `#ffffff`. |
+| `--zabi-on-brand-dark` | | The same in dark. Default `var(--zabi-brand-950)`. |
+| `--zabi-on-accent` | | Label on a solid accent fill in light. Default `#ffffff`. |
+| `--zabi-on-accent-dark` | | The same in dark. Default `var(--zabi-accent-950)`. |
+
+Each ramp runs light (50) to dark (950). Light mode puts fills on step 600;
+dark mode mirrors the ramp, so the fill is step 400.
+
+A ramp you write by hand should keep the library's lightness per step, or the
+contrast the roles were designed with is gone. Run it through
+`zabi-theme --set` to have it checked (see [`--set`](#--set-and-overrides)).
+
+### Type
+
+| Token | Default | What follows |
+|---|---|---|
+| `--font-family-sans` | `'Nunito Sans', ui-sans-serif, system-ui, sans-serif` | Body text and every component |
+| `--font-family-heading` | `var(--font-family-sans)` | `h1` to `h6` and the Heading component |
+| `--font-family-mono` | `"Monaco", "Menlo", "Ubuntu Mono", monospace` | CodeBlock |
+| `--font-weight-regular` | `400` | `font-normal` |
+| `--font-weight-medium` | `500` | `font-medium` |
+| `--font-weight-semibold` | `600` | `font-semibold` |
+| `--font-weight-bold` | `700` | `font-bold` |
+
+Loading the font files is up to the app. The heading face is applied in the
+base layer, so a `font-*` utility on a heading still wins.
+
+### Shape, depth and stacking
+
+| Token | Default | What follows |
+|---|---|---|
+| `--radius-control` | `0.5rem` | Buttons, inputs, selects, toggles |
+| `--radius-container` | `0.75rem` | Cards, alerts, panels, list items, code blocks |
+| `--radius-overlay` | `1rem` | Modals, sheets, menus, popovers, toasts |
+| `--radius-pill` | `9999px` | Badges, avatars, status dots |
+| `--shadow-color` | `24 24 27` (dark: `0 0 0`) | The colour of `shadow-sm` and `shadow-lg`, as three space-separated RGB channels |
+| `--shadow-opacity` | `0.14` (dark: `0.3`) | Their strength |
+| `--z-dropdown`, `--z-sticky`, `--z-fixed`, `--z-modal-backdrop`, `--z-modal`, `--z-popover`, `--z-tooltip`, `--z-toast` | 1000 to 1080 | The layer of each floating component, when the app has its own stacking order to fit into |
+
+The two shadow tokens are the only ones here with a separate dark value. A
+`:root` override after the imports replaces both; to keep two values, declare
+the dark one under the dark selectors (see
+[One role in dark only](#one-role-in-dark-only)).
+
+### Not on the list
+
+These tokens exist, and their names are kept, but setting them does not restyle
+the components:
+
+- `--spacing-xs` … `--spacing-2xl` feed the `p-md`, `gap-lg` utilities for your
+  own markup. Components use Tailwind's numeric scale.
+- `--control-height-sm`, `-md`, `-lg` record the 32, 40 and 48px control
+  heights. Components set those heights with `h-8`, `h-10` and `h-12`.
+- `--radius-sm`, `-md`, `-lg`, `-xl` are legacy aliases. No component uses them.
+- `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-xl` are built from the
+  two shadow tokens above. Set those instead.
+
+## Roles: read them, do not set them
+
+A role says what a colour is for. Components paint with roles, and your own CSS
+should too: `var(--color-action-primary)` or the `bg-action-primary` class, not
+`var(--zabi-brand-600)`. A role is already the right step in each mode.
+
+| Roles | For |
+|---|---|
+| `--color-action-primary`, `-hover`, `-active`, `-text`, `-subtle`, `-subtle-hover` | Primary buttons and controls. The same set exists for `secondary` and `danger`; `--color-action-disabled`, `-disabled-text`, `-disabled-border` for disabled ones. |
+| `--color-on-brand`, `--color-on-accent` | Text on a primary fill and on a solid accent fill |
+| `--color-accent`, `-hover`, `-active`, `-subtle`, `-border`, `-text` | The second brand colour |
+| `--color-focus-ring`, `--color-focus-ring-offset`, `--color-focus` | The focus ring and the gap around it |
+| `--color-link`, `--color-link-hover` | Links |
+| `--color-headline`, `--color-body`, `--color-description`, `--color-caption`, `--color-label` | Text |
+| `--color-surface-base`, `-raised`, `-elevated`, `-overlay`, `-inset` | The page, cards, nested cards, floating panels, wells |
+| `--color-surface-hover`, `--color-surface-active`, `--color-surface-overlay-hover` | Hover and pressed fills |
+| `--color-border`, `-weak`, `-medium`, `-strong`, `--color-border-overlay` | Borders and dividers |
+| `--color-input`, `-border`, `-border-hover`, `-hover`, `-focus`, `-disabled`, `-placeholder` | Form fields |
+| `--color-<family>`, `-weak`, `-medium`, `-strong`, `-subtle`, `-border`, `-text` | `success`, `warning`, `error`, `info`, `energetic`, `neutral` (see [Semantic families](#semantic-families)) |
+
+Aliases kept from earlier versions resolve to the same values: `--color-background`,
+`--color-card`, `--color-surface-1` … `-4`, `--color-primary*`,
+`--color-secondary*`, `--color-page`.
+
+**Why not set them.** A role set on `:root` after the imports is one value for
+both modes: it replaces the dark value as well, and nothing checks its
+contrast. If one role has to move, do it through the generator, which checks
+it: see [`--set`](#--set-and-overrides).
+
+**Do not set `--color-brand-*`, `--color-accent-<step>` or `--color-base-*`
+either.** Those are the mirrored steps: `--color-brand-600` is
+`--zabi-brand-600` in light and `--zabi-brand-400` in dark. Set on `:root`
+after the imports, one of them becomes the same colour in both modes and stops
+mirroring. Override the `--zabi-*` ramp instead.
+
+### One role in dark only
+
+Declare it under all three dark selectors, after the imports:
 
 ```css
-@import "zabi-components/css";
-```
+.dark,
+[data-theme="dark"] {
+  --color-link: var(--zabi-brand-200);
+}
 
-Canonical recommendation for most apps remains:
-
-```css
-@import "tailwindcss";
-@import "zabi-components/theme-only";
-@import "zabi-components/theme-dark-only";
-```
-
-Dark mapping rule reference:
-- Physical ramp tokens are `--zabi-base-50 ... --zabi-base-950`, declared once, in `@theme`.
-- Semantic dark mapping is generated as aliases, `--color-base-S: var(--zabi-base-(1000 - S))` (for example `50 <-> 950`, `75 <-> 925`, `500` unchanged).
-
-## 🎯 Common Customizations
-
-### Change Brand Colors
-
-Override the **physical** ramp, `--zabi-brand-*`, once. Every role that uses the
-brand follows in light and in dark: primary actions, focus rings, links, brand
-tints.
-
-```css
-:root {
-  --zabi-brand-50: #f0f9ff;
-  --zabi-brand-100: #e0f2fe;
-  --zabi-brand-200: #bae6fd;
-  --zabi-brand-300: #7dd3fc;
-  --zabi-brand-400: #38bdf8;
-  --zabi-brand-500: #0ea5e9;
-  --zabi-brand-600: #0284c7;
-  --zabi-brand-700: #0369a1;
-  --zabi-brand-800: #075985;
-  --zabi-brand-900: #0c4a6e;
-  --zabi-brand-950: #082f49;
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    --color-link: var(--zabi-brand-200);
+  }
 }
 ```
 
-Do not override `--color-brand-*` for this. Those are the semantic steps, and
-`.dark` re-points each of them at the mirrored physical step, so an override of
-them is light-only.
+## Light, dark and auto
 
-The same holds for the second brand colour (`--zabi-accent-50 … 950`) and for
-the neutrals (`--zabi-base-50 … 950`, 21 steps). See
-[Rebranding Through Tokens](#-rebranding-through-tokens).
+The mode is chosen on the `<html>` element, by an attribute or a class:
 
-### Change Primary Button Color
+| On `<html>` | Result |
+|---|---|
+| nothing | light, also on a dark system |
+| `data-theme="light"` | light |
+| `data-theme="dark"` | dark |
+| `data-theme="auto"` | follows the system (`prefers-color-scheme`) |
+| `class="dark"` | dark, the same as `data-theme="dark"` |
 
-The primary button uses `--color-action-primary`, which defaults to `brand-600`
-(4.86:1 against a white label). To change it:
+- **Following the system is opt-in.** A page with no attribute and no class
+  stays light on a dark system, as it always has. `data-theme="auto"` needs no
+  script.
+- **`<html>` only.** A `.dark` or `data-theme` on an element further down is
+  not supported. It re-themes the roles the dark file restates (the card
+  surface, the label on a primary button) and leaves the rest (text, borders,
+  the primary fill) light, so the subtree comes out half dark.
+- The three `data-theme` values also set `color-scheme`, so native controls and
+  scrollbars match. `.dark` does not; set `color-scheme` yourself if you use
+  the class.
+- The dark file must be imported together with a light one. It only remaps
+  roles onto ramps the light theme declares.
+- `ThemeToggle` toggles the `dark` class and reads only that class. Tailwind's
+  own `dark:` variant follows the system unless you redefine it. Neither reads
+  `data-theme`.
 
-```css
-@theme {
-  /* Use a different brand shade */
-  --color-action-primary: theme(colors.brand.600);
-  
-  /* Or use a completely custom color */
-  --color-action-primary: #your-color-here;
-}
+```js
+document.documentElement.dataset.theme = "dark"; // "light" | "auto"
+// or
+document.documentElement.classList.toggle("dark");
 ```
 
-### Brand Scale Usage
+## The generator
+
+```bash
+npx zabi-theme --brand "#0026EA" --out src/lib/brand.generated.css
+npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out src/lib/brand.generated.css
+```
+
+| Option | |
+|---|---|
+| `--brand <hex>` | Required. Builds `--zabi-brand-50 … 950`. |
+| `--accent <hex>` | Builds `--zabi-accent-50 … 950`. Omitted: the library's citron. |
+| `--neutral <hex>` | Tints the 21-step `--zabi-base-50 … 950`. Omitted: the library's greys. |
+| `--out <file>` | Where to write. Omitted: stdout. |
+| `--strict` | Exit 1 when a role pair is below WCAG AA. |
+| `--set <token>=<value>` | Also write this declaration; repeatable. |
+| `--help` | Usage. |
+
+Colours are hex, `#rgb` or `#rrggbb`. Warnings and the one-line summary go to
+stderr. Exit codes: 0 done, 1 `--strict` with a failed pair, 2 bad usage
+(missing `--brand`, not a hex colour).
+
+### What it does
+
+- **Brand and accent ramps** on the library's lightness curve, from the hue and
+  chroma of the colour you give. See
+  [the first section](#the-first-thing-to-know-your-colour-is-not-pinned-to-a-step).
+- **Neutral ramp.** It keeps the base scale's own 21 lightness steps and takes
+  only the hue, at low chroma. A saturated colour gives a tinted grey, not a
+  coloured page.
+- **"On" colours.** It sets `--zabi-on-brand` and `--zabi-on-brand-dark` (and
+  the accent pair when `--accent` is given) to white or the ramp's 950 step,
+  whichever reaches 4.5:1 on the fill, its hover and its active step.
+- **Contrast check.** Every pair the library holds itself to is resolved in
+  light and dark with the new ramps in place: 116 checks, 4.5:1 for text and
+  3:1 for focus rings and UI parts.
+
+### What it does not do
+
+- It does not put your exact hex in the ramp.
+- It does not write fonts, radius or shadow unless you pass them with `--set`.
+- It does not check the hover, pressed and secondary-button alpha tints. They
+  are not part of the contrast list.
+- It does not check that a `--set` token exists. A misspelt name is written as
+  given.
+- It does not load or check fonts.
+
+### Warnings
+
+A plain brand passes, because the ramps share the library's curve. Warnings
+come from two places.
+
+An input that will not give the ramp its author probably expects:
+
+```
+zabi-theme: warning: brand #808080 has almost no colour in it, so the ramp is a grey scale. Give a more saturated colour for a visible hue.
+```
+
+A role pair below AA, which only happens when `--set` moves a role:
+
+```
+zabi-theme: warning: light · on-brand label on primary: #2f1b00 on #9b6200 is 3.24:1, needs 4.5:1 (--color-on-brand on --color-action-primary)
+```
+
+### `--strict` in CI
+
+Without `--strict` a failed pair is a warning and the file is still written.
+With it the command exits 1. Because the output is deterministic, one line
+checks both that the brand passes and that the committed file is current:
+
+```bash
+npx zabi-theme --brand "#C17B00" --neutral "#78716c" --strict --out src/lib/brand.generated.css && git diff --exit-code src/lib/brand.generated.css
+```
+
+### `--set` and overrides
+
+`--set` writes one more declaration into the file. It applies in light and in
+dark, and it takes part in the contrast check and in the choice of the "on"
+colours.
+
+```bash
+npx zabi-theme --brand "#C17B00" --set "--color-link=var(--color-brand-800)" --out src/lib/brand.generated.css
+npx zabi-theme --brand "#C17B00" --set '--font-family-heading="Fraunces", var(--font-family-sans)' --out src/lib/brand.generated.css
+```
+
+Point a role at a **semantic** step, `var(--color-brand-800)`, not at a
+physical one. The semantic step mirrors in dark; `var(--zabi-brand-800)` is
+the same dark brown in both modes, and as a link colour it fails in dark:
+
+```
+zabi-theme: warning: dark · link on page: #613b00 on #18181b is 1.8:1, needs 4.5:1 (--color-link on --color-surface-base)
+```
+
+### `createTheme()`
+
+The same thing as a function, for a build script:
+
+```js
+import { writeFileSync } from "node:fs";
+import { createTheme } from "zabi-components/create-theme";
+
+const { css, tokens, warnings, closest } = createTheme({
+  brand: "#C17B00",
+  accent: "#ff3366", // optional
+  neutral: "#78716c", // optional
+  overrides: { "--color-link": "var(--color-brand-800)" }, // optional
+});
+
+for (const warning of warnings) console.warn(warning.message);
+console.log(`Brand is closest to step ${closest.brand.step} (${closest.brand.hex}).`);
+
+if (warnings.some((warning) => warning.type === "contrast")) process.exit(1);
+writeFileSync("src/lib/brand.generated.css", css);
+```
+
+| Returned | |
+|---|---|
+| `css` | The stylesheet: a header comment and one `:root { … }` rule. |
+| `tokens` | Every declaration in `css`, name to value. |
+| `warnings` | `{ type: "contrast", pair, mode, ratio, required, foreground, background, message }` for each role pair below AA, and `{ type: "input", option, message }` notes about the colours given. Empty when everything passes. |
+| `closest` | `{ brand, accent?, neutral? }`, each `{ step, hex, deltaE, exact }`: where the input landed in its ramp. |
+
+It throws a `TypeError` when `brand` is missing or a colour is not hex.
+
+## What does not follow an override
+
+- **Hover, pressed and secondary-button fills.** `--color-surface-hover`,
+  `--color-surface-active` and `--color-action-secondary` are fixed near-black
+  (light) and near-white (dark) alpha tints. They do not take the hue of
+  `--zabi-base-*`. At 8 to 15% the hue of the ink is not visible.
+- **The overlay edge and the modal backdrop.** `--color-border-overlay` in
+  light and `--color-overlay` are fixed alpha tints too.
+- **The shadow colour.** `--shadow-color` is the default neutral's ink, not
+  your neutral's. Set it yourself; it is on the list above.
+- **The `energetic` family.** It points at the citron ramp, not at the accent,
+  so it stays yellow when `--zabi-accent-*` changes. `success`, `warning`,
+  `error` and `info` keep their own ramps as well.
+- **The size of the dark surface steps.** The four dark levels are mixed from
+  your neutral ramp, so they take its hue. The mix amounts were solved for the
+  default greys; a neutral whose 900 or 50 step is far from `#18181b` /
+  `#fafafa` gives steps of a different size.
+- **Browsers without `color-mix()`.** Where Tailwind compiles the dark file
+  (your build, or the `zabi-components/css` bundle) it adds the default hex as
+  a fallback before each mixed surface. Those browsers get the default dark
+  surfaces whatever the app overrides.
+- **Tokens set below `<html>`.** See [Import order](#import-order).
+- **Semantic steps.** `--color-brand-*` and friends do not rebrand both modes;
+  see [Roles](#roles-read-them-do-not-set-them).
+
+## Stability
+
+Every token named in [Tokens an app may set](#tokens-an-app-may-set) and
+[Roles](#roles-read-them-do-not-set-them) is public API, and so is every other
+token the theme files publish. **Renaming or removing one is a breaking
+change.** Adding a token is not. Regenerating the library's own ramps is
+breaking too, because it changes every colour an app has not overridden.
+`RELEASING.md` says the same from the release side.
+
+This is enforced, not just promised.
+`tests/__snapshots__/theme-token-names.snap.json` lists every published token
+name, 398 of them. `npm run test:themes` reads the names out of the built
+`zabi-components/colors` file and fails if one on the list is missing. The
+list only grows: refreshing the snapshots adds new names and never drops one,
+so taking a name off is a hand edit of that file in a commit, which is where a
+breaking change gets noticed.
+
+The CSS export paths (`zabi-components/theme-only` and the rest) are public in
+the same way: removing one is breaking.
+
+---
+
+## Reference: how the theme is built
+
+Background for the tables above. An app does not need any of it to rebrand.
+
+### Which step does what
 
 The brand scale is used throughout the system:
 
@@ -161,186 +469,7 @@ mirror flips that automatically, so "more pressed" means "more contrast against
 the page" in both themes. Never point `-active` at a step on the far side of the
 ramp — that is how the pressed primary label ended up at 1.66:1.
 
-### Dark Mode
-
-Dark mode automatically inverts the brand scale:
-- `brand-50` becomes `brand-950` (darkest)
-- `brand-950` becomes `brand-50` (lightest)
-
-This happens automatically in the `.dark` block, so you typically don't need to override action colors in dark mode.
-
-## 🎨 Rebranding Through Tokens
-
-An app rebrands from one file of overrides on `:root`, with no component CSS.
-Nothing has to be repeated for dark mode, because `.dark` declares no raw
-palette. It only says which step of a ramp each role uses.
-
-`zabi-theme` generates the ramps and the "on" colours from one brand colour;
-see [Generating a Theme](#-generating-a-theme).
-
-| Override on `:root` | What follows, in both themes |
-|---|---|
-| `--zabi-brand-50 … 950` | primary actions, focus, links, brand tints, `--color-primary*` |
-| `--zabi-accent-50 … 950` | `--color-accent` and its roles (defaults to the citron ramp) |
-| `--zabi-base-50 … 950` (21 steps) | text, borders, inputs, the page, cards, the dark surface levels |
-| `--zabi-on-brand`, `--zabi-on-brand-dark` | the label on a primary fill, per theme |
-| `--zabi-on-accent`, `--zabi-on-accent-dark` | the label on a solid accent fill, per theme |
-| `--font-family-sans`, `-heading`, `-mono` | body, headings, code |
-| `--font-weight-regular`, `-medium`, `-semibold`, `-bold` | every `font-*` weight the components use |
-
-**"On brand" text.** Components paint the primary label with
-`--color-action-primary-text`. It follows the role `--color-on-brand`, which is
-`--zabi-on-brand` in light (white) and `--zabi-on-brand-dark` in dark (the
-ramp's 950 step). A light brand colour such as amber or yellow cannot carry
-white text, so set those two; they are plain values on `:root`, with no
-selector to get right.
-
-**Accent.** `--color-accent` (600), `-hover` (700), `-active` (800), `-subtle`
-(200, dark 100), `-border` (300, dark 200), `-text` (700) and `--color-on-accent`.
-Utilities: `bg-accent`, `text-accent` (the text step, like `text-success`) and
-`border-accent` are hand-written; the rest (`bg-accent-subtle`,
-`hover:bg-accent-hover`, `border-accent-border`, `text-on-accent`,
-`bg-accent-600` …) are generated by Tailwind from the tokens. The `energetic`
-family still points at citron itself and does not move with the accent.
-
-**Fonts.** `--font-family-heading` defaults to `var(--font-family-sans)` and is
-applied to `h1`–`h6` in the base layer, so a `font-*` utility on a heading
-still wins. `--font-family-mono` is CodeBlock's stack. The weight tokens are
-the variables Tailwind's `font-normal`, `font-medium`, `font-semibold` and
-`font-bold` read; `font-normal` resolves through `--font-weight-regular`.
-
-**Not tinted by `--zabi-base-*`:** the hover, pressed and secondary-button
-fills, the overlay edge and the shadow colour are fixed near-black or
-near-white alpha tints (`--color-surface-hover` and friends). At 8–21% the hue
-of the ink is not visible; override those tokens directly if it matters.
-
-Proved from the built CSS by `tests/theme-output.test.js` (`npm run test:themes`),
-which also keeps a list of every published token name and fails if one
-disappears.
-
-## 🛠️ Generating a Theme
-
-`zabi-theme` writes that file of overrides from one brand colour.
-
-```bash
-npx zabi-theme --brand "#0026EA" --out src/lib/brand.generated.css
-npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out src/lib/brand.generated.css
-```
-
-```css
-@import "zabi-components/theme-only";
-@import "zabi-components/theme-dark-only";
-@import "./brand.generated.css";
-```
-
-| Option | |
-|---|---|
-| `--brand <hex>` | Required. Builds `--zabi-brand-50 … 950`. |
-| `--accent <hex>` | Builds `--zabi-accent-50 … 950`. Omitted: the library's citron. |
-| `--neutral <hex>` | Tints the 21-step `--zabi-base-50 … 950`. Omitted: the library's greys. |
-| `--out <file>` | Where to write. Omitted: stdout. |
-| `--strict` | Exit 1 when a role pair is below WCAG AA. |
-| `--set <token>=<value>` | Also write this declaration; repeatable. |
-
-Warnings and the one-line summary go to stderr. Exit codes: 0 done, 1 `--strict`
-with a failed pair, 2 bad usage (missing `--brand`, not a hex colour).
-
-The same thing as a function, for a build script:
-
-```js
-import { createTheme } from "zabi-components/create-theme";
-
-const { css, tokens, warnings, closest } = createTheme({
-  brand: "#0026EA",
-  accent: "#ff3366",     // optional
-  neutral: "#78716c",    // optional
-  overrides: { "--color-link": "var(--zabi-brand-800)" }, // optional
-});
-```
-
-`tokens` is the name-to-value map that `css` declares. `warnings` holds
-`{ type: "contrast", pair, mode, ratio, required, foreground, background, message }`
-for each role pair below AA, and `{ type: "input", option, message }` notes about
-the colours given. `closest` says which step each input landed nearest.
-
-**Your colour is not pinned to a step.** Each ramp is built on the library's
-lightness curve (see Calibrated Colour Ramps), so step 600 is as dark as every
-built-in 600 and every role keeps its contrast. The colour supplies hue and
-chroma. Its exact hex may not appear in the ramp; the file header and `closest`
-name the nearest step. `#C17B00` lands exactly on step 500. `#0026EA` is darker
-than a 600 and lands nearest step 800, and the primary button uses step 600,
-`#2b65ff`. A very bright colour such as `#FFE600` has no step that bright at
-its chroma, and the generator says so.
-
-**Neutral** keeps the base scale's own 21 lightness steps and takes only the
-hue, at low chroma. A saturated colour gives a tinted grey, not a coloured page.
-
-**"On" colours.** The file sets `--zabi-on-brand` and `--zabi-on-brand-dark`
-(and the accent pair when `--accent` is given) to white or the ramp's 950 step,
-whichever reaches 4.5:1 on the fill, its hover and its active step.
-
-**Contrast check.** Every pair `check-contrast.js` holds the library to is
-resolved in light and dark with the new ramps in place: 4.5:1 for text, 3:1 for
-focus rings and UI parts. Because the ramps share the library's curve, a plain
-brand passes. Failures come from `overrides` / `--set` that move a role to
-another step. The hover and pressed alpha tints are not part of this check.
-
-The output is deterministic: the same input gives the same bytes, and there is
-no timestamp, so the file can be committed and diffed.
-
-For maintainers: the generator's source is `create-theme/`. It ships as plain
-ESM in `dist/create-theme/` and needs `culori` at runtime, so `culori` is a
-dependency. `scripts/build-create-theme.js` copies it and writes
-`theme-data.js`, the default theme and the pair list, from `src/app.css` and
-`scripts/contrast-pairs.js` on every build. `verify-build.js` fails if that
-file differs from its sources, and runs the bin from `dist/`. Tests:
-`tests/create-theme.test.js`, part of `npm run test:themes`.
-
-## 🌗 Dark Mode Selectors
-
-`src/app.css` holds one `.dark { … }` rule. `scripts/build-css.js` publishes it,
-in every file that carries dark tokens, as:
-
-```css
-.dark, [data-theme="dark"] { … }
-@media (prefers-color-scheme: dark) { [data-theme="auto"] { … } }
-[data-theme="light"] { color-scheme: light; }
-[data-theme="dark"]  { color-scheme: dark; }
-[data-theme="auto"]  { color-scheme: light dark; }
-```
-
-- `.dark` behaves exactly as before, and still sets no `color-scheme`.
-- Following the system is opt-in through `data-theme="auto"`. No attribute and
-  no class is light.
-- All selectors have the specificity of `.dark`.
-- The class or attribute goes on `<html>`.
-- The dev site and Storybook read `src/app.css` directly, so `data-theme` only
-  exists in the built files.
-
-`validate-theme.js` fails the build if a dark-carrying file lacks any of the
-three, or if the `auto` copy differs from `.dark`.
-
-## 🌙 Dark Mode Action Colors
-
-Dark mode action colors are handled in the `.dark` block of `src/app.css`:
-
-### Primary Actions
-- **No explicit dark mode override needed** - Brand colors are automatically inverted
-- `brand-800` (light mode) → `brand-200` (dark mode) automatically
-- The label is `--color-on-brand`: `.dark` points it at `--zabi-on-brand-dark`
-
-### Secondary Actions  
-- **No explicit dark mode override needed** - Base colors are automatically inverted
-- `base-600` (light mode) → `base-400` (dark mode) automatically
-
-### Danger Actions
-- **No re-pointing needed.** Danger resolves through `--color-error-*`, which
-  mirrors like every other ramp, so dark danger is the same step of the same
-  ramp as light danger. The `.dark` block restates the aliases only so that
-  `zabi-components/theme-dark-only` remains a complete standalone import
-  (`validate-theme.js` enforces that).
-
-## 🎨 Calibrated Colour Ramps
+### Calibrated colour ramps
 
 Every chromatic ramp (`brand`, `citron`, `pine`, `iris`, `warning`, `error`) is
 **generated against one shared lightness curve**, so `<ramp>-600` means the same
@@ -367,7 +496,7 @@ To change the library's own ramps, edit `hue` / `peakChroma` for a ramp in
 `tokens/chromatic-scales.js` and re-run the generator. **Do not hand-edit
 `--zabi-<ramp>-*` in `src/app.css`** — the generator overwrites them. They live
 in `@theme` only; `.dark` no longer holds a copy. (An app rebrands by overriding
-them on `:root` instead; see Rebranding Through Tokens.)
+them on `:root` instead; see [Tokens an app may set](#tokens-an-app-may-set).)
 
 `--zabi-accent-*` is not a generated ramp: each step aliases the citron step of
 the same number.
@@ -376,7 +505,7 @@ The `base` (neutral) ramp is deliberately **not** on this curve: it is wider on
 purpose because it also drives text, borders and the surface levels. Semantic
 `neutral` aliases the base step closest to the chromatic 600s.
 
-## 🧩 Semantic Families
+### Semantic families
 
 Each family exposes the same roles, built from the same steps:
 
@@ -406,89 +535,7 @@ Prefer the **subtle** trio (`-subtle` fill + `-border` edge + `-text` label) for
 anything informational. Solid fills are for the one element on a screen that has
 to shout.
 
-## 📐 Control Geometry
-
-One height scale is shared by **every** form control, so a Button, Input, Select,
-IconButton and Slider of the same size line up in a row:
-
-| size | height | token |
-|---|---|---|
-| `sm` | 32px | `--control-height-sm` |
-| `md` | 40px | `--control-height-md` |
-| `lg` | 48px | `--control-height-lg` |
-
-IconButton also has `xs`, a 24px box for dense pointer-first layouts. No text
-control is that small, so it sits outside the shared scale, and the check pins
-it separately.
-
-Enforced by `scripts/check-control-geometry.js`.
-
-## 🔲 Border Radius
-
-Four radii, chosen by **role**, never by size. A large button is a bigger box
-with the same corner as a small one.
-
-| token | value | use |
-|---|---|---|
-| `--radius-control` | 8px | buttons, inputs, selects, toggles |
-| `--radius-container` | 12px | cards, alerts, panels, list items, code blocks |
-| `--radius-overlay` | 16px | modals, sheets, menus, popovers, toasts |
-| `--radius-pill` | full | badges, avatars, status dots |
-
-`--radius-sm/md/lg/xl` remain as legacy aliases for consumer overrides, but
-components must not use them — `check-control-geometry.js` fails the build if a
-component reaches for a t-shirt radius.
-
-## ✋ Interaction Fills
-
-Hover and active fills are **surface-relative alpha tints**, not fixed ramp steps:
-
-```css
-/* light */
---color-surface-hover:  rgba(9, 9, 11, 0.09);
---color-surface-active: rgba(9, 9, 11, 0.15);
-/* dark */
---color-surface-hover:  rgba(250, 250, 250, 0.08);
---color-surface-active: rgba(250, 250, 250, 0.14);
-```
-
-A fixed step can coincide exactly with the surface it sits on — `base-100` in
-dark mode *is* `--color-surface-base`, which is how ghost-button hover became
-invisible. `check-token-violations.js` now fails on `hover:bg-base-*` /
-`active:bg-base-*` in component source, in `src/routes` and in the `@apply`
-lines of `src/app.css`.
-
-Being one step away is not the same as being visible. `check-contrast.js`
-composites each tint over every surface level and requires 1.2:1 for the
-resting hover and the secondary button, and a further 1.08:1 for each state
-after it. Light hover was 6% ink, 1.14:1, and passed every check until then.
-
-Use `hover:bg-surface-hover` / `active:bg-surface-active` for quiet controls, and
-the `action-*-hover` / `action-*-active` tokens for filled ones.
-
-**State variants next to a hand-written colour class.** `text-description`,
-`border-border`, `bg-card` and the other semantic colour classes are written by
-hand in `src/app.css`, outside every cascade layer, so they beat any generated
-utility on the same element, including the state variant meant to replace
-them. `text-description hover:text-headline` compiled and never changed on
-hover. Each such variant a component uses is restated by hand in the block
-headed "STATE VARIANTS OF THE HAND-WRITTEN COLOUR CLASSES". When a component
-needs a new one, add the rule there; `tests/state-variants.test.ts`
-(`scripts/check-state-variants.js`) fails until it exists.
-
-## ♿ Contrast
-
-`scripts/check-contrast.js` resolves every fill/foreground pair a component can
-render — through the same token chain the CSS uses — in **both** themes, and
-fails below WCAG AA. It also holds the focus ring to 3:1 against the page, a
-card, and the offset gap that separates it from a primary button. Run it after
-re-pointing any token:
-
-```bash
-npm run check:contrast     # or: npm run check:design (all four guards)
-```
-
-## 🧱 Surface Elevation Levels
+### Surface elevation levels
 
 Every surface uses one of four semantic levels. Use these tokens instead of raw `base-*` steps for backgrounds:
 
@@ -572,28 +619,89 @@ To retune the dark levels, edit `SURFACE_ALPHA` in `tokens/surface-ladder.js`, r
 
 > The light surface tokens must stay **below** the `/* Background Colors */` marker in `@theme`. `scripts/sync-theme-tokens.js` regenerates everything between the base-scale aliases and that marker.
 
-## 🎛️ Overriding a Component's Classes
+### Interaction fills
 
-`class` is the public prop on every component and is merged **last**, so a
-call-site utility wins. That promise needs `cn()` (`src/components/util/cn.ts`,
-tailwind-merge) to be true: `rounded-control` and `rounded-container` are
-equal-specificity utilities, so plain concatenation leaves the winner to
-whichever one Tailwind emits later in the stylesheet, not to the caller.
+Hover and active fills are **surface-relative alpha tints**, not fixed ramp steps:
 
-```svelte
-<Card class="rounded-pill" />   <!-- rounded-container is dropped, not fought -->
+```css
+/* light */
+--color-surface-hover:  rgba(9, 9, 11, 0.09);
+--color-surface-active: rgba(9, 9, 11, 0.15);
+/* dark */
+--color-surface-hover:  rgba(250, 250, 250, 0.08);
+--color-surface-active: rgba(250, 250, 250, 0.14);
 ```
 
-Most semantic utilities work with stock tailwind-merge — `bg-card` vs
-`bg-surface-overlay`, `text-headline` vs `text-description` all resolve. The
-role-based radii are the exception and are declared explicitly in `cn.ts`,
-because `control`/`container`/`overlay`/`pill` are role names rather than scale
-values. **Add any future custom scale to that config**, or tailwind-merge keeps
-both classes and stylesheet order silently decides again.
+A fixed step can coincide exactly with the surface it sits on — `base-100` in
+dark mode *is* `--color-surface-base`, which is how ghost-button hover became
+invisible. `check-token-violations.js` now fails on `hover:bg-base-*` /
+`active:bg-base-*` in component source, in `src/routes` and in the `@apply`
+lines of `src/app.css`.
 
-Covered by `tests/class-merge.test.ts`.
+Being one step away is not the same as being visible. `check-contrast.js`
+composites each tint over every surface level and requires 1.2:1 for the
+resting hover and the secondary button, and a further 1.08:1 for each state
+after it. Light hover was 6% ink, 1.14:1, and passed every check until then.
 
-## 🌑 Shadow Scale
+Use `hover:bg-surface-hover` / `active:bg-surface-active` for quiet controls, and
+the `action-*-hover` / `action-*-active` tokens for filled ones.
+
+**State variants next to a hand-written colour class.** `text-description`,
+`border-border`, `bg-card` and the other semantic colour classes are written by
+hand in `src/app.css`, outside every cascade layer, so they beat any generated
+utility on the same element, including the state variant meant to replace
+them. `text-description hover:text-headline` compiled and never changed on
+hover. Each such variant a component uses is restated by hand in the block
+headed "STATE VARIANTS OF THE HAND-WRITTEN COLOUR CLASSES". When a component
+needs a new one, add the rule there; `tests/state-variants.test.ts`
+(`scripts/check-state-variants.js`) fails until it exists.
+
+### Contrast
+
+`scripts/check-contrast.js` resolves every fill/foreground pair a component can
+render — through the same token chain the CSS uses — in **both** themes, and
+fails below WCAG AA. It also holds the focus ring to 3:1 against the page, a
+card, and the offset gap that separates it from a primary button. Run it after
+re-pointing any token:
+
+```bash
+npm run check:contrast     # or: npm run check:design (all five guards)
+```
+
+### Border radius
+
+Four radii, chosen by **role**, never by size. A large button is a bigger box
+with the same corner as a small one.
+
+| token | value | use |
+|---|---|---|
+| `--radius-control` | 8px | buttons, inputs, selects, toggles |
+| `--radius-container` | 12px | cards, alerts, panels, list items, code blocks |
+| `--radius-overlay` | 16px | modals, sheets, menus, popovers, toasts |
+| `--radius-pill` | full | badges, avatars, status dots |
+
+`--radius-sm/md/lg/xl` remain as legacy aliases so that existing consumer
+stylesheets keep compiling, but components must not use them — `check-control-geometry.js` fails the build if a
+component reaches for a t-shirt radius.
+
+### Control geometry
+
+One height scale is shared by **every** form control, so a Button, Input, Select,
+IconButton and Slider of the same size line up in a row:
+
+| size | height | token |
+|---|---|---|
+| `sm` | 32px | `--control-height-sm` |
+| `md` | 40px | `--control-height-md` |
+| `lg` | 48px | `--control-height-lg` |
+
+IconButton also has `xs`, a 24px box for dense pointer-first layouts. No text
+control is that small, so it sits outside the shared scale, and the check pins
+it separately.
+
+Enforced by `scripts/check-control-geometry.js`.
+
+### Shadow scale
 
 Elevation in light mode is **two steps**, not a ramp. A shadow says "this is
 above the page" or "this floats over it" — there is no third meaning, and an
@@ -616,13 +724,13 @@ Rules:
   `shadow` utility is the sneaky one: it resolves to a Tailwind default that
   `app.css` never defines, so no token controls it.
 - Shadows carry elevation in **light mode only**. In dark mode the surface
-  levels above do the work — see Surface Elevation Levels.
+  levels above do the work — see [Surface elevation levels](#surface-elevation-levels).
 - The light shadow is the ramp's own ink (`--shadow-color: 24 24 27`) at
   `--shadow-opacity: 0.14`. Dark keeps black at 0.3.
 
 Enforced by `scripts/check-token-violations.js`.
 
-## 📏 Spacing Rhythm
+### Spacing rhythm
 
 Layout spacing rides a **4px grid**. Half-steps (`gap-1.5`, `px-2.5`, `py-2.5`)
 set up a second rhythm competing with the first: a 6px gap beside an 8px gap is
@@ -638,7 +746,7 @@ a 2px wobble nobody chose, and it accumulates down a dense form.
 
 Enforced by `scripts/check-token-violations.js`.
 
-## 🔠 Type Scale
+### Type scale
 
 `Heading` and `Text` sit on **one** ramp rather than each carrying its own, so a
 heading and the copy beneath it share line boxes instead of nearly matching.
@@ -660,60 +768,129 @@ tighten tracking as they grow and are `semibold`/`bold`; `Text` takes a
 emphasis without being promoted to a heading. `tone="label"` defaults to
 `medium`; every other tone defaults to `normal`.
 
-## 📁 File Structure
+### Overriding a component's classes
 
-```
-src/
-└── app.css          ← 🎯 EDIT THIS FILE FOR ALL THEMING (single source of truth)
+`class` is the public prop on every component and is merged **last**, so a
+call-site utility wins. That promise needs `cn()` (`src/components/util/cn.ts`,
+tailwind-merge) to be true: `rounded-control` and `rounded-container` are
+equal-specificity utilities, so plain concatenation leaves the winner to
+whichever one Tailwind emits later in the stylesheet, not to the caller.
 
-dist/                 ← ⚠️ GENERATED FILES - DON'T EDIT
-├── zabi-components.css              (full CSS with dark mode)
-├── zabi-components-theme.css       (light mode only)
-├── zabi-components-theme-only.css  (light mode only)
-├── zabi-components-theme-dark.css   (dark mode only)
-├── zabi-components-theme-dark-only.css (dark mode only)
-└── zabi-components-colors.css       (standalone, both modes)
-
-examples/             ← ⚠️ EXAMPLES ONLY - DON'T EDIT
-└── theme-extensions/
-    ├── 02-custom-brand-colors.css
-    └── 03-custom-semantic-colors.css
+```svelte
+<Card class="rounded-pill" />   <!-- rounded-container is dropped, not fought -->
 ```
 
-## ⚠️ Important Notes
+Most semantic utilities work with stock tailwind-merge — `bg-card` vs
+`bg-surface-overlay`, `text-headline` vs `text-description` all resolve. The
+role-based radii are the exception and are declared explicitly in `cn.ts`,
+because `control`/`container`/`overlay`/`pill` are role names rather than scale
+values. **Add any future custom scale to that config**, or tailwind-merge keeps
+both classes and stylesheet order silently decides again.
 
-1. **Never edit files in `dist/`** - These are automatically generated from `src/app.css` by `scripts/build-css.js`
-2. **All theming is in `src/app.css`** - This is the single source of truth
-3. **Always edit `src/app.css`** - This is your single source of truth
-4. The `examples/` folder contains examples, not your actual theme
-5. **Dist files are overwritten** every time you run `npm run build:css`
+Covered by `tests/class-merge.test.ts`.
 
-## 🔄 Build Process
+---
 
-When you edit `src/app.css`:
+## For maintainers
 
-1. **Development**: Changes are automatically reflected (no build needed)
-2. **Production**: Run `npm run build:css` to regenerate dist files
-3. The build script (`scripts/build-css.js`) reads `src/app.css` and generates:
-   - `zabi-components.css` - Full compiled CSS with Tailwind processed (includes dark mode)
-   - `zabi-components-theme.css` - Theme block with Tailwind import (light mode only)
-   - `zabi-components-theme-only.css` - Theme block only (light mode only)
-   - `zabi-components-theme-dark.css` - Dark mode theme with Tailwind import
-   - `zabi-components-theme-dark-only.css` - Dark mode theme only
-   - `zabi-components-colors.css` - Standalone CSS custom properties (both light and dark)
+This part is about changing the library's own theme, not an app's.
 
-## 🔄 After Making Changes
+### One source file
 
-### For Development
-After editing `src/app.css`, changes are automatically reflected in your app. No build needed!
+All theming is in `src/app.css`:
 
-### For Production/Library Build
-If you're building the library for distribution:
-```bash
-npm run build:css  # Regenerates all dist CSS files from src/app.css
+- the `@theme` block holds every token and the light values, including the raw
+  `--zabi-*` ramps, declared once;
+- one `.dark { … }` rule remaps roles for dark. No `--zabi-*` token and no hex
+  literal belongs in it; `validate-theme.js` fails the build on either.
+
+The files under `dist/` are generated from it by `scripts/build-css.js` and are
+overwritten on every build. Never edit them. Which file is which is in
+[docs/theme-imports.md](./docs/theme-imports.md). `examples/theme-extensions/`
+holds examples, not the theme.
+
+Parts of `src/app.css` are generated too, so edit the source instead:
+
+| To change | Edit | Then run |
+|---|---|---|
+| A chromatic ramp (`brand`, `citron`, `pine`, `iris`, `warning`, `error`) | `hue` / `peakChroma` in `tokens/chromatic-scales.js` | `npm run sync:tokens` |
+| The neutral ramp | `tokens/base-scale.js` | `npm run sync:tokens` |
+| The dark surface levels | `SURFACE_ALPHA` in `tokens/surface-ladder.js` | `npm run sync:tokens` |
+| A role, a font, a radius | `src/app.css` | nothing in development |
+
+Before a release, `npm run build:css` regenerates the `dist/` files and
+`npm run build:lib` does that and verifies them (`scripts/verify-build.js`).
+
+### Dark mode selectors
+
+`src/app.css` holds one `.dark { … }` rule. `scripts/build-css.js` publishes it,
+in every file that carries dark tokens, as:
+
+```css
+.dark, [data-theme="dark"] { … }
+@media (prefers-color-scheme: dark) { [data-theme="auto"] { … } }
+[data-theme="light"] { color-scheme: light; }
+[data-theme="dark"]  { color-scheme: dark; }
+[data-theme="auto"]  { color-scheme: light dark; }
 ```
 
-## Optional perceptual midpoint generation (OKLCH)
+- `.dark` behaves exactly as before, and still sets no `color-scheme`.
+- All selectors have the specificity of `.dark`.
+- Keep it as one `.dark` rule in the source and do not write the others by
+  hand; `scripts/dark-selectors.js` generates them.
+- The dev site and Storybook read `src/app.css` directly. `postcss.config.cjs`
+  runs the same expansion on it, so `data-theme` works there as it does in the
+  published files.
+
+`validate-theme.js` fails the build if a dark-carrying file lacks any of the
+three, or if the `auto` copy differs from `.dark`.
+
+### Dark mode action colours
+
+- **Primary.** No dark override: `--color-brand-*` mirrors, so `brand-800` in
+  light is `brand-200` in dark. The label is `--color-on-brand`, which `.dark`
+  points at `--zabi-on-brand-dark`.
+- **Secondary.** No dark override: `--color-base-*` mirrors the same way.
+- **Danger.** Resolves through `--color-error-*`, which mirrors like every
+  other ramp. The `.dark` block restates the aliases only so that
+  `zabi-components/theme-dark-only` remains a complete standalone import
+  (`validate-theme.js` enforces that).
+
+Hover and active always move toward the dark end in light mode, and the mirror
+flips that, so "more pressed" means "more contrast against the page" in both
+themes. Never point `-active` at a step on the far side of the ramp; that is
+how the pressed primary label once ended up at 1.66:1.
+
+### Building the generator
+
+The source is `create-theme/`. It ships as plain ESM in `dist/create-theme/`
+and needs `culori` at runtime, so `culori` is a dependency.
+`scripts/build-create-theme.js` copies it and writes `theme-data.js`, the
+default theme and the pair list, from `src/app.css` and
+`scripts/contrast-pairs.js` on every build. `verify-build.js` fails if that
+file differs from its sources, and runs the bin from `dist/`. Tests:
+`tests/create-theme.test.js`, part of `npm run test:themes`.
+
+### Where the two-brand proof lives
+
+- `tests/theme-output.test.js` (`npm run test:themes`) proves from the built
+  CSS that one ramp override rebrands light and dark, and keeps the list of
+  published token names.
+- The docs site runs under two brands: the default, and Amber, which
+  `vite-plugin-brand-themes.js` builds with `createTheme` from the inputs in
+  `src/lib/marketing/brand-inputs.ts` each time the site starts or builds. The
+  switcher is in the top bar and on `/theming`; `?brand=amber` opens any page
+  in it.
+- `playwright/theme-brands.spec.ts` (`npm run test:e2e`) loads component pages
+  under both brands, in light and dark, at desktop width and at 375px, and
+  checks from computed styles that the primary fill, its label, the focus ring,
+  the card surface and the heading face change with the brand and that the
+  label keeps 4.5:1.
+- `tests/theming-guide.test.ts` (`npm test`) fails if this guide, `THEME.md`,
+  `docs/theme-imports.md` or the site's token tables name a token the theme
+  does not publish.
+
+### Optional perceptual midpoint generation (OKLCH)
 
 Base midpoints are frozen hex by default (`fixed` mode).  
 For experimentation, you can generate midpoint steps in OKLCH interpolation and commit the resulting frozen values:

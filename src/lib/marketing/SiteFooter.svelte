@@ -13,6 +13,7 @@
             area to 44px, and the row gap keeps those areas from overlapping. -->
             <ul class="flex flex-wrap gap-x-8 gap-y-6">
                 <li><a class="focus-ring relative inline-flex rounded-sm before:absolute before:-inset-x-2 before:-inset-y-3 hover:text-headline" href="/docs">Docs</a></li>
+                <li><a class="focus-ring relative inline-flex rounded-sm before:absolute before:-inset-x-2 before:-inset-y-3 hover:text-headline" href="/theming">Theming</a></li>
                 <li><a class="focus-ring relative inline-flex rounded-sm before:absolute before:-inset-x-2 before:-inset-y-3 hover:text-headline" href="/components">Components</a></li>
                 <li>
                     <a
