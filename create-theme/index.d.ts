@@ -22,6 +22,25 @@ export interface CreateThemeOptions {
      * colours.
      */
     overrides?: Record<string, string>;
+    /**
+     * Put the exact colour on the solid fill, where the ramp would use its
+     * step 600. `true` pins the brand: in light, `--color-action-primary` is
+     * the hex you gave, with hover and pressed states derived from it and a
+     * label (white, or the ramp's dark end) that reaches 4.5:1 on all three.
+     * The focus ring and links take the colour too where every guarded pair
+     * still passes, and stay on the ramp where it would not. The ramp itself,
+     * and so every tint and border, is unchanged.
+     *
+     * Dark takes the colour only if nothing guarded fails with it; otherwise
+     * dark keeps the mirrored ramp step, as it does without `pin`.
+     *
+     * A pair that fails with the pinned colour is reported in `warnings`. The
+     * colour is never moved to make it pass.
+     *
+     * `{ accent: true }` does the same for `--color-accent` and needs `accent`.
+     * Omitted or `false`: the output is exactly what it is without the option.
+     */
+    pin?: boolean | { brand?: boolean; accent?: boolean };
 }
 
 /** A role pair below WCAG AA with the generated ramps in place. */
@@ -40,6 +59,29 @@ export interface ContrastWarning {
 }
 
 /** An input that will not give the ramp its author probably expects. */
+/** What `pin` did with one colour. */
+export interface PinReport {
+    /** The pinned colour, as `#rrggbb`. */
+    hex: string;
+    light: {
+        /** Role groups that took the colour besides the fill: `"focus ring"`, `"link"`, `"accent text"`. */
+        followed: string[];
+        /** Role groups left on the ramp, because the colour fails a guarded pair there. */
+        onRamp: string[];
+        /** Which way hover and pressed go from the fill. */
+        states: 'darker' | 'lighter';
+    };
+    dark: {
+        /** False when the colour fails in dark and dark keeps the ramp. */
+        pinned: boolean;
+        followed: string[];
+        onRamp: string[];
+        states?: 'darker' | 'lighter';
+        /** When not pinned: the pairs that would fail with the colour. */
+        failed?: string[];
+    };
+}
+
 export interface InputWarning {
     type: 'input';
     option: 'brand' | 'accent' | 'neutral';
@@ -58,10 +100,19 @@ export interface ClosestStep {
 }
 
 export interface CreateThemeResult {
-    /** The stylesheet: a header comment and one `:root { … }` rule. */
+    /**
+     * The stylesheet: a header comment and one `:root { … }` rule. With `pin`,
+     * two more rules follow, with the dark values of the pinned roles:
+     * `.dark, [data-theme="dark"] { … }` and the same declarations for
+     * `[data-theme="auto"]` inside `@media (prefers-color-scheme: dark)`.
+     */
     css: string;
-    /** Every declaration in `css`, name to value, in output order. */
+    /** Every declaration of the `:root` rule, name to value, in output order. */
     tokens: Record<string, string>;
+    /** Only with `pin`: every declaration of the dark rules. */
+    darkTokens?: Record<string, string>;
+    /** Only with `pin`: what was pinned and which roles took the colour. */
+    pinned?: { brand?: PinReport; accent?: PinReport };
     /** Contrast failures and input notes. Empty when everything passes. */
     warnings: ThemeWarning[];
     closest: { brand: ClosestStep; accent?: ClosestStep; neutral?: ClosestStep };

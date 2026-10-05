@@ -11,6 +11,8 @@
  *                      generator can re-resolve every role over new ramps
  *   pairs              scripts/contrast-pairs.js — the list check-contrast.js
  *                      holds the library itself to
+ *   darkSelectors      scripts/dark-selectors.js — where the dark theme is
+ *                      published, for the dark half of a pinned brand
  *
  * It is written on every build from those two sources and is never committed,
  * so it cannot go stale: there is no copy to forget. scripts/verify-build.js
@@ -25,6 +27,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { readThemeMaps } from './resolve-tokens.js';
 import { buildPairs } from './contrast-pairs.js';
+import { DARK_CLASS, DARK_ATTRIBUTE, AUTO_ATTRIBUTE, AUTO_MEDIA } from './dark-selectors.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
@@ -41,7 +44,12 @@ const pick = (map) => Object.fromEntries(Object.entries(map).filter(([name]) => 
 /** The default theme as the generator needs it. Pure: same sources, same object. */
 export function buildThemeData() {
     const { light, darkOnly } = readThemeMaps(fs.readFileSync(path.join(root, 'src', 'app.css'), 'utf8'));
-    return { light: pick(light), darkOnly: pick(darkOnly), pairs: buildPairs() };
+    return {
+        light: pick(light),
+        darkOnly: pick(darkOnly),
+        pairs: buildPairs(),
+        darkSelectors: { always: `${DARK_CLASS},\n${DARK_ATTRIBUTE}`, auto: AUTO_ATTRIBUTE, media: AUTO_MEDIA },
+    };
 }
 
 export function renderThemeData(data) {

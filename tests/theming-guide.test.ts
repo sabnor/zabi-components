@@ -40,6 +40,8 @@ const NOT_TOKENS = new Set([
     "--strict",
     "--set",
     "--help",
+    "--pin",
+    "--pin-accent",
     // other commands the docs quote
     "--exit-code",
     "--dry-run",

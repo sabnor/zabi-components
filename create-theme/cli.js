@@ -17,12 +17,14 @@ import { createTheme } from './index.js';
 const HELP = `zabi-theme: generate brand tokens for zabi-components
 
 Usage
-  zabi-theme --brand <hex> [--accent <hex>] [--neutral <hex>] [--out <file>] [--strict]
-             [--set <token>=<value> ...]
+  zabi-theme --brand <hex> [--pin] [--accent <hex>] [--pin-accent] [--neutral <hex>]
+             [--out <file>] [--strict] [--set <token>=<value> ...]
 
 Options
   --brand <hex>     Brand colour (required). Builds --zabi-brand-50 … 950.
+  --pin             Put the exact brand colour on primary buttons (see below).
   --accent <hex>    Second brand colour. Builds --zabi-accent-50 … 950.
+  --pin-accent      The same for the solid accent fill. Needs --accent.
   --neutral <hex>   Tints the 21-step neutral ramp, --zabi-base-50 … 950.
   --out <file>      Write the CSS here. Without it the CSS goes to stdout.
   --strict          Exit 1 when any role pair is below WCAG AA.
@@ -34,6 +36,13 @@ Each ramp is built on the library's lightness curve. Your colour supplies hue
 and chroma and is not pinned to a step, so the exact hex may not appear in the
 file; the header says which step is closest.
 
+With --pin the ramp is the same, and the primary action is the exact colour in
+light: the fill, its hover and pressed states, and where they still pass, the
+focus ring and links. The label is white or the ramp's dark end, whichever
+reaches 4.5:1. Dark takes the colour only if it passes there; otherwise dark
+keeps the ramp, and the header says so. A pair that fails is reported, and
+the colour is never moved to make it pass.
+
 Import the file after the theme:
   @import "zabi-components/theme-only";
   @import "zabi-components/theme-dark-only";
@@ -41,7 +50,7 @@ Import the file after the theme:
 `;
 
 const VALUE_OPTIONS = ['brand', 'accent', 'neutral', 'out'];
-const FLAG_OPTIONS = ['strict', 'help'];
+const FLAG_OPTIONS = ['strict', 'help', 'pin', 'pin-accent'];
 
 function usageError(message) {
     process.stderr.write(`zabi-theme: ${message}\nRun "zabi-theme --help" for usage.\n`);
@@ -92,6 +101,8 @@ try {
         accent: options.accent,
         neutral: options.neutral,
         overrides: options.overrides,
+        // Left out when not asked for, so the options are what they always were.
+        ...(options.pin || options['pin-accent'] ? { pin: { brand: !!options.pin, accent: !!options['pin-accent'] } } : {}),
     });
 } catch (error) {
     if (error instanceof TypeError) usageError(error.message.replace(/^zabi-theme: /, ''));
@@ -117,6 +128,12 @@ for (const warning of result.warnings) {
 const closest = Object.entries(result.closest)
     .map(([name, c]) => `${name} closest to step ${c.step}`)
     .join(', ');
+for (const [name, report] of Object.entries(result.pinned ?? {})) {
+    process.stderr.write(
+        `zabi-theme: ${name} ${report.hex} is pinned in light` +
+            (report.dark.pinned ? ' and in dark.\n' : '; dark keeps the ramp, because the colour fails there.\n'),
+    );
+}
 process.stderr.write(
     `zabi-theme: ${options.out ? `wrote ${options.out}` : 'done'} (${closest}); ` +
         (contrast.length === 0

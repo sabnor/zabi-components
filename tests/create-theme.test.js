@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import postcss from 'postcss';
 import { readThemeMaps, resolveTokenColor } from '../scripts/resolve-tokens.js';
 import { buildThemeData, renderThemeData, GENERATOR_FILES, THEME_DATA_FILE } from '../scripts/build-create-theme.js';
 import { TARGET_LIGHTNESS, measureLightness } from '../tokens/chromatic-scales.js';
@@ -326,4 +327,225 @@ test('the bin warns on stderr, and --strict turns a failed pair into exit 1', ()
   const grey = run('--brand', '#808080', '--strict');
   assert.equal(grey.status, 0);
   assert.match(grey.stderr, /warning: brand #808080 has almost no colour/);
+});
+
+/* ---------- pin: the exact brand colour on the primary action ---------- */
+
+/** What a page computes with a pinned theme: the dark rule comes after `:root`. */
+function themedPinned(result) {
+  return {
+    light: { ...defaults.light, ...result.tokens },
+    dark: { ...defaults.light, ...defaults.darkOnly, ...result.tokens, ...(result.darkTokens ?? {}) },
+  };
+}
+
+function ratio(a, b) {
+  const lum = (hex) => {
+    const [r, g, b2] = [1, 3, 5].map((i) => {
+      const v = parseInt(hex.slice(i, i + 2), 16) / 255;
+      return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b2;
+  };
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/** Every token a guarded pair reads, so "dark is as it was" can be said of all of them. */
+const guardedTokens = [...new Set(buildThemeData().pairs.flatMap((pair) => [pair.bg, pair.fg]))];
+
+test('without pin the output is what it was: no dark rule, no new fields', () => {
+  for (const options of [{ brand: '#0026EA' }, { brand: '#C17B00', accent: '#ff3366', neutral: '#78716c' }]) {
+    const plain = createTheme(options);
+    for (const off of [false, undefined, null, {}, { brand: false }]) {
+      assert.deepEqual(createTheme({ ...options, pin: off }), plain);
+    }
+    assert.deepEqual(Object.keys(plain), ['css', 'tokens', 'warnings', 'closest']);
+    assert.ok(!plain.css.includes('.dark'));
+    assert.ok(!plain.css.includes('PINNED'));
+    assert.equal(plain.css.match(/\{/g).length, 1, 'one rule, :root');
+  }
+  // The frozen bytes of the unpinned ultramarine theme: the header and the first and last declarations.
+  const { css } = createTheme({ brand: '#0026EA' });
+  assert.ok(css.includes(' * is not pinned to a step: the exact hex may not appear below.\n'));
+  assert.ok(css.endsWith('  --zabi-on-brand-dark: var(--zabi-brand-950);\n}\n'));
+});
+
+test('pin puts the exact colour on the light primary action and leaves dark as it was', () => {
+  const brand = '#0026ea';
+  const plain = createTheme({ brand: '#0026EA' });
+  const pinned = createTheme({ brand: '#0026EA', pin: true });
+  assert.deepEqual(createTheme({ brand: '#0026EA', pin: { brand: true } }), pinned);
+  const { light, dark } = themedPinned(pinned);
+
+  // The ramp is the unpinned ramp: tints, borders and every other role keep their place.
+  for (const step of RAMP_STEPS) assert.equal(pinned.tokens[`--zabi-brand-${step}`], plain.tokens[`--zabi-brand-${step}`]);
+  assert.deepEqual(pinned.closest, plain.closest);
+  assert.equal(resolveTokenColor(light, '--color-action-primary-subtle'), plain.tokens['--zabi-brand-200']);
+
+  // Light: the fill is the colour, to the byte, with a white label at about 8.5:1.
+  assert.equal(pinned.tokens['--color-action-primary'], brand);
+  assert.equal(resolveTokenColor(light, '--color-action-primary'), brand);
+  assert.equal(resolveTokenColor(light, '--color-action-primary-text'), '#ffffff');
+  const white = ratio('#ffffff', brand);
+  assert.ok(white > 8.4 && white < 8.7, `white on ${brand} is ${white.toFixed(2)}:1`);
+
+  // Hover and pressed are darker steps of the same colour, and still carry the label.
+  const [fill, hover, pressed] = ['', '-hover', '-active'].map((suffix) => resolveTokenColor(light, `--color-action-primary${suffix}`));
+  assert.ok(measureLightness(hover) < measureLightness(fill) - 5, `${hover} is not darker than ${fill}`);
+  assert.ok(measureLightness(pressed) < measureLightness(hover) - 5, `${pressed} is not darker than ${hover}`);
+  for (const colour of [hover, pressed]) assert.ok(ratio('#ffffff', colour) >= 4.5);
+
+  // The roles that are the brand colour by design follow it, because they pass.
+  assert.equal(resolveTokenColor(light, '--color-focus-ring'), brand);
+  assert.equal(resolveTokenColor(light, '--color-nav-menu-focus'), brand);
+  assert.equal(resolveTokenColor(light, '--color-link'), brand);
+  assert.equal(resolveTokenColor(light, '--color-primary'), brand);
+  assert.deepEqual(pinned.pinned.brand.light, { followed: ['focus ring', 'link'], onRamp: [], states: 'darker' });
+
+  // Dark: this blue is 2.08:1 against a dark page, so dark is not pinned, and
+  // every guarded token resolves exactly as it does without pin.
+  assert.equal(pinned.pinned.brand.dark.pinned, false);
+  assert.ok(pinned.pinned.brand.dark.failed.includes('pinned primary fill against the page'));
+  const plainDark = themed(plain.tokens).dark;
+  for (const token of guardedTokens) {
+    assert.equal(resolveTokenColor(dark, token), resolveTokenColor(plainDark, token), `dark ${token}`);
+  }
+  assert.equal(resolveTokenColor(dark, '--color-action-primary'), plain.tokens['--zabi-brand-400']);
+  assert.equal(resolveTokenColor(dark, '--color-link'), plain.tokens['--zabi-brand-300']);
+  // The dark rule only remaps roles: no hex, as in the library's own dark block.
+  for (const [role, value] of Object.entries(pinned.darkTokens)) {
+    assert.match(value, /^var\(--color-brand-\d+\)$/, `${role}: ${value}`);
+    assert.ok(role in pinned.tokens, `${role} is restated in dark without being set on :root`);
+  }
+
+  assert.deepEqual(contrastWarnings(pinned), []);
+  assert.match(pinned.css, / \* PINNED brand #0026ea: in light, the primary action is exactly this colour\./);
+  assert.match(pinned.css, / \*   light, also this colour: focus ring, link\n/);
+  assert.match(pinned.css, / \*   dark: NOT pinned\./);
+  assert.match(pinned.css, /Contrast: all \d+ role pairs pass WCAG AA in light and dark\./);
+  assert.equal(createTheme({ brand: '#0026EA', pin: true }).css, pinned.css, 'same options, same bytes');
+});
+
+test('a pinned file carries its dark half under every selector the dark theme is published under', () => {
+  const { css, tokens, darkTokens } = createTheme({ brand: '#0026EA', pin: true });
+  const rules = [];
+  postcss.parse(css).walkRules((rule) => {
+    const media = rule.parent.type === 'atrule' ? `@${rule.parent.name} ${rule.parent.params} ` : '';
+    const declarations = {};
+    rule.walkDecls((decl) => (declarations[decl.prop] = decl.value));
+    rules.push([media + rule.selectors.map((s) => s.trim()).join(', '), declarations]);
+  });
+  assert.deepEqual(rules.map(([selector]) => selector), [
+    ':root',
+    '.dark, [data-theme="dark"]',
+    '@media (prefers-color-scheme: dark) [data-theme="auto"]',
+  ]);
+  assert.deepEqual(rules[0][1], tokens);
+  assert.deepEqual(rules[1][1], darkTokens);
+  assert.deepEqual(rules[2][1], darkTokens);
+  // The selectors come from the build, not from a second copy in the generator.
+  const data = buildThemeData();
+  assert.deepEqual(data.darkSelectors, { always: '.dark,\n[data-theme="dark"]', auto: '[data-theme="auto"]', media: '(prefers-color-scheme: dark)' });
+});
+
+test('a colour that needs a dark label is pinned with one, and its states go lighter', () => {
+  const pinned = createTheme({ brand: '#C17B00', pin: true });
+  const { light, dark } = themedPinned(pinned);
+  assert.equal(resolveTokenColor(light, '--color-action-primary'), '#c17b00');
+  // White is 3.44:1 on this amber; the ramp's dark end passes, on the fill and on both states.
+  const label = resolveTokenColor(light, '--color-action-primary-text');
+  assert.equal(label, pinned.tokens['--zabi-brand-950']);
+  const [fill, hover, pressed] = ['', '-hover', '-active'].map((suffix) => resolveTokenColor(light, `--color-action-primary${suffix}`));
+  for (const colour of [fill, hover, pressed]) assert.ok(ratio(label, colour) >= 4.5, `${label} on ${colour}`);
+  assert.ok(measureLightness(hover) > measureLightness(fill) && measureLightness(pressed) > measureLightness(hover));
+  assert.equal(pinned.pinned.brand.light.states, 'lighter');
+  // As text on a white card the amber is 3.4:1: links and the ring stay on the ramp, which passes.
+  assert.deepEqual(pinned.pinned.brand.light.onRamp, ['focus ring', 'link']);
+  assert.equal(resolveTokenColor(light, '--color-link'), pinned.tokens['--zabi-brand-700']);
+  assert.equal(resolveTokenColor(light, '--color-focus-ring'), pinned.tokens['--zabi-brand-600']);
+  // It passes on a dark page, so dark takes the colour too.
+  assert.equal(pinned.pinned.brand.dark.pinned, true);
+  assert.equal(resolveTokenColor(dark, '--color-action-primary'), '#c17b00');
+  assert.ok(ratio(resolveTokenColor(dark, '--color-action-primary-text'), '#c17b00') >= 4.5);
+  // The one thing it cannot do is reported, and the colour is not moved to hide it.
+  assert.deepEqual(contrastWarnings(pinned).map((w) => `${w.mode} ${w.pair} ${w.ratio}`), [
+    'light pinned primary fill against the page 2.92',
+  ]);
+});
+
+test('a colour that cannot be a light button is pinned anyway, and every failing pair is a warning', () => {
+  const pinned = createTheme({ brand: '#FFE600', pin: true });
+  const { light } = themedPinned(pinned);
+  assert.equal(resolveTokenColor(light, '--color-action-primary'), '#ffe600');
+  assert.equal(resolveTokenColor(light, '--color-action-primary-text'), pinned.tokens['--zabi-brand-950']);
+  const failed = contrastWarnings(pinned).map((w) => `${w.mode} ${w.pair}`);
+  assert.deepEqual(failed, [
+    'light focus offset gap on primary button',
+    'light pinned primary fill against the page',
+    'light pinned primary fill against a card',
+  ]);
+  // No label pair is among them: the dark end reaches 4.5:1 on the yellow.
+  assert.ok(!failed.some((pair) => /label|button primary/.test(pair)));
+  for (const warning of contrastWarnings(pinned)) assert.ok(pinned.css.includes(warning.message));
+  // The ring and links would be invisible in yellow: they stay on the ramp.
+  assert.equal(resolveTokenColor(light, '--color-focus-ring'), pinned.tokens['--zabi-brand-600']);
+  assert.equal(resolveTokenColor(light, '--color-link'), pinned.tokens['--zabi-brand-700']);
+});
+
+test('pin leaves a role the app set itself alone, in both modes', () => {
+  const pinned = createTheme({ brand: '#0026EA', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } });
+  assert.equal(pinned.tokens['--color-link'], 'var(--color-brand-800)');
+  assert.ok(!('--color-link' in pinned.darkTokens), 'the dark rule would undo the override in dark');
+  assert.equal(pinned.tokens['--color-action-primary'], '#0026ea');
+  assert.equal(pinned.tokens['--color-link-hover'], pinned.tokens['--color-action-primary-hover']);
+});
+
+test('pin.accent pins the solid accent fill; bad pin values are TypeErrors', () => {
+  const pinned = createTheme({ brand: '#0026EA', accent: '#B4005A', pin: { brand: true, accent: true } });
+  const { light } = themedPinned(pinned);
+  assert.equal(resolveTokenColor(light, '--color-accent'), '#b4005a');
+  assert.ok(ratio(resolveTokenColor(light, '--color-on-accent'), '#b4005a') >= 4.5);
+  assert.equal(resolveTokenColor(light, '--color-action-primary'), '#0026ea');
+  assert.deepEqual(Object.keys(pinned.pinned), ['brand', 'accent']);
+  assert.match(pinned.css, / \* PINNED accent #b4005a: in light, the solid accent fill is exactly this colour\./);
+  // Accent alone.
+  const accentOnly = createTheme({ brand: '#0026EA', accent: '#B4005A', pin: { accent: true } });
+  assert.equal(accentOnly.tokens['--color-accent'], '#b4005a');
+  assert.ok(!('--color-action-primary' in accentOnly.tokens));
+
+  assert.throws(() => createTheme({ brand: '#0026EA', pin: { accent: true } }), /pin\.accent needs an accent colour/);
+  assert.throws(() => createTheme({ brand: '#0026EA', pin: 'yes' }), /pin must be true, false or \{ brand, accent \}/);
+  assert.throws(() => createTheme({ brand: '#0026EA', pin: { neutral: true } }), /pin has no "neutral"/);
+});
+
+test('the bin takes --pin and --pin-accent, says what it pinned, and --strict still fails a failed pair', () => {
+  const pinned = run('--brand', '#0026EA', '--pin');
+  assert.equal(pinned.status, 0);
+  assert.equal(pinned.stdout, createTheme({ brand: '#0026EA', pin: true }).css);
+  assert.match(pinned.stderr, /brand #0026ea is pinned in light; dark keeps the ramp, because the colour fails there\./);
+  assert.match(pinned.stderr, /every role pair passes WCAG AA in light and dark\./);
+  // Without the flag the bin's output is the unpinned file.
+  assert.equal(run('--brand', '#0026EA').stdout, createTheme({ brand: '#0026EA' }).css);
+
+  const amber = run('--brand', '#C17B00', '--pin');
+  assert.equal(amber.status, 0);
+  assert.match(amber.stderr, /warning: light · pinned primary fill against the page: #c17b00 on #ececee is 2\.92:1, needs 3:1/);
+  assert.match(amber.stderr, /brand #c17b00 is pinned in light and in dark\./);
+  assert.equal(run('--brand', '#C17B00', '--pin', '--strict').status, 1);
+  assert.equal(run('--brand', '#0026EA', '--pin', '--strict').status, 0);
+
+  const both = run('--brand', '#0026EA', '--accent', '#B4005A', '--pin', '--pin-accent');
+  assert.equal(both.stdout, createTheme({ brand: '#0026EA', accent: '#B4005A', pin: { brand: true, accent: true } }).css);
+
+  for (const [args, message] of [
+    [['--brand', '#0026EA', '--pin=yes'], /--pin takes no value/],
+    [['--brand', '#0026EA', '--pin-accent'], /pin\.accent needs an accent colour/],
+  ]) {
+    const result = run(...args);
+    assert.equal(result.status, 2, args.join(' '));
+    assert.match(result.stderr, message);
+    assert.equal(result.stdout, '');
+  }
+  assert.match(run('--help').stdout, /--pin {13}Put the exact brand colour on primary buttons/);
 });

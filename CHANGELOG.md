@@ -14,6 +14,15 @@ Whenever token or CSS import API surface changes, include:
 
 ### Added
 
+- **`zabi-theme --pin`** (and `createTheme({ pin: true })`): the primary action
+  is the exact brand colour in light, with hover and pressed states derived
+  from it and a label checked at 4.5:1. The focus ring and links take the
+  colour where every guarded pair still passes. Dark keeps the mirrored ramp
+  step unless the colour passes there; the file header says which. A pair that
+  fails is a warning and the colour is never moved. `--pin-accent` /
+  `pin: { accent: true }` does the same for the solid accent fill. Without the
+  option the output is unchanged.
+
 ### Changed
 
 - **Nested corners are concentric.** Where a rounded element sits closer to
