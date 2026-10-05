@@ -8,7 +8,7 @@ const meta = {
         layout: 'padded',
         docs: {
             description: {
-                component: 'Tabs component with full keyboard navigation. Use Arrow Left/Right to navigate between tabs, Home/End to jump to first/last tab, and Enter/Space to activate a tab.'
+                component: 'Tabs component with full keyboard navigation. Use Arrow Left/Right to navigate between tabs, Home/End to jump to first/last tab, and Enter/Space to activate a tab. When the tabs do not fit their row the list scrolls sideways, without a scrollbar: the edge with more tabs beyond it fades, and the selected and the focused tab are kept in view. fullWidth makes two or three tabs share the row.'
             }
         }
     },
@@ -102,7 +102,26 @@ export const ManyTabs: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Narrow the preview to see how a long row of tabs behaves on a small screen.'
+                story: 'Narrow the preview: the row scrolls sideways and the edge with more tabs fades. The arrow keys bring each tab into view as it takes focus. A row that fits is not changed.'
+            }
+        }
+    }
+};
+
+export const FullWidth: Story = {
+    args: {
+        tabs: [
+            { id: 'list', label: 'List' },
+            { id: 'month', label: 'Month' },
+            { id: 'map', label: 'Map' }
+        ],
+        activeTab: 'list',
+        fullWidth: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'fullWidth: the tabs share the row equally, for two or three tabs on a phone. A label too long for its share wraps.'
             }
         }
     }
