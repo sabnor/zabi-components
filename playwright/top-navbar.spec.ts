@@ -176,7 +176,7 @@ test.describe("TopNavbar phone menu at 375px", () => {
     }) => {
         await gotoLab(page);
         await openMenu(page);
-        await panel(page).getByRole("button", { name: /Switch to (dark|light) mode/ }).focus();
+        await panel(page).getByRole("button", { name: "Dark mode", exact: true }).focus();
         await page.keyboard.press("Tab");
         await expect(page.getByTestId("lab-outside")).toBeFocused();
         await expect(panel(page)).toHaveCount(0);
@@ -283,7 +283,7 @@ test.describe("TopNavbar phone menu on a short screen", () => {
         expect(sizes.overscroll).toBe("contain");
 
         // The last control in the menu can be brought on screen, without moving the page.
-        const last = panel(page).getByRole("button", { name: /Switch to (dark|light) mode/ });
+        const last = panel(page).getByRole("button", { name: "Dark mode", exact: true });
         await last.scrollIntoViewIfNeeded();
         const box = (await last.boundingBox())!;
         expect(box.y + box.height).toBeLessThanOrEqual(320);

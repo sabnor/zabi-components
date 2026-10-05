@@ -65,8 +65,7 @@
         light: "light",
         dark: "dark",
         describe: (current, next) => `Theme: ${current}. Switch to ${next}`,
-        toLight: "Switch to light mode",
-        toDark: "Switch to dark mode",
+        darkMode: "Dark mode",
         beforeMount: "Theme toggle",
     };
     const text = $derived({ ...DEFAULT_LABELS, ...labels });
@@ -111,6 +110,8 @@
         mounted = true;
         if (typeof document === "undefined") return;
         const root = document.documentElement;
+
+        clearInlineScheme(root);
 
         // The choice made last time, unless a script in <head> has applied it
         // already (`themeInitScript`) or the app passed a mode of its own.
@@ -165,9 +166,14 @@
               : "dark",
     );
 
-    const accessibleName = $derived(
-        modes === "three" ? text.describe(text[pageMode], text[nextMode]) : isDark ? text.toLight : text.toDark,
-    );
+    /**
+     * Two modes: a switch with one name, "Dark mode", and `aria-pressed` for its
+     * state. The name used to flip as well ("Switch to dark mode", then "Switch
+     * to light mode, pressed"), and "pressed" on "Switch to light mode" says
+     * two things at once. Three modes are steps, not on and off, so there the
+     * name carries the state and there is no `aria-pressed`.
+     */
+    const accessibleName = $derived(modes === "three" ? text.describe(text[pageMode], text[nextMode]) : text.darkMode);
 
     function toggleTheme(event: Event) {
         if (disabled) return;
@@ -188,13 +194,24 @@
             if (!isDark) root.classList.remove("dark");
             return;
         }
-        if (isDark) {
-            root.classList.add("dark");
-            root.style.colorScheme = "dark";
-        } else {
-            root.classList.remove("dark");
-            root.style.colorScheme = "light";
-        }
+        // The class only. The theme sets `color-scheme` for it (dark under
+        // `.dark`, light on the root otherwise), so no inline value is written:
+        // one left behind would outrank the stylesheet, and the next time the
+        // app added or removed the class itself the tokens would change and
+        // the native controls would not.
+        root.classList.toggle("dark", isDark);
+        clearInlineScheme(root);
+    }
+
+    /**
+     * Removes an inline `color-scheme` of "light" or "dark" from `<html>`: what
+     * this button wrote before the theme set the scheme itself, and what a
+     * start-up script copied from the old docs writes. Any other inline value
+     * is the app's own and is left alone.
+     */
+    function clearInlineScheme(root: HTMLElement) {
+        const inline = root.style.colorScheme;
+        if (inline === "light" || inline === "dark") root.style.removeProperty("color-scheme");
     }
 
     /**

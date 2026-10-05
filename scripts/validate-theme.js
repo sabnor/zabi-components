@@ -8,6 +8,7 @@ import {
   LIGHT_ATTRIBUTE,
   AUTO_ATTRIBUTE,
   AUTO_MEDIA,
+  LIGHT_SCHEME_SELECTORS,
 } from './dark-selectors.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -230,6 +231,53 @@ function validateDarkSelectors(filePath, fileName) {
   return true;
 }
 
+/**
+ * The light theme says `color-scheme: light` on the root element and for
+ * `data-theme="light"`. Without it a page with no class and no attribute left
+ * the scheme to the browser, and a `light dark` meta tag on a dark system gave
+ * dark native controls on light surfaces.
+ *
+ * The rule has to come before every rule that sets a dark or automatic scheme
+ * in the same file: they have the same specificity, so the later one wins, and
+ * a light rule placed after them would turn a dark page's scrollbars light.
+ */
+function validateLightScheme(filePath, fileName) {
+  const root = postcss.parse(fs.readFileSync(filePath, 'utf8'));
+  const errors = [];
+  /** [selectors, value] for every rule that sets color-scheme, in source order. */
+  const schemes = [];
+  root.walkRules((rule) => {
+    rule.each((node) => {
+      if (node.type === 'decl' && node.prop === 'color-scheme') {
+        schemes.push([(rule.selectors ?? [rule.selector]).map((s) => s.trim()), node.value.trim()]);
+      }
+    });
+  });
+  const isLightRule = ([selectors, value]) =>
+    value === 'light' &&
+    selectors.length === LIGHT_SCHEME_SELECTORS.length &&
+    LIGHT_SCHEME_SELECTORS.every((selector) => selectors.includes(selector));
+  const at = schemes.findIndex(isLightRule);
+  if (at === -1) {
+    errors.push(`no ${LIGHT_SCHEME_SELECTORS.join(', ')} { color-scheme: light } rule`);
+  } else {
+    if (schemes.filter(isLightRule).length > 1) errors.push('more than one light color-scheme rule');
+    const before = schemes.slice(0, at).filter(([, value]) => value !== 'light');
+    if (before.length > 0) {
+      errors.push(
+        `the light color-scheme rule comes after ${before.map(([selectors]) => selectors.join(', ')).join(' and ')}, which it would then override`,
+      );
+    }
+  }
+  if (errors.length > 0) {
+    console.error(`❌ Light color-scheme invalid in ${fileName}:`);
+    errors.forEach((error) => console.error(`   - ${error}`));
+    return false;
+  }
+  console.log(`✓ ${fileName} says color-scheme: light for the root and ${LIGHT_ATTRIBUTE}, before any dark rule`);
+  return true;
+}
+
 /** Classes the components need that Tailwind cannot generate from the tokens. */
 const REQUIRED_COMPONENT_SELECTORS = [
   '.text-action-primary',
@@ -427,6 +475,22 @@ async function validateThemes() {
       continue;
     }
     if (!validateDarkSelectors(filePath, name)) allValid = false;
+  }
+
+  console.log('\n🔍 Validating the light theme\'s color-scheme in every file that carries light tokens...');
+  for (const name of [
+    'zabi-components-theme.css',
+    'zabi-components-theme-only.css',
+    'zabi-components-colors.css',
+    'zabi-components.css',
+  ]) {
+    const filePath = path.join(distDir, name);
+    if (!fs.existsSync(filePath)) {
+      console.error(`❌ ${name} not found`);
+      allValid = false;
+      continue;
+    }
+    if (!validateLightScheme(filePath, name)) allValid = false;
   }
 
   console.log('\n🔍 Validating surface elevation levels...');

@@ -1852,7 +1852,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "Partial<ThemeToggleLabels>",
                         required: false,
                         description:
-                            "Texts of the accessible name: auto, light, dark and describe(current, next) for three modes, toLight and toDark for two, beforeMount.",
+                            "Texts of the accessible name: darkMode for two modes (the name is constant and aria-pressed says the state); auto, light, dark and describe(current, next) for three; beforeMount.",
                     },
                     {
                         name: "disabled",

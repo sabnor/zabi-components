@@ -37,14 +37,14 @@ test.describe("ThemeToggle and data-theme", () => {
     test('on a data-theme="dark" page it reads dark and switches the attribute, not the class', async ({ page }) => {
         await withRootAttributes(page, 'data-theme="dark"');
         await page.goto("/components/ThemeToggle", { waitUntil: "domcontentloaded" });
-        const toggle = page.locator(PREVIEWS).getByRole("button", { name: /Switch to (dark|light) mode/ }).first();
-        await expect(toggle).toHaveAccessibleName("Switch to light mode");
+        const toggle = page.locator(PREVIEWS).getByRole("button", { name: "Dark mode", exact: true }).first();
+        await expect(toggle).toHaveAttribute("aria-pressed", "true");
         await expect(toggle).toHaveAttribute("aria-pressed", "true");
         const dark = await root(page);
         expect(dark).toMatchObject({ class: false, attribute: "dark" });
 
         await toggle.click();
-        await expect(toggle).toHaveAccessibleName("Switch to dark mode");
+        await expect(toggle).toHaveAttribute("aria-pressed", "false");
         const light = await root(page);
         expect(light).toMatchObject({ class: false, attribute: "light" });
         expect(light.page).not.toBe(dark.page);
@@ -62,17 +62,17 @@ test.describe("ThemeToggle and data-theme", () => {
         // take the page off "auto".
         await page.addInitScript(() => localStorage.setItem("theme", "unset"));
         await page.goto("/components/ThemeToggle", { waitUntil: "domcontentloaded" });
-        const toggle = page.locator(PREVIEWS).getByRole("button", { name: /Switch to (dark|light) mode/ }).first();
-        await expect(toggle).toHaveAccessibleName("Switch to light mode");
+        const toggle = page.locator(PREVIEWS).getByRole("button", { name: "Dark mode", exact: true }).first();
+        await expect(toggle).toHaveAttribute("aria-pressed", "true");
         const dark = await root(page);
         expect(dark).toMatchObject({ class: false, attribute: "auto" });
 
         // The system changes: the page follows in CSS and the button follows the page.
         await page.emulateMedia({ colorScheme: "light" });
-        await expect(toggle).toHaveAccessibleName("Switch to dark mode");
+        await expect(toggle).toHaveAttribute("aria-pressed", "false");
         expect(await root(page)).toMatchObject({ class: false, attribute: "auto" });
         await page.emulateMedia({ colorScheme: "dark" });
-        await expect(toggle).toHaveAccessibleName("Switch to light mode");
+        await expect(toggle).toHaveAttribute("aria-pressed", "true");
 
         await toggle.click();
         const light = await root(page);
@@ -82,8 +82,8 @@ test.describe("ThemeToggle and data-theme", () => {
 
     test("on a page without data-theme it toggles the class, as it always has", async ({ page }) => {
         await page.goto("/components/ThemeToggle", { waitUntil: "domcontentloaded" });
-        const toggle = page.locator(PREVIEWS).getByRole("button", { name: /Switch to (dark|light) mode/ }).first();
-        await expect(toggle).toHaveAccessibleName("Switch to dark mode");
+        const toggle = page.locator(PREVIEWS).getByRole("button", { name: "Dark mode", exact: true }).first();
+        await expect(toggle).toHaveAttribute("aria-pressed", "false");
         const light = await root(page);
         expect(light).toMatchObject({ class: false, attribute: null });
 
@@ -91,7 +91,10 @@ test.describe("ThemeToggle and data-theme", () => {
         const dark = await root(page);
         expect(dark).toMatchObject({ class: true, attribute: null });
         expect(dark.page).not.toBe(light.page);
-        expect(await page.evaluate(() => document.documentElement.style.colorScheme)).toBe("dark");
+        // The scheme comes from the theme's `.dark` rule; nothing is written inline.
+        expect(
+            await page.evaluate(() => [document.documentElement.style.colorScheme, getComputedStyle(document.documentElement).colorScheme]),
+        ).toEqual(["", "dark"]);
 
         await toggle.click();
         expect(await root(page)).toEqual(light);
@@ -201,8 +204,8 @@ test.describe('ThemeToggle with modes="three"', () => {
         expect(await icon(page)).toEqual(["monitor"]);
         // The two-way button beside it reads the result.
         await expect(
-            page.locator(PREVIEWS).getByRole("button", { name: /Switch to (dark|light) mode/ }).first(),
-        ).toHaveAccessibleName("Switch to light mode");
+            page.locator(PREVIEWS).getByRole("button", { name: "Dark mode", exact: true }).first(),
+        ).toHaveAttribute("aria-pressed", "true");
     });
 
     test("the stored mode is applied again after a reload, and before first paint with themeInitScript", async ({ page }) => {
@@ -236,9 +239,9 @@ test.describe('ThemeToggle with modes="three"', () => {
 
     test("on a page switched by the dark class it reads dark, then takes the page over to data-theme", async ({ page }) => {
         await page.goto("/components/ThemeToggle", { waitUntil: "domcontentloaded" });
-        const two = page.locator(PREVIEWS).getByRole("button", { name: /Switch to (dark|light) mode/ }).first();
+        const two = page.locator(PREVIEWS).getByRole("button", { name: "Dark mode", exact: true }).first();
         await two.click();
-        await expect(two).toHaveAccessibleName("Switch to light mode");
+        await expect(two).toHaveAttribute("aria-pressed", "true");
         const toggle = three(page);
         await expect(toggle).toHaveAccessibleName("Theme: dark. Switch to system");
         expect(await root(page)).toMatchObject({ class: true, attribute: null });
@@ -247,7 +250,7 @@ test.describe('ThemeToggle with modes="three"', () => {
         await expect(toggle).toHaveAccessibleName("Theme: system. Switch to light");
         expect(await root(page)).toMatchObject({ class: false, attribute: "auto" });
         // The two-way button follows, and from here writes the attribute as well.
-        await expect(two).toHaveAccessibleName("Switch to dark mode");
+        await expect(two).toHaveAttribute("aria-pressed", "false");
         await two.click();
         expect(await root(page)).toMatchObject({ class: false, attribute: "dark" });
         await expect(toggle).toHaveAccessibleName("Theme: dark. Switch to system");

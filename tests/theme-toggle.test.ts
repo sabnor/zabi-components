@@ -34,7 +34,7 @@ function system(dark: boolean) {
     };
 }
 
-const button = () => screen.findByRole("button", { name: /switch to (dark|light) mode/i });
+const button = () => screen.findByRole("button", { name: "Dark mode" });
 const state = () => ({
     class: root.classList.contains("dark"),
     attribute: root.getAttribute("data-theme"),
@@ -62,26 +62,27 @@ afterEach(() => {
 });
 
 describe("ThemeToggle on a page switched by the dark class", () => {
-    it("is unchanged: it toggles the class, the inline color-scheme and the stored choice", async () => {
+    it("toggles the class and the stored choice, and writes no inline color-scheme", async () => {
         const user = userEvent.setup();
         render(ThemeToggle);
         const toggle = await button();
-        expect(toggle.getAttribute("aria-label")).toBe("Switch to dark mode");
+        expect(toggle.getAttribute("aria-label")).toBe("Dark mode");
         expect(toggle.getAttribute("aria-pressed")).toBe("false");
 
         await user.click(toggle);
-        expect(state()).toEqual({ class: true, attribute: null, inline: "dark", stored: "dark" });
-        expect(toggle.getAttribute("aria-label")).toBe("Switch to light mode");
+        expect(state()).toEqual({ class: true, attribute: null, inline: "", stored: "dark" });
+        // The name does not change with the state; `aria-pressed` does.
+        expect(toggle.getAttribute("aria-label")).toBe("Dark mode");
         expect(toggle.getAttribute("aria-pressed")).toBe("true");
 
         await user.click(toggle);
-        expect(state()).toEqual({ class: false, attribute: null, inline: "light", stored: "light" });
+        expect(state()).toEqual({ class: false, attribute: null, inline: "", stored: "light" });
     });
 
     it("starts dark when the class is already there", async () => {
         root.classList.add("dark");
         render(ThemeToggle);
-        expect((await button()).getAttribute("aria-label")).toBe("Switch to light mode");
+        expect((await button()).getAttribute("aria-pressed")).toBe("true");
     });
 
     it("still follows a system change while nothing is stored, and writes the class", async () => {
@@ -90,7 +91,7 @@ describe("ThemeToggle on a page switched by the dark class", () => {
         const toggle = await button();
         os.change(true);
         await waitFor(() => expect(toggle.getAttribute("aria-pressed")).toBe("true"));
-        expect(state()).toEqual({ class: true, attribute: null, inline: "dark", stored: null });
+        expect(state()).toEqual({ class: true, attribute: null, inline: "", stored: null });
     });
 });
 
@@ -106,7 +107,7 @@ describe("ThemeToggle on a page switched by data-theme", () => {
         render(ThemeToggle);
         const toggle = await button();
         expect(toggle.getAttribute("aria-pressed")).toBe(String(dark));
-        expect(toggle.getAttribute("aria-label")).toBe(dark ? "Switch to light mode" : "Switch to dark mode");
+        expect(toggle.getAttribute("aria-label")).toBe("Dark mode");
     });
 
     it("writes the attribute, and neither the class nor an inline color-scheme", async () => {
@@ -166,7 +167,7 @@ describe("ThemeToggle beside something else that switches the theme", () => {
         root.classList.remove("dark");
         await waitFor(() => expect(toggle.getAttribute("aria-pressed")).toBe("false"));
         root.setAttribute("data-theme", "dark");
-        await waitFor(() => expect(toggle.getAttribute("aria-label")).toBe("Switch to light mode"));
+        await waitFor(() => expect(toggle.getAttribute("aria-pressed")).toBe("true"));
     });
 
     it("a disabled toggle writes nothing", async () => {
@@ -387,7 +388,7 @@ describe("ThemeToggle: mode, bound, and an app control beside it", () => {
         await user.click(screen.getByTestId("assign-auto"));
         await waitFor(() => expect(root.getAttribute("data-theme")).toBe("auto"));
         // A dark system: the two-way button reads the result.
-        expect(toggle.getAttribute("aria-label")).toBe("Switch to light mode");
+        expect(toggle.getAttribute("aria-pressed")).toBe("true");
     });
 });
 
@@ -397,7 +398,7 @@ describe("ThemeToggle with two modes restores the stored choice", () => {
         render(ThemeToggle);
         const toggle = await button();
         expect(toggle.getAttribute("aria-pressed")).toBe("true");
-        expect(state()).toEqual({ class: true, attribute: null, inline: "dark", stored: "dark" });
+        expect(state()).toEqual({ class: true, attribute: null, inline: "", stored: "dark" });
     });
 
     it("on a data-theme page, and leaves a stored value that is not a mode alone", async () => {
@@ -413,5 +414,83 @@ describe("ThemeToggle with two modes restores the stored choice", () => {
         render(ThemeToggle);
         expect((await button()).getAttribute("aria-pressed")).toBe("true");
         expect(root.getAttribute("data-theme")).toBe("dark");
+    });
+});
+
+/**
+ * Two modes are a switch: one name and `aria-pressed`. The name used to flip
+ * with the state ("Switch to dark mode", then "Switch to light mode, pressed"),
+ * which a screen reader announced as a pressed button that switches to light.
+ */
+describe("ThemeToggle with two modes: one name, and pressed for the state", () => {
+    it("is called Dark mode whatever the state, on a class page and on a data-theme page", async () => {
+        const user = userEvent.setup();
+        const first = render(ThemeToggle);
+        const toggle = await button();
+        const seen = [[toggle.getAttribute("aria-label"), toggle.getAttribute("aria-pressed")]];
+        await user.click(toggle);
+        seen.push([toggle.getAttribute("aria-label"), toggle.getAttribute("aria-pressed")]);
+        await user.click(toggle);
+        seen.push([toggle.getAttribute("aria-label"), toggle.getAttribute("aria-pressed")]);
+        expect(seen).toEqual([
+            ["Dark mode", "false"],
+            ["Dark mode", "true"],
+            ["Dark mode", "false"],
+        ]);
+        first.unmount();
+
+        // Nothing stored from the presses above, or it would be restored over the attribute.
+        localStorage.clear();
+        root.setAttribute("data-theme", "dark");
+        render(ThemeToggle);
+        const onAttribute = await button();
+        expect(onAttribute.getAttribute("aria-pressed")).toBe("true");
+        expect(screen.queryByRole("button", { name: /switch to/i })).toBeNull();
+    });
+
+    it("takes the name from labels.darkMode", async () => {
+        render(ThemeToggle, { props: { labels: { darkMode: "Mörkt läge" } } });
+        const toggle = await screen.findByRole("button", { name: "Mörkt läge" });
+        expect(toggle.getAttribute("aria-pressed")).toBe("false");
+    });
+});
+
+/**
+ * The theme sets `color-scheme` itself: dark under `.dark`, light on the root
+ * otherwise. The button used to write it inline as well, and an inline value
+ * outranks the stylesheet: after one press, an app that added `class="dark"`
+ * from its own script got dark tokens and light native controls.
+ */
+describe("ThemeToggle leaves color-scheme to the theme", () => {
+    it("writes no inline value on a class page, pressed or following the system", async () => {
+        const user = userEvent.setup();
+        const os = system(false);
+        render(ThemeToggle);
+        const toggle = await button();
+        os.change(true);
+        await waitFor(() => expect(toggle.getAttribute("aria-pressed")).toBe("true"));
+        expect(root.style.colorScheme).toBe("");
+        await user.click(toggle);
+        await user.click(toggle);
+        expect(root.getAttribute("style") ?? "").not.toContain("color-scheme");
+    });
+
+    it.each(["light", "dark"])('clears a stale inline "%s" when it mounts, and after a press', async (stale) => {
+        const user = userEvent.setup();
+        root.style.colorScheme = stale;
+        render(ThemeToggle);
+        const toggle = await button();
+        expect(root.style.colorScheme).toBe("");
+        // Written again by something else: a press clears it too.
+        root.style.colorScheme = stale;
+        await user.click(toggle);
+        expect(root.style.colorScheme).toBe("");
+    });
+
+    it("leaves an inline value that is not light or dark to the app", async () => {
+        root.style.colorScheme = "light dark";
+        render(ThemeToggle);
+        await button();
+        expect(root.style.colorScheme).toBe("light dark");
     });
 });

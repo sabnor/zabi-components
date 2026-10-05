@@ -79,6 +79,27 @@ describe("IconButton", () => {
             },
         );
 
+        /**
+         * A toggled-on button, held down. Its pressed fill was its hover fill,
+         * so with a mouse (which is already hovering) the press showed nothing,
+         * and on touch the step was 1.24:1 (ghost) and 1.18:1 (danger tone)
+         * against the resting fill. The `-subtle-active` roles are a step of
+         * their own; scripts/contrast-pairs.js holds them to 1.25:1.
+         */
+        it.each([
+            ["ghost", undefined, "action-primary-subtle"],
+            ["outline", undefined, "action-primary-subtle"],
+            ["link", undefined, "action-primary-subtle"],
+            ["ghost", "danger", "action-danger-subtle"],
+            ["outline", "danger", "action-danger-subtle"],
+        ] as const)("a toggled-on %s button (tone %s) is held on a fill past its hover fill", (variant, tone, role) => {
+            render(IconButton, { label: "On", variant, tone, pressed: true });
+            const on = classesOf(screen.getByRole("button", { name: "On" }));
+            expect(on).toContain(`bg-${role}`);
+            expect(on).toContain(`hover:bg-${role}-hover`);
+            expect(on).toContain(`active:bg-${role}-active`);
+        });
+
         it("flips a bound value on click", async () => {
             const user = userEvent.setup();
             render(IconButtonHarness, { mode: "bind" });

@@ -34,6 +34,16 @@ export const LIGHT_ATTRIBUTE = '[data-theme="light"]';
 export const AUTO_ATTRIBUTE = '[data-theme="auto"]';
 export const AUTO_MEDIA = '(prefers-color-scheme: dark)';
 
+/**
+ * Where the light theme says `color-scheme: light`: the root element by
+ * default, and `data-theme="light"`. src/app.css writes this rule by hand,
+ * above `.dark`; the standalone colours file, which is assembled from the
+ * token blocks alone, gets it from here. Both dark selectors come later in
+ * every published file, so they win where they apply.
+ */
+export const LIGHT_SCHEME_SELECTORS = [':root', LIGHT_ATTRIBUTE];
+export const LIGHT_SCHEME_CSS_MINIFIED = `${LIGHT_SCHEME_SELECTORS.join(',')}{color-scheme:light}`;
+
 const COLOR_SCHEMES = [
     [LIGHT_ATTRIBUTE, 'light'],
     [DARK_ATTRIBUTE, 'dark'],

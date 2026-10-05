@@ -119,6 +119,11 @@
     });
 
     /**
+     * Held down, a toggled-on ghost or danger-tone button goes one step past its
+     * hover fill (the `-subtle-active` roles): with a mouse the hover fill is
+     * already showing, so the same fill would not show the press. The solid
+     * variants have no further step and keep their fill.
+     *
      * Pressed holds a fill that hover cannot reach and adds an inset outline in
      * the text colour, so the state is a shape as well as a colour. It is an
      * outline, not a ring: `.focus-ring` owns `box-shadow`, and an outline also
@@ -128,7 +133,7 @@
         if (!pressed) return "";
         const outline = "outline-2 -outline-offset-2 outline-current";
         if (isDangerTone) {
-            return `bg-action-danger-subtle hover:bg-action-danger-subtle-hover ${outline}`;
+            return `bg-action-danger-subtle hover:bg-action-danger-subtle-hover active:bg-action-danger-subtle-active ${outline}`;
         }
         switch (variant) {
             case "secondary":
@@ -138,7 +143,7 @@
             case "ghost":
             case "outline":
             case "link":
-                return `bg-action-primary-subtle text-link hover:bg-action-primary-subtle-hover active:bg-action-primary-subtle-hover ${outline}`;
+                return `bg-action-primary-subtle text-link hover:bg-action-primary-subtle-hover active:bg-action-primary-subtle-active ${outline}`;
             case "primary":
             default:
                 return `bg-action-primary-active hover:bg-action-primary-active ${outline}`;

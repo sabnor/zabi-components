@@ -774,7 +774,7 @@ test.describe("Toaster on a desktop", () => {
         // site's ThemeToggle only names its action once it has mounted, which
         // is after the page has hydrated.
         await expect(
-            page.getByRole("button", { name: /^Switch to (dark|light) mode$/ }).first(),
+            page.getByRole("button", { name: "Dark mode", exact: true }).first(),
             "The page must hydrate before the button is pressed",
         ).toBeAttached({ timeout: 30_000 });
         await page.getByRole("button", { name: "Push sample toast" }).first().click();

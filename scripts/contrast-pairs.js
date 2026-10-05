@@ -110,6 +110,15 @@ export function buildPairs() {
         // the resting field, when every other pressed fill is 1.26:1 or more.
         { name: 'input value on a pressed field', bg: '--color-input-active', fg: '--color-body', min: AA_NORMAL },
         { name: 'pressed field against the resting field', bg: '--color-input', fg: '--color-input-active', min: MIN_PRESSED },
+        // A toggled-on IconButton, held down. Its resting fill is the subtle
+        // one, and the pressed fill was the hover step: 1.24:1 (ghost) and
+        // 1.18:1 (danger tone) in light, and the same fill a mouse already
+        // shows on hover. The pressed role is its own step; the icon, which is
+        // all there is on an IconButton, keeps 3:1 on it (WCAG 1.4.11).
+        { name: 'held toggled-on fill against its resting fill', bg: '--color-action-primary-subtle', fg: '--color-action-primary-subtle-active', min: MIN_PRESSED },
+        { name: 'icon on a held toggled-on fill', bg: '--color-action-primary-subtle-active', fg: '--color-link', min: AA_LARGE },
+        { name: 'held toggled-on danger fill against its resting fill', bg: '--color-action-danger-subtle', fg: '--color-action-danger-subtle-active', min: MIN_PRESSED },
+        { name: 'icon on a held toggled-on danger fill', bg: '--color-action-danger-subtle-active', fg: '--color-error', min: AA_LARGE },
         // Placeholders are decorative-ish, but must stay readable — large-text bar.
         // Placeholder text is read: an example, or the format hint of an empty
         // DateField ("dd/mm/yyyy"). It was held to 3:1 on the resting field only,

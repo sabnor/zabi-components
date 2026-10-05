@@ -233,6 +233,12 @@ test('dark is published under .dark, [data-theme="dark"] and an opt-in [data-the
         order.push(`${rule.selectors.map((s) => s.trim()).join(', ')} = ${schemeOf(rule).join('/')}`);
       }
     });
+    // A file that also carries the light tokens starts with the light theme's
+    // own rule: light on the root, which every rule after it can override.
+    const carriesLight = file.endsWith('colors.css') || file.endsWith('zabi-components.css');
+    assert.equal(order[0] === ':root, [data-theme="light"] = light', carriesLight, `${file}: ${order[0]}`);
+    if (carriesLight) order.shift();
+    assert.ok(!order.some((entry) => entry.startsWith(':root')), `${file}: a second root color-scheme rule`);
     assert.deepEqual(
       order.slice(0, 4),
       [

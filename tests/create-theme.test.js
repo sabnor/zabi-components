@@ -175,7 +175,12 @@ test('the "on" colours are chosen so the label passes on the fill', () => {
 test('a role pair below WCAG AA comes back as a structured warning, per mode', () => {
   const result = createTheme({ brand: '#0026EA', overrides: { '--color-link': 'var(--zabi-brand-400)' } });
   const warnings = contrastWarnings(result);
-  assert.deepEqual(warnings.map((w) => `${w.mode} ${w.pair}`), ['light link on page', 'light link on card']);
+  // The link colour is also the icon of a toggled-on ghost IconButton, held down.
+  assert.deepEqual(warnings.map((w) => `${w.mode} ${w.pair}`), [
+    'light link on page',
+    'light link on card',
+    'light icon on a held toggled-on fill',
+  ]);
   const [onPage] = warnings;
   assert.equal(onPage.required, 4.5);
   assert.ok(onPage.ratio < 4.5 && onPage.ratio > 1);
@@ -183,7 +188,7 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#ececee' });
   assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #ececee is [\d.]+:1, needs 4\.5:1/);
   // The failure is in the file too, so it is not lost when stderr is.
-  assert.match(result.css, /Contrast: 2 of \d+ role pairs are below WCAG AA:/);
+  assert.match(result.css, /Contrast: 3 of \d+ role pairs are below WCAG AA:/);
 
   // 3:1 pairs are checked as well: a focus ring too pale for the page.
   const ring = createTheme({ brand: '#0026EA', overrides: { '--color-focus': 'var(--zabi-brand-300)' } });
@@ -316,7 +321,7 @@ test('the bin warns on stderr, and --strict turns a failed pair into exit 1', ()
   const lenient = run(...args);
   assert.equal(lenient.status, 0);
   assert.match(lenient.stderr, /warning: light · link on page: .* needs 4\.5:1/);
-  assert.match(lenient.stderr, /2 role pairs below WCAG AA\./);
+  assert.match(lenient.stderr, /3 role pairs below WCAG AA\./);
   assert.match(lenient.stdout, /--color-link: var\(--zabi-brand-400\);/);
 
   const strict = run(...args, '--strict');

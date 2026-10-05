@@ -33,10 +33,11 @@ export interface ThemeToggleLabels {
      * one's. Default: "Theme: system. Switch to light".
      */
     describe: (current: string, next: string) => string;
-    /** The name with two modes while the page is dark. Default "Switch to light mode". */
-    toLight: string;
-    /** The name with two modes while the page is light. Default "Switch to dark mode". */
-    toDark: string;
+    /**
+     * The name with two modes. It does not change: the button is a switch, and
+     * `aria-pressed` says whether dark is on. Default "Dark mode".
+     */
+    darkMode: string;
     /** The name before the button mounts, when the mode is not known yet. Default "Theme toggle". */
     beforeMount: string;
 }

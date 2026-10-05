@@ -275,9 +275,12 @@ The mode is chosen on the `<html>` element, by an attribute or a class:
   the primary fill) light, so the subtree comes out half dark.
 - `color-scheme` comes with the theme, so what the browser draws itself (date
   and time pickers, scrollbars, autofill) matches: dark under `.dark`,
-  `data-theme="dark"` and `data-theme="auto"` on a dark system, light under
-  `data-theme="light"`. Before 8.1 the class did not set it. A page with no
-  class and no attribute gets no `color-scheme` from the theme.
+  `data-theme="dark"` and `data-theme="auto"` on a dark system, and light
+  everywhere else, a page with no class and no attribute included. That
+  overrides a `<meta name="color-scheme">` tag, so the page needs neither the
+  tag nor an inline `color-scheme` on `<html>`; `ThemeToggle` writes none and
+  removes a stale `light` or `dark` one. Before 8.1 only the attributes set
+  it.
 - The dark file must be imported together with a light one. It only remaps
   roles onto ramps the light theme declares.
 - Tailwind's own `dark:` variant follows the system unless you redefine it, and
@@ -290,7 +293,7 @@ it.
 
 | | Press | Writes |
 |---|---|---|
-| `<ThemeToggle />` (`modes="two"`) | light ↔ dark | `data-theme` when `<html>` has the attribute, the `dark` class otherwise |
+| `<ThemeToggle />` (`modes="two"`) | light ↔ dark | `data-theme` when `<html>` has the attribute, the `dark` class otherwise. It is a switch named "Dark mode" (`labels.darkMode`), with `aria-pressed` for its state |
 | `<ThemeToggle modes="three" />` | system → light → dark → system | always `data-theme` (`auto`, `light` or `dark`); it adds the attribute and removes a leftover `dark` class |
 
 With two modes, a press on a page that is on `auto` sets `light` or `dark`, and
@@ -314,7 +317,10 @@ words are replaceable:
 ```
 
 **Remembering the choice.** The choice is kept in `localStorage` under
-`storageKey` (default `"theme"`) and applied again when the button mounts.
+`storageKey` (default `"theme"`) and applied again when the button mounts, with
+two modes and with three, on a `data-theme` page and on a class page: the
+two-way button on a `data-theme="auto"` page that finds `"dark"` stored sets
+`data-theme="dark"`.
 `storageKey={null}` keeps nothing. To store it in your own backend, bind the
 mode or listen for it:
 
@@ -1018,6 +1024,7 @@ Before a release, `npm run build:css` regenerates the `dist/` files and
 in every file that carries dark tokens, as:
 
 ```css
+:root, [data-theme="light"] { color-scheme: light; }   /* in the light files */
 [data-theme="light"] { color-scheme: light; }
 [data-theme="dark"]  { color-scheme: dark; }
 [data-theme="auto"]  { color-scheme: light dark; }
@@ -1025,6 +1032,10 @@ in every file that carries dark tokens, as:
 @media (prefers-color-scheme: dark) { [data-theme="auto"] { …; color-scheme: dark; } }
 ```
 
+- The light rule is written by hand in `src/app.css`, above `.dark`, and has
+  to stay above it: all of these have the specificity of one class, so the
+  later one wins. `validate-theme.js` fails the build if a light file lacks
+  the rule or has it after a dark one.
 - `color-scheme: dark` is the last declaration of the source `.dark` rule, so
   every dark selector carries it. The three attribute rules come first: with
   `class="dark" data-theme="light"` the class brings the dark tokens, and so

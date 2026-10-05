@@ -105,7 +105,7 @@ export const NEVER_TOGETHER = new Map([
         // Together, and meant to lose: pressedClass restates the pressed fill for
         // the toggled-on state in its own string, and that one has a rule.
         `${ICON_BUTTON}: bg-action-primary-subtle + active:bg-surface-active`,
-        'on one element when a ghost or outline button is toggled on, where active:bg-action-primary-subtle-hover (same string as the base, hand-written rule) is the pressed fill',
+        'on one element when a ghost or outline button is toggled on, where active:bg-action-primary-subtle-active (same string as the base, hand-written rule) is the pressed fill',
     ],
     [
         'src/components/molecules/Tabs.svelte: bg-action-primary-subtle + active:bg-surface-active',

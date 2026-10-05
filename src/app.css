@@ -571,6 +571,12 @@
   --color-action-primary-active: var(--color-brand-800);
   --color-action-primary-subtle: var(--color-brand-200);
   --color-action-primary-subtle-hover: var(--color-brand-300);
+  /* Held down, on a control whose resting fill is the subtle one: a toggled-on
+   * ghost IconButton. It used the hover step, which is 1.24:1 against the
+   * resting fill and, with a mouse, is what the button already shows. Half a
+   * step past hover is 1.42:1 against resting, and the icon (--color-link)
+   * keeps 3.50:1 on it; a whole step would leave the icon at 3.01:1. */
+  --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-400) 50%, var(--color-brand-300));
   /* "On brand" — the label on a primary fill.
    * White rather than brand-50: the ramp's lightest tint lands at exactly
    * 4.50:1 on brand-600 — passing, but with no margin. Pure white gives 4.86:1.
@@ -615,6 +621,11 @@
   --color-action-danger-active: var(--color-error-800);
   --color-action-danger-subtle: var(--color-error-100);
   --color-action-danger-subtle-hover: var(--color-error-200);
+  /* The same for a toggled-on danger-tone IconButton: hover was 1.18:1 against
+   * the resting fill. Half a step past it is 1.32:1, and the icon
+   * (--color-error) keeps 3.36:1; on the whole step it is exactly 3.00. Dark needs no override:
+   * the same expression resolves through the mirrored steps. */
+  --color-action-danger-subtle-active: color-mix(in srgb, var(--color-error-300) 50%, var(--color-error-200));
   --color-action-danger-text: var(--color-error-50);
 
   /* Shadow Colors
@@ -749,6 +760,21 @@ body {
      .dark, [data-theme="dark"]                                   always dark
      @media (prefers-color-scheme: dark) { [data-theme="auto"] }   follows the OS
    [data-theme="light"], or no attribute and no class, stays light. */
+
+/* The light theme says it is light. Without this a page with no class and no
+   attribute left `color-scheme` to the browser: with
+   <meta name="color-scheme" content="light dark"> and a dark system, the
+   date picker and the scrollbars went dark on light surfaces. A declaration on
+   the root element overrides the meta tag.
+   It has to stay ABOVE the dark rule: both have the specificity of one class,
+   so the later one wins, and the dark selectors come later in every published
+   file (the light theme file is imported first). `[data-theme="auto"]` sets
+   `light dark` after this, so auto still follows the system. */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+}
+
 .dark {
   /* Brand Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-brand-50: var(--zabi-brand-950);
@@ -1021,6 +1047,8 @@ body {
   /* Pinned like the other tints: light moved these a step darker. */
   --color-action-primary-subtle: var(--color-brand-100);
   --color-action-primary-subtle-hover: var(--color-brand-200);
+  /* Half a step past the dark hover fill, as in light. */
+  --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
 
   /* Secondary Actions - light alpha tint instead of the light-mode dark tint */
   --color-action-secondary: rgba(250, 250, 250, 0.09);
@@ -2024,6 +2052,19 @@ body {
    its resting fill. */
 .active\:bg-action-danger-subtle-hover:active {
   background-color: var(--color-action-danger-subtle-hover);
+}
+
+/* A toggled-on button, held: one step past its hover fill. These come after the
+   two `-subtle-hover` rules above on purpose. A toggled-on IconButton carries
+   both classes (the hover step from its variant, this from its pressed state),
+   all four rules are unlayered with the same specificity, and the later one
+   wins. The fallbacks are for an app whose own theme file predates the roles. */
+.active\:bg-action-primary-subtle-active:active {
+  background-color: var(--color-action-primary-subtle-active, var(--color-action-primary-subtle-hover));
+}
+
+.active\:bg-action-danger-subtle-active:active {
+  background-color: var(--color-action-danger-subtle-active, var(--color-action-danger-subtle-hover));
 }
 
 .disabled\:bg-action-disabled:disabled {

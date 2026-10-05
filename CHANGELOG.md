@@ -63,6 +63,11 @@ Whenever token or CSS import API surface changes, include:
   shows blurred until the full image has loaded, and only the neighbouring
   photos are preloaded. It is dark in both themes and keeps clear of the safe
   areas.
+- `--color-action-primary-subtle-active` and
+  `--color-action-danger-subtle-active`
+  (`active:bg-action-primary-subtle-active`,
+  `active:bg-action-danger-subtle-active`): the held fill of a control whose
+  resting fill is the subtle one.
 
 ### Changed
 
@@ -102,6 +107,18 @@ Whenever token or CSS import API surface changes, include:
   and the focused field is scrolled into view.
 - FloatingActionButton reserves `scroll-padding-bottom` on what scrolls under
   it, so a focused row is scrolled clear of the button.
+- **ThemeToggle with two modes has a constant name**, "Dark mode", with
+  `aria-pressed` for the state. It used to change between "Switch to dark
+  mode" and "Switch to light mode"; update tests and scripts that find the
+  button by those names. `labels.darkMode` sets the name.
+- **The light theme sets `color-scheme: light`** on the root element and for
+  `data-theme="light"`. A page with `<meta name="color-scheme"
+  content="light dark">` on a dark system no longer shows dark native controls
+  on a light page. A `color-scheme` rule of your own must come after the theme
+  import to win.
+- ThemeToggle no longer writes an inline `color-scheme` on `<html>`, and
+  removes a stale `light` or `dark` one. Adding or removing `class="dark"`
+  from your own script now moves native controls with the tokens.
 
 ### Fixed
 
@@ -145,6 +162,9 @@ Whenever token or CSS import API surface changes, include:
 - Calendar marks unavailable days with a line through the number as well as
   the grey, and the `locale` documentation says `strings` must be translated
   too.
+- A toggled-on ghost, outline, link or danger-tone IconButton shows a pressed
+  fill that is distinct from its hover fill and 1.25:1 or more from its
+  resting fill.
 
 ## [8.1.0-beta.0] - 2026-10-05
 

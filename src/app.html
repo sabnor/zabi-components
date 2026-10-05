@@ -12,19 +12,16 @@
     site keeps its own header, content and footer clear in
     src/routes/+layout.svelte. -->
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="light dark" />
     <script>
         (function () {
             try {
                 var stored = localStorage.getItem("theme");
                 var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
                 var isDark = stored === "dark" || (!stored && prefersDark);
-                if (isDark) {
-                    document.documentElement.classList.add("dark");
-                    document.documentElement.style.colorScheme = "dark";
-                } else {
-                    document.documentElement.style.colorScheme = "light";
-                }
+                // The class is all it takes: the theme sets `color-scheme` for it
+                // (dark under `.dark`, light otherwise), and the stylesheet is in
+                // <head>, so the first paint already has both.
+                if (isDark) document.documentElement.classList.add("dark");
             } catch (_) {}
         })();
     </script>

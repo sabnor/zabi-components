@@ -519,3 +519,62 @@ test.describe("the same pages on a fine pointer", () => {
         expect(position).toBe("static");
     });
 });
+
+/**
+ * A toggled-on IconButton, held down with a mouse. The pointer is already over
+ * the button, so the hover fill is showing; the pressed fill used to be that
+ * same fill, and the press showed nothing. It is now one step past it, and far
+ * enough from the resting fill to read on touch too, where there is no hover.
+ */
+test.describe("a toggled-on IconButton shows the press", () => {
+    for (const dark of [false, true]) {
+        test(`ghost, ${dark ? "dark" : "light"}: held is past hover, and 1.25:1 or more from resting`, async ({ page }) => {
+            await openPage(page, "IconButton");
+            await page.evaluate((on) => document.documentElement.classList.toggle("dark", on), dark);
+            await page.addStyleTag({ content: "*, *::before, *::after { transition: none !important; }" });
+            const bold = page.locator(PREVIEWS).getByRole("button", { name: "Bold" }).first();
+            await bold.scrollIntoViewIfNeeded();
+            if ((await bold.getAttribute("aria-pressed")) !== "true") await bold.click();
+            await expect(bold).toHaveAttribute("aria-pressed", "true");
+
+            const read = () =>
+                bold.evaluate((node) => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = canvas.height = 1;
+                    const context = canvas.getContext("2d", { willReadFrequently: true })!;
+                    const luminance = (colour: string) => {
+                        context.clearRect(0, 0, 1, 1);
+                        context.fillStyle = colour;
+                        context.fillRect(0, 0, 1, 1);
+                        const [r, g, b] = [...context.getImageData(0, 0, 1, 1).data].slice(0, 3).map((channel) => {
+                            const value = channel / 255;
+                            return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+                        });
+                        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                    };
+                    const style = getComputedStyle(node);
+                    return { fill: luminance(style.backgroundColor), icon: luminance(style.color), raw: style.backgroundColor };
+                });
+            const ratio = (a: number, b: number) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+
+            await page.mouse.move(0, 0);
+            const resting = await read();
+            const box = (await bold.boundingBox())!;
+            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+            const hovered = await read();
+            expect(hovered.raw).not.toBe(resting.raw);
+            await page.mouse.down();
+            try {
+                const held = await read();
+                expect(held.raw, "held is not the hover fill").not.toBe(hovered.raw);
+                expect(ratio(held.fill, resting.fill)).toBeGreaterThanOrEqual(1.25);
+                // The icon is all there is on the button: 3:1 on the fill it is drawn on.
+                expect(ratio(held.icon, held.fill)).toBeGreaterThanOrEqual(3);
+            } finally {
+                // Released off the button, so it stays toggled on.
+                await page.mouse.move(0, 0);
+                await page.mouse.up();
+            }
+        });
+    }
+});

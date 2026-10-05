@@ -4,7 +4,7 @@ import autoprefixer from 'autoprefixer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { darkThemeCss, darkThemeCssMinified, expandDarkRule } from './dark-selectors.js';
+import { darkThemeCss, darkThemeCssMinified, expandDarkRule, LIGHT_SCHEME_CSS_MINIFIED } from './dark-selectors.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -227,6 +227,8 @@ async function buildCSS() {
   });
   if (themeChunks.length > 0) {
     colorsCss += ':root{' + themeChunks.join('') + '}\n';
+    // Not a token, so it is not in the @theme block: the light theme's own scheme.
+    colorsCss += LIGHT_SCHEME_CSS_MINIFIED + '\n';
   }
   const darkChunks = [];
   appAst.walkRules((rule) => {

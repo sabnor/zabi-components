@@ -410,3 +410,85 @@ test.describe("placeholder against value", () => {
         });
     }
 });
+
+/**
+ * The docs site itself, which is switched by the `dark` class. Its start-up
+ * script used to write an inline `color-scheme` on `<html>` and the page
+ * carried `<meta name="color-scheme" content="light dark">`, both to make the
+ * browser's own parts agree with the tokens. The theme now says the scheme in
+ * both directions (`:root` light, `.dark` dark), so the script only adds the
+ * class and the meta tag is gone.
+ */
+test.describe("the docs site: native controls match the theme, and the first paint is right", () => {
+    const cases: { name: string; system: "light" | "dark"; stored: string | null; dark: boolean }[] = [
+        { name: "a dark system, light chosen", system: "dark", stored: "light", dark: false },
+        { name: "a light system, dark chosen", system: "light", stored: "dark", dark: true },
+        { name: "a dark system, nothing chosen", system: "dark", stored: null, dark: true },
+        { name: "a light system, nothing chosen", system: "light", stored: null, dark: false },
+    ];
+
+    for (const { name, system, stored, dark } of cases) {
+        test(`${name}: ${dark ? "dark" : "light"} tokens and a ${dark ? "dark" : "light"} scheme, from the first paint`, async ({ page }) => {
+            await page.emulateMedia({ colorScheme: system });
+            if (stored) await page.addInitScript((value) => localStorage.setItem("theme", value), stored);
+            // Records what the page is the moment <body> starts: before any
+            // component, and before anything could have been painted.
+            await page.route("**/components/DateField", async (route) => {
+                const response = await route.fetch();
+                const html = await response.text();
+                expect(html).toContain("<body");
+                await route.fulfill({
+                    response,
+                    body: html.replace(
+                        /<body([^>]*)>/,
+                        `<body$1><script>window.__atBody = {
+                            dark: document.documentElement.classList.contains("dark"),
+                            scheme: getComputedStyle(document.documentElement).colorScheme,
+                            page: getComputedStyle(document.documentElement).getPropertyValue("--color-surface-base").trim(),
+                        };</script>`,
+                    ),
+                });
+            });
+            await page.goto("/components/DateField", { waitUntil: "domcontentloaded" });
+            await expect(page.locator("main h1").first()).toBeVisible();
+
+            const now = await page.evaluate(() => ({
+                dark: document.documentElement.classList.contains("dark"),
+                scheme: getComputedStyle(document.documentElement).colorScheme,
+                page: getComputedStyle(document.documentElement).getPropertyValue("--color-surface-base").trim(),
+                inline: document.documentElement.style.colorScheme,
+                meta: document.querySelector('meta[name="color-scheme"]')?.getAttribute("content") ?? null,
+                // What a native date field inside the page resolves.
+                field: getComputedStyle(document.querySelector('main input[type="date"]')!).colorScheme,
+                atBody: (window as unknown as { __atBody: { dark: boolean; scheme: string; page: string } }).__atBody,
+            }));
+
+            expect(now.dark).toBe(dark);
+            expect(now.scheme).toBe(dark ? "dark" : "light");
+            expect(now.field).toBe(dark ? "dark" : "light");
+            // Nothing but the stylesheet says so.
+            expect(now.inline).toBe("");
+            expect(now.meta).toBeNull();
+            // And it said so before <body>: same class, same scheme, same page colour.
+            expect(now.atBody).toEqual({ dark: now.dark, scheme: now.scheme, page: now.page });
+            expect(now.page).not.toBe("");
+        });
+    }
+
+    test("the app adding or removing the dark class itself moves the scheme with the tokens, also after the toggle was pressed", async ({ page }) => {
+        await page.emulateMedia({ colorScheme: "light" });
+        await page.goto("/components/ThemeToggle", { waitUntil: "domcontentloaded" });
+        const toggle = page.locator("main .min-h-\\[100px\\]").getByRole("button", { name: "Dark mode", exact: true }).first();
+        await toggle.click();
+        await toggle.click();
+        await expect(toggle).toHaveAttribute("aria-pressed", "false");
+        const scheme = () => page.evaluate(() => getComputedStyle(document.documentElement).colorScheme);
+        expect(await scheme()).toBe("light");
+        // The press used to leave an inline "light" behind, which then outranked `.dark`.
+        await page.evaluate(() => document.documentElement.classList.add("dark"));
+        expect(await scheme()).toBe("dark");
+        await expect(toggle).toHaveAttribute("aria-pressed", "true");
+        await page.evaluate(() => document.documentElement.classList.remove("dark"));
+        expect(await scheme()).toBe("light");
+    });
+});

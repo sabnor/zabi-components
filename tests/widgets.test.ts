@@ -116,7 +116,7 @@ describe("ThemeToggle", () => {
         const onclick = vi.fn();
         render(ThemeToggle, { props: { onclick, size: "sm" } });
 
-        const btn = await screen.findByRole("button", { name: /switch to dark mode/i });
+        const btn = await screen.findByRole("button", { name: "Dark mode" });
         expect(btn.className).toContain("w-8");
 
         await user.click(btn);
