@@ -13,6 +13,8 @@ This document provides a comprehensive accessibility audit for zabi-components, 
 > audit. The entries for Button, Card, Modal, Dropdown, Navigation and Select,
 > and the keyboard, screen reader, focus and summary sections, were checked
 > against the code on 2026-09-30 and corrected where the issue had been fixed.
+> The Modal, Tabs, Alert and Navigation entries and the colour contrast section
+> were checked again on 2026-10-05.
 > The other entries, and every low-priority recommendation, were not
 > re-checked. Components added since the audit (SortableList, Collapsible,
 > ConfirmDialog, Drawer, MediaGrid, Slider, Spinner, UnsavedChangesBar, AppShell,
@@ -129,14 +131,15 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 **Status:** ✅ Compliant
 
 **Current Features:**
-- ✅ `role="dialog"`
+- ✅ `role="dialog"`, or `role="alertdialog"` when asked for (ConfirmDialog uses it)
 - ✅ `aria-modal="true"`
 - ✅ `aria-labelledby` for title
 - ✅ `aria-describedby` for the description
 - ✅ Escape key to close
 - ✅ Backdrop click to close
 - ✅ Tab is kept inside the panel
-- ✅ Focus moves into the panel on open and returns to the opener on close, also when modals are nested
+- ✅ Focus moves into the panel on open (to the control `initialFocus` selects, else the first one) and returns to the opener on close, also when modals are nested
+- ✅ With `dismissible={false}` Escape, the backdrop and the close button do nothing; the close button is `aria-disabled` and keeps focus, so the trap holds
 
 **Issues Found:**
 - ✅ The focus trap, focus return and `aria-describedby` issues of the original audit are resolved
@@ -184,13 +187,10 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 - ✅ The fade at an edge with more tabs is a mask, so nothing covers a tab or its focus ring; it is dropped in forced colours
 
 **Issues Found:**
-- ⚠️ Missing `aria-orientation` for vertical tabs
-- ⚠️ Could improve focus management
+- ✅ No open issues. Tabs are horizontal only, so the `aria-orientation` item of the original audit does not apply: horizontal is the default of a tablist
 
 **Recommendations:**
-- Add `aria-orientation` prop
-- Ensure focus styles are visible
-- Consider adding `aria-label` for tab list
+- None open
 
 **Priority:** Low
 
@@ -201,8 +201,7 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 **Status:** ✅ Compliant
 
 **Current Features:**
-- ✅ Proper `role` attributes (`alert` or `status`)
-- ✅ `aria-live` regions for dynamic content
+- ✅ `role="status"` for the `success` and `info` variants and `role="alert"` for the others; both roles are live regions, so no separate `aria-live` is set
 - ✅ `aria-atomic="true"`
 - ✅ Close button with `aria-label`
 - ✅ Proper semantic HTML
@@ -242,9 +241,9 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 **Status:** ✅ Mostly Compliant
 
 **Current Features:**
-- ✅ Proper `role="navigation"`
+- ✅ A `<nav>` landmark
 - ✅ `aria-label` support
-- ✅ Keyboard navigation (Arrow keys, Enter, Escape)
+- ✅ Keyboard: every link is a Tab stop and Enter follows it. TopNavbar and SidebarNavigation have no arrow-key navigation; NavigationMenu opens a panel with Enter, Space or Arrow Down and closes it with Escape
 - ✅ Focus management
 - ✅ Active state indication
 
@@ -373,18 +372,24 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 ## Color Contrast Audit
 
 ### Current Status
-All components use semantic color tokens that should meet WCAG AA contrast requirements.
+Contrast is checked by a script, not by eye. `scripts/check-contrast.js`
+(`npm run check:contrast`, part of `npm run check`) resolves every fill and
+foreground pair a component can render, through the same token chain the CSS
+uses, in light and in dark, and fails the build below WCAG AA: 4.5:1 for text,
+3:1 for focus rings, control edges and other UI parts. It also holds the hover
+and pressed tints to a visible step over every surface level.
 
-### Testing Required
-- [ ] Verify all text colors meet 4.5:1 contrast ratio (normal text)
-- [ ] Verify all text colors meet 3:1 contrast ratio (large text)
-- [ ] Verify all interactive elements meet contrast requirements
-- [ ] Test in both light and dark modes
+A brand generated with `zabi-theme` is held to the same list of pairs; see
+THEMING.md.
+
+### Not covered
+- Colours an app sets by hand on a role token
+- Text placed on an image or a gradient
+- Combinations an app makes itself, such as a status colour on a tinted fill of another family
 
 ### Recommendations
-- Use automated contrast checking tools
-- Test with actual color combinations
-- Document contrast ratios in design system
+- Run `npm run check:contrast` after re-pointing any token
+- Check the pairs above in the app, in both themes
 
 ## Keyboard Navigation Audit
 
@@ -392,7 +397,7 @@ All components use semantic color tokens that should meet WCAG AA contrast requi
 - ✅ Tab: Move between interactive elements
 - ✅ Enter/Space: Activate buttons and links
 - ✅ Escape: Close modals and dropdowns
-- ✅ Arrow keys: Navigate within components (Tabs, Navigation)
+- ✅ Arrow keys: Navigate within components (Tabs, Dropdown, Select, the radio-like controls, Calendar, MediaGrid)
 
 ### Missing Patterns
 - None of the four patterns the original audit listed is missing any more: modals trap and return focus, and Dropdown and Select handle the arrow keys, Home and End.
@@ -484,7 +489,7 @@ The low-priority recommendations were not re-checked, and the components added s
 
 1. **Automated Testing:**
    - Use axe-core for automated testing
-   - Integrate into CI/CD pipeline
+   - Run it with the other gates (the project has no CI; see RELEASING.md)
    - Test all components regularly
 
 2. **Manual Testing:**

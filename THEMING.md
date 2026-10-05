@@ -313,7 +313,7 @@ stderr. Exit codes: 0 done, 1 `--strict` with a failed pair, 2 bad usage
   the accent pair when `--accent` is given) to white or the ramp's 950 step,
   whichever reaches 4.5:1 on the fill, its hover and its active step.
 - **Contrast check.** Every pair the library holds itself to is resolved in
-  light and dark with the new ramps in place: 116 checks, 4.5:1 for text and
+  light and dark with the new ramps in place: 4.5:1 for text and
   3:1 for focus rings and UI parts.
 
 ### What it does not do
@@ -439,7 +439,7 @@ breaking too, because it changes every colour an app has not overridden.
 
 This is enforced, not just promised.
 `tests/__snapshots__/theme-token-names.snap.json` lists every published token
-name, 398 of them. `npm run test:themes` reads the names out of the built
+name. `npm run test:themes` reads the names out of the built
 `zabi-components/colors` file and fails if one on the list is missing. The
 list only grows: refreshing the snapshots adds new names and never drops one,
 so taking a name off is a hand edit of that file in a commit, which is where a

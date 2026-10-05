@@ -256,6 +256,26 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 ### EmptyState
 - Sizes: `default`, `compact`
 
+### FloatingActionButton
+- Position: `bottom-end` (default), `bottom-start`, `bottom-center`
+- Shape: round with an icon, or `extended` with the label beside it
+- No sizes: 56px, the same on every screen
+
+### BottomTabBar
+- Position: `fixed` (default), `static`. AppShell places the bar itself
+
+### BottomSheet
+- Snap points: `half`, `full` (`BottomSheetSnap`); one or both, through `snapPoints`
+
+### Modal
+- Sizes: `sm`, `md`, `lg`
+- Full screen: `fullScreen` at every width, or `fullScreen="mobile"` below 768px
+
+### TopNavbar
+- Collapse point: `collapseAt` is `sm`, `md` (default), `lg` or `xl`, the width from which the links are a row
+
+AppBar, AppShell and StickyActionBar have no variants or sizes.
+
 ## Best Practices
 
 1. **Use semantic variants for states** - Don't use `error` variant just because you like red

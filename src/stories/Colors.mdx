@@ -7,7 +7,8 @@ import { ramp, semantic } from './tokens';
 
 Components never hardcode a color. They read **semantic tokens** such as
 `--color-action-primary`, and the semantic tokens point at **ramps** such as
-`--zabi-brand-600`. To rebrand, you change what the semantic tokens point at.
+`--zabi-brand-600`. To rebrand, you replace the ramps; the semantic tokens
+follow in light and in dark.
 
 Every value on this page is read from the library's stylesheet when this
 Storybook is built, so it matches the version you are looking at.
@@ -16,12 +17,14 @@ Storybook is built, so it matches the version you are looking at.
 
 Seven ramps, each with eleven steps from 50 to 950. Base has extra half steps
 for surfaces and borders, so it is shown in two rows. All ramps share one lightness curve, so step 600 is
-the same lightness in every one of them.
+the same lightness in every one of them. Accent is the second brand colour: it
+points at Citron step for step until an app sets `--zabi-accent-*`.
 
 <ColorPalette>
   <ColorItem title="Base, light half" subtitle="Neutral: surfaces and borders" colors={ramp('base', 0, 450)} />
   <ColorItem title="Base, dark half" subtitle="Neutral: text and dark surfaces" colors={ramp('base', 500, 1000)} />
   <ColorItem title="Brand" subtitle="Primary actions, links and focus" colors={ramp('brand')} />
+  <ColorItem title="Accent" subtitle="Second brand colour; Citron by default" colors={ramp('accent')} />
   <ColorItem title="Pine" subtitle="Success" colors={ramp('pine')} />
   <ColorItem title="Citron" subtitle="Energetic accents" colors={ramp('citron')} />
   <ColorItem title="Iris" subtitle="Information" colors={ramp('iris')} />
@@ -37,8 +40,8 @@ These are the tokens to use in your own CSS. The swatches are live: switch the
 <ColorPalette>
   <ColorItem
     title="Surfaces"
-    subtitle="Four levels. Anything floating above content uses overlay."
-    colors={semantic(['surface-base', 'surface-raised', 'surface-elevated', 'surface-overlay'])}
+    subtitle="Four levels, and inset for a well cut into a card. Anything floating above content uses overlay."
+    colors={semantic(['surface-base', 'surface-raised', 'surface-elevated', 'surface-overlay', 'surface-inset'])}
   />
   <ColorItem
     title="Text"
@@ -47,18 +50,32 @@ These are the tokens to use in your own CSS. The swatches are live: switch the
   />
   <ColorItem
     title="Borders"
-    subtitle="Default, medium and strong, plus the input border"
-    colors={semantic(['border', 'border-medium', 'border-strong', 'input-border'])}
+    subtitle="Default, medium and strong, the input border, and the edge that draws a control (a checkbox, an empty star)"
+    colors={semantic(['border', 'border-medium', 'border-strong', 'input-border', 'control-border'])}
   />
   <ColorItem
     title="Primary action"
-    subtitle="The fill, its states, and the text that sits on it"
+    subtitle="The fill, its states, and the text that sits on it. The text follows on-brand."
     colors={semantic([
       'action-primary',
       'action-primary-hover',
       'action-primary-active',
       'action-primary-subtle',
       'action-primary-text',
+      'on-brand',
+    ])}
+  />
+  <ColorItem
+    title="Accent"
+    subtitle="The second brand colour: a fill and its states, a tinted fill with its edge and text, and the text on the solid fill"
+    colors={semantic([
+      'accent',
+      'accent-hover',
+      'accent-active',
+      'accent-subtle',
+      'accent-border',
+      'accent-text',
+      'on-accent',
     ])}
   />
   <ColorItem
@@ -96,8 +113,8 @@ These are the tokens to use in your own CSS. The swatches are live: switch the
   />
   <ColorItem
     title="Interaction and focus"
-    subtitle="Hover and active fills are relative to the surface under them"
-    colors={semantic(['surface-hover', 'surface-active', 'focus-ring'])}
+    subtitle="Hover and active fills are relative to the surface under them. The muted ring is for a ghost or link control."
+    colors={semantic(['surface-hover', 'surface-active', 'input-hover', 'input-active', 'focus-ring', 'focus-ring-muted'])}
   />
 </ColorPalette>
 
@@ -121,39 +138,35 @@ With Tailwind CSS, use the class of the same name:
 
 ## Rebranding
 
-Override the semantic tokens after the theme import. Set the dark values too.
+Generate one file from your brand colour and import it after the theme. It
+replaces the ramps, so one file covers light and dark.
 
-```css
-:root {
-  --color-action-primary: #0f766e;
-  --color-action-primary-hover: #115e59;
-  --color-action-primary-text: #ffffff;
-  --color-focus-ring: #0d9488;
-  --color-link: #0f766e;
-}
-
-.dark {
-  --color-action-primary: #5eead4;
-  --color-action-primary-hover: #99f6e4;
-  --color-action-primary-text: #042f2e;
-  --color-focus-ring: #2dd4bf;
-  --color-link: #5eead4;
-}
+```bash
+npx zabi-theme --brand "#C17B00" --neutral "#78716c" --out src/lib/brand.generated.css
 ```
 
-Tokens are CSS custom properties, so they cascade. Set them on any element to
-theme only what is inside it.
+```css
+@import "tailwindcss";
+@import "zabi-components/theme-only";
+@import "zabi-components/theme-dark-only";
+@import "./lib/brand.generated.css";
+```
+
+Your colour gives the ramp its hue and saturation; the lightness of each step
+is the library's, so the exact hex may not be in the ramp. The theming guide
+(`THEMING.md` in the package) lists every token an app may set.
 
 **Check the colors you change.** The colors that ship are contrast checked
-before every release: 84 pairs pass WCAG AA in both themes. Colors you override
-are not checked, so test the pairs you change, such as a button label against
-its fill.
+before every release: every fill and text pair a component can render passes
+WCAG AA in both themes, and the generator holds a new brand to the same pairs. Tokens you set by hand are not checked, so
+test the pairs you change, such as a button label against its fill.
 
 ## Dark mode
 
-Add the `dark` class to the `html` element. Every semantic token has a dark
-value, so nothing else changes in your markup.
+Add the `dark` class or `data-theme="dark"` to the `html` element. Every
+semantic token has a dark value, so nothing else changes in your markup.
+`data-theme="auto"` follows the system setting.
 
 ```html
-<html lang="en" class="dark">
+<html lang="en" data-theme="dark">
 ```
