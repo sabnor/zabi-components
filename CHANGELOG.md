@@ -35,6 +35,34 @@ Whenever token or CSS import API surface changes, include:
   applies the stored mode before first paint. An app's own control (a
   SegmentedControl with three options) can drive the theme through them, and
   ThemeToggle follows.
+- **Stepper**, a new molecule: shows progress through a multi-step form.
+  `steps` are labels (or `{ label, description }`), `bind:current` is the
+  zero-based step. The full layout shows markers joined by a line with their
+  labels; below 30rem of its own width it becomes one line, "Step 2 of 3 —
+  Ratings", under a segmented bar (`layout` forces either). A completed step
+  has a check, the current one its number in a ringed marker, an upcoming one
+  an outline, so progress is never colour alone. It is a navigation landmark
+  with `aria-current="step"`, and a change of step is announced once.
+  `interactive` (off by default) makes completed steps buttons that go back;
+  `strings` translates the built-in words; `size` is `sm`, `md` or `lg`. It
+  does not move focus: focus the new step's heading yourself.
+- **PhotoGrid**, a new molecule: square photo thumbnails that open a viewer.
+  `photos` take `src`, `thumbSrc`, `alt`, `width`, `height` and an optional
+  `caption` and `id`; `columns` (3, then 4 and 5 as the grid widens), `max`
+  (the last tile shows "+N"), `onopen(index)`, and `onadd` for an "Add photo"
+  tile. `selectable` is `"single"` or `"multiple"` with `bind:selected` and
+  `bind:selectedKeys`; a single selection is never cleared by a repeat press,
+  and each tile then has an Open button. One Tab stop with arrow keys, lazy
+  loading, a placeholder while loading and a fallback when it fails.
+- **PhotoViewer**, a new molecule: a full-screen dialog for those photos, with
+  `bind:index`, `bind:isOpen`, a caption, a counter and up to three `actions`
+  as buttons (more go in a menu). Swipe or arrow keys change photo; pinch,
+  double tap, the wheel with Ctrl or `+` / `-` zoom; drag pans; swipe down,
+  Escape or the close button close it (`onclose({ reason })`). Focus is
+  trapped and returns to the tile of the photo that was showing. The thumbnail
+  shows blurred until the full image has loaded, and only the neighbouring
+  photos are preloaded. It is dark in both themes and keeps clear of the safe
+  areas.
 
 ### Changed
 
@@ -114,6 +142,9 @@ Whenever token or CSS import API surface changes, include:
   8rem, and the toast stack is capped to the screen and scrolls, so toasts
   no longer run off the top at 320px with enlarged text.
 - Toast's close button takes taps in its full 44px area; the card clipped 1px.
+- Calendar marks unavailable days with a line through the number as well as
+  the grey, and the `locale` documentation says `strings` must be translated
+  too.
 
 ## [8.1.0-beta.0] - 2026-10-05
 

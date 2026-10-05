@@ -547,6 +547,19 @@ test.describe("Calendar — display modes", () => {
         await expect(at("2026-10-04")).toHaveAttribute("aria-disabled", "true");
         await expect(at("2026-10-12"), "A Monday: closed").toHaveAttribute("aria-disabled", "true");
         await expect(at("2026-10-12")).toHaveAccessibleName("Monday, 12 October 2026, unavailable");
+        // Struck through as well as grey: not by colour alone.
+        // Read from the number, which is what the line is drawn through. Set
+        // on the button it computes the same there and draws nothing: the
+        // number is in a face that is positioned out of the flow.
+        const struck = (date: string) =>
+            at(date).evaluate((el) => {
+                const number = el.querySelector(".face > span")!;
+                const positioned = getComputedStyle(number.parentElement!).position;
+                return `${getComputedStyle(number).textDecorationLine}, in a face that is ${positioned}`;
+            });
+        expect(await struck("2026-10-12")).toBe("line-through, in a face that is absolute");
+        expect(await struck("2026-10-13")).toBe("none, in a face that is absolute");
+        expect(await at("2026-10-13").evaluate((el) => getComputedStyle(el).textDecorationLine)).toBe("none");
         // `force`: Playwright will not press what says it is unavailable; a finger will.
         await at("2026-10-12").click({ force: true });
         await expect(state).toContainText("Booked: nothing.");

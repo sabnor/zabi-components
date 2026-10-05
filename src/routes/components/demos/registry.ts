@@ -27,6 +27,9 @@ import StickyActionBarDemo from "./StickyActionBarDemo.svelte";
 import CalendarDemo from "./CalendarDemo.svelte";
 import DateFieldDemo from "./DateFieldDemo.svelte";
 import TimeFieldDemo from "./TimeFieldDemo.svelte";
+import PhotoGridDemo from "./PhotoGridDemo.svelte";
+import PhotoViewerDemo from "./PhotoViewerDemo.svelte";
+import StepperDemo from "./StepperDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -58,6 +61,9 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     Calendar: CalendarDemo,
     DateField: DateFieldDemo,
     TimeField: TimeFieldDemo,
+    PhotoGrid: PhotoGridDemo,
+    PhotoViewer: PhotoViewerDemo,
+    Stepper: StepperDemo,
 };
 
 export function getComponentDemo(

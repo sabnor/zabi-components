@@ -645,6 +645,83 @@ focused field is scrolled into view.
 
 ---
 
+### PhotoGrid
+
+**Keyboard support:**
+- ✅ **Tab**: Into the grid, onto one tile, and out again: the grid is one Tab stop
+- ✅ **Arrow keys**: Move between tiles (Left and Right swapped in a right-to-left page); nothing wraps
+- ✅ **Home / End**: The first / last tile of the row
+- ✅ **Ctrl + Home / End**: The first / last tile of the grid
+- ✅ **Enter / Space**: Open the photo, or select it in a selectable grid
+
+The tile that takes Tab is the one the keyboard was last on; before that, the
+selected tile in a `single` grid, else the first. A short hint ("Use the arrow
+keys to move between photos.") is read out when focus enters the grid, and
+shown under it while the keyboard is in it.
+
+Each tile is a button named by the photo's `alt`; a photo without one is named
+"Photo 3 of 12" and a development build warns. The "Add photo" tile is first
+and has its label written on it. The last tile under `max` is named by its
+photo and "6 more photos".
+
+With `selectable`, tiles are toggle buttons (`aria-pressed`). In `single` the
+selected photo is never cleared by pressing it again; in `multiple` a press
+toggles, like a checkbox. Each tile then has a second button, "Open (photo)",
+reached with Tab from the tile.
+
+**Usage:**
+```svelte
+<PhotoGrid {photos} max={8} aria-label="Quiz night photos" onopen={show} onadd={pick} />
+```
+
+**Best Practices:**
+- Give the grid an `aria-label` or `aria-labelledby`, and every photo real `alt` text
+- Open a PhotoViewer from `onopen`: focus comes back to the right tile by itself when it closes
+- `onadd` only reports the press: open your own file picker or an ImageUpload from it
+
+---
+
+### PhotoViewer
+
+**Keyboard support:**
+- ✅ **Tab / Shift + Tab**: Move through the controls; focus wraps and never reaches the page behind
+- ✅ **Arrow Left / Right**: Previous / next photo (swapped in a right-to-left page). While zoomed in, they pan instead
+- ✅ **Arrow Up / Down**: Pan, while zoomed in
+- ✅ **Page Up / Page Down**: Previous / next photo, zoomed in or not
+- ✅ **Home / End**: First / last photo
+- ✅ **+ / −**: Zoom in / out, up to four times
+- ✅ **0**: Back to the fitted photo
+- ✅ **Escape**: Leave the zoom if zoomed in; otherwise close
+
+Everything a finger can do has a key or a button: the previous, next and close
+buttons are always shown, never hidden after a while. At the first and last
+photo the button that has nowhere to go stays, dimmed and `aria-disabled`, so
+focus is never dropped. A tap on the black beside the photo does not close the
+viewer: it is the first half of a double tap, and a near miss of the photo.
+
+It is a modal dialog. Focus moves to the close button when it opens. When it
+closes, focus goes to the tile of the photo that was showing, if the PhotoGrid
+it was opened from shows that photo; otherwise to whatever opened it. The
+photo is an image with its `alt`; when the photo changes, its `alt` and place
+("The bar, 3 of 12") are read out politely. A photo that takes more than about
+0.4 seconds to load says "Loading photo"; one that fails says so and offers
+"Try again".
+
+While a menu of extra actions is open the keys belong to the menu: Escape
+closes the menu, not the viewer.
+
+**Usage:**
+```svelte
+<PhotoViewer {photos} bind:index bind:isOpen={open} actions={[share, remove]} />
+```
+
+**Best Practices:**
+- Confirm a destructive action yourself (a ConfirmDialog opens over the viewer); the viewer moves to the photo that takes the deleted one's place
+- Translate `strings` and `label` together with the action labels
+- Keep captions short: two lines show, and the rest is behind a "More" button
+
+---
+
 ### Rating
 
 **Keyboard support** (native `<input type="radio">`, one per star):
@@ -815,6 +892,62 @@ sentence for that reason; keep a translated one short too.
 - Translate the button names, the handle description and the announcements through `strings`
 - With `controls="manual"`, put `row.handle` and `row.moveButtons` beside a header toggle, never inside another `<button>` or link: a button inside a button is invalid markup and cannot be reached by keyboard
 - A click on the handle or a move button does not bubble (Enter and Space produce a click too), so a card header with its own click handler is not toggled by them; use `onreorder` to observe a move
+
+---
+
+### Stepper
+
+**Keyboard support:**
+- ✅ **Nothing to operate by default**: it shows progress, and has no Tab stop
+- ✅ **Tab / Shift + Tab** (with `interactive`): Through the completed steps, in order
+- ✅ **Enter / Space** (with `interactive`): Go back to that step
+
+It is a navigation landmark ("Progress") holding one ordered list. Each step
+is read as its number, label and state: "Step 1 of 3: Details, completed",
+"Step 2 of 3: Ratings, current", "Step 3 of 3: Result + notes, upcoming". The
+current step has `aria-current="step"`. The compact and the full layout are
+the same list, so they read the same.
+
+With `interactive`, only completed steps are buttons. The current step and the
+ones after it are not, so a press never lands on the current step and nothing
+can be skipped. A pressed step becomes the current one and keeps focus, as
+plain text that is not a Tab stop.
+
+When the step changes it is read out once, politely ("Step 2 of 3: Ratings"),
+and focus is not moved. Moving focus to the new step's heading is the app's
+job:
+
+**Usage:**
+```svelte
+<script lang="ts">
+    import { tick } from "svelte";
+
+    const steps = ["Details", "Ratings", "Result + notes"];
+    let current = $state(0);
+    let heading: HTMLElement | undefined = $state();
+
+    async function go(to: number) {
+        current = to;
+        await tick();
+        heading?.focus();
+    }
+</script>
+
+<Stepper {steps} {current} />
+<h2 bind:this={heading} tabindex="-1">{steps[current]}</h2>
+
+<StickyActionBar label="Log visit">
+    {#if current > 0}
+        <Button variant="ghost" size="lg" onclick={() => go(current - 1)}>Back</Button>
+    {/if}
+    <Button size="lg" onclick={() => go(current + 1)}>Next</Button>
+</StickyActionBar>
+```
+
+**Best Practices:**
+- Keep your own Back and Next buttons: the Stepper is not the way through the form
+- Translate `label` and all three `strings`; the state word is part of `stepLabel`
+- Give the heading `tabindex="-1"` and focus it after each change of step
 
 ---
 

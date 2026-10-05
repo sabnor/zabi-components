@@ -33,6 +33,9 @@
     import DateField from "../components/atoms/DateField.svelte";
     import TimeField from "../components/atoms/TimeField.svelte";
     import Calendar from "../components/molecules/Calendar.svelte";
+    import PhotoGrid from "../components/molecules/PhotoGrid.svelte";
+    import PhotoViewer from "../components/molecules/PhotoViewer.svelte";
+    import Stepper from "../components/molecules/Stepper.svelte";
     import type {
         AlertProps,
         BadgeProps,
@@ -59,6 +62,9 @@
         DateFieldProps,
         TimeFieldProps,
         CalendarProps,
+        PhotoGridProps,
+        PhotoViewerProps,
+        StepperProps,
     } from "./index";
 
     interface Props {
@@ -88,6 +94,9 @@
         dateField?: DateFieldProps;
         timeField?: TimeFieldProps;
         calendar?: CalendarProps;
+        photoGrid?: PhotoGridProps;
+        photoViewer?: PhotoViewerProps;
+        stepper?: StepperProps;
     }
 
     let {
@@ -116,6 +125,9 @@
         dateField = {},
         timeField = {},
         calendar = {},
+        photoGrid = { photos: [] },
+        photoViewer = { photos: [] },
+        stepper = { steps: [] },
     }: Props = $props();
 </script>
 
@@ -144,3 +156,6 @@
 <DateField {...dateField} />
 <TimeField {...timeField} />
 <Calendar {...calendar} />
+<PhotoGrid {...photoGrid} />
+<PhotoViewer {...photoViewer} />
+<Stepper {...stepper} />

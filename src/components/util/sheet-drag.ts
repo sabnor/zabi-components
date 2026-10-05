@@ -48,7 +48,11 @@ const now = () => (typeof performance !== "undefined" ? performance.now() : Date
 /** How far back the velocity looks, in ms. */
 const VELOCITY_WINDOW = 100;
 
-function createTracker() {
+/**
+ * How fast a pointer was moving over the last moments of a gesture, on one
+ * axis. Also used by `PhotoViewer`, for both axes.
+ */
+export function createVelocityTracker() {
     let samples: { time: number; y: number }[] = [];
     return {
         reset(y: number, time: number) {
@@ -76,7 +80,7 @@ export function attachSheetDrag(
     { handleZone, scroller }: SheetDragTargets,
     callbacks: SheetDragCallbacks,
 ): () => void {
-    const tracker = createTracker();
+    const tracker = createVelocityTracker();
     const allowed = () => callbacks.canStart?.() ?? true;
 
     // --- The handle zone: pointer events, so a mouse and a pen drag it too.

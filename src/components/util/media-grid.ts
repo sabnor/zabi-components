@@ -101,3 +101,29 @@ export function moveIndex(
             return last;
     }
 }
+
+const KEY_MOVES: Record<string, MediaGridMove> = {
+    ArrowUp: "up",
+    ArrowDown: "down",
+    Home: "rowStart",
+    End: "rowEnd",
+};
+
+/**
+ * The move a key asks for in a grid of tiles, or undefined for a key that is
+ * not a navigation key. Left and Right follow what is on screen, which is
+ * mirrored in a right-to-left layout; Ctrl with Home or End goes to the first
+ * or last tile. Shared by `MediaGrid` and `PhotoGrid`.
+ */
+export function moveForKey(
+    event: Pick<KeyboardEvent, "key" | "ctrlKey">,
+    rtl: boolean,
+): MediaGridMove | undefined {
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        return (event.key === "ArrowLeft") !== rtl ? "left" : "right";
+    }
+    if (event.ctrlKey && event.key === "Home") return "first";
+    if (event.ctrlKey && event.key === "End") return "last";
+    if (!event.ctrlKey) return KEY_MOVES[event.key];
+    return undefined;
+}

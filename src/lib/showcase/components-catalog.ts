@@ -5604,7 +5604,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "the page's language",
                         description:
-                            "Language of the month and day names, as a BCP 47 tag such as sv or en-GB. Left out, it is the lang of the html element, then the browser's; on the server it is English, so pass it when you render on the server.",
+                            "Language of the month and day names, as a BCP 47 tag such as sv or en-GB. Left out, it is the lang of the html element, then the browser's; on the server it is English, so pass it when you render on the server. It does not translate the words the component adds (Previous month, today, selected, the events part): translate those in strings as well.",
                     },
                     {
                         name: "min",
@@ -5714,6 +5714,462 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
     max="2026-11-20"
     isDateDisabled={(date) => new Date(\`\${date}T00:00:00Z\`).getUTCDay() === 1}
     onselect={(date) => book(date)}
+/>`,
+                    },
+                ],
+            },
+            {
+                name: "PhotoGrid",
+                category: "molecules",
+                description:
+                    "Grid of square photo thumbnails that opens a viewer, with an add tile, a count of the photos not shown, and optional selection.",
+                props: [
+                    {
+                        name: "photos",
+                        type: "Photo[]",
+                        required: true,
+                        description:
+                            "The photos: src, thumbSrc (optional), alt, width, height, and optionally caption and id. The grid shows thumbSrc, or src without one. id is the photo's identity where src may repeat or change.",
+                    },
+                    {
+                        name: "columns",
+                        type: "number",
+                        required: false,
+                        defaultValue: "3, 4 or 5 by width",
+                        description:
+                            "How many columns. Left out, it follows the width of the grid itself: 3 under 480px, 4 from there and 5 from 768px.",
+                    },
+                    {
+                        name: "max",
+                        type: "number",
+                        required: false,
+                        description:
+                            "Shows no more than this many photos. The last tile then shows how many more there are, as +12, and opens the viewer at its photo.",
+                    },
+                    {
+                        name: "onopen",
+                        type: "(index: number) => void",
+                        required: false,
+                        description:
+                            "Runs with the photo's place in photos when one is opened. Set the viewer's index and open it from here.",
+                    },
+                    {
+                        name: "onadd",
+                        type: "() => void",
+                        required: false,
+                        description:
+                            "Puts an Add photo tile first and runs when it is pressed. Open your own file picker or an ImageUpload from it; the grid does not pick files itself.",
+                    },
+                    {
+                        name: "selectable",
+                        type: "'single' | 'multiple'",
+                        required: false,
+                        description:
+                            "Makes a press select instead of open: single for one photo (a cover), multiple for any number (to delete). Each tile then has a small button of its own that opens it. In single, pressing the selected photo again changes nothing.",
+                    },
+                    {
+                        name: "selected",
+                        type: "string | number | null",
+                        required: false,
+                        defaultValue: "null",
+                        description:
+                            "Key of the selected photo (its id, or its src). Bindable. Used with selectable single.",
+                    },
+                    {
+                        name: "selectedKeys",
+                        type: "Array<string | number>",
+                        required: false,
+                        defaultValue: "[]",
+                        description:
+                            "Keys of the selected photos. Bindable. Used with selectable multiple.",
+                    },
+                    {
+                        name: "onselect",
+                        type: "({ photo, index, selected, keys }) => void",
+                        required: false,
+                        description:
+                            "Runs when a photo is selected or, in multiple, its selection is cleared.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<PhotoGridStrings>",
+                        required: false,
+                        description:
+                            "The built-in words: addPhoto, photoName (for a photo without alt), morePhotos, openPhoto and keyboardHint.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the host element. aria-label and aria-labelledby name the list.",
+                    },
+                ],
+                variants: [
+                    "single",
+                    "multiple",
+                    "max",
+                    "columns",
+                ],
+                examples: [
+                    {
+                        title: "A gallery: add, a count of the rest, and a viewer",
+                        description:
+                            "Square thumbnails, loaded as they come into view. Add photo opens the app's own file picker. With max, the last tile says how many more there are. Press a photo to open it; when the viewer closes, focus is back on the tile of the photo that was showing",
+                        code: `<script lang="ts">
+    import { PhotoGrid, PhotoViewer, type Photo } from "zabi-components";
+
+    let photos = $state<Photo[]>(data.photos);
+    let index = $state(0);
+    let open = $state(false);
+    let picker: HTMLInputElement;
+</script>
+
+<input bind:this={picker} type="file" accept="image/*" multiple class="sr-only" onchange={upload} />
+
+<PhotoGrid
+    {photos}
+    max={8}
+    aria-label="Quiz night photos"
+    onopen={(at) => {
+        index = at;
+        open = true;
+    }}
+    onadd={() => picker.click()}
+/>
+
+<PhotoViewer {photos} bind:index bind:isOpen={open} />`,
+                    },
+                    {
+                        title: "Choosing photos to delete",
+                        description:
+                            "selectable multiple: a press ticks a photo and another press unticks it, like a checkbox. The small button in the corner of a tile opens that photo",
+                        code: `<PhotoGrid
+    {photos}
+    selectable="multiple"
+    bind:selectedKeys
+    aria-label="Photos to delete"
+    onopen={show}
+/>
+
+<Button variant="danger" disabled={selectedKeys.length === 0} onclick={deleteSelected}>
+    Delete selected
+</Button>`,
+                    },
+                    {
+                        title: "Choosing a cover photo",
+                        description:
+                            "selectable single: one photo is selected, and pressing it again leaves it selected. Three columns whatever the width",
+                        code: `<PhotoGrid {photos} columns={3} selectable="single" bind:selected={cover} aria-label="Cover photo" />`,
+                    },
+                ],
+            },
+            {
+                name: "PhotoViewer",
+                category: "molecules",
+                description:
+                    "Full-screen photo viewer: swipe or arrow between photos, pinch or double tap to zoom, swipe down or Escape to close.",
+                props: [
+                    {
+                        name: "photos",
+                        type: "Photo[]",
+                        required: true,
+                        description:
+                            "The same array PhotoGrid takes. width and height give each photo its box before it has loaded; thumbSrc is shown blurred until the full image is there; alt is read out; caption is shown under the photo.",
+                    },
+                    {
+                        name: "index",
+                        type: "number",
+                        required: false,
+                        defaultValue: "0",
+                        description:
+                            "Place in photos of the photo that is showing. Bindable. If photos gets shorter while the viewer is open, it stays on a photo that exists, and the viewer closes when none is left.",
+                    },
+                    {
+                        name: "isOpen",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Open state. Bindable.",
+                    },
+                    {
+                        name: "actions",
+                        type: "PhotoViewerAction[]",
+                        required: false,
+                        defaultValue: "[]",
+                        description:
+                            "Things to do with the photo showing: id, label, icon, tone (danger), disabled and onclick(photo, index). Up to three are buttons under the photo; with more, two are and the rest are in a menu. The viewer shares, downloads and deletes nothing by itself.",
+                    },
+                    {
+                        name: "onclose",
+                        type: "({ reason }) => void",
+                        required: false,
+                        description:
+                            "Runs when the viewer closes itself. reason is escape, close-button or swipe.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Photo viewer",
+                        description: "Accessible name of the dialog.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<PhotoViewerStrings>",
+                        required: false,
+                        description:
+                            "The built-in words: close, previous, next, counter (shown) and position (read out), loading, loadError, retry, moreActions, showMore, showLess and photoName.",
+                    },
+                    {
+                        name: "portal",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Renders the overlay in document.body, so an ancestor with a transform or clipped overflow cannot trap it. Pass false to render in place.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the dialog panel. The viewer is black behind the photo in both themes; its controls sit on plates in the theme's own surface colour.",
+                    },
+                ],
+                variants: [
+                    "actions",
+                ],
+                examples: [
+                    {
+                        title: "Opened from a grid, with actions",
+                        description:
+                            "Swipe sideways or use the arrow keys to change photo, pinch or double tap to zoom and drag to pan, swipe down or press Escape to close. Share uses the browser's share sheet where there is one; Delete asks first, and the viewer moves to the photo that takes its place",
+                        code: `<script lang="ts">
+    import { ConfirmDialog, PhotoGrid, PhotoViewer, type PhotoViewerAction } from "zabi-components";
+    import { Share2, Trash2 } from "@lucide/svelte";
+
+    let index = $state(0);
+    let open = $state(false);
+    let toDelete = $state<Photo | null>(null);
+
+    const actions: PhotoViewerAction[] = [
+        {
+            id: "share",
+            label: "Share",
+            icon: Share2,
+            onclick: (photo) => navigator.share?.({ title: photo.alt, url: photo.src }),
+        },
+        {
+            id: "delete",
+            label: "Delete",
+            icon: Trash2,
+            tone: "danger",
+            onclick: (photo) => (toDelete = photo),
+        },
+    ];
+</script>
+
+<PhotoGrid {photos} onopen={(at) => { index = at; open = true; }} />
+<PhotoViewer {photos} bind:index bind:isOpen={open} {actions} />
+
+<ConfirmDialog
+    open={toDelete !== null}
+    variant="danger"
+    title="Delete this photo?"
+    confirmLabel="Delete"
+    onconfirm={() => {
+        photos = photos.filter((photo) => photo !== toDelete);
+        toDelete = null;
+    }}
+    oncancel={() => (toDelete = null)}
+/>`,
+                    },
+                    {
+                        title: "Captions, and no actions",
+                        description:
+                            "A caption sits on a plate under the photo, two lines at most; a longer one gets a More button that unfolds it. The second photo here has a long one",
+                        code: `<PhotoViewer {photos} bind:index bind:isOpen={open} label="Photos with captions" />`,
+                    },
+                ],
+            },
+            {
+                name: "Stepper",
+                category: "molecules",
+                description:
+                    "Progress through a multi-step form: each step with a marker and label where there is room, one line of text under a segmented bar where there is not.",
+                props: [
+                    {
+                        name: "steps",
+                        type: "(string | { label: string; description?: string })[]",
+                        required: true,
+                        description:
+                            "The steps, in order: labels, or objects with a label and a description. Nothing is rendered without steps.",
+                    },
+                    {
+                        name: "current",
+                        type: "number",
+                        required: false,
+                        defaultValue: "0",
+                        description:
+                            "Index of the current step, counted from 0. Bindable. A value outside the steps is shown as the nearest step (below the first: the first; past the last: the last); the bound value is left as it was given.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Size of the markers (24, 32 and 40px at the default text size) and the text. A step that can be pressed is a 44px target on a touch screen at every size.",
+                    },
+                    {
+                        name: "layout",
+                        type: "'auto' | 'full' | 'compact'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "full draws every step with its marker and label; compact draws one line of text under a segmented bar. auto is compact while the Stepper itself is narrower than 30rem and full from there, whatever the width of the screen.",
+                    },
+                    {
+                        name: "interactive",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Makes the completed steps buttons that go back to that step. The current step and the ones after it are never buttons. Without it the Stepper only shows progress.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Progress",
+                        description:
+                            "Accessible name of the navigation landmark. Translate it with strings.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<StepperStrings>",
+                        required: false,
+                        description:
+                            "Overrides for the built-in strings: position (\"Step 2 of 3\"), stepLabel (what a screen reader reads for a step) and announcement (read out when the step changes). All three are functions.",
+                    },
+                    {
+                        name: "onstepchange",
+                        type: "(index: number) => void",
+                        required: false,
+                        description:
+                            "Called with the index of the step a press went back to. Only with interactive.",
+                    },
+                ],
+                variants: [
+                    "sm",
+                    "md",
+                    "lg",
+                    "auto",
+                    "full",
+                    "compact",
+                    "interactive",
+                ],
+                examples: [
+                    {
+                        title: "Basic stepper",
+                        description:
+                            "Three steps and the app's own Back and Next buttons. As wide as its container: full here on a wide screen, compact on a phone",
+                        code: `<Stepper steps={["Details", "Ratings", "Result + notes"]} bind:current />
+
+<Button variant="outline" disabled={current === 0} onclick={() => (current -= 1)}>Back</Button>
+<Button disabled={current === 2} onclick={() => (current += 1)}>Next</Button>`,
+                    },
+                    {
+                        title: "A three-step form",
+                        description:
+                            "A form on a phone with a StickyActionBar. The Stepper reads the new step out by itself; moving focus to the step's heading is the app's job, done here after each change",
+                        code: `<script lang="ts">
+    import { tick } from "svelte";
+
+    const steps = ["Details", "Ratings", "Result + notes"];
+    let current = $state(0);
+    let heading: HTMLElement | undefined = $state();
+
+    async function go(to: number) {
+        current = to;
+        await tick();
+        heading?.focus();
+    }
+</script>
+
+<form onsubmit={save}>
+    <Stepper {steps} {current} />
+    <h2 bind:this={heading} tabindex="-1">{steps[current]}</h2>
+
+    {#if current === 0}
+        <Input id="place" label="Place" bind:value={visit.place} />
+    {:else if current === 1}
+        <Rating label="Quiz" bind:value={visit.quiz} />
+    {:else}
+        <Textarea id="notes" label="Notes" bind:value={visit.notes} />
+    {/if}
+
+    <StickyActionBar label="Log visit">
+        {#if current > 0}
+            <Button variant="ghost" size="lg" onclick={() => go(current - 1)}>Back</Button>
+        {/if}
+        {#if current < steps.length - 1}
+            <Button size="lg" onclick={() => go(current + 1)}>Next</Button>
+        {:else}
+            <Button type="submit" size="lg">Save visit</Button>
+        {/if}
+    </StickyActionBar>
+</form>`,
+                    },
+                    {
+                        title: "Going back to a completed step",
+                        description:
+                            "With interactive, the steps before the current one are buttons. The current step and the ones after it are not, so nothing can be skipped",
+                        code: `<Stepper
+    steps={["Details", "Ratings", "Result + notes"]}
+    bind:current
+    interactive
+    onstepchange={(index) => console.log("back to", index)}
+/>`,
+                    },
+                    {
+                        title: "Layouts, sizes and descriptions",
+                        description:
+                            "The two layouts side by side, forced with layout; the three sizes; and steps with a line under the label",
+                        code: `<Stepper {steps} current={1} layout="full" />
+<Stepper {steps} current={1} layout="compact" />
+
+<Stepper {steps} current={1} size="sm" />
+<Stepper {steps} current={1} size="lg" />
+
+<Stepper
+    steps={[
+        { label: "Details", description: "Place and date" },
+        { label: "Ratings", description: "Quiz, food and mood" },
+        { label: "Result + notes", description: "Score and what happened" },
+    ]}
+    current={1}
+/>`,
+                    },
+                    {
+                        title: "Translated",
+                        description:
+                            "Every built-in string is replaceable. The state words are part of stepLabel, so a language can order the sentence its own way",
+                        code: `<Stepper
+    steps={["Detaljer", "Betyg", "Resultat + anteckningar"]}
+    bind:current
+    label="Förlopp"
+    strings={{
+        position: (step, total) => \`Steg \${step} av \${total}\`,
+        stepLabel: (step, total, label, state) =>
+            \`Steg \${step} av \${total}: \${label}, \${
+                { completed: "klart", current: "aktuellt", upcoming: "kommande" }[state]
+            }\`,
+        announcement: (step, total, label) => \`Steg \${step} av \${total}: \${label}\`,
+    }}
 />`,
                     },
                 ],

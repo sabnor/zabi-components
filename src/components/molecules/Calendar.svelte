@@ -77,6 +77,11 @@
          * Language of the month and day names, as a BCP 47 tag (`sv`, `en-GB`).
          * Left out, it is the page's language (`<html lang>`), then the
          * browser's; on the server, English.
+         *
+         * It translates only what comes from the calendar of that language:
+         * the month, the weekdays and the dates. The words the component
+         * adds ("Previous month", "today", "selected", "2 events: ...") stay
+         * English until you pass them in `strings`. Translate both.
          */
         locale?: string;
         /** Earliest day that can be selected, as `YYYY-MM-DD`. Months before it cannot be reached. */
@@ -470,9 +475,17 @@
         outline-offset: -4px;
     }
 
+    /* Struck through as well as grey: the grey alone is a thin difference
+       (3:1 against the page), and colour must not be the only sign. */
     .day[aria-disabled="true"] {
         color: var(--color-action-disabled-text);
         cursor: not-allowed;
+    }
+
+    /* On the number itself: the face is positioned out of the flow, and a
+       line set on the button is not drawn through what is out of the flow. */
+    .day[aria-disabled="true"] .face > span:first-child {
+        text-decoration: line-through;
     }
 
     /* 5px above the bottom of the face: 4px dots, so 2px at their ends, plus

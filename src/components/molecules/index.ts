@@ -86,4 +86,23 @@ export type {
     CalendarStrings,
     CalendarTone,
 } from '../util/calendar.js';
+export { default as PhotoGrid } from './PhotoGrid.svelte';
+export { default as PhotoViewer } from './PhotoViewer.svelte';
+export type {
+    Photo,
+    PhotoGridSelectDetail,
+    PhotoGridStrings,
+    PhotoKey,
+    PhotoViewerAction,
+    PhotoViewerCloseReason,
+    PhotoViewerStrings,
+} from '../util/photo.js';
+export { default as Stepper } from './Stepper.svelte';
+export type {
+    StepperItem,
+    StepperLayout,
+    StepperStep,
+    StepperStepState,
+    StepperStrings,
+} from '../util/stepper.js';
 export * from './toast-store.js';

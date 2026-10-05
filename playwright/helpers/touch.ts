@@ -65,3 +65,34 @@ export async function touchTap(
     await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
     await cdp.detach();
 }
+
+/**
+ * Two fingers on the glass, moved together from one pair of points to
+ * another, through the DevTools protocol: a pinch when the pairs differ in
+ * how far apart they are, a two-finger drag when they do not. `hold` is how
+ * long the fingers rest at the end before both lift.
+ */
+export async function touchPinch(
+    page: Page,
+    from: [Point, Point],
+    to: [Point, Point],
+    { duration = 300, hold = 100, steps = 12 }: { duration?: number; hold?: number; steps?: number } = {},
+): Promise<void> {
+    const cdp = await page.context().newCDPSession(page);
+    const at = (progress: number) =>
+        from.map((start, finger) => ({
+            x: Math.round(start.x + (to[finger].x - start.x) * progress),
+            y: Math.round(start.y + (to[finger].y - start.y) * progress),
+            id: finger + 1,
+        }));
+    // One finger, then the other: as fingers arrive.
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: at(0).slice(0, 1) });
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: at(0) });
+    for (let step = 1; step <= steps; step += 1) {
+        await page.waitForTimeout(duration / steps);
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: at(step / steps) });
+    }
+    if (hold > 0) await page.waitForTimeout(hold);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await cdp.detach();
+}

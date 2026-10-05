@@ -133,6 +133,7 @@ them:
 - **Rating** takes `sm` | `md` | `lg` for the star (20, 24 and 32px); the target around an interactive star stays at 44px or more.
 - **DateField** and **TimeField** take the three sizes of Input and are exactly as tall, on a touch screen too.
 - **Calendar** has no `size`: it is as wide as its container, in seven equal columns, with days at least 44px tall. Give it a width where the container is wide.
+- **Stepper** takes `sm` | `md` | `lg` for its markers (1.5, 2 and 2.5rem: 24, 32 and 40px at the default text size) and its text (12, 14 and 16px). It is not a control height: nothing in it is pressed unless `interactive`, and then a completed step is a 44px target on a touch screen at every size. One limit: in the compact layout the segments share the width of the bar, so with more than six steps on a 320px screen (more than seven at 375px) a segment is narrower than 44px, though still 44px tall. A flow that long is better not `interactive` on a phone. As an item of a flex row, or anywhere else that gives it no width, the Stepper asks for 30rem and takes less when there is less.
 
 ## Usage Guidelines
 
@@ -239,6 +240,12 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 ### SegmentedControl
 - Sizes: `sm`, `md`, `lg`
 - Width: `fullWidth` (default) or as wide as its labels
+
+### Stepper
+- Sizes: `sm`, `md`, `lg`
+- Layouts: `auto` (default: compact while the Stepper itself is narrower than 30rem, full from there), `full`, `compact`
+- States of a step: completed, current, upcoming (set by `current`, not by a prop of the step)
+- Modes: `interactive` (completed steps are buttons that go back)
 
 ### Spinner
 - Sizes: `xs`, `sm`, `md`, `lg`

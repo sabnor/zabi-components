@@ -11,10 +11,10 @@
         MEDIA_GRID_STRINGS,
         columnCount,
         isVideoUrl,
+        moveForKey,
         moveIndex,
         type MediaGridItemType,
         type MediaGridKey,
-        type MediaGridMove,
         type MediaGridSelectDetail,
         type MediaGridStrings,
     } from "../util/media-grid.js";
@@ -197,13 +197,6 @@
         ondelete?.(entry);
     }
 
-    const KEY_MOVES: Record<string, MediaGridMove> = {
-        ArrowUp: "up",
-        ArrowDown: "down",
-        Home: "rowStart",
-        End: "rowEnd",
-    };
-
     function handleKeydown(event: KeyboardEvent) {
         const tile = (event.target as HTMLElement).closest<HTMLElement>(
             "[data-media-grid-tile]",
@@ -222,18 +215,8 @@
             return;
         }
 
-        let move: MediaGridMove | undefined;
-        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-            // The arrows follow what is on screen, which is mirrored in RTL.
-            const rtl = getComputedStyle(tile).direction === "rtl";
-            move = (event.key === "ArrowLeft") !== rtl ? "left" : "right";
-        } else if (event.ctrlKey && event.key === "Home") {
-            move = "first";
-        } else if (event.ctrlKey && event.key === "End") {
-            move = "last";
-        } else if (!event.ctrlKey) {
-            move = KEY_MOVES[event.key];
-        }
+        // The arrows follow what is on screen, which is mirrored in RTL.
+        const move = moveForKey(event, getComputedStyle(tile).direction === "rtl");
         if (!move) return;
 
         // Also keeps the arrow keys from scrolling a Modal body under the grid.

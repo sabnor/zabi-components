@@ -12,6 +12,15 @@ import type { HTMLAttributes, HTMLButtonAttributes, HTMLInputAttributes } from '
 import type { BottomTabBarItem } from '../components/util/bottom-tab-bar.js';
 import type { CalendarEvent, CalendarStrings } from '../components/util/calendar.js';
 import type {
+    Photo,
+    PhotoGridSelectDetail,
+    PhotoGridStrings,
+    PhotoKey,
+    PhotoViewerAction,
+    PhotoViewerCloseReason,
+    PhotoViewerStrings,
+} from '../components/util/photo.js';
+import type {
     BottomSheetCloseReason,
     BottomSheetSnap,
 } from '../components/util/bottom-sheet.js';
@@ -23,6 +32,11 @@ import type {
     SizeVariant,
 } from './variants.js';
 import type { RatingStrings } from '../components/util/rating.js';
+import type {
+    StepperItem,
+    StepperLayout,
+    StepperStrings,
+} from '../components/util/stepper.js';
 import type { SegmentedControlOption } from '../components/util/segmented-control.js';
 
 export type ZabiComponent<T extends Record<string, any> = Record<string, any>, E extends Record<string, any> = Record<string, any>> = Component<T, E>;
@@ -599,7 +613,10 @@ export interface CalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'cla
     events?: CalendarEvent[];
     /** First day of the week: 0 for Sunday to 6 for Saturday. */
     weekStartsOn?: number;
-    /** Language of the month and day names, as a BCP 47 tag. */
+    /**
+     * Language of the month and day names, as a BCP 47 tag. It does not translate the
+     * words the component adds ("today", "selected", ...): pass those in `strings` too.
+     */
     locale?: string;
     /** Earliest day that can be selected, as `YYYY-MM-DD`. */
     min?: string;
@@ -615,6 +632,78 @@ export interface CalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'cla
     onmonthchange?: (month: string) => void;
     /** Extra classes for the host element. */
     class?: string;
+}
+
+// PhotoGrid component props
+export interface PhotoGridProps
+    extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'aria-label' | 'aria-labelledby' | 'onselect'> {
+    photos: Photo[];
+    /** How many columns. Left out, it follows the width of the grid: 3, 4 from 480px, 5 from 768px. */
+    columns?: number;
+    /** Shows no more than this many photos; the last tile then says how many more there are. */
+    max?: number;
+    /** Called with the photo's place in `photos` when one is opened. */
+    onopen?: (index: number) => void;
+    /** Makes a press select: `single` for one photo, `multiple` for any number. */
+    selectable?: 'single' | 'multiple';
+    /** Key of the selected photo, or `null`. Supports `bind:selected`. */
+    selected?: PhotoKey | null;
+    /** Keys of the selected photos. Supports `bind:selectedKeys`. */
+    selectedKeys?: PhotoKey[];
+    /** Called when a photo is selected or, in `multiple`, its selection is cleared. */
+    onselect?: (detail: PhotoGridSelectDetail) => void;
+    /** Puts an "Add photo" tile first and is called when it is pressed. */
+    onadd?: () => void;
+    /** Overrides for the built-in strings. */
+    strings?: Partial<PhotoGridStrings>;
+    /** Extra classes for the host element. */
+    class?: string;
+    'aria-label'?: string;
+    'aria-labelledby'?: string;
+}
+
+// PhotoViewer component props
+export interface PhotoViewerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'onclose' | 'aria-label'> {
+    photos: Photo[];
+    /** Place in `photos` of the photo that is showing. Supports `bind:index`. */
+    index?: number;
+    isOpen?: boolean;
+    /** Things to do with the photo that is showing. */
+    actions?: PhotoViewerAction[];
+    /** Render the overlay in `document.body`; `false` renders in place. */
+    portal?: boolean;
+    /** Fired when the viewer closes itself, with what the user did. */
+    onclose?: (detail: { reason: PhotoViewerCloseReason }) => void;
+    /** Accessible name of the dialog. */
+    label?: string;
+    /** Overrides for the built-in strings. */
+    strings?: Partial<PhotoViewerStrings>;
+    /** Extra classes for the dialog panel. */
+    class?: string;
+}
+
+// Stepper component props
+export interface StepperProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    class?: string;
+    /** The steps, in order: labels, or objects with a label and a description. */
+    steps: StepperItem[];
+    /**
+     * Index of the current step, counted from 0. Bindable. A value outside
+     * the steps is shown as the nearest step; the bound value is left as given.
+     */
+    current?: number;
+    /** Size of the markers and the text. */
+    size?: SizeVariant;
+    /** `auto` is compact while the Stepper itself is narrower than 30rem. */
+    layout?: StepperLayout;
+    /** Makes the completed steps buttons that go back to that step. */
+    interactive?: boolean;
+    /** Accessible name of the navigation landmark. */
+    label?: string;
+    /** Overrides for the built-in strings. */
+    strings?: Partial<StepperStrings>;
+    /** Called with the index of the step a press went back to. Only with `interactive`. */
+    onstepchange?: (index: number) => void;
 }
 
 // Component type definitions
@@ -643,3 +732,6 @@ export type BottomSheet = ZabiComponent<BottomSheetProps>;
 export type DateField = ZabiComponent<DateFieldProps>;
 export type TimeField = ZabiComponent<TimeFieldProps>;
 export type Calendar = ZabiComponent<CalendarProps>;
+export type PhotoGrid = ZabiComponent<PhotoGridProps>;
+export type PhotoViewer = ZabiComponent<PhotoViewerProps>;
+export type Stepper = ZabiComponent<StepperProps>;
