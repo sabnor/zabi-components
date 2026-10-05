@@ -329,14 +329,11 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 - ✅ A single selection is never cleared by a repeat press; `clearable` adds a named clear button, and Delete or Backspace clears
 - ✅ Focus moves to the first star when the clear button hides
 - ✅ Filled and empty stars differ by shape (filled against outlined), not by colour alone
+- ✅ The outline of an empty star (`--color-control-border`) is 3:1 or better on every surface level of both themes
 - ✅ `readonly` is one image with one name ("Quiz, 3.5 of 5 stars"); it has no inputs, so it takes no focus and submits nothing, even with `name`
 - ✅ Focus is an outline in forced colours; the pressed star does not animate under `prefers-reduced-motion`
 
-**Issues Found:**
-- ⚠️ The outline of an empty star (`--color-border-strong`) is 3:1 or better on the page, card and inset surfaces of both themes, and 2.49:1 on the dark elevated surface
-
 **Recommendations:**
-- Use it on page, card and inset surfaces
 - Test with a screen reader on a phone
 
 **Priority:** Low

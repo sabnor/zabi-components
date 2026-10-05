@@ -308,6 +308,55 @@ function checkAlphaTints(themes) {
     return { failures, checked };
 }
 
+/* ---------- every focus-ring variant reads a colour the pairs hold ---------- */
+
+/**
+ * `.focus-ring--muted` set `--zabi-focus-ring-color: var(--color-base-500)`: a
+ * raw ramp step, in no pair, so the ring was 2.49:1 on the dark elevated
+ * surface and every check passed. The pair list can only hold tokens it knows
+ * about, so this reads the stylesheet the other way round: whatever a rule
+ * hands to `--zabi-focus-ring-color` has to be a flat colour in both themes
+ * and has to be measured against the surfaces in contrast-pairs.js. A new
+ * variant, or one re-pointed at a ramp step, fails here until it is listed.
+ */
+function checkFocusRingSources(css, themes, pairs) {
+    const failures = [];
+    const sources = new Set();
+    const re = /--zabi-focus-ring-color\s*:\s*([^;]+);/g;
+    let m;
+    while ((m = re.exec(css))) {
+        const value = m[1].trim();
+        // `var(--role)` or `var(--role, <fallback>)`. The role is what the
+        // library's own theme paints; a fallback only serves an app whose
+        // theme file lacks the role, which the flat-colour check below rules
+        // out here.
+        const token = value.match(/^var\(\s*(--[\w-]+)\s*(?:,[\s\S]*)?\)$/);
+        if (!token) {
+            failures.push(`--zabi-focus-ring-color: ${value} is not a token, so no pair can measure it`);
+            continue;
+        }
+        sources.add(token[1]);
+    }
+    if (sources.size === 0) failures.push('no --zabi-focus-ring-color declaration found: the focus-ring rules have moved');
+
+    const SURFACES = ['base', 'raised', 'inset', 'elevated'].map((s) => `--color-surface-${s}`);
+    for (const token of sources) {
+        const missing = SURFACES.filter((bg) => !pairs.some((p) => p.fg === token && p.bg === bg && p.min >= 3));
+        if (missing.length) {
+            failures.push(
+                `focus ring colour ${token} is not held to 3:1 on ${missing.join(', ')}: ` +
+                    'add it to UI_PARTS in scripts/contrast-pairs.js',
+            );
+        }
+        for (const themeName of ['light', 'dark']) {
+            if (!resolve(themes[themeName], token)) {
+                failures.push(`${themeName} · focus ring colour ${token} is not a flat colour, so its pairs would be skipped`);
+            }
+        }
+    }
+    return { failures, checked: sources.size };
+}
+
 /* ---------- the pairs components actually render ---------- */
 
 
@@ -325,6 +374,13 @@ function main() {
         for (const pair of pairs) {
             const bg = resolve(map, pair.bg);
             const fg = resolve(map, pair.fg);
+            // A token that is not declared at all is a renamed or deleted role,
+            // not an alpha value: skipping it would drop its pairs silently.
+            const undeclared = [pair.bg, pair.fg].find((token) => !(token in map));
+            if (undeclared) {
+                failures.push(`${themeName} · ${pair.name}: ${undeclared} is not declared, so the pair cannot be checked`);
+                continue;
+            }
             if (!bg || !fg) {
                 skipped.push(`${themeName} · ${pair.name} (${!bg ? pair.bg : pair.fg} is not a flat colour)`);
                 continue;
@@ -361,6 +417,9 @@ function main() {
     const tints = checkAlphaTints(themes);
     failures.push(...tints.failures);
 
+    const rings = checkFocusRingSources(css, themes, pairs);
+    failures.push(...rings.failures);
+
     if (failures.length) {
         console.error('\n❌ Contrast check failed:\n');
         failures.forEach((f) => console.error('  • ' + f));
@@ -370,7 +429,8 @@ function main() {
 
     console.log(`✓ ${pairs.length * 2 - skipped.length} colour pairs pass WCAG AA in both themes`);
     console.log(`✓ ${fills.checked} interaction fills are distinguishable from the surface they sit on`);
-    console.log(`✓ ${tints.checked} alpha tints read at ${MIN_TINT_CONTRAST}:1 or more over the surface they land on\n`);
+    console.log(`✓ ${tints.checked} alpha tints read at ${MIN_TINT_CONTRAST}:1 or more over the surface they land on`);
+    console.log(`✓ ${rings.checked} focus-ring colours are each measured against the surfaces a control lands on\n`);
 }
 
 main();

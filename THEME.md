@@ -118,6 +118,8 @@ already the right value in each mode. Use the same roles in your own CSS.
 - `--color-accent`, `-hover`, `-active`, `-subtle`, `-border`, `-text` - The second brand colour
 - `--color-on-accent` - Text on a solid accent fill
 - `--color-link`, `--color-focus-ring` - Links and the focus ring
+- `--color-focus-ring-muted` - The neutral ring of ghost and link controls (`.focus-ring--muted`)
+- `--color-control-border` (`border-control-border`) - The edge of a control that has nothing else to be seen by, such as the outline of an empty Rating star. `--color-border-strong` is a decorative edge and is under 3:1 on the dark elevated and overlay surfaces
 - `--color-success`, `--color-warning`, `--color-error`, `--color-info` - States, each with `-subtle`, `-border` and `-text`
 
 The full list is in [THEMING.md](./THEMING.md#roles-read-them-do-not-set-them).

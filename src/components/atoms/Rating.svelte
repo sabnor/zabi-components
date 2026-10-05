@@ -269,9 +269,11 @@
         --zabi-rating-on: var(--color-action-primary);
         /* The outline is all there is of an empty star, so it needs 3:1 against
            what it sits on (WCAG 1.4.11). `--color-border-medium` is 2.2:1 on
-           the light page and 1.9:1 on a dark card; this is 3.1:1 or better on
-           the page, card and inset surfaces of both themes. */
-        --zabi-rating-off: var(--color-border-strong);
+           the light page and 1.9:1 on a dark card, and `--color-border-strong`
+           2.49:1 on the dark elevated surface; the control boundary is held to
+           3:1 on every surface level of both themes. The fallback is for an
+           app whose own theme file predates the role. */
+        --zabi-rating-off: var(--color-control-border, var(--color-border-strong));
     }
 
     .rating[data-size="sm"] {

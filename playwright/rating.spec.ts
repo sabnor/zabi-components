@@ -125,7 +125,7 @@ test.describe("Rating: touch, keyboard and small screens", () => {
         await expect(clear).toBeVisible();
     });
 
-    test("rendering: filled stars use the primary action colour and empty ones the strong border", async ({
+    test("rendering: filled stars use the primary action colour and empty ones the control boundary", async ({
         page,
     }) => {
         // The star tapped last (the second) dips while pressed; read once it has let go.
@@ -156,7 +156,7 @@ test.describe("Rating: touch, keyboard and small screens", () => {
             const fill = (star: Element) => star.querySelector(".rating-glyph-fill")!;
             return {
                 on: probe("--color-action-primary"),
-                off: probe("--color-border-strong"),
+                off: probe("--color-control-border"),
                 filled: getComputedStyle(fill(stars[0])).color,
                 filledWidth: fill(stars[1]).getBoundingClientRect().width,
                 emptyWidth: fill(stars[2]).getBoundingClientRect().width,
@@ -321,7 +321,7 @@ test.describe("Rating: touch, keyboard and small screens", () => {
         expect(await shadow()).toContain(ring);
     });
 
-    test("contrast: an empty star is 3:1 or better against the page, card and inset surfaces, in light and dark", async ({
+    test("contrast: an empty star is 3:1 or better against every surface level, in light and dark", async ({
         page,
     }) => {
         // WCAG 1.4.11: the outline is all there is of an empty star.
@@ -352,7 +352,13 @@ test.describe("Rating: touch, keyboard and small screens", () => {
                 const empty = getComputedStyle(
                     host.querySelectorAll(".rating-star")[4].querySelector(".rating-glyph-empty")!,
                 ).color;
-                const result = ["--color-page", "--color-card", "--color-surface-inset"].map((variable) => {
+                const result = [
+                    "--color-page",
+                    "--color-card",
+                    "--color-surface-inset",
+                    "--color-surface-elevated",
+                    "--color-surface-overlay",
+                ].map((variable) => {
                     const [light, dark] = [luminance(empty), luminance(surface(variable))].sort(
                         (a, b) => b - a,
                     );

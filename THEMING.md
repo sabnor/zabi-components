@@ -204,6 +204,8 @@ should too: `var(--color-action-primary)` or the `bg-action-primary` class, not
 | `--color-on-brand`, `--color-on-accent` | Text on a primary fill and on a solid accent fill |
 | `--color-accent`, `-hover`, `-active`, `-subtle`, `-border`, `-text` | The second brand colour |
 | `--color-focus-ring`, `--color-focus-ring-offset`, `--color-focus` | The focus ring and the gap around it |
+| `--color-focus-ring-muted` | The neutral ring of ghost and link controls (`.focus-ring--muted`); 3:1 or more on every surface level |
+| `--color-control-border` | The edge of a control that has nothing else to be seen by, such as an empty Rating star; 3:1 or more on every surface level |
 | `--color-link`, `--color-link-hover` | Links |
 | `--color-headline`, `--color-body`, `--color-description`, `--color-caption`, `--color-label` | Text |
 | `--color-surface-base`, `-raised`, `-elevated`, `-overlay`, `-inset` | The page, cards, nested cards, floating panels, wells |
@@ -661,7 +663,13 @@ needs a new one, add the rule there; `tests/state-variants.test.ts`
 `scripts/check-contrast.js` resolves every fill/foreground pair a component can
 render — through the same token chain the CSS uses — in **both** themes, and
 fails below WCAG AA. It also holds the focus ring to 3:1 against the page, a
-card, and the offset gap that separates it from a primary button. Run it after
+card, and the offset gap that separates it from a primary button. The muted
+ring (`--color-focus-ring-muted`), the danger ring and the control boundary
+(`--color-control-border`) are held to 3:1 on all five surfaces: page, card,
+inset, elevated and overlay. The brand and nav rings are held on the first
+four; they are 2.91:1 on the dark overlay. The colour a focus-ring rule
+uses must be a token in that list (`scripts/contrast-pairs.js`), so a ring
+cannot read a raw ramp step. Run it after
 re-pointing any token:
 
 ```bash

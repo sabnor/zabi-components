@@ -403,6 +403,15 @@
   --color-border-weak: var(--color-base-300);
   --color-border-medium: var(--color-base-400);
   --color-border-strong: var(--color-base-500);
+  /* Control boundary — the edge of a control that has nothing else to be seen
+   * by, such as the outline of an empty Rating star (its first user).
+   * WCAG 1.4.11 asks 3:1 for it against whatever it sits on, so it is held to
+   * 3:1 on every surface level in both themes (scripts/check-contrast.js).
+   * The decorative edges above are not: --color-border-strong is the mirror's
+   * fixed point, the same grey in both themes, and is 2.49:1 on the dark
+   * elevated surface and 1.98:1 on the dark overlay. .dark pins this one step
+   * lighter for that reason. */
+  --color-control-border: var(--color-base-500);
 
   /* Focus Colors
    * brand-600, not brand-500: a focus indicator needs 3:1 against what is
@@ -417,6 +426,12 @@
   /* Aliases for `ring-focus-ring`, `.focus-ring`, and form utils */
   --color-focus-ring: var(--color-focus);
   --color-focus-ring-offset: var(--color-card);
+  /* `.focus-ring--muted`: the neutral ring of a ghost or link control, quiet
+   * by having no hue, not by having less contrast. The rule used to read
+   * --color-base-500 directly, which does not move between themes: 4.1:1 or
+   * more in light, 2.49:1 on the dark elevated surface. .dark pins it one step
+   * lighter; it is held to 3:1 on every surface level in both themes. */
+  --color-focus-ring-muted: var(--color-base-500);
 
   /* Primary Colors */
   --color-primary: var(--color-brand-600);
@@ -916,7 +931,13 @@ body {
 
   /* Text Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Border Colors - No dark mode overrides needed, base colors are already inverted */
+  /* Border Colors - the decorative edges need no override, base colors are
+   * already inverted. The control boundary does: base-500 is the mirror's
+   * fixed point (#71717a in both themes), and the dark surfaces above the card
+   * are too light for it (2.49:1 on elevated, 1.98:1 on the overlay). base-600
+   * mirrors to --zabi-base-400 (#a1a1aa): 3.73:1 on the overlay, the lightest
+   * surface, and more on every level below it. base-550 is 2.76:1 there. */
+  --color-control-border: var(--color-base-600);
 
   /* Focus Colors — pinned to the steps dark has always used. Light moved each
    * one step darker to clear 3:1 on its page; the mirrored brand-500 is already
@@ -925,6 +946,9 @@ body {
   --color-focus-weak: var(--color-brand-600);
   --color-focus-medium: var(--color-brand-700);
   --color-focus-strong: var(--color-brand-800);
+  /* The muted ring, for the same reason as the control boundary above: one
+   * step lighter than the fixed point, 3.73:1 on the overlay. */
+  --color-focus-ring-muted: var(--color-base-600);
 
   /* Primary Colors - No dark mode overrides needed, brand colors are already inverted */
 
@@ -1578,8 +1602,12 @@ body {
     --zabi-focus-ring-color: var(--color-error);
   }
 
+  /** Neutral ring for ghost and link controls. A role, not a ramp step: see
+   *  --color-focus-ring-muted. The fallback is the step this rule read before
+   *  the role existed, for an app whose own theme file does not declare it:
+   *  without it the whole box-shadow would be invalid and the ring gone. */
   .focus-ring--muted {
-    --zabi-focus-ring-color: var(--color-base-500);
+    --zabi-focus-ring-color: var(--color-focus-ring-muted, var(--color-base-500));
   }
 
   /**

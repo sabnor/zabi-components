@@ -247,8 +247,8 @@ Whenever token or CSS import API surface changes, include:
   ("Quiz, 3.5 of 5 stars"), fills stars by any fraction and prints the number
   beside them (`showValue`, `formatValue`); it submits nothing. Each star is a
   44px target at every `size`. The texts are replaceable through `strings`.
-  An empty star is drawn in `--color-border-strong`, 3:1 or more on the page,
-  card and inset surfaces; it is weaker on the dark elevated surface.
+  An empty star is drawn in `--color-control-border`, 3:1 or more on every
+  surface level in both themes.
 - **SegmentedControl**, a new molecule: two to four choices in one row, such as
   List / Month. `options` take `value`, `label`, an optional `icon` and
   `disabled`; `bind:value` holds the choice and `onchange` reports it. It is a
@@ -285,6 +285,15 @@ Whenever token or CSS import API surface changes, include:
 - **Two-brand tests.** `playwright/theme-brands.spec.ts` checks component pages
   under the default brand and Amber, in light and dark, at desktop width and
   375px, from computed styles.
+- **`--color-control-border`** (`border-control-border`,
+  `text-control-border`): the edge of a control that has nothing else to be
+  seen by. 3:1 or more on every surface level in light and dark.
+  `--color-border-strong` is unchanged and remains a decorative edge.
+- **`--color-focus-ring-muted`**, the colour of `.focus-ring--muted`.
+- The contrast guard holds the muted and danger focus rings and the control
+  boundary to 3:1 on all five surface levels, and fails when a focus-ring rule
+  reads a colour that is not in its pair list. The theme generator checks the
+  same pairs.
 
 ### Changed
 
@@ -382,6 +391,12 @@ Whenever token or CSS import API surface changes, include:
 
 ### Fixed
 
+- **The muted focus ring shows in dark.** `.focus-ring--muted` (ghost and link
+  buttons, the AppBar back control, the SortableList handle) read
+  `--color-base-500`, the same grey in both themes: 2.49:1 on the dark elevated
+  surface and 1.98:1 on the dark overlay. It now reads
+  `--color-focus-ring-muted`, one step lighter in dark, 3.7:1 or more on every
+  surface level. Light is unchanged.
 - **The brand menu in the docs site header stays on screen.** It opened past
   the right edge and widened the page at 768px and 1024px; it now opens toward
   the side that has room.

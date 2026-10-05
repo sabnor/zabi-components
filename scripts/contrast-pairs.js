@@ -17,6 +17,30 @@ export const AA_LARGE = 3.0;
 
 const FAMILIES = ['success', 'warning', 'error', 'info', 'energetic', 'neutral'];
 
+/** Every surface a control can land on: the four levels and the inset well. */
+const SURFACE_TOKEN = { page: 'base', card: 'raised', inset: 'inset', elevated: 'elevated', overlay: 'overlay' };
+const EVERY_SURFACE = Object.keys(SURFACE_TOKEN);
+/**
+ * KNOWN GAP, not a pass: the brand ring (--color-focus-ring, and the nav ring
+ * that aliases it) is 2.91:1 on the dark overlay with the default theme
+ * (#6d87f1 on #454547). Closing it means moving dark --color-focus, which
+ * re-colours every focus ring in dark, so it waits for a decision. Until then
+ * these two rings are held on the four surfaces they pass on; in light the
+ * overlay is the card's white, so nothing light is left unchecked. Replace
+ * this list with EVERY_SURFACE when the dark ring has moved.
+ */
+const BRAND_RING_SURFACES = ['page', 'card', 'inset', 'elevated'];
+
+/** [name, token, surfaces] — parts that need 3:1 against what they sit on. */
+const UI_PARTS = [
+    ['focus ring', '--color-focus-ring', BRAND_RING_SURFACES],
+    ['nav focus ring', '--color-nav-menu-focus', BRAND_RING_SURFACES],
+    // `.focus-ring--danger` reads --color-error.
+    ['danger focus ring', '--color-error', EVERY_SURFACE],
+    ['muted focus ring', '--color-focus-ring-muted', EVERY_SURFACE],
+    ['control boundary', '--color-control-border', EVERY_SURFACE],
+];
+
 export function buildPairs() {
     const pairs = [];
 
@@ -100,6 +124,20 @@ export function buildPairs() {
         { name: 'focus offset gap on primary button', bg: '--color-action-primary', fg: '--color-focus-ring-offset', min: AA_LARGE },
         { name: 'focus ring against its offset gap', bg: '--color-focus-ring-offset', fg: '--color-focus-ring', min: AA_LARGE },
     );
+
+    // WCAG 1.4.11 again, on the rest of the ladder. The four pairs above stop
+    // at the card, and a ring or a control's only edge is drawn wherever the
+    // control lands. `.focus-ring--muted` read --color-base-500, the same grey
+    // in both themes: 4.40:1 on the light elevated surface and 2.49:1 on the
+    // dark one, where the AppBar puts its ghost buttons. The empty Rating star
+    // was the same grey and the same 2.49:1.
+    for (const [name, fg, surfaces] of UI_PARTS) {
+        for (const surface of surfaces) {
+            const pair = { name: `${name} on ${surface}`, bg: `--color-surface-${SURFACE_TOKEN[surface]}`, fg, min: AA_LARGE };
+            // Page and card are already listed above for the two brand rings.
+            if (!pairs.some((p) => p.bg === pair.bg && p.fg === pair.fg)) pairs.push(pair);
+        }
+    }
 
     return pairs;
 }

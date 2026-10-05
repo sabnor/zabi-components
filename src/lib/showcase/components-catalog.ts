@@ -924,7 +924,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "md",
                         description:
-                            "Size of a star. An interactive star is a 44px target at every size. Meant for page, card and inset surfaces: on the dark elevated surface the empty star's outline is 2.49:1, under the 3:1 it has everywhere else.",
+                            "Size of a star. An interactive star is a 44px target at every size. The empty star's outline is drawn in --color-control-border, 3:1 or better on every surface level in light and dark.",
                     },
                     {
                         name: "readonly",

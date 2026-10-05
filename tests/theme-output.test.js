@@ -226,6 +226,11 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-action-primary-text': '#ffffff',
         '--color-on-brand': '#ffffff',
         '--color-focus-ring': '#4f68da',
+        // Light did not move when the two roles below were added: the muted
+        // ring and an empty star are still the grey they always were.
+        '--color-border-strong': '#71717a',
+        '--color-control-border': '#71717a',
+        '--color-focus-ring-muted': '#71717a',
         '--color-link': '#3c52ba',
         '--color-surface-base': '#ececee',
         '--color-surface-raised': '#ffffff',
@@ -239,6 +244,12 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-action-primary-text': '#111d49',
         '--color-on-brand': '#111d49',
         '--color-focus-ring': '#6d87f1',
+        // The decorative edge stays on the mirror's fixed point; the two roles
+        // that need 3:1 on the dark elevated and overlay surfaces are pinned
+        // one step lighter.
+        '--color-border-strong': '#71717a',
+        '--color-control-border': '#a1a1aa',
+        '--color-focus-ring-muted': '#a1a1aa',
         '--color-link': '#b5c6ff',
         // The ladder was four baked hex values; it is now color-mix() over the
         // neutral ramp and has to land on exactly the same four.
