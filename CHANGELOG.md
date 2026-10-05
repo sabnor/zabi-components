@@ -12,6 +12,35 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [8.1.0-beta.1] - 2026-10-06
+
+A pre-release under the `beta` dist-tag, following 8.1.0-beta.0.
+
+### Known limitations of this beta
+
+Still verified in desktop Chromium only, with phone widths, touch, safe areas
+and the on-screen keyboard emulated. Nothing has been checked on a real phone,
+in Safari or Firefox, or with a screen reader; the device checklist under
+8.1.0-beta.0 still applies, and now also covers PhotoViewer's gestures (pinch,
+double tap, swipe, Safari's own back and zoom gestures), Stepper's spoken
+names, toasts and overlays following a real keyboard, and the tap-to-open
+Tooltip.
+
+Known issues:
+
+- Stepper's `layout="auto"` goes to the full layout at 30rem of its own width
+  whatever the number of steps: it suits about five short labels. With
+  `interactive`, compact segments are narrower than 44px from seven steps on a
+  320px screen.
+- PhotoViewer's overflow menu (more than three actions) has no dedicated test
+  for staying unclipped inside the dialog; it passes the general menu tests.
+- One browser test (`photo-viewer.spec.ts:112`) reads a thumbnail's opacity
+  while it may still be fading in and can fail under load; it passes alone.
+- In Safari 16 and older a Stepper needs a width from its parent when placed
+  in a flex row.
+- A toast can still cover buttons that sit in an overlay's content rather
+  than in its footer.
+
 ### Upgrade notes (since 8.1.0-beta.0)
 
 Nothing exported was removed or renamed against 8.0.0, and no token name.
