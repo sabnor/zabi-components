@@ -2275,7 +2275,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "bottom-start",
                         description:
-                            "Where the popup sits relative to the trigger.",
+                            "The side the menu opens on when it fits there. Near an edge of the screen it flips to the other side, and is narrowed or scrolls inside when neither side has room.",
                     },
                     {
                         name: "onOptionClick",
@@ -3097,6 +3097,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Tab styling.",
                     },
                     {
+                        name: "fullWidth",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "The tabs share the row equally; meant for two or three tabs on a phone. Without it a tab is as wide as its label, and a row that does not fit scrolls sideways with a fade at the edge that has more.",
+                    },
+                    {
                         name: "onclick",
                         type: "(event: Event) => void",
                         required: false,
@@ -3140,7 +3148,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "true",
                         description:
-                            "Enable viewport for mobile responsiveness",
+                            "Sets isMobile on the menu context for your own children to read (true under 768px, or always with 'mobile'). It changes nothing by itself: the list wraps and a panel stays on screen at every width.",
                     },
                     {
                         name: "class",
@@ -5175,7 +5183,15 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Active route for built-in links",
+                        description: "Active route for built-in links. The phone menu closes when it changes.",
+                    },
+                    {
+                        name: "collapseAt",
+                        type: "'sm' | 'md' | 'lg' | 'xl'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Breakpoint at which the links move from the phone menu into the bar. Raise it when the row has more items than fit at 768px.",
                     },
                 ],
                 variants: [

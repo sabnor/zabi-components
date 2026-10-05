@@ -178,6 +178,8 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 - ✅ `aria-controls` linking tabs to panels
 - ✅ Keyboard navigation (Arrow keys, Home, End)
 - ✅ Proper `tabindex` management
+- ✅ A row of tabs that does not fit scrolls sideways inside the tablist; the selected and the focused tab are kept in view, and the scrolling box is not a Tab stop
+- ✅ The fade at an edge with more tabs is a mask, so nothing covers a tab or its focus ring; it is dropped in forced colours
 
 **Issues Found:**
 - ⚠️ Missing `aria-orientation` for vertical tabs
@@ -245,6 +247,9 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 - ✅ Active state indication
 
 - ✅ `aria-current="page"` on the current item (TopNavbar, SidebarNavigation)
+- ✅ TopNavbar's phone menu is a disclosure: `aria-expanded` on the menu button, and `aria-controls` only while the menu exists
+- ✅ The phone menu closes on a link, on Escape, on a press or a focus move outside the bar, and when the screen passes the breakpoint; it scrolls on its own on a short screen
+- ✅ In the phone menu each link is the full row; the brand is cut short so the menu button never leaves the screen
 
 **Issues Found:**
 - ✅ The `aria-current` issue of the original audit is resolved
@@ -424,7 +429,8 @@ Rules every component follows, new ones included. Each names where it lives in t
   - Collapsible, to its trigger when a panel closes with focus inside it;
   - MediaGrid, to the item that took a removed item's place, or to the grid when none is left;
   - Toaster, to the neighbouring toast when the focused one is dismissed, or back to where focus came from;
-  - UnsavedChangesBar, which holds focus on the bar while its buttons are disabled during a save.
+  - UnsavedChangesBar, which holds focus on the bar while its buttons are disabled during a save;
+  - TopNavbar, to the menu button when Escape closes the phone menu with focus inside it.
 
   Modal, SlideUp and Drawer cover the case they cannot prevent, content inside them that disables or removes its own focused control: the next Tab goes to the first control in the panel and Escape still closes it (`recoverStrayFocus` in `src/components/util/focus-utils.ts`).
 - **Modal overlays share one stack and one scroll lock.** Modal, SlideUp, Drawer and BottomSheet (and ConfirmDialog, which is a Modal) join the same stack, so the overlay opened last is on top whatever the DOM order, and only it acts on Tab and Escape (`joinOverlayStack` in `focus-utils.ts`). The scroll lock on `<body>` is counted, so the page scrolls again only when the last overlay has closed (`lockBodyScroll` in `src/components/util/overlay.ts`).
@@ -439,6 +445,7 @@ Rules every component follows, new ones included. Each names where it lives in t
   Exceptions: IconButton `xs` is 24px on every pointer, for dense pointer-first layouts (a larger invisible target covered the edge of the button beside it and was removed), and Button `variant="link"` is as wide as its text. `playwright/touch-targets.spec.ts` hit-tests every control on every component page and lists the exceptions in one place.
 - **Every pressable control has a pressed state that does not depend on hover.** `:active` changes the fill (`--color-surface-active`, or the `-active` step of the control's own colour), the text colour of a link, or the size of a tile, in both themes. On a touch screen it is the only feedback there is before the action happens.
 - **A hover style does not stay on after a tap.** A browser leaves `:hover` on the last element tapped until something else is tapped. Tailwind's `hover:` variant only applies where `(hover: hover)` holds; the hand-written `:hover` rules in `src/app.css` and in the components' own `<style>` blocks are inside the same media query (`tests/touch-targets.test.ts` fails on one that is not).
+- **A popup stays on screen.** Dropdown opens on the side its `placement` asks for whenever it fits there; near an edge it flips to the other side, and when neither has room it is limited to the viewport less 8px on each side and scrolls inside. NavigationMenuContent is slid back from the edge the same way. Both are measured before they are painted and again on resize and scroll (`src/components/util/fit-in-viewport.ts`); a popup that fits is not touched. Arrow-key order and where focus returns do not change.
 - **Nothing is reachable by hover alone.** Actions revealed on hover also appear when focus is inside the component, and are always visible where hover does not exist (touch). ImageUpload shows Change and Remove that way; MediaGrid keeps its remove button beside the item and always visible.
 - **Focus is visible in forced colours.** The focus ring is a box-shadow, which forced-colours mode (Windows High Contrast) drops. `src/app.css` restates it there as an outline for `.focus-ring`, the legacy `.focus-brand` and `.focus-nav`, and the checkbox and radio row.
 

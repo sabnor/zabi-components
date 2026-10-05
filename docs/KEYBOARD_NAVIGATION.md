@@ -195,6 +195,7 @@ function handleKeydown(event: KeyboardEvent) {
 - Use `aria-activedescendant` for current selection
 - Trap focus when open
 - Return focus to trigger on close
+- The menu opens on the side `placement` asks for when it fits there, and is flipped or limited in size near an edge of the screen. That changes where it is drawn only: the arrow keys keep the order of the items, and in a menu that scrolls the focused item is brought into view
 
 ---
 
@@ -205,7 +206,13 @@ function handleKeydown(event: KeyboardEvent) {
 - ✅ **Arrow Left**: Move to previous tab
 - ✅ **Home**: Move to first tab
 - ✅ **End**: Move to last tab
-- ✅ **Enter / Space**: Activate tab
+- ✅ **Enter / Space**: Activate tab. On the selected tab it does nothing: a single selection is never cleared by a repeat press
+
+When the tabs do not fit their row, the list scrolls sideways. The tab that
+takes focus from a key is scrolled into view, with room to spare for its focus
+ring, and so is the selected tab when the list first appears; only the list
+moves, never the page, and it moves at once under `prefers-reduced-motion`.
+The tablist is still one Tab stop: the box that scrolls is not focusable.
 
 **Usage:**
 ```svelte
@@ -241,6 +248,17 @@ function handleKeydown(event: KeyboardEvent) {
 - ✅ **Escape**: Close mobile menu (if applicable)
 - ✅ **Home**: Move to first item
 - ✅ **End**: Move to last item
+
+**TopNavbar's phone menu** is a disclosure, not a dialog: the menu button has
+`aria-expanded`, and `aria-controls` while the menu is open; focus is not
+trapped and the page behind is not locked.
+- ✅ **Enter / Space** on the menu button: Open or close the menu
+- ✅ **Tab**: Through the links and controls in the menu, then on into the page; the menu closes when focus leaves the bar
+- ✅ **Escape**: Close the menu. If focus was in it, focus returns to the menu button
+- ✅ **Enter** on a link: Follow it; the menu closes
+
+It also closes on a press outside the bar, when `currentPath` changes, and
+when the screen becomes wide enough for the row (`collapseAt`, `md` by default).
 
 **Usage:**
 ```svelte
