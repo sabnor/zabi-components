@@ -11,6 +11,7 @@
     import { TOUCH_HIT_AREA } from '../util/touch-target.js';
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
+    import { attachSheetDrag, FLICK_VELOCITY } from "../util/sheet-drag.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -24,6 +25,18 @@
          * focus when it opens. Without it, or with no match, the first control does.
          */
         initialFocus?: string;
+        /**
+         * Adds a grip at the top and lets a swipe down close the sheet. The
+         * grip drags from anywhere; a swipe on the content closes only when
+         * the content is at its top, and scrolls it otherwise. The close
+         * button, the backdrop and Escape stay, so nothing depends on the
+         * gesture.
+         */
+        swipeToClose?: boolean;
+        /**
+         * Runs when the sheet closes itself, with the event that closed it:
+         * the click, the Escape keydown, or the end of a swipe.
+         */
         onclick?: (event: Event) => void;
         onkeydown?: (event: Event) => void;
         children?: Snippet;
@@ -35,6 +48,7 @@
         title = '',
         closeLabel = 'Close',
         initialFocus,
+        swipeToClose = false,
         onclick,
         onkeydown,
         children,
@@ -44,6 +58,10 @@
     const slideTitleId = generateId('slideup-title');
 
     let slideUpContainer = $state<HTMLDivElement>();
+    let grip = $state<HTMLDivElement>();
+    /** How far a swipe has pulled the sheet down, in px. */
+    let dragOffset = $state(0);
+    let dragging = $state(false);
     let focusActive = false;
     /** Position among the open overlays; lifts a sheet opened later above the earlier ones. */
     let depth = $state(0);
@@ -88,6 +106,35 @@
         }
     });
 
+    $effect(() => {
+        const container = slideUpContainer;
+        const zone = grip;
+        if (!isOpen || !swipeToClose || !container || !zone) return;
+        const settle = () => {
+            dragging = false;
+            dragOffset = 0;
+        };
+        const stop = attachSheetDrag(
+            // The panel is its own scrolling box.
+            { handleZone: zone, scroller: container },
+            {
+                onStart: () => (dragging = true),
+                // Down only: there is nowhere for it to go upwards.
+                onMove: (distance) => (dragOffset = Math.max(0, distance)),
+                onEnd(distance, velocity, event) {
+                    const far = distance > container.getBoundingClientRect().height * 0.3;
+                    settle();
+                    if (distance > 0 && (far || velocity >= FLICK_VELOCITY)) closeSlideUp(event);
+                },
+                onCancel: settle,
+            },
+        );
+        return () => {
+            stop();
+            settle();
+        };
+    });
+
     function handleBackdropClick(event: Event) {
         if (event.target === event.currentTarget) {
             closeSlideUp(event);
@@ -116,7 +163,16 @@
     >
         <div
             bind:this={slideUpContainer}
-            class={cn("fixed bottom-0 left-0 right-0 z-modal flex max-h-[90vh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none", className)}
+            class={cn(
+                "fixed bottom-0 left-0 right-0 z-modal flex max-h-[90dvh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none",
+                // Back to rest after a swipe that did not close it.
+                swipeToClose &&
+                    "overscroll-contain transition-transform duration-200 ease-out motion-reduce:transition-none",
+                className,
+            )}
+            style:transform={dragOffset > 0 ? `translateY(${dragOffset}px)` : undefined}
+            style:transition={dragging ? "none" : undefined}
+            data-dragging={dragging ? "true" : undefined}
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? slideTitleId : undefined}
@@ -124,8 +180,25 @@
             onkeydown={(event) => trapTabKey(slideUpContainer, event)}
             {...restProps}
         >
+            {#if swipeToClose}
+                <!-- Decorative: it adds a gesture, and the close button is the
+                control. It stays at the top while the content scrolls.
+                `touch-none`: otherwise the browser takes a touch here for
+                itself. The bar is drawn in the text colour where colours are
+                forced, since a background is dropped there. -->
+                <div
+                    bind:this={grip}
+                    data-sheet-grip
+                    aria-hidden="true"
+                    class="sticky top-0 z-10 flex h-[28px] shrink-0 cursor-grab touch-none items-start justify-center bg-surface-overlay pt-[10px] active:cursor-grabbing"
+                >
+                    <span
+                        class="block h-1 w-9 rounded-pill bg-current text-description forced-colors:bg-[CanvasText]"
+                    ></span>
+                </div>
+            {/if}
             {#if title}
-                <div class="flex items-center justify-between px-6 pb-4 pt-6">
+                <div class="flex items-center justify-between px-6 pb-4 {swipeToClose ? 'pt-2' : 'pt-6'}">
                     <h2
                         id={slideTitleId}
                         class="text-2xl font-normal leading-8 tracking-normal text-headline"
@@ -143,7 +216,8 @@
                 </div>
             {/if}
 
-            <div class="flex-1 px-6 pb-6">
+            <!-- Clear of the home indicator on a phone. -->
+            <div class="flex-1 px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
                 {@render children?.()}
             </div>
         </div>

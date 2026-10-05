@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { markAppShell } from "../util/app-shell.js";
+    import { untrack } from "svelte";
+    import { markAppShell, publishAppShellInsets } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
 
     /**
@@ -36,8 +37,11 @@
      * containing block for anything positioned inside it, and such an element
      * does not scroll with the content, so a floating button above the tab bar
      * is `absolute` with `bottom: calc(var(--app-shell-bottom-inset) + 1rem)`.
-     * The properties are inherited: they reach what is rendered inside the
-     * shell, not an overlay that is moved to `document.body`.
+     *
+     * While the shell is mounted the same two properties are also set on
+     * `<html>`, so an overlay that is moved to `document.body` (a sheet, a
+     * toast) can read them too. With more than one shell on the page, the one
+     * mounted last is the one mirrored there.
      */
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class" | "style"> & {
         /** The top bar, an `AppBar`. It handles the safe area above it. */
@@ -118,6 +122,19 @@
               ? FOOTER_ESTIMATE
               : `${footerHeight}px`,
     );
+
+    // On `<html>` as well, for what is rendered outside the shell.
+    let published: ReturnType<typeof publishAppShellInsets> | undefined;
+    $effect(() => {
+        published = untrack(() => publishAppShellInsets(topInset, bottomInset));
+        return () => {
+            published?.leave();
+            published = undefined;
+        };
+    });
+    $effect(() => {
+        published?.update(topInset, bottomInset);
+    });
 </script>
 
 <div

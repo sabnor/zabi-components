@@ -32,6 +32,7 @@ export { default as ActionPanel } from './atoms/ActionPanel.svelte';
 export { default as Spinner } from './atoms/Spinner.svelte';
 export { default as Rating } from './atoms/Rating.svelte';
 export type { RatingStrings } from './util/rating.js';
+export { default as FloatingActionButton } from './atoms/FloatingActionButton.svelte';
 
 export { default as Alert } from './molecules/Alert.svelte';
 export { default as ComponentDemo } from './molecules/ComponentDemo.svelte';
@@ -109,6 +110,12 @@ export type {
     BottomTabBarIcon,
     BottomTabBarItem,
 } from './util/bottom-tab-bar.js';
+export { default as BottomSheet } from './molecules/BottomSheet.svelte';
+export type {
+    BottomSheetCloseReason,
+    BottomSheetSnap,
+} from './util/bottom-sheet.js';
+export { default as StickyActionBar } from './molecules/StickyActionBar.svelte';
 
 export {
     toastStore,

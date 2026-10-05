@@ -1,0 +1,136 @@
+<script lang="ts">
+    import type { Component } from "svelte";
+    import type { HTMLAttributes } from "svelte/elements";
+    import { Plus } from "@lucide/svelte";
+    import { isInsideAppShell } from "../util/app-shell.js";
+    import { cn } from "../util/cn.js";
+
+    /**
+     * The one main thing to do on a screen, as a round button that floats over
+     * the content: new quiz, compose, add.
+     *
+     * Inside an `AppShell` it is placed against the shell, 16px above the tab
+     * bar. On its own it is fixed to the screen, 16px above the home
+     * indicator; if something else is fixed to the bottom there (a
+     * `BottomTabBar` on its own), say how tall it is with
+     * `--fab-bottom-offset` on the button or any ancestor:
+     *
+     * ```svelte
+     * <FloatingActionButton
+     *     label="New quiz"
+     *     onclick={create}
+     *     style="--fab-bottom-offset: calc(4rem + 1px)"
+     * />
+     * ```
+     *
+     * It lies over the content, so the last row would stay under it at the
+     * end of the page. Give the content room to scroll clear: `pb-24` (96px)
+     * on the list covers the button and its margins.
+     */
+    type Props = Omit<HTMLAttributes<HTMLElement>, "class"> & {
+        /** What the button does. Its accessible name, and its text when `extended`. */
+        label: string;
+        /** An icon component, as `@lucide/svelte` icons are. A plus sign by default. */
+        icon?: Component<{ size?: number; class?: string }>;
+        /** Shows the label as text beside the icon. */
+        extended?: boolean;
+        /** Makes it a link to this address. Without it, it is a button. */
+        href?: string;
+        /**
+         * The bottom corner it sits in. `bottom-end` is the right in a
+         * left-to-right page and the left in a right-to-left one.
+         */
+        position?: "bottom-end" | "bottom-start" | "bottom-center";
+        class?: string;
+    };
+
+    let {
+        label,
+        icon,
+        extended = false,
+        href,
+        position = "bottom-end",
+        class: className = "",
+        ...restProps
+    }: Props = $props();
+
+    const inShell = isInsideAppShell();
+    const Icon = $derived(icon ?? Plus);
+
+    /**
+     * 16px from the edges, in px: a margin that grew with the text size would
+     * push the button into the content it floats over. The side clears a
+     * notch in landscape, whichever side that is on.
+     */
+    const positionClasses = $derived(
+        {
+            "bottom-end":
+                "end-[calc(16px+max(env(safe-area-inset-left,0px),env(safe-area-inset-right,0px)))]",
+            "bottom-start":
+                "start-[calc(16px+max(env(safe-area-inset-left,0px),env(safe-area-inset-right,0px)))]",
+            // Not `left-1/2` with a shift back: that leaves the button half
+            // the width to lay its label out in.
+            "bottom-center": "inset-x-0 mx-auto w-fit",
+        }[position] ??
+            "end-[calc(16px+max(env(safe-area-inset-left,0px),env(safe-area-inset-right,0px)))]",
+    );
+
+    const classes = $derived(
+        cn(
+            "focus-ring z-sticky inline-flex cursor-pointer items-center justify-center gap-2 rounded-pill no-underline shadow-lg select-none",
+            // Round: 56px in px, like the 24px icon in it, so it does not
+            // double with the text size and cover twice the content.
+            // Extended: it holds text, so its height follows the text; it
+            // grows sideways, and downwards if the label wraps.
+            extended ? "min-h-14 min-w-14" : "size-[56px]",
+            // `shadow-lg` is a utility and beats the box-shadow `.focus-ring`
+            // draws its ring with, so the ring is drawn here, over the same
+            // elevation: 2px of the offset colour, then 2px of the ring colour.
+            "focus-visible:shadow-[0_0_0_2px_var(--zabi-focus-ring-offset-color),0_0_0_4px_var(--zabi-focus-ring-color),var(--shadow-lg)]",
+            // Transparent until forced-colors mode draws it: the fill is gone there.
+            "border border-transparent",
+            "bg-action-primary text-action-primary",
+            "transition-[background-color,scale] duration-150 active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100",
+            extended ? "px-5 py-2 text-sm font-medium" : "p-0",
+            // Never wider than the screen it floats on, margins included.
+            "[max-inline-size:calc(100%_-_32px)]",
+            inShell
+                ? "absolute bottom-[calc(var(--app-shell-bottom-inset,0px)+var(--fab-bottom-offset,0px)+16px)]"
+                : "fixed bottom-[calc(env(safe-area-inset-bottom,0px)+var(--fab-bottom-offset,0px)+16px)]",
+            positionClasses,
+            className,
+        ),
+    );
+</script>
+
+{#snippet content()}
+    <!-- Decorative: the label names the button, shown or not. -->
+    <span class="flex size-[24px] shrink-0" aria-hidden="true">
+        <Icon size={24} />
+    </span>
+    {#if extended}
+        <span class="min-w-0 [overflow-wrap:anywhere]">{label}</span>
+    {/if}
+{/snippet}
+
+{#if href !== undefined}
+    <a
+        {href}
+        class={classes}
+        aria-label={extended ? undefined : label}
+        data-position={position}
+        {...restProps}
+    >
+        {@render content()}
+    </a>
+{:else}
+    <button
+        type="button"
+        class={classes}
+        aria-label={extended ? undefined : label}
+        data-position={position}
+        {...restProps}
+    >
+        {@render content()}
+    </button>
+{/if}

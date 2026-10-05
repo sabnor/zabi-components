@@ -1,13 +1,13 @@
 <script lang="ts">
     import Bell from "@lucide/svelte/icons/bell";
     import House from "@lucide/svelte/icons/house";
-    import Plus from "@lucide/svelte/icons/plus";
     import Search from "@lucide/svelte/icons/search";
     import Share2 from "@lucide/svelte/icons/share-2";
     import Trophy from "@lucide/svelte/icons/trophy";
     import User from "@lucide/svelte/icons/user";
     import Users from "@lucide/svelte/icons/users";
     import Button from "../../../components/atoms/Button.svelte";
+    import FloatingActionButton from "../../../components/atoms/FloatingActionButton.svelte";
     import IconButton from "../../../components/atoms/IconButton.svelte";
     import AppBar from "../../../components/molecules/AppBar.svelte";
     import BottomTabBar from "../../../components/molecules/BottomTabBar.svelte";
@@ -77,7 +77,8 @@
                 {/snippet}
             </AppBar>
         {/snippet}
-        <ul class="m-0 list-none space-y-3 p-4">
+        <!-- `pb-24`: room for the last row to scroll clear of the floating button. -->
+        <ul class="m-0 list-none space-y-3 p-4 pb-24">
             {#each rounds as round (round.name)}
                 <li class="rounded-container border border-border bg-card p-4">
                     <p class="font-medium text-headline">{round.name}</p>
@@ -85,16 +86,9 @@
                 </li>
             {/each}
         </ul>
-        <!-- Placed against the shell, above the tab bar, with the shell's own
-        measure of that bar. It does not scroll with the content. -->
-        <IconButton
-            size="lg"
-            label="New quiz"
-            class="absolute right-4 bottom-[calc(var(--app-shell-bottom-inset)+1rem)] rounded-pill shadow-lg"
-            onclick={() => (lastAction = "New quiz")}
-        >
-            <Plus size={24} />
-        </IconButton>
+        <!-- Places itself against the shell, 16px above the tab bar, with the
+        shell's own measure of that bar. It does not scroll with the content. -->
+        <FloatingActionButton label="New quiz" onclick={() => (lastAction = "New quiz")} />
         {#snippet footer()}
             <BottomTabBar {items} {active} onclick={stayHere} />
         {/snippet}

@@ -253,6 +253,23 @@ test.describe("AppShell on a phone", () => {
         expect(await pill("Quiz")).not.toBe("rgba(0, 0, 0, 0)");
     });
 
+    test("radius: the tab's corners follow the active pill inside it, 4px out on every side", async ({
+        page,
+    }) => {
+        const link = tab(page, "Quiz");
+        const pill = link.locator("span").first();
+        const outer = await box(link);
+        const inner = await box(pill);
+        // The pill is 32px high, so 16px at its ends.
+        expect(Math.round(inner.height)).toBe(32);
+        expect(Math.round(inner.y - outer.y), "4px above the pill").toBe(4);
+        expect(Math.round(inner.x - outer.x), "at least 4px beside it").toBeGreaterThanOrEqual(4);
+        expect(await link.evaluate((el) => getComputedStyle(el).borderTopLeftRadius)).toBe("20px");
+        // And 4px under the label, so the box is the same all round.
+        const label = await box(link.locator("span").last());
+        expect(Math.round(outer.y + outer.height - (label.y + label.height))).toBe(4);
+    });
+
     test("a focused tab shows a focus ring", async ({ page }) => {
         await bar(page).getByRole("button", { name: "Share" }).focus();
         // Past the floating button, to the first tab.
@@ -276,6 +293,14 @@ test.describe("AppShell on a phone", () => {
             )
             .toEqual([`${header.height}px`, `${footer.height}px`]);
 
+        // The same two on <html>, for what is rendered outside the shell.
+        expect(
+            await page.evaluate(() => [
+                document.documentElement.style.getPropertyValue("--app-shell-top-inset"),
+                document.documentElement.style.getPropertyValue("--app-shell-bottom-inset"),
+            ]),
+        ).toEqual([`${header.height}px`, `${footer.height}px`]);
+
         // What they are for: the floating button sits 16px above the tab bar...
         const button = await box(floating(page));
         expect(footer.y - (button.y + button.height)).toBe(16);
@@ -296,8 +321,29 @@ test.describe("AppShell on a phone", () => {
                 shell(page).evaluate((el) => el.style.getPropertyValue("--app-shell-bottom-inset")),
             )
             .toBe(`${footer.height}px`);
+        // The button's margin is in px: it does not grow with the text.
         const button = await box(floating(page));
-        expect(footer.y - (button.y + button.height)).toBe(32);
+        expect(footer.y - (button.y + button.height)).toBe(16);
+        await expect
+            .poll(() =>
+                page.evaluate(() =>
+                    document.documentElement.style.getPropertyValue("--app-shell-bottom-inset"),
+                ),
+            )
+            .toBe(`${footer.height}px`);
+    });
+
+    test("the properties leave <html> with the shell", async ({ page }) => {
+        const onRoot = () =>
+            page.evaluate(() =>
+                document.documentElement.style.getPropertyValue("--app-shell-bottom-inset"),
+            );
+        await expect.poll(onRoot).toMatch(/px$/);
+        // Back to the framed example and away from the page: no shell is left.
+        await bar(page).getByRole("button", { name: "Close full screen" }).click();
+        await page.getByRole("link", { name: "Components", exact: true }).last().click();
+        await expect(page).not.toHaveURL(/AppShell/);
+        await expect.poll(onRoot).toBe("");
     });
 });
 

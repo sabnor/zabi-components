@@ -11,6 +11,10 @@ import type { Component, Snippet } from 'svelte';
 import type { HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
 import type { BottomTabBarItem } from '../components/util/bottom-tab-bar.js';
 import type {
+    BottomSheetCloseReason,
+    BottomSheetSnap,
+} from '../components/util/bottom-sheet.js';
+import type {
     ButtonVariant,
     CardVariant,
     ExtendedSemanticVariant,
@@ -451,6 +455,65 @@ export interface SegmentedControlProps
     onchange?: (value: string) => void;
 }
 
+// FloatingActionButton component props
+export interface FloatingActionButtonProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** What the button does. Its accessible name, and its text when `extended`. */
+    label: string;
+    /** An icon component, as `@lucide/svelte` icons are. A plus sign by default. */
+    icon?: Component<{ size?: number; class?: string }>;
+    /** Shows the label as text beside the icon. */
+    extended?: boolean;
+    /** Makes it a link to this address. Without it, it is a button. */
+    href?: string;
+    /** The bottom corner it sits in. `bottom-end` follows the writing direction. */
+    position?: 'bottom-end' | 'bottom-start' | 'bottom-center';
+    class?: string;
+}
+
+// StickyActionBar component props
+export interface StickyActionBarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'style'> {
+    /** Accessible name. With it the bar is a group. */
+    label?: string;
+    class?: string;
+    /** Added after the offset and margin the bar sets while the keyboard is up. */
+    style?: string;
+    /** The main action, and at most one or two beside it. */
+    children?: Snippet;
+}
+
+// BottomSheet component props
+export interface BottomSheetProps
+    extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'title' | 'onclose' | 'onkeydown'> {
+    isOpen?: boolean;
+    /** Heading of the sheet, and its accessible name. */
+    title: string;
+    description?: string;
+    /** The heights the sheet can rest at. */
+    snapPoints?: BottomSheetSnap[];
+    /** The snap point the sheet is at. Bindable. */
+    snap?: BottomSheetSnap;
+    /** Render the overlay in `document.body`; `false` renders in place. */
+    portal?: boolean;
+    /** When false, Escape, the backdrop, the close button and a swipe down do not close it. */
+    dismissible?: boolean;
+    /** Fired when the sheet closes itself, with what the user did. */
+    onclose?: (detail: { reason: BottomSheetCloseReason }) => void;
+    /** Hears every keydown in the sheet, after the sheet has handled Escape. */
+    onkeydown?: (event: KeyboardEvent) => void;
+    /** Accessible name of the close button. */
+    closeLabel?: string;
+    /** Accessible name of the grip while its button takes the sheet up a step. */
+    expandLabel?: string;
+    /** Accessible name of the grip while its button takes the sheet down a step. */
+    collapseLabel?: string;
+    /** CSS selector of the control that takes focus when the sheet opens. */
+    initialFocus?: string;
+    class?: string;
+    children?: Snippet;
+    /** Pinned to the bottom of the panel, below the scrolling content. */
+    footer?: Snippet;
+}
+
 // Component type definitions
 export type Button = ZabiComponent<ButtonProps, ButtonEvents>;
 export type Heading = ZabiComponent<HeadingProps>;
@@ -471,3 +534,6 @@ export type AppBar = ZabiComponent<AppBarProps>;
 export type AppShell = ZabiComponent<AppShellProps>;
 export type Rating = ZabiComponent<RatingProps>;
 export type SegmentedControl = ZabiComponent<SegmentedControlProps>;
+export type FloatingActionButton = ZabiComponent<FloatingActionButtonProps>;
+export type StickyActionBar = ZabiComponent<StickyActionBarProps>;
+export type BottomSheet = ZabiComponent<BottomSheetProps>;

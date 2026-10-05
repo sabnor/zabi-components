@@ -67,3 +67,30 @@ export function trapTabKey(container: HTMLElement | undefined, event: KeyboardEv
         first.focus();
     }
 }
+
+/**
+ * Watches a scrolling box in an overlay and reports whether it has to be a
+ * Tab stop itself: true when its content is taller than it and holds nothing
+ * that can take focus, so the keyboard would otherwise have no way to scroll
+ * it. The answer changes with the viewport and with the content, so it is
+ * reported again whenever either does.
+ *
+ * Call it when the overlay opens, in the browser; the returned function stops it.
+ */
+export function watchScrollerNeedsFocus(
+    box: HTMLElement,
+    onChange: (needsFocus: boolean) => void,
+): () => void {
+    const measure = () => {
+        onChange(box.scrollHeight > box.clientHeight && getFocusableElements(box).length === 0);
+    };
+    measure();
+    const resize = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : undefined;
+    resize?.observe(box);
+    const mutation = new MutationObserver(measure);
+    mutation.observe(box, { childList: true, subtree: true, characterData: true });
+    return () => {
+        resize?.disconnect();
+        mutation.disconnect();
+    };
+}

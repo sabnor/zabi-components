@@ -74,4 +74,10 @@ export type {
     BottomTabBarIcon,
     BottomTabBarItem,
 } from '../util/bottom-tab-bar.js';
+export { default as BottomSheet } from './BottomSheet.svelte';
+export type {
+    BottomSheetCloseReason,
+    BottomSheetSnap,
+} from '../util/bottom-sheet.js';
+export { default as StickyActionBar } from './StickyActionBar.svelte';
 export * from './toast-store.js';

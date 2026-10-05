@@ -294,6 +294,35 @@ Whenever token or CSS import API surface changes, include:
   boundary to 3:1 on all five surface levels, and fails when a focus-ring rule
   reads a colour that is not in its pair list. The theme generator checks the
   same pairs.
+- **BottomSheet**, a new molecule: a modal panel that slides up from the bottom
+  for pickers, filters and short forms. It rests at snap points (`snapPoints`,
+  `"half"` and `"full"` by default; `bind:snap`); the grip at the top drags it
+  between them or down to close, and is also a button ("Expand" / "Collapse")
+  for the keyboard and screen readers. Scrolling inside the sheet wins over
+  dragging unless the content is at its top. `title`, `description`, a `footer`
+  snippet, and `isOpen`, `dismissible`, `portal`, `initialFocus`, `closeLabel`
+  and `onclose({ reason })` as in Drawer, with the added reason `"swipe"`.
+  Focus is trapped and returns to the opener; point `initialFocus` at the first
+  field of a form. It keeps clear of the safe areas, does not animate under
+  `prefers-reduced-motion`, and from `md` up is a centred 40rem sheet.
+- **StickyActionBar**, a new molecule: a bar that keeps a form's main action in
+  view at the bottom of the screen or of its scrolling box, and rises above the
+  on-screen keyboard where the browser does not shrink the page for it. It
+  reserves `scroll-padding-bottom` so the focused field is not hidden behind
+  it, and never takes focus. Use one per scrolling box. A short form needs
+  `class="flex min-h-full flex-col"` for the bar to sit at the bottom.
+- **FloatingActionButton**, a new atom: a round 56px primary button that floats
+  above the content. `label` is required and is its accessible name;
+  `extended` shows it as text beside the `icon`. It is a link with `href`, a
+  button otherwise. `position` is `bottom-end` (default), `bottom-start` or
+  `bottom-center`. Inside an AppShell it sits above the tab bar; elsewhere it
+  is fixed above the safe area, and `--fab-bottom-offset` lifts it further.
+- **SlideUp can be swiped away.** `swipeToClose` adds a grip and closes the
+  sheet on a downward swipe; `onclick` is called as for the other ways of
+  closing.
+- AppShell also sets `--app-shell-top-inset` and `--app-shell-bottom-inset` on
+  `<html>` while it is mounted, so overlays rendered in `document.body` can
+  read them.
 
 ### Changed
 
@@ -395,6 +424,8 @@ Whenever token or CSS import API surface changes, include:
 - **Every pressable control shows a pressed state** (`:active`) that does not
   depend on hover, in both themes. A disabled Toggle or Tab no longer shows
   one.
+- SlideUp pads its content for the bottom safe area and is at most `90dvh`
+  tall (was `90vh`).
 
 ### Deprecated
 

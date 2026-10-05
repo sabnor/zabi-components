@@ -24,3 +24,4 @@ export { default as Radio } from './Radio.svelte';
 export { default as Spinner } from './Spinner.svelte';
 export { default as Rating } from './Rating.svelte';
 export type { RatingStrings } from '../util/rating.js';
+export { default as FloatingActionButton } from './FloatingActionButton.svelte';

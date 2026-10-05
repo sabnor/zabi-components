@@ -730,6 +730,104 @@ comes from `badgeLabel`.
 
 ---
 
+### BottomSheet Component
+
+**Current Keyboard Support:**
+- ✅ **Tab / Shift + Tab**: Move through the controls in the sheet; focus wraps and never reaches the page behind
+- ✅ **Escape**: Close the sheet (not when `dismissible` is false)
+- ✅ **Enter / Space** on the grip: Move the sheet to its other height
+- ✅ **Enter / Space**: Activate the focused control, including the close button
+
+The grip at the top is a real button, named by what it will do: "Expand" while
+the sheet is at half height, "Collapse" at full (`expandLabel`,
+`collapseLabel`). Dragging it does the same with a pointer, and a drag or flick
+down past the lowest height closes the sheet; nothing is only reachable by
+dragging. With a single snap point there is nowhere to switch to, so the grip
+is not a control and the close button is the first one.
+
+When the sheet opens, focus moves to the control `initialFocus` selects, or to
+the first control (the grip, or the close button). When it closes, focus
+returns to the element that opened it. The page behind does not scroll while
+it is open. It shares the overlay stack and the scroll lock with Modal, SlideUp
+and Drawer, so they nest in any order.
+
+A swipe on the content scrolls the content. It moves the sheet only when the
+content is at its top and the swipe goes down.
+
+**Usage:**
+```svelte
+<BottomSheet bind:isOpen={open} bind:snap title="Filters">
+    …
+    {#snippet footer()}
+        <Button size="lg" onclick={apply}>Show results</Button>
+    {/snippet}
+</BottomSheet>
+```
+
+**Best Practices:**
+- Give the sheet a `footer` for its main button: it stays in view at half height, clear of the home indicator
+- Keep `dismissible` true unless the sheet holds a step that must be finished; the grip still works when it is false
+- Use buttons of `size="lg"` inside it on a phone, so each is a 48px target
+- SlideUp with `swipeToClose` is the simpler sheet: one height, a decorative grip, swipe down to close
+
+---
+
+### StickyActionBar Component
+
+**Current Keyboard Support:**
+- ✅ **Tab**: Reach the bar's buttons in document order, after the form's last field
+- ✅ **Enter / Space**: Activate a button; Enter in a field submits the form as usual
+
+The bar never takes focus and never moves it. It lies over the bottom of what
+scrolls, so while it is mounted it sets `scroll-padding-bottom` on its scrolling
+ancestor (or the page) to its own height: a field that takes focus is brought
+into view above the bar, not under it. With the on-screen keyboard up, the bar
+rises by the part of its scrolling box that the keyboard covers, never out of
+that box, and the reserved room grows by the same amount.
+
+It differs from UnsavedChangesBar: that one appears only while the form is
+dirty, announces itself and holds focus while saving; this one is always there
+and holds whatever buttons you give it.
+
+**Usage:**
+```svelte
+<form class="flex min-h-full flex-col" onsubmit={save}>
+    <div class="space-y-4 p-4">…</div>
+    <StickyActionBar>
+        <Button type="submit" size="lg" fullWidth>Save visit</Button>
+    </StickyActionBar>
+</form>
+```
+
+**Best Practices:**
+- Put the bar after the last field, inside the form, so the order on screen is the order of focus
+- Give it a `label` when it holds more than one button, so a screen reader says what they belong to
+- On a form screen in AppShell, leave the tab bar out and let this bar be the bottom of the screen
+- Use one bar per scrolling box: two would stick to the same edge, one on top of the other
+
+---
+
+### FloatingActionButton Component
+
+**Current Keyboard Support:**
+- ✅ **Tab**: Reach the button where it stands in the document, not where it floats
+- ✅ **Enter / Space**: Activate it (Enter only, when it is a link with `href`)
+
+`label` is required and is the accessible name; with `extended` it is also the
+visible text. Place the button in the markup after the content it acts on: in
+an AppShell that puts it between the content and the tabs in the tab order.
+
+**Usage:**
+```svelte
+<FloatingActionButton label="New quiz" onclick={create} />
+```
+
+**Best Practices:**
+- One per screen, for the one main action
+- Give the scrolling content padding at the end (`pb-24`), so its last row and a focused control can scroll clear of the button
+
+---
+
 ## Focus Management
 
 ### Focus Styles

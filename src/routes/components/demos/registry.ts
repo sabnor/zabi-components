@@ -20,6 +20,10 @@ import UnsavedChangesBarDemo from "./UnsavedChangesBarDemo.svelte";
 import AppBarDemo from "./AppBarDemo.svelte";
 import BottomTabBarDemo from "./BottomTabBarDemo.svelte";
 import AppShellDemo from "./AppShellDemo.svelte";
+import BottomSheetDemo from "./BottomSheetDemo.svelte";
+import FloatingActionButtonDemo from "./FloatingActionButtonDemo.svelte";
+import SlideUpDemo from "./SlideUpDemo.svelte";
+import StickyActionBarDemo from "./StickyActionBarDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -44,6 +48,10 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     AppBar: AppBarDemo,
     BottomTabBar: BottomTabBarDemo,
     AppShell: AppShellDemo,
+    BottomSheet: BottomSheetDemo,
+    FloatingActionButton: FloatingActionButtonDemo,
+    SlideUp: SlideUpDemo,
+    StickyActionBar: StickyActionBarDemo,
 };
 
 export function getComponentDemo(

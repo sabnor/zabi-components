@@ -2050,6 +2050,106 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "FloatingActionButton",
+                category: "atoms",
+                description:
+                    "Round primary button that floats over the content, above the tab bar: the one main action of a screen.",
+                props: [
+                    {
+                        name: "label",
+                        type: "string",
+                        required: true,
+                        description:
+                            "What the button does. Its accessible name, and its text when extended.",
+                    },
+                    {
+                        name: "icon",
+                        type: "Component",
+                        required: false,
+                        defaultValue: "Plus",
+                        description:
+                            "An icon component, such as a lucide icon, drawn at 24px.",
+                    },
+                    {
+                        name: "extended",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the label as text beside the icon. The button grows sideways, and the label wraps before the button is wider than the screen.",
+                    },
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Makes it a link to this address. Without it, it is a button: pass onclick.",
+                    },
+                    {
+                        name: "position",
+                        type: "'bottom-end' | 'bottom-start' | 'bottom-center'",
+                        required: false,
+                        defaultValue: "bottom-end",
+                        description:
+                            "The bottom corner it sits in, 16px from the edges. bottom-end is the right in a left-to-right page and the left in a right-to-left one.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes. Inside AppShell the button is placed against the shell, above --app-shell-bottom-inset; on its own it is fixed above the home indicator. Set --fab-bottom-offset (on the button or an ancestor) to lift it over something else fixed to the bottom, such as a BottomTabBar on its own.",
+                    },
+                ],
+                variants: [
+                    "extended",
+                    "bottom-end",
+                    "bottom-start",
+                    "bottom-center",
+                ],
+                examples: [
+                    {
+                        title: "Above the tab bar",
+                        description:
+                            "56px round at any text size, 16px above the tab bar and from the edge. It stays put while the content scrolls; the list has padding at the end so its last row can scroll clear",
+                        code: `<script lang="ts">
+    import { AppShell, BottomTabBar, FloatingActionButton } from "zabi-components";
+</script>
+
+<AppShell>
+    <!-- pb-24: room for the last row to scroll clear of the button. -->
+    <ul class="p-4 pb-24">…</ul>
+
+    <FloatingActionButton label="New quiz" onclick={newQuiz} />
+
+    {#snippet footer()}
+        <BottomTabBar {items} active={page.url.pathname} />
+    {/snippet}
+</AppShell>`,
+                    },
+                    {
+                        title: "Extended, centred, with its own icon",
+                        description:
+                            "The label is shown beside the icon. Without a shell the button is fixed to the screen; lift it over a tab bar of your own with --fab-bottom-offset",
+                        code: `<FloatingActionButton
+    label="Write a question"
+    icon={Pencil}
+    extended
+    position="bottom-center"
+    onclick={write}
+/>
+
+<!-- Outside AppShell, over a fixed BottomTabBar: -->
+<FloatingActionButton
+    label="New quiz"
+    href="/quiz/new"
+    style="--fab-bottom-offset: calc(4rem + 1px)"
+/>`,
+                    },
+                ],
+            },
         ],
         molecules: [
             {
@@ -2929,11 +3029,19 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "CSS selector, looked up inside the sheet, of the control that takes focus on open. Without it, or with no match, the first control does.",
                     },
                     {
+                        name: "swipeToClose",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Adds a grip at the top and lets a swipe down close the sheet. A swipe on the content closes only when the content is at its top. The close button, the backdrop and Escape stay.",
+                    },
+                    {
                         name: "onclick",
                         type: "(event: Event) => void",
                         required: false,
                         description:
-                            "Runs on click inside the panel, including the close control.",
+                            "Runs when the sheet closes itself, with the event that closed it: the click on the close button or the backdrop, the Escape keydown, or the end of a swipe.",
                     },
                 ],
 
@@ -2948,6 +3056,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "A close label for the reader's language, and focus starting on a field",
                         code: '&lt;SlideUp bind:isOpen title="Filter" closeLabel="Stäng" initialFocus="#filter-search"&gt;\n  &lt;Input id="filter-search" label="Sök" /&gt;\n&lt;/SlideUp&gt;',
+                    },
+                    {
+                        title: "Swipe down to close",
+                        description:
+                            "A grip at the top; drag it down, or swipe down on the content while it is at its top. The sheet keeps clear of the home indicator",
+                        code: `<SlideUp bind:isOpen title="Release notes" swipeToClose>
+    …
+</SlideUp>`,
                     },
                 ],
             },
@@ -4745,6 +4861,271 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "BottomSheet",
+                category: "molecules",
+                description:
+                    "Modal panel that slides up from the bottom for pickers, filters and short forms, and rests at half or full height.",
+                props: [
+                    {
+                        name: "isOpen",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Open state. Bindable.",
+                    },
+                    {
+                        name: "title",
+                        type: "string",
+                        required: true,
+                        description:
+                            "Heading of the sheet, and its accessible name.",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Shown under the title and read out with the dialog.",
+                    },
+                    {
+                        name: "snapPoints",
+                        type: "Array<'half' | 'full'>",
+                        required: false,
+                        defaultValue: "['half', 'full']",
+                        description:
+                            "The heights the sheet can rest at: half of the screen, or full, down from the status bar. With one, the grip only drags.",
+                    },
+                    {
+                        name: "snap",
+                        type: "'half' | 'full'",
+                        required: false,
+                        defaultValue: "the lowest snap point",
+                        description:
+                            "The snap point the sheet is at. Bindable: it follows a drag and the grip, and you can set it.",
+                    },
+                    {
+                        name: "dismissible",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "When false, Escape, the backdrop, the close button and a swipe down do not close the sheet. The grip still moves it between snap points, and setting isOpen yourself still closes it.",
+                    },
+                    {
+                        name: "onclose",
+                        type: "({ reason }) => void",
+                        required: false,
+                        description:
+                            "Runs when the sheet closes itself. reason is escape, backdrop, close-button or swipe.",
+                    },
+                    {
+                        name: "portal",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Renders the overlay in document.body, so an ancestor with a transform or clipped overflow cannot trap it. Pass false to render in place.",
+                    },
+                    {
+                        name: "initialFocus",
+                        type: "string",
+                        required: false,
+                        description:
+                            "CSS selector, looked up inside the sheet, of the control that takes focus on open. Without it, or with no match, the first control does: the grip, or the close button. For a form or a picker, point it at the first field.",
+                    },
+                    {
+                        name: "closeLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Close",
+                        description:
+                            "Accessible name of the close button, for translation.",
+                    },
+                    {
+                        name: "expandLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Expand",
+                        description:
+                            "Accessible name of the grip while pressing it takes the sheet up a step.",
+                    },
+                    {
+                        name: "collapseLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Collapse",
+                        description:
+                            "Accessible name of the grip while pressing it takes the sheet down a step.",
+                    },
+                    {
+                        name: "footer",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Pinned to the bottom of the sheet, below the scrolling content: the buttons of a form or a picker. The sheet does not follow the on-screen keyboard: at half height a real keyboard may cover the footer (not verified on a device), so open a sheet with fields at full height.",
+                    },
+                    {
+                        name: "onkeydown",
+                        type: "(event: KeyboardEvent) => void",
+                        required: false,
+                        description:
+                            "Hears every keydown in the sheet, after the sheet has handled Escape. The Tab cycle is kept either way.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the dialog panel. From the md breakpoint up the panel stays attached to the bottom edge, centred and at most 40rem wide.",
+                    },
+                ],
+                variants: [
+                    "snapPoints",
+                    "dismissible",
+                ],
+                examples: [
+                    {
+                        title: "A picker with two heights",
+                        description:
+                            "Drag the grip between half and full, or press it. Drag or flick it down past half to close. A swipe on the list scrolls the list, and moves the sheet only from the top of the list",
+                        code: `<script lang="ts">
+    import { BottomSheet, Button } from "zabi-components";
+
+    let open = $state(false);
+    let snap = $state<"half" | "full">("half");
+</script>
+
+<Button onclick={() => (open = true)}>Choose a team</Button>
+
+<BottomSheet
+    bind:isOpen={open}
+    bind:snap
+    title="Choose a team"
+    onclose={({ reason }) => console.log(reason)}
+>
+    <ul>…</ul>
+    {#snippet footer()}
+        <Button onclick={() => (open = false)}>Done</Button>
+    {/snippet}
+</BottomSheet>`,
+                    },
+                    {
+                        title: "A short form at one height",
+                        description:
+                            "One snap point, so the grip only drags. Focus starts in the field, and the buttons stay pinned under it",
+                        code: `<BottomSheet
+    bind:isOpen={open}
+    title="Rename team"
+    snapPoints={["half"]}
+    initialFocus="#team-name"
+    closeLabel="Cancel"
+>
+    <Input id="team-name" label="Team name" bind:value={name} />
+    {#snippet footer()}
+        <Button variant="ghost" onclick={() => (open = false)}>Cancel</Button>
+        <Button onclick={save}>Save</Button>
+    {/snippet}
+</BottomSheet>`,
+                    },
+                ],
+            },
+            {
+                name: "StickyActionBar",
+                category: "molecules",
+                description:
+                    "Bar that keeps a form's main button at the bottom of the screen and above the on-screen keyboard.",
+                props: [
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "The main action, and at most one or two beside it. They are laid out at the end of the bar and wrap when they do not fit.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name. With it the bar is a group, so a screen reader says what the buttons belong to.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes. The bar is sticky at the bottom of its scrolling ancestor: put it after the last field, and make a short form a full-height column (flex min-h-full flex-col) so the bar is at the bottom of the screen. While mounted it sets scroll-padding-bottom on that ancestor, so a focused field is not left under it. Use one bar per scrolling box.",
+                    },
+                    {
+                        name: "style",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Added after the bottom offset and margin the bar sets while the keyboard is up. Where the keyboard covers the page (iOS Safari, Chrome on Android) the bar rises by the part of its scrolling box that the keyboard covers, read from window.visualViewport, never out of that box, and the content gains that much room to scroll.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "After a form",
+                        description:
+                            "The button stays in view while the form scrolls, and the last field can be scrolled clear of it. On a phone it rides above the keyboard",
+                        code: `<script lang="ts">
+    import { Button, Input, StickyActionBar } from "zabi-components";
+</script>
+
+<!-- A column as tall as the screen: the bar is at the bottom of it even
+     when the fields end sooner. -->
+<form class="flex min-h-full flex-col" onsubmit={save}>
+    <div class="space-y-4 p-4">
+        <Input label="Place" bind:value={visit.place} />
+        <Input label="Team" bind:value={visit.team} />
+        …
+    </div>
+    <StickyActionBar>
+        <Button type="submit" size="lg" fullWidth>Save visit</Button>
+    </StickyActionBar>
+</form>`,
+                    },
+                    {
+                        title: "A form screen in AppShell",
+                        description:
+                            "A form is a task of its own: leave the tab bar out and let the action bar be the bottom of the screen. UnsavedChangesBar is the bar to use when Save should appear only once something has changed",
+                        code: `<AppShell>
+    {#snippet header()}
+        <AppBar title="New visit" backHref="/visits" />
+    {/snippet}
+
+    <form class="flex min-h-full flex-col" onsubmit={save}>
+        <div class="space-y-4 p-4">…</div>
+        <StickyActionBar label="Visit">
+            <Button variant="ghost" size="lg" onclick={saveDraft}>Save draft</Button>
+            <Button type="submit" size="lg">Save visit</Button>
+        </StickyActionBar>
+    </form>
+</AppShell>`,
+                    },
+                    {
+                        title: "In a scrolling box of its own",
+                        description:
+                            "The bar belongs to the nearest box that scrolls, here the content of a sheet, and stays inside it: with the keyboard up it rises only by the part of that box the keyboard covers. Use one bar per scrolling box. For a sheet's own buttons its footer is simpler",
+                        code: `<BottomSheet bind:isOpen={open} title="Add a visit" snapPoints={["half"]}>
+    <form class="flex min-h-full flex-col" onsubmit={save}>
+        <div class="space-y-4 pb-4">…</div>
+        <!-- The negative side margins undo the sheet's padding. -->
+        <StickyActionBar class="-mx-4">
+            <Button type="submit" size="lg" fullWidth>Save visit</Button>
+        </StickyActionBar>
+    </form>
+</BottomSheet>`,
+                    },
+                ],
+            },
         ],
         organisms: [
             {
@@ -5331,7 +5712,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: '""',
                         description:
-                            "Added after the two custom properties the host sets: --app-shell-top-inset and --app-shell-bottom-inset, the heights of the header and the footer with their safe areas.",
+                            "Added after the two custom properties the host sets: --app-shell-top-inset and --app-shell-bottom-inset, the heights of the header and the footer with their safe areas. While the shell is mounted both are also set on the html element, so an overlay moved to the body can read them.",
                     },
                 ],
                 variants: [],
@@ -5341,8 +5722,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Only the middle scrolls. Scroll down and the top bar slides away; the tab bar and the floating button stay. Open it full screen on a phone to try it at size",
                         code: `<script lang="ts">
-    import { AppBar, AppShell, BottomTabBar, IconButton } from "zabi-components";
-    import { Bell, House, Plus, Search, Trophy } from "@lucide/svelte";
+    import {
+        AppBar,
+        AppShell,
+        BottomTabBar,
+        FloatingActionButton,
+        IconButton,
+    } from "zabi-components";
+    import { Bell, House, Search, Trophy } from "@lucide/svelte";
     import { page } from "$app/state";
 
     const items = [
@@ -5363,17 +5750,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
         </AppBar>
     {/snippet}
 
-    <div class="p-4">…</div>
+    <!-- pb-24: room for the last row to scroll clear of the floating button. -->
+    <div class="p-4 pb-24">…</div>
 
-    <!-- Positioned against the shell, 1rem above the tab bar. -->
-    <IconButton
-        size="lg"
-        label="New quiz"
-        class="absolute right-4 bottom-[calc(var(--app-shell-bottom-inset)+1rem)] rounded-pill shadow-lg"
-        onclick={newQuiz}
-    >
-        <Plus size={24} />
-    </IconButton>
+    <!-- Places itself against the shell, 16px above the tab bar. -->
+    <FloatingActionButton label="New quiz" onclick={newQuiz} />
 
     {#snippet footer()}
         <BottomTabBar {items} active={page.url.pathname} />

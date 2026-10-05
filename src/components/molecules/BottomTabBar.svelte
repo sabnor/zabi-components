@@ -122,8 +122,13 @@
         // The 44px floor and the side padding are in px on purpose: in rem
         // they would double with the text size, and five tabs would no longer
         // fit a 320px screen, or would leave a label one letter per line.
+        //
+        // Radius: the active pill (2rem high, so 1rem at its ends) sits 4px
+        // inside this box on every side, so the box takes that radius plus
+        // the 4px. No gap between pill and label: 2rem + 1rem of content in a
+        // 3.5rem box leaves the same 4px above and below as at the sides.
         const base =
-            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-[44px] flex-col items-center justify-center gap-1 rounded-control px-[4px] text-center text-xs leading-4 no-underline transition-colors duration-150 motion-reduce:transition-none";
+            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-[44px] flex-col items-center justify-center gap-0 rounded-[calc(1rem+4px)] px-[4px] text-center text-xs leading-4 no-underline transition-colors duration-150 motion-reduce:transition-none";
         return isActive
             ? cn(base, "font-semibold text-nav-menu-item-active")
             : cn(

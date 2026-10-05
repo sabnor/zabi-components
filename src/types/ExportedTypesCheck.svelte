@@ -27,6 +27,9 @@
     import AppBar from "../components/molecules/AppBar.svelte";
     import BottomTabBar from "../components/molecules/BottomTabBar.svelte";
     import AppShell from "../components/organisms/AppShell.svelte";
+    import FloatingActionButton from "../components/atoms/FloatingActionButton.svelte";
+    import BottomSheet from "../components/molecules/BottomSheet.svelte";
+    import StickyActionBar from "../components/molecules/StickyActionBar.svelte";
     import type {
         AlertProps,
         BadgeProps,
@@ -47,6 +50,9 @@
         AppBarProps,
         BottomTabBarProps,
         AppShellProps,
+        FloatingActionButtonProps,
+        BottomSheetProps,
+        StickyActionBarProps,
     } from "./index";
 
     interface Props {
@@ -70,6 +76,9 @@
         appBar?: AppBarProps;
         bottomTabBar?: BottomTabBarProps;
         appShell?: AppShellProps;
+        floatingActionButton?: FloatingActionButtonProps;
+        bottomSheet?: BottomSheetProps;
+        stickyActionBar?: StickyActionBarProps;
     }
 
     let {
@@ -92,6 +101,9 @@
         appBar = {},
         bottomTabBar = { items: [] },
         appShell = {},
+        floatingActionButton = { label: "" },
+        bottomSheet = { title: "" },
+        stickyActionBar = {},
     }: Props = $props();
 </script>
 
@@ -114,3 +126,6 @@
 <AppBar {...appBar} />
 <BottomTabBar {...bottomTabBar} />
 <AppShell {...appShell} />
+<FloatingActionButton {...floatingActionButton} />
+<BottomSheet {...bottomSheet} />
+<StickyActionBar {...stickyActionBar} />

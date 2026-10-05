@@ -16,7 +16,7 @@ This document provides a comprehensive accessibility audit for zabi-components, 
 > The other entries, and every low-priority recommendation, were not
 > re-checked. Components added since the audit (SortableList, Collapsible,
 > ConfirmDialog, Drawer, MediaGrid, Slider, Spinner, UnsavedChangesBar, AppShell,
-> AppBar, BottomTabBar and others) are not audited here; their keyboard behaviour is in
+> AppBar, BottomTabBar, BottomSheet, StickyActionBar, FloatingActionButton and others) are not audited here; their keyboard behaviour is in
 > KEYBOARD_NAVIGATION.md and their conventions are under
 > [Library conventions](#library-conventions).
 
@@ -427,7 +427,9 @@ Rules every component follows, new ones included. Each names where it lives in t
   - UnsavedChangesBar, which holds focus on the bar while its buttons are disabled during a save.
 
   Modal, SlideUp and Drawer cover the case they cannot prevent, content inside them that disables or removes its own focused control: the next Tab goes to the first control in the panel and Escape still closes it (`recoverStrayFocus` in `src/components/util/focus-utils.ts`).
-- **Modal overlays share one stack and one scroll lock.** Modal, SlideUp and Drawer (and ConfirmDialog, which is a Modal) join the same stack, so the overlay opened last is on top whatever the DOM order, and only it acts on Tab and Escape (`joinOverlayStack` in `focus-utils.ts`). The scroll lock on `<body>` is counted, so the page scrolls again only when the last overlay has closed (`lockBodyScroll` in `src/components/util/overlay.ts`).
+- **Modal overlays share one stack and one scroll lock.** Modal, SlideUp, Drawer and BottomSheet (and ConfirmDialog, which is a Modal) join the same stack, so the overlay opened last is on top whatever the DOM order, and only it acts on Tab and Escape (`joinOverlayStack` in `focus-utils.ts`). The scroll lock on `<body>` is counted, so the page scrolls again only when the last overlay has closed (`lockBodyScroll` in `src/components/util/overlay.ts`).
+- **A gesture is never the only way.** BottomSheet and SlideUp can be dragged and swiped closed (`attachSheetDrag` in `src/components/util/sheet-drag.ts`), and every result of a drag has a control: BottomSheet's grip is a button that changes its height, and both keep the close button, the backdrop and Escape. A touch on a sheet's content scrolls the content; it moves the sheet only from the top of the content, downwards. Under `prefers-reduced-motion` a sheet changes height and position without animation.
+- **Bars that lie over the content reserve their room.** StickyActionBar sets `scroll-padding-bottom` on its scrolling ancestor to its own height, plus the on-screen keyboard's while that is up (`watchKeyboardInset` in `src/components/util/keyboard-inset.ts`), so a focused field is never left under it. FloatingActionButton cannot know what it covers: give the content padding at the end. Margins and minimum target sizes that must not grow with the text size are in px.
 - **Disabled options stay reachable.** A disabled Dropdown item or Select option is `aria-disabled`, not `disabled`. It keeps its place in the arrow-key order and is announced as unavailable, and activating it does nothing. A natively disabled button cannot take focus, so the arrow keys used to stop at the option before it.
 - **A single selection is never cleared by a repeat press.** Pressing the selected item again does nothing; only checkbox-like controls toggle off. MediaGrid without `multiple`, SegmentedControl and Rating follow it. Where a selection may be withdrawn there is a control for that: Rating's `clearable` adds a clear button beside the stars.
 - **A touch target is 44 by 44px on a coarse pointer, and nothing changes on a fine one.** Every rule for it sits behind `pointer: coarse`, so a layout made for a mouse is as it was. There are two ways there, described in `src/components/util/touch-target.ts`:

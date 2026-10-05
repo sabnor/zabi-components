@@ -206,3 +206,33 @@ describe("AppShell and its bars", () => {
         );
     });
 });
+
+describe("AppShell insets outside the shell", () => {
+    const rootValue = (name: string) => document.documentElement.style.getPropertyValue(name);
+
+    it("mirrors both properties onto <html> while mounted, and removes them after", async () => {
+        const { unmount } = render(AppShellHarness);
+        await waitFor(() =>
+            expect(rootValue("--app-shell-bottom-inset")).toContain("safe-area-inset-bottom"),
+        );
+        expect(rootValue("--app-shell-top-inset")).toContain("3.5rem");
+        unmount();
+        expect(rootValue("--app-shell-top-inset")).toBe("");
+        expect(rootValue("--app-shell-bottom-inset")).toBe("");
+    });
+
+    it("mirrors the shell mounted last, and the one before it again when that goes", async () => {
+        const first = render(AppShellHarness);
+        await waitFor(() => expect(rootValue("--app-shell-top-inset")).toContain("3.5rem"));
+
+        // A second shell without bars: its insets are the safe areas alone.
+        const second = render(AppShellHarness, { props: { withHeader: false, withFooter: false } });
+        await waitFor(() =>
+            expect(rootValue("--app-shell-top-inset")).toBe("env(safe-area-inset-top, 0px)"),
+        );
+        second.unmount();
+        expect(rootValue("--app-shell-top-inset")).toContain("3.5rem");
+        first.unmount();
+        expect(rootValue("--app-shell-top-inset")).toBe("");
+    });
+});
