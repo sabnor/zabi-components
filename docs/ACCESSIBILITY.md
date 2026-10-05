@@ -15,8 +15,8 @@ This document provides a comprehensive accessibility audit for zabi-components, 
 > against the code on 2026-09-30 and corrected where the issue had been fixed.
 > The other entries, and every low-priority recommendation, were not
 > re-checked. Components added since the audit (SortableList, Collapsible,
-> ConfirmDialog, Drawer, MediaGrid, Slider, Spinner, UnsavedChangesBar and
-> others) are not audited here; their keyboard behaviour is in
+> ConfirmDialog, Drawer, MediaGrid, Slider, Spinner, UnsavedChangesBar, AppShell,
+> AppBar, BottomTabBar and others) are not audited here; their keyboard behaviour is in
 > KEYBOARD_NAVIGATION.md and their conventions are under
 > [Library conventions](#library-conventions).
 

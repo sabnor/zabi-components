@@ -22,6 +22,9 @@
     import Tooltip from "../components/atoms/Tooltip.svelte";
     import Alert from "../components/molecules/Alert.svelte";
     import Modal from "../components/molecules/Modal.svelte";
+    import AppBar from "../components/molecules/AppBar.svelte";
+    import BottomTabBar from "../components/molecules/BottomTabBar.svelte";
+    import AppShell from "../components/organisms/AppShell.svelte";
     import type {
         AlertProps,
         BadgeProps,
@@ -37,6 +40,9 @@
         TextareaProps,
         ToggleProps,
         TooltipProps,
+        AppBarProps,
+        BottomTabBarProps,
+        AppShellProps,
     } from "./index";
 
     interface Props {
@@ -55,6 +61,9 @@
         textarea?: TextareaProps;
         toggle?: ToggleProps;
         tooltip?: TooltipProps;
+        appBar?: AppBarProps;
+        bottomTabBar?: BottomTabBarProps;
+        appShell?: AppShellProps;
     }
 
     let {
@@ -72,6 +81,9 @@
         textarea = {},
         toggle = {},
         tooltip = {},
+        appBar = {},
+        bottomTabBar = { items: [] },
+        appShell = {},
     }: Props = $props();
 </script>
 
@@ -89,3 +101,6 @@
 <Textarea {...textarea} />
 <Toggle {...toggle} />
 <Tooltip {...tooltip} />
+<AppBar {...appBar} />
+<BottomTabBar {...bottomTabBar} />
+<AppShell {...appShell} />

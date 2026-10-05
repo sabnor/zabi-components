@@ -618,6 +618,50 @@ place in the page.
 
 ---
 
+### AppShell, AppBar and BottomTabBar
+
+**Current Keyboard Support:**
+- ✅ **Tab**: Through the AppBar (back, then the actions), then the content, then the tabs, in that order
+- ✅ **Enter**: Follow a tab or the back link
+- ✅ **Enter / Space**: Activate the back button (when it is `onback` without `backHref`) or an action
+
+The tabs are links in a `<nav>`, not a tablist: there are no arrow keys, and
+each tab is a Tab stop. The tab for the current page has `aria-current="page"`.
+Following the active tab again is an ordinary navigation to the page you are
+on; nothing is deselected.
+
+With `collapseOnScroll` the AppBar slides away while the page scrolls down. It
+stays in the tab order while it is away: when focus moves into it, it comes
+back, and it never hides while keyboard focus is inside it. Focus left on an
+action by a tap or a click does not hold the bar: it hides as the page scrolls
+on, the control keeps focus, and the next key press brings the bar back. Under
+`prefers-reduced-motion` it changes position without animation.
+
+A count on a tab is part of the name of its link ("Inbox, 3 new"); the wording
+comes from `badgeLabel`.
+
+**Usage:**
+```svelte
+<AppShell>
+    {#snippet header()}
+        <AppBar title="Quiz" backHref="/" collapseOnScroll />
+    {/snippet}
+    <div class="p-4">…</div>
+    {#snippet footer()}
+        <BottomTabBar {items} active={page.url.pathname} />
+    {/snippet}
+</AppShell>
+```
+
+**Best Practices:**
+- Use `IconButton` at `size="lg"` for the AppBar's actions, so each is a 48px target, and keep to two
+- Keep to three to five tabs with one-word labels; they wrap when the text is enlarged, they are not cut off
+- In SvelteKit pass `active={page.url.pathname}`, so the server renders `aria-current` too. Without `active` the bar reads the address once it runs in the browser
+- AppShell scrolls its own middle area, not the window: `scroll-padding-top` there keeps a focused field from landing under the AppBar
+- Without AppShell nothing reserves room for the bars. A BottomTabBar on its own is fixed over the page: give the page `padding-bottom` and `scroll-padding-bottom` of the bar's height (`calc(4rem + 1px + env(safe-area-inset-bottom))` by default), and `scroll-padding-top` for a sticky AppBar, so focus is never hidden under a bar
+
+---
+
 ## Focus Management
 
 ### Focus Styles

@@ -63,4 +63,10 @@ export type {
     DrawerSize,
 } from '../util/drawer.js';
 export { default as UnsavedChangesBar } from './UnsavedChangesBar.svelte';
+export { default as AppBar } from './AppBar.svelte';
+export { default as BottomTabBar } from './BottomTabBar.svelte';
+export type {
+    BottomTabBarIcon,
+    BottomTabBarItem,
+} from '../util/bottom-tab-bar.js';
 export * from './toast-store.js';

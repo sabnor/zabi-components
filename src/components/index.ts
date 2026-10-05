@@ -96,6 +96,12 @@ export type {
     DrawerSize,
 } from './util/drawer.js';
 export { default as UnsavedChangesBar } from './molecules/UnsavedChangesBar.svelte';
+export { default as AppBar } from './molecules/AppBar.svelte';
+export { default as BottomTabBar } from './molecules/BottomTabBar.svelte';
+export type {
+    BottomTabBarIcon,
+    BottomTabBarItem,
+} from './util/bottom-tab-bar.js';
 
 export {
     toastStore,
@@ -112,6 +118,7 @@ export { default as SidebarNavigation } from './organisms/SidebarNavigation.svel
 export { default as SidebarShell } from './organisms/SidebarShell.svelte';
 export { default as SidebarAccountPanel } from './organisms/SidebarAccountPanel.svelte';
 export { default as SidebarPanel } from './organisms/SidebarPanel.svelte';
+export { default as AppShell } from './organisms/AppShell.svelte';
 
 import { generateId } from './util/ssr-safe.js';
 

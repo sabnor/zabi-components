@@ -215,6 +215,29 @@ Whenever token or CSS import API surface changes, include:
   `[data-theme="light"]` stays light. Following the system is opt-in: a page
   with no class and no attribute is light, as before. Put the class or the
   attribute on `<html>`.
+- **AppShell**, a new organism: the phone layout. A `header` snippet (an
+  AppBar), the scrolling content in `<main>`, and a `footer` snippet (a
+  BottomTabBar), in a full-height column that uses `dvh` and keeps clear of the
+  notch, the home indicator and the rounded corners (`env(safe-area-inset-*)`).
+  It sets `--app-shell-top-inset` and `--app-shell-bottom-inset` to the measured
+  height of its bars, so a floating control can sit above the tab bar.
+  `contentElement="div"` is for a shell inside a page that already has a
+  `<main>`.
+- **AppBar**, a new molecule: the top bar of a phone screen, with a `title`
+  (`headingLevel`, default 1), a back control (`backHref` or `onback`,
+  `backLabel`), a `leading` snippet and an `actions` snippet for up to two
+  actions. `collapseOnScroll` slides it away on the way down and brings it back
+  on the way up; it stays while keyboard focus is inside it, comes back when
+  focus enters, and does not animate under `prefers-reduced-motion`.
+- **BottomTabBar**, a new molecule: main navigation at the bottom of a phone
+  screen, for three to five links with an icon above a short label. `items`
+  take `href`, `label`, `icon` and an optional `badge` count, which is read
+  with the label ("Inbox, 3 new"; `badgeLabel`, `badgeMax`). `active` is an
+  href or a path and marks one item with `aria-current="page"`; left out, the
+  bar follows the address in the browser, so pass it when rendering on the
+  server (`active={page.url.pathname}`). It is fixed to the bottom on its own
+  and in the flow inside an AppShell (`position`), and keeps clear of the home
+  indicator. Tabs are at least 44px with 8px between them.
 
 ### Changed
 

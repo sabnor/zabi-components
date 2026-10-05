@@ -3,3 +3,4 @@ export { default as SidebarNavigation } from './SidebarNavigation.svelte';
 export { default as SidebarShell } from './SidebarShell.svelte';
 export { default as SidebarAccountPanel } from './SidebarAccountPanel.svelte';
 export { default as SidebarPanel } from './SidebarPanel.svelte';
+export { default as AppShell } from './AppShell.svelte';

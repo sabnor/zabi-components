@@ -9,6 +9,7 @@ export * from './page.types.js';
 // Enhanced component type with proper event handling for Svelte 5
 import type { Component, Snippet } from 'svelte';
 import type { HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
+import type { BottomTabBarItem } from '../components/util/bottom-tab-bar.js';
 import type {
     ButtonVariant,
     CardVariant,
@@ -341,6 +342,61 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'clas
     className?: string;
 }
 
+// BottomTabBar component props
+export interface BottomTabBarProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** Three to five destinations. */
+    items: BottomTabBarItem[];
+    /** The href of the active tab, or the path of the current page. Defaults to the current page. */
+    active?: string;
+    /** Accessible name of the navigation landmark. */
+    label?: string;
+    /** What a badge adds to the tab's accessible name, after the label and a comma. */
+    badgeLabel?: (count: number, item: BottomTabBarItem) => string;
+    /** Counts above this show as `99+`. */
+    badgeMax?: number;
+    /** Defaults to `fixed`, or to `static` inside an `AppShell`. */
+    position?: 'fixed' | 'static';
+    class?: string;
+}
+
+// AppBar component props
+export interface AppBarProps extends Omit<HTMLAttributes<HTMLElement>, 'class' | 'title'> {
+    /** The name of the screen, as a heading. */
+    title?: string;
+    headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+    /** Shows the back control as a link to this address. */
+    backHref?: string;
+    /** Called when the back control is activated; on its own it makes the control a button. */
+    onback?: (event: MouseEvent) => void;
+    /** Accessible name of the back control. */
+    backLabel?: string;
+    /**
+     * Hides the bar while the page scrolls down and brings it back when it scrolls up.
+     * Keyboard focus inside the bar holds it and brings it back; focus left by a tap does not.
+     */
+    collapseOnScroll?: boolean;
+    /** Before the title, after the back control. */
+    leading?: Snippet;
+    /** After the title. At most two icon buttons. */
+    actions?: Snippet;
+    class?: string;
+}
+
+// AppShell component props
+export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'style'> {
+    /** The top bar, an `AppBar`. */
+    header?: Snippet;
+    /** The scrolling content, rendered in the element `contentElement` names. */
+    children?: Snippet;
+    /** The element around the content. Use `div` for a shell inside another `<main>`. */
+    contentElement?: 'main' | 'div';
+    /** The bottom bar, a `BottomTabBar`. */
+    footer?: Snippet;
+    class?: string;
+    /** Added after the two custom properties the shell sets. */
+    style?: string;
+}
+
 // Component type definitions
 export type Button = ZabiComponent<ButtonProps, ButtonEvents>;
 export type Heading = ZabiComponent<HeadingProps>;
@@ -356,3 +412,6 @@ export type Progress = ZabiComponent<ProgressProps>;
 export type Skeleton = ZabiComponent<SkeletonProps>;
 export type Toggle = ZabiComponent<ToggleProps, ToggleEvents>;
 export type Tooltip = ZabiComponent<TooltipProps>;
+export type BottomTabBar = ZabiComponent<BottomTabBarProps>;
+export type AppBar = ZabiComponent<AppBarProps>;
+export type AppShell = ZabiComponent<AppShellProps>;

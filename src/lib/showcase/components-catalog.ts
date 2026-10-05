@@ -4168,6 +4168,217 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "AppBar",
+                category: "molecules",
+                description:
+                    "Top bar for a phone screen with a title, a back control and up to two actions; can hide while the page scrolls.",
+                props: [
+                    {
+                        name: "title",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "The name of the screen, rendered as a heading. Wraps to two lines before it is cut.",
+                    },
+                    {
+                        name: "headingLevel",
+                        type: "1 | 2 | 3 | 4 | 5 | 6",
+                        required: false,
+                        defaultValue: "1",
+                        description:
+                            "Heading level of the title. 1 when the bar names the page.",
+                    },
+                    {
+                        name: "backHref",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Shows the back control as a link to this address.",
+                    },
+                    {
+                        name: "onback",
+                        type: "(event: MouseEvent) => void",
+                        required: false,
+                        description:
+                            "Runs when the back control is activated. On its own it makes the control a button; with backHref it runs before the link is followed, and event.preventDefault() stops that.",
+                    },
+                    {
+                        name: "backLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Back",
+                        description:
+                            "Accessible name of the back control.",
+                    },
+                    {
+                        name: "collapseOnScroll",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Hides the bar while the page scrolls down and brings it back when it scrolls up. Follows the nearest scrolling ancestor (the one in AppShell) or the window. Never hides while keyboard focus is inside it, and keyboard focus brings it back; focus left by a tap or click does not hold it. No animation under reduced motion.",
+                    },
+                    {
+                        name: "actions",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "After the title. At most two icon buttons, at size lg so each is a 48px target; put anything more in a menu. The limit is not enforced.",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Before the title, after the back control: a logo or an avatar.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the header element. The bar is sticky at the top; pass static to let it scroll with the page.",
+                    },
+                ],
+                variants: [
+                    "collapseOnScroll",
+                ],
+                examples: [
+                    {
+                        title: "Title, back and two actions",
+                        description:
+                            "A header landmark with the title as a heading. The back control and each action are 48px targets",
+                        code: `<script lang="ts">
+    import { AppBar, IconButton } from "zabi-components";
+    import { EllipsisVertical, Share2 } from "@lucide/svelte";
+</script>
+
+<AppBar title="Round 3" backHref="/quiz">
+    {#snippet actions()}
+        <IconButton variant="ghost" size="lg" label="Share" onclick={share}>
+            <Share2 size={20} />
+        </IconButton>
+        <IconButton variant="ghost" size="lg" label="More" onclick={openMenu}>
+            <EllipsisVertical size={20} />
+        </IconButton>
+    {/snippet}
+</AppBar>`,
+                    },
+                    {
+                        title: "Collapses on scroll",
+                        description:
+                            "Scroll down and the bar slides away; scroll up a little and it is back. Tab to the back control and it returns too",
+                        code: `<AppBar title="Questions" backHref="/quiz" collapseOnScroll />`,
+                    },
+                ],
+            },
+            {
+                name: "BottomTabBar",
+                category: "molecules",
+                description:
+                    "Navigation bar at the bottom of a phone screen: three to five links, each an icon over a short label, with optional counts.",
+                props: [
+                    {
+                        name: "items",
+                        type: "BottomTabBarItem[]",
+                        required: true,
+                        description:
+                            "Three to five destinations, each { href, label, icon, badge? }. icon is a component such as a lucide icon; badge is a count. A development build warns outside three to five.",
+                    },
+                    {
+                        name: "active",
+                        type: "string",
+                        required: false,
+                        defaultValue: "the current page",
+                        description:
+                            "The href of the active tab, or the path of the current page: the tab for that page or the closest one above it gets aria-current. Left out, the bar reads the address in the browser; in SvelteKit pass page.url.pathname so the server marks it too.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Main",
+                        description:
+                            "Accessible name of the navigation landmark.",
+                    },
+                    {
+                        name: "badgeLabel",
+                        type: "(count: number, item: BottomTabBarItem) => string",
+                        required: false,
+                        defaultValue: "(count) => `${count} new`",
+                        description:
+                            "What a badge adds to the tab's accessible name, after the label and a comma: Inbox, 3 new. Replace it to translate or to say what is counted.",
+                    },
+                    {
+                        name: "badgeMax",
+                        type: "number",
+                        required: false,
+                        defaultValue: "99",
+                        description:
+                            "Counts above this show as 99+. The accessible name keeps the real count.",
+                    },
+                    {
+                        name: "position",
+                        type: "'fixed' | 'static'",
+                        required: false,
+                        defaultValue: "fixed (static inside AppShell)",
+                        description:
+                            "fixed pins the bar to the bottom of the screen; static leaves it where it is in the page. AppShell places the bar itself. A fixed bar on its own lies over the page: give the page padding-bottom and scroll-padding-bottom of the bar's height, calc(4rem + 1px + env(safe-area-inset-bottom)) by default, so the last content and a focused field are not under it.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the nav element, for example md:hidden to show the bar on phones only.",
+                    },
+                ],
+                variants: [
+                    "fixed",
+                    "static",
+                ],
+                examples: [
+                    {
+                        title: "Marks the current page",
+                        description:
+                            "With no active tab passed, the bar marks the section this page is in. A page below a tab keeps that tab marked",
+                        code: `<script lang="ts">
+    import { BottomTabBar } from "zabi-components";
+    import { BookOpen, House, LayoutGrid } from "@lucide/svelte";
+    import { page } from "$app/state";
+
+    const items = [
+        { href: "/", label: "Home", icon: House },
+        { href: "/components", label: "Components", icon: LayoutGrid },
+        { href: "/docs", label: "Docs", icon: BookOpen },
+    ];
+</script>
+
+<!-- In SvelteKit, pass the path so the server marks the tab too. -->
+<BottomTabBar {items} active={page.url.pathname} />`,
+                    },
+                    {
+                        title: "Five tabs with counts",
+                        description:
+                            "A count is part of the name of its link, in words you choose. Pressing the active tab changes nothing",
+                        code: `<BottomTabBar
+    items={[
+        { href: "/home", label: "Home", icon: House },
+        { href: "/quiz", label: "Quiz", icon: Trophy },
+        { href: "/teams", label: "Teams", icon: Users },
+        { href: "/inbox", label: "Inbox", icon: Bell, badge: 3 },
+        { href: "/me", label: "Me", icon: User, badge: 120 },
+    ]}
+    active={page.url.pathname}
+    badgeLabel={(count) => (count === 1 ? "1 unread" : \`\${count} unread\`)}
+/>`,
+                    },
+                ],
+            },
         ],
         organisms: [
             {
@@ -4702,6 +4913,106 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Opens from SidebarNavigation profile control",
                         code: "<SidebarAccountPanel profileName=\"Alex\" profileEmail=\"alex@example.com\" />",
+                    },
+                ],
+            },
+            {
+                name: "AppShell",
+                category: "organisms",
+                description:
+                    "Phone app layout: a top bar, content that scrolls and a bottom tab bar, as tall as the screen and clear of the safe areas.",
+                props: [
+                    {
+                        name: "header",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "The top bar, an AppBar. It stays at the top of the scrolling area and handles the safe area above it.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "The scrolling content, rendered in the element contentElement names.",
+                    },
+                    {
+                        name: "contentElement",
+                        type: "'main' | 'div'",
+                        required: false,
+                        defaultValue: "main",
+                        description:
+                            "The element around the content. main when the shell is the page. A page has one main element: use div for a shell that sits inside another one.",
+                    },
+                    {
+                        name: "footer",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "The bottom bar, a BottomTabBar. It sits below the scrolling area and handles the safe area below it.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes for the host. It is 100dvh tall; pass a height class to put the shell in a frame.",
+                    },
+                    {
+                        name: "style",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Added after the two custom properties the host sets: --app-shell-top-inset and --app-shell-bottom-inset, the heights of the header and the footer with their safe areas.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Phone layout",
+                        description:
+                            "Only the middle scrolls. Scroll down and the top bar slides away; the tab bar and the floating button stay. Open it full screen on a phone to try it at size",
+                        code: `<script lang="ts">
+    import { AppBar, AppShell, BottomTabBar, IconButton } from "zabi-components";
+    import { Bell, House, Plus, Search, Trophy } from "@lucide/svelte";
+    import { page } from "$app/state";
+
+    const items = [
+        { href: "/", label: "Home", icon: House },
+        { href: "/quiz", label: "Quiz", icon: Trophy },
+        { href: "/inbox", label: "Inbox", icon: Bell, badge: 3 },
+    ];
+</script>
+
+<AppShell>
+    {#snippet header()}
+        <AppBar title="Quiz" collapseOnScroll>
+            {#snippet actions()}
+                <IconButton variant="ghost" size="lg" label="Search" onclick={search}>
+                    <Search size={20} />
+                </IconButton>
+            {/snippet}
+        </AppBar>
+    {/snippet}
+
+    <div class="p-4">…</div>
+
+    <!-- Positioned against the shell, 1rem above the tab bar. -->
+    <IconButton
+        size="lg"
+        label="New quiz"
+        class="absolute right-4 bottom-[calc(var(--app-shell-bottom-inset)+1rem)] rounded-pill shadow-lg"
+        onclick={newQuiz}
+    >
+        <Plus size={24} />
+    </IconButton>
+
+    {#snippet footer()}
+        <BottomTabBar {items} active={page.url.pathname} />
+    {/snippet}
+</AppShell>`,
                     },
                 ],
             },
