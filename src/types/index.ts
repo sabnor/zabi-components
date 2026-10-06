@@ -354,6 +354,8 @@ export interface PickerFieldProps
     placeholder?: string;
     /** An icon or an avatar before the text. */
     leading?: Snippet;
+    /** Replaces the chevron at the end: a calendar or a clock, say. It is decoration, so it should be `aria-hidden`. */
+    trailing?: Snippet;
     /** Replaces the value text, for rich content. The control is still named by `value`, so give that too. */
     children?: Snippet;
     size?: 'sm' | 'md' | 'lg';
@@ -926,6 +928,16 @@ export interface DateFieldProps
     size?: SizeVariant;
     /** Extra classes for the `<input>`. */
     class?: string;
+    /** Language of the field, as a BCP 47 tag or a list of them. With it the field shows the value in that language and opens the library's own picker; without it, the native input. */
+    locale?: string | string[];
+    /** With `locale`: how the value is shown, as options of `Intl.DateTimeFormat`. */
+    format?: Intl.DateTimeFormatOptions;
+    /** With `locale`: shown in the placeholder colour while the field is empty. */
+    placeholder?: string;
+    /** With `locale`: `library` (default) opens the library's picker in a sheet; `native` opens the platform's. */
+    picker?: 'library' | 'native';
+    /** With `locale`: the words the field says; replace any of them to translate. */
+    strings?: Partial<{ clear: string; chooseDate: string }>;
 }
 
 // TimeField component props
@@ -961,6 +973,16 @@ export interface TimeFieldProps
     size?: SizeVariant;
     /** Extra classes for the `<input>`. */
     class?: string;
+    /** Language of the field, as a BCP 47 tag or a list of them. With it the field shows the value in that language and opens the library's own picker; without it, the native input. */
+    locale?: string | string[];
+    /** With `locale`: how the value is shown, as options of `Intl.DateTimeFormat`. */
+    format?: Intl.DateTimeFormatOptions;
+    /** With `locale`: shown in the placeholder colour while the field is empty. */
+    placeholder?: string;
+    /** With `locale`: `library` (default) opens the library's picker in a sheet; `native` opens the platform's. */
+    picker?: 'library' | 'native';
+    /** With `locale`: the words the field says; replace any of them to translate. */
+    strings?: Partial<{ clear: string; done: string; hours: string; minutes: string; chooseTime: string }>;
 }
 
 // Calendar component props

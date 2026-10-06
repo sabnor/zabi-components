@@ -121,6 +121,10 @@
         <UnsavedChangesBar dirty onsave={() => {}} ondiscard={() => {}} />
     {:else if kind === "Rating"}
         <RatingHarness initial={3} clearable />
+    {:else if kind === "DateField"}
+        <DateHarness piece="date" locale="sv" initialValue="2026-10-06" label="" />
+    {:else if kind === "TimeField"}
+        <DateHarness piece="time" locale="sv" initialValue="18:30" label="" />
     {:else if kind === "Portals"}
         <!-- App code inside overlays that are rendered in <body>: each still reads the provider it was written under. -->
         <Modal isOpen title="Dialog" portal>

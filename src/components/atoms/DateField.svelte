@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { HTMLInputAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
+    import type { DateFieldStrings } from "../util/temporal-field.js";
     import TemporalField from "./TemporalField.svelte";
 
     /**
@@ -10,13 +11,26 @@
      * calendar, Android its calendar, a desktop browser its own. `value` is
      * always `YYYY-MM-DD`, or `""` while empty, whatever the field shows.
      *
-     * What the field shows is the browser's decision: the date in the format
-     * of the browser or device, not of the page, and no attribute changes
-     * that. To show a date as text in the page's language, use `formatDate`:
+     * What the field shows is the browser's decision, unless it has a
+     * `locale`: without one, the date is in the format of the browser or
+     * device, not of the page, and no attribute changes that. To show a date
+     * as text in the page's language, use `formatDate`:
      *
      * ```svelte
      * <DateField label="Date" bind:value={date} min="2026-01-01" />
      * <p>{formatDate(date, "sv")}</p>  <!-- 6 okt. 2026 -->
+     * ```
+     *
+     * With `locale`, the field shows the value in that language and its own
+     * picker opens: a Calendar in a BottomSheet (at every width), with Clear
+     * unless the field is `required`. Until the page has run, and without
+     * scripts, it is the native input as above and submits as before; once
+     * it has, the native input stays as the form control, out of sight, and a
+     * button in its place shows the date. `picker="native"` opens the
+     * platform's own picker instead.
+     *
+     * ```svelte
+     * <DateField label="Datum" locale="sv" bind:value format={{ weekday: "short", day: "numeric", month: "short" }} />
      * ```
      *
      * Other attributes (`autocomplete`, `data-*`, `onchange`, ...) land on the
@@ -53,6 +67,20 @@
         size?: SizeVariant;
         /** Extra classes for the `<input>`. */
         class?: string;
+        /**
+         * Language of the field, as a BCP 47 tag (`sv`, `en-GB`) or a list of them. With it the
+         * field shows the value in that language, whatever the browser's is, and opens the
+         * library's own picker; see above. Left out, the field is the native input.
+         */
+        locale?: string | string[];
+        /** With `locale`: how the value is shown, as options of `Intl.DateTimeFormat`. Default: what formatDate gives for the locale. */
+        format?: Intl.DateTimeFormatOptions;
+        /** With `locale`: shown in the placeholder colour while the field is empty. */
+        placeholder?: string;
+        /** With `locale`: `library` (default) opens the library's calendar in a sheet; `native` opens the platform's own picker. */
+        picker?: "library" | "native";
+        /** With `locale`: the words the field says; replace any of them to translate. */
+        strings?: Partial<DateFieldStrings>;
     };
 
     let {
@@ -71,6 +99,11 @@
         readonly = false,
         size = "md",
         class: className = "",
+        locale,
+        format,
+        placeholder,
+        picker = "library",
+        strings,
         ...restProps
     }: Props = $props();
 
@@ -103,5 +136,10 @@
     {readonly}
     {size}
     class={className}
+    {locale}
+    {format}
+    {placeholder}
+    {picker}
+    {strings}
     {...restProps}
 />

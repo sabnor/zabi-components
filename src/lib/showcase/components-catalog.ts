@@ -3068,7 +3068,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "DateField",
                 category: "atoms",
                 description:
-                    "Date field that opens the device's own date picker, styled like Input; the value is an ISO date.",
+                    "Date field styled like Input; with a locale it shows the date in that language and opens the library's calendar. The value is an ISO date.",
                 props: [
                     {
                         name: "value",
@@ -3183,6 +3183,43 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Extra classes for the input. Other attributes land on the input too.",
                     },
+                    {
+                        name: "locale",
+                        type: "string | string[]",
+                        required: false,
+                        description:
+                            "Language of the field, as a BCP 47 tag such as sv or en-GB. With it the field shows the value in that language whatever the browser's is, and opens the library's own picker; the native input stays in the form, out of sight. Without it, and before the page has run or without scripts, the field is the native input.",
+                    },
+                    {
+                        name: "format",
+                        type: "Intl.DateTimeFormatOptions",
+                        required: false,
+                        description:
+                            "With locale: how the value is shown. Default: what formatDate gives for the locale. The value itself stays in the native format.",
+                    },
+                    {
+                        name: "placeholder",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "With locale: shown in the placeholder colour while the field is empty.",
+                    },
+                    {
+                        name: "picker",
+                        type: "'library' | 'native'",
+                        required: false,
+                        defaultValue: "library",
+                        description:
+                            "With locale: \"library\" (default) opens the library's Calendar in a sheet, with Clear unless the field is required; \"native\" opens the platform's own date picker.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<DateFieldStrings>",
+                        required: false,
+                        description:
+                            "The words the field says: clear, chooseDate (the sheet's name when the field has no label). A ZabiStringsProvider can set them once as dateField.",
+                    },
                 ],
                 variants: [
                     "sm",
@@ -3206,6 +3243,22 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 
 <!-- 6 okt. 2026 -->
 <p>{formatDate(value, "en-GB")}</p>`,
+                    },
+                    {
+                        title: "A locale: the library's own display and picker",
+                        description:
+                            "With locale the field shows the date in that language whatever the browser's is, and opens the Calendar in a sheet. The native input stays in the form, out of sight, and is what shows without scripts. format changes how the date is written; picker=\"native\" opens the platform's picker instead",
+                        code: `<DateField label="Datum" name="date" locale="sv" bind:value placeholder="Välj datum" />
+
+<!-- tis 6 okt -->
+<DateField
+    label="Datum"
+    locale="sv"
+    format={{ weekday: "short", day: "numeric", month: "short" }}
+    bind:value
+/>
+
+<DateField label="Datum" locale="sv" picker="native" bind:value />`,
                     },
                     {
                         title: "Limits, a hint, an error, and inside FormField",
@@ -3242,7 +3295,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "TimeField",
                 category: "atoms",
                 description:
-                    "Time field that opens the device's own time picker, styled like Input; the value is 24-hour HH:mm.",
+                    "Time field styled like Input; with a locale it shows the time in that language and opens the library's hour and minute picker. The value is 24-hour HH:mm.",
                 props: [
                     {
                         name: "value",
@@ -3357,6 +3410,43 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Extra classes for the input. Other attributes land on the input too.",
                     },
+                    {
+                        name: "locale",
+                        type: "string | string[]",
+                        required: false,
+                        description:
+                            "Language of the field, as a BCP 47 tag such as sv or en-GB. With it the field shows the value in that language whatever the browser's is, and opens the library's own picker; the native input stays in the form, out of sight. Without it, and before the page has run or without scripts, the field is the native input.",
+                    },
+                    {
+                        name: "format",
+                        type: "Intl.DateTimeFormatOptions",
+                        required: false,
+                        description:
+                            "With locale: how the value is shown. Default: what formatTime gives for the locale. The value itself stays in the native format.",
+                    },
+                    {
+                        name: "placeholder",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "With locale: shown in the placeholder colour while the field is empty.",
+                    },
+                    {
+                        name: "picker",
+                        type: "'library' | 'native'",
+                        required: false,
+                        defaultValue: "library",
+                        description:
+                            "With locale: \"library\" (default) opens hours and minutes in two columns in a sheet, with Done and Clear; \"native\" opens the platform's own time picker. A step under 60 seconds, or any, uses the platform's picker too.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<TimeFieldStrings>",
+                        required: false,
+                        description:
+                            "The words the field says: clear, done, hours, minutes, chooseTime (the sheet's name when the field has no label). A ZabiStringsProvider can set them once as timeField.",
+                    },
                 ],
                 variants: [
                     "sm",
@@ -3380,6 +3470,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 
 <!-- 19:00 -->
 <p>{formatTime(value, "en-GB")}</p>`,
+                    },
+                    {
+                        title: "A locale: the library's own display and picker",
+                        description:
+                            "With locale the field shows the time in that language (18:30 in Swedish, never 06:30 PM) and opens hours and minutes in a sheet, with Done. step is in seconds: 900 is every 15 minutes, none is every 5. A step under 60 uses the platform's picker. Without scripts it is the native input",
+                        code: `<TimeField label="Tid" name="time" locale="sv" bind:value placeholder="Välj tid" />
+
+<TimeField label="Tid" locale="sv" step={900} min="17:00" max="21:30" bind:value />`,
                     },
                     {
                         title: "Limits, a hint, an error, and inside FormField",

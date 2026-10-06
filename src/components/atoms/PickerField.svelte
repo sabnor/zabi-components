@@ -44,6 +44,8 @@
         placeholder?: string;
         /** An icon or an avatar before the text. */
         leading?: Snippet;
+        /** Replaces the chevron at the end: a calendar or a clock, say. It is decoration, so it should be `aria-hidden`. */
+        trailing?: Snippet;
         /** Replaces the value text, for rich content. The control is still named by `value`, so give that too. */
         children?: Snippet;
         size?: "sm" | "md" | "lg";
@@ -89,6 +91,7 @@
         value = "",
         placeholder = "",
         leading,
+        trailing,
         children,
         size = "md",
         disabled = false,
@@ -166,14 +169,18 @@
             {isEmpty ? placeholder : value}
         {/if}
     </span>
-    <ChevronDown
-        size={20}
-        class={cn(
-            "shrink-0 text-description transition-transform duration-(--duration-moderate) motion-reduce:transition-none",
-            expanded && "rotate-180",
-        )}
-        aria-hidden="true"
-    />
+    {#if trailing}
+        <span class="flex shrink-0 items-center text-description" data-picker-field-trailing>{@render trailing()}</span>
+    {:else}
+        <ChevronDown
+            size={20}
+            class={cn(
+                "shrink-0 text-description transition-transform duration-(--duration-moderate) motion-reduce:transition-none",
+                expanded && "rotate-180",
+            )}
+            aria-hidden="true"
+        />
+    {/if}
 {/snippet}
 
 <div class={cn("w-full min-w-0", className)}>

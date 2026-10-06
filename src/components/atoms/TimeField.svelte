@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { HTMLInputAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
+    import type { TimeFieldStrings } from "../util/temporal-field.js";
     import TemporalField from "./TemporalField.svelte";
 
     /**
@@ -11,14 +12,24 @@
      * `HH:mm` (`HH:mm:ss` when `step` asks for seconds), or `""` while empty,
      * whatever the field shows.
      *
-     * What the field shows is the browser's decision: 24-hour or 12-hour
-     * with AM and PM, by the settings of the browser or device, not of the
-     * page. To show a time as text in the page's language, use `formatTime`:
+     * What the field shows is the browser's decision, unless it has a
+     * `locale`: without one, 24-hour or 12-hour with AM and PM, by the
+     * settings of the browser or device, not of the page. To show a time as
+     * text in the page's language, use `formatTime`:
      *
      * ```svelte
      * <TimeField label="Starts" bind:value={time} step={300} />
      * <p>{formatTime(time, "sv")}</p>  <!-- 19:00 -->
      * ```
+     *
+     * With `locale`, the field shows the value in that language ("18:30" in
+     * Swedish, never "06:30 PM") and its own picker opens: two columns in a
+     * BottomSheet, hours (written as the locale writes an hour) and minutes
+     * (every `step`, five minutes without one), and Done. A value that is not
+     * on the step is kept as its own minute. A `step` under 60 seconds, or
+     * `"any"`, uses the platform's picker instead, as does `picker="native"`.
+     * Until the page has run, and without scripts, it is the native input
+     * as above and submits as before.
      *
      * Other attributes (`autocomplete`, `data-*`, `onchange`, ...) land on the
      * `<input>`.
@@ -54,6 +65,20 @@
         size?: SizeVariant;
         /** Extra classes for the `<input>`. */
         class?: string;
+        /**
+         * Language of the field, as a BCP 47 tag (`sv`, `en-GB`) or a list of them. With it the
+         * field shows the value in that language, whatever the browser's is, and opens the
+         * library's own picker; see above. Left out, the field is the native input.
+         */
+        locale?: string | string[];
+        /** With `locale`: how the value is shown, as options of `Intl.DateTimeFormat`. Default: formatTime gives for the locale. */
+        format?: Intl.DateTimeFormatOptions;
+        /** With `locale`: shown in the placeholder colour while the field is empty. */
+        placeholder?: string;
+        /** With `locale`: `library` (default) opens the library's time columns in a sheet; `native` opens the platform's own picker. */
+        picker?: "library" | "native";
+        /** With `locale`: the words the field says; replace any of them to translate. */
+        strings?: Partial<TimeFieldStrings>;
     };
 
     let {
@@ -72,6 +97,11 @@
         readonly = false,
         size = "md",
         class: className = "",
+        locale,
+        format,
+        placeholder,
+        picker = "library",
+        strings,
         ...restProps
     }: Props = $props();
 
@@ -104,5 +134,10 @@
     {readonly}
     {size}
     class={className}
+    {locale}
+    {format}
+    {placeholder}
+    {picker}
+    {strings}
     {...restProps}
 />

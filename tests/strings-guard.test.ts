@@ -21,6 +21,7 @@ import { MEDIA_GRID_STRINGS } from "../src/components/util/media-grid";
 import { PHOTO_GRID_STRINGS, PHOTO_VIEWER_STRINGS } from "../src/components/util/photo";
 import { PROGRESS_STRINGS } from "../src/components/util/progress";
 import { RATING_STRINGS } from "../src/components/util/rating";
+import { DATE_FIELD_STRINGS, TIME_FIELD_STRINGS } from "../src/components/util/temporal-field";
 import { SORTABLE_LIST_STRINGS } from "../src/components/util/sortable-list";
 import { DEFAULT_TOASTER_STRINGS } from "../src/components/util/toaster";
 import { STEPPER_STRINGS } from "../src/components/util/stepper";
@@ -465,6 +466,8 @@ const ENTRY_DEFAULTS: Record<keyof ZabiStrings, Words> = {
     photoGrid: PHOTO_GRID_STRINGS as unknown as Words,
     photoViewer: PHOTO_VIEWER_STRINGS as unknown as Words,
     propsTable: DEFAULT_PROPS_TABLE_STRINGS as unknown as Words,
+    dateField: DATE_FIELD_STRINGS as unknown as Words,
+    timeField: TIME_FIELD_STRINGS as unknown as Words,
     progress: PROGRESS_STRINGS as unknown as Words,
     rating: RATING_STRINGS as unknown as Words,
     toaster: DEFAULT_TOASTER_STRINGS as unknown as Words,
@@ -551,6 +554,8 @@ const PROVIDED: {
     // Mounted under the provider, with one toast on screen.
     { kind: "Toaster", entries: ["toaster"] },
     { kind: "Rating", entries: ["rating"] },
+    { kind: "DateField", entries: ["dateField"] },
+    { kind: "TimeField", entries: ["timeField"] },
     { kind: "AvatarGroup", entries: ["avatarGroup"] },
     { kind: "SwipeableListItem", entries: ["swipeableListItem"] },
     { kind: "PullToRefresh", entries: ["pullToRefresh"] },
@@ -588,6 +593,16 @@ async function revealProvided(kind: string) {
     }
     if (kind === "Toaster") {
         await waitFor(() => expect(document.querySelector("[data-toast-id]")).not.toBeNull());
+        return;
+    }
+    if (kind === "DateField" || kind === "TimeField") {
+        const button = await waitFor(() => {
+            const found = document.querySelector<HTMLElement>('button[aria-haspopup="dialog"]');
+            expect(found).not.toBeNull();
+            return found!;
+        });
+        await fireEvent.click(button);
+        await waitFor(() => expect(document.querySelector('[role="dialog"]')).not.toBeNull());
         return;
     }
     if (

@@ -34,9 +34,17 @@
         weekStartsOn?: number;
         locale?: string;
         isDateDisabled?: (date: string) => boolean;
-        strings?: Partial<CalendarStrings>;
+        strings?: Partial<CalendarStrings> | Record<string, string>;
         onselect?: (date: string) => void;
         onmonthchange?: (month: string) => void;
+
+        /** The field's own props with a `locale` (`locale`, `strings` and `onselect` are shared with the calendar piece). */
+        format?: Intl.DateTimeFormatOptions;
+        placeholder?: string;
+        picker?: "library" | "native";
+        onfieldchange?: (event: Event) => void;
+        onfieldinput?: (event: Event) => void;
+        oninvalid?: (event: Event) => void;
     }
 
     let {
@@ -65,6 +73,12 @@
         strings,
         onselect,
         onmonthchange,
+        format,
+        placeholder,
+        picker,
+        onfieldchange,
+        onfieldinput,
+        oninvalid,
     }: Props = $props();
 
     // svelte-ignore state_referenced_locally
@@ -109,7 +123,7 @@
         {#if inFormField}
             <FormField {label} description={hint} error={fieldError} {required} {disabled}>
                 {#snippet control(props)}
-                    <Field hideLabel name="when" bind:value {min} {max} {step} {...props} />
+                    <Field hideLabel name="when" bind:value {min} {max} {step} {locale} {format} {placeholder} {picker} {strings} {...props} />
                 {/snippet}
             </FormField>
         {:else}
@@ -127,6 +141,14 @@
                 {readonly}
                 {size}
                 class={fieldClass}
+                {locale}
+                {format}
+                {placeholder}
+                {picker}
+                {strings}
+                onchange={onfieldchange}
+                oninput={onfieldinput}
+                {oninvalid}
                 data-testid="field"
             />
         {/if}

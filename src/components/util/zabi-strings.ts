@@ -25,6 +25,7 @@ import { getContext, setContext } from "svelte";
 
 import type { AvatarGroupStrings } from "./avatar.js";
 import type { CalendarStrings } from "./calendar.js";
+import type { DateFieldStrings, TimeFieldStrings } from "./temporal-field.js";
 import type { MediaGridStrings } from "./media-grid.js";
 import type { PhotoGridStrings, PhotoViewerStrings } from "./photo.js";
 import type { ProgressStrings } from "./progress.js";
@@ -158,6 +159,7 @@ export interface ZabiStrings {
     calendar?: Partial<CalendarStrings>;
     codeBlock?: Partial<CodeBlockTexts>;
     colorPicker?: Partial<ColorPickerStrings>;
+    dateField?: Partial<DateFieldStrings>;
     componentDemo?: Partial<ComponentDemoStrings>;
     contactForm?: Partial<ContactFormStrings>;
     imageUpload?: Partial<ImageUploadTexts>;
@@ -177,6 +179,7 @@ export interface ZabiStrings {
     stepper?: Partial<StepperStrings>;
     swipeableListItem?: Partial<SwipeableListItemStrings>;
     themeToggle?: Partial<ThemeToggleLabels>;
+    timeField?: Partial<TimeFieldStrings>;
     toast?: Partial<ToastTexts>;
     toaster?: Partial<ToasterStrings>;
     topNavbar?: Partial<TopNavbarStrings>;
