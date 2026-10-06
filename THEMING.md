@@ -1259,8 +1259,9 @@ need the focus ring at 3:1 (a thin control's ring is drawn around it, outside
 the material); the same roles are also held over the mode's own page.
 `npm run check:contrast` and `createTheme` both compute this, so a theme with
 a too-thin fill gets a warning. The alphas for thin, regular and thick are
-light 58, 80, 86 and dark 66, 76, 98: the smallest whole 2% that passes, except
-light thin, which could go lower. Dark needs more because its surfaces are
+light 58, 84, 86 and dark 66, 76, 98: the smallest whole 2% that passes with a
+step or two of margin (against the page-colour chrome the floors are thin 50 / 62
+and regular 82 / 72, light / dark), except light thin, which could go lower. Dark needs more because its surfaces are
 close to the backdrop they must hide.
 
 **Fallbacks.** The three fills become the opaque surface they are made from and
@@ -1271,6 +1272,34 @@ any ancestor (a way out for a slow phone). The fallback re-points the tokens,
 so every use of them follows, in both modes and over an app's own fill. Under
 forced colors the rim is a 1px `CanvasText` outline. To set a fill per mode:
 `overrides: { light: { '--color-material-regular': … }, dark: { … } }`.
+
+**Layers.** `backdrop-filter` makes an element the containing block of its fixed
+descendants, so a container that holds a Dropdown or a Tooltip puts the glass on
+a `::before` instead. `material-layer-thick` and `material-layer-regular` are the
+layer forms of thick and regular (same tokens, so every fallback applies): the
+element is positioned by you, never scrolls its own content, and keeps only the
+outer shadow.
+
+**Bars.** `--color-surface-chrome` is the page colour in both modes, so a bar is
+flush with the page. `material-bar` is the bar surface: put it on a positioned
+element (never a scroller). At rest its `::before` layer is `--color-bar`, with
+no line and no blur; with `data-scrolled-under="true"` it is the regular material
+and a 1px `--color-bar-border` hairline on the content side (the bottom edge, or
+the top edge with `data-bar-edge="bottom"`). The fill and line fade over
+`--duration-moderate`. Under the fallbacks a scrolled bar is page coloured with the
+hairline (`CanvasText` in forced colors). Scope `--color-bar` on the element
+(`transparent`, `var(--color-bar-brand)`) and the layer follows. Tokens, each
+settable per mode:
+
+| Token | Default | Use |
+|---|---|---|
+| `--color-bar` (read by `material-bar`) | `var(--color-surface-chrome)` | A bar's fill at rest |
+| `--color-bar-border` (`border-bar`) | headline at 10% | The hairline once content is under the bar; decorative |
+| `--color-bar-brand` (`bg-bar-brand`) | `var(--color-action-primary)` | An on-brand AppBar; `--color-on-brand` is held at 4.5:1 on it |
+| `--color-tabbar-active` (`bg-tabbar-active`) | `var(--color-nav-menu-active)` | The active tab's pill; `--color-nav-menu-item-active` is held at 4.5:1 on it |
+
+`--color-bar` and headline are held at 4.5:1 as well. To get the raised bar fill
+back: `--color-surface-chrome: var(--color-surface-raised)`.
 
 ### Gradients
 

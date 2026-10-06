@@ -345,6 +345,10 @@ export function buildPairs() {
         { name: 'toggle track edge on card', bg: '--color-surface-raised', fg: '--color-toggle-track-border', min: AA_LARGE },
         // WCAG 1.4.11: the fill of Progress must be seen against its track.
         { name: 'progress fill on track', bg: '--color-progress-track', fg: '--color-progress-fill', min: AA_LARGE },
+        // Bars (D124, D126, D129): the tokens a component may not paint with a raw value.
+        { name: 'active tab label on the tab pill', bg: '--color-tabbar-active', fg: '--color-nav-menu-item-active', min: AA_NORMAL },
+        { name: 'on-brand text on an on-brand bar', bg: '--color-bar-brand', fg: '--color-on-brand', min: AA_NORMAL },
+        { name: 'headline on a bar at rest', bg: '--color-bar', fg: '--color-headline', min: AA_NORMAL },
     );
 
     for (const material of MATERIALS) {

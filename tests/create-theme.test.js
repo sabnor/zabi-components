@@ -177,13 +177,15 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   const result = createTheme({ brand: '#0026EA', overrides: { '--color-link': 'var(--zabi-brand-400)' } });
   const warnings = contrastWarnings(result);
   // The link colour is also the icon of a toggled-on ghost IconButton, held
-  // down, the label of a selected pill Tab, and the text of a subtle brand Badge.
+  // down, the label of a selected pill Tab, the text of a subtle brand Badge and
+  // the active label of a BottomTabBar (--color-nav-menu-item-active).
   assert.deepEqual(warnings.map((w) => `${w.mode} ${w.pair}`), [
     'light badge subtle · brand',
     'light link on page',
     'light link on card',
     'light icon on a held toggled-on fill',
     'light label on a selected pill tab',
+    'light active tab label on the tab pill',
   ]);
   const onPage = warnings.find((w) => w.pair === 'link on page');
   assert.equal(onPage.required, 4.5);
@@ -192,7 +194,7 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#fafafa' });
   assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #fafafa is [\d.]+:1, needs 4\.5:1/);
   // The failure is in the file too, so it is not lost when stderr is.
-  assert.match(result.css, /Contrast: 5 of \d+ role pairs are below WCAG AA:/);
+  assert.match(result.css, /Contrast: 6 of \d+ role pairs are below WCAG AA:/);
 
   // 3:1 pairs are checked as well: a focus ring too pale for the page.
   const ring = createTheme({ brand: '#0026EA', overrides: { '--color-focus': 'var(--zabi-brand-300)' } });
@@ -325,7 +327,7 @@ test('the bin warns on stderr, and --strict turns a failed pair into exit 1', ()
   const lenient = run(...args);
   assert.equal(lenient.status, 0);
   assert.match(lenient.stderr, /warning: light · link on page: .* needs 4\.5:1/);
-  assert.match(lenient.stderr, /5 role pairs below WCAG AA\./);
+  assert.match(lenient.stderr, /6 role pairs below WCAG AA\./);
   assert.match(lenient.stdout, /--color-link: var\(--zabi-brand-400\);/);
 
   const strict = run(...args, '--strict');
@@ -751,20 +753,20 @@ test('without light or dark overrides the bytes are what they were before the op
   // Hashes of the css from the generator before per-mode overrides. The header
   // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193 to 195, then the segment thumb pairs; the flat hash moved when the pressed field became a mix of the field:
   // the field edge on the field fill, the page and the card, then the progress fill on its track, each in both modes).
-  // They moved again for 9a: the generator now resolves the control veil pairs (the strengths are in its data) and the tonal, outline and toggle pairs were added, so the header counts 260; and the pinned amber's veil is flipped to lighten-only (its label is dark).
+  // They moved again for 9a: the generator now resolves the control veil pairs (the strengths are in its data) and the tonal, outline and toggle pairs were added, so the header counts 260; the bar pairs (active tab pill, on-brand bar, headline on a bar) moved the header and the bytes again, and so did the chrome token and the bar tokens; and the pinned amber's veil is flipped to lighten-only (its label is dark).
   const before = {
-    plain: [{ brand: '#0026EA' }, 'cfb6b828927ea0254a88733806d2446cba829033e7c1320d3991fa759d94eae9'],
+    plain: [{ brand: '#0026EA' }, '9882543b47419758d4390af0baf023892dd914aba1cce6c0e695d5d24446c765'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      '9b0d3eae0fcf2f2ef9f49a1119704274871c72a7baeb2b2ea12212eafd84969b',
+      'c67c0f32ac7ecbd7882f3d522a6b4bc62c8e6f2ee708a902824032e9da02ed07',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      '678503dd5353580d6d54fcc8fa4635476cf6160a395dc696e73aeb94a7731332',
+      'c4c7bfa9e52dc068aed3741fa17652e04883d4eaea2a7d867f58840146138500',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      'fff9463c8a797220df6a2729bb82b8dc126f6238cee7c22b71e5b65b6d213eee',
+      '31ab3edfe3411a30f825447ed9818514de4856fa2702cffd82e3eb94da0f22a3',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -807,8 +809,9 @@ test('a dark override is written only under the dark selectors', () => {
 
 test('the page and the chrome surface are settable per mode, with dark restated', () => {
   assert.equal(defaults.light['--color-surface-base'], 'var(--color-base-50)');
-  assert.equal(defaults.light['--color-surface-chrome'], 'var(--color-surface-raised)');
-  assert.equal(defaults.darkOnly['--color-surface-chrome'], 'var(--color-surface-raised)');
+  // D108: the bar fill is the page colour in both modes.
+  assert.equal(defaults.light['--color-surface-chrome'], 'var(--color-surface-base)');
+  assert.equal(defaults.darkOnly['--color-surface-chrome'], 'var(--color-surface-base)');
   const lightPage = { '--color-surface-base': 'var(--zabi-base-150)' };
   const result = createTheme({ brand: '#0026EA', overrides: { light: lightPage } });
   const root = result.css.slice(0, result.css.indexOf('.dark,'));
@@ -823,6 +826,28 @@ test('the page and the chrome surface are settable per mode, with dark restated'
   assert.equal(declarationOf(chrome.css.slice(0, chrome.css.indexOf('.dark,')), '--color-surface-chrome'), '#f8faff');
   assert.equal(declarationOf(darkRule(chrome.css), '--color-surface-chrome'), '#101820');
   assert.equal(declarationOf(mediaRule(chrome.css), '--color-surface-chrome'), '#101820');
+});
+
+test('the bar tokens (D124) default from existing tokens, are restated in dark, and are settable per mode', () => {
+  const defaultsOf = { '--color-bar': 'var(--color-surface-chrome)', '--color-bar-brand': 'var(--color-action-primary)', '--color-tabbar-active': 'var(--color-nav-menu-active)' };
+  for (const [name, value] of Object.entries(defaultsOf)) {
+    assert.equal(defaults.light[name], value, name);
+    assert.equal(defaults.darkOnly[name], value, `${name} in dark`);
+  }
+  assert.match(defaults.light['--color-bar-border'], /var\(--color-headline\) 10%/);
+  assert.equal(defaults.darkOnly['--color-bar-border'], defaults.light['--color-bar-border']);
+  const result = createTheme({
+    brand: '#0026EA',
+    overrides: { '--color-bar-brand': '#0026EA', light: { '--color-bar': '#f8faff', '--color-bar-border': '#cbd5e1' }, dark: { '--color-bar': '#101820', '--color-tabbar-active': '#1b2a3a' } },
+  });
+  const root = result.css.slice(0, result.css.indexOf('.dark,'));
+  assert.equal(declarationOf(root, '--color-bar'), '#f8faff');
+  assert.equal(declarationOf(darkRule(result.css), '--color-bar'), '#101820');
+  assert.equal(declarationOf(darkRule(result.css), '--color-tabbar-active'), '#1b2a3a');
+  assert.equal(declarationOf(darkRule(result.css), '--color-bar-border'), defaults.darkOnly['--color-bar-border']);
+  assert.equal(declarationOf(root, '--color-bar-brand'), '#0026EA');
+  // A flat override reaches both modes through the cascade: dark does not restate it.
+  assert.equal(declarationOf(darkRule(result.css), '--color-bar-brand'), undefined);
 });
 
 test('both, flat keys and a mode: the specific mode wins in its mode', () => {
@@ -953,12 +978,14 @@ test('the library meets its own material floors, and a material one step below f
     return spawnSync(process.execPath, [path.join(projectRoot, 'scripts', 'check-contrast.js'), file], { encoding: 'utf8' });
   };
   assert.equal(guard(css).status, 0, 'the shipped alphas must pass');
-  // The floors: light 80% (focus ring over the worst backdrop), dark 76%. One step (2%) below fails.
-  assert.ok(css.includes('--material-alpha-regular: 80%;') && css.includes('--material-alpha-regular: 76%;'));
-  const light = guard(css.replace('--material-alpha-regular: 80%;', '--material-alpha-regular: 78%;'));
+  // The floors against the page-colour chrome: light 82% (focus ring over the
+  // worst backdrop), dark 72%; shipped with a step or two of margin. One step
+  // (2%) below the floor fails.
+  assert.ok(css.includes('--material-alpha-regular: 84%;') && css.includes('--material-alpha-regular: 76%;'));
+  const light = guard(css.replace('--material-alpha-regular: 84%;', '--material-alpha-regular: 80%;'));
   assert.equal(light.status, 1);
   assert.match(light.stderr, /light · material regular · .* over the worst backdrop/);
-  const dark = guard(css.replace('--material-alpha-regular: 76%;', '--material-alpha-regular: 74%;'));
+  const dark = guard(css.replace('--material-alpha-regular: 76%;', '--material-alpha-regular: 70%;'));
   assert.equal(dark.status, 1);
   assert.match(dark.stderr, /dark · material regular · .* over the worst backdrop/);
   // Thick carries the caption: it fails first on that, in dark, one step below 98%.

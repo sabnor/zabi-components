@@ -12,6 +12,16 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- **Bar tokens** (Z-045; D124): `--color-bar` (a bar's fill at rest, default `var(--color-surface-chrome)`), `--color-bar-border` (the hairline a bar shows once content is under it: the headline colour at 10%), `--color-bar-brand` (the fill of an on-brand AppBar, default `var(--color-action-primary)`) and `--color-tabbar-active` (the active tab's pill, default `var(--color-nav-menu-active)`; Z-046). All four are restated in dark and settable through `createTheme` `overrides` per mode. Classes `bg-tabbar-active`, `bg-bar-brand`, `border-bar`. Guarded pairs: the active tab label on its pill, on-brand text on the brand bar, the headline on a bar at rest.
+- **`.material-bar`**: the surface of a bar. A `::before` layer paints `--color-bar` at rest and, when the element has `data-scrolled-under="true"`, the regular material with a 1px `--color-bar-border` hairline on the content side (`data-bar-edge="bottom"` puts it on the top edge). The element itself has no `backdrop-filter`, so a Dropdown or Tooltip in a bar is still placed against the screen. Under the opaque fallbacks a scrolled bar is the page colour with the hairline.
+- **`.material-layer-regular`**: the layer form of the regular material, as `.material-layer-thick` is for the thick one, for a floating bar that holds controls.
+
+### Changed (visible in 9.0)
+
+- **`--color-surface-chrome` is the page colour** (`var(--color-surface-base)`) in both modes, not the raised surface (D108), so bars and sidebars that read it are flush with the page. The regular material is mixed from it and was re-solved: light 84% (was 80%), dark 76% (unchanged); thin stays 58% / 66%. Restore 8.1: `--color-surface-chrome: var(--color-surface-raised)` (per mode in `overrides`).
+
 ## [9.0.0-alpha.2] - 2026-10-06
 
 A second local preview build of the 9.0 visual direction, not published to npm;

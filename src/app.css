@@ -311,9 +311,18 @@
   --color-surface-overlay: #ffffff;
   /* Chrome — the surface of bars and sidebars (AppBar, TopNavbar, BottomTabBar,
    * the sidebars). One token so a theme can retint all of them at once. Equal to
-   * the raised surface in both themes today; the shell components adopt it
-   * in a later release. */
-  --color-surface-chrome: var(--color-surface-raised);
+   * the page colour in both themes (D108): a bar is flush with the page at
+   * rest and takes the material over it once content scrolls under it. Point it
+   * at --color-surface-raised for a raised bar fill. */
+  --color-surface-chrome: var(--color-surface-base);
+  /* Bars (D124), read by .material-bar. The fill at rest, the hairline shown
+   * once content is under the bar (decorative, not a guarded edge: the same
+   * idea as the material rim), the fill of an on-brand AppBar, and the active
+   * tab's pill in the BottomTabBar. */
+  --color-bar: var(--color-surface-chrome);
+  --color-bar-border: color-mix(in srgb, var(--color-headline) 10%, transparent);
+  --color-bar-brand: var(--color-action-primary);
+  --color-tabbar-active: var(--color-nav-menu-active);
   /* Inset — a recessed area ON a raised surface (a well, a code sample, a stat
    * strip inside a card). It is the ramp step between the page and the raised
    * surface in both themes, so it always reads as cut into the card, never as
@@ -748,7 +757,9 @@
    * over the worst backdrop of the mode, not alone: the alpha floors are
    * enforced by scripts/check-contrast.js (see scripts/contrast-pairs.js,
    * MATERIALS) and by createTheme for an app's own theme. Each alpha is the
-   * smallest whole 2% that passes every pair its level carries:
+   * smallest whole 2% that passes every pair its level carries, plus a little
+   * margin (floors against the page-colour chrome: thin 50 / 62, regular 82 / 72,
+   * light / dark):
    *   thin    headline                 (a control on a bar: an icon, a short label;
    *                                    its focus ring is drawn outside it)
    *   regular + body, label, focus ring (bars, the tab bar, a floating sidebar)
@@ -757,7 +768,7 @@
    * The fallbacks (reduced transparency, more contrast, forced colors, no
    * backdrop-filter, data-materials="opaque") are below the .dark rule. */
   --material-alpha-thin: 58%;
-  --material-alpha-regular: 80%;
+  --material-alpha-regular: 84%;
   --material-alpha-thick: 86%;
   --color-material-thin: color-mix(in srgb, var(--color-surface-chrome) var(--material-alpha-thin), transparent);
   --color-material-regular: color-mix(in srgb, var(--color-surface-chrome) var(--material-alpha-regular), transparent);
@@ -1095,8 +1106,13 @@ body {
   /* Inset — the step between the page and the raised surface (L 24). The input
    * field is the library's own inset; see --color-input below. */
   --color-surface-inset: var(--color-base-150);
-  /* Chrome — restated so a light-only override of the raised surface does not reach dark. */
-  --color-surface-chrome: var(--color-surface-raised);
+  /* Chrome and the bar tokens — restated so a light-only override of the page
+   * or the raised surface does not reach dark. */
+  --color-surface-chrome: var(--color-surface-base);
+  --color-bar: var(--color-surface-chrome);
+  --color-bar-border: color-mix(in srgb, var(--color-headline) 10%, transparent);
+  --color-bar-brand: var(--color-action-primary);
+  --color-tabbar-active: var(--color-nav-menu-active);
 
   /* Distinct from base, raised AND elevated — a neutral chip has no hue to
    * separate it, so it has to separate on lightness wherever it lands. */
@@ -1501,6 +1517,100 @@ body {
   .material-layer-thick {
     outline: 1px solid CanvasText;
     outline-offset: -1px;
+  }
+}
+
+/* The same layer form for the regular material: a floating bar (the floating
+ * tab bar, UnsavedChangesBar) that holds popovers or focusable controls. Same
+ * rules as above, reading --color-material-regular and --material-filter-regular. */
+.material-layer-regular {
+  isolation: isolate;
+  background-color: transparent;
+  --tw-shadow: var(--shadow-material);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+}
+
+.material-layer-regular::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background-color: var(--color-material-regular);
+  -webkit-backdrop-filter: var(--material-filter-regular);
+  backdrop-filter: var(--material-filter-regular);
+  box-shadow:
+    inset 0 1px 0 var(--color-material-highlight),
+    inset 0 0 0 1px var(--color-material-rim);
+}
+
+@media (forced-colors: active) {
+  .material-layer-regular {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+}
+
+/* The surface of a bar (AppBar, BottomTabBar, StickyActionBar, TopNavbar), D124.
+ * Flush with the page at rest; the regular material and a hairline on the side
+ * the content comes from once content has scrolled under it. The component
+ * writes data-scrolled-under="true|false" (no attribute is the same as false)
+ * and, for a bar at the bottom of the screen, data-bar-edge="bottom"; the
+ * hairline is on the bottom edge otherwise.
+ *
+ * Like the layer form above, the glass is on a `::before`, never on the
+ * element: a bar holds Dropdowns and Tooltips, and `backdrop-filter` on it
+ * would become their containing block. The element is positioned by the
+ * component (sticky, fixed or relative: a class here would beat Tailwind's
+ * utilities) and is never a scroller. The hairline is a border on the layer
+ * (border-box, so the bar's own box does not change, and a border survives
+ * forced colors where a box-shadow would not). The fill reads --color-bar, so a
+ * component scopes it on the element (`transparent`, or `var(--color-bar-brand)`)
+ * and the layer follows. Scrolled, the fill is --color-material-regular, so
+ * every fallback above applies unchanged: page coloured, no blur, hairline kept.
+ * The fill and the line change over the moderate duration, which the
+ * reduced-motion block zeroes. */
+.material-bar {
+  isolation: isolate;
+  background-color: transparent;
+}
+
+.material-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  box-sizing: border-box;
+  pointer-events: none;
+  background-color: var(--color-bar);
+  border: 0 solid transparent;
+  border-bottom-width: 1px;
+  transition-property: background-color, border-color;
+  transition-duration: var(--duration-moderate);
+  transition-timing-function: var(--ease-standard);
+}
+
+.material-bar[data-bar-edge="bottom"]::before {
+  border-bottom-width: 0;
+  border-top-width: 1px;
+}
+
+.material-bar[data-scrolled-under="true"]::before {
+  background-color: var(--color-material-regular);
+  -webkit-backdrop-filter: var(--material-filter-regular);
+  backdrop-filter: var(--material-filter-regular);
+  border-color: var(--color-bar-border);
+}
+
+@media (forced-colors: active) {
+  .material-bar[data-scrolled-under="true"]::before {
+    border-color: CanvasText;
   }
 }
 
@@ -2032,6 +2142,18 @@ body {
 
 .bg-nav-menu-item-active {
   background-color: var(--color-nav-menu-item-active);
+}
+
+.bg-tabbar-active {
+  background-color: var(--color-tabbar-active);
+}
+
+.bg-bar-brand {
+  background-color: var(--color-bar-brand);
+}
+
+.border-bar {
+  border-color: var(--color-bar-border);
 }
 
 .text-success {

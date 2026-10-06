@@ -111,6 +111,7 @@ already the right value in each mode. Use the same roles in your own CSS.
 
 - `--color-surface-base` / `-raised` / `-elevated` / `-overlay` - Surface levels: page, cards, nested cards, floating panels
 - `--color-material-thin`, `-regular`, `-thick` (`material-thin|regular|thick` classes) - Frosted fills for what floats over content; see THEMING.md, Materials. `data-materials="opaque"` on the root or an ancestor turns them into opaque surfaces
+- `--color-surface-chrome` - The fill of bars and sidebars; the page colour (flush). `--color-bar`, `--color-bar-border`, `--color-bar-brand`, `--color-tabbar-active` (`bg-bar-brand`, `bg-tabbar-active`, `border-bar` classes) - A bar's fill at rest, the hairline shown once content scrolls under it, the on-brand AppBar fill, the active tab pill. `material-bar` (with `data-scrolled-under`) paints a bar; `material-layer-regular` / `material-layer-thick` put a material on a layer. See THEMING.md, Materials
 - `--color-surface-inset` - A recessed area on a card (a well); see THEMING.md, Surface elevation levels
 - `--color-headline`, `--color-body`, `--color-description`, `--color-caption` - Text
 - `--color-border` - Borders and dividers
