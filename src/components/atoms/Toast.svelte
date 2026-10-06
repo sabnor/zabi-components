@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { DEFAULT_TOAST_TEXTS, zabiStringsFor } from "../util/zabi-strings.js";
     import { cn } from "../util/cn.js";
     import { TOUCH_HIT_AREA } from "../util/touch-target.js";
 
@@ -18,12 +19,16 @@
         message = '',
         type = 'info',
         closable = true,
-        closeLabel = 'Close notification',
+        closeLabel: closeLabelGiven,
         onclick,
         class: className = '',
         layout = 'viewport',
         ...restProps
     }: Props = $props();
+
+    /** Each text: the prop, else the app-wide word from a `ZabiStringsProvider` above this one, else English. */
+    const provided = zabiStringsFor("toast");
+    const closeLabel = $derived(closeLabelGiven ?? provided()?.closeLabel ?? DEFAULT_TOAST_TEXTS.closeLabel);
 
     let isVisible = $state(true);
 

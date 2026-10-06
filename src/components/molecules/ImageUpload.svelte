@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { DEFAULT_IMAGE_UPLOAD_TEXTS, zabiStringsFor } from "../util/zabi-strings.js";
     import { onDestroy, tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Button from "../atoms/Button.svelte";
@@ -85,21 +86,21 @@
         value = $bindable<Exclude<Props["value"], undefined>>(),
         disabled = false,
         accept = "image/*",
-        placeholder = "No image selected",
-        browseText = "Click to choose a file",
-        changeText = "Change",
-        removeText = "Remove",
+        placeholder: placeholderGiven,
+        browseText: browseTextGiven,
+        changeText: changeTextGiven,
+        removeText: removeTextGiven,
         changeLabel,
         removeLabel,
         alt = "",
         previewType,
         preview,
         actionsPlacement,
-        selectedText = "Image selected",
-        removedText = "Image removed",
+        selectedText: selectedTextGiven,
+        removedText: removedTextGiven,
         errorMessage = "",
-        errorTitle = "Image upload failed",
-        errorRecovery = "Recovery action: try another file or retry upload.",
+        errorTitle: errorTitleGiven,
+        errorRecovery: errorRecoveryGiven,
         onchange,
         onclick,
         onbrowse,
@@ -108,6 +109,17 @@
         children: _children,
         ...restProps
     }: Props = $props();
+
+    /** Each text: the prop, else the app-wide word from a `ZabiStringsProvider` above this one, else English. */
+    const provided = zabiStringsFor("imageUpload");
+    const placeholder = $derived(placeholderGiven ?? provided()?.placeholder ?? DEFAULT_IMAGE_UPLOAD_TEXTS.placeholder);
+    const browseText = $derived(browseTextGiven ?? provided()?.browseText ?? DEFAULT_IMAGE_UPLOAD_TEXTS.browseText);
+    const changeText = $derived(changeTextGiven ?? provided()?.changeText ?? DEFAULT_IMAGE_UPLOAD_TEXTS.changeText);
+    const removeText = $derived(removeTextGiven ?? provided()?.removeText ?? DEFAULT_IMAGE_UPLOAD_TEXTS.removeText);
+    const selectedText = $derived(selectedTextGiven ?? provided()?.selectedText ?? DEFAULT_IMAGE_UPLOAD_TEXTS.selectedText);
+    const removedText = $derived(removedTextGiven ?? provided()?.removedText ?? DEFAULT_IMAGE_UPLOAD_TEXTS.removedText);
+    const errorTitle = $derived(errorTitleGiven ?? provided()?.errorTitle ?? DEFAULT_IMAGE_UPLOAD_TEXTS.errorTitle);
+    const errorRecovery = $derived(errorRecoveryGiven ?? provided()?.errorRecovery ?? DEFAULT_IMAGE_UPLOAD_TEXTS.errorRecovery);
 
     // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
     // one that has a fallback (`props_invalid_value`), and a page that throws

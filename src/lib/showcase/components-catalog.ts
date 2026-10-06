@@ -2186,7 +2186,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "{}",
                         description:
-                            "One optional entry per component that has a strings object (select, stepper, calendar, toaster and so on, with that component's keys), and common for the words many single-text props default to: close, back, expand, collapse, required, showPassword, search, confirm, cancel. A component says its built-in English, then the provider's entry or common word, then its own strings, then its own single-text props; the later wins. A provider inside another replaces only the words it gives. Outside a provider nothing changes.",
+                            "One optional entry per component that has a strings object (alert, avatarGroup, calendar, codeBlock, colorPicker, componentDemo, contactForm, imageUpload, mediaGrid, photoGrid, photoViewer, propsTable, pullToRefresh, rating, select, sidebarAccountPanel, sidebarBrandHeader, sidebarFooter, sidebarNavigation, sortableList, stepper, swipeableListItem, themeToggle, toast, toaster, topNavbar, unsavedChangesBar; each with that component's own keys), and common for the words many single-text props default to: close, back, expand, collapse, required, showPassword, search, confirm, cancel. A component says its built-in English, then the provider's entry or common word, then its own strings, then its own single-text props; the later wins. A provider inside another replaces only the words it gives. Outside a provider nothing changes.",
                     },
                     {
                         name: "children",
@@ -6957,6 +6957,14 @@ pushToast({
                         required: false,
                         description:
                             "Overrides for the built-in strings: more(count, names), the accessible name of the +N.",
+                    },
+                    {
+                        name: "locale",
+                        type: "string",
+                        required: false,
+                        defaultValue: "—",
+                        description:
+                            "The language the initials are worked out in; passed to each Avatar. Without it, the page's.",
                     },
                 ],
                 variants: ["sm", "md", "lg"],

@@ -37,6 +37,13 @@ Whenever token or CSS import API surface changes, include:
 
 ### Changed
 
+- **`ZabiStringsProvider` covers every text but landmark names.** New
+  entries: `avatarGroup`, `swipeableListItem`, `pullToRefresh`, and for the
+  components whose texts are single props, keyed by prop name: `toast`,
+  `alert`, `codeBlock`, `imageUpload`, `unsavedChangesBar`. For those the
+  order is the prop, then the provider, then English. `AvatarGroup` takes
+  `locale` and passes it to its avatars.
+
 ### Fixed
 
 - A toast's countdown says "1 second", not "1 seconds".

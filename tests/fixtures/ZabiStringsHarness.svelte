@@ -7,6 +7,13 @@
     import Drawer from "../../src/components/molecules/Drawer.svelte";
     import FormField from "../../src/components/molecules/FormField.svelte";
     import Modal from "../../src/components/molecules/Modal.svelte";
+    import CodeBlock from "../../src/components/atoms/CodeBlock.svelte";
+    import Toast from "../../src/components/atoms/Toast.svelte";
+    import Alert from "../../src/components/molecules/Alert.svelte";
+    import AvatarGroup from "../../src/components/molecules/AvatarGroup.svelte";
+    import ImageUpload from "../../src/components/molecules/ImageUpload.svelte";
+    import UnsavedChangesBar from "../../src/components/molecules/UnsavedChangesBar.svelte";
+    import SwipePullHarness from "./SwipePullHarness.svelte";
     import SlideUp from "../../src/components/molecules/SlideUp.svelte";
     import Toaster from "../../src/components/molecules/Toaster.svelte";
     import { pushToast } from "../../src/components/molecules/toast-store.js";
@@ -92,6 +99,26 @@
     {:else if kind === "Toaster"}
         <!-- Mounted under the provider, as an app mounts it once at its root. -->
         <Toaster />
+    {:else if kind === "AvatarGroup"}
+        <AvatarGroup
+            label="Sällskap"
+            max={2}
+            people={["Anna", "Bo", "Cia", "Dan", "Eva"].map((name) => ({ name }))}
+        />
+    {:else if kind === "SwipeableListItem"}
+        <SwipePullHarness kind="swipe" />
+    {:else if kind === "PullToRefresh"}
+        <SwipePullHarness kind="pull" />
+    {:else if kind === "Toast"}
+        <Toast message="Sparat" layout="inline" />
+    {:else if kind === "Alert"}
+        <Alert variant="info" title="Obs" message="Läs detta" closable />
+    {:else if kind === "CodeBlock"}
+        <CodeBlock code="let a = 1;" />
+    {:else if kind === "ImageUpload"}
+        <ImageUpload label="Bild" />
+    {:else if kind === "UnsavedChangesBar"}
+        <UnsavedChangesBar dirty onsave={() => {}} ondiscard={() => {}} />
     {:else if kind === "Rating"}
         <RatingHarness initial={3} clearable />
     {:else if kind === "Portals"}

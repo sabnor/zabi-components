@@ -23,9 +23,11 @@
  */
 import { getContext, setContext } from "svelte";
 
+import type { AvatarGroupStrings } from "./avatar.js";
 import type { CalendarStrings } from "./calendar.js";
 import type { MediaGridStrings } from "./media-grid.js";
 import type { PhotoGridStrings, PhotoViewerStrings } from "./photo.js";
+import type { PullToRefreshStrings } from "./pull-to-refresh.js";
 import type { RatingStrings } from "./rating.js";
 import type {
     ColorPickerStrings,
@@ -42,6 +44,7 @@ import type {
 } from "./sidebar.js";
 import type { SortableListStrings } from "./sortable-list.js";
 import type { StepperStrings } from "./stepper.js";
+import type { SwipeableListItemStrings } from "./swipeable-list-item.js";
 import type { ThemeToggleLabels } from "./theme-mode.js";
 import type { ToasterStrings } from "./toaster.js";
 import type { TopNavbarStrings } from "./top-navbar.js";
@@ -83,17 +86,85 @@ export const DEFAULT_ZABI_COMMON_STRINGS: ZabiCommonStrings = {
     cancel: "Cancel",
 };
 
+/*
+ * Components whose own words are single-text props, each with a sentence of
+ * its own for a default. The provider's entry for one has the props' names.
+ */
+
+/** Toast's own text: `closeLabel`. */
+export interface ToastTexts {
+    closeLabel: string;
+}
+export const DEFAULT_TOAST_TEXTS: ToastTexts = { closeLabel: "Close notification" };
+
+/** Alert's own text: `closeLabel`. */
+export interface AlertTexts {
+    closeLabel: string;
+}
+export const DEFAULT_ALERT_TEXTS: AlertTexts = { closeLabel: "Dismiss alert" };
+
+/** CodeBlock's own texts: the copy button's name, and what is announced once copied. */
+export interface CodeBlockTexts {
+    copyLabel: string;
+    copiedLabel: string;
+}
+export const DEFAULT_CODE_BLOCK_TEXTS: CodeBlockTexts = {
+    copyLabel: "Copy code to clipboard",
+    copiedLabel: "Code copied to clipboard",
+};
+
+/** ImageUpload's own texts, by the name of the prop each one is. */
+export interface ImageUploadTexts {
+    placeholder: string;
+    browseText: string;
+    changeText: string;
+    removeText: string;
+    selectedText: string;
+    removedText: string;
+    errorTitle: string;
+    errorRecovery: string;
+}
+export const DEFAULT_IMAGE_UPLOAD_TEXTS: ImageUploadTexts = {
+    placeholder: "No image selected",
+    browseText: "Click to choose a file",
+    changeText: "Change",
+    removeText: "Remove",
+    selectedText: "Image selected",
+    removedText: "Image removed",
+    errorTitle: "Image upload failed",
+    errorRecovery: "Recovery action: try another file or retry upload.",
+};
+
+/** UnsavedChangesBar's own texts, by the name of the prop each one is. */
+export interface UnsavedChangesBarTexts {
+    message: string;
+    label: string;
+    saveLabel: string;
+    discardLabel: string;
+}
+export const DEFAULT_UNSAVED_CHANGES_BAR_TEXTS: UnsavedChangesBarTexts = {
+    message: "You have unsaved changes",
+    label: "Unsaved changes",
+    saveLabel: "Save",
+    discardLabel: "Discard",
+};
+
 /** One optional entry per component that has words of its own, and `common`. */
 export interface ZabiStrings {
     common?: Partial<ZabiCommonStrings>;
+    alert?: Partial<AlertTexts>;
+    avatarGroup?: Partial<AvatarGroupStrings>;
     calendar?: Partial<CalendarStrings>;
+    codeBlock?: Partial<CodeBlockTexts>;
     colorPicker?: Partial<ColorPickerStrings>;
     componentDemo?: Partial<ComponentDemoStrings>;
     contactForm?: Partial<ContactFormStrings>;
+    imageUpload?: Partial<ImageUploadTexts>;
     mediaGrid?: Partial<MediaGridStrings>;
     photoGrid?: Partial<PhotoGridStrings>;
     photoViewer?: Partial<PhotoViewerStrings>;
     propsTable?: Partial<PropsTableStrings>;
+    pullToRefresh?: Partial<PullToRefreshStrings>;
     rating?: Partial<RatingStrings>;
     select?: Partial<SelectStrings>;
     sidebarAccountPanel?: Partial<SidebarAccountPanelStrings>;
@@ -102,9 +173,12 @@ export interface ZabiStrings {
     sidebarNavigation?: Partial<SidebarNavigationStrings>;
     sortableList?: Partial<SortableListStrings>;
     stepper?: Partial<StepperStrings>;
+    swipeableListItem?: Partial<SwipeableListItemStrings>;
     themeToggle?: Partial<ThemeToggleLabels>;
+    toast?: Partial<ToastTexts>;
     toaster?: Partial<ToasterStrings>;
     topNavbar?: Partial<TopNavbarStrings>;
+    unsavedChangesBar?: Partial<UnsavedChangesBarTexts>;
 }
 
 /** What the context holds: an object whose `current` is read when it is needed, so a change reaches every reader. */

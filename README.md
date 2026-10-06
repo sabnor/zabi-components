@@ -380,12 +380,16 @@ What a component says is decided in this order, the later winning:
 4. a single-text prop passed to it.
 
 So a provider changes nothing for a component that already has its texts set,
-and outside a provider everything is as it was. The entries are `calendar`,
-`colorPicker`, `componentDemo`, `contactForm`, `mediaGrid`, `photoGrid`,
-`photoViewer`, `propsTable`, `rating`, `select`, `sidebarAccountPanel`,
+and outside a provider everything is as it was. The entries are `alert`,
+`avatarGroup`, `calendar`, `codeBlock`, `colorPicker`, `componentDemo`,
+`contactForm`, `imageUpload`, `mediaGrid`, `photoGrid`, `photoViewer`,
+`propsTable`, `pullToRefresh`, `rating`, `select`, `sidebarAccountPanel`,
 `sidebarBrandHeader`, `sidebarFooter`, `sidebarNavigation`, `sortableList`,
-`stepper`, `themeToggle`, `toaster` and `topNavbar`; the type is `ZabiStrings`,
-and `ZabiCommonStrings` lists the common words. Leave out what the app does not
+`stepper`, `swipeableListItem`, `themeToggle`, `toast`, `toaster`, `topNavbar`
+and `unsavedChangesBar`; the type is `ZabiStrings`, and `ZabiCommonStrings`
+lists the common words. For Alert, CodeBlock, ImageUpload, Toast and
+UnsavedChangesBar the entry's keys are the names of their text props
+(`alert: { closeLabel }`, `codeBlock: { copyLabel, copiedLabel }`). Leave out what the app does not
 use: there is nothing to translate for a component it never renders.
 
 The provider is Svelte context. On a server it belongs to the request being
@@ -397,10 +401,10 @@ it while a component initialises and read `.current` where they are used.
 
 The library ships no translations. The object is the app's.
 
-Not every text is behind the provider yet. A single-text prop whose default is
-a sentence of its own (`ariaLabel="Sidebar navigation"`, CodeBlock's
-`copyLabel`, ImageUpload's texts, UnsavedChangesBar's, the `label` of a
-PhotoViewer or a Stepper) is still set on the component, as in the table below.
+What is not behind the provider is the names of landmarks and regions, which
+say what a part of the app is and so are the app's to give: `ariaLabel` and
+`label` props such as SidebarNavigation's "Sidebar navigation", a
+PhotoViewer's, a Stepper's or a BottomTabBar's. Set those on the component.
 
 ### On one component
 
@@ -425,6 +429,7 @@ A `strings` key and an older prop for the same text: the prop wins.
 | FormField | `requiredLabel` |
 | ImageUpload | `placeholder`, `browseText`, `changeText`, `removeText`, `selectedText`, `removedText`, `errorTitle` |
 | List | `ariaLabel` |
+| AvatarGroup, PullToRefresh, SwipeableListItem | `strings` (and `label` on AvatarGroup) |
 | MediaGrid, PhotoGrid, PhotoViewer, SortableList, Stepper, Rating | `strings` (and `label` on PhotoViewer and Stepper) |
 | NavigationMenu | `ariaLabel` |
 | PropsTable | `caption`, `strings` |

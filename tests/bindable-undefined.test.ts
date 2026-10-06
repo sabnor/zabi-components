@@ -24,11 +24,13 @@ import MediaGrid from "../src/components/molecules/MediaGrid.svelte";
 import Modal from "../src/components/molecules/Modal.svelte";
 import PhotoGrid from "../src/components/molecules/PhotoGrid.svelte";
 import PhotoViewer from "../src/components/molecules/PhotoViewer.svelte";
+import PullToRefresh from "../src/components/molecules/PullToRefresh.svelte";
 import RadioGroup from "../src/components/molecules/RadioGroup.svelte";
 import SegmentedControl from "../src/components/molecules/SegmentedControl.svelte";
 import SidebarFooter from "../src/components/molecules/SidebarFooter.svelte";
 import SlideUp from "../src/components/molecules/SlideUp.svelte";
 import Stepper from "../src/components/molecules/Stepper.svelte";
+import SwipeableListItem from "../src/components/molecules/SwipeableListItem.svelte";
 import Tabs from "../src/components/molecules/Tabs.svelte";
 import SidebarAccountPanel from "../src/components/organisms/SidebarAccountPanel.svelte";
 import SidebarNavigation from "../src/components/organisms/SidebarNavigation.svelte";
@@ -116,6 +118,8 @@ const cases: Case[] = [
     { name: "SidebarNavigation searchValue", component: SidebarNavigation, prop: "searchValue", becomes: "", props: { items: [] } },
     { name: "SidebarNavigation isLightMode", component: SidebarNavigation, prop: "isLightMode", becomes: false, props: { items: [] } },
     { name: "SidebarNavigation isOpen", component: SidebarNavigation, prop: "isOpen", becomes: false, props: { items: [] } },
+    { name: "PullToRefresh", component: PullToRefresh, prop: "refreshing", becomes: false, props: {} },
+    { name: "SwipeableListItem", component: SwipeableListItem, prop: "open", becomes: false, props: { actions: [{ id: "a", label: "Archive", onselect: () => {} }] } },
     { name: "SidebarPanel searchValue", component: SidebarPanel, prop: "searchValue", becomes: "", props: { items: [] } },
     { name: "SidebarPanel selectedItemId", component: SidebarPanel, prop: "selectedItemId", becomes: "", props: { items: [] } },
     { name: "SidebarShell", component: SidebarShell, prop: "isOpen", becomes: false },

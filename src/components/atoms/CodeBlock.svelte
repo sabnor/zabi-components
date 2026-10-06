@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { DEFAULT_CODE_BLOCK_TEXTS, zabiStringsFor } from "../util/zabi-strings.js";
     import Check from "@lucide/svelte/icons/check";
     import Copy from "@lucide/svelte/icons/copy";
     import IconButton from "./IconButton.svelte";
@@ -26,11 +27,16 @@
         class: classAttr = "",
         className: legacyClass = "",
         showCopyButton = true,
-        copyLabel = "Copy code to clipboard",
-        copiedLabel = "Code copied to clipboard",
+        copyLabel: copyLabelGiven,
+        copiedLabel: copiedLabelGiven,
         trustHtml = false,
         ...restProps
     }: Props & Record<string, unknown> = $props();
+
+    /** Each text: the prop, else the app-wide word from a `ZabiStringsProvider` above this one, else English. */
+    const provided = zabiStringsFor("codeBlock");
+    const copyLabel = $derived(copyLabelGiven ?? provided()?.copyLabel ?? DEFAULT_CODE_BLOCK_TEXTS.copyLabel);
+    const copiedLabel = $derived(copiedLabelGiven ?? provided()?.copiedLabel ?? DEFAULT_CODE_BLOCK_TEXTS.copiedLabel);
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */

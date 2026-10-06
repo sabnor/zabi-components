@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { DEFAULT_ALERT_TEXTS, zabiStringsFor } from "../util/zabi-strings.js";
     import Check from "@lucide/svelte/icons/check";
     import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
     import X from "@lucide/svelte/icons/x";
@@ -31,7 +32,7 @@
         title = "",
         message = "",
         closable = false,
-        closeLabel = "Dismiss alert",
+        closeLabel: closeLabelGiven,
         open = $bindable<Exclude<Props["open"], undefined>>(),
         inline = false,
         class: classProp = "",
@@ -40,6 +41,10 @@
         children,
         ...restProps
     }: Props & { children?: any } = $props();
+
+    /** Each text: the prop, else the app-wide word from a `ZabiStringsProvider` above this one, else English. */
+    const provided = zabiStringsFor("alert");
+    const closeLabel = $derived(closeLabelGiven ?? provided()?.closeLabel ?? DEFAULT_ALERT_TEXTS.closeLabel);
 
     // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
     // one that has a fallback (`props_invalid_value`), and a page that throws

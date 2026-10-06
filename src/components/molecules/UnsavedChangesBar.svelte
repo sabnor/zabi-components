@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { DEFAULT_UNSAVED_CHANGES_BAR_TEXTS, zabiStringsFor } from "../util/zabi-strings.js";
     import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Button from "../atoms/Button.svelte";
@@ -45,10 +46,10 @@
 
     let {
         dirty = false,
-        message = "You have unsaved changes",
-        label = "Unsaved changes",
-        saveLabel = "Save",
-        discardLabel = "Discard",
+        message: messageGiven,
+        label: labelGiven,
+        saveLabel: saveLabelGiven,
+        discardLabel: discardLabelGiven,
         saving = false,
         onsave,
         ondiscard,
@@ -58,6 +59,13 @@
         class: className = "",
         ...restProps
     }: Props = $props();
+
+    /** Each text: the prop, else the app-wide word from a `ZabiStringsProvider` above this one, else English. */
+    const provided = zabiStringsFor("unsavedChangesBar");
+    const message = $derived(messageGiven ?? provided()?.message ?? DEFAULT_UNSAVED_CHANGES_BAR_TEXTS.message);
+    const label = $derived(labelGiven ?? provided()?.label ?? DEFAULT_UNSAVED_CHANGES_BAR_TEXTS.label);
+    const saveLabel = $derived(saveLabelGiven ?? provided()?.saveLabel ?? DEFAULT_UNSAVED_CHANGES_BAR_TEXTS.saveLabel);
+    const discardLabel = $derived(discardLabelGiven ?? provided()?.discardLabel ?? DEFAULT_UNSAVED_CHANGES_BAR_TEXTS.discardLabel);
 
     /** True while a promise returned by `onsave` is pending. */
     let pending = $state(false);

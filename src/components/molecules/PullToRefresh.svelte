@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import ArrowDown from "@lucide/svelte/icons/arrow-down";
@@ -78,7 +79,9 @@
     applyDefaults();
     $effect.pre(applyDefaults);
 
-    const text = $derived({ ...DEFAULT_PULL_TO_REFRESH_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("pullToRefresh");
+    const text = $derived({ ...DEFAULT_PULL_TO_REFRESH_STRINGS, ...provided(), ...strings });
 
     let root = $state<HTMLDivElement>();
     /** How far the indicator is out under a finger, in px; null when no pull is going on. */

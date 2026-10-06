@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import type { HTMLAttributes } from "svelte/elements";
     import Avatar from "../atoms/Avatar.svelte";
     import {
@@ -40,6 +41,8 @@
         label?: string;
         /** Overrides for the built-in strings. */
         strings?: Partial<AvatarGroupStrings>;
+        /** The language the initials are worked out in; passed to each Avatar. Without it, the page's. */
+        locale?: string;
         /** Extra classes for the list. */
         class?: string;
     };
@@ -50,11 +53,14 @@
         size = "md",
         label,
         strings,
+        locale,
         class: className = "",
         ...restProps
     }: Props = $props();
 
-    const text = $derived({ ...DEFAULT_AVATAR_GROUP_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("avatarGroup");
+    const text = $derived({ ...DEFAULT_AVATAR_GROUP_STRINGS, ...provided(), ...strings });
     const split = $derived(splitGroup(people.length, max));
     const shown = $derived(people.slice(0, split.shown));
     const hiddenNames = $derived(people.slice(split.shown).map((person) => person.name));
@@ -86,7 +92,7 @@
 >
     {#each shown as person, index (index)}
         <li class={cn("flex", index > 0 && (OVERLAP[size] ?? OVERLAP.md))}>
-            <Avatar name={person.name} src={person.src} {size} class={ring} />
+            <Avatar name={person.name} src={person.src} {size} {locale} class={ring} />
         </li>
     {/each}
     {#if split.hidden > 0}

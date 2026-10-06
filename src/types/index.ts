@@ -852,6 +852,8 @@ export interface AvatarGroupProps extends Omit<HTMLAttributes<HTMLUListElement>,
     label?: string;
     /** Overrides for the built-in strings. */
     strings?: Partial<AvatarGroupStrings>;
+    /** The language the initials are worked out in; passed to each Avatar. */
+    locale?: string;
     class?: string;
 }
 

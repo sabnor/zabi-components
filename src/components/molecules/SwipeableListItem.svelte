@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Ellipsis from "@lucide/svelte/icons/ellipsis";
@@ -87,7 +88,9 @@
     applyDefaults();
     $effect.pre(applyDefaults);
 
-    const text = $derived({ ...DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("swipeableListItem");
+    const text = $derived({ ...DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS, ...provided(), ...strings });
     const groupId = generateId("swipeable-actions");
 
     let root = $state<HTMLDivElement>();

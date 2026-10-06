@@ -23,7 +23,18 @@ import { RATING_STRINGS } from "../src/components/util/rating";
 import { SORTABLE_LIST_STRINGS } from "../src/components/util/sortable-list";
 import { DEFAULT_TOASTER_STRINGS } from "../src/components/util/toaster";
 import { STEPPER_STRINGS } from "../src/components/util/stepper";
-import { DEFAULT_ZABI_COMMON_STRINGS, type ZabiStrings } from "../src/components/util/zabi-strings";
+import { DEFAULT_AVATAR_GROUP_STRINGS } from "../src/components/util/avatar";
+import { DEFAULT_PULL_TO_REFRESH_STRINGS } from "../src/components/util/pull-to-refresh";
+import { DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS } from "../src/components/util/swipeable-list-item";
+import {
+    DEFAULT_ALERT_TEXTS,
+    DEFAULT_CODE_BLOCK_TEXTS,
+    DEFAULT_IMAGE_UPLOAD_TEXTS,
+    DEFAULT_TOAST_TEXTS,
+    DEFAULT_UNSAVED_CHANGES_BAR_TEXTS,
+    DEFAULT_ZABI_COMMON_STRINGS,
+    type ZabiStrings,
+} from "../src/components/util/zabi-strings";
 import StringsHarness from "./fixtures/StringsHarness.svelte";
 import ZabiStringsHarness from "./fixtures/ZabiStringsHarness.svelte";
 
@@ -437,6 +448,14 @@ const THEME_TOGGLE_DEFAULTS: Words = {
 
 const ENTRY_DEFAULTS: Record<keyof ZabiStrings, Words> = {
     common: DEFAULT_ZABI_COMMON_STRINGS as unknown as Words,
+    alert: DEFAULT_ALERT_TEXTS as unknown as Words,
+    avatarGroup: DEFAULT_AVATAR_GROUP_STRINGS as unknown as Words,
+    codeBlock: DEFAULT_CODE_BLOCK_TEXTS as unknown as Words,
+    imageUpload: DEFAULT_IMAGE_UPLOAD_TEXTS as unknown as Words,
+    pullToRefresh: DEFAULT_PULL_TO_REFRESH_STRINGS as unknown as Words,
+    swipeableListItem: DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS as unknown as Words,
+    toast: DEFAULT_TOAST_TEXTS as unknown as Words,
+    unsavedChangesBar: DEFAULT_UNSAVED_CHANGES_BAR_TEXTS as unknown as Words,
     calendar: DEFAULT_CALENDAR_STRINGS as unknown as Words,
     colorPicker: DEFAULT_COLOR_PICKER_STRINGS as unknown as Words,
     componentDemo: DEFAULT_COMPONENT_DEMO_STRINGS as unknown as Words,
@@ -530,6 +549,14 @@ const PROVIDED: {
     // Mounted under the provider, with one toast on screen.
     { kind: "Toaster", entries: ["toaster"] },
     { kind: "Rating", entries: ["rating"] },
+    { kind: "AvatarGroup", entries: ["avatarGroup"] },
+    { kind: "SwipeableListItem", entries: ["swipeableListItem"] },
+    { kind: "PullToRefresh", entries: ["pullToRefresh"] },
+    { kind: "Toast", entries: ["toast"] },
+    { kind: "Alert", entries: ["alert"] },
+    { kind: "CodeBlock", entries: ["codeBlock"] },
+    { kind: "ImageUpload", entries: ["imageUpload"] },
+    { kind: "UnsavedChangesBar", entries: ["unsavedChangesBar"] },
     // Select's own entry names the sheet's buttons too, and wins over `common`: see the test for that below.
     { kind: "SelectSheet", entries: ["select"] },
 ];
