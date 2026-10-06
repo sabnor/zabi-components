@@ -99,8 +99,8 @@ export const BrandBar: Story = {
 };
 
 export const ColourBlockUnderStatusBar: Story = {
-    args: { placement: 'tabs' },
-    render: () => ({ Component: AppShellFlushStory }),
+    args: { frameWidth: 390, frameHeight: 780 },
+    render: (args) => ({ Component: AppShellFlushStory, props: { frameWidth: args.frameWidth, frameHeight: args.frameHeight } }),
     parameters: {
         docs: {
             description: {
