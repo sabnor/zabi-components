@@ -19,6 +19,7 @@ Whenever token or CSS import API surface changes, include:
 - **`.on-fill`** (Z-055): the on-colour scope for a fill the app chooses. Like `.on-brand`, with the label colour taken from `--zabi-on-fill` (fallback `currentColor`): text roles, links, edges and focus rings inside take it, and a surface inside (a Card, a field, a Chip) gets the theme's roles back. The library cannot check the contrast of a colour picked at run time.
 - **`--color-progress-track-border`** (`border-progress-track-border`; Z-049): the edge of the Progress track, by default the field edge as before. `createTheme` writes `transparent` for a mode in which an overridden `--color-progress-track` itself reaches 3:1 against the page and the card and the app did not set the edge; an edge the app sets itself is never moved.
 - **`--font-family-display`** (`font-display`; Z-058): a second typeface as a token; follows `--font-family-heading` until set. `cn` knows `font-heading` and `font-display` as font families.
+- **`Checkbox`, `Radio` and `Toggle` take a `leading` snippet** (Z-060; D145): drawn inside the one `<label>`, between the control and the label text (an avatar in an attendee list), so a press on it toggles the control. The accessible name stays the `label` string; give a leading image an empty alt. Without `leading` the markup is unchanged.
 
 ### Changed
 

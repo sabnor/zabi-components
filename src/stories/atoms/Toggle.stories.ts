@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Toggle from '../../components/atoms/Toggle.svelte';
+import SelectionLeadingStory from './SelectionLeadingStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Toggle',
@@ -91,6 +92,17 @@ export const InAForm: Story = {
         docs: {
             description: {
                 story: 'With a name, the toggle adds a hidden input and submits its value with a native form while it is on.'
+            }
+        }
+    }
+};
+
+export const WithLeading: StoryObj<typeof SelectionLeadingStory> = {
+    render: () => ({ Component: SelectionLeadingStory, props: { control: 'toggle' } }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'The leading snippet sits inside the one label, between the switch and the name, so pressing the avatar changes the control. Give the avatar an empty alt: the label already names the row.'
             }
         }
     }

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Checkbox from '../../components/atoms/Checkbox.svelte';
+import SelectionLeadingStory from './SelectionLeadingStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Checkbox',
@@ -85,6 +86,17 @@ export const WithoutLabel: Story = {
         docs: {
             description: {
                 story: 'In a table row or a list there is often no room for a visible label. Pass aria-label so the checkbox still has a name.'
+            }
+        }
+    }
+};
+
+export const WithLeading: StoryObj<typeof SelectionLeadingStory> = {
+    render: () => ({ Component: SelectionLeadingStory, props: { control: 'checkbox' } }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'The leading snippet sits inside the one label, between the checkbox and the name, so pressing the avatar changes the control. Give the avatar an empty alt: the label already names the row.'
             }
         }
     }

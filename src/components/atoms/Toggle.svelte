@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import type { HTMLButtonAttributes } from "svelte/elements";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
@@ -21,6 +22,12 @@
         loading?: boolean;
         label?: string;
         /**
+         * Drawn inside the one label, between the switch and the label text,
+         * as decoration for the name `label` already gives. A leading image
+         * should have an empty alt: the label names the row.
+         */
+        leading?: Snippet;
+        /**
          * The switch's accessible name when there is no visible `label`. With
          * neither this, `aria-labelledby` nor `label`, it is called "Toggle".
          */
@@ -40,6 +47,7 @@
         disabled = false,
         loading = false,
         label = "",
+        leading,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledby,
         onclick,
@@ -128,13 +136,20 @@
         <input type="hidden" {name} {value} />
     {/if}
 
-    {#if label}
+    {#if label || leading}
         <label
             for={toggleId}
-            class="text-sm font-medium text-label {isDisabled
+            class="text-sm font-medium text-label {leading
+                ? 'inline-flex items-center gap-3 '
+                : ''}{isDisabled
                 ? 'cursor-not-allowed opacity-50'
                 : 'cursor-pointer'}"
         >
+            {#if leading}
+                <span class="inline-flex shrink-0 items-center">
+                    {@render leading()}
+                </span>
+            {/if}
             {label}
         </label>
     {/if}

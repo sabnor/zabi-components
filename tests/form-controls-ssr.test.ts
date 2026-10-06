@@ -109,3 +109,12 @@ describe("buttons, links and rows on the server", () => {
         expect(markup).toMatch(/<div[^>]*data-testid="text-div"/);
     });
 });
+
+describe("leading snippet on the server", () => {
+    it.each(["checkbox", "radio", "toggle"])("%s renders the leading element once, inside the label", async (control) => {
+        const { default: Harness } = await import("./fixtures/SelectionLeadingHarness.svelte");
+        const markup = body(Harness, { control });
+        expect(markup.match(/data-testid="leading"/g)).toHaveLength(1);
+        expect(/<label[^>]*>(?:(?!<\/label>)[\s\S])*data-testid="leading"/.test(markup)).toBe(true);
+    });
+});

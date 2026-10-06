@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import type { HTMLInputAttributes } from "svelte/elements";
     import SelectionControl from "./SelectionControl.svelte";
     import type { SelectionControlMarkProps } from "./SelectionControl.svelte";
@@ -20,6 +21,12 @@
         checked?: boolean;
         onChange?: (event: Event) => void;
         onchange?: (event: Event) => void;
+        /**
+         * Drawn inside the one label, between the box and the label text, as
+         * decoration for the name `label` already gives. A leading image
+         * should have an empty alt: the label names the row.
+         */
+        leading?: Snippet;
     };
 
     let {
@@ -33,6 +40,7 @@
         checked = $bindable<Exclude<Props["checked"], undefined>>(),
         onChange,
         onchange,
+        leading,
         ...restProps
     }: Props = $props();
 
@@ -65,6 +73,7 @@
     {onChange}
     {onchange}
     {mark}
+    {leading}
     class={className}
     {...restProps}
 />

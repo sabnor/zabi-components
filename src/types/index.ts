@@ -225,6 +225,11 @@ export interface CheckboxProps
     disabled?: boolean;
     loading?: boolean;
     label?: string;
+    /**
+     * Drawn inside the one label, between the box and the label text. A
+     * leading image should have an empty alt: the label names the row.
+     */
+    leading?: Snippet;
     onchange?: (event: Event) => void;
     /** Same as `onchange`; both are called. */
     onChange?: (event: Event) => void;
@@ -458,6 +463,11 @@ export interface ToggleProps
     disabled?: boolean;
     loading?: boolean;
     label?: string;
+    /**
+     * Drawn inside the one label, between the switch and the label text. A
+     * leading image should have an empty alt: the label names the row.
+     */
+    leading?: Snippet;
     /** The switch's accessible name when there is no visible `label`. */
     'aria-label'?: string;
     /** The id of an element of the page that names the switch. */

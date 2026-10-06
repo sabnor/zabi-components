@@ -767,6 +767,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Initial checked state for uncontrolled usage",
                     },
                     {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Drawn inside the one label, between the box and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,
@@ -857,6 +865,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "60dvh",
                         description: "Max height for the options list. dvh follows a phone's collapsing browser bars.",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Drawn inside the one label, between the dot and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
                     },
                     {
                         name: "presentation",
@@ -1977,6 +1993,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "0",
                         description: "Current value",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Drawn inside the one label, between the switch and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
                     },
                     {
                         name: "max",

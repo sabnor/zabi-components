@@ -39,6 +39,12 @@
         onChange?: (event: Event) => void;
         onchange?: (event: Event) => void;
         mark?: Snippet<[SelectionControlMarkProps]>;
+        /**
+         * Drawn inside the one label, between the control and the label text,
+         * as decoration for the name `label` already gives. A leading image
+         * should have an empty alt: the label names the row.
+         */
+        leading?: Snippet;
     };
 
     let {
@@ -56,6 +62,7 @@
         onChange,
         onchange,
         mark,
+        leading,
         ...restProps
     }: Props = $props();
 
@@ -170,6 +177,11 @@
                 {@render mark({ checked: !!checked, loading, disabled: isDisabled })}
             {/if}
         </span>
+        {#if leading}
+            <span class="inline-flex shrink-0 items-center">
+                {@render leading()}
+            </span>
+        {/if}
         {#if label}
             <span class="text-sm font-medium text-label">
                 {label}
