@@ -12,6 +12,19 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.1] - 2026-10-06
+
+A local preview build of the 9.0 visual direction, not published to npm; 8.1.0
+stays the stable version. It holds the token layer only (surfaces, status
+colours, materials, gradients, motion, typeface): no component is restyled yet
+except the default `Card` and the `ImageUpload` hover plate, and dark mode is
+not yet art-directed. No token, prop or export is removed or renamed; values
+move, and each visible change below has a line that restores 8.1. Built quickly
+and tested lightly on purpose: the type and design checks, one unit run, the
+theme tests, the package build and a scratch install were run on it. NOTHING
+was rendered: no browser suite, no Storybook or visual check in either mode, no
+accessibility or QA review. Using it is the test.
+
 ### Added
 
 - **Motion tokens.** `--duration-fast|base|moderate|slow` (100, 150, 200, 300ms) and `--ease-standard` (`cubic-bezier(0.2, 0, 0, 1)`), `--ease-out` (Tailwind's own curve) and `--ease-spring` (a lightly damped `linear()` spring with one overshoot, with a cubic-bezier fallback where `linear()` is unsupported). Utilities: `ease-standard`, `ease-out`, `ease-spring`; durations are `duration-(--duration-moderate)` (Tailwind has no `duration-fast` style name for custom properties). Under `prefers-reduced-motion: reduce` the four durations become `0s` and the spring becomes the standard curve, in both modes and over an app's own values (`:root:root`, like the materials fallback), so everything that reads the tokens follows. All are settable through `createTheme` `overrides`.
