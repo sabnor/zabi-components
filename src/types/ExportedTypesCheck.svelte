@@ -36,6 +36,8 @@
     import PhotoGrid from "../components/molecules/PhotoGrid.svelte";
     import PhotoViewer from "../components/molecules/PhotoViewer.svelte";
     import Stepper from "../components/molecules/Stepper.svelte";
+    import Avatar from "../components/atoms/Avatar.svelte";
+    import AvatarGroup from "../components/molecules/AvatarGroup.svelte";
     import type {
         AlertProps,
         BadgeProps,
@@ -65,6 +67,8 @@
         PhotoGridProps,
         PhotoViewerProps,
         StepperProps,
+        AvatarProps,
+        AvatarGroupProps,
     } from "./index";
 
     interface Props {
@@ -97,6 +101,8 @@
         photoGrid?: PhotoGridProps;
         photoViewer?: PhotoViewerProps;
         stepper?: StepperProps;
+        avatar?: AvatarProps;
+        avatarGroup?: AvatarGroupProps;
     }
 
     let {
@@ -128,6 +134,8 @@
         photoGrid = { photos: [] },
         photoViewer = { photos: [] },
         stepper = { steps: [] },
+        avatar = { name: "" },
+        avatarGroup = { people: [] },
     }: Props = $props();
 </script>
 
@@ -159,3 +167,5 @@
 <PhotoGrid {...photoGrid} />
 <PhotoViewer {...photoViewer} />
 <Stepper {...stepper} />
+<Avatar {...avatar} />
+<AvatarGroup {...avatarGroup} />

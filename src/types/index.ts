@@ -39,6 +39,7 @@ import type {
     SemanticVariant,
     SizeVariant,
 } from './variants.js';
+import type { AvatarGroupStrings, AvatarPerson, AvatarSize } from '../components/util/avatar.js';
 import type { RatingStrings } from '../components/util/rating.js';
 import type {
     StepperItem,
@@ -824,6 +825,36 @@ export interface StepperProps extends Omit<HTMLAttributes<HTMLElement>, 'class'>
     onstepchange?: (index: number) => void;
 }
 
+// Avatar component props
+export interface AvatarProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'class' | 'role' | 'aria-label'> {
+    /** The person's name: the accessible name, and where the initials come from. */
+    name: string;
+    /** Address of the picture. Without it, or when it fails to load, the initials show. */
+    src?: string;
+    /** Diameter: 24, 32 and 48px. */
+    size?: AvatarSize;
+    /** Accessible name, when it should differ from `name`. `alt=""` makes the avatar decorative. */
+    alt?: string;
+    /** Language the initials are upper-cased in. The page's own by default. */
+    locale?: string;
+    class?: string;
+}
+
+// AvatarGroup component props
+export interface AvatarGroupProps extends Omit<HTMLAttributes<HTMLUListElement>, 'class' | 'aria-label'> {
+    /** The people, in the order they are shown. */
+    people: AvatarPerson[];
+    /** How many are shown before the rest become "+N". */
+    max?: number;
+    /** Diameter of each avatar: 24, 32 and 48px. */
+    size?: AvatarSize;
+    /** Accessible name of the list. */
+    label?: string;
+    /** Overrides for the built-in strings. */
+    strings?: Partial<AvatarGroupStrings>;
+    class?: string;
+}
+
 // Component type definitions
 export type Button = ZabiComponent<ButtonProps, ButtonEvents>;
 export type Heading = ZabiComponent<HeadingProps>;
@@ -852,4 +883,6 @@ export type TimeField = ZabiComponent<TimeFieldProps>;
 export type Calendar = ZabiComponent<CalendarProps>;
 export type PhotoGrid = ZabiComponent<PhotoGridProps>;
 export type PhotoViewer = ZabiComponent<PhotoViewerProps>;
+export type Avatar = ZabiComponent<AvatarProps>;
+export type AvatarGroup = ZabiComponent<AvatarGroupProps>;
 export type Stepper = ZabiComponent<StepperProps>;

@@ -12,6 +12,21 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- **Avatar and AvatarGroup.** `Avatar` is a round profile picture that falls
+  back to initials: `name`, `src`, `size` (`sm` 24, `md` 32, `lg` 48px), `alt`
+  (`alt=""` makes it decorative), `locale`. Initials come from the first and
+  last word of the name; they are in the server's markup under the picture
+  and are what is left when the picture fails to load. `AvatarGroup` shows
+  `people` overlapped as a list, up to `max` (default 4) and the rest as "+3",
+  named through `strings.more`. The ring between avatars is
+  `--zabi-avatar-ring`, the raised surface by default. Not interactive.
+
+### Changed
+
+### Fixed
+
 ## [8.1.0-beta.4] - 2026-10-06
 
 A local preview build on top of 8.1.0-beta.3, not published to npm. Built

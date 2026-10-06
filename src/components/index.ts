@@ -147,6 +147,10 @@ export type {
     PhotoViewerCloseReason,
     PhotoViewerStrings,
 } from './util/photo.js';
+export { default as Avatar } from './atoms/Avatar.svelte';
+export { default as AvatarGroup } from './molecules/AvatarGroup.svelte';
+export { DEFAULT_AVATAR_GROUP_STRINGS } from './util/avatar.js';
+export type { AvatarGroupStrings, AvatarPerson, AvatarSize } from './util/avatar.js';
 export { default as Stepper } from './molecules/Stepper.svelte';
 export type {
     StepperItem,

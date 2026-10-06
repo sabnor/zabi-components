@@ -31,6 +31,8 @@ import PhotoGridDemo from "./PhotoGridDemo.svelte";
 import PhotoViewerDemo from "./PhotoViewerDemo.svelte";
 import StepperDemo from "./StepperDemo.svelte";
 import ZabiStringsProviderDemo from "./ZabiStringsProviderDemo.svelte";
+import AvatarDemo from "./AvatarDemo.svelte";
+import AvatarGroupDemo from "./AvatarGroupDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -66,6 +68,8 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     PhotoViewer: PhotoViewerDemo,
     Stepper: StepperDemo,
     ZabiStringsProvider: ZabiStringsProviderDemo,
+    Avatar: AvatarDemo,
+    AvatarGroup: AvatarGroupDemo,
 };
 
 export function getComponentDemo(

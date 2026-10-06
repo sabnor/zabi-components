@@ -97,6 +97,9 @@ export type {
     PhotoViewerCloseReason,
     PhotoViewerStrings,
 } from '../util/photo.js';
+export { default as AvatarGroup } from './AvatarGroup.svelte';
+export { DEFAULT_AVATAR_GROUP_STRINGS } from '../util/avatar.js';
+export type { AvatarGroupStrings, AvatarPerson } from '../util/avatar.js';
 export { default as Stepper } from './Stepper.svelte';
 export type {
     StepperItem,

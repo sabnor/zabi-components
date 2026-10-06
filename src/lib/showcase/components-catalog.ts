@@ -2858,6 +2858,76 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                 ],
             },
+            {
+                name: "Avatar",
+                category: "atoms",
+                description:
+                    "Round picture of a person that falls back to their initials, or to an icon when there is no name.",
+                props: [
+                    {
+                        name: "name",
+                        type: "string",
+                        required: true,
+                        description:
+                            "The person's name: the accessible name, and where the initials come from. The first letter of the first and of the last word; one letter for one word; a person icon for an empty name.",
+                    },
+                    {
+                        name: "src",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Address of the picture. Without it, or when it fails to load, the initials show. They are under the picture from the start, so nothing moves.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Diameter: 24, 32 and 48px. It does not grow with the text size.",
+                    },
+                    {
+                        name: "alt",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name, when it should differ from name. An empty alt makes the avatar decorative, for a name printed beside it.",
+                    },
+                    {
+                        name: "locale",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Language the initials are upper-cased in. The page's own (html lang) by default, which the server cannot read: pass it where that matters.",
+                    },
+                ],
+                variants: ["sm", "md", "lg"],
+                examples: [
+                    {
+                        title: "Picture, initials, one word",
+                        description:
+                            "With a picture, without one, and a name of one word",
+                        code: `<Avatar name="Ada Lovelace" src={picture} />
+<Avatar name="Grace Hopper" />
+<Avatar name="Plato" />`,
+                    },
+                    {
+                        title: "Sizes",
+                        description: "24, 32 and 48px",
+                        code: `<Avatar name="Ada Lovelace" size="sm" />
+<Avatar name="Ada Lovelace" size="md" />
+<Avatar name="Ada Lovelace" size="lg" />`,
+                    },
+                    {
+                        title: "Fallbacks and a decorative avatar",
+                        description:
+                            "A picture that does not load, an empty name, and alt left empty beside a printed name",
+                        code: `<Avatar name="Alan Turing" src="/media/missing.jpg" />
+<Avatar name="" alt="Unknown member" />
+<span><Avatar name="Barbara Liskov" alt="" size="sm" /> Barbara Liskov</span>`,
+                    },
+                ],
+            },
         ],
         molecules: [
             {
@@ -6680,6 +6750,79 @@ pushToast({
             }\`,
         announcement: (step, total, label) => \`Steg \${step} av \${total}: \${label}\`,
     }}
+/>`,
+                    },
+                ],
+            },
+            {
+                name: "AvatarGroup",
+                category: "molecules",
+                description:
+                    "Row of overlapping avatars for the people in something, with the rest counted as +3.",
+                props: [
+                    {
+                        name: "people",
+                        type: "{ name: string; src?: string }[]",
+                        required: true,
+                        description:
+                            "The people, in the order they are shown.",
+                    },
+                    {
+                        name: "max",
+                        type: "number",
+                        required: false,
+                        defaultValue: "4",
+                        description:
+                            "How many are shown before the rest become +N. Below 1 is 1. One person too many is shown and not counted, so there is never a +1.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Diameter of each avatar: 24, 32 and 48px.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name of the list.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<AvatarGroupStrings>",
+                        required: false,
+                        description:
+                            "Overrides for the built-in strings: more(count, names), the accessible name of the +N.",
+                    },
+                ],
+                variants: ["sm", "md", "lg"],
+                examples: [
+                    {
+                        title: "Who's going",
+                        description:
+                            "Seven people with the default max of 4: four avatars and a +3 that is read as \"and 3 more\"",
+                        code: `<AvatarGroup {people} label="Who's going" />`,
+                    },
+                    {
+                        title: "Sizes, max, and one too many",
+                        description:
+                            "Small with max 3; five people with max 4, where the fifth is shown and not counted; large with max 5",
+                        code: `<AvatarGroup {people} size="sm" max={3} label="Members, small" />
+<AvatarGroup people={people.slice(0, 5)} label="Members: five, all shown" />
+<AvatarGroup {people} size="lg" max={5} label="Members, large" />`,
+                    },
+                    {
+                        title: "Translated, on another surface",
+                        description:
+                            "strings.more in Swedish, and the ring between avatars told which surface is under the group",
+                        code: `<AvatarGroup
+    {people}
+    label="Vilka som kommer"
+    strings={{ more: (count) => \`och \${count} till\` }}
+    style="--zabi-avatar-ring: var(--color-surface-base)"
 />`,
                     },
                 ],
