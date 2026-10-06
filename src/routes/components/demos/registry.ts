@@ -30,6 +30,7 @@ import TimeFieldDemo from "./TimeFieldDemo.svelte";
 import PhotoGridDemo from "./PhotoGridDemo.svelte";
 import PhotoViewerDemo from "./PhotoViewerDemo.svelte";
 import StepperDemo from "./StepperDemo.svelte";
+import ZabiStringsProviderDemo from "./ZabiStringsProviderDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -64,6 +65,7 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     PhotoGrid: PhotoGridDemo,
     PhotoViewer: PhotoViewerDemo,
     Stepper: StepperDemo,
+    ZabiStringsProvider: ZabiStringsProviderDemo,
 };
 
 export function getComponentDemo(

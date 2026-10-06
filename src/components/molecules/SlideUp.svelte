@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import type { Snippet } from 'svelte';
     import {
         focusFirstElement,
@@ -67,7 +68,7 @@
         class: className = "",
         isOpen = $bindable<Exclude<Props["isOpen"], undefined>>(),
         title = '',
-        closeLabel = 'Close',
+        closeLabel: closeLabelGiven,
         initialFocus,
         swipeToClose = false,
         onclick,
@@ -76,6 +77,10 @@
         footer,
         ...restProps
     }: Props = $props();
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const closeLabel = $derived(closeLabelGiven ?? common().close);
 
     // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
     // one that has a fallback (`props_invalid_value`), and a page that throws

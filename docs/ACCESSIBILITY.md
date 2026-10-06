@@ -296,6 +296,8 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 
 **Current Features:**
 - ✅ Built on Dropdown: the trigger carries `aria-expanded` and `aria-haspopup="listbox"`, the list is `role="listbox"` and each choice `role="option"` with `aria-selected`
+- ✅ The trigger is a select-only combobox (`role="combobox"` on the button, with `aria-controls`), so it can say what a button cannot: `aria-invalid="true"` with an `error`, an error `variant` or a failed `required` check, `aria-required="true"` when required, and `aria-busy="true"` while `isLoading`. It is announced as a combo box, collapsed or expanded, with its value; the keys are the same. With `presentation="native"` the native `<select>` carries `aria-invalid` and `required` itself
+- ✅ Under `prefers-reduced-motion` the list appears without its fade and slide, and the chevron turns without a transition
 - ✅ Arrow keys, Home and End move between options
 - ✅ A disabled option is `aria-disabled` and stays in the arrow-key order
 - ✅ Every option has `aria-selected`, true or false. The chosen one is marked by a check at the end of its row and a fill, in the pop-over and in the sheet: a mark of its own, which is neither the focus ring (it used to be an edge in the action colour, as the ring is) nor colour alone. The check is the text colour, far above 3:1 on the row

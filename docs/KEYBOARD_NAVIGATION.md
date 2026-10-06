@@ -925,7 +925,9 @@ the chosen option, not on the search field, so the on-screen keyboard does not
 cover the list before it has been seen; choosing an option, the chosen one
 included, closes the sheet and returns focus to the field.
 
-The field carries `aria-expanded` and `aria-haspopup="listbox"`; each choice is
+The field is a select-only combobox: a button with `role="combobox"`,
+`aria-expanded`, `aria-haspopup="listbox"` and `aria-controls`, and with
+`aria-invalid`, `aria-required` and `aria-busy` when they apply; each choice is
 `role="option"` with `aria-selected`. A disabled option is `aria-disabled` and
 stays in the arrow-key order. The message below the field is `role="alert"`
 for an error and `role="status"` otherwise.

@@ -19,7 +19,9 @@ import { DEFAULT_TOP_NAVBAR_STRINGS } from "../src/components/util/top-navbar";
 import { DEFAULT_CALENDAR_STRINGS } from "../src/components/util/calendar";
 import { MEDIA_GRID_STRINGS } from "../src/components/util/media-grid";
 import { PHOTO_GRID_STRINGS, PHOTO_VIEWER_STRINGS } from "../src/components/util/photo";
+import { RATING_STRINGS } from "../src/components/util/rating";
 import { SORTABLE_LIST_STRINGS } from "../src/components/util/sortable-list";
+import { DEFAULT_TOASTER_STRINGS } from "../src/components/util/toaster";
 import { STEPPER_STRINGS } from "../src/components/util/stepper";
 import { DEFAULT_ZABI_COMMON_STRINGS, type ZabiStrings } from "../src/components/util/zabi-strings";
 import StringsHarness from "./fixtures/StringsHarness.svelte";
@@ -433,7 +435,7 @@ const THEME_TOGGLE_DEFAULTS: Words = {
     beforeMount: "Theme toggle",
 };
 
-const ENTRY_DEFAULTS: Record<Exclude<keyof ZabiStrings, "rating" | "toaster">, Words> = {
+const ENTRY_DEFAULTS: Record<keyof ZabiStrings, Words> = {
     common: DEFAULT_ZABI_COMMON_STRINGS as unknown as Words,
     calendar: DEFAULT_CALENDAR_STRINGS as unknown as Words,
     colorPicker: DEFAULT_COLOR_PICKER_STRINGS as unknown as Words,
@@ -443,6 +445,8 @@ const ENTRY_DEFAULTS: Record<Exclude<keyof ZabiStrings, "rating" | "toaster">, W
     photoGrid: PHOTO_GRID_STRINGS as unknown as Words,
     photoViewer: PHOTO_VIEWER_STRINGS as unknown as Words,
     propsTable: DEFAULT_PROPS_TABLE_STRINGS as unknown as Words,
+    rating: RATING_STRINGS as unknown as Words,
+    toaster: DEFAULT_TOASTER_STRINGS as unknown as Words,
     select: DEFAULT_SELECT_STRINGS as unknown as Words,
     sidebarAccountPanel: DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS as unknown as Words,
     sidebarBrandHeader: DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS as unknown as Words,
@@ -519,9 +523,32 @@ const PROVIDED: {
     { kind: "ConfirmDialog", entries: [], common: ["confirm", "cancel"] },
     { kind: "DropdownSheet", entries: [], common: ["close", "expand", "collapse"] },
     { kind: "SidebarDrawer", entries: [], common: ["close"] },
+    { kind: "Modal", entries: [], common: ["close"] },
+    { kind: "Drawer", entries: [], common: ["close"] },
+    { kind: "SlideUp", entries: [], common: ["close"] },
+    { kind: "BottomSheet", entries: [], common: ["close", "expand", "collapse"] },
+    // Mounted under the provider, with one toast on screen.
+    { kind: "Toaster", entries: ["toaster"] },
+    { kind: "Rating", entries: ["rating"] },
     // Select's own entry names the sheet's buttons too, and wins over `common`: see the test for that below.
     { kind: "SelectSheet", entries: ["select"] },
 ];
+
+// A toast enters with a transition, which this DOM has no `animate` for.
+if (typeof Element.prototype.animate !== "function") {
+    Element.prototype.animate = function animate() {
+        const animation = {
+            cancel() {},
+            finish() {},
+            onfinish: null as null | (() => void),
+            finished: Promise.resolve(),
+            currentTime: 0,
+            playState: "finished",
+        };
+        queueMicrotask(() => animation.onfinish?.());
+        return animation as unknown as Animation;
+    };
+}
 
 /** Brings a provider-harness kind into the state that says the most. */
 async function revealProvided(kind: string) {
@@ -530,7 +557,15 @@ async function revealProvided(kind: string) {
         await waitFor(() => expect(document.querySelector('[role="dialog"]')).not.toBeNull());
         return;
     }
-    if (kind === "DropdownSheet" || kind === "SidebarDrawer" || kind === "ConfirmDialog" || kind === "Gallery") {
+    if (kind === "Toaster") {
+        await waitFor(() => expect(document.querySelector("[data-toast-id]")).not.toBeNull());
+        return;
+    }
+    if (
+        ["DropdownSheet", "SidebarDrawer", "ConfirmDialog", "Gallery", "Modal", "Drawer", "SlideUp", "BottomSheet"].includes(
+            kind,
+        )
+    ) {
         await waitFor(() => expect(document.querySelector('[role="dialog"], [role="alertdialog"]')).not.toBeNull());
         return;
     }
@@ -643,6 +678,39 @@ describe("ZabiStringsProvider", () => {
         expect(screen.getByTestId("in-modal").closest('[role="dialog"]')!.closest("[data-overlay-depth]")!.parentElement).toBe(
             document.body,
         );
+    });
+
+    it("a change of the provider's strings after mount changes the words: a language switch", async () => {
+        const { rerender } = render(ZabiStringsHarness, {
+            kind: "AppBar",
+            strings: { common: { back: "Tillbaka" } },
+        });
+        expect(screen.getByRole("link", { name: "Tillbaka" })).toBeTruthy();
+        await rerender({ kind: "AppBar", strings: { common: { back: "Takaisin" } } });
+        await waitFor(() => expect(screen.getByRole("link", { name: "Takaisin" })).toBeTruthy());
+        expect(screen.queryByRole("link", { name: "Tillbaka" })).toBeNull();
+        // And a component's own entry, in the same way.
+        cleanup();
+        const select = render(ZabiStringsHarness, {
+            kind: "SelectSheet",
+            strings: { select: { placeholder: "Välj" } },
+        });
+        expect(document.querySelector('button[aria-haspopup="listbox"]')!.textContent).toContain("Välj");
+        await select.rerender({ kind: "SelectSheet", strings: { select: { placeholder: "Valitse" } } });
+        await waitFor(() =>
+            expect(document.querySelector('button[aria-haspopup="listbox"]')!.textContent).toContain("Valitse"),
+        );
+    });
+
+    it("the Toaster says the words of the provider it is mounted under", async () => {
+        render(ZabiStringsHarness, {
+            kind: "Toaster",
+            strings: { toaster: { regionLabel: "Aviseringar", dismiss: "Stäng aviseringen" } },
+        });
+        await waitFor(() => expect(document.querySelector("[data-toast-id]")).not.toBeNull());
+        expect(document.querySelector("[data-zabi-toaster]")!.getAttribute("aria-label")).toBe("Aviseringar");
+        expect(screen.getAllByRole("button", { name: "Stäng aviseringen" }).length).toBeGreaterThan(0);
+        expect(screen.queryByRole("button", { name: "Dismiss notification" })).toBeNull();
     });
 
     it("app code outside any provider reads nothing", () => {

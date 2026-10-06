@@ -17,6 +17,7 @@
         watchViewport,
         type PanelPlacement,
     } from "../util/fit-in-viewport.js";
+    import { isInsideToastRegion } from "../util/focus-utils.js";
     import BottomSheet from './BottomSheet.svelte';
     import DropdownItem from './DropdownItem.svelte';
 
@@ -462,6 +463,7 @@
         if (!isOpen || asSheet) return;
         function onDocMouseDown(e: MouseEvent) {
             const t = e.target as Node;
+            if (isInsideToastRegion(t)) return;
             if (rootEl && !rootEl.contains(t)) {
                 isOpen = false;
             }
@@ -557,7 +559,7 @@
             // the corner: within a pixel of concentric.
             // A column, so that the list below can be the part that scrolls
             // when the menu is limited in height.
-            'flex flex-col rounded-overlay border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-[opacity,translate] duration-200 ease-in-out',
+            'flex flex-col rounded-overlay border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-[opacity,translate] duration-200 ease-in-out motion-reduce:transition-none',
             transformClasses(),
         ]
             .join(' ')

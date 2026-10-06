@@ -167,7 +167,7 @@ describe("Select presentation", () => {
         { value: "b", label: "Beta", disabled: true },
         { value: "c", label: "Gamma" },
     ];
-    const field = () => screen.getByRole("button", { name: /Team/ });
+    const field = () => screen.getByRole("combobox", { name: /Team/ });
 
     it("auto by default: a sheet named by the label on a phone, with the list and its search field", async () => {
         device(true);

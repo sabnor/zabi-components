@@ -23,7 +23,7 @@ const fields: { name: string; path: string; field: (page: Page) => Locator; heig
     {
         name: "Select",
         path: "/components/Select",
-        field: (page) => page.getByRole("button", { name: /Default \(No Search\)/ }).first(),
+        field: (page) => page.getByRole("combobox", { name: /Default \(No Search\)/ }).first(),
         height: 40,
     },
     {

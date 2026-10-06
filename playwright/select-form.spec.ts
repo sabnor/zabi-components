@@ -228,7 +228,7 @@ test.describe("Select before and after it hydrates", () => {
         ).toBe(true);
         await expect(page.locator('input[type="hidden"][name="frequency"]')).toHaveCount(0);
         // The label names the trigger now.
-        await expect(page.getByRole("button", { name: /Frequency/ })).toBeVisible();
+        await expect(page.getByRole("combobox", { name: /Frequency/ })).toBeVisible();
 
         // Tab goes from the trigger on to the next field, not into the hidden select.
         await trigger(field).focus();

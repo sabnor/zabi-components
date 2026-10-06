@@ -46,6 +46,13 @@ Whenever token or CSS import API surface changes, include:
   slider shows its focus ring and is 44px on a coarse pointer.
 - SidebarAccountPanel's `systemMode` default reads "Follows the system", so
   the row no longer says "System System".
+- **Select's trigger is a `combobox`**, not a button, and says when it is
+  invalid (`aria-invalid` with `error`, the error variant or a failed
+  `required` check), required (`aria-required`) and loading (`aria-busy`).
+  It is announced as a combo box. Tests that find a Select by role `button`
+  must use `combobox`. `presentation="native"` is unchanged.
+- Modal, Drawer, SlideUp, BottomSheet, Toaster and Rating read
+  `ZabiStringsProvider`. Mount the Toaster inside the provider.
 
 ### Fixed
 
@@ -74,6 +81,9 @@ Whenever token or CSS import API surface changes, include:
   `tabindex="-1"`.
 - **BottomTabBar's active tab has a 2px outline in the action colour**, so it
   can be told apart at 3:1 with labels hidden and in dark.
+- **A press on a toast no longer closes an open Select or Dropdown.**
+- The Select chevron and the Dropdown panel do not animate under reduced
+  motion.
 
 ## [8.1.0-beta.3] - 2026-10-06
 

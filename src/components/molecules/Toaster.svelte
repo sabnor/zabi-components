@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import ToasterToast from './ToasterToast.svelte';
     import { toastStore } from './toast-store.js';
     import { cn } from "../util/cn.js";
@@ -117,7 +118,9 @@
         ...restProps
     }: Props = $props();
 
-    const words = $derived<ToasterStrings>({ ...DEFAULT_TOASTER_STRINGS, ...strings });
+    /** The app-wide words for the toaster, from the `ZabiStringsProvider` it is mounted under, if there is one. */
+    const provided = zabiStringsFor("toaster");
+    const words = $derived<ToasterStrings>({ ...DEFAULT_TOASTER_STRINGS, ...provided(), ...strings });
 
     /**
      * One utility per property, so a class from the caller still replaces it

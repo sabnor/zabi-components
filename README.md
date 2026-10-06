@@ -362,8 +362,14 @@ inside says those instead of English, without a prop on any of them:
 
 <ZabiStringsProvider strings={sv}>
     {@render children()}
+    <!-- Inside the provider: the toaster reads the words of the provider it is mounted under. -->
+    <Toaster />
 </ZabiStringsProvider>
 ```
+
+Mount the `Toaster` inside the provider. It is mounted once, at the root, and
+a toaster placed beside the provider instead of in it says its own words in
+English.
 
 What a component says is decided in this order, the later winning:
 

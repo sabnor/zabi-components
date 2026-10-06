@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import Star from "@lucide/svelte/icons/star";
     import X from "@lucide/svelte/icons/x";
     import type { HTMLAttributes } from "svelte/elements";
@@ -116,7 +117,9 @@
      */
     const groupName = $derived(name || `${baseId}-group`);
 
-    const text = $derived({ ...RATING_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("rating");
+    const text = $derived({ ...RATING_STRINGS, ...provided(), ...strings });
     const count = $derived(starCount(max));
     const stars = $derived(Array.from({ length: count }, (_, index) => index + 1));
     /** What the stars show: the value held within 0..max. */

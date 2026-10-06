@@ -2175,6 +2175,60 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "ZabiStringsProvider",
+                category: "atoms",
+                description:
+                    "Sets the library's own words once for everything inside it; renders no element. Put it around the app, with the Toaster inside it.",
+                props: [
+                    {
+                        name: "strings",
+                        type: "ZabiStrings",
+                        required: false,
+                        defaultValue: "{}",
+                        description:
+                            "One optional entry per component that has a strings object (select, stepper, calendar, toaster and so on, with that component's keys), and common for the words many single-text props default to: close, back, expand, collapse, required, showPassword, search, confirm, cancel. A component says its built-in English, then the provider's entry or common word, then its own strings, then its own single-text props; the later wins. A provider inside another replaces only the words it gives. Outside a provider nothing changes.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "—",
+                        description:
+                            "What the words apply to. A dialog or sheet drawn in body still reads the provider it was written under. getZabiStrings() gives app code the same words.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Once, for the whole app",
+                        description:
+                            "Nothing is set on the components inside: their placeholder, search field and accessible names are the provider's.",
+                        code: `<script lang="ts">
+  import { ZabiStringsProvider, type ZabiStrings } from "zabi-components";
+
+  const sv: ZabiStrings = {
+    common: { required: "(obligatoriskt)", showPassword: "Visa lösenordet", close: "Stäng" },
+    select: { placeholder: "Välj ett alternativ", searchPlaceholder: "Sök", listLabel: "Alternativ" },
+  };
+</script>
+
+<ZabiStringsProvider strings={sv}>
+  <Select label="Pub" options={pubs} bind:value={pub} />
+  <Input label="Lösenord" type="password" revealable />
+</ZabiStringsProvider>`,
+                    },
+                    {
+                        title: "A component's own texts still win",
+                        description:
+                            "The second Select has a placeholder of its own; the first says the provider's.",
+                        code: `<ZabiStringsProvider strings={sv}>
+  <Select label="Från appen" options={pubs} />
+  <Select label="Med egen text" options={pubs} placeholder="Vilken pub?" />
+</ZabiStringsProvider>`,
+                    },
+                ],
+            },
+            {
                 name: "Container",
                 category: "atoms",
                 description:

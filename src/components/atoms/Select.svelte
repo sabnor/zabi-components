@@ -14,6 +14,7 @@
         type SelectStrings,
     } from "../util/select.js";
     import { generateId } from "../util/ssr-safe.js";
+    import { isInsideToastRegion } from "../util/focus-utils.js";
     import { cn } from "../util/cn.js";
     import { fieldDescribedBy, fieldMessageState } from "../util/field.js";
     import FieldMessages from "./FieldMessages.svelte";
@@ -430,6 +431,7 @@
         if (!isOpen) return;
 
         const target = event.target as HTMLElement;
+        if (isInsideToastRegion(target)) return;
         // The list in a sheet is in `<body>`, not in this container: a press
         // in that sheet (an option, the grip, the search field) is not outside.
         if (target.closest('[role="dialog"]')?.querySelector("[data-dropdown-sheet]")) return;
@@ -530,6 +532,12 @@
         sheetSnap={searchable && options.length > 6 ? "full" : "half"}
     >
         {#snippet trigger(aria)}
+            <!-- A select-only combobox, as the ARIA practices describe it:
+            a button could not say that it is invalid or required
+            (`aria-invalid` and `aria-required` are not a button's), so a
+            Select with an error was announced like one without. The keys,
+            `aria-haspopup="listbox"`, `aria-expanded` and `aria-controls` are
+            as they were. -->
             <button
                 type="button"
                 id={mounted ? selectId : `${selectId}-trigger`}
@@ -538,6 +546,10 @@
                 onclick={handleTriggerClick}
                 {...restProps}
                 {...aria}
+                role="combobox"
+                aria-invalid={status.variant === "error" ? "true" : undefined}
+                aria-required={required ? "true" : undefined}
+                aria-busy={isLoading ? "true" : undefined}
                 aria-describedby={fieldDescribedBy(selectId, status, describedBy)}
             >
                 <!-- An empty trigger shows its placeholder in the placeholder
@@ -568,7 +580,7 @@
                 </span>
                 <ChevronDown
                     size={20}
-                    class="shrink-0 text-description transition-transform duration-200 {isOpen
+                    class="shrink-0 text-description transition-transform duration-200 motion-reduce:transition-none {isOpen
                         ? 'rotate-180'
                         : ''}"
                 />

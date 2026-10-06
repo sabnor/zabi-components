@@ -154,7 +154,7 @@ describe("the handover", () => {
     it("an aria-label names the trigger once mounted, and the native select in the native presentation", async () => {
         render(Select, { props: { "aria-label": "Team", options, value: "a" } });
         await tick();
-        expect(screen.getByRole("button", { name: "Team" })).toBeTruthy();
+        expect(screen.getByRole("combobox", { name: "Team" })).toBeTruthy();
         expect(native().hasAttribute("aria-label")).toBe(false);
         cleanup();
 

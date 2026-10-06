@@ -59,12 +59,12 @@ describe("Select", () => {
         const user = userEvent.setup();
         render(SelectFormHarness);
 
-        expect(screen.getByRole("button", { name: /fruit/i }).textContent).toContain(
+        expect(screen.getByRole("combobox", { name: /fruit/i }).textContent).toContain(
             "Banana",
         );
         expect(formData().get("fruit")).toBe("2");
 
-        await user.click(screen.getByRole("button", { name: /fruit/i }));
+        await user.click(screen.getByRole("combobox", { name: /fruit/i }));
         await user.click(screen.getByRole("option", { name: "Apple" }));
         expect(formData().get("fruit")).toBe("1");
     });
@@ -72,7 +72,7 @@ describe("Select", () => {
     it("keeps the search field outside the listbox and lets Home move the caret", async () => {
         const user = userEvent.setup();
         render(SelectFormHarness);
-        await user.click(screen.getByRole("button", { name: /fruit/i }));
+        await user.click(screen.getByRole("combobox", { name: /fruit/i }));
 
         const listbox = screen.getByRole("listbox");
         const search = screen.getByRole("textbox", { name: "Search options" });

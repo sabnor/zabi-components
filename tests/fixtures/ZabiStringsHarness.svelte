@@ -7,6 +7,11 @@
     import Drawer from "../../src/components/molecules/Drawer.svelte";
     import FormField from "../../src/components/molecules/FormField.svelte";
     import Modal from "../../src/components/molecules/Modal.svelte";
+    import SlideUp from "../../src/components/molecules/SlideUp.svelte";
+    import Toaster from "../../src/components/molecules/Toaster.svelte";
+    import { pushToast } from "../../src/components/molecules/toast-store.js";
+    import { onMount } from "svelte";
+    import RatingHarness from "./RatingHarness.svelte";
     import SidebarPanel from "../../src/components/organisms/SidebarPanel.svelte";
     import type { ZabiStrings } from "../../src/components/util/zabi-strings.js";
     import AppBarHarness from "./AppBarHarness.svelte";
@@ -35,6 +40,11 @@
     }
 
     let { kind, strings, inner }: Props = $props();
+
+    onMount(() => {
+        // A toaster says nothing until there is a toast.
+        if (kind === "Toaster") pushToast({ message: "Sparat", type: "success" });
+    });
 </script>
 
 {#snippet component()}
@@ -71,6 +81,19 @@
         <SidebarShellHarness mobile="drawer" initialOpen />
     {:else if kind === "SelectSheet"}
         <Select label="Ark" options={[{ value: "a", label: "Alfa" }]} presentation="sheet" />
+    {:else if kind === "Modal"}
+        <Modal isOpen title="Dialog" portal>Innehåll</Modal>
+    {:else if kind === "Drawer"}
+        <Drawer isOpen title="Låda">Innehåll</Drawer>
+    {:else if kind === "SlideUp"}
+        <SlideUp isOpen title="Panel">Innehåll</SlideUp>
+    {:else if kind === "BottomSheet"}
+        <BottomSheet isOpen title="Ark">Innehåll</BottomSheet>
+    {:else if kind === "Toaster"}
+        <!-- Mounted under the provider, as an app mounts it once at its root. -->
+        <Toaster />
+    {:else if kind === "Rating"}
+        <RatingHarness initial={3} clearable />
     {:else if kind === "Portals"}
         <!-- App code inside overlays that are rendered in <body>: each still reads the provider it was written under. -->
         <Modal isOpen title="Dialog" portal>
