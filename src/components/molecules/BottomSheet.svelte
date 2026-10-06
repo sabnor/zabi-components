@@ -11,6 +11,13 @@
     } from "../util/bottom-sheet.js";
     import { cn } from "../util/cn.js";
     import {
+        OVERLAY_CHROME,
+        OVERLAY_TITLE_HYPHENS,
+        OVERLAY_TITLE_WRAP,
+        OVERLAY_TITLE_XL,
+        textIsEnlarged,
+    } from "../util/overlay-chrome.js";
+    import {
         focusFirstElement,
         joinOverlayStack,
         recoverStrayFocus,
@@ -149,6 +156,15 @@
     let header = $state<HTMLDivElement>();
     let scroller = $state<HTMLDivElement>();
     let footerElement = $state<HTMLDivElement>();
+
+    /**
+     * Read as the overlay opens: with the text enlarged, a long word in the
+     * title is hyphenated before it is cut (util/overlay-chrome.ts).
+     */
+    let enlargedText = $state(false);
+    $effect(() => {
+        if (isOpen) enlargedText = textIsEnlarged();
+    });
     let focusActive = false;
     let scrollerNeedsFocus = $state(false);
     /** Position among the open overlays; lifts a sheet opened later above the earlier ones. */
@@ -412,8 +428,11 @@ a background is dropped there, and the grip would be gone. -->
             onkeydown={(event) => trapTabKey(panel, event)}
         >
             <!-- The whole header drags the sheet, in both directions.
-            `touch-none`: otherwise the browser takes a touch here for itself. -->
-            <div bind:this={header} class="relative shrink-0 touch-none px-4 pt-7 pb-3">
+            `touch-none`: otherwise the browser takes a touch here for itself.
+            Chrome: laid out in px, with a title that stops at 1.3 times its
+            size (util/overlay-chrome.ts). The gutters of the content and
+            the footer are px with it, so the three stay in line. -->
+            <div bind:this={header} class="relative shrink-0 touch-none px-4 pt-7 pb-3 {OVERLAY_CHROME}">
                 {#if stepTo}
                     <button
                         type="button"
@@ -433,13 +452,13 @@ a background is dropped there, and the grip would be gone. -->
                     <div class="min-w-0 flex-1">
                         <h2
                             id={titleId}
-                            class="text-xl leading-7 font-semibold text-headline [overflow-wrap:anywhere]"
+                            class="{OVERLAY_TITLE_XL} font-semibold text-headline {OVERLAY_TITLE_WRAP} {enlargedText ? OVERLAY_TITLE_HYPHENS : ''}"
                         >
                             {title}
                         </h2>
                     </div>
                     <!-- `aria-disabled`, not `disabled` or removed: the button may hold focus when `dismissible` turns false, and a disabled or missing element would drop focus out of the trap. -->
-                    <!-- 0.5rem in from the end edge of the panel: its radius
+                    <!-- 8px in from the end edge of the panel: its radius
                     (control) plus that is the panel's (overlay). -->
                     <button
                         type="button"
@@ -463,7 +482,7 @@ a background is dropped there, and the grip would be gone. -->
                 bind:this={scroller}
                 data-bottom-sheet-content
                 class={cn(
-                    "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-1 pb-4",
+                    "min-h-0 flex-1 overflow-y-auto overscroll-contain px-[16px] pt-[4px] pb-[16px]",
                     scrollerNeedsFocus &&
                         "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus-ring",
                 )}
@@ -484,7 +503,7 @@ a background is dropped there, and the grip would be gone. -->
             {#if footer}
                 <div
                     bind:this={footerElement}
-                    class="flex shrink-0 flex-wrap justify-end gap-[8px] border-t border-border-overlay px-4 py-3"
+                    class="flex shrink-0 flex-wrap justify-end gap-[8px] border-t border-border-overlay px-[16px] py-[12px]"
                 >
                     {@render footer()}
                 </div>

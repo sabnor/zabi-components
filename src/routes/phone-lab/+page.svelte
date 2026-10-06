@@ -9,6 +9,7 @@
     import FloatingActionButton from "../../components/atoms/FloatingActionButton.svelte";
     import IconButton from "../../components/atoms/IconButton.svelte";
     import Input from "../../components/atoms/Input.svelte";
+    import Text from "../../components/atoms/Text.svelte";
     import Radio from "../../components/atoms/Radio.svelte";
     import Toast from "../../components/atoms/Toast.svelte";
     import Tooltip from "../../components/atoms/Tooltip.svelte";
@@ -98,6 +99,13 @@
     let slideFormOpen = $state(false);
     let slideSwipeOpen = $state(false);
     let drawerOpen = $state(false);
+    /** Overlay chrome at large text (playwright/overlay-chrome.spec.ts): which of the four is open. */
+    let chromeOpen = $state({ sheet: false, modal: false, drawer: false, slide: false });
+    const installSteps = [
+        "Öppna webbläsarens meny och välj Dela. Menyn finns längst ned på skärmen i Safari och uppe till höger i Chrome.",
+        "Välj Lägg till på hemskärmen i listan. Du kan behöva bläddra nedåt för att hitta valet.",
+        "Bekräfta med Lägg till. Appen får en egen ikon och öppnas utan adressfält nästa gång.",
+    ];
     let rowsOpen = $state(false);
     let rowsExtended = $state(false);
 
@@ -329,6 +337,16 @@
             <Page class="max-w-4xl" safeArea={false}><p class="text-body">A page that leaves them alone.</p></Page>
         </div>
     </section>
+    <section class="space-y-3" aria-labelledby="lab-chrome">
+        <h2 id="lab-chrome" class="text-lg font-medium text-headline">Overlay chrome</h2>
+        <div class="flex flex-wrap gap-3">
+            {#each ["sheet", "modal", "drawer", "slide"] as const as kind (kind)}
+                <Button variant="secondary" data-testid={`chrome-${kind}-open`} onclick={() => (chromeOpen[kind] = true)}>
+                    {kind}
+                </Button>
+            {/each}
+        </div>
+    </section>
     <!-- Room to scroll a trigger to the top of the screen. -->
     <div class="h-dvh" aria-hidden="true"></div>
 </main>
@@ -439,6 +457,62 @@
         <Button data-testid="drawer-save" onclick={() => (drawerOpen = false)}>Save</Button>
     {/snippet}
 </Drawer>
+
+<!-- The app's install sheet, and the same content in the three other overlays:
+a Swedish title with a word of ten letters, three paragraphs, one large button. -->
+{#snippet installText()}
+    <div class="space-y-3" data-testid="chrome-text">
+        {#each installSteps as step (step)}
+            <Text>{step}</Text>
+        {/each}
+    </div>
+{/snippet}
+{#snippet installDone()}
+    <Button fullWidth size="lg" onclick={() => (chromeOpen = { sheet: false, modal: false, drawer: false, slide: false })}
+        >Klar</Button>
+{/snippet}
+
+<BottomSheet
+    bind:isOpen={chromeOpen.sheet}
+    title="Lägg till på hemskärmen"
+    lang="sv"
+    data-testid="chrome-sheet"
+    footer={installDone}
+>
+    {@render installText()}
+</BottomSheet>
+
+<Modal
+    bind:isOpen={chromeOpen.modal}
+    fullScreen
+    title="Lägg till på hemskärmen"
+    lang="sv"
+    data-testid="chrome-modal"
+    footer={installDone}
+>
+    {@render installText()}
+</Modal>
+
+<Drawer
+    bind:isOpen={chromeOpen.drawer}
+    title="Lägg till på hemskärmen"
+    lang="sv"
+    data-testid="chrome-drawer"
+    footer={installDone}
+>
+    {@render installText()}
+</Drawer>
+
+<!-- A SlideUp is rendered in place and types no `lang` or `data-testid` of its own: the element around it has them. -->
+<div lang="sv" data-testid="chrome-slide-host">
+    <SlideUp
+        bind:isOpen={chromeOpen.slide}
+        title="Lägg till på hemskärmen"
+        footer={installDone}
+    >
+        {@render installText()}
+    </SlideUp>
+</div>
 
 <PhotoViewer photos={labPhotos} bind:isOpen={viewerOpen} actions={viewerActions} />
 

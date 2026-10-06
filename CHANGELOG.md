@@ -35,6 +35,15 @@ Whenever token or CSS import API surface changes, include:
 - **Select's form control is a `<select name>`**, not a hidden input, and
   `required` now blocks an empty form: the browser's message is shown as the
   field's error and focus goes to the trigger.
+- **Overlay headers stay compact at large text sizes.** In BottomSheet, Modal,
+  Drawer and SlideUp the header's padding, gaps, grip and close button are
+  sized in px, and the title grows to 1.3 times its size and stops; the
+  content still scales in full. At 200% text a half-height sheet now gives
+  the content 378 of 576px (was 182). Nothing changes at the default text
+  size.
+- Overlay titles break at a hyphen in the page's language when the text is
+  enlarged, and a word too long for the line no longer sticks out of Drawer
+  or SlideUp.
 
 ### Fixed
 

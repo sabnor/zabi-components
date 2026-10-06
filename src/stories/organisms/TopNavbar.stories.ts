@@ -27,6 +27,15 @@ const meta = {
             control: 'inline-radio',
             options: ['sm', 'md', 'lg', 'xl'],
             description: 'Breakpoint at which the links move from the phone menu into the bar'
+        },
+        themeModes: {
+            control: 'inline-radio',
+            options: ['two', 'three'],
+            description: 'two: the toggle switches light and dark. three: it steps through system, light and dark.'
+        },
+        swedish: {
+            control: 'boolean',
+            description: 'Story only: passes Swedish `strings` and `themeLabels`'
         }
     }
 } satisfies Meta<typeof TopNavbarDemo>;
@@ -75,5 +84,36 @@ export const WithCustomActions: Story = {
         brand: 'MyApp',
         showThemeToggle: true,
         customActions: true
+    }
+};
+
+export const ThreeThemeModes: Story = {
+    args: {
+        brand: 'MyApp',
+        showThemeToggle: true,
+        themeModes: 'three'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'themeModes="three": the toggle steps through system, light and dark, and its name says the mode it is in and the one a press goes to ("Theme: system. Switch to light"). The default, "two", is a switch between light and dark. The story passes themeStorageKey={null}, so the choice is not kept; an app leaves that prop out and the choice is stored under "theme".'
+            }
+        }
+    }
+};
+
+export const Swedish: Story = {
+    args: {
+        brand: 'MinApp',
+        showThemeToggle: true,
+        themeModes: 'three',
+        swedish: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Every word the bar says by itself, in another language: strings names the phone menu\'s button ("Öppna menyn", "Stäng menyn") and the note read after a link that opens in a new tab; themeLabels names the theme toggle. The links and the brand are the app\'s own. Narrow the canvas to see the menu button.'
+            }
+        }
     }
 };

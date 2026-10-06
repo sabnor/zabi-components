@@ -17,6 +17,14 @@
     import { TOUCH_HIT_AREA } from '../util/touch-target.js';
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
+    import {
+        OVERLAY_CHROME,
+        OVERLAY_CLOSE_GLYPH,
+        OVERLAY_TITLE_2XL,
+        OVERLAY_TITLE_HYPHENS,
+        OVERLAY_TITLE_WRAP,
+        textIsEnlarged,
+    } from "../util/overlay-chrome.js";
     import { attachSheetDrag, FLICK_VELOCITY } from "../util/sheet-drag.js";
 
     interface Props {
@@ -75,6 +83,15 @@
     let grip = $state<HTMLDivElement>();
     let headerElement = $state<HTMLDivElement>();
     let footerElement = $state<HTMLDivElement>();
+
+    /**
+     * Read as the overlay opens: with the text enlarged, a long word in the
+     * title is hyphenated before it is cut (util/overlay-chrome.ts).
+     */
+    let enlargedText = $state(false);
+    $effect(() => {
+        if (isOpen) enlargedText = textIsEnlarged();
+    });
     /** With a footer: the content, which is then what scrolls. */
     let scroller = $state<HTMLDivElement>();
     /** How far a swipe has pulled the sheet down, in px. */
@@ -238,7 +255,7 @@
                     bind:this={grip}
                     data-sheet-grip
                     aria-hidden="true"
-                    class="sticky top-0 z-10 flex h-[28px] shrink-0 cursor-grab touch-none items-start justify-center bg-surface-overlay pt-[10px] active:cursor-grabbing"
+                    class="sticky top-0 z-10 flex h-[28px] shrink-0 cursor-grab touch-none items-start justify-center bg-surface-overlay pt-[10px] active:cursor-grabbing {OVERLAY_CHROME}"
                 >
                     <span
                         class="block h-1 w-9 rounded-pill bg-current text-description forced-colors:bg-[CanvasText]"
@@ -246,20 +263,25 @@
                 </div>
             {/if}
             {#if title}
+                <!-- Chrome: laid out in px, with a title that stops at 1.3
+                times its size (util/overlay-chrome.ts). 12px between a long
+                title and the button: the title wraps, the button keeps its size. -->
                 <div
                     bind:this={headerElement}
-                    class="flex shrink-0 items-center justify-between px-6 pb-4 {swipeToClose ? 'pt-2' : 'pt-6'}"
+                    class="flex shrink-0 items-center justify-between gap-[12px] px-6 pb-4 {OVERLAY_CHROME} {swipeToClose
+                        ? 'pt-2'
+                        : 'pt-6'}"
                 >
                     <h2
                         id={slideTitleId}
-                        class="text-2xl font-normal leading-8 tracking-normal text-headline"
+                        class="min-w-0 {OVERLAY_TITLE_2XL} font-normal tracking-normal text-headline {OVERLAY_TITLE_WRAP} {enlargedText ? OVERLAY_TITLE_HYPHENS : ''}"
                     >
                         {title}
                     </h2>
                     <button
                         type="button"
                         onclick={closeSlideUp}
-                        class="focus-ring pointer-coarse:relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-2xl text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active {TOUCH_HIT_AREA}"
+                        class="focus-ring pointer-coarse:relative flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full {OVERLAY_CLOSE_GLYPH} text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active {TOUCH_HIT_AREA}"
                         aria-label={closeLabel}
                     >
                         ×
@@ -273,7 +295,7 @@
                 <div
                     bind:this={scroller}
                     data-slide-up-content
-                    class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pt-1 pb-4"
+                    class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[24px] pt-[4px] pb-[16px]"
                 >
                     {@render children?.()}
                 </div>
@@ -282,13 +304,13 @@
                 <div
                     bind:this={footerElement}
                     data-slide-up-footer
-                    class="flex shrink-0 flex-wrap justify-end gap-[8px] border-t border-border-overlay px-6 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] group-data-keyboard-open/overlay:pb-4"
+                    class="flex shrink-0 flex-wrap justify-end gap-[8px] border-t border-border-overlay px-[24px] pt-[16px] pb-[calc(16px+env(safe-area-inset-bottom,0px))] group-data-keyboard-open/overlay:pb-[16px]"
                 >
                     {@render footer()}
                 </div>
             {:else}
                 <!-- Clear of the home indicator on a phone. -->
-                <div class="flex-1 px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
+                <div class="flex-1 px-[24px] pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
                     {@render children?.()}
                 </div>
             {/if}

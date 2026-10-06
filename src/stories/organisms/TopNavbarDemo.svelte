@@ -1,6 +1,8 @@
 <script lang="ts">
     import TopNavbar from "../../components/organisms/TopNavbar.svelte";
     import Button from "../../components/atoms/Button.svelte";
+    import type { ThemeToggleLabels } from "../../components/util/theme-mode.js";
+    import type { TopNavbarStrings } from "../../components/util/top-navbar.js";
 
     interface Props {
         brand?: string;
@@ -9,6 +11,10 @@
         collapseAt?: "sm" | "md" | "lg" | "xl";
         /** Eight links instead of four, to show a row that needs a later switch. */
         manyItems?: boolean;
+        /** `three`: the toggle steps through system, light and dark. */
+        themeModes?: "two" | "three";
+        /** The bar in Swedish: its links, and every word it says by itself. */
+        swedish?: boolean;
     }
 
     let {
@@ -17,7 +23,31 @@
         customActions = false,
         collapseAt,
         manyItems = false,
+        themeModes,
+        swedish = false,
     }: Props = $props();
+
+    /** What the bar says by itself: the phone menu's button and the note on a link that leaves the site. */
+    const swedishStrings: TopNavbarStrings = {
+        openMenu: "Öppna menyn",
+        closeMenu: "Stäng menyn",
+        opensInNewTab: "(öppnas i ny flik)",
+    };
+    /** And what its theme toggle says. */
+    const swedishThemeLabels: ThemeToggleLabels = {
+        auto: "system",
+        light: "ljust",
+        dark: "mörkt",
+        describe: (current, next) => `Tema: ${current}. Byt till ${next}`,
+        darkMode: "Mörkt läge",
+        beforeMount: "Byt tema",
+    };
+    const swedishItems = [
+        { label: "Hem", href: "/" },
+        { label: "Om oss", href: "/about" },
+        { label: "Tjänster", href: "/services" },
+        { label: "Handbok", href: "https://example.com/handbok" },
+    ];
 
     const fourItems = [
         { label: "Home", href: "/" },
@@ -26,7 +56,9 @@
         { label: "Contact", href: "/contact" },
     ];
     const navItems = $derived(
-        manyItems
+        swedish
+            ? swedishItems
+            : manyItems
             ? [
                   ...fourItems,
                   { label: "Pricing", href: "/pricing" },
@@ -52,6 +84,10 @@
     items={navItems}
     currentPath="/"
     {collapseAt}
+    {themeModes}
+    themeStorageKey={themeModes === "three" ? null : undefined}
+    strings={swedish ? swedishStrings : undefined}
+    themeLabels={swedish ? swedishThemeLabels : undefined}
     navVariant="header"
     onclick={handleNavClick}
 >
@@ -73,7 +109,7 @@
             <Button
                 variant="ghost"
                 size="sm"
-                text="Help"
+                text={swedish ? "Hjälp" : "Help"}
                 onclick={() => handleActionClick("help")}
             />
         {/if}

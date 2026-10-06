@@ -4,6 +4,13 @@
     import X from "@lucide/svelte/icons/x";
     import { cn } from "../util/cn.js";
     import {
+        OVERLAY_CHROME,
+        OVERLAY_TITLE_2XL,
+        OVERLAY_TITLE_HYPHENS,
+        OVERLAY_TITLE_WRAP,
+        textIsEnlarged,
+    } from "../util/overlay-chrome.js";
+    import {
         focusFirstElement,
         getFocusableElements,
         joinOverlayStack,
@@ -106,6 +113,15 @@
     let panel = $state<HTMLDivElement>();
     let scroller = $state<HTMLDivElement>();
     let footerElement = $state<HTMLDivElement>();
+
+    /**
+     * Read as the overlay opens: with the text enlarged, a long word in the
+     * title is hyphenated before it is cut (util/overlay-chrome.ts).
+     */
+    let enlargedText = $state(false);
+    $effect(() => {
+        if (isOpen) enlargedText = textIsEnlarged();
+    });
     let headerElement = $state<HTMLDivElement>();
     let focusActive = false;
     /**
@@ -290,11 +306,16 @@
             {...restProps}
             onkeydown={(event) => trapTabKey(panel, event)}
         >
-            <div bind:this={headerElement} class="flex items-start justify-between gap-4 px-6 pb-3 pt-6">
+            <!-- Chrome: laid out in px, with a title that stops at 1.3 times its
+            size (util/overlay-chrome.ts). -->
+            <div
+                bind:this={headerElement}
+                class="flex items-start justify-between gap-4 px-6 pb-3 pt-6 {OVERLAY_CHROME}"
+            >
                 <div class="min-w-0 flex-1">
                     <h2
                         id={titleId}
-                        class="text-2xl font-normal leading-8 tracking-normal text-headline"
+                        class="{OVERLAY_TITLE_2XL} font-normal tracking-normal text-headline {OVERLAY_TITLE_WRAP} {enlargedText ? OVERLAY_TITLE_HYPHENS : ''}"
                     >
                         {title}
                     </h2>
@@ -327,7 +348,7 @@
             <div
                 bind:this={scroller}
                 class={cn(
-                    "min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-1",
+                    "min-h-0 flex-1 overflow-y-auto px-[24px] pb-[24px] pt-[4px]",
                     // Inset: a ring outside the box would be cut off at
                     // the screen edge the drawer sits on.
                     scrollerNeedsFocus &&
@@ -343,7 +364,7 @@
             {#if footer}
                 <div
                     bind:this={footerElement}
-                    class="flex shrink-0 justify-end gap-3 border-t border-border-overlay px-6 py-4"
+                    class="flex shrink-0 justify-end gap-[12px] border-t border-border-overlay px-[24px] py-[16px]"
                 >
                     {@render footer()}
                 </div>

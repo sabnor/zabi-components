@@ -584,7 +584,32 @@ test.describe("Full-screen Modal at the other sizes", () => {
         expect(close.x + close.width).toBeLessThanOrEqual(NARROW.width);
         expect(close.y).toBeGreaterThanOrEqual(0);
         expect(close.width, "The button keeps its size beside a long title").toBe(close.height);
-        expect(close.width).toBeGreaterThanOrEqual(44);
+        // The header is chrome and does not grow with the text (playwright/overlay-chrome.spec.ts):
+        // the button is drawn at 32px, as at 100%, where it was 64px here. The touch it takes is
+        // still 44 by 44px: the hit area around it, measured and then pressed at its corners.
+        expect(close.width).toBe(32);
+        expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(true);
+        const hitArea = await closeButton(page, "form").evaluate((el) => {
+            const style = getComputedStyle(el, "::before");
+            return { width: parseFloat(style.width), height: parseFloat(style.height), position: style.position };
+        });
+        expect(hitArea.position).toBe("absolute");
+        expect(hitArea.width).toBeGreaterThanOrEqual(44);
+        expect(hitArea.height).toBeGreaterThanOrEqual(44);
+        for (const [dx, dy] of [
+            [-21, -21],
+            [21, -21],
+            [-21, 21],
+            [21, 21],
+        ]) {
+            const hit = await page.evaluate(
+                ([x, y]) => document.elementFromPoint(x, y)?.closest("button")?.getAttribute("aria-label"),
+                [close.x + close.width / 2 + dx, close.y + close.height / 2 + dy],
+            );
+            expect(hit, `A touch ${dx},${dy} from the centre of the button lands on it`).toBe(
+                await closeButton(page, "form").getAttribute("aria-label"),
+            );
+        }
 
         for (const part of [dialog(page, "form"), dialog(page, "form").locator("[data-modal-content]")]) {
             expect(

@@ -25,6 +25,14 @@
     import CardFooter from '../atoms/CardFooter.svelte';
 
     import { cn } from "../util/cn.js";
+    import {
+        OVERLAY_CHROME,
+        OVERLAY_CLOSE_GLYPH,
+        OVERLAY_TITLE_2XL,
+        OVERLAY_TITLE_HYPHENS,
+        OVERLAY_TITLE_WRAP,
+        textIsEnlarged,
+    } from "../util/overlay-chrome.js";
     type Size = 'sm' | 'md' | 'lg';
     type CloseReason = 'escape' | 'backdrop' | 'close-button';
 
@@ -167,17 +175,17 @@
         /** From `md` up, `mobile` restates the padding of the usual dialog. */
         scroller: {
             all: 'min-h-0 flex-1 overflow-y-auto overscroll-contain pr-[max(24px,env(safe-area-inset-right,0px))] pl-[max(24px,env(safe-area-inset-left,0px))]',
-            mobile: 'max-md:min-h-0 max-md:flex-1 max-md:overflow-y-auto max-md:overscroll-contain max-md:pr-[max(24px,env(safe-area-inset-right,0px))] max-md:pl-[max(24px,env(safe-area-inset-left,0px))] md:px-6',
+            mobile: 'max-md:min-h-0 max-md:flex-1 max-md:overflow-y-auto max-md:overscroll-contain max-md:pr-[max(24px,env(safe-area-inset-right,0px))] max-md:pl-[max(24px,env(safe-area-inset-left,0px))] md:px-[24px]',
         },
-        scrollerBelowHeader: { all: 'pt-4', mobile: 'max-md:pt-4' },
+        scrollerBelowHeader: { all: 'pt-[16px]', mobile: 'max-md:pt-[16px]' },
         scrollerAtTop: {
             all: 'pt-[max(24px,calc(env(safe-area-inset-top,0px)_+_8px))]',
-            mobile: 'max-md:pt-[max(24px,calc(env(safe-area-inset-top,0px)_+_8px))] md:pt-6',
+            mobile: 'max-md:pt-[max(24px,calc(env(safe-area-inset-top,0px)_+_8px))] md:pt-[24px]',
         },
-        scrollerAboveFooter: { all: 'pb-4', mobile: 'max-md:pb-4' },
+        scrollerAboveFooter: { all: 'pb-[16px]', mobile: 'max-md:pb-[16px]' },
         scrollerAtBottom: {
             all: 'pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))]',
-            mobile: 'max-md:pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] md:pb-6',
+            mobile: 'max-md:pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] md:pb-[24px]',
         },
         footer: {
             all: 'shrink-0 flex-wrap border-t border-border pr-[max(24px,env(safe-area-inset-right,0px))] pb-[max(24px,calc(env(safe-area-inset-bottom,0px)_+_8px))] pl-[max(24px,env(safe-area-inset-left,0px))] group-data-keyboard-open/overlay:pb-[24px]',
@@ -198,6 +206,15 @@
      */
     let scroller = $state<HTMLDivElement>();
     let scrollerNeedsFocus = $state(false);
+
+    /**
+     * Read as the overlay opens: with the text enlarged, a long word in the
+     * title is hyphenated before it is cut (util/overlay-chrome.ts).
+     */
+    let enlargedText = $state(false);
+    $effect(() => {
+        if (isOpen) enlargedText = textIsEnlarged();
+    });
 
     $effect(() => {
         const box = scroller;
@@ -341,17 +358,20 @@
                 )}
             >
                 {#if title || description || showClose}
+                    <!-- Chrome: laid out in px, with a title that stops at 1.3
+                    times its size (util/overlay-chrome.ts). The padding of the
+                    content and the footer is px with it, so they stay in line. -->
                     <CardHeader
                         {description}
                         descriptionId={description ? modalDescriptionId : undefined}
-                        className={cn("px-6 pt-6 pb-4", full('header'))}
+                        className={cn("px-6 pt-6 pb-4", OVERLAY_CHROME, full('header'))}
                     >
                         <!-- 12px between a long title and the button: the title wraps, the button keeps its size. -->
                         <div class="flex items-center gap-[12px] {title ? 'justify-between' : 'justify-end'}">
                             {#if title}
                                 <h2
                                     id={modalTitleId}
-                                    class="min-w-0 text-2xl font-normal leading-8 tracking-normal text-headline [overflow-wrap:anywhere]"
+                                    class="min-w-0 {OVERLAY_TITLE_2XL} font-normal tracking-normal text-headline {OVERLAY_TITLE_WRAP} {enlargedText ? OVERLAY_TITLE_HYPHENS : ''}"
                                 >
                                     {title}
                                 </h2>
@@ -361,7 +381,7 @@
                                 <button
                                     type="button"
                                     onclick={(event) => closeModal('close-button', event)}
-                                    class="focus-ring pointer-coarse:relative flex size-8 shrink-0 items-center justify-center rounded-control text-2xl text-description transition-colors {TOUCH_HIT_AREA} {dismissible
+                                    class="focus-ring pointer-coarse:relative flex size-8 shrink-0 items-center justify-center rounded-control {OVERLAY_CLOSE_GLYPH} text-description transition-colors {TOUCH_HIT_AREA} {dismissible
                                         ? 'cursor-pointer hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active'
                                         : 'cursor-not-allowed opacity-50'}"
                                     aria-label={closeLabel}
@@ -397,14 +417,14 @@
                     </CardContent>
                 {:else if children}
                     <CardContent
-                        className="flex-1 px-6 {title || description || showClose ? '' : 'pt-6'} {footer ? '' : 'pb-6'}"
+                        className="flex-1 px-[24px] {title || description || showClose ? '' : 'pt-[24px]'} {footer ? '' : 'pb-[24px]'}"
                     >
                         {@render children?.()}
                     </CardContent>
                 {/if}
 
                 {#if footer}
-                    <CardFooter className={cn("flex justify-end gap-3 pt-4", full('footer'))}>
+                    <CardFooter className={cn("flex justify-end gap-[12px] p-[24px] pt-[16px]", full('footer'))}>
                         {@render footer?.()}
                     </CardFooter>
                 {/if}

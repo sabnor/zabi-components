@@ -3617,7 +3617,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         description:
-                            "Dialog title.",
+                            "Dialog title. It wraps; with the text enlarged, a long word is hyphenated by the page's lang before it is cut. It grows with the reader's text size up to 1.3 times (31.2px); the gutters and the close button of the header stay as they are.",
                     },
                     {
                         name: "description",
@@ -3741,7 +3741,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         description:
-                            "Panel heading.",
+                            "Panel heading. It wraps; with the text enlarged, a long word is hyphenated by the page's lang before it is cut. It grows with the reader's text size up to 1.3 times (31.2px); the gutters and the close button of the header stay as they are.",
                     },
                     {
                         name: "closeLabel",
@@ -5213,7 +5213,8 @@ pushToast({
                         name: "title",
                         type: "string",
                         required: true,
-                        description: "Heading of the drawer, and its accessible name.",
+                        description:
+                            "Heading of the drawer, and its accessible name. It wraps; with the text enlarged, a long word is hyphenated by the page's lang before it is cut. It grows with the reader's text size up to 1.3 times (31.2px); the gutters and the close button of the header stay as they are.",
                     },
                     {
                         name: "description",
@@ -5735,7 +5736,7 @@ pushToast({
                         type: "string",
                         required: true,
                         description:
-                            "Heading of the sheet, and its accessible name.",
+                            "Heading of the sheet, and its accessible name. It wraps; with the text enlarged, a long word is hyphenated by the page's lang before it is cut. It grows with the reader's text size up to 1.3 times (26px); the gutters and the close button of the header stay as they are.",
                     },
                     {
                         name: "description",

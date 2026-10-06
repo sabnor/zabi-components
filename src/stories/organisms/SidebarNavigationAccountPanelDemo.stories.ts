@@ -85,6 +85,18 @@ const meta = {
         profileEmail: 'jane@example.com',
         searchMode: 'input',
         searchPlaceholder: 'Search navigation…'
+    },
+    argTypes: {
+        themeModes: {
+            control: 'inline-radio',
+            options: ['two', 'three'],
+            description:
+                'On `SidebarAccountPanel`. two: the theme row flips light and dark and the app switches the page. three: the row steps through system, light and dark and switches the page itself.'
+        },
+        swedish: {
+            control: 'boolean',
+            description: 'Story only: passes Swedish `strings` to the sidebar and to the panel'
+        }
     }
 } satisfies Meta<typeof SidebarNavigationAccountPanelDemo>;
 
@@ -93,3 +105,47 @@ type Story = StoryObj<typeof meta>;
 
 export const SideBySide: Story = {};
 
+export const ThreeThemeModes: Story = {
+    args: {
+        themeModes: 'three'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'Open the panel from the profile row. With `themeModes="three"` the theme row of `SidebarAccountPanel` steps through system, light and dark, sets `data-theme` on the page itself as ThemeToggle does, and reports the mode through `onThemeModeChange`. The story passes `themeStorageKey={null}`, so the choice is not kept.'
+            }
+        }
+    }
+};
+
+export const Swedish: Story = {
+    args: {
+        swedish: true,
+        themeModes: 'three',
+        brandName: 'Dagbron',
+        profileName: 'Anna Lind',
+        profileEmail: 'anna@example.com',
+        searchPlaceholder: 'Sök i menyn…',
+        items: [
+            { id: 'dashboard', label: 'Översikt', href: '/dashboard', icon: House, section: 'Arbetsyta' },
+            { id: 'revenue', label: 'Intäkter', href: '/revenue', icon: BarChart3, section: 'Arbetsyta' },
+            { id: 'calendar', label: 'Kalender', href: '/calendar', icon: Calendar, section: 'Vyer' },
+            {
+                id: 'settings',
+                label: 'Inställningar',
+                href: '/settings',
+                icon: Settings,
+                group: 'secondary' as const
+            }
+        ]
+    },
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'The sidebar and its account panel in Swedish: `strings` on `SidebarNavigation` (the names of its lists, the footer, the brand header) and `strings` on `SidebarAccountPanel` (its heading, rows and the three theme modes), with `logoutLabel` on both.'
+            }
+        }
+    }
+};
