@@ -24,6 +24,22 @@ export const AA_LARGE = 3.0;
 export const MIN_PRESSED = 1.25;
 /** Value text against placeholder text: enough to tell a filled field from an empty one. */
 export const MIN_VALUE_OVER_PLACEHOLDER = 1.75;
+/** A neutral fill that has no edge (a Chip at rest): what it takes to be seen on the page and on a card. */
+export const MIN_EDGELESS_FILL = 1.2;
+
+/** What is written on a tint card (Card tone="tint"): [name, token, the least it needs against the tint]. */
+const TINT_CARD_ROLES = [
+    ['headline', '--color-headline', AA_NORMAL],
+    ['body', '--color-body', AA_NORMAL],
+    ['label', '--color-label', AA_NORMAL],
+    ['description', '--color-description', AA_NORMAL],
+    ['caption', '--color-caption', AA_NORMAL],
+    ['link', '--color-link', AA_NORMAL],
+    // A form can sit on a tint card: its field edge and an outline Button's edge are the only boundary they have.
+    ['focus ring', '--color-focus-ring', AA_LARGE],
+    ['field edge', '--color-input-border', AA_LARGE],
+    ['outline button edge', '--color-action-outline-border', AA_LARGE],
+];
 
 const FAMILIES = ['success', 'warning', 'error', 'info', 'energetic', 'neutral'];
 
@@ -88,7 +104,7 @@ export const BLOCK_ROLES = [
  * on it. Inside a block it has to be in the list that gives the roles back
  * their theme values, or its text is the block's label colour on a card.
  */
-export const SURFACE_CLASS = /^(surface-[\w-]+|card(-elevated)?|background|input(-disabled)?|[\w-]+-subtle|nav-menu-active|action-disabled)$/;
+export const SURFACE_CLASS = /^(surface-[\w-]+|card(-elevated|-tint)?|chip(-selected)?|background|input(-disabled)?|[\w-]+-subtle|nav-menu-active|action-disabled)$/;
 
 /**
  * The worst thing a material can float over: the far end of the neutral ramp.
@@ -363,11 +379,34 @@ export function buildPairs() {
         { name: 'toggle track edge on card', bg: '--color-surface-raised', fg: '--color-toggle-track-border', min: AA_LARGE },
         // WCAG 1.4.11: the fill of Progress must be seen against its track.
         { name: 'progress fill on track', bg: '--color-progress-track', fg: '--color-progress-fill', min: AA_LARGE },
+        // Chip: a quiet neutral fill at rest, seen on the page and on a card
+        // without an edge, with a label that holds 4.5:1 on all three of its
+        // fills. The selected chip is tonal by default; its own label is held
+        // on its own three fills, so an app that sets them is checked.
+        { name: 'chip fill against the page', bg: '--color-surface-base', fg: '--color-chip', min: MIN_EDGELESS_FILL },
+        { name: 'chip fill against a card', bg: '--color-surface-raised', fg: '--color-chip', min: MIN_EDGELESS_FILL },
+        { name: 'chip label', bg: '--color-chip', fg: '--color-chip-text', min: AA_NORMAL },
+        { name: 'chip label :hover', bg: '--color-chip-hover', fg: '--color-chip-text', min: AA_NORMAL },
+        { name: 'chip label :active', bg: '--color-chip-active', fg: '--color-chip-text', min: AA_NORMAL },
+        { name: 'selected chip label', bg: '--color-chip-selected', fg: '--color-chip-selected-text', min: AA_NORMAL },
+        { name: 'selected chip label :hover', bg: '--color-chip-selected-hover', fg: '--color-chip-selected-text', min: AA_NORMAL },
+        { name: 'selected chip label :active', bg: '--color-chip-selected-active', fg: '--color-chip-selected-text', min: AA_NORMAL },
+        // WCAG 1.4.11: the edge of the Progress track. The default track is the
+        // field fill, 1.00:1 on a card, so the edge is what finds it; an app
+        // whose track reaches 3:1 itself sets the edge to `transparent`, and a
+        // pair with no flat colour is skipped.
+        { name: 'progress track edge on page', bg: '--color-surface-base', fg: '--color-progress-track-border', min: AA_LARGE },
+        { name: 'progress track edge on card', bg: '--color-surface-raised', fg: '--color-progress-track-border', min: AA_LARGE },
         // Bars (D124, D126, D129): the tokens a component may not paint with a raw value.
         { name: 'active tab label on the tab pill', bg: '--color-tabbar-active', fg: '--color-nav-menu-item-active', min: AA_NORMAL },
         { name: 'on-brand text on an on-brand bar', bg: '--color-bar-brand', fg: '--color-on-brand', min: AA_NORMAL },
         { name: 'headline on a bar at rest', bg: '--color-bar', fg: '--color-headline', min: AA_NORMAL },
     );
+
+    // Card tone="tint": the brand tint as a surface for content.
+    for (const [role, fg, min] of TINT_CARD_ROLES) {
+        pairs.push({ name: `tint card · ${role}`, bg: '--color-card-tint', fg, min });
+    }
 
     for (const material of MATERIALS) {
         for (const [where, behind] of [['the worst backdrop', WORST_BACKDROP], ['the page', '--color-surface-base']]) {

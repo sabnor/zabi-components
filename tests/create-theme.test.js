@@ -188,6 +188,8 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
     'light icon on a held toggled-on fill',
     'light label on a selected pill tab',
     'light active tab label on the tab pill',
+    // The link is also written on a tint card (Card tone="tint").
+    'light tint card · link',
     // The link is also written on the thick material (a Toaster toast), judged over both backdrops.
     'light material thick · link over the worst backdrop',
     'light material thick · link over the page',
@@ -200,7 +202,7 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#fafafa' });
   assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #fafafa is [\d.]+:1, needs 4\.5:1/);
   // The failure is in the file too, so it is not lost when stderr is.
-  assert.match(result.css, /Contrast: 9 of \d+ role pairs are below WCAG AA:/);
+  assert.match(result.css, /Contrast: 10 of \d+ role pairs are below WCAG AA:/);
 
   // 3:1 pairs are checked as well: a focus ring too pale for the page.
   const ring = createTheme({ brand: '#0026EA', overrides: { '--color-focus': 'var(--zabi-brand-300)' } });
@@ -333,7 +335,7 @@ test('the bin warns on stderr, and --strict turns a failed pair into exit 1', ()
   const lenient = run(...args);
   assert.equal(lenient.status, 0);
   assert.match(lenient.stderr, /warning: light · link on page: .* needs 4\.5:1/);
-  assert.match(lenient.stderr, /9 role pairs below WCAG AA\./);
+  assert.match(lenient.stderr, /10 role pairs below WCAG AA\./);
   assert.match(lenient.stdout, /--color-link: var\(--zabi-brand-400\);/);
 
   const strict = run(...args, '--strict');
@@ -789,20 +791,21 @@ test('without light or dark overrides the bytes are what they were before the op
   // Then for Z-043: the dark primary and danger are the light steps with a white label (the dark label knob is white, the header counts 4 more pairs: the primary and danger fills against the page and the card).
   // Then for 16a (Z-044): the field edge is guarded on the elevated surface and the overlay (two pairs per mode, so the header counts 4 more), and the dark surfaces, hairline, rim and shadows moved.
   // Then for 16b (Z-057): the dark status tints are mixes over the card surface, so a flat override of the card surface (the `flat` case) restates them and its bytes moved.
+  // Then for T0 (tranche 5): the chip, tint card and progress edge pairs, so the header counts 38 more pairs per run (the `flat` case, whose raised surface is light in dark too, also lists the tint card's dark pairs); nothing else in the output moved.
   // Then for 16c: the material alphas and the backdrop brightness reach the generator, so the default material pairs are checked (and can warn), and the dark filters are restated.
   const before = {
-    plain: [{ brand: '#0026EA' }, '3303a57d367a8a367bb5e59aa3129666459377edb1c71d6f0624f60329f90ccb'],
+    plain: [{ brand: '#0026EA' }, '6534f7a9a7647db63f08dd34b3ecc3b9b9510381eb95ec6ef63682d661b4d9e1'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      'fd2c1cf0a4310b70be00acea7a016c7635bf8d8d567dd948ce8dc7280d99de48',
+      'b887358eedffc6036c3141b5051f40d0238811c41420c7b0984af8cf88ea56ef',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      '58f9f7e23e0a91f6c62e10b8f645c30b67e7dba7fd2a7fd69e679e3f7eb6bf7d',
+      'e1eb8d5d98b50b1ebb79a1ed1fbde6225eaea1155ade540c875e22c9e7c81573',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '0278a8094d688783eca1cd35398b9ff36653ed2487d9baca22abc6c4fd039bc7',
+      '5624e9ad5d608f79955ae5d9cbd48de1447561f7758d6b86dbfb6a8445071fbb',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -994,11 +997,12 @@ test('the field edge is a guarded foreground: 3:1 on the field fill, the page, t
   const pairs = buildPairs().filter((p) => p.fg === '--color-input-border' && !p.behind);
   assert.deepEqual(
     pairs.map((p) => [p.bg, p.min]).sort(),
-    [['--color-background', 3], ['--color-input', 3], ['--color-surface-elevated', 3], ['--color-surface-overlay', 3], ['--color-surface-raised', 3]],
+    // The sixth is the tint card (Card tone="tint"): a form can sit on it.
+    [['--color-background', 3], ['--color-card-tint', 3], ['--color-input', 3], ['--color-surface-elevated', 3], ['--color-surface-overlay', 3], ['--color-surface-raised', 3]],
   );
   // The generator ships the same list, so a consumer's theme is checked too.
   const shipped = JSON.parse(JSON.stringify(buildThemeData().pairs)).filter((p) => p.fg === '--color-input-border' && !p.behind);
-  assert.equal(shipped.length, 5);
+  assert.equal(shipped.length, 6);
 });
 
 /* ---------- materials (D97) ---------- */
@@ -1233,6 +1237,84 @@ test('the button and toggle tokens exist in both modes and take overrides', () =
   assert.equal(result.tokens['--zabi-button-font-weight'], '600');
   assert.match(result.css, /--zabi-button-radius: 9999px;/);
   assert.deepEqual(contrastWarnings(result), []);
+});
+
+test('the chip, tint card and progress edge tokens exist in both modes, are guarded, and take overrides', () => {
+  const chip = [
+    '--color-chip', '--color-chip-hover', '--color-chip-active', '--color-chip-text',
+    '--color-chip-selected', '--color-chip-selected-hover', '--color-chip-selected-active', '--color-chip-selected-text',
+  ];
+  for (const name of [...chip, '--color-card-tint', '--color-progress-track-border']) {
+    assert.ok(name in defaults.light, `light ${name}`);
+    assert.ok(name in defaults.darkOnly, `dark ${name}`);
+  }
+  // The selected chip is the tonal role by default, as its own tokens.
+  for (const suffix of ['', '-hover', '-active', '-text']) {
+    assert.equal(defaults.light[`--color-chip-selected${suffix}`], `var(--color-action-tonal${suffix})`);
+    assert.equal(defaults.darkOnly[`--color-chip-selected${suffix}`], `var(--color-action-tonal${suffix})`);
+  }
+  assert.equal(defaults.light['--color-progress-track-border'], 'var(--color-input-border)');
+  assert.equal(defaults.darkOnly['--color-progress-track-border'], 'var(--color-input-border)');
+  // The pairs are in the list the generator ships, so an app's overrides are checked against them.
+  const shipped = buildThemeData().pairs.map((pair) => pair.name);
+  for (const name of ['chip label', 'chip label :active', 'selected chip label :hover', 'chip fill against a card', 'tint card · caption', 'tint card · field edge', 'tint card · outline button edge', 'progress track edge on card']) {
+    assert.ok(shipped.includes(name), name);
+  }
+  assert.deepEqual(contrastWarnings(createTheme({ brand: '#0026EA' })), []);
+  // A chip label too pale for its fill, in light only, is a warning for light only.
+  const pale = createTheme({ brand: '#0026EA', overrides: { light: { '--color-chip-text': '#a1a1aa', '--color-card-tint': '#cddcff' } } });
+  const names = contrastWarnings(pale).map((w) => `${w.mode} ${w.pair}`);
+  assert.ok(names.includes('light chip label') && names.includes('light chip label :active'), names.join('\n'));
+  assert.ok(names.includes('light tint card · headline') === false);
+  assert.ok(names.some((name) => name.startsWith('light tint card')), 'a tint card that is too deep for the field edge warns');
+  assert.ok(!names.some((name) => name.startsWith('dark')), names.join('\n'));
+  assert.equal(declarationOf(darkRule(pale.css), '--color-chip-text'), defaults.darkOnly['--color-chip-text']);
+});
+
+test('createTheme writes a transparent progress track edge where the app\'s own track reaches 3:1 on the page and the card', () => {
+  const edge = '--color-progress-track-border';
+  const track = '--color-progress-track';
+  const rootOf = (css) => css.slice(0, css.indexOf('.dark,'));
+  // Nothing set: nothing written, and the default stays the field edge.
+  const plain = createTheme({ brand: '#0026EA' });
+  assert.equal(plain.tokens[edge], undefined);
+  assert.equal(declarationOf(plain.css, edge), undefined);
+  // A track that reaches 3:1 on the page (#fafafa) and the card (#fff) in light, and keeps the fill against it: the edge goes, in light only.
+  const solid = createTheme({ brand: '#0026EA', overrides: { light: { [track]: '#18181b' } } });
+  assert.equal(declarationOf(rootOf(solid.css), edge), 'transparent');
+  assert.equal(declarationOf(darkRule(solid.css), edge), 'var(--color-input-border)');
+  assert.deepEqual(contrastWarnings(solid), []);
+  // Under `both`, in each mode that passes: #71717a is 4.8:1 on white and 3.67:1 and 3.40:1 on the dark page and card (a white fill reads on it in both).
+  const both = createTheme({ brand: '#0026EA', overrides: { [track]: '#71717a', '--color-progress-fill': '#ffffff' } });
+  assert.equal(declarationOf(rootOf(both.css), edge), 'transparent');
+  assert.equal(declarationOf(darkRule(both.css), edge), 'transparent');
+  // Dark alone.
+  const dark = createTheme({ brand: '#0026EA', overrides: { dark: { [track]: '#d4d4d8' } } });
+  assert.equal(declarationOf(rootOf(dark.css), edge), undefined);
+  assert.equal(declarationOf(darkRule(dark.css), edge), 'transparent');
+  // A track that does not reach 3:1 keeps the edge: Quizrundan's base-250 is 1.3:1.
+  const faint = createTheme({ brand: '#0026EA', overrides: { [track]: 'var(--color-base-250)' } });
+  assert.equal(declarationOf(faint.css, edge), undefined);
+  // Reaching it on the page and not on the card is not enough: both are needed.
+  const pageOnly = createTheme({ brand: '#0026EA', overrides: { light: { [track]: '#7a7a82', '--color-surface-raised': '#7a7a82' } } });
+  assert.equal(declarationOf(rootOf(pageOnly.css), edge), undefined);
+  // An edge the app sets is its decision, in either mode or both: never moved.
+  const own = createTheme({ brand: '#0026EA', overrides: { light: { [track]: '#71717a', [edge]: '#52525b' } } });
+  assert.equal(declarationOf(rootOf(own.css), edge), '#52525b');
+  const ownBoth = createTheme({ brand: '#0026EA', overrides: { [track]: '#71717a', [edge]: 'var(--color-border)' } });
+  assert.equal(declarationOf(rootOf(ownBoth.css), edge), 'var(--color-border)');
+  assert.equal(declarationOf(darkRule(ownBoth.css), edge), undefined);
+  // An edge the app sets to transparent itself is no warning, with a track that would need it or not.
+  for (const track_ of ['#71717a', 'var(--color-base-250)']) {
+    const quiet = createTheme({ brand: '#0026EA', overrides: { [edge]: 'transparent', [track]: track_ } });
+    assert.equal(declarationOf(rootOf(quiet.css), edge), 'transparent');
+    assert.deepEqual(contrastWarnings(quiet).filter((w) => w.pair.startsWith('progress track edge')), []);
+  }
+  // And an edge below 3:1 that the app sets is reported.
+  const weak = createTheme({ brand: '#0026EA', overrides: { [edge]: 'var(--color-base-250)' } });
+  assert.deepEqual(contrastWarnings(weak).filter((w) => w.pair.startsWith('progress track edge')).map((w) => `${w.mode} ${w.pair}`), [
+    'light progress track edge on page', 'light progress track edge on card', 'dark progress track edge on page', 'dark progress track edge on card',
+  ]);
 });
 
 /* ---------- darkPrimary (Z-043): the primary action keeps its hue in dark ---------- */

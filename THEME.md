@@ -116,8 +116,12 @@ already the right value in each mode. Use the same roles in your own CSS.
 - `--color-headline`, `--color-body`, `--color-description`, `--color-caption` - Text
 - `--color-border` - Borders and dividers
 - `--color-action-primary`, `-hover`, `-active` - Primary actions. The brand step 600, 700 and 800 in light and in dark (the fill keeps its hue; the label is white in both). `createTheme({ darkPrimary: 'mirror' })` restores the 8.1 pale dark fills. Danger follows the same rule
+- `--font-family-display` (`font-display`) - A second face for `Heading variant="display"`; follows `--font-family-heading` until set
 - `--color-on-brand` - Text on a primary fill (`--color-action-primary-text` follows it)
 - `--color-action-tonal`, `-hover`, `-active`, `-text` (`bg-action-tonal`, `text-action-tonal`) - A brand tint with a brand label, for a quieter action beside a primary or a chosen answer. Label held to 4.5:1 on all three fills
+- `--color-chip`, `-hover`, `-active`, `-text` (`bg-chip`, `hover:bg-chip-hover`, `active:bg-chip-active`, `text-chip-text`) - A Chip at rest: a quiet neutral fill seen on the page and a card without an edge (1.2:1 or more), its label held to 4.5:1 on all three fills
+- `--color-chip-selected`, `-hover`, `-active`, `-text` (`bg-chip-selected`, `bg-chip-selected-hover`, `bg-chip-selected-active`, `text-chip-selected-text`) - A selected Chip: the tonal role by default, as tokens of its own, so an app that themes tonal gets matching chips
+- `--color-card-tint` (`bg-card-tint`) - The brand tint as a surface for content (Card `tone="tint"`): brand-100 in light, the brand at 8% over the card in dark. Text, link, ring, field edge and outline edge are held on it
 - `--color-action-outline-border`, `-hover` (`border-action-outline`) - The edge of an outline button: the field edge, 3:1 on the page and the card
 - `--color-toggle-track`, `-hover`, `-active`, `-track-border` (`bg-toggle-track`, `ring-toggle-track`) - The off switch: a light tint with an edge that holds 3:1 (`--color-control-track*` stays the Slider's)
 - `--zabi-button-radius`, `--zabi-button-font-weight` (`rounded-button`, `font-button`) - Button corner and label weight, set on any ancestor; they default to `--radius-control` and 500
@@ -128,6 +132,7 @@ already the right value in each mode. Use the same roles in your own CSS.
 - `--color-focus-ring-danger` - The ring of a destructive control (`.focus-ring--danger`); `--color-error` by default
 - `--color-control-border` (`border-control-border`) - The edge of a control that has nothing else to be seen by, such as the outline of an empty Rating star. `--color-border-strong` is a decorative edge, and is only 3.08:1 on the dark elevated and overlay surfaces
 - `--color-input-border` (`border-input-border`) - The edge of a form field (Input, Textarea, Select, DateField, TimeField). Held to 3:1 on the field fill (`--color-input`), the page and the card in both themes (WCAG 1.4.11); `--color-input-border-hover` is one step darker in light
+- `--color-progress-track-border` (`border-progress-track-border`) - The edge of the Progress track: the field edge by default (3:1 on the page and the card); `transparent` for a track that reaches 3:1 itself (`createTheme` writes that when it overrides the track)
 - `--color-progress-fill`, `--color-progress-track` (`bg-progress-fill`, `bg-progress-track`) - The fill and the track of Progress. The fill is `--color-action-primary` and the track `--color-input` (a darker well, `--color-base-75`, in dark), so the bar follows a pinned primary action. Held to 3:1 (fill on track) in both themes
 - `--color-success`, `--color-warning`, `--color-error`, `--color-info` - States, each with `-subtle`, `-border` and `-text`. In dark the tint and edge are the hue thinned (16% / 36%) into the card surface, not a deep saturated step
 

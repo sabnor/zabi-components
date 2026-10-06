@@ -12,6 +12,14 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- **Chip tokens** (Z-051): `--color-chip`, `-hover`, `-active`, `-text` (a quiet neutral fill without an edge: `base-200` / `300` / `350` in light, `--zabi-base-750` / `700` / `650` in dark, the label is the headline colour) and `--color-chip-selected`, `-hover`, `-active`, `-text`, which default to the tonal role (`--color-action-tonal*`), so an app that themes tonal gets matching chips. Classes `bg-chip`, `hover:bg-chip-hover`, `active:bg-chip-active`, `text-chip-text`, `bg-chip-selected`, `hover:bg-chip-selected-hover`, `active:bg-chip-selected-active`, `text-chip-selected-text`. Label pairs guarded at 4.5:1 on all fills in both modes, in the library and in `createTheme`.
+- **`--color-card-tint`** (`bg-card-tint`; Z-055): the brand tint as a surface for content. `brand-100` in light, the brand at 8% over the card in dark. Text roles and the link are guarded on it at 4.5:1, the focus ring, the field edge and the outline-button edge at 3:1.
+- **`.on-fill`** (Z-055): the on-colour scope for a fill the app chooses. Like `.on-brand`, with the label colour taken from `--zabi-on-fill` (fallback `currentColor`): text roles, links, edges and focus rings inside take it, and a surface inside (a Card, a field, a Chip) gets the theme's roles back. The library cannot check the contrast of a colour picked at run time.
+- **`--color-progress-track-border`** (`border-progress-track-border`; Z-049): the edge of the Progress track, by default the field edge as before. `createTheme` writes `transparent` for a mode in which an overridden `--color-progress-track` itself reaches 3:1 against the page and the card and the app did not set the edge; an edge the app sets itself is never moved.
+- **`--font-family-display`** (`font-display`; Z-058): a second typeface as a token; follows `--font-family-heading` until set. `cn` knows `font-heading` and `font-display` as font families.
+
 ## [9.0.0-alpha.4] - 2026-10-06
 
 A fourth local preview build of the 9.0 visual direction, not published to npm;

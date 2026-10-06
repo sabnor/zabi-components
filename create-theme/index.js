@@ -706,6 +706,34 @@ function followPrimaryWithLink(tokens, darkTokens, modes) {
     return { tokens, darkTokens };
 }
 
+/**
+ * The edge of the Progress track (`--color-progress-track-border`) is the field
+ * edge by default, because the default track is the field fill and does not
+ * reach 3:1 against the page or a card (WCAG 1.4.11). An app that overrides
+ * the track so that it does reach 3:1 against both, in a mode, does not need
+ * an edge there: it is written as `transparent` for that mode, as the link
+ * follows an overridden primary. An edge the app sets itself, in either
+ * mode or both, is its decision, and is never moved (a `transparent` of its
+ * own draws no warning: a pair with no flat colour is skipped).
+ */
+const PROGRESS_TRACK = '--color-progress-track';
+const PROGRESS_TRACK_EDGE = '--color-progress-track-border';
+const MIN_TRACK_AGAINST_SURFACE = 3;
+
+function settleProgressTrackEdge(tokens, darkTokens, modes) {
+    for (const mode of ['light', 'dark']) {
+        if (overrideIn(modes, mode, PROGRESS_TRACK) === undefined) continue;
+        if (overrideIn(modes, mode, PROGRESS_TRACK_EDGE) !== undefined) continue;
+        const maps = themeMaps(tokens, darkTokens)[mode];
+        const track = resolveTokenColor(maps, PROGRESS_TRACK);
+        if (!track) continue; // an alpha tint: not one flat colour
+        const surfaces = ['--color-surface-base', '--color-surface-raised'].map((role) => resolveTokenColor(maps, role));
+        if (surfaces.some((surface) => !surface || contrast(track, surface) < MIN_TRACK_AGAINST_SURFACE)) continue;
+        ({ tokens, darkTokens } = setRoles(tokens, darkTokens, mode, { [PROGRESS_TRACK_EDGE]: 'transparent' }));
+    }
+    return { tokens, darkTokens };
+}
+
 /* ---------- control gradients ---------- */
 
 /** The strongest veil tried: the library's own cap. */
@@ -974,6 +1002,7 @@ export function createTheme(options) {
 
     // What the generator settles once the app's own values are in place.
     if (!pin.brand) ({ tokens, darkTokens } = followPrimaryWithLink(tokens, darkTokens, modes));
+    ({ tokens, darkTokens } = settleProgressTrackEdge(tokens, darkTokens, modes));
     ({ tokens, darkTokens } = settleControlGradients(tokens, darkTokens, modes));
 
     const { warnings: contrastWarnings, checked } = checkPairs(tokens, darkTokens, extraPairs);

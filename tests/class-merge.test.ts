@@ -34,6 +34,11 @@ describe("cn", () => {
         expect(cn("rounded-button", "rounded-container")).toBe("rounded-container");
         expect(cn("font-button", "font-bold")).toBe("font-bold");
         expect(cn("font-medium", "font-button-strong")).toBe("font-button-strong");
+        // The theme faces are families: the last one wins, and a weight beside one is kept.
+        expect(cn("font-display", "font-sans")).toBe("font-sans");
+        expect(cn("font-sans", "font-display")).toBe("font-display");
+        expect(cn("font-heading", "font-display")).toBe("font-display");
+        expect(cn("font-display", "font-bold")).toBe("font-display font-bold");
         // A veil is an image: it neither removes the fill beside it nor is removed by it.
         expect(cn("bg-control-gradient", "bg-action-primary")).toBe("bg-control-gradient bg-action-primary");
         expect(cn("bg-action-primary", "bg-control-gradient")).toBe("bg-action-primary bg-control-gradient");

@@ -67,6 +67,10 @@
    * on :root. Applied to h1–h6 in the base layer below and by the Heading
    * component. */
   --font-family-heading: var(--font-family-sans);
+  /* A second face for a display line (Heading variant="display", `font-display`):
+   * a hero, a score, a big number. Follows the heading face until an app sets
+   * it, so a second typeface is one token and not a CSS rule. */
+  --font-family-display: var(--font-family-heading);
   /* Code. CodeBlock reads it. */
   --font-family-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   /* Tailwind's own names for the same three faces. Its `font-sans` and
@@ -78,6 +82,7 @@
   --font-sans: var(--font-family-sans);
   --font-mono: var(--font-family-mono);
   --font-heading: var(--font-family-heading);
+  --font-display: var(--font-family-display);
 
   /* Font weights. These are the variables Tailwind's `font-normal`,
    * `font-medium`, `font-semibold` and `font-bold` read, so every component
@@ -352,6 +357,13 @@
   --color-card-hover: var(--color-base-150);
   --color-card-active: var(--color-base-200);
   --color-card-elevated: var(--color-surface-overlay);
+  /* Card tint — the brand tint as a surface for content (Card tone="tint"): the
+   * subtle fill's own step (brand-100), as its own token so an app can move one
+   * and not the other. Headline, body, label, description, caption and link
+   * hold 4.5:1 on it, and the ring, the field edge and the outline Button's
+   * edge 3:1 (a form can sit on it): 15.30, 12.87, 9.02, 6.68, 5.29 and 5.84:1;
+   * ring 4.19, field edge 4.17. */
+  --color-card-tint: var(--color-brand-100);
 
   /* Surfaces — numbered aliases (kept for compatibility; prefer surface-base/raised/elevated/overlay) */
   --color-surface-1: var(--color-surface-raised);
@@ -380,6 +392,12 @@
    * follows a pinned primary; the track is the field fill it always was. */
   --color-progress-fill: var(--color-action-primary);
   --color-progress-track: var(--color-input);
+  /* The edge of the track. The default track is the field fill (white on the
+   * white card), 1.00:1 on the card and 1.04:1 on the page, so its edge is the
+   * field edge, 3:1 on both (the guard holds it). An app whose own track
+   * already reaches 3:1 sets this to `transparent`; createTheme does that when
+   * it overrides the track. */
+  --color-progress-track-border: var(--color-input-border);
 
   /* Interaction fills — surface-relative on purpose.
    * A hard-coded ramp step (e.g. base-100) can coincide exactly with the
@@ -686,6 +704,23 @@
   --color-action-tonal-hover: var(--color-action-primary-subtle-hover);
   --color-action-tonal-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
   --color-action-tonal-text: var(--color-brand-800);
+
+  /* Chip - the filter and choice pill (Chip). At rest a quiet neutral fill that
+   * shows on the page and on a card without an edge: base-200 is 1.22:1 on the
+   * page and 1.27:1 on the card, hover base-300 and pressed base-350 (1.42 and
+   * 1.85 on the page). The label is the headline, 4.5:1 or more on all three
+   * (13.96, 11.99 and 9.18:1). */
+  --color-chip: var(--color-base-200);
+  --color-chip-hover: var(--color-base-300);
+  --color-chip-active: var(--color-base-350);
+  --color-chip-text: var(--color-headline);
+  /* A selected chip is tonal, in both modes (never solid): its own tokens,
+   * pointing at the tonal role, so an app that themes tonal gets matching chips
+   * and one that wants another selected look sets these. */
+  --color-chip-selected: var(--color-action-tonal);
+  --color-chip-selected-hover: var(--color-action-tonal-hover);
+  --color-chip-selected-active: var(--color-action-tonal-active);
+  --color-chip-selected-text: var(--color-action-tonal-text);
 
   /* Outline Actions - the edge of an outline Button. The border role was the
    * card edge, 1.25:1 on the page: a label in a ghost box. This is the field
@@ -1149,6 +1184,12 @@ body {
   --color-card-hover: var(--color-surface-elevated);
   --color-card-active: var(--color-surface-overlay-hover);
   --color-card-elevated: var(--color-surface-elevated);
+  /* Card tint, dark: the brand at 8% over the card (as the status tints of D136,
+   * which are 16%: here the field edge sets the ceiling, base-500 is 3.07:1 on
+   * this and 2.90:1 at 12%). 8% is #252733: 1.11:1 on the card and 1.20:1 on the
+   * page; headline 13.49, body 11.68, label and description 10.03, caption 7.68,
+   * link 8.81, ring 6.59:1. */
+  --color-card-tint: color-mix(in srgb, var(--zabi-brand-500) 8%, var(--color-surface-raised));
 
   /* Surfaces — numbered aliases of the surface levels */
   --color-surface-1: var(--color-surface-raised);
@@ -1186,6 +1227,9 @@ body {
    * needs a track this dark: 3.91:1 here with the default brand (2.59:1 on
    * base-250, 2.94:1 for an amber brand on base-200). */
   --color-progress-track: var(--color-base-75);
+  /* Restated: the root value of a var() alias is resolved at :root. The field
+   * edge, 3.67:1 on the page and 3.40:1 on the card. */
+  --color-progress-track-border: var(--color-input-border);
   /* base-500 (the mirror's fixed point): 3.67:1 on the dark field and the page,
    * 3.40:1 on the card, 3.08:1 on the elevated surface and the overlay.
    * base-300 was 1.70, 1.57 and 1.43. */
@@ -1334,6 +1378,20 @@ body {
   --color-action-tonal-hover: var(--color-action-primary-subtle-hover);
   --color-action-tonal-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
   --color-action-tonal-text: var(--color-brand-800);
+
+  /* Chip, dark - its own steps, not the mirror of light. The ladder rises from
+   * the page (base-900, card base-850): rest base-750 is 1.41:1 on the page and
+   * 1.31:1 on the card, hover base-700 and pressed base-650 lighter again (1.70
+   * and 1.96 on the page). Headline is 11.43, 9.50 and 8.24:1 on the three.
+   * Restated, with the selected chip, because the root values are var() aliases. */
+  --color-chip: var(--zabi-base-750);
+  --color-chip-hover: var(--zabi-base-700);
+  --color-chip-active: var(--zabi-base-650);
+  --color-chip-text: var(--color-headline);
+  --color-chip-selected: var(--color-action-tonal);
+  --color-chip-selected-hover: var(--color-action-tonal-hover);
+  --color-chip-selected-active: var(--color-action-tonal-active);
+  --color-chip-selected-text: var(--color-action-tonal-text);
 
   /* Outline Actions - the field edge, restated for the same reason. */
   --color-action-outline-border: var(--color-input-border);
@@ -2456,8 +2514,22 @@ body {
    *
    * These selectors add no specificity (`:where`), so a block inside a
    * surface inside a block is a block again.
+   *
+   * `on-fill` is the same scope for a fill the app chooses: put it on the
+   * block and set the label colour beside the fill,
+   * `<div class="on-fill" style="background: #123; --zabi-on-fill: #fff">`.
+   * Everything above applies with `--zabi-on-fill` as the label colour (the
+   * text roles, links, edges and rings inside; a surface inside gets the
+   * theme's back). Without the property the label is `currentColor`, so the
+   * block's own text colour carries, and the ring's 2px gap is transparent
+   * (the library does not know the fill, so the block shows through). The
+   * library cannot hold a colour the app picks at run time: unlike `on-brand`
+   * and `on-accent`, whose fills and labels scripts/check-contrast.js measure,
+   * the 4.5:1 of the label on the fill (3:1 for edges and rings) is the app's
+   * to check. The guard only checks that the rule re-points and restores the
+   * same roles as the other two.
    */
-  :where(:has(> .on-brand, > .on-accent):not(.on-brand, .on-accent, .on-brand *, .on-accent *)) {
+  :where(:has(> .on-brand, > .on-accent, > .on-fill):not(.on-brand, .on-accent, .on-fill, .on-brand *, .on-accent *, .on-fill *)) {
     --zabi-theme-headline: var(--color-headline);
     --zabi-theme-body: var(--color-body);
     --zabi-theme-label: var(--color-label);
@@ -2522,14 +2594,38 @@ body {
     --color-action-outline-border-hover: var(--color-on-accent);
   }
 
+  /* A fill the app chooses: the label is --zabi-on-fill, the block's own colour without it. */
+  .on-fill {
+    color: var(--zabi-on-fill, currentColor);
+    --color-focus-ring: var(--zabi-on-fill, currentColor);
+    --color-focus-ring-muted: var(--zabi-on-fill, currentColor);
+    --color-nav-menu-focus: var(--zabi-on-fill, currentColor);
+    --color-focus-ring-offset: transparent;
+    --color-focus-ring-danger: var(--zabi-on-fill, currentColor);
+    --color-headline: var(--zabi-on-fill, currentColor);
+    --color-body: var(--zabi-on-fill, currentColor);
+    --color-label: var(--zabi-on-fill, currentColor);
+    --color-description: var(--zabi-on-fill, currentColor);
+    --color-caption: var(--zabi-on-fill, currentColor);
+    --color-link: var(--zabi-on-fill, currentColor);
+    --color-link-hover: var(--zabi-on-fill, currentColor);
+    --color-border: var(--zabi-on-fill, currentColor);
+    --color-border-medium: var(--zabi-on-fill, currentColor);
+    --color-border-strong: var(--zabi-on-fill, currentColor);
+    --color-control-border: var(--zabi-on-fill, currentColor);
+    --color-action-outline-border: var(--zabi-on-fill, currentColor);
+    --color-action-outline-border-hover: var(--zabi-on-fill, currentColor);
+  }
+
   /* A surface inside a block: its text and edges are the theme's again. */
-  :where(.on-brand, .on-accent)
+  :where(.on-brand, .on-accent, .on-fill)
     :where(
       .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
       .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
       .bg-surface-chrome, .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
-      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-energetic-subtle, .bg-error-subtle,
+      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
+      .bg-energetic-subtle, .bg-error-subtle,
       .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     ) {
@@ -2550,13 +2646,14 @@ body {
   }
 
   /* And what is inside that surface is ringed in the theme's ring again. */
-  :where(.on-brand, .on-accent)
+  :where(.on-brand, .on-accent, .on-fill)
     :where(
       .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
       .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
       .bg-surface-chrome, .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
-      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-energetic-subtle, .bg-error-subtle,
+      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
+      .bg-energetic-subtle, .bg-error-subtle,
       .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     )
@@ -2805,6 +2902,72 @@ body {
 
 .text-action-tonal {
   color: var(--color-action-tonal-text);
+}
+
+/* Chip: the quiet neutral fill and the tonal selected fill, each with its label.
+ * Hand-written with their states, like the tonal fill, so a `hover:` or
+ * `active:` variant of one cannot lose to the base class. The plain
+ * `-hover` and `-active` classes are the fills themselves. */
+.bg-chip {
+  background-color: var(--color-chip);
+}
+
+.bg-chip-hover {
+  background-color: var(--color-chip-hover);
+}
+
+.bg-chip-active {
+  background-color: var(--color-chip-active);
+}
+
+@media (hover: hover) {
+.hover\:bg-chip-hover:hover {
+  background-color: var(--color-chip-hover);
+}
+}
+
+.active\:bg-chip-active:active {
+  background-color: var(--color-chip-active);
+}
+
+.text-chip-text {
+  color: var(--color-chip-text);
+}
+
+.bg-chip-selected {
+  background-color: var(--color-chip-selected);
+}
+
+.bg-chip-selected-hover {
+  background-color: var(--color-chip-selected-hover);
+}
+
+.bg-chip-selected-active {
+  background-color: var(--color-chip-selected-active);
+}
+
+@media (hover: hover) {
+.hover\:bg-chip-selected-hover:hover {
+  background-color: var(--color-chip-selected-hover);
+}
+}
+
+.active\:bg-chip-selected-active:active {
+  background-color: var(--color-chip-selected-active);
+}
+
+.text-chip-selected-text {
+  color: var(--color-chip-selected-text);
+}
+
+/* Card tint: the brand tint as a surface for content. */
+.bg-card-tint {
+  background-color: var(--color-card-tint);
+}
+
+/* The edge of the Progress track. */
+.border-progress-track-border {
+  border-color: var(--color-progress-track-border);
 }
 
 /* Toggle track, off. Hand-written with its states, so `hover:` and `active:`

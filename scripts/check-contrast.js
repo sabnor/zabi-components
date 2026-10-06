@@ -363,6 +363,13 @@ function checkFocusRingSources(css, themes, pairs) {
 }
 
 /**
+ * `.on-fill`: the block for a fill the app chooses. Its label is
+ * `--zabi-on-fill`, set on the block, so no pair of its own can be held;
+ * the rule is only checked for re-pointing and restoring the same roles.
+ */
+const ON_FILL = { name: 'custom fill', selector: '.on-fill', runtime: true, on: 'var(--zabi-on-fill, currentColor)' };
+
+/**
  * Controls inside a brand or accent block.
  *
  * `.on-brand` and `.on-accent` re-point the roles a control writes with when
@@ -400,7 +407,7 @@ function checkBlocks(css, themes, componentsDir) {
         return { failures: ['the rule that keeps the theme values (--zabi-theme-*) on the parent of a block was not found'], checked };
     }
     const copies = declarations(kept[2]);
-    for (const block of BLOCKS) {
+    for (const block of [...BLOCKS, ON_FILL]) {
         // Written on a block, or inside one, a kept value would be the block's own colour.
         for (const selector of [`> ${block.selector}`, `${block.selector} *`, `${block.selector},`]) {
             if (!kept[1].includes(selector)) {
@@ -410,7 +417,7 @@ function checkBlocks(css, themes, componentsDir) {
     }
 
     // The two rules that give them back: on a surface inside a block, and on what is inside that surface.
-    const resets = [...css.matchAll(/:where\(\.on-brand, \.on-accent\)\s*:where\(([^)]*)\)(\s*>\s*:where\(\*\))?\s*\{([^}]*)\}/g)];
+    const resets = [...css.matchAll(/:where\(\.on-brand, \.on-accent, \.on-fill\)\s*:where\(([^)]*)\)(\s*>\s*:where\(\*\))?\s*\{([^}]*)\}/g)];
     const restored = {};
     const surfaces = new Set();
     for (const reset of resets) {
@@ -419,7 +426,7 @@ function checkBlocks(css, themes, componentsDir) {
     }
     if (resets.length < 2) failures.push('the rules that restore the theme values on a surface inside a block were not found');
 
-    for (const block of BLOCKS) {
+    for (const block of [...BLOCKS, ON_FILL]) {
         const own = ruleBody(block.selector);
         if (!own) {
             failures.push(`${block.selector} was not found in the stylesheet`);
@@ -427,6 +434,14 @@ function checkBlocks(css, themes, componentsDir) {
         }
         for (const [role, min] of BLOCK_ROLES) {
             const value = own[role];
+            if (block.runtime) {
+                // The label is a colour the app sets at run time, so there is no ratio to measure here:
+                // only that every role is re-pointed at it, like the two blocks above.
+                if (value !== block.on) {
+                    failures.push(`${block.selector} must re-point ${role} at ${block.on}: on the block it is the page's colour`);
+                }
+                continue;
+            }
             const token = value?.match(/^var\(\s*(--[\w-]+)\s*\)$/)?.[1];
             if (!token) {
                 failures.push(`${block.selector} does not re-point ${role} at a token: on the block it is the page's colour`);

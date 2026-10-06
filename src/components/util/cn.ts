@@ -50,6 +50,11 @@ const twMerge = extendTailwindMerge({
     extend: {
         theme: {
             spacing: SPACING_STEPS,
+            // The two theme faces (`font-heading`, `font-display`, from --font-heading
+            // and --font-display). tailwind-merge already reads any plain name after
+            // `font-` as a family; they are listed so that stays true if that rule
+            // narrows to the weights.
+            font: ["heading", "display"],
         },
         classGroups: {
             ...Object.fromEntries(RADIUS_GROUPS.map((group) => [group, [{ [group]: RADIUS_ROLES }]])),

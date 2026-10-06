@@ -167,6 +167,7 @@ contrast the roles were designed with is gone. Run it through
 |---|---|---|
 | `--font-family-sans` | the platform UI face: `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"` | Body text and every component |
 | `--font-family-heading` | `var(--font-family-sans)` | `h1` to `h6` and the Heading component |
+| `--font-family-display` | `var(--font-family-heading)` | `Heading variant="display"` and `font-display`: a second face, so it is a token and not a CSS rule |
 | `--font-family-mono` | `ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace` | CodeBlock |
 | `--font-weight-regular` | `400` | `font-normal` |
 | `--font-weight-medium` | `500` | `font-medium` |
@@ -184,8 +185,8 @@ base layer, so a `font-*` utility on a heading still wins.
 
 Tailwind's own font utilities follow these tokens: `font-sans` is
 `--font-family-sans`, `font-mono` is `--font-family-mono`, and `font-heading`
-is `--font-family-heading`. The theme maps Tailwind's `--font-sans` and
-`--font-mono` (and a `--font-heading` of its own) onto them. Before 8.1
+is `--font-family-heading`, `font-display` is `--font-family-display`. The theme maps Tailwind's `--font-sans` and
+`--font-mono` (and a `--font-heading` and `--font-display` of its own) onto them. Before 8.1
 `font-sans` was Tailwind's system stack, so `class="font-sans"` on a heading
 dropped it out of the brand face. Set the `--font-family-*` tokens, not the
 short names: the short ones follow.
@@ -511,6 +512,17 @@ IconButton, the border of an `outline` one, and the focus ring of all of
 them, the danger ring included. They were, on a brand block in the default
 theme: labels 2.15 (light) and 1.52 (dark), `outline` and `ghost` 3.65 and
 2.05, `link` 1.39 and 1.34, the danger ring 1.06 and 1.04.
+
+**A fill you choose.** `on-fill` is the same scope for a colour the library
+does not know: `<div class="on-fill" style="background: #123; --zabi-on-fill: #fff">`.
+Everything above applies with `--zabi-on-fill` as the label colour (without it
+the label is `currentColor`, and the ring's gap is transparent, so the block
+shows through). A surface inside (`bg-card`, `bg-card-tint`, `bg-chip`, `on-surface`
+and the rest of the list) gets the theme's roles back. The library cannot hold
+a colour the app picks at run time: the 4.5:1 of the label on your fill (3:1 for
+edges and rings) is yours to check. A primary Button, a solid Badge and a
+Rating keep their own fills and labels inside any of the three blocks; only the
+text roles, the edges and the rings follow the block.
 
 The Button variants, on a brand block (`bg-action-primary`). "Label" is
 against the button's own fill, or against the block where the button has
@@ -1354,6 +1366,9 @@ Tokens and classes the 9.0 Button, Toggle and FloatingActionButton read. All set
 - **Outline edge** (`border-action-outline`): `--color-action-outline-border` and `-hover`, the field edge by default (3:1 on the page and a card in both modes). Inside `.on-brand` and `.on-accent` it is the block's label colour.
 - **Button corner and label weight**, apart from fields: `rounded-button` reads `--zabi-button-radius` and falls back to `--radius-control`; `font-button` (500) and `font-button-strong` (600) read `--zabi-button-font-weight`. Declared nowhere, so set them on any ancestor (or in `createTheme` `overrides`).
 - **Off Toggle** (`bg-toggle-track`, `ring-toggle-track`): `--color-toggle-track`, `-hover`, `-active` and `--color-toggle-track-border`. The track is a light tint; its edge is what holds 3:1 on the page and a card (WCAG 1.4.11). `--color-control-track*` is unchanged and still the Slider's.
+- **Chip** (`bg-chip`, `text-chip-text`): `--color-chip`, `-hover`, `-active` (light base-200, 300, 350; dark base-750, 700, 650) and `--color-chip-text` (the headline, 4.5:1 on all three). Seen on the page and a card without an edge, 1.2:1 or more, guarded. **Selected chip** (`bg-chip-selected`, `text-chip-selected-text`): `--color-chip-selected`, `-hover`, `-active`, `-text`, the tonal role by default, as tokens of their own, with the label held on all three fills.
+- **Tint card** (`bg-card-tint`): `--color-card-tint`, brand-100 in light and the brand at 8% over the card in dark. Headline, body, label, description, caption and link are held to 4.5:1 on it, and the ring, the field edge and the outline Button's edge to 3:1, in both modes.
+- **Progress track edge** (`border-progress-track-border`): `--color-progress-track-border`, the field edge by default (3:1 on the page and a card in both modes, because the default track is the field fill and does not reach it). `transparent` skips the guard. `createTheme` writes `transparent` for a mode in which you override `--color-progress-track` with a colour that itself reaches 3:1 on the page and the card, unless you set the edge; an edge you set, `transparent` included, is never moved.
 
 ### Shadow scale
 
