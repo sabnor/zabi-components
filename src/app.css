@@ -115,17 +115,17 @@
   --color-brand-950: var(--zabi-brand-950);
 
   /* Citron Color Scale — physical ramp + semantic aliases (same mirror pattern as pine / base) */
-  --zabi-citron-50: #f6f7ef;
-  --zabi-citron-100: #edefdf;
-  --zabi-citron-200: #dcdfbf;
-  --zabi-citron-300: #c5ca95;
-  --zabi-citron-400: #aab063;
-  --zabi-citron-500: #8c9027;
-  --zabi-citron-600: #707400;
-  --zabi-citron-700: #5a5d00;
-  --zabi-citron-800: #454700;
-  --zabi-citron-900: #313200;
-  --zabi-citron-950: #202100;
+  --zabi-citron-50: #f4f8ee;
+  --zabi-citron-100: #e9f0de;
+  --zabi-citron-200: #d4e2bd;
+  --zabi-citron-300: #b9ce92;
+  --zabi-citron-400: #99b55e;
+  --zabi-citron-500: #769619;
+  --zabi-citron-600: #5d7900;
+  --zabi-citron-700: #4a6100;
+  --zabi-citron-800: #384a00;
+  --zabi-citron-900: #273500;
+  --zabi-citron-950: #192300;
 
   --color-citron-50: var(--zabi-citron-50);
   --color-citron-100: var(--zabi-citron-100);
@@ -167,17 +167,17 @@
   --color-accent-950: var(--zabi-accent-950);
 
   /* Pine Color Scale — physical ramp + semantic aliases (mirror pattern matches --zabi-base-* / --color-base-*) */
-  --zabi-pine-50: #f0f8f5;
-  --zabi-pine-100: #e2f1eb;
-  --zabi-pine-200: #c5e4d7;
-  --zabi-pine-300: #9fd1bd;
-  --zabi-pine-400: #70ba9e;
-  --zabi-pine-500: #399c7a;
-  --zabi-pine-600: #00805e;
-  --zabi-pine-700: #00674a;
-  --zabi-pine-800: #004f37;
-  --zabi-pine-900: #003826;
-  --zabi-pine-950: #002518;
+  --zabi-pine-50: #f0f9f3;
+  --zabi-pine-100: #e1f2e8;
+  --zabi-pine-200: #c3e5d0;
+  --zabi-pine-300: #9cd3b2;
+  --zabi-pine-400: #6cbb8e;
+  --zabi-pine-500: #319e67;
+  --zabi-pine-600: #00804b;
+  --zabi-pine-700: #00683b;
+  --zabi-pine-800: #00502b;
+  --zabi-pine-900: #00391c;
+  --zabi-pine-950: #002610;
 
   --color-pine-50: var(--zabi-pine-50);
   --color-pine-100: var(--zabi-pine-100);
@@ -217,17 +217,17 @@
   --color-iris-950: var(--zabi-iris-950);
 
   /* Warning Color Scale — physical ramp + semantic aliases (Tailwind amber) */
-  --zabi-warning-50: #fbf6ed;
-  --zabi-warning-100: #f7ecda;
-  --zabi-warning-200: #f1d9b6;
-  --zabi-warning-300: #e8bf87;
-  --zabi-warning-400: #db9e4c;
-  --zabi-warning-500: #c17b00;
-  --zabi-warning-600: #9e6000;
-  --zabi-warning-700: #824c00;
+  --zabi-warning-50: #fdf5ec;
+  --zabi-warning-100: #fbebda;
+  --zabi-warning-200: #f6d7b4;
+  --zabi-warning-300: #efbc84;
+  --zabi-warning-400: #e49a44;
+  --zabi-warning-500: #c67800;
+  --zabi-warning-600: #a05f00;
+  --zabi-warning-700: #834b00;
   --zabi-warning-800: #663800;
-  --zabi-warning-900: #4b2600;
-  --zabi-warning-950: #341800;
+  --zabi-warning-900: #4b2700;
+  --zabi-warning-950: #331800;
 
   --color-warning-50: var(--zabi-warning-50);
   --color-warning-100: var(--zabi-warning-100);
@@ -497,8 +497,8 @@
    *   <family>-weak     step 700  pressed / emphasis
    *   <family>-medium   step 800  strongest fill
    *   <family>-strong   step 900  darkest
-   *   <family>-subtle   step 200  tinted fill (badges, alerts); .dark pins step 100
-   *   <family>-border   step 300  tinted edge; .dark pins step 200
+   *   <family>-subtle   step 100  tinted fill (badges, alerts); .dark restates step 100
+   *   <family>-border   step 200  tinted edge; .dark restates step 200
    *   <family>-text     step 700  text on a subtle fill or a page surface
    *
    * Warning, error and energetic previously sat at step 500 — the mirror's
@@ -512,32 +512,32 @@
   --color-success-weak: var(--color-pine-700);
   --color-success-medium: var(--color-pine-800);
   --color-success-strong: var(--color-pine-900);
-  --color-success-subtle: var(--color-pine-200);
-  --color-success-border: var(--color-pine-300);
+  --color-success-subtle: var(--color-pine-100);
+  --color-success-border: var(--color-pine-200);
 
   /* Warning Colors */
   --color-warning: var(--color-warning-600);
   --color-warning-weak: var(--color-warning-700);
   --color-warning-medium: var(--color-warning-800);
   --color-warning-strong: var(--color-warning-900);
-  --color-warning-subtle: var(--color-warning-200);
-  --color-warning-border: var(--color-warning-300);
+  --color-warning-subtle: var(--color-warning-100);
+  --color-warning-border: var(--color-warning-200);
 
   /* Error Colors */
   --color-error: var(--color-error-600);
   --color-error-weak: var(--color-error-700);
   --color-error-medium: var(--color-error-800);
   --color-error-strong: var(--color-error-900);
-  --color-error-subtle: var(--color-error-200);
-  --color-error-border: var(--color-error-300);
+  --color-error-subtle: var(--color-error-100);
+  --color-error-border: var(--color-error-200);
 
   /* Energetic Colors (Citron) */
   --color-energetic: var(--color-citron-600);
   --color-energetic-weak: var(--color-citron-700);
   --color-energetic-medium: var(--color-citron-800);
   --color-energetic-strong: var(--color-citron-900);
-  --color-energetic-subtle: var(--color-citron-200);
-  --color-energetic-border: var(--color-citron-300);
+  --color-energetic-subtle: var(--color-citron-100);
+  --color-energetic-border: var(--color-citron-200);
 
   /* Accent Colors — the second brand colour, on --zabi-accent-* (citron by
    * default). The same recipe as the primary action: fill at 600, hover 700,
@@ -547,8 +547,8 @@
   --color-accent: var(--color-accent-600);
   --color-accent-hover: var(--color-accent-700);
   --color-accent-active: var(--color-accent-800);
-  --color-accent-subtle: var(--color-accent-200);
-  --color-accent-border: var(--color-accent-300);
+  --color-accent-subtle: var(--color-accent-100);
+  --color-accent-border: var(--color-accent-200);
   --color-accent-text: var(--color-accent-700);
   /* Label on a solid accent fill — see "on brand" below for the two knobs. */
   --zabi-on-accent: #ffffff;
@@ -565,12 +565,12 @@
   --color-neutral-weak: var(--color-base-600);
   --color-neutral-medium: var(--color-base-700);
   --color-neutral-strong: var(--color-base-900);
-  /* Visibly past the page (base-50, 1.31:1) and the card (1.37:1). It was
+  /* Visibly past the page (base-50, 1.20:1) and the card (1.27:1). It was
    * base-100 once, which IS the dark page and made a neutral badge measure
-   * 1.00:1 and read as bare text. The border is a step darker than the fill,
-   * like every other family. */
-  --color-neutral-subtle: var(--color-base-250);
-  --color-neutral-border: var(--color-base-300);
+   * 1.00:1 and read as bare text; base-150 is only 1.13:1 on the page. The
+   * border is a step darker than the fill, like every other family. */
+  --color-neutral-subtle: var(--color-base-200);
+  --color-neutral-border: var(--color-base-250);
 
   /* Info Colors */
   --color-info: var(--color-iris-600);
@@ -578,8 +578,8 @@
   --color-info-medium: var(--color-iris-800);
   --color-info-strong: var(--color-iris-900);
   --color-info-active: var(--color-iris-400);
-  --color-info-subtle: var(--color-iris-200);
-  --color-info-border: var(--color-iris-300);
+  --color-info-subtle: var(--color-iris-100);
+  --color-info-border: var(--color-iris-200);
   /* Text alias */
   --color-info-text: var(--color-iris-700);
 
@@ -599,14 +599,14 @@
   --color-action-primary: var(--color-brand-600);
   --color-action-primary-hover: var(--color-brand-700);
   --color-action-primary-active: var(--color-brand-800);
-  --color-action-primary-subtle: var(--color-brand-200);
-  --color-action-primary-subtle-hover: var(--color-brand-300);
+  --color-action-primary-subtle: var(--color-brand-100);
+  --color-action-primary-subtle-hover: var(--color-brand-200);
   /* Held down, on a control whose resting fill is the subtle one: a toggled-on
    * ghost IconButton. It used the hover step, which is 1.24:1 against the
    * resting fill and, with a mouse, is what the button already shows. Half a
    * step past hover is 1.42:1 against resting, and the icon (--color-link)
    * keeps 3.50:1 on it; a whole step would leave the icon at 3.01:1. */
-  --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-400) 50%, var(--color-brand-300));
+  --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
   /* "On brand" — the label on a primary fill.
    * White rather than brand-50: the ramp's lightest tint lands at exactly
    * 4.50:1 on brand-600 — passing, but with no margin. Pure white gives 4.86:1.

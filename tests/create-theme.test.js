@@ -389,7 +389,7 @@ test('pin puts the exact colour on the light primary action and leaves dark as i
   // The ramp is the unpinned ramp: tints, borders and every other role keep their place.
   for (const step of RAMP_STEPS) assert.equal(pinned.tokens[`--zabi-brand-${step}`], plain.tokens[`--zabi-brand-${step}`]);
   assert.deepEqual(pinned.closest, plain.closest);
-  assert.equal(resolveTokenColor(light, '--color-action-primary-subtle'), plain.tokens['--zabi-brand-200']);
+  assert.equal(resolveTokenColor(light, '--color-action-primary-subtle'), plain.tokens['--zabi-brand-100']);
 
   // Light: the fill is the colour, to the byte, with a white label at about 8.5:1.
   assert.equal(pinned.tokens['--color-action-primary'], brand);
@@ -754,7 +754,7 @@ test('without light or dark overrides the bytes are what they were before the op
     plain: [{ brand: '#0026EA' }, 'e6f5363cea616208faf1d96cb8356ef30343b8e1ab69f9078b3594c8db187a81'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      '906b8bc12d9f39a7bae9537deb6cdbb6a50d0b1ef604ab2b0f00b82fe0ef3d18',
+      'cec6b2bbb494cb97ed8b349e60ada1cc86baf2b95c8a96429eda47efe5a9e089',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },

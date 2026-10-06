@@ -54,13 +54,13 @@ export const RAMP_SEEDS = {
     // Periwinkle — the product's brand hue, from the original brand-600/700.
     brand: { hue: 274, peakChroma: 0.175, hueShift: -6 },
     // Citron — yellow-green accent, from the original citron-400.
-    citron: { hue: 112, peakChroma: 0.135, hueShift: 0 },
+    citron: { hue: 124, peakChroma: 0.16, hueShift: 0 },
     // Pine — deep blue-green, from the original pine-400/500.
-    pine: { hue: 170, peakChroma: 0.115, hueShift: -6 },
+    pine: { hue: 160, peakChroma: 0.14, hueShift: -6 },
     // Iris — muted violet, from the original iris-500/600.
     iris: { hue: 283, peakChroma: 0.115, hueShift: -2 },
     // Amber — warms from gold to bronze as it darkens, as the original did.
-    warning: { hue: 82, peakChroma: 0.165, hueShift: -24 },
+    warning: { hue: 72, peakChroma: 0.18, hueShift: -12 },
     // Red — from the original error-500/600.
     error: { hue: 24, peakChroma: 0.205, hueShift: 5 },
 };

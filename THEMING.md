@@ -1016,11 +1016,11 @@ Families: `success`, `warning`, `error`, `info`, `energetic`, `neutral`.
 and `-active` (800) instead of `-weak` / `-medium` / `-strong`.
 
 The tints are the one role that does not simply mirror. A step-100 fill is
-1.16:1 on a white card, too pale to read as a fill, so light uses steps 200 and
-300 (1.36:1 and about 1.7:1). Mirrored, those would be too heavy on a dark
-surface, so `.dark` pins 100 and 200. `neutral` follows the same shape on the
-base ramp: `base-250` fill and `base-300` edge in light, `base-300` and
-`base-200` in dark.
+1.16:1 on a white card, which is enough on the near-white 9.0 page once the
+tint has its edge, so light uses steps 100 and 200 for the fill and the edge.
+`.dark` restates 100 and 200 too (the mirror of those would be too heavy on a
+dark surface). `neutral` follows the same shape on the base ramp: `base-200`
+fill and `base-250` edge in light, `base-300` and `base-200` in dark.
 
 Prefer the **subtle** trio (`-subtle` fill + `-border` edge + `-text` label) for
 anything informational. Solid fills are for the one element on a screen that has
