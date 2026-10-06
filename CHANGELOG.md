@@ -12,6 +12,36 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [8.1.0-beta.5] - 2026-10-06
+
+A local preview build on top of 8.1.0-beta.4, not published to npm. It adds
+the last components of the mobile set. Built quickly and tested lightly on
+purpose: type and design checks, the unit suite and the package build were
+run on it; the browser suite was NOT run on this build, and the new
+components have only been opened once each in Chromium at 375px, light and
+dark. Nothing here has had an accessibility or QA review. Using it is the
+test.
+
+### Upgrade notes (since 8.1.0-beta.4)
+
+- Nothing changes for existing code. With a `ZabiStringsProvider`, Toast,
+  Alert, CodeBlock, ImageUpload and UnsavedChangesBar now follow it.
+
+### Known limitations of this beta
+
+- **Avatar's initials are brand-200 on brand-700 in the default light
+  theme** (the subtle primary pair, guarded at 4.5:1), not brand-100 on
+  brand-600.
+- **PullToRefresh: a rejected `onrefresh` ends the busy state silently.**
+  Report the failure in the app. In controlled mode (`bind:refreshing`) it
+  says "Updated" whenever `refreshing` goes back to false.
+- **SwipeableListItem: an action's label does not wrap**, so a long label
+  makes the actions wide at 200% text; keep labels to a word. With
+  `showMoreButton={false}` focus has nowhere to return to after an action.
+- Avatar, AvatarGroup, SwipeableListItem and PullToRefresh are untested in
+  RTL, forced colours, reduced motion and at 200% text, and on a real phone.
+- The limitations listed under 8.1.0-beta.4 still apply.
+
 ### Added
 
 - **Avatar and AvatarGroup.** `Avatar` is a round profile picture that falls
