@@ -153,6 +153,82 @@ describe("BottomSheet semantics", () => {
     });
 });
 
+describe("BottomSheet motion", () => {
+    // jsdom has no matchMedia, which the component reads as "reduced motion".
+    const mediaList = (reduce: boolean) =>
+        ((q: string) => ({ matches: reduce && q.includes("reduce"), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} })) as never;
+    const stubAnimate = (impl?: (...args: unknown[]) => unknown) => {
+        const animate = vi.fn(impl ?? (() => ({})));
+        HTMLElement.prototype.animate = animate as never;
+        window.matchMedia = mediaList(false);
+        return animate;
+    };
+    afterEach(() => {
+        delete (HTMLElement.prototype as { animate?: unknown }).animate;
+        delete (window as { matchMedia?: unknown }).matchMedia;
+    });
+
+    it("uses the motion tokens for snapping, with a filler under the bottom edge", async () => {
+        await openSheet();
+        const cls = sheet().getAttribute("class")!;
+        expect(cls).toContain("duration-(--duration-slow)");
+        expect(cls).toContain("ease-spring");
+        expect(cls).not.toMatch(/duration-(150|200|300)\b/);
+        expect(cls).toContain("after:top-full");
+        expect(cls).toContain("after:pointer-events-none");
+    });
+
+    it("slides in over the slow duration with the spring easing when the tokens are readable", async () => {
+        const animate = stubAnimate();
+        const real = window.getComputedStyle;
+        vi.spyOn(window, "getComputedStyle").mockImplementation((el, pseudo) => {
+            const style = real(el, pseudo);
+            return new Proxy(style, {
+                get: (t, key) =>
+                    key === "getPropertyValue"
+                        ? (name: string) =>
+                              name === "--duration-slow" ? "0.3s" : name === "--ease-spring" ? " linear(0, 1) " : t.getPropertyValue(name)
+                        : Reflect.get(t, key).bind?.(t) ?? Reflect.get(t, key),
+            });
+        });
+        await openSheet();
+        expect(animate).toHaveBeenCalledTimes(1);
+        expect(animate.mock.calls[0][1]).toEqual({ duration: 300, easing: "linear(0, 1)" });
+    });
+
+    it("falls back to 300ms and ease-out without tokens, and when the easing is rejected", async () => {
+        const animate = stubAnimate();
+        await openSheet();
+        expect(animate.mock.calls[0][1]).toEqual({ duration: 300, easing: "ease-out" });
+        cleanup();
+
+        const rejecting = stubAnimate((_f, options) => {
+            if ((options as { easing: string }).easing !== "ease-out") throw new TypeError("bad easing");
+            return {};
+        });
+        const real = window.getComputedStyle;
+        vi.spyOn(window, "getComputedStyle").mockImplementation((el, pseudo) => {
+            const style = real(el, pseudo);
+            return new Proxy(style, {
+                get: (t, key) =>
+                    key === "getPropertyValue"
+                        ? (name: string) => (name === "--ease-spring" ? "linear(0, 1)" : t.getPropertyValue(name))
+                        : Reflect.get(t, key).bind?.(t) ?? Reflect.get(t, key),
+            });
+        });
+        await openSheet();
+        expect(rejecting).toHaveBeenCalledTimes(2);
+        expect(rejecting.mock.calls[1][1]).toEqual({ duration: 300, easing: "ease-out" });
+    });
+
+    it("does not animate under reduced motion", async () => {
+        const animate = stubAnimate();
+        window.matchMedia = mediaList(true);
+        await openSheet();
+        expect(animate).not.toHaveBeenCalled();
+    });
+});
+
 describe("BottomSheet snap points", () => {
     // The heights themselves need a stylesheet and layout, and jsdom does not
     // parse `min()` and `max()`: they are in playwright/bottom-sheet.spec.ts.

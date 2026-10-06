@@ -12,6 +12,10 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Changed (visible in 9.0)
+
+- **BottomSheet arrives on a spring.** The slide in, the move between snap points and the settle after a drag use `--ease-spring` over `--duration-slow` (300ms); they were a literal 200ms ease-out. The slide in reads both tokens from the sheet, so a theme that sets them is followed, and falls back to `ease-out` where the tokens cannot be read or the engine rejects a `linear()` easing. A 2rem filler under the panel's bottom edge keeps the overshoot from showing the page. Reduced motion is unchanged (no slide, no transition), and so are drag, snap logic, focus and scroll lock. Restore 8.1: on the sheet or an ancestor, `--ease-spring: var(--ease-out); --duration-slow: 200ms` (both tokens are shared with other components), or `class="duration-200 ease-out"` on the `BottomSheet`.
+
 ### Fixed
 
 - **Z-040: the pressed field follows the field.** `--color-input-active` (the

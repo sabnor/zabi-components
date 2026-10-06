@@ -164,7 +164,8 @@
     applyDefaults();
     $effect.pre(applyDefaults);
 
-    const SLIDE_MS = 200;
+    // Used only where --duration-slow cannot be read.
+    const SLIDE_MS = 300;
 
     const titleId = generateId("bottom-sheet-title");
     const descriptionId = generateId("bottom-sheet-description");
@@ -221,10 +222,26 @@
     /** Slides the panel up from the bottom edge. Skipped where motion is unwanted or unsupported. */
     function slideIn(container: HTMLElement) {
         if (typeof container.animate !== "function" || prefersReducedMotion()) return;
-        container.animate(
-            [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }],
-            { duration: SLIDE_MS, easing: "ease-out" },
-        );
+        // Arriving gets the spring, read from the element so a theme that
+        // overrides the tokens is followed. Where the tokens cannot be read
+        // (no stylesheet) or the engine rejects the easing, plain ease-out.
+        const style = getComputedStyle(container);
+        const duration = parseDuration(style.getPropertyValue("--duration-slow"));
+        const spring = style.getPropertyValue("--ease-spring").trim();
+        const frames = [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }];
+        try {
+            container.animate(frames, { duration, easing: spring || "ease-out" });
+        } catch {
+            container.animate(frames, { duration, easing: "ease-out" });
+        }
+    }
+
+    /** `300ms`, `0.3s` or `0s` to milliseconds; the fallback when it is not a time. */
+    function parseDuration(value: string): number {
+        const match = /^\s*(-?\d*\.?\d+)(ms|s)\s*$/.exec(value);
+        if (!match) return SLIDE_MS;
+        const ms = parseFloat(match[1]) * (match[2] === "s" ? 1000 : 1);
+        return ms >= 0 ? ms : SLIDE_MS;
     }
 
     /** The snap points in px, lowest first, for the screen as it is now. */
@@ -437,7 +454,11 @@ a background is dropped there, and the grip would be gone. -->
                 "group-data-keyboard-open/overlay:max-h-[calc(100%_-_env(safe-area-inset-top,0px))] group-data-keyboard-open/overlay:pb-0",
                 // Clear of the notch and the rounded corners in landscape.
                 "pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-                "transition-[height,transform] duration-200 ease-out motion-reduce:transition-none",
+                // Snapping and settling spring; the overshoot may lift the panel a
+                // few px, so the filler continues its fill under the screen edge.
+                // `inherit` follows whatever the panel paints.
+                "transition-[height,transform] duration-(--duration-slow) ease-spring motion-reduce:transition-none",
+                "after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-8 after:content-[''] after:[background:inherit]",
                 "md:w-[min(100%,40rem)] md:border-x",
                 className,
             )}
