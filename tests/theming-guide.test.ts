@@ -76,6 +76,9 @@ const COMPONENT_PROPERTIES: Record<string, string> = {
     "--zabi-rating-on-active": "src/components/atoms/Rating.svelte",
     "--zabi-rating-on-edge": "src/components/atoms/Rating.svelte",
     "--zabi-rating-off": "src/components/atoms/Rating.svelte",
+    // Button reads these through `rounded-button` and `font-button`, which are in the stylesheet.
+    "--zabi-button-radius": "src/app.css",
+    "--zabi-button-font-weight": "src/app.css",
 };
 
 function mentioned(text: string): string[] {
