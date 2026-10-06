@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { page } from "$app/stores";
-    import { goto } from "$app/navigation";
     import SidebarNavigation from "../../components/organisms/SidebarNavigation.svelte";
     import type { SidebarNavigationItem } from "../../components/organisms/SidebarNavigation.svelte";
     import type { ComponentMetadata } from "../../types/page.types";
@@ -56,12 +55,30 @@
         `${$page.url.pathname}${$page.url.search}`,
     );
 
+    /**
+     * Where a category row leads: the first component of the category, with
+     * `?catalog=all` for the row that lists every one. A real address, so
+     * the row works as a link does: in a new tab, copied, and before the
+     * page has hydrated. (It was `category:molecules`, a scheme that does
+     * not exist, caught by a click handler.)
+     *
+     * The fragment names the category. It keeps the row's address apart from
+     * that of the component it leads to, which is a row of its own further
+     * down: the page is marked `aria-current="page"` and the category
+     * `aria-current="location"`, one of each.
+     */
+    function categoryHref(categoryId: string): string {
+        const first = firstInCategory(categoryId);
+        const suffix = categoryId === "all" ? "?catalog=all" : "";
+        return `/components/${first?.name ?? ""}${suffix}#catalog-${categoryId}`;
+    }
+
     const docsSidebarItems = $derived.by((): SidebarNavigationItem[] => {
         const categoryItems: SidebarNavigationItem[] = categories.map(
             (category) => ({
                 id: `category-${category.id}`,
                 label: category.label,
-                href: `category:${category.id}`,
+                href: categoryHref(category.id),
                 icon: getDocsCategoryIcon(category.id),
                 badgeText:
                     category.id === "all"
@@ -97,26 +114,8 @@
         return components[categoryId]?.[0];
     }
 
-    function handleDocsSidebarNavigate(
-        item: SidebarNavigationItem,
-        event: MouseEvent,
-    ): void {
-        if (item.href.startsWith("category:")) {
-            event.preventDefault();
-            const targetValue = item.href.split(":")[1];
-            if (!targetValue) {
-                return;
-            }
-            const first = firstInCategory(targetValue);
-            if (first) {
-                const suffix =
-                    targetValue === "all" ? "?catalog=all" : "";
-                goto(`/components/${first.name}${suffix}`);
-            }
-            sidebarOpen = false;
-            return;
-        }
-
+    /** Every row is a link with an address of its own; all that is left to do is close the drawer. */
+    function handleDocsSidebarNavigate(): void {
         sidebarOpen = false;
     }
 </script>
@@ -135,7 +134,7 @@
                 ariaLabel="Component catalog"
                 items={docsSidebarItems}
                 currentPath={docsSidebarCurrentPath}
-                activePrimaryHref={`category:${selectedCategory}`}
+                activePrimaryHref={categoryHref(selectedCategory)}
                 bind:searchValue={componentsNavSearch}
                 searchMode="input"
                 showProfile={false}

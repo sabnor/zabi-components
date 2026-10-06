@@ -20,6 +20,20 @@ Whenever token or CSS import API surface changes, include:
 
 ### Changed
 
+- **A loading Button or IconButton keeps keyboard focus.** While `loading`
+  (and not `disabled`) it is `aria-disabled="true"` and `aria-busy`, still a
+  Tab stop, and a press or a submit is swallowed; it was `disabled`, which
+  dropped focus to the page. CSS and tests that matched a loading button with
+  `:disabled` or `[disabled]` must use `[aria-busy="true"]`. A loading link
+  keeps its place in the Tab order.
+- **ColorPicker's colour map works from the keyboard, by touch and with a
+  pen.** It is two native sliders (saturation, lightness) in one Tab stop:
+  arrow keys move, Shift moves ten steps. Three new strings (`area`,
+  `saturation`, `lightness`) and `invalidHex` for the hex message. The hue
+  slider shows its focus ring and is 44px on a coarse pointer.
+- SidebarAccountPanel's `systemMode` default reads "Follows the system", so
+  the row no longer says "System System".
+
 ### Fixed
 
 - **Controls directly on an `on-brand` or `on-accent` block are legible.**
@@ -32,6 +46,10 @@ Whenever token or CSS import API surface changes, include:
   legible directly on a block, so put them on a card: an empty or ticked
   checkbox, radio or toggle, a filled Rating star, and status message text.
   Needs `:has()`.
+- **The current page is visible in forced colours** in SidebarNavigation,
+  SidebarPanel and TopNavbar: an outline on the current item.
+- `check-package-links` also reads reference-style links and HTML `href` and
+  `src`.
 
 ## [8.1.0-beta.3] - 2026-10-06
 

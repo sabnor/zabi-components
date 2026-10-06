@@ -88,6 +88,9 @@ const reveal: Record<string, () => Promise<void>> = {
         const swatch = document.querySelector<HTMLElement>("[data-color-picker-open]")!;
         await fireEvent.click(swatch);
         await waitFor(() => expect(document.querySelector('[role="dialog"]')).not.toBeNull());
+        // A value that is not a colour: the message under the field.
+        const field = document.querySelector<HTMLInputElement>('input[type="text"]')!;
+        await fireEvent.input(field, { target: { value: "zzz" } });
     },
     async ContactForm() {
         // Sent empty: every field's error and the box above them.
@@ -203,6 +206,10 @@ describe("the defaults are today's English", () => {
             open: "Open color picker",
             picker: "Color picker",
             hue: "Hue slider",
+            area: "Saturation and lightness",
+            saturation: "Saturation",
+            lightness: "Lightness",
+            invalidHex: "Please enter a valid hex color (e.g., #ff0000 or #f00)",
         });
         expect(DEFAULT_SELECT_STRINGS).toEqual({
             placeholder: "Select an option",
@@ -229,7 +236,7 @@ describe("the defaults are today's English", () => {
             theme: "Theme",
             lightMode: "Light mode",
             darkMode: "Dark mode",
-            systemMode: "System",
+            systemMode: "Follows the system",
             light: "Light",
             dark: "Dark",
             system: "System",
@@ -334,6 +341,10 @@ describe("SidebarAccountPanel theme row", () => {
             onThemeModeChange,
         });
         await waitFor(() => expect(row().textContent).toContain("System"));
+        // Two lines and a badge, and no word of it twice: the second line and
+        // the badge were both "System", and the row read "Theme System System".
+        const said = row().textContent!.replace(/\s+/g, " ").trim();
+        expect(said).toBe("Theme Follows the system System");
 
         await fireEvent.click(row());
         expect(getThemeMode()).toBe("light");

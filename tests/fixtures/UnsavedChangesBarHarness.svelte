@@ -15,6 +15,13 @@
          * later. `none`: only reports.
          */
         mode?: "sync" | "async" | "reject" | "late" | "none";
+        /**
+         * What the save waits for, in place of the moment: a test that looks
+         * at the bar while it is saving passes a promise and settles it when
+         * it has looked. With a timer the save was over before a slow
+         * machine got to look.
+         */
+        until?: Promise<unknown>;
         onsaved?: () => void;
         ondiscarded?: () => void;
         onerror?: (error: unknown) => void;
@@ -29,6 +36,7 @@
         discardLabel,
         withActions = false,
         mode = "sync",
+        until,
         onsaved,
         ondiscarded,
         onerror,
@@ -40,8 +48,8 @@
     let name = $state(initialDirty ? "Ada Lovelace" : "Ada");
     const dirty = $derived(name !== saved);
 
-    function wait(ms: number): Promise<void> {
-        return new Promise((resolve) => setTimeout(resolve, ms));
+    function wait(ms: number): Promise<unknown> {
+        return until ?? new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     function save(): void | Promise<unknown> {

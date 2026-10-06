@@ -15,6 +15,13 @@ const save = () => screen.getByRole("button", { name: "Save" }) as HTMLButtonEle
 const discard = () => screen.getByRole("button", { name: "Discard" }) as HTMLButtonElement;
 const status = () => screen.getByRole("status");
 
+/** A save that is pending until the test ends it. */
+function pendingSave() {
+    let finish!: () => void;
+    const until = new Promise<void>((resolve) => (finish = resolve));
+    return { until, finish };
+}
+
 describe("UnsavedChangesBar visibility and semantics", () => {
     it("is an empty, unnamed host until the form is dirty", () => {
         render(UnsavedChangesBarHarness);
@@ -116,7 +123,9 @@ describe("UnsavedChangesBar actions", () => {
 
     it("shows the saving state while the saving prop is set", () => {
         render(UnsavedChangesBarHarness, { props: { initialDirty: true, saving: true } });
-        expect(save().disabled).toBe(true);
+        // Save is loading: unavailable, but not `disabled`, so it can hold focus.
+        expect(save().getAttribute("aria-disabled")).toBe("true");
+        expect(save().disabled).toBe(false);
         expect(save().getAttribute("aria-busy")).toBe("true");
         expect(discard().disabled).toBe(true);
         expect(bar().getAttribute("aria-busy")).toBe("true");
@@ -125,19 +134,24 @@ describe("UnsavedChangesBar actions", () => {
     it("enters the saving state for a promise and leaves when it resolves", async () => {
         const user = userEvent.setup();
         const onsaved = vi.fn();
+        // The save is over when this test says so. It used to be over after
+        // 30ms, which a busy machine could spend inside `user.click`: the bar
+        // was gone, and "Save" could not be found.
+        const { until, finish } = pendingSave();
         render(UnsavedChangesBarHarness, {
-            props: { initialDirty: true, mode: "async", onsaved },
+            props: { initialDirty: true, mode: "async", until, onsaved },
         });
 
         await user.click(save());
         expect(save().getAttribute("aria-busy")).toBe("true");
-        expect(save().disabled).toBe(true);
+        expect(save().getAttribute("aria-disabled")).toBe("true");
         expect(discard().disabled).toBe(true);
 
         // A second activation while saving does nothing.
         await fireEvent.click(save());
         expect(onsaved).toHaveBeenCalledTimes(1);
 
+        finish();
         await waitFor(() => expect(screen.queryByRole("region")).toBeNull());
         expect(status().textContent?.trim()).toBe("");
     });
@@ -145,16 +159,18 @@ describe("UnsavedChangesBar actions", () => {
     it("stays, leaves the saving state and reports when the promise rejects", async () => {
         const user = userEvent.setup();
         const onerror = vi.fn();
+        const { until, finish } = pendingSave();
         render(UnsavedChangesBarHarness, {
-            props: { initialDirty: true, mode: "reject", onerror },
+            props: { initialDirty: true, mode: "reject", until, onerror },
         });
 
         await user.click(save());
-        expect(save().disabled).toBe(true);
+        expect(save().getAttribute("aria-disabled")).toBe("true");
+        finish();
         await waitFor(() => expect(onerror).toHaveBeenCalledTimes(1));
         expect((onerror.mock.calls[0][0] as Error).message).toBe("The server said no.");
         expect(screen.getByRole("region")).toBeTruthy();
-        expect(save().disabled).toBe(false);
+        expect(save().hasAttribute("aria-disabled")).toBe(false);
         expect(save().hasAttribute("aria-busy")).toBe(false);
         expect(discard().disabled).toBe(false);
     });
@@ -210,13 +226,15 @@ describe("UnsavedChangesBar focus", () => {
 
     it("holds focus on the bar while saving and returns it to the field afterwards", async () => {
         const user = userEvent.setup();
-        render(UnsavedChangesBarHarness, { props: { mode: "async" } });
+        const { until, finish } = pendingSave();
+        render(UnsavedChangesBarHarness, { props: { mode: "async", until } });
         await user.click(field());
         await user.type(field(), "x");
         await user.click(save());
 
-        // Save is disabled now; focus must not have fallen to <body>.
+        // Save is unavailable now; focus must not have fallen to <body>.
         await waitFor(() => expect(document.activeElement).toBe(bar()));
+        finish();
         await waitFor(() => expect(screen.queryByRole("region")).toBeNull());
         await waitFor(() => expect(document.activeElement).toBe(field()));
     });
@@ -224,12 +242,14 @@ describe("UnsavedChangesBar focus", () => {
     it("returns focus to Save when a save fails", async () => {
         const user = userEvent.setup();
         const onerror = vi.fn();
-        render(UnsavedChangesBarHarness, { props: { mode: "reject", onerror } });
+        const { until, finish } = pendingSave();
+        render(UnsavedChangesBarHarness, { props: { mode: "reject", until, onerror } });
         await user.click(field());
         await user.type(field(), "x");
         await user.click(save());
 
         await waitFor(() => expect(document.activeElement).toBe(bar()));
+        finish();
         await waitFor(() => expect(onerror).toHaveBeenCalled());
         await waitFor(() => expect(document.activeElement).toBe(save()));
     });

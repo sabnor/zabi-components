@@ -284,10 +284,16 @@
             "focus-ring focus-ring--nav relative w-full cursor-pointer rounded-control no-underline transition-colors duration-150 outline-none";
 
         if (isActive) {
+            // In forced colours all three cues are gone: fills (the tint and
+            // the bar) become the canvas and every link takes the system's
+            // link colour. An outline is a shape and is drawn there, so the
+            // current row keeps one. Inset, so a focused row's ring (2px
+            // outside) reads as a different thing.
             return (
                 `${structural} ${layoutClasses} bg-nav-menu-active ` +
                 "text-nav-menu-item-active hover:bg-nav-menu-active " +
-                "active:bg-nav-menu-active-hover"
+                "active:bg-nav-menu-active-hover " +
+                "forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2"
             );
         }
 

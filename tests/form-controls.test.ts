@@ -378,7 +378,9 @@ describe("Button and IconButton as links", () => {
             const link = screen.getByRole("link", { name });
             expect(link.hasAttribute("href")).toBe(false);
             expect(link.getAttribute("aria-disabled")).toBe("true");
-            expect(link.hasAttribute("tabindex")).toBe(false);
+            // A disabled link is out of the Tab order; a loading one keeps
+            // its Tab stop, so focus is not dropped when loading starts.
+            expect(link.getAttribute("tabindex")).toBe("loading" in state ? "0" : null);
             const click = new MouseEvent("click", { bubbles: true, cancelable: true });
             link.dispatchEvent(click);
             expect(click.defaultPrevented).toBe(true);

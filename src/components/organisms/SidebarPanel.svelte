@@ -102,7 +102,10 @@
         const baseClasses =
             "focus-ring focus-ring--nav w-full cursor-pointer rounded-control px-3 py-2 text-left transition-colors duration-150";
         if (isActive) {
-            return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border`;
+            // The fill, the shadow and the ring are all dropped in forced
+            // colours; an outline is drawn there, so the selected item keeps
+            // a shape of its own.
+            return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2`;
         }
         return `${baseClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
     }

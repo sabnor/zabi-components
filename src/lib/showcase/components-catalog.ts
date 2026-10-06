@@ -400,7 +400,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "Partial<ColorPickerStrings>",
                         required: false,
                         description:
-                            "The accessible names of its parts, for another language: hexInput, open, picker, hue.",
+                            "The accessible names of its parts, for another language: hexInput, open, picker, hue, area, saturation and lightness for the colour map, and invalidHex for the message under the field.",
                     },
                     {
                         name: "value",
@@ -1846,7 +1846,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "boolean",
                         required: false,
                         defaultValue: "false",
-                        description: "Show loading state",
+                        description:
+                            "Shows a spinner and makes the button unavailable without taking focus from it: aria-disabled and aria-busy, still a Tab stop, and a press does nothing. Not the disabled attribute.",
                     },
                 ],
                 variants: [],

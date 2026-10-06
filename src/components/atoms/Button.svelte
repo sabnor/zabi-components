@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
+    import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
@@ -15,7 +15,7 @@
          * Where the link goes. Makes this an `<a>` that looks the same;
          * without it, it is a `<button>`. A link cannot be disabled: while
          * `disabled` or `loading` it has no `href`, is `aria-disabled` and
-         * does nothing when pressed.
+         * does nothing when pressed. While `loading` it stays a Tab stop.
          */
         href?: string;
         /** With `href`: where the link opens. */
@@ -29,6 +29,12 @@
         ping?: HTMLAnchorAttributes["ping"];
         variant?: ButtonVariant;
         size?: SizeVariant;
+        /**
+         * Shows a spinner and makes the button unavailable without taking
+         * focus from it: `aria-disabled` and `aria-busy`, still a Tab stop,
+         * and a press does nothing. It is not `disabled`: match it in CSS
+         * with `[aria-busy="true"]`.
+         */
         loading?: boolean;
         text?: string;
         /** Stretch to the width of the container. */
@@ -56,7 +62,36 @@
     }: Props = $props();
 
     const isDisabled = $derived(!!disabled || loading);
+    /**
+     * Loading without `disabled`: unavailable, and still where focus is.
+     *
+     * `disabled` on a button, or no `href` on a link, makes the element
+     * unfocusable, and the browser then drops focus on `<body>`: whoever
+     * pressed Save with the keyboard was at the top of the page when the
+     * save came back. So a loading control says it the ARIA way
+     * (`aria-disabled`, `aria-busy`), stays a Tab stop, and swallows the
+     * press. `disabled` is the platform's: out of the Tab order.
+     */
+    const isBusy = $derived(loading && !disabled);
     const isLink = $derived(href !== undefined && href !== null);
+
+    /**
+     * A loading link has no `href`, so it is a Tab stop only by `tabindex`.
+     * The browser takes focus from an element the moment it stops being
+     * focusable, so the two attributes must never both be missing: the
+     * `tabindex` goes on before the `href` comes off (their order in the
+     * markup), and when loading ends it stays until the `href` is back, one
+     * update longer.
+     */
+    let keepsTabStop = $state(false);
+    $effect.pre(() => {
+        if (isBusy) {
+            keepsTabStop = true;
+        } else if (untrack(() => keepsTabStop)) {
+            void tick().then(() => (keepsTabStop = false));
+        }
+    });
+
     /** A text link in a sentence: `variant="link"` on a real link. */
     const isInlineLink = $derived(isLink && variant === "link");
 
@@ -68,6 +103,16 @@
             return;
         }
         (onclick as ((event: MouseEvent) => void) | null | undefined)?.(event);
+    }
+
+    /** A loading button is not `disabled`, so the press reaches it: it ends here, and submits nothing. */
+    function handleButtonClick(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
+        if (isBusy) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+        onclick?.(event);
     }
 
     /**
@@ -104,6 +149,16 @@
      */
     const DISABLED_LINK =
         "bg-(--color-action-disabled) text-action-disabled-text border border-transparent cursor-not-allowed";
+
+    /**
+     * A loading button wears the same pair. It is not `:disabled`, so the
+     * variant's classes are left out instead of overridden: none of its hover
+     * or pressed fills can show. What the variant gives the box is kept (the
+     * outline's border, the link's missing side padding), so the button does
+     * not change size when it starts loading. It keeps the focus ring: it
+     * can be focused.
+     */
+    const BUSY_BUTTON = "bg-(--color-action-disabled) text-action-disabled-text cursor-not-allowed";
 
     const disabledClass =
         "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:no-underline disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
@@ -148,7 +203,13 @@
         const base = `${layout} focus-ring items-center justify-center rounded-control text-center font-medium text-balance transition-colors duration-150 cursor-pointer select-none`;
         // `disabled:` does not match an `<a>`: a disabled link wears the
         // disabled pair itself, in place of its variant.
-        const state = isLink && isDisabled ? DISABLED_LINK : `${variantClass} ${disabledClass}`;
+        const busyBox = variant === "outline" ? "border border-transparent" : variant === "link" ? "px-0" : "";
+        const state =
+            isLink && isDisabled
+                ? DISABLED_LINK
+                : isBusy
+                  ? `${BUSY_BUTTON} ${busyBox}`
+                  : `${variantClass} ${disabledClass}`;
         return cn(`${base} ${s.box} ${s.text} ${s.gap} ${state} ${className}`);
     });
 </script>
@@ -170,8 +231,11 @@
 {#if isLink}
     <!-- A link that cannot be followed keeps its role and says it is
     unavailable; without an `href` it is not a Tab stop, as a disabled button
-    is not. -->
+    is not. A loading one is given the Tab stop back, so focus stays on it:
+    `tabindex` is written before `href` is taken away, in that order (see
+    `keepsTabStop`). -->
     <a
+        tabindex={isBusy || keepsTabStop ? 0 : undefined}
         href={isDisabled ? undefined : href}
         class={buttonClasses}
         role={isDisabled ? "link" : undefined}
@@ -186,10 +250,11 @@
     <button
         type={type ?? "button"}
         class={buttonClasses}
-        disabled={isDisabled}
+        disabled={!!disabled}
+        aria-disabled={isBusy ? "true" : undefined}
         aria-busy={loading ? "true" : undefined}
-        {onclick}
         {...restProps}
+        onclick={handleButtonClick}
     >
         {@render content()}
     </button>

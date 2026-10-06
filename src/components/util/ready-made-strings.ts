@@ -14,6 +14,14 @@ export interface ColorPickerStrings {
     picker: string;
     /** Accessible name of the hue slider in it. */
     hue: string;
+    /** Accessible name of the colour map: the two sliders below, on one surface. */
+    area: string;
+    /** Accessible name of the map's slider that goes across. */
+    saturation: string;
+    /** Accessible name of the map's slider that goes up and down. */
+    lightness: string;
+    /** The message under the field while what is typed is not a hex colour. */
+    invalidHex: string;
 }
 
 export const DEFAULT_COLOR_PICKER_STRINGS: ColorPickerStrings = {
@@ -21,6 +29,10 @@ export const DEFAULT_COLOR_PICKER_STRINGS: ColorPickerStrings = {
     open: "Open color picker",
     picker: "Color picker",
     hue: "Hue slider",
+    area: "Saturation and lightness",
+    saturation: "Saturation",
+    lightness: "Lightness",
+    invalidHex: "Please enter a valid hex color (e.g., #ff0000 or #f00)",
 };
 
 /** `ContactForm`: every label, placeholder and message of the form. */

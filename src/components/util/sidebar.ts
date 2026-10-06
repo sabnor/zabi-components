@@ -66,7 +66,8 @@ export const DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS: SidebarAccountPanelStrings =
     theme: "Theme",
     lightMode: "Light mode",
     darkMode: "Dark mode",
-    systemMode: "System",
+    // Not "System": the badge beside it says that, and the row read "Theme System System".
+    systemMode: "Follows the system",
     light: "Light",
     dark: "Dark",
     system: "System",

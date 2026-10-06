@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
+    import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
@@ -77,8 +77,36 @@
     }: Props = $props();
 
     const isDisabled = $derived(!!disabled || loading);
+    /**
+     * Loading without `disabled`: unavailable, and still where focus is.
+     *
+     * `disabled` on a button, or no `href` on a link, makes the element
+     * unfocusable, and the browser then drops focus on `<body>`: whoever
+     * pressed Save with the keyboard was at the top of the page when the
+     * save came back. So a loading control says it the ARIA way
+     * (`aria-disabled`, `aria-busy`), stays a Tab stop, and swallows the
+     * press. `disabled` is the platform's: out of the Tab order.
+     */
+    const isBusy = $derived(loading && !disabled);
     const isLink = $derived(href !== undefined && href !== null);
     const isToggle = $derived(pressed !== undefined && !isLink);
+
+    /**
+     * A loading link has no `href`, so it is a Tab stop only by `tabindex`.
+     * The browser takes focus from an element the moment it stops being
+     * focusable, so the two attributes must never both be missing: the
+     * `tabindex` goes on before the `href` comes off (their order in the
+     * markup), and when loading ends it stays until the `href` is back, one
+     * update longer.
+     */
+    let keepsTabStop = $state(false);
+    $effect.pre(() => {
+        if (isBusy) {
+            keepsTabStop = true;
+        } else if (untrack(() => keepsTabStop)) {
+            void tick().then(() => (keepsTabStop = false));
+        }
+    });
 
     /** A disabled link has no `href`, but a pointer can still press it. */
     function handleLinkClick(event: MouseEvent) {
@@ -93,6 +121,13 @@
     function handleClick(
         event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
+        // A loading button is not `disabled`, so the press reaches it: it
+        // ends here, toggles nothing and submits nothing.
+        if (isBusy) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
         // Read before the handler runs: a parent that flips its own state in
         // `onclick` has already moved `pressed` by the time it returns.
         const next = !pressed;
@@ -193,9 +228,12 @@
         const base =
             "inline-flex focus-ring items-center justify-center rounded-control shrink-0 transition-colors duration-150 cursor-pointer select-none";
         // `disabled:` does not match an `<a>`: a disabled link wears the
-        // disabled pair itself, in place of its variant.
+        // disabled pair itself, in place of its variant. So does a loading
+        // button, which is not `:disabled` (it keeps focus): with the
+        // variant's classes left out, none of its hover or pressed fills can
+        // show. The box is a fixed square, so the border changes no size.
         const state =
-            isLink && isDisabled
+            isDisabled && (isLink || isBusy)
                 ? "bg-(--color-action-disabled) text-action-disabled-text border border-transparent cursor-not-allowed"
                 : `${variantClass} ${isLink ? "" : pressedClass} ${disabledClass}`;
         return cn(`${base} ${sizeClass.box} ${state} ${className}`);
@@ -214,7 +252,10 @@
 {/snippet}
 
 {#if isLink}
+    <!-- A loading link is given its Tab stop back, so focus stays on it:
+    `tabindex` is written before `href` is taken away, in that order. -->
     <a
+        tabindex={isBusy || keepsTabStop ? 0 : undefined}
         href={isDisabled ? undefined : href}
         class={buttonClasses}
         role={isDisabled ? "link" : undefined}
@@ -230,7 +271,8 @@
     <button
         type={type ?? "button"}
         class={buttonClasses}
-        disabled={isDisabled}
+        disabled={!!disabled}
+        aria-disabled={isBusy ? "true" : undefined}
         aria-busy={loading ? "true" : undefined}
         aria-pressed={pressed}
         onclick={handleClick}

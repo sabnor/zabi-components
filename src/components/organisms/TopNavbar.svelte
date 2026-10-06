@@ -288,7 +288,12 @@
         const base =
             "focus-ring focus-ring--nav group/nav-item flex flex-col items-center justify-center overflow-clip relative rounded-pill shrink-0 transition-colors duration-200 outline-none";
         return isActive
-            ? cn(base, "bg-nav-menu-active text-nav-menu-item-active")
+            ? // Forced colours drop the fill and recolour the label: the
+              // current item keeps an inset outline there, which is drawn.
+              cn(
+                  base,
+                  "bg-nav-menu-active text-nav-menu-item-active forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2",
+              )
             : cn(
                   base,
                   "text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-nav-menu-active",

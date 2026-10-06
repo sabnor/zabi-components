@@ -49,7 +49,8 @@
     const text = $derived({ ...DEFAULT_COLOR_PICKER_STRINGS, ...strings });
 
     let isOpen = $state(false);
-    let isDragging = $state(false);
+    /** The pointer that is down on the colour map, if one is. */
+    let dragPointer: number | null = null;
     let pickerContainer: HTMLDivElement | undefined;
 
     /**
@@ -170,9 +171,7 @@
     const variant = $derived(value && !isValidHex(value) ? "error" : "default");
 
     const message = $derived(
-        value && !isValidHex(value)
-            ? "Please enter a valid hex color (e.g., #ff0000 or #f00)"
-            : "",
+        value && !isValidHex(value) ? text.invalidHex : "",
     );
 
     function handleInput(event: Event) {
@@ -239,27 +238,87 @@
         }
     }
 
-    function handleColorMapClick(event: MouseEvent) {
-        if (!colorMapContainer || !colorMap) return;
+    /**
+     * The colour map: saturation across, lightness up.
+     *
+     * It is two sliders on one surface, and is built as that: two visually
+     * hidden `<input type="range">`, which is what a screen reader, a switch
+     * and a voice command already know how to name, read and set ("Saturation,
+     * slider, 50%"). A single element cannot say it: `role="slider"` has one
+     * value, and an unnamed `role="button"`, which this was, has none.
+     *
+     * For the keyboard the two act as one map. Left and right move
+     * saturation and up and down lightness, from whichever slider has focus,
+     * and focus goes to the one that moved, so its new value is what is
+     * read out. Shift moves by ten. Only the first is a Tab stop.
+     *
+     * The surface takes pointer events, so a finger and a pen work as a mouse
+     * does; it used to listen for `mousedown` alone. The whole surface is the
+     * target (the mark on it is not something to hit), and `touch-none`
+     * keeps a drag on it from scrolling the page.
+     */
+    let saturationInput = $state<HTMLInputElement | null>(null);
+    let lightnessInput = $state<HTMLInputElement | null>(null);
+
+    const percent = (value: number) => Math.max(0, Math.min(100, Math.round(value)));
+
+    function setFromPoint(event: PointerEvent) {
+        if (!colorMapContainer) return;
         const rect = colorMapContainer.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        saturation = Math.max(0, Math.min(100, (x / rect.width) * 100));
-        lightness = Math.max(0, Math.min(100, 100 - (y / rect.height) * 100));
-
+        if (rect.width === 0 || rect.height === 0) return;
+        saturation = percent(((event.clientX - rect.left) / rect.width) * 100);
+        lightness = percent(100 - ((event.clientY - rect.top) / rect.height) * 100);
         updateHexFromHsl();
-        drawColorMap();
     }
 
-    function handleColorMapDrag(event: MouseEvent) {
-        if (isDragging) {
-            handleColorMapClick(event);
+    function handleMapPointerDown(event: PointerEvent) {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        dragPointer = event.pointerId;
+        try {
+            colorMapContainer?.setPointerCapture(event.pointerId);
+        } catch {
+            /* a test DOM, or a pointer that is already gone */
         }
+        setFromPoint(event);
+        // The keys carry on from where the pointer left it.
+        saturationInput?.focus({ preventScroll: true });
+        // Not a text selection, and not a second focus change from the press itself.
+        event.preventDefault();
     }
 
-    function handleMouseUp() {
-        isDragging = false;
+    function handleMapPointerMove(event: PointerEvent) {
+        if (dragPointer !== event.pointerId) return;
+        setFromPoint(event);
+    }
+
+    function handleMapPointerUp(event: PointerEvent) {
+        if (dragPointer !== event.pointerId) return;
+        dragPointer = null;
+    }
+
+    function handleMapKeydown(event: KeyboardEvent) {
+        const step = event.shiftKey ? 10 : 1;
+        const across = event.key === "ArrowRight" ? step : event.key === "ArrowLeft" ? -step : 0;
+        const up = event.key === "ArrowUp" ? step : event.key === "ArrowDown" ? -step : 0;
+        if (across === 0 && up === 0) return;
+        // The slider's own handling would move the focused one for all four keys.
+        event.preventDefault();
+        if (across !== 0) {
+            saturation = percent(saturation + across);
+            saturationInput?.focus({ preventScroll: true });
+        } else {
+            lightness = percent(lightness + up);
+            lightnessInput?.focus({ preventScroll: true });
+        }
+        updateHexFromHsl();
+    }
+
+    /** Home, End, Page Up and Down, and what assistive technology sets: the slider's own value. */
+    function handleMapInput(axis: "saturation" | "lightness", event: Event) {
+        const next = percent(Number((event.currentTarget as HTMLInputElement).value));
+        if (axis === "saturation") saturation = next;
+        else lightness = next;
+        updateHexFromHsl();
     }
 
     function handleHueChange(event: Event) {
@@ -322,21 +381,22 @@
             updateFromHex(value);
         }
         window.addEventListener("mousedown", handleClickOutside);
-        window.addEventListener("mouseup", handleMouseUp);
-        window.addEventListener("mousemove", handleColorMapDrag);
 
         // Teardown is returned from onMount rather than registered with
         // onDestroy: onDestroy also runs on the server, where there is no window.
         return () => {
             window.removeEventListener("mousedown", handleClickOutside);
-            window.removeEventListener("mouseup", handleMouseUp);
-            window.removeEventListener("mousemove", handleColorMapDrag);
         };
     });
 
     const displayColor = $derived(value && isValidHex(value) ? value : placeholder);
     const pickerIndicatorX = $derived(`${saturation}%`);
     const pickerIndicatorY = $derived(`${100 - lightness}%`);
+    /** What a slider of the map says: its own value, and the colour the two make. */
+    const mapValueText = (value: number) => `${Math.round(value)}%, ${hslToHex(hue, saturation, lightness)}`;
+    /** A ring around a surface whose slider has keyboard focus: the sliders themselves are not drawn. */
+    const RING_WITHIN =
+        "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring";
 </script>
 
 <div class={className} {...restProps}>
@@ -385,34 +445,70 @@
                     aria-label={text.picker}
                 >
                     <div class="space-y-4">
+                        <!-- The sliders inside are the controls; the pointer
+                        handlers are on the surface they share. -->
+                        <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                         <div
                             use:setColorMapContainer
-                            class="relative w-full h-48 rounded-container overflow-hidden cursor-crosshair"
-                            onmousedown={(e) => {
-                                isDragging = true;
-                                handleColorMapClick(e);
-                            }}
-                            role="button"
-                            tabindex="0"
+                            class="relative w-full h-48 rounded-container cursor-crosshair touch-none select-none {RING_WITHIN}"
+                            role="group"
+                            aria-label={text.area}
+                            onpointerdown={handleMapPointerDown}
+                            onpointermove={handleMapPointerMove}
+                            onpointerup={handleMapPointerUp}
+                            onpointercancel={handleMapPointerUp}
                         >
                             <canvas
                                 use:setColorMap
                                 width={256}
                                 height={192}
-                                class="w-full h-full"
+                                class="w-full h-full rounded-container"
                             ></canvas>
+                            <input
+                                bind:this={saturationInput}
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="1"
+                                value={saturation}
+                                class="sr-only"
+                                aria-label={text.saturation}
+                                aria-valuetext={mapValueText(saturation)}
+                                oninput={(event) => handleMapInput("saturation", event)}
+                                onkeydown={handleMapKeydown}
+                            />
+                            <input
+                                bind:this={lightnessInput}
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="1"
+                                value={lightness}
+                                tabindex="-1"
+                                class="sr-only"
+                                aria-label={text.lightness}
+                                aria-orientation="vertical"
+                                aria-valuetext={mapValueText(lightness)}
+                                oninput={(event) => handleMapInput("lightness", event)}
+                                onkeydown={handleMapKeydown}
+                            />
+                            <!-- White with a dark edge: seen on the white corner of the map as on the black. -->
                             <div
-                                class="absolute w-4 h-4 border-2 border-white rounded-full shadow-sm pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
+                                class="absolute w-4 h-4 border-2 border-white rounded-full shadow-[0_0_0_1px_rgba(0,0,0,0.6)] pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
                                 style="left: {pickerIndicatorX}; top: {pickerIndicatorY};"
                             ></div>
                         </div>
 
                         <div class="space-y-2">
+                            <!-- A real slider, drawn by the two layers around
+                            it. It is transparent, so the ring for keyboard
+                            focus is on this box; and the box is a finger tall
+                            on a touch screen, where 24px was not. -->
                             <div
-                                class="relative h-6 rounded-control overflow-hidden"
+                                class="relative h-6 pointer-coarse:h-11 rounded-control {RING_WITHIN}"
                             >
                                 <div
-                                    class="absolute inset-0"
+                                    class="absolute inset-0 rounded-control"
                                     style="background: linear-gradient(to right, hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%));"
                                 ></div>
                                 <input

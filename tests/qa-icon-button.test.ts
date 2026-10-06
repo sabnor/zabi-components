@@ -35,7 +35,14 @@ describe("IconButton (QA): toggle edge cases", () => {
             expect(onclick).not.toHaveBeenCalled();
             // The state is still exposed: a disabled toggle is "pressed, unavailable".
             expect(button().getAttribute("aria-pressed")).toBe("true");
-            expect((button() as HTMLButtonElement).disabled).toBe(true);
+            // Disabled is the attribute. Loading is `aria-disabled`: the
+            // button keeps focus, and swallows the press itself.
+            if ("loading" in blocked) {
+                expect((button() as HTMLButtonElement).disabled).toBe(false);
+                expect(button().getAttribute("aria-disabled")).toBe("true");
+            } else {
+                expect((button() as HTMLButtonElement).disabled).toBe(true);
+            }
         },
     );
 

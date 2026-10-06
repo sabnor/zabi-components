@@ -227,7 +227,7 @@ describe("ConfirmDialog confirm and cancel", () => {
         await openDialog(user);
         await user.click(confirmButton());
         expect(state()).toBe("open");
-        expect(confirmButton().disabled).toBe(false);
+        expect(confirmButton().hasAttribute("aria-disabled")).toBe(false);
     });
 
     it("reports how the user backed out", async () => {
@@ -277,7 +277,7 @@ describe("ConfirmDialog loading", () => {
         });
         await settled();
 
-        expect(confirmButton().disabled).toBe(true);
+        expect(confirmButton().getAttribute("aria-disabled")).toBe("true");
         expect(confirmButton().getAttribute("aria-busy")).toBe("true");
         expect(cancelButton().disabled).toBe(true);
         // Not on the panel: a busy element may hold back the status message in it.
@@ -303,7 +303,7 @@ describe("ConfirmDialog loading", () => {
         await user.click(confirmButton());
 
         expect(state()).toBe("open");
-        expect(confirmButton().disabled).toBe(true);
+        expect(confirmButton().getAttribute("aria-disabled")).toBe("true");
         expect(confirmButton().getAttribute("aria-busy")).toBe("true");
         expect(cancelButton().disabled).toBe(true);
         // Focus is held inside the dialog instead of falling to <body>.
@@ -327,7 +327,7 @@ describe("ConfirmDialog loading", () => {
 
         await openDialog(user);
         await user.click(confirmButton());
-        await waitFor(() => expect(confirmButton().disabled).toBe(false));
+        await waitFor(() => expect(confirmButton().hasAttribute("aria-disabled")).toBe(false));
         expect(state()).toBe("open");
     });
 
@@ -347,7 +347,7 @@ describe("ConfirmDialog loading", () => {
         await waitFor(() => expect(onerror).toHaveBeenCalledWith(failure));
         await tick();
         expect(state()).toBe("open");
-        expect(confirmButton().disabled).toBe(false);
+        expect(confirmButton().hasAttribute("aria-disabled")).toBe(false);
         expect(cancelButton().disabled).toBe(false);
         expect(document.activeElement).toBe(confirmButton());
 

@@ -182,8 +182,15 @@ busy page is still a flick.
 
 With `href` a Button or an IconButton is a real link (`<a>`), so the keys are a
 link's: **Enter** follows it, and Space does not. While `disabled` or `loading`
-such a link has no `href`: it is read as an unavailable link (`aria-disabled`),
-is not a Tab stop, and does nothing when pressed, as a disabled button is.
+such a link has no `href`: it is read as an unavailable link (`aria-disabled`)
+and does nothing when pressed. A `disabled` one is not a Tab stop, as a
+disabled button is not.
+
+A `loading` Button or IconButton, link or not, stays a Tab stop and keeps
+focus: it is `aria-disabled="true"` and `aria-busy="true"` instead of
+`disabled`, and Enter, Space and a click do nothing until it has loaded. A
+loading submit button does not submit its form, also not through Enter in one
+of the form's fields.
 `variant="link"` with `href` is a text link inside its sentence.
 
 **Usage:**
@@ -323,6 +330,30 @@ on a Collapsible nested inside a panel, which is not part of the group.
 
 ---
 
+### ColorPicker
+
+**Keyboard support:**
+- ✅ **Tab**: The hex field, the swatch that opens the picker, and in the open picker the colour map and the hue slider: one stop each
+- ✅ **Enter / Space** on the swatch: Open or close the picker
+- ✅ **Arrow Left / Right** on the map: Less or more saturation
+- ✅ **Arrow Up / Down** on the map: Lighter or darker
+- ✅ **Shift + an arrow**: Ten steps instead of one
+- ✅ **Home / End, Page Up / Page Down**: The slider's own, on the value that has focus
+- ✅ **Arrow keys** on the hue slider: Change the hue
+
+The map is two sliders on one surface, "Saturation" and "Lightness", in a
+group named "Saturation and lightness". Tab reaches the first; an arrow key
+moves the value it belongs to and puts focus on that slider, so its new value
+is what is read out, with the colour the two make ("50%, #bf4040"). The
+sliders are not drawn: the surface they share shows the focus ring, and the
+round mark on it is where the two values are. The hue slider is a native
+range drawn by its track, which shows the ring for it. A hex value can always
+be typed in the field instead.
+
+With a pointer, press or drag anywhere on the map: a mouse, a finger or a pen.
+
+---
+
 ### ConfirmDialog
 
 **Keyboard support:**
@@ -335,8 +366,9 @@ instead of confirming. There is no Enter shortcut for the confirm button: Enter
 only activates the button that has focus. When the dialog closes, focus returns
 to the element that opened it.
 
-While a confirm is loading both buttons are disabled and Escape and the
-backdrop do nothing. Focus is held on the dialog itself instead of falling to
+While a confirm is loading neither button can be used (Cancel is disabled, the
+confirm button is `aria-disabled` and busy) and Escape and the backdrop do
+nothing. Focus is held on the dialog itself instead of falling to
 the page (without a focus outline around the whole dialog, since the dialog is
 not a control), and returns to the confirm button if the request fails and the
 dialog stays open. `loadingLabel` ("Working…" by default) is announced once,
@@ -1183,8 +1215,9 @@ See [NAVIGATION_MENU.md](./NAVIGATION_MENU.md).
 - ✅ **Enter / Space**: Activate Discard, Save or an extra action
 
 The bar never takes focus when it appears; its message is announced politely
-instead. While a save is in progress both buttons are disabled and focus is
-held on the bar, not dropped on the page. When the bar goes (after Save or
+instead. While a save is in progress neither button can be used (Discard is
+disabled, Save is `aria-disabled` and busy) and focus is held on the bar, not
+dropped on the page. When the bar goes (after Save or
 Discard), focus returns to the element it came from, usually the field that was
 being edited; if that is gone, it stays on the bar's empty host, at the same
 place in the page.

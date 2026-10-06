@@ -66,6 +66,27 @@ describe("the link check itself", () => {
         ]);
     });
 
+    it("reads reference definitions and HTML links, the other two ways a page links", () => {
+        const { dead } = findDeadPackageLinks(root, readme(
+            [
+                "See [the release notes][ref] and [THEME][ok].",
+                "",
+                "[ref]: ./RELEASING.md",
+                '   [titled]: <./docs/nope.md> "A title"',
+                "[ok]: ./THEME.md#tokens",
+                "[site]: https://example.com/RELEASING.md",
+                '<a href="./RELEASING.md#steps">Releasing</a> <img src="./static/nope.png" alt="">',
+                '<a href="https://example.com">out</a> <a href="#top">up</a>',
+            ].join("\n"),
+        ));
+        expect(dead).toEqual([
+            'README.md: ./RELEASING.md (RELEASING.md is not in "files" of package.json)',
+            'README.md: ./docs/nope.md (docs/nope.md is not in "files" of package.json)',
+            'README.md: ./RELEASING.md#steps (RELEASING.md is not in "files" of package.json)',
+            'README.md: ./static/nope.png (static/nope.png is not in "files" of package.json)',
+        ]);
+    });
+
     it("does not read a link inside a fenced example", () => {
         const { dead } = findDeadPackageLinks(root, readme("```md\n[x](./RELEASING.md)\n```\n"));
         expect(dead).toEqual([]);

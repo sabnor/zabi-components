@@ -50,8 +50,19 @@ export function findDeadPackageLinks(projectRoot = defaultRoot, overrides = {}) 
     for (const document of documents) {
         // A fenced block is an example, not a link in the page.
         const text = read(document).replace(/```[\s\S]*?```/g, '');
-        for (const match of text.matchAll(/\]\(\s*<?([^)\s>]+)>?(?:\s+"[^"]*")?\s*\)/g)) {
-            const target = match[1];
+        // The three ways a Markdown page links: inline `[a](target)`, a
+        // reference definition `[a]: target` on a line of its own (which
+        // `[a][ref]` and a bare `[ref]` then use), and HTML `href`/`src`.
+        // The second and third used to pass unread: `[ref]: ./RELEASING.md`
+        // was as dead on npm as the inline link the check was written for.
+        const targets = [
+            ...text.matchAll(/\]\(\s*<?([^)\s>]+)>?(?:\s+"[^"]*")?\s*\)/g),
+            ...text.matchAll(/^ {0,3}\[[^\]\n]+\]:\s*<?([^\s>]+)>?/gm),
+            ...text.matchAll(/<[a-z][^>]*?\s(?:href|src)\s*=\s*["']([^"']+)["']/gi),
+        ]
+            .sort((a, b) => a.index - b.index)
+            .map((match) => match[1]);
+        for (const target of targets) {
             // A URL, or a heading in the same file.
             if (/^([a-z][a-z0-9+.-]*:|\/\/|#)/i.test(target)) continue;
             const file = target.split('#')[0].split('?')[0];
