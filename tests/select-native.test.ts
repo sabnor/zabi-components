@@ -175,7 +175,7 @@ describe("Select strings", () => {
         });
         expect(triggerOf(container).textContent).toContain("Välj");
         await user.click(triggerOf(container));
-        expect(await screen.findByRole("listbox", { name: "Lag" })).toBeTruthy();
+        expect(await screen.findByRole("listbox", { name: "Alternativ" })).toBeTruthy();
         const search = screen.getByRole("textbox", { name: "Sök lag" });
         await user.type(search, "zzz");
         expect(await screen.findByText("Inget")).toBeTruthy();
