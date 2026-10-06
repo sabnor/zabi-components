@@ -45,6 +45,7 @@ import type {
     SizeVariant,
 } from './variants.js';
 import type { AvatarGroupStrings, AvatarPerson, AvatarSize } from '../components/util/avatar.js';
+import type { ProgressStrings } from '../components/util/progress.js';
 import type { RatingStrings } from '../components/util/rating.js';
 import type {
     StepperItem,
@@ -482,7 +483,12 @@ export interface ChipGroupProps
 export interface ProgressProps {
     value?: number;
     max?: number;
-    size?: SizeVariant;
+    /** Bar height: 4, 8, 12 and 16px. */
+    size?: 'sm' | 'md' | 'lg' | 'xl';
+    /** Draws `max` separate segments (a whole number from 2 to 24), `value` of them filled; any other `max` draws the continuous bar. */
+    segmented?: boolean;
+    /** Overrides for the built-in strings. */
+    strings?: Partial<ProgressStrings>;
     label?: string;
     /** Names the progressbar when there is no visible `label`. */
     'aria-label'?: string;

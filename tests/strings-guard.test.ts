@@ -19,6 +19,7 @@ import { DEFAULT_TOP_NAVBAR_STRINGS } from "../src/components/util/top-navbar";
 import { DEFAULT_CALENDAR_STRINGS } from "../src/components/util/calendar";
 import { MEDIA_GRID_STRINGS } from "../src/components/util/media-grid";
 import { PHOTO_GRID_STRINGS, PHOTO_VIEWER_STRINGS } from "../src/components/util/photo";
+import { PROGRESS_STRINGS } from "../src/components/util/progress";
 import { RATING_STRINGS } from "../src/components/util/rating";
 import { SORTABLE_LIST_STRINGS } from "../src/components/util/sortable-list";
 import { DEFAULT_TOASTER_STRINGS } from "../src/components/util/toaster";
@@ -464,6 +465,7 @@ const ENTRY_DEFAULTS: Record<keyof ZabiStrings, Words> = {
     photoGrid: PHOTO_GRID_STRINGS as unknown as Words,
     photoViewer: PHOTO_VIEWER_STRINGS as unknown as Words,
     propsTable: DEFAULT_PROPS_TABLE_STRINGS as unknown as Words,
+    progress: PROGRESS_STRINGS as unknown as Words,
     rating: RATING_STRINGS as unknown as Words,
     toaster: DEFAULT_TOASTER_STRINGS as unknown as Words,
     select: DEFAULT_SELECT_STRINGS as unknown as Words,

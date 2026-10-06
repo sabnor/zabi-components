@@ -27,6 +27,7 @@ import type { AvatarGroupStrings } from "./avatar.js";
 import type { CalendarStrings } from "./calendar.js";
 import type { MediaGridStrings } from "./media-grid.js";
 import type { PhotoGridStrings, PhotoViewerStrings } from "./photo.js";
+import type { ProgressStrings } from "./progress.js";
 import type { PullToRefreshStrings } from "./pull-to-refresh.js";
 import type { RatingStrings } from "./rating.js";
 import type {
@@ -164,6 +165,7 @@ export interface ZabiStrings {
     photoGrid?: Partial<PhotoGridStrings>;
     photoViewer?: Partial<PhotoViewerStrings>;
     propsTable?: Partial<PropsTableStrings>;
+    progress?: Partial<ProgressStrings>;
     pullToRefresh?: Partial<PullToRefreshStrings>;
     rating?: Partial<RatingStrings>;
     select?: Partial<SelectStrings>;

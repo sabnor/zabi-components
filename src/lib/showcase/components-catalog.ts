@@ -2119,10 +2119,25 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "size",
-                        type: "'sm' | 'md' | 'lg'",
+                        type: "'sm' | 'md' | 'lg' | 'xl'",
                         required: false,
                         defaultValue: "md",
-                        description: "Bar height",
+                        description: "Bar height: 4, 8, 12 and 16px",
+                    },
+                    {
+                        name: "segmented",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws max separate segments, value of them filled, for a count such as 4 of 19. max must be a whole number from 2 to 24, otherwise the continuous bar is drawn. The read-out beside the label is the count instead of the percent",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<ProgressStrings>",
+                        required: false,
+                        description:
+                            "Overrides for the built-in strings: valueText(value, max), the count of a segmented bar (\"4 of 19\")",
                     },
                     {
                         name: "label",
@@ -2226,6 +2241,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Card footer",
                         description: "Place actions at the bottom of a card",
                         code: "<CardFooter>…</CardFooter>",
+                    },
+                    {
+                        title: "Segmented",
+                        description: "A count such as 4 of 19",
+                        code: '<Progress value={4} max={19} segmented label="Round" />',
                     },
                 ],
             },
