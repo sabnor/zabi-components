@@ -12,6 +12,17 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- Theme generator: `neutralChroma` (CLI `--neutral-chroma`), the OKLCH chroma
+  at the neutral ramp's peak, 0 to 0.1, for a clearly tinted neutral such as a
+  blue-slate. Needs `neutral`. With it, the translucent ink roles
+  (`--color-action-secondary` and its hover and pressed steps,
+  `--color-surface-hover`, `--color-surface-active`, `--color-border-overlay`
+  in light, `--shadow-color`) follow the neutral ramp instead of staying grey,
+  and the file restates the dark values under the dark selectors. Without the
+  option the output is exactly what it was. (Z-036)
+
 ## [8.1.0-beta.5] - 2026-10-06
 
 A local preview build on top of 8.1.0-beta.4, not published to npm. It adds

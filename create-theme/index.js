@@ -67,6 +67,8 @@ const MAX_PEAK_CHROMA = 0.4;
 const MIN_ENVELOPE = 0.2;
 /** A neutral stays a neutral: this is the most chroma any of its steps gets. */
 const MAX_NEUTRAL_CHROMA = 0.03;
+/** `neutralChroma` may lift the cap, but not past this: beyond it the steps stop being neutrals. */
+const MAX_NEUTRAL_CHROMA_OPTION = 0.1;
 /** The least any neutral step keeps of that, so the lightest steps still tint. */
 const MIN_NEUTRAL_PROFILE = 0.25;
 /** CIELAB ΔE past which the input is visibly not one of the ramp's steps. */
@@ -132,7 +134,7 @@ function chromaticRamp(colour) {
 
 /* ---------- neutral ramp ---------- */
 
-function neutralRamp(colour) {
+function neutralRamp(colour, chromaOption) {
     const defaults = BASE_STEPS.map((step) => {
         const hex = data.light[`--zabi-base-${step}`];
         return { step, lightness: cieL(hex), chroma: toOklch(hex).c ?? 0 };
@@ -144,10 +146,66 @@ function neutralRamp(colour) {
     const nearest = defaults.reduce((best, d) =>
         Math.abs(d.lightness - colour.lightness) < Math.abs(best.lightness - colour.lightness) ? d : best,
     );
-    const peakChroma = Math.min(colour.chroma / profile(nearest), MAX_NEUTRAL_CHROMA);
+    // `neutralChroma` replaces the capped value; the profile across the steps stays.
+    const peakChroma = chromaOption ?? Math.min(colour.chroma / profile(nearest), MAX_NEUTRAL_CHROMA);
     const out = {};
     for (const d of defaults) out[d.step] = hexAt(d.lightness, peakChroma * profile(d), colour.hue);
     return out;
+}
+
+/* ---------- ink roles ---------- */
+
+/**
+ * The translucent roles that are fixed alpha tints of near-black (light) or
+ * near-white (dark) in the library, so grey over any ramp. With `neutralChroma`
+ * they are the neutral ramp's own ink at the same alpha instead. Each keeps the
+ * alpha the library gives it, read from the default theme's data. The dark
+ * `--color-border-overlay` is already a ramp step: it is restated as it is.
+ */
+const INK_ROLES = [
+    '--color-action-secondary',
+    '--color-action-secondary-hover',
+    '--color-action-secondary-active',
+    '--color-surface-hover',
+    '--color-surface-active',
+    '--color-border-overlay',
+];
+
+/** `rgba(9, 9, 11, 0.1)` -> 10. Null for anything that is not an rgba() tint. */
+function alphaPercent(value) {
+    const match = /^rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)$/.exec(String(value ?? '').trim());
+    return match ? Math.round(Number(match[1]) * 1000) / 10 : null;
+}
+
+/** `#18181b` -> `24 24 27`, the form `--shadow-color` takes. */
+function triplet(hex) {
+    return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(' ');
+}
+
+/**
+ * Light and dark declarations for the ink roles over a neutral ramp. Roles the
+ * author overrides themselves are left out, so their override stays what both
+ * modes show.
+ */
+function inkTokens(ramp, overrides) {
+    const light = {};
+    const dark = {};
+    const mix = (step, percent) => `color-mix(in srgb, var(--zabi-base-${step}) ${percent}%, transparent)`;
+    for (const role of INK_ROLES) {
+        if (role in overrides) continue;
+        const lightPercent = alphaPercent(data.light[role]);
+        if (lightPercent !== null) light[role] = mix(900, lightPercent);
+        const darkPercent = alphaPercent(data.darkOnly[role]);
+        // A role the dark theme already points at a ramp step (the overlay edge)
+        // keeps that: the light value on `:root` would otherwise win there too.
+        if (darkPercent !== null) dark[role] = mix(50, darkPercent);
+        else if (data.darkOnly[role] !== undefined) dark[role] = data.darkOnly[role];
+    }
+    if (!('--shadow-color' in overrides)) {
+        light['--shadow-color'] = triplet(ramp[900]);
+        dark['--shadow-color'] = '0 0 0';
+    }
+    return { light, dark };
 }
 
 /* ---------- closest step ---------- */
@@ -479,7 +537,7 @@ function rampTokens(name, ramp, steps) {
     return Object.fromEntries(steps.map((step) => [`--zabi-${name}-${step}`, ramp[step]]));
 }
 
-function render({ inputs, closest, tokens, darkTokens, pinned, contrastWarnings, checked }) {
+function render({ inputs, closest, tokens, darkTokens, pinned, neutralChroma, contrastWarnings, checked }) {
     const describeInput = (name) =>
         inputs[name]
             ? `${inputs[name]}  closest step ${closest[name].step} (${closest[name].hex}, ` +
@@ -494,6 +552,12 @@ function render({ inputs, closest, tokens, darkTokens, pinned, contrastWarnings,
         ` *   brand    ${describeInput('brand')}`,
         ` *   accent   ${describeInput('accent')}`,
         ` *   neutral  ${describeInput('neutral')}`,
+        ...(neutralChroma === undefined
+            ? []
+            : [
+                  ` *   neutral chroma ${neutralChroma} (peak, OKLCH). The ink roles (secondary button,`,
+                  ' *   hover and pressed tints, overlay edge, shadow colour) follow the neutral ramp.',
+              ]),
         ' *',
         ...(pinned ? pinnedNotes(pinned) : [
         ' * The ramps sit on the library\'s lightness curve, so step 600 means the same',
@@ -512,7 +576,7 @@ function render({ inputs, closest, tokens, darkTokens, pinned, contrastWarnings,
     ];
     const body = Object.entries(tokens).map(([name, value]) => `  ${name}: ${value};`);
     const root = `${header.join('\n')}\n:root {\n${body.join('\n')}\n}\n`;
-    if (!pinned) return root;
+    if (!pinned && Object.keys(darkTokens).length === 0) return root;
     // A role on `:root` is one value in light and in dark, so dark says its own,
     // under each selector the dark theme is published under.
     const dark = Object.entries(darkTokens).map(([name, value]) => `${name}: ${value};`);
@@ -556,7 +620,7 @@ function pinnedNotes(pinned) {
 }
 
 /**
- * @param {{ brand: string, accent?: string, neutral?: string, overrides?: Record<string, string>, pin?: boolean | { brand?: boolean, accent?: boolean } }} options
+ * @param {{ brand: string, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string>, pin?: boolean | { brand?: boolean, accent?: boolean } }} options
  */
 export function createTheme(options) {
     if (options === null || typeof options !== 'object') {
@@ -577,6 +641,20 @@ export function createTheme(options) {
     if (options.accent !== undefined && options.accent !== null) inputs.accent = parseHex(options.accent, 'accent');
     if (options.neutral !== undefined && options.neutral !== null) inputs.neutral = parseHex(options.neutral, 'neutral');
 
+    let neutralChroma;
+    if (options.neutralChroma !== undefined && options.neutralChroma !== null) {
+        const value = options.neutralChroma;
+        if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > MAX_NEUTRAL_CHROMA_OPTION) {
+            throw new TypeError(
+                `${TOOL}: neutralChroma must be a number from 0 to ${MAX_NEUTRAL_CHROMA_OPTION}, the OKLCH chroma at the neutral ramp's peak (got ${
+                    typeof value === 'string' ? `"${value}"` : String(value)
+                })`,
+            );
+        }
+        if (!inputs.neutral) throw new TypeError(`${TOOL}: neutralChroma needs a neutral colour, for example { neutral: "#607296", neutralChroma: 0.05 }`);
+        neutralChroma = value;
+    }
+
     const pin = readPin(options.pin);
     if (pin.accent && !inputs.accent) throw new TypeError(`${TOOL}: pin.accent needs an accent colour`);
     const pinning = pin.brand || pin.accent;
@@ -585,6 +663,7 @@ export function createTheme(options) {
     const closest = {};
     const described = {};
     let tokens = {};
+    let darkTokens = {};
 
     for (const name of ['brand', 'accent']) {
         if (!inputs[name]) continue;
@@ -609,16 +688,22 @@ export function createTheme(options) {
     }
     if (inputs.neutral) {
         const colour = describe(inputs.neutral);
-        if (colour.chroma > MAX_NEUTRAL_CHROMA * 2) {
+        if (neutralChroma === undefined && colour.chroma > MAX_NEUTRAL_CHROMA * 2) {
             warnings.push({
                 type: 'input',
                 option: 'neutral',
                 message: `neutral ${colour.hex} is a saturated colour: only its hue is used, at low chroma, so the result is a tinted grey.`,
             });
         }
-        const ramp = neutralRamp(colour);
+        const ramp = neutralRamp(colour, neutralChroma);
         closest.neutral = closestStep(inputs.neutral, ramp);
         tokens = { ...tokens, ...rampTokens('base', ramp, BASE_STEPS) };
+        if (neutralChroma !== undefined) {
+            // Opt-in: without it these roles are the library's grey tints, as before.
+            const ink = inkTokens(ramp, overrides);
+            tokens = { ...tokens, ...ink.light };
+            darkTokens = ink.dark;
+        }
     }
 
     // Overrides take part in choosing the labels, and are written last.
@@ -632,7 +717,6 @@ export function createTheme(options) {
 
     // Pinned colours: role overrides for light, their dark counterparts, and
     // the labels chosen with those in place.
-    let darkTokens = {};
     const pinned = {};
     const extraPairs = ['brand', 'accent'].flatMap((name) => (pin[name] ? PIN_ROLES[name].pairs : []));
     for (const name of ['brand', 'accent']) {
@@ -647,8 +731,16 @@ export function createTheme(options) {
     const { warnings: contrastWarnings, checked } = checkPairs(tokens, darkTokens, extraPairs);
     warnings.push(...contrastWarnings);
 
-    const css = render({ inputs, closest, tokens, darkTokens, pinned: pinning ? pinned : null, contrastWarnings, checked });
-    return pinning ? { css, tokens, darkTokens, pinned, warnings, closest } : { css, tokens, warnings, closest };
+    const css = render({ inputs, closest, tokens, darkTokens, pinned: pinning ? pinned : null, neutralChroma, contrastWarnings, checked });
+    const hasDark = pinning || neutralChroma !== undefined;
+    return {
+        css,
+        tokens,
+        ...(hasDark ? { darkTokens } : {}),
+        ...(pinning ? { pinned } : {}),
+        warnings,
+        closest,
+    };
 }
 
 export default createTheme;

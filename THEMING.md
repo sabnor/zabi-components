@@ -641,7 +641,8 @@ npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out sr
 | `--pin` | The primary action is the exact brand colour in light. See [`--pin`](#--pin-the-exact-brand-colour-on-buttons). |
 | `--accent <hex>` | Builds `--zabi-accent-50 … 950`. Omitted: the library's citron. |
 | `--pin-accent` | The same for the solid accent fill. Needs `--accent`. |
-| `--neutral <hex>` | Tints the 21-step `--zabi-base-50 … 950`. Omitted: the library's greys. |
+| `--neutral <hex>` | Tints the 21-step `--zabi-base-50 … 950`. Omitted: the library's greys. Takes the hue only, at no more than 0.03 chroma. |
+| `--neutral-chroma <n>` | OKLCH chroma at the neutral ramp's peak, 0 to 0.1; needs `--neutral`. Lifts the 0.03 cap (0.04 to 0.06 gives a clearly tinted neutral such as a blue-slate), and makes the ink roles follow the neutral ramp. See [`--neutral-chroma`](#neutral-chroma-a-strongly-tinted-neutral). |
 | `--out <file>` | Where to write. Omitted: stdout. |
 | `--strict` | Exit 1 when a role pair is below WCAG AA. |
 | `--set <token>=<value>` | Also write this declaration; repeatable. |
@@ -650,6 +651,33 @@ npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out sr
 Colours are hex, `#rgb` or `#rrggbb`. Warnings and the one-line summary go to
 stderr. Exit codes: 0 done, 1 `--strict` with a failed pair, 2 bad usage
 (missing `--brand`, not a hex colour).
+
+### `--neutral-chroma`: a strongly tinted neutral
+
+`--neutral` gives the neutral ramp its hue and never more chroma than 0.03, so
+it stays a tinted grey. For a UI that reads as one hue with the brand, say a
+blue-slate under an ultramarine brand, give the chroma yourself:
+
+```bash
+npx zabi-theme --brand "#0026EA" --neutral "#607296" --neutral-chroma 0.05 --out src/lib/brand.generated.css
+```
+
+The ramp has the same 21 lightness steps and the same shape; only its peak
+chroma is the number you gave (`0` to `0.1`). The contrast check runs on the
+result as always. Without `--neutral-chroma` the output is exactly what it was.
+
+With it, the translucent ink roles stop being grey and follow the ramp, as
+`color-mix()` over `--zabi-base-900` (light) or `--zabi-base-50` (dark) at the
+alpha the library gives each role:
+`--color-action-secondary`, `-hover`, `-active`, `--color-surface-hover`,
+`--color-surface-active` and, in light, `--color-border-overlay`.
+`--shadow-color` becomes the RGB triplet of step 900 in light and stays `0 0 0`
+in dark. The modal scrim `--color-overlay` stays black. Because a role on
+`:root` is one value in both modes, the file restates the dark values under the
+dark selectors, as `--pin` does. A role you set with `--set` keeps your value.
+The contrast check does not evaluate these translucent roles, with or without
+the option; the library's own guard (`npm run check:design`) does for the
+defaults.
 
 ### `--pin`: the exact brand colour on buttons
 
@@ -704,8 +732,8 @@ write it.
   chroma of the colour you give. See
   [the first section](#the-first-thing-to-know-your-colour-is-not-pinned-to-a-step).
 - **Neutral ramp.** It keeps the base scale's own 21 lightness steps and takes
-  only the hue, at low chroma. A saturated colour gives a tinted grey, not a
-  coloured page.
+  only the hue, at low chroma (0.03 at most). A saturated colour gives a tinted
+  grey, not a coloured page. `neutralChroma` lifts that cap.
 - **"On" colours.** It sets `--zabi-on-brand` and `--zabi-on-brand-dark` (and
   the accent pair when `--accent` is given) to white or the ramp's 950 step,
   whichever reaches 4.5:1 on the fill, its hover and its active step.
@@ -783,6 +811,7 @@ const { css, tokens, warnings, closest } = createTheme({
   brand: "#C17B00",
   accent: "#ff3366", // optional
   neutral: "#78716c", // optional
+  neutralChroma: 0.05, // optional, 0 to 0.1, needs neutral: a clearly tinted neutral; the ink roles follow it
   overrides: { "--color-link": "var(--color-brand-800)" }, // optional
   pin: true, // optional: the exact brand on the primary action; or { brand: true, accent: true }
 });
@@ -796,27 +825,32 @@ writeFileSync("src/lib/brand.generated.css", css);
 
 | Returned | |
 |---|---|
-| `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin`, two dark rules follow it. |
+| `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin` or `neutralChroma`, two dark rules follow it. |
 | `tokens` | Every declaration of the `:root` rule, name to value. |
-| `darkTokens` | Only with `pin`: every declaration of the dark rules. |
+| `darkTokens` | Only with `pin` or `neutralChroma`: every declaration of the dark rules. |
 | `pinned` | Only with `pin`: `{ brand?, accent? }`, each `{ hex, light: { followed, onRamp, states }, dark: { pinned, followed, onRamp, states?, failed? } }`. |
 | `warnings` | `{ type: "contrast", pair, mode, ratio, required, foreground, background, message }` for each role pair below AA, and `{ type: "input", option, message }` notes about the colours given. Empty when everything passes. |
 | `closest` | `{ brand, accent?, neutral? }`, each `{ step, hex, deltaE, exact }`: where the input landed in its ramp. |
 
-It throws a `TypeError` when `brand` is missing, a colour is not hex, or
-`pin.accent` is set without `accent`. Without `pin` the result and the file are
+It throws a `TypeError` when `brand` is missing, a colour is not hex,
+`pin.accent` is set without `accent`, or `neutralChroma` is not a number from 0
+to 0.1 or is given without `neutral`. Without `pin` the result and the file are
 exactly what they were before the option existed.
 
 ## What does not follow an override
 
 - **Hover, pressed and secondary-button fills.** `--color-surface-hover`,
-  `--color-surface-active` and `--color-action-secondary` are fixed near-black
-  (light) and near-white (dark) alpha tints. They do not take the hue of
-  `--zabi-base-*`. At 8 to 15% the hue of the ink is not visible.
+  `--color-surface-active` and `--color-action-secondary` (and `-hover`,
+  `-active`) are fixed near-black (light) and near-white (dark) alpha tints.
+  They do not take the hue of `--zabi-base-*`, unless you give `neutralChroma`
+  (`--neutral-chroma`): then they are mixes of the neutral ramp's ink at the
+  same alphas.
 - **The overlay edge and the modal backdrop.** `--color-border-overlay` in
-  light and `--color-overlay` are fixed alpha tints too.
+  light is a fixed alpha tint too, and follows the ramp with `neutralChroma`
+  (in dark it is already a ramp step). `--color-overlay`, the scrim, stays black.
 - **The shadow colour.** `--shadow-color` is the default neutral's ink, not
-  your neutral's. Set it yourself; it is on the list above.
+  your neutral's. With `neutralChroma` it is the ramp's step 900 in light;
+  otherwise set it yourself, it is on the list above.
 - **The `energetic` family.** It points at the citron ramp, not at the accent,
   so it stays yellow when `--zabi-accent-*` changes. `success`, `warning`,
   `error` and `info` keep their own ramps as well.

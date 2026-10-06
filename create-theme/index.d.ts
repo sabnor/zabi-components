@@ -16,6 +16,26 @@ export interface CreateThemeOptions {
      */
     neutral?: HexColor;
     /**
+     * The OKLCH chroma at the neutral ramp's peak, `0` to `0.1`. Needs
+     * `neutral`, which still supplies the hue. Omitted: the ramp takes the hue
+     * of `neutral` at no more than 0.03 chroma, so it stays a tinted grey. For a
+     * clearly tinted neutral, such as a blue-slate UI, give 0.04 to 0.06. The
+     * profile across the 21 steps is the same; only its peak moves.
+     *
+     * With it, the translucent ink roles follow the neutral ramp instead of
+     * staying grey: `--color-action-secondary` (and `-hover`, `-active`),
+     * `--color-surface-hover`, `--color-surface-active` and
+     * `--color-border-overlay` become `color-mix()` of `--zabi-base-900` (light)
+     * or `--zabi-base-50` (dark) at their usual alphas, and `--shadow-color` is
+     * the ramp's step 900 in light. `--color-overlay` (the modal scrim) stays
+     * black. Dark values are written under the dark selectors, as with `pin`.
+     * Omitted: the output is exactly what it is without the option.
+     *
+     * The contrast check does not evaluate these translucent roles, with or
+     * without the option.
+     */
+    neutralChroma?: number;
+    /**
      * Extra declarations written after the ramps, for example
      * `{ "--color-link": "var(--color-brand-800)" }`. They apply in light and in
      * dark, and take part in the contrast check and in the choice of the "on"
@@ -101,15 +121,15 @@ export interface ClosestStep {
 
 export interface CreateThemeResult {
     /**
-     * The stylesheet: a header comment and one `:root { … }` rule. With `pin`,
-     * two more rules follow, with the dark values of the pinned roles:
+     * The stylesheet: a header comment and one `:root { … }` rule. With `pin`
+     * or `neutralChroma`, two more rules follow, with the dark values of those roles:
      * `.dark, [data-theme="dark"] { … }` and the same declarations for
      * `[data-theme="auto"]` inside `@media (prefers-color-scheme: dark)`.
      */
     css: string;
     /** Every declaration of the `:root` rule, name to value, in output order. */
     tokens: Record<string, string>;
-    /** Only with `pin`: every declaration of the dark rules. */
+    /** Only with `pin` or `neutralChroma`: every declaration of the dark rules. */
     darkTokens?: Record<string, string>;
     /** Only with `pin`: what was pinned and which roles took the colour. */
     pinned?: { brand?: PinReport; accent?: PinReport };
@@ -123,7 +143,7 @@ export interface CreateThemeResult {
  * every guarded role pair in light and dark. Deterministic: the same options
  * give the same bytes.
  *
- * @throws {TypeError} when `brand` is missing or a colour is not a hex value.
+ * @throws {TypeError} when `brand` is missing, a colour is not a hex value, or `neutralChroma` is not a number from 0 to 0.1 or is given without `neutral`.
  */
 export function createTheme(options: CreateThemeOptions): CreateThemeResult;
 export default createTheme;

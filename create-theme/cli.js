@@ -18,6 +18,7 @@ const HELP = `zabi-theme: generate brand tokens for zabi-components
 
 Usage
   zabi-theme --brand <hex> [--pin] [--accent <hex>] [--pin-accent] [--neutral <hex>]
+             [--neutral-chroma <n>]
              [--out <file>] [--strict] [--set <token>=<value> ...]
 
 Options
@@ -26,6 +27,12 @@ Options
   --accent <hex>    Second brand colour. Builds --zabi-accent-50 … 950.
   --pin-accent      The same for the solid accent fill. Needs --accent.
   --neutral <hex>   Tints the 21-step neutral ramp, --zabi-base-50 … 950.
+  --neutral-chroma <n>
+                    Chroma at the neutral ramp's peak, 0 to 0.1 (OKLCH). Default: the
+                    hue of --neutral at most 0.03. Use 0.04 to 0.06 for a clearly
+                    tinted neutral. Needs --neutral. With it, the ink roles (secondary
+                    button, hover and pressed tints, overlay edge, shadow colour)
+                    follow the neutral ramp instead of staying grey.
   --out <file>      Write the CSS here. Without it the CSS goes to stdout.
   --strict          Exit 1 when any role pair is below WCAG AA.
   --set <t>=<v>     Also write this declaration, e.g. --set "--color-link=var(--color-brand-800)".
@@ -49,7 +56,7 @@ Import the file after the theme:
   @import "./brand.generated.css";
 `;
 
-const VALUE_OPTIONS = ['brand', 'accent', 'neutral', 'out'];
+const VALUE_OPTIONS = ['brand', 'accent', 'neutral', 'neutral-chroma', 'out'];
 const FLAG_OPTIONS = ['strict', 'help', 'pin', 'pin-accent'];
 
 function usageError(message) {
@@ -86,6 +93,12 @@ function parseArgs(argv) {
     return options;
 }
 
+function parseChroma(text) {
+    const value = Number(text);
+    if (text.trim() === '' || !Number.isFinite(value)) usageError(`--neutral-chroma must be a number such as 0.05 (got "${text}")`);
+    return value;
+}
+
 const options = parseArgs(process.argv.slice(2));
 
 if (options.help) {
@@ -100,6 +113,8 @@ try {
         brand: options.brand,
         accent: options.accent,
         neutral: options.neutral,
+        // Left out when not asked for, so the options are what they always were.
+        ...(options['neutral-chroma'] !== undefined ? { neutralChroma: parseChroma(options['neutral-chroma']) } : {}),
         overrides: options.overrides,
         // Left out when not asked for, so the options are what they always were.
         ...(options.pin || options['pin-accent'] ? { pin: { brand: !!options.pin, accent: !!options['pin-accent'] } } : {}),

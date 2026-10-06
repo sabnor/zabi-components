@@ -608,3 +608,129 @@ test('a pair with a second foreground passes on either, and fails when both fail
   });
   assert.ok(contrastWarnings(both).some((w) => w.mode === 'light' && w.pair === 'focus ring or its offset gap on an accent button'));
 });
+
+/* ---------- neutralChroma ---------- */
+
+const { toOklch } = await import(pathToFileURL(path.join(distDir, 'lib', 'ramp-math.js')).href);
+const INK_ROLES = [
+  '--color-action-secondary',
+  '--color-action-secondary-hover',
+  '--color-action-secondary-active',
+  '--color-surface-hover',
+  '--color-surface-active',
+  '--color-border-overlay',
+];
+
+test('without neutralChroma nothing about the ink roles or the dark rules appears', () => {
+  for (const options of [{ brand: '#0026EA' }, { brand: '#0026EA', neutral: '#0026EA' }]) {
+    const plain = createTheme(options);
+    assert.ok(!plain.css.includes('color-mix'));
+    assert.ok(!plain.css.includes('.dark'));
+    assert.ok(!('darkTokens' in plain));
+    for (const role of [...INK_ROLES, '--shadow-color']) assert.ok(!(role in plain.tokens), role);
+    // Null and undefined are "not given".
+    assert.equal(createTheme({ ...options, neutralChroma: undefined }).css, plain.css);
+    assert.equal(createTheme({ ...options, neutralChroma: null }).css, plain.css);
+  }
+  // The neutral ramp is still capped at 0.03: the saturated input only gives its hue.
+  const capped = createTheme({ brand: '#0026EA', neutral: '#0026EA' });
+  assert.ok(toOklch(capped.tokens['--zabi-base-500']).c <= 0.031);
+  assert.ok(capped.warnings.some((w) => w.option === 'neutral' && /saturated/.test(w.message)));
+});
+
+test('neutralChroma lifts the cap: the ramp keeps its hue and reaches the asked chroma', () => {
+  const capped = createTheme({ brand: '#0026EA', neutral: '#607296' });
+  const tinted = createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 });
+  const mid = toOklch(tinted.tokens['--zabi-base-500']);
+  assert.ok(mid.c > 0.045 && mid.c < 0.055, `base-500 chroma ${mid.c}`);
+  assert.ok(Math.abs(mid.h - toOklch('#607296').h) < 3, `base-500 hue ${mid.h}`);
+  assert.ok(toOklch(capped.tokens['--zabi-base-500']).c < 0.03);
+  // Same 21 steps, same lightness: only the chroma moves.
+  for (const step of BASE_STEPS) {
+    const token = `--zabi-base-${step}`;
+    assert.ok(token in tinted.tokens, token);
+    assert.ok(Math.abs(measureLightness(tinted.tokens[token]) - measureLightness(capped.tokens[token])) < 1, token);
+  }
+  // No saturated-colour note when the author chose the chroma.
+  const saturated = createTheme({ brand: '#0026EA', neutral: '#0026EA', neutralChroma: 0.05 });
+  assert.ok(!saturated.warnings.some((w) => w.option === 'neutral'));
+  // The contrast check runs on what is emitted.
+  assert.deepEqual(contrastWarnings(tinted), []);
+  assert.match(tinted.css, /all \d+ role pairs pass WCAG AA/);
+});
+
+test('with neutralChroma the ink roles are mixes of the neutral ramp, and dark says its own', () => {
+  const result = createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 });
+  const alphas = { '--color-action-secondary': 10, '--color-action-secondary-hover': 15, '--color-action-secondary-active': 20, '--color-surface-hover': 9, '--color-surface-active': 15, '--color-border-overlay': 10 };
+  for (const [role, percent] of Object.entries(alphas)) {
+    assert.equal(result.tokens[role], `color-mix(in srgb, var(--zabi-base-900) ${percent}%, transparent)`, role);
+  }
+  const darkAlphas = { '--color-action-secondary': 9, '--color-action-secondary-hover': 15, '--color-action-secondary-active': 21, '--color-surface-hover': 8, '--color-surface-active': 14 };
+  for (const [role, percent] of Object.entries(darkAlphas)) {
+    assert.equal(result.darkTokens[role], `color-mix(in srgb, var(--zabi-base-50) ${percent}%, transparent)`, role);
+  }
+  // Dark's overlay edge is a ramp step already; the light mix must not reach it.
+  assert.equal(result.darkTokens['--color-border-overlay'], defaults.darkOnly['--color-border-overlay']);
+  // The shadow is the triplet of step 900 in light and stays black in dark.
+  const hex = result.tokens['--zabi-base-900'];
+  assert.equal(result.tokens['--shadow-color'], [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(' '));
+  assert.equal(result.darkTokens['--shadow-color'], '0 0 0');
+  // The modal scrim is not touched.
+  assert.ok(!('--color-overlay' in result.tokens) && !('--color-overlay' in result.darkTokens));
+  assert.ok(!('pinned' in result));
+  // The file carries the dark half under every selector the dark theme is published under.
+  const root = postcss.parse(result.css);
+  const rules = [];
+  root.walkRules((rule) => rules.push(rule.selector));
+  assert.deepEqual(rules, [':root', '.dark,\n[data-theme="dark"]', '[data-theme="auto"]']);
+  const dark = {};
+  root.walkRules('.dark,\n[data-theme="dark"]', (rule) => rule.walkDecls((d) => { dark[d.prop] = d.value; }));
+  assert.deepEqual(dark, result.darkTokens);
+  // Deterministic.
+  assert.equal(createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 }).css, result.css);
+});
+
+test('a role the app overrides is not replaced by an ink role, in either mode', () => {
+  const result = createTheme({
+    brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05,
+    overrides: { '--color-surface-hover': 'rgba(0, 0, 0, 0.05)', '--shadow-color': '1 2 3' },
+  });
+  assert.equal(result.tokens['--color-surface-hover'], 'rgba(0, 0, 0, 0.05)');
+  assert.equal(result.tokens['--shadow-color'], '1 2 3');
+  assert.ok(!('--color-surface-hover' in result.darkTokens));
+  assert.ok(!('--shadow-color' in result.darkTokens));
+});
+
+test('neutralChroma works together with pin and keeps the dark half of both', () => {
+  const result = createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: true });
+  assert.ok(result.pinned.brand);
+  assert.ok(result.darkTokens['--color-surface-hover'].includes('--zabi-base-50'));
+  assert.ok('--color-action-primary' in result.darkTokens);
+  assert.ok(result.css.includes('PINNED brand'));
+});
+
+test('neutralChroma is validated', () => {
+  const base = { brand: '#0026EA', neutral: '#607296' };
+  for (const bad of [-0.01, 0.11, NaN, Infinity, '0.05', {}, true]) {
+    assert.throws(() => createTheme({ ...base, neutralChroma: bad }), (error) => error instanceof TypeError && /neutralChroma must be a number from 0 to 0\.1/.test(error.message), String(bad));
+  }
+  assert.throws(() => createTheme({ brand: '#0026EA', neutralChroma: 0.05 }), (error) => error instanceof TypeError && /neutralChroma needs a neutral colour/.test(error.message));
+  // The limits themselves are fine, and 0 is a pure grey with ink still following the ramp.
+  assert.ok(createTheme({ ...base, neutralChroma: 0.1 }));
+  const grey = createTheme({ ...base, neutralChroma: 0 });
+  assert.ok(toOklch(grey.tokens['--zabi-base-500']).c < 0.005);
+  assert.ok(grey.tokens['--color-surface-hover'].includes('--zabi-base-900'));
+});
+
+test('the bin takes --neutral-chroma and refuses a bad one with exit 2', () => {
+  const ok = run('--brand', '#0026EA', '--neutral', '#607296', '--neutral-chroma', '0.05');
+  assert.equal(ok.status, 0, ok.stderr);
+  assert.equal(ok.stdout, createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 }).css);
+  for (const args of [['--neutral', '#607296', '--neutral-chroma', 'abc'], ['--neutral', '#607296', '--neutral-chroma', '0.5'], ['--neutral-chroma', '0.05']]) {
+    const bad = run('--brand', '#0026EA', ...args);
+    assert.equal(bad.status, 2, args.join(' '));
+    assert.equal(bad.stdout, '');
+    assert.match(bad.stderr, /neutral-chroma|neutralChroma/);
+  }
+  assert.match(run('--help').stdout, /--neutral-chroma/);
+});
