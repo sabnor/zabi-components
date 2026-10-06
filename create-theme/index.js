@@ -341,7 +341,9 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = [], { gradients = true
                 const flat = resolveTokenColor(maps[mode], behind);
                 // A material's filter dims what is behind it (D137); other `behind` pairs are not filtered.
                 const backdrop = flat && pair.material ? dimBackdrop(flat, backdropBrightness(maps[mode])) : flat;
-                bg = paint && backdrop ? compositeOver(paint, backdrop) : null;
+                bg = paint && backdrop ? backdrop : null;
+                // `layers`: the same paint stacked, each laid over the last (nested translucent cards).
+                for (let layer = 0; layer < (pair.layers ?? 1) && bg; layer += 1) bg = compositeOver(paint, bg);
             }
             const fg = resolveTokenColor(maps[mode], pair.fg);
             if (!bg || !fg) continue; // an alpha tint: not one flat colour

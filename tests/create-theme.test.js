@@ -190,9 +190,15 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
     'light active tab label on the tab pill',
     // The link is also written on a tint card (Card tone="tint").
     'light tint card · link',
+    // And on a flat card, held on three stacks (Card variant="flat"; in light the layers change nothing).
+    'light flat card · link (three layers over the card)',
+    'light flat card · link (two layers over the overlay)',
+    'light flat card · link (one layer over the page)',
     // The link is also written on the thick material (a Toaster toast), judged over both backdrops.
     'light material thick · link over the worst backdrop',
     'light material thick · link over the page',
+    'dark flat card · link (three layers over the card)',
+    'dark flat card · link (two layers over the overlay)',
     'dark material thick · link over the worst backdrop',
   ]);
   const onPage = warnings.find((w) => w.pair === 'link on page');
@@ -202,7 +208,7 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#fafafa' });
   assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #fafafa is [\d.]+:1, needs 4\.5:1/);
   // The failure is in the file too, so it is not lost when stderr is.
-  assert.match(result.css, /Contrast: 10 of \d+ role pairs are below WCAG AA:/);
+  assert.match(result.css, /Contrast: 15 of \d+ role pairs are below WCAG AA:/);
 
   // 3:1 pairs are checked as well: a focus ring too pale for the page.
   const ring = createTheme({ brand: '#0026EA', overrides: { '--color-focus': 'var(--zabi-brand-300)' } });
@@ -335,7 +341,7 @@ test('the bin warns on stderr, and --strict turns a failed pair into exit 1', ()
   const lenient = run(...args);
   assert.equal(lenient.status, 0);
   assert.match(lenient.stderr, /warning: light · link on page: .* needs 4\.5:1/);
-  assert.match(lenient.stderr, /10 role pairs below WCAG AA\./);
+  assert.match(lenient.stderr, /15 role pairs below WCAG AA\./);
   assert.match(lenient.stdout, /--color-link: var\(--zabi-brand-400\);/);
 
   const strict = run(...args, '--strict');
@@ -792,20 +798,21 @@ test('without light or dark overrides the bytes are what they were before the op
   // Then for 16a (Z-044): the field edge is guarded on the elevated surface and the overlay (two pairs per mode, so the header counts 4 more), and the dark surfaces, hairline, rim and shadows moved.
   // Then for 16b (Z-057): the dark status tints are mixes over the card surface, so a flat override of the card surface (the `flat` case) restates them and its bytes moved.
   // Then for T0 (tranche 5): the chip, tint card and progress edge pairs, so the header counts 38 more pairs per run (the `flat` case, whose raised surface is light in dark too, also lists the tint card's dark pairs); nothing else in the output moved.
+  // Then for the flat card: the flat card tokens and their stacked pairs, so the header counts more pairs and the bytes carry the tokens.
   // Then for 16c: the material alphas and the backdrop brightness reach the generator, so the default material pairs are checked (and can warn), and the dark filters are restated.
   const before = {
-    plain: [{ brand: '#0026EA' }, '6534f7a9a7647db63f08dd34b3ecc3b9b9510381eb95ec6ef63682d661b4d9e1'],
+    plain: [{ brand: '#0026EA' }, 'f87ad720c2c7be9174385bf28d884bf80a5f7d920bc56443394a29bf53794e4c'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      'b887358eedffc6036c3141b5051f40d0238811c41420c7b0984af8cf88ea56ef',
+      'f3e5771b45c98c5e622478beea2f30f3f26797a598e9b7eb1e470317cd9297ad',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      'e1eb8d5d98b50b1ebb79a1ed1fbde6225eaea1155ade540c875e22c9e7c81573',
+      'c810757e47e9ff9e91079e107050cd1a6db21e9af518ad6fe7446a27e26303ce',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '5624e9ad5d608f79955ae5d9cbd48de1447561f7758d6b86dbfb6a8445071fbb',
+      '128c8137bdd1d60c1520f2370222296f0a9625e83d03cf0a9a706b523fb64935',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -1269,6 +1276,28 @@ test('the chip, tint card and progress edge tokens exist in both modes, are guar
   assert.ok(names.some((name) => name.startsWith('light tint card')), 'a tint card that is too deep for the field edge warns');
   assert.ok(!names.some((name) => name.startsWith('dark')), names.join('\n'));
   assert.equal(declarationOf(darkRule(pale.css), '--color-chip-text'), defaults.darkOnly['--color-chip-text']);
+});
+
+test('the flat card tokens: the card in light, a translucent ramp step in dark, derived from the ramp, guarded on stacked layers and settable', () => {
+  assert.equal(defaults.light['--color-card-flat'], 'var(--color-card)');
+  assert.equal(defaults.light['--color-card-flat-hover'], 'var(--color-card-hover)');
+  assert.equal(defaults.light['--color-card-flat-active'], 'var(--color-card-active)');
+  assert.equal(defaults.darkOnly['--color-card-flat'], 'color-mix(in srgb, var(--zabi-base-50) 7%, transparent)');
+  assert.equal(defaults.darkOnly['--color-card-flat-hover'], 'color-mix(in srgb, var(--zabi-base-50) 11%, transparent)');
+  assert.equal(defaults.darkOnly['--color-card-flat-active'], 'color-mix(in srgb, var(--zabi-base-50) 15%, transparent)');
+  const shipped = buildThemeData().pairs.filter((pair) => pair.bg === '--color-card-flat');
+  assert.ok(shipped.some((pair) => pair.behind === '--color-surface-raised' && pair.layers === 3 && pair.fg === '--color-caption'));
+  assert.ok(shipped.some((pair) => pair.behind === '--color-surface-overlay' && pair.layers === 2 && pair.fg === '--color-link'));
+  assert.deepEqual(contrastWarnings(createTheme({ brand: '#0026EA' })), []);
+  // A dark layer too strong to read the caption on, three deep, is a warning for dark only.
+  const strong = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-card-flat': 'color-mix(in srgb, #fafafa 20%, transparent)' } } });
+  const names = contrastWarnings(strong).map((w) => `${w.mode} ${w.pair}`);
+  assert.ok(names.some((name) => name.startsWith('dark flat card · caption (three layers')), names.join('\n'));
+  assert.ok(!names.some((name) => name.startsWith('light')), names.join('\n'));
+  // The restore line of the changelog: the opaque card fill, which leaves no layer to stack.
+  const restored = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-card-flat': 'var(--color-card)' } } });
+  assert.deepEqual(contrastWarnings(restored), []);
+  assert.equal(declarationOf(darkRule(restored.css), '--color-card-flat'), 'var(--color-card)');
 });
 
 test('createTheme writes a transparent progress track edge where the app\'s own track reaches 3:1 on the page and the card', () => {

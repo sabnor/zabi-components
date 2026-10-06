@@ -33,7 +33,7 @@ describe("Card tone", () => {
         const elevated = a.container.firstElementChild!;
         const flat = b.container.firstElementChild!;
         expect(classesOf(elevated)).toEqual(expect.arrayContaining(["bg-card-elevated", "shadow-lg"]));
-        expect(classesOf(flat)).toEqual(expect.arrayContaining(["bg-card", "border-none"]));
+        expect(classesOf(flat)).toEqual(expect.arrayContaining(["bg-card-flat", "border-none"]));
     });
 
     it.each([

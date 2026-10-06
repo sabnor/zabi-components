@@ -535,7 +535,9 @@ function main() {
                     failures.push(`${themeName} · ${pair.name}: ${!paint ? pair.bg : behind} cannot be resolved to a colour, so the material cannot be composited`);
                     continue;
                 }
-                bg = compositeOver(paint, backdrop);
+                bg = backdrop;
+                // `layers`: the same paint stacked, each laid over the last (nested translucent cards).
+                for (let layer = 0; layer < (pair.layers ?? 1); layer += 1) bg = compositeOver(paint, bg);
             }
             const fg = resolve(map, pair.fg);
             if (!bg || !fg) {

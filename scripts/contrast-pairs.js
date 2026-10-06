@@ -408,6 +408,21 @@ export function buildPairs() {
         pairs.push({ name: `tint card · ${role}`, bg: '--color-card-tint', fg, min });
     }
 
+    // Card variant="flat": in dark a translucent step, so what is behind it is part of the pair. In light
+    // the fill is the card, opaque, and the layers change nothing. The stacks held are the deepest that
+    // text can still be read on: three layers over the card, two over the overlay (a flat card in a flat
+    // card in a sheet), one over the page. Three over the overlay is not held: the caption is 4.1:1 there.
+    // The field edge and the outline Button's edge are 3:1 on one layer over the page only (3.03:1); on a
+    // layer over a card or an overlay they are 2.8:1 or less at any alpha that shows the layer (THEMING.md).
+    const FLAT_STACKS = [['three layers over the card', '--color-surface-raised', 3], ['two layers over the overlay', '--color-surface-overlay', 2], ['one layer over the page', '--color-surface-base', 1]];
+    for (const [where, behind, layers] of FLAT_STACKS) {
+        for (const [role, fg, min] of TINT_CARD_ROLES) {
+            if (min === AA_LARGE && role !== 'focus ring' && layers !== 1) continue;
+            if (min === AA_LARGE && role !== 'focus ring' && behind !== '--color-surface-base') continue;
+            pairs.push({ name: `flat card · ${role} (${where})`, bg: '--color-card-flat', fg, min, behind, layers });
+        }
+    }
+
     for (const material of MATERIALS) {
         for (const [where, behind] of [['the worst backdrop', WORST_BACKDROP], ['the page', '--color-surface-base']]) {
             for (const role of material.text) {

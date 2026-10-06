@@ -364,6 +364,10 @@
    * edge 3:1 (a form can sit on it): 15.30, 12.87, 9.02, 6.68, 5.29 and 5.84:1;
    * ring 4.19, field edge 4.17. */
   --color-card-tint: var(--color-brand-100);
+  /* Card variant="flat": today's flat fill (the card), opaque. Dark restates it as a translucent step. */
+  --color-card-flat: var(--color-card);
+  --color-card-flat-hover: var(--color-card-hover);
+  --color-card-flat-active: var(--color-card-active);
 
   /* Surfaces — numbered aliases (kept for compatibility; prefer surface-base/raised/elevated/overlay) */
   --color-surface-1: var(--color-surface-raised);
@@ -1190,6 +1194,13 @@ body {
    * page; headline 13.49, body 11.68, label and description 10.03, caption 7.68,
    * link 8.81, ring 6.59:1. */
   --color-card-tint: color-mix(in srgb, var(--zabi-brand-500) 8%, var(--color-surface-raised));
+  /* Card variant="flat", dark: a translucent step of the neutral ramp (base-50 at 7%), so a flat card
+   * is lighter than whatever it sits on, and a flat card inside a flat card is lighter again. Shadows
+   * do not carry layers on a dark page; alpha does. Hover and pressed are the same step at 11% and 15%.
+   * Restore the opaque fill: overrides: { dark: { '--color-card-flat': 'var(--color-card)' } }. */
+  --color-card-flat: color-mix(in srgb, var(--zabi-base-50) 7%, transparent);
+  --color-card-flat-hover: color-mix(in srgb, var(--zabi-base-50) 11%, transparent);
+  --color-card-flat-active: color-mix(in srgb, var(--zabi-base-50) 15%, transparent);
 
   /* Surfaces — numbered aliases of the surface levels */
   --color-surface-1: var(--color-surface-raised);
@@ -1985,9 +1996,17 @@ body {
   background-color: var(--color-card);
 }
 
+.bg-card-flat {
+  background-color: var(--color-card-flat);
+}
+
 @media (hover: hover) {
 .hover\:bg-card-hover:hover {
   background-color: var(--color-card-hover);
+}
+
+.hover\:bg-card-flat-hover:hover {
+  background-color: var(--color-card-flat-hover);
 }
 }
 
@@ -2051,6 +2070,10 @@ body {
 /* `.bg-card` is unlayered, so the generated `active:bg-card-active` would lose to it. */
 .active\:bg-card-active:active {
   background-color: var(--color-card-active);
+}
+
+.active\:bg-card-flat-active:active {
+  background-color: var(--color-card-flat-active);
 }
 
 .disabled\:bg-input-disabled:disabled {
@@ -2685,7 +2708,7 @@ body {
   /* A surface inside a block: its text and edges are the theme's again. */
   :where(.on-brand, .on-accent, .on-fill)
     :where(
-      .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
+      .bg-card, .bg-card-flat, .bg-card-elevated, .bg-background, .bg-surface-base,
       .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
       .bg-surface-chrome, .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
@@ -2719,10 +2742,18 @@ body {
     --zabi-inv-star: initial;
   }
 
+  /* A flat card inside a block is the opaque card, in dark too: its dark fill is a translucent
+   * step, which over the block's fill would carry the theme's text (restored above) at 2.3:1. */
+  :where(.on-brand, .on-accent, .on-fill) :where(.bg-card-flat) {
+    --color-card-flat: var(--color-card);
+    --color-card-flat-hover: var(--color-card-hover);
+    --color-card-flat-active: var(--color-card-active);
+  }
+
   /* And what is inside that surface is ringed in the theme's ring again. */
   :where(.on-brand, .on-accent, .on-fill)
     :where(
-      .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
+      .bg-card, .bg-card-flat, .bg-card-elevated, .bg-background, .bg-surface-base,
       .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
       .bg-surface-chrome, .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,

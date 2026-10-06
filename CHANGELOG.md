@@ -12,6 +12,10 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Changed
+
+- In dark, `Card variant="flat"` is a translucent, slightly lighter layer (the neutral ramp's base-50 at 7%, hover 11%, pressed 15%) instead of the opaque card fill, so flat cards nested in each other, in a default card, an elevated card or a sheet each read a step lighter and stay visible. Light is unchanged: a light flat card computes to the same fill as before. New tokens `--color-card-flat`, `--color-card-flat-hover`, `--color-card-flat-active` (utilities `bg-card-flat`, `hover:bg-card-flat-hover`, `active:bg-card-flat-active`), settable through `createTheme` `overrides`. To keep the opaque dark fill: `overrides: { dark: { '--color-card-flat': 'var(--color-card)' } }`, and the same for `-hover` and `-active` (`var(--color-card-hover)`, `var(--color-card-active)`).
+
 ## [9.0.0-alpha.5] - 2026-10-07
 
 A fifth local preview build of the 9.0 direction, not published to npm; 8.1.0

@@ -39,6 +39,10 @@ describe("cn", () => {
         expect(cn("font-sans", "font-display")).toBe("font-display");
         expect(cn("font-heading", "font-display")).toBe("font-display");
         expect(cn("font-display", "font-bold")).toBe("font-display font-bold");
+        // The flat card fill is a colour like the card: the last one wins, and the state steps are their own variants.
+        expect(cn("bg-card-flat", "bg-card")).toBe("bg-card");
+        expect(cn("bg-card", "bg-card-flat")).toBe("bg-card-flat");
+        expect(cn("bg-card-flat", "hover:bg-card-flat-hover", "active:bg-card-flat-active")).toBe("bg-card-flat hover:bg-card-flat-hover active:bg-card-flat-active");
         // A veil is an image: it neither removes the fill beside it nor is removed by it.
         expect(cn("bg-control-gradient", "bg-action-primary")).toBe("bg-control-gradient bg-action-primary");
         expect(cn("bg-action-primary", "bg-control-gradient")).toBe("bg-action-primary bg-control-gradient");

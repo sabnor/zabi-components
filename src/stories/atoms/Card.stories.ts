@@ -3,6 +3,7 @@ import CardWithContent from './CardWithContent.svelte';
 import CardCompound from './CardCompound.svelte';
 import CardTonesStory from './CardTonesStory.svelte';
 import CardLinkStory from './CardLinkStory.svelte';
+import CardFlatLayersStory from './CardFlatLayersStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Card',
@@ -166,4 +167,16 @@ export const Tones: Story = {
         }
     },
     render: (args) => ({ Component: CardTonesStory, props: args })
+};
+
+export const FlatLayers: Story = {
+    name: 'Flat layers',
+    parameters: {
+        docs: {
+            description: {
+                story: 'In dark, a flat card is a translucent, slightly lighter layer, so flat cards nested in each other, in a default card or in an elevated card each read a step lighter. In light it is the card surface, as before. Restore the opaque fill with `overrides: { dark: { \'--color-card-flat\': \'var(--color-card)\' } }`.'
+            }
+        }
+    },
+    render: (args) => ({ Component: CardFlatLayersStory, props: args })
 };
