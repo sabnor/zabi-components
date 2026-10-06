@@ -140,24 +140,32 @@ describe("BottomTabBar active tab", () => {
         render(BottomTabBar, { props: { items, active: "/quiz" } });
         const [active] = current();
         const idle = links()[0];
+        const pill = active.querySelector("span")!.className;
         expect(active.className).toContain("font-semibold");
-        expect(active.querySelector("span")!.className).toContain("bg-nav-menu-active");
-        expect(active.querySelector("span")!.className).toContain("--color-action-primary");
+        expect(active.className).toContain("focus-ring");
+        expect(pill).toContain("bg-tabbar-active");
+        expect(pill).toContain("text-nav-menu-item-active");
         expect(idle.className).not.toContain("font-semibold");
-        expect(idle.querySelector("span")!.className).not.toContain("bg-nav-menu-active");
+        expect(idle.querySelector("span")!.className).not.toContain("bg-tabbar-active");
+    });
+
+    it("draws no outline on the active pill (it would read as a stuck focus ring)", () => {
+        render(BottomTabBar, { props: { items, active: "/quiz" } });
+        const pill = current()[0].querySelector("span")!.className;
+        // Only the forced-colors variant may mention an outline.
+        const plain = pill.split(/\s+/).filter((c) => !c.startsWith("forced-colors:"));
+        expect(plain.filter((c) => c.includes("outline"))).toEqual([]);
+        expect(pill).not.toContain("--color-action-primary");
     });
 
     it("keeps a shape on the active tab in forced-colors mode, where its fill is dropped", () => {
         render(BottomTabBar, { props: { items, active: "/quiz" } });
         const [active] = current();
         const idle = links()[0];
-        // A transparent outline is invisible until the system paints it.
-        expect(active.querySelector("span")!.className).toContain("outline-2");
-        // A 2px outline in the action colour: the mark that reaches 3:1 against the bar.
-        expect(active.querySelector("span")!.className).toContain("outline-2");
-        expect(active.querySelector("span")!.className).toContain("outline-(color:--color-action-primary)");
-        expect(active.querySelector("span")!.className).not.toContain("outline-transparent");
-        expect(idle.querySelector("span")!.className).not.toContain("outline-2");
+        const pill = active.querySelector("span")!.className;
+        expect(pill).toContain("forced-colors:outline-2");
+        expect(pill).toContain("forced-colors:outline-(color:Highlight)");
+        expect(idle.querySelector("span")!.className).not.toContain("outline");
     });
 
     it("never clears the selection when the active tab is pressed again", async () => {

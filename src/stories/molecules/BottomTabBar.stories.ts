@@ -90,3 +90,39 @@ export const NarrowPhone: Story = {
         }
     }
 };
+
+export const ActiveIcon: Story = {
+    args: {
+        startActive: '/inbox',
+        withActiveIcons: true,
+    },
+    render: (args) => ({
+        Component: BottomTabBarStory,
+        props: args,
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'An item can give an activeIcon, drawn instead of its icon on the active tab. Without one, the same icon is drawn with a heavier stroke. Here only Inbox has one. The active tab is told apart by the pill, the icon, the semibold label and the colour, and has no outline: the focus ring is for keyboard focus only.'
+            }
+        }
+    }
+};
+
+export const Floating: Story = {
+    args: {
+        floating: true,
+        withBadges: true,
+    },
+    render: (args) => ({
+        Component: BottomTabBarStory,
+        props: args,
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'floating draws the bar as a rounded glass capsule inset 12px from the edges. It is always glass, so scrollEdge has no effect; content should pass under it.'
+            }
+        }
+    }
+};

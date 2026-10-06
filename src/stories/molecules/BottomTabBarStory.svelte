@@ -1,4 +1,5 @@
 <script lang="ts">
+    import BellRing from '@lucide/svelte/icons/bell-ring';
     import Bell from '@lucide/svelte/icons/bell';
     import House from '@lucide/svelte/icons/house';
     import Trophy from '@lucide/svelte/icons/trophy';
@@ -20,6 +21,10 @@
         longLabels?: boolean;
         /** Width of the phone frame in px. */
         frameWidth?: 320 | 360 | 390;
+        /** Swap to a different icon on the active tab. */
+        withActiveIcons?: boolean;
+        /** Draw the bar as a capsule inset from the edges. */
+        floating?: boolean;
     }
 
     let {
@@ -30,12 +35,14 @@
         badgeMax,
         longLabels = false,
         frameWidth = 360,
+        withActiveIcons = false,
+        floating = false,
     }: Props = $props();
 
     const all = $derived<BottomTabBarItem[]>([
         { href: '/home', label: 'Home', icon: House },
         { href: '/quiz', label: longLabels ? 'Quiz night' : 'Quiz', icon: Trophy },
-        { href: '/inbox', label: longLabels ? 'Notifications' : 'Inbox', icon: Bell, badge: withBadges ? 3 : undefined },
+        { href: '/inbox', label: longLabels ? 'Notifications' : 'Inbox', icon: Bell, activeIcon: withActiveIcons ? BellRing : undefined, badge: withBadges ? 3 : undefined },
         { href: '/teams', label: longLabels ? 'Leaderboard' : 'Teams', icon: Users },
         { href: '/me', label: 'Me', icon: User, badge: withBadges ? 120 : undefined },
     ]);
@@ -60,5 +67,5 @@ own in an app the bar is fixed to the bottom of the screen. -->
     style="width: {frameWidth}px;"
 >
     <p class="p-4 text-sm text-description">Active: {active}</p>
-    <BottomTabBar {items} {active} {label} {badgeMax} position="static" onclick={select} />
+    <BottomTabBar {items} {active} {label} {badgeMax} {floating} position="static" onclick={select} />
 </div>

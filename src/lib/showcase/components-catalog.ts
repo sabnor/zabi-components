@@ -5981,7 +5981,7 @@ pushToast({
                         type: "BottomTabBarItem[]",
                         required: true,
                         description:
-                            "Three to five destinations, each { href, label, icon, badge? }. icon is a component such as a lucide icon; badge is a count. A development build warns outside three to five. The bar is one 64px row at every text size: a label is one line, grows with the reader's text size up to 1.3 times and no further than its tab has room for, and is cut with an ellipsis, never inside a word, when it still does not fit. A tab narrower than 52px (five tabs below 260px) shows its icon only. The link is always named by the full label, so keep labels to one short word.",
+                            "Three to five destinations, each { href, label, icon, activeIcon?, badge? }. icon is a component such as a lucide icon; activeIcon is drawn instead of it on the active tab (typically the filled form; without it icon is drawn with a heavier stroke); badge is a count, drawn in the attention colour. A development build warns outside three to five. The bar is one 64px row at every text size: a label is one line, grows with the reader's text size up to 1.3 times and no further than its tab has room for, and is cut with an ellipsis, never inside a word, when it still does not fit. A tab narrower than 52px (five tabs below 260px) shows its icon only. The link is always named by the full label, so keep labels to one short word.",
                     },
                     {
                         name: "active",
@@ -6022,6 +6022,14 @@ pushToast({
                         defaultValue: "fixed (static inside AppShell)",
                         description:
                             "fixed pins the bar to the bottom of the screen; static leaves it where it is in the page. AppShell places the bar itself. A fixed bar on its own lies over the page: give the page padding-bottom and scroll-padding-bottom of the bar's height, calc(64px + env(safe-area-inset-bottom)) by default, so the last content and a focused field are not under it.",
+                    },
+                    {
+                        name: "floating",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the bar as a rounded capsule of glass inset 12px from the screen edges and from the home indicator, instead of edge to edge. It is always the regular material because content is always under it, so scrollEdge has no effect. The nav keeps its landmark, safe-area padding and position and becomes transparent; the height a shell measures includes the 12px.",
                     },
                     {
                         name: "class",
