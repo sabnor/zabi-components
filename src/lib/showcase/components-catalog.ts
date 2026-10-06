@@ -38,6 +38,34 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "button",
                         description: "HTML button type",
                     },
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Makes this a link: an a element with the same look. While disabled or loading it has no href, is aria-disabled and cannot be followed. With variant link it is a text link that flows with its sentence.",
+                    },
+                    {
+                        name: "target",
+                        type: "string",
+                        required: false,
+                        description:
+                            "With href: where the link opens.",
+                    },
+                    {
+                        name: "rel",
+                        type: "string",
+                        required: false,
+                        description:
+                            "With href: the link's relationship, such as noopener.",
+                    },
+                    {
+                        name: "download",
+                        type: "string | boolean",
+                        required: false,
+                        description:
+                            "With href: download the address instead of opening it.",
+                    },
                 ],
                 variants: [
                     "primary",
@@ -118,6 +146,34 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "",
                         description: "Accessible label for icon-only buttons",
+                    },
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Makes this a link: an a element with the same look. While disabled or loading it has no href, is aria-disabled and cannot be followed. A link is not a toggle: pressed is ignored.",
+                    },
+                    {
+                        name: "target",
+                        type: "string",
+                        required: false,
+                        description:
+                            "With href: where the link opens.",
+                    },
+                    {
+                        name: "rel",
+                        type: "string",
+                        required: false,
+                        description:
+                            "With href: the link's relationship, such as noopener.",
+                    },
+                    {
+                        name: "download",
+                        type: "string | boolean",
+                        required: false,
+                        description:
+                            "With href: download the address instead of opening it.",
                     },
                 ],
                 variants: [
@@ -202,6 +258,59 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "md",
                         description:
                             "32, 40 or 48px tall, as Button and Select. On a touch screen sm and md are 44px tall, so a row of controls still lines up.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Help text under the field, tied to it with aria-describedby and read out with it. Not a live region.",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "An error under the field. It sets the error variant, marks the field invalid and is announced. It wins over variant and message.",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Drawn inside the field before the text: an icon, a unit. The field makes room for it. Decoration lets a press through to the field; a button or link in it is pressable.",
+                    },
+                    {
+                        name: "trailing",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Drawn inside the field after the text, before the loading spinner. A button in it sits 4px inside the field: give it rounded-[calc(var(--radius-control)-4px)].",
+                    },
+                    {
+                        name: "revealable",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "With type password: adds a button at the end of the field that shows the password as text and hides it again. It keeps the caret, leaves autocomplete alone, and is a 44px target on a touch screen.",
+                    },
+                    {
+                        name: "revealLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Show password",
+                        description:
+                            "Accessible name of the reveal button. It is the same in both states; aria-pressed says whether the password is showing.",
+                    },
+                    {
+                        name: "aria-describedby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Ids of other elements that describe the field. The hint and the message are added after them, and only ids of elements that are rendered.",
                     },
                 ],
                 variants: ["default", "success", "warning", "error"],
@@ -717,6 +826,36 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "auto",
                         description:
                             "How the list is shown. auto: in a BottomSheet on a phone (a touch screen narrower than 640px), under the field everywhere else, decided each time it opens. The sheet is titled by the label, keeps the search field under its header, has 48px rows and opens with the chosen option focused and in view; choosing closes it and returns focus to the field. The list, its roles, the keys and the form value are the same in both. popover and sheet are always the one or the other.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Help text under the field, tied to it with aria-describedby and read out with it. Not a live region.",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "An error under the field. It sets the error variant, marks the field invalid and is announced. It wins over variant and message.",
+                    },
+                    {
+                        name: "aria-describedby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Ids of other elements that describe the field. The hint and the message are added after them, and only ids of elements that are rendered.",
+                    },
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of the trigger button, for a label of your own. Generated when omitted.",
                     },
                 ],
                 variants: ["default", "success", "warning", "error"],
@@ -1706,6 +1845,29 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "4",
                         description: "Visible rows",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Help text under the field, tied to it with aria-describedby and read out with it. Not a live region.",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "An error under the field. It sets the error variant, marks the field invalid and is announced. It wins over variant and message.",
+                    },
+                    {
+                        name: "aria-describedby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Ids of other elements that describe the field. The hint and the message are added after them, and only ids of elements that are rendered.",
                     },
                 ],
                 variants: ["default", "success", "warning", "error"],

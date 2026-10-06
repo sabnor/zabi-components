@@ -4,6 +4,7 @@
         RADIO_GROUP_CONTROL_SHELL,
         RADIO_GROUP_OPTION_LABEL_ROW,
         RADIO_GROUP_RING_OVERLAY,
+        SELECTION_CONTROL_INPUT,
     } from "../atoms/selection-control.styles";
     import { generateId } from "../util/ssr-safe.js";
     import { SvelteMap } from "svelte/reactivity";
@@ -178,7 +179,7 @@
                         checked={isChecked}
                         disabled={optionDisabled}
                         tabindex={tabIndexFor(option)}
-                        class="sr-only"
+                        class={SELECTION_CONTROL_INPUT}
                         onchange={handleChange}
                         {@attach registerRadio(option.value)}
                     />

@@ -12,7 +12,7 @@ export const doc: ComponentDoc = makeDoc({
     defaultExample: {
         title: "Minimal rows",
         description:
-            "Each item needs id and label. Add more fields in later examples.",
+            "Each item needs id and label. A row is a link with href, a button when the list has onclick, and plain content when it has neither.",
         demoId: demoId("List", "default"),
         code: `<script lang="ts">
   const items = [
@@ -23,7 +23,7 @@ export const doc: ComponentDoc = makeDoc({
 </script>
 
 <div class="list-group">
-  <List items={items} ariaLabel="Quick settings" />
+  <List items={items} ariaLabel="Quick settings" onclick={(item) => open(item.id)} />
 </div>`,
     },
     examples: [
@@ -153,7 +153,7 @@ export const doc: ComponentDoc = makeDoc({
         {
             title: "Trailing slot (manual ListItem)",
             description:
-                "ListItemData has no trailing slot. Compose your own <ul> and pass the trailing snippet on ListItem for badges, status, or short meta.",
+                "ListItemData has no trailing slot. Compose your own <ul> and pass the trailing snippet on ListItem for badges, status, or short meta. This row has no href and no onclick, so it is plain content: not a button, and no arrow.",
             demoId: demoId("List", "trailing"),
             code: `<script lang="ts">
   import { Badge, ListItem } from "zabi-components/atoms";

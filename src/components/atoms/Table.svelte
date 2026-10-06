@@ -1,12 +1,14 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
+    import type { HTMLTableAttributes } from 'svelte/elements';
     import { cn } from "../util/cn.js";
     import { generateId } from "../util/ssr-safe.js";
 
     /** `true` stacks at every width; a breakpoint name stacks below it. */
     export type TableStacked = boolean | "sm" | "md" | "lg";
 
-    interface Props {
+    /** Other attributes (`id`, `data-*`, `aria-*`, ...) land on the `<table>`. */
+    type Props = Omit<HTMLTableAttributes, 'class' | 'children'> & {
         /** `<caption>`, and the table's accessible name, when set. */
         caption?: string;
         /** Keeps the caption as the accessible name but hides it from view. */
@@ -19,7 +21,7 @@
         stacked?: TableStacked;
         class?: string;
         children?: Snippet;
-    }
+    };
 
     let {
         caption,
@@ -27,6 +29,7 @@
         stacked = false,
         class: className = '',
         children,
+        ...restProps
     }: Props = $props();
 
     const captionId = generateId("table-caption");
@@ -151,6 +154,7 @@
         class={cn("w-full min-w-[20rem] border-collapse text-left text-sm text-body", stackedClass)}
         role={stacked ? "table" : undefined}
         aria-labelledby={stacked && caption ? captionId : undefined}
+        {...restProps}
     >
         {#if caption}
             <caption

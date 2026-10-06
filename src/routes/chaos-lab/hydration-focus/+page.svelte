@@ -1,6 +1,10 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import CardHeader from "../../../components/atoms/CardHeader.svelte";
     import Container from "../../../components/atoms/Container.svelte";
+    import Heading from "../../../components/atoms/Heading.svelte";
+    import Text from "../../../components/atoms/Text.svelte";
+    import AppBar from "../../../components/molecules/AppBar.svelte";
     import Collapsible from "../../../components/molecules/Collapsible.svelte";
     import EmptyState from "../../../components/molecules/EmptyState.svelte";
     import AppShell from "../../../components/organisms/AppShell.svelte";
@@ -43,6 +47,33 @@
     <Container as="section">
         <button type="button" data-testid="in-container">In a Container</button>
     </Container>
+
+    <Text>
+        Forgot it? <a href="#reset" data-testid="in-text">Reset your password</a>
+    </Text>
+
+    <Text as="div">
+        <label>E-mail <input type="email" data-testid="in-text-div" /></label>
+    </Text>
+
+    <Text as="span">
+        <a href="#terms" data-testid="in-text-span">Terms</a>
+    </Text>
+
+    <Heading level={2}>
+        Visits <a href="#all" data-testid="in-heading">See all</a>
+    </Heading>
+
+    <CardHeader title="Log in" level={2}>
+        <a href="#help" data-testid="in-card-header">Need help?</a>
+    </CardHeader>
+
+    <!-- The title is a heading of its own level; the actions sit beside it. -->
+    <AppBar title="New visit" headingLevel={2}>
+        {#snippet actions()}
+            <button type="button" data-testid="in-app-bar">Save</button>
+        {/snippet}
+    </AppBar>
 
     <Collapsible title="Delivery notes" headingLevel={3}>
         <p>Leave it at the door.</p>

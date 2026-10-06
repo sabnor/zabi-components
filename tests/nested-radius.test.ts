@@ -95,7 +95,7 @@ describe("nested corner radii", () => {
     });
 
     it("ListItem: a row takes the radius a list group hands down, and the container radius otherwise", () => {
-        render(ListItem, { props: { item: { id: "inbox", label: "Inbox" } } });
+        render(ListItem, { props: { item: { id: "inbox", label: "Inbox" }, onclick: () => {} } });
         const row = screen.getByText("Inbox").closest("[class*='focus-ring']")!;
         expect(row.className).toContain("rounded-[var(--zabi-list-row-radius,var(--radius-container))]");
     });

@@ -40,6 +40,21 @@ Whenever token or CSS import API surface changes, include:
   `--zabi-rating-on-active`, `--zabi-rating-on-edge`.
 - A `font-heading` utility for `--font-family-heading`.
 - `CHANGELOG.md` is in the package.
+- **`hint` and `error` on Input, Textarea and Select**, as on DateField: a
+  hint is tied to the field with `aria-describedby`, an error sets the error
+  state and is announced. `variant` + `message` still work, and your own
+  `aria-describedby` is merged, not overwritten.
+- **Input takes `leading` and `trailing` snippets** and, for
+  `type="password"`, **`revealable`**: a button in the field that shows or
+  hides the password (`revealLabel`, default "Show password", with
+  `aria-pressed`).
+- **`href` on Button and IconButton** renders a real link with the same look
+  (`target`, `rel`, `download` are passed on). A disabled or loading link has
+  no `href` and is `aria-disabled`.
+- **Form controls accept their element's attributes.** Input, Textarea,
+  Select, Checkbox, Radio, Toggle and ThemeToggle are typed on the native
+  element, so `autocomplete`, `inputmode`, `maxlength`, `enterkeyhint` and
+  `data-*` type-check; Table and Text pass other attributes to their element.
 
 ### Changed
 
@@ -77,6 +92,17 @@ Whenever token or CSS import API surface changes, include:
   `--font-family-sans` and `--font-family-mono`; before, they were Tailwind's
   system stacks. If you used `font-sans` to get the system font, write the
   stack yourself.
+- **Button labels wrap.** A label that does not fit goes onto a second line
+  and the button grows (`min-height` in place of a fixed height); a label
+  that fits is as before (32, 40 and 48px; 44px minimum on touch). In a tight
+  flex row a button may now shrink and wrap where it held its width.
+- **A List row with nothing to do is plain content.** A row with no `href` in
+  a List with no `onclick` is no longer a focusable button with an arrow.
+- Checkbox and Radio inputs are stretched over their box (invisible) instead
+  of being visually hidden, so tools that click the input itself work
+  (`getByRole("checkbox").check()`).
+- Textarea and Select status messages use the same text colour step as
+  Input's. DateField and TimeField ids start with `input-`.
 
 ### Fixed
 
@@ -90,6 +116,15 @@ Whenever token or CSS import API surface changes, include:
   1.24:1) and its label keeps 4.89:1 on it (was 4.02:1).
 - README links to RELEASING.md point at the repository, and the README says
   to install `@lucide/svelte` and import icons per file.
+- **No component drops keyboard focus on hydration.** Heading, Text,
+  CardHeader, AppBar's title and EmptyState's heading no longer use a dynamic
+  element, which Svelte re-inserts while hydrating; a guard fails the build if
+  one comes back. (AppShell and Container were fixed in 8.1.0-beta.1.)
+- Input, Textarea and Select no longer point `aria-describedby` at a message
+  that is not rendered.
+- ListItem rows show a hover and a pressed fill.
+- Button and IconButton do not scale when pressed under
+  `prefers-reduced-motion`.
 
 ## [8.1.0-beta.1] - 2026-10-06
 

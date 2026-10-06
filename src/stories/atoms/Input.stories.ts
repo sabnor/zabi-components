@@ -100,3 +100,71 @@ export const Error: Story = {
         message: 'This field is required'
     }
 };
+
+export const WithHint: Story = {
+    args: {
+        label: 'Password',
+        type: 'password',
+        autocomplete: 'new-password',
+        hint: 'At least 8 characters.'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A hint is help that is always there. It is tied to the field with aria-describedby and read with it; it is not announced on its own.'
+            }
+        }
+    }
+};
+
+export const WithHintAndError: Story = {
+    args: {
+        label: 'Password',
+        type: 'password',
+        value: 'abc',
+        hint: 'At least 8 characters.',
+        error: 'That is fewer than 8 characters.'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'error sets the error variant, marks the field invalid and is announced. The field is described by the hint first and the error after it.'
+            }
+        }
+    }
+};
+
+export const RevealablePassword: Story = {
+    args: {
+        label: 'Password',
+        type: 'password',
+        autocomplete: 'current-password',
+        value: 'correct horse',
+        revealable: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A toggle at the end of the field shows the password as text and hides it again. Its name stays "Show password" and aria-pressed says which state it is in. A press with a mouse or a finger leaves focus and the caret in the field; autocomplete is not touched. Translate the name with revealLabel.'
+            }
+        }
+    }
+};
+
+export const RevealableLarge: Story = {
+    args: {
+        label: 'Password',
+        type: 'password',
+        value: 'correct horse',
+        size: 'lg',
+        revealable: true,
+        loading: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'The toggle is 8px smaller than the field at every size and sits 4px inside it. The loading spinner stands after it, and the field makes room for both.'
+            }
+        }
+    }
+};

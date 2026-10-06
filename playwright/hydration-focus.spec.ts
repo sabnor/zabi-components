@@ -41,7 +41,33 @@ const controls: { name: string; locate: (page: Page) => ReturnType<Page["locator
     { name: "Container", locate: (page) => page.getByTestId("in-container") },
     { name: "Collapsible's heading", locate: (page) => page.getByRole("button", { name: "Delivery notes" }) },
     { name: "AppShell's content", locate: (page) => page.getByTestId("in-app-shell") },
+    { name: "Text (a p): a link", locate: (page) => page.getByTestId("in-text") },
+    { name: "Text (a div): a field", locate: (page) => page.getByTestId("in-text-div") },
+    { name: "Text (a span): a link", locate: (page) => page.getByTestId("in-text-span") },
+    { name: "Heading: a link", locate: (page) => page.getByTestId("in-heading") },
+    { name: "CardHeader: a link", locate: (page) => page.getByTestId("in-card-header") },
+    { name: "AppBar: an action", locate: (page) => page.getByTestId("in-app-bar") },
 ];
+
+test("Text: what is typed across the moment of hydration is all kept", async ({ page }) => {
+    const typed = "abcdefghijklmnopqrstuvwxyz0123456789";
+    const release = await holdScripts(page);
+    await page.goto(LAB, { waitUntil: "commit" });
+    const field = page.getByTestId("in-text-div");
+    await expect(field).toBeVisible();
+    await field.focus();
+    await page.keyboard.type(typed.slice(0, 12));
+    // Released in the middle of the word, and typing goes on while the page wakes up.
+    const released = release();
+    for (const key of typed.slice(12)) {
+        await page.keyboard.type(key);
+        await page.waitForTimeout(40);
+    }
+    await released;
+    await expect(page.getByTestId("lab-hydrated")).toBeAttached({ timeout: 30_000 });
+    await expect(field).toHaveValue(typed);
+    await expect(field).toBeFocused();
+});
 
 for (const control of controls) {
     test(`${control.name}: a control focused before hydration keeps focus through it`, async ({ page }) => {
@@ -85,6 +111,12 @@ test("the markup is what it was: the same elements, in the same order", async ({
             container: tagOf('[data-testid="in-container"]', 1),
             collapsibleHeading: document.querySelector("h3 > button[aria-expanded]") ? "h3" : null,
             appShellContent: tagOf("[data-app-shell-content]"),
+            text: tagOf('[data-testid="in-text"]', 1),
+            textDiv: tagOf('[data-testid="in-text-div"]', 2),
+            textSpan: tagOf('[data-testid="in-text-span"]', 1),
+            heading: tagOf('[data-testid="in-heading"]', 1),
+            cardHeaderTitle: document.querySelector('[data-testid="in-card-header"]')?.previousElementSibling?.tagName.toLowerCase() ?? null,
+            appBarTitle: document.querySelector('[data-testid="in-app-bar"]')?.closest("header")?.querySelector("h2")?.textContent?.trim() ?? null,
         };
     });
     expect(tags).toEqual({
@@ -93,5 +125,11 @@ test("the markup is what it was: the same elements, in the same order", async ({
         container: "section",
         collapsibleHeading: "h3",
         appShellContent: "div",
+        text: "p",
+        textDiv: "div",
+        textSpan: "span",
+        heading: "h2",
+        cardHeaderTitle: "h2",
+        appBarTitle: "New visit",
     });
 });

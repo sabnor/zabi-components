@@ -221,16 +221,27 @@
         {@render leading?.()}
         {#if title}
             <!-- One line, cut with an ellipsis. 1.125rem, and no more than
-            1.3 times that (23.4px) however large the text is set. -->
-            <svelte:element
-                this={`h${headingLevel}`}
-                class={cn(
-                    "m-0 min-w-0 flex-1 truncate text-[length:min(1.125rem,23.4px)] leading-[1.34] font-semibold text-headline",
-                    !hasBack && !leading && "ps-2",
-                )}
-            >
-                {title}
-            </svelte:element>
+            1.3 times that (23.4px) however large the text is set.
+            One branch per level, not a dynamic element: hydration takes a dynamic
+            element out and puts it back, which blurs a control inside it that the user
+            had already tabbed to. -->
+            {@const titleClasses = cn(
+                "m-0 min-w-0 flex-1 truncate text-[length:min(1.125rem,23.4px)] leading-[1.34] font-semibold text-headline",
+                !hasBack && !leading && "ps-2",
+            )}
+            {#if headingLevel === 1}
+                <h1 class={titleClasses}>{title}</h1>
+            {:else if headingLevel === 2}
+                <h2 class={titleClasses}>{title}</h2>
+            {:else if headingLevel === 3}
+                <h3 class={titleClasses}>{title}</h3>
+            {:else if headingLevel === 4}
+                <h4 class={titleClasses}>{title}</h4>
+            {:else if headingLevel === 5}
+                <h5 class={titleClasses}>{title}</h5>
+            {:else}
+                <h6 class={titleClasses}>{title}</h6>
+            {/if}
         {:else}
             <div class="min-w-0 flex-1"></div>
         {/if}

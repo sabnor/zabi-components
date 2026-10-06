@@ -50,6 +50,34 @@ if (violations.length > 0) {
 }
 console.log('✓ Component import paths (types) OK');
 
+// A dynamic element is taken out and put back when the page hydrates. A field
+// or a link inside it that the user had already focused is blurred on the way,
+// and what they type next is lost (playwright/hydration-focus.spec.ts). Write
+// one branch per tag over a shared snippet instead. Comments may name it.
+const dynamicElementRe = /<svelte:element[\s>/]/;
+const dynamicElements = [];
+for (const filePath of files) {
+  const lines = fs
+    .readFileSync(filePath, 'utf8')
+    .replace(/<!--[\s\S]*?-->/g, (comment) => comment.replace(/[^\n]/g, ' '))
+    .split('\n');
+  lines.forEach((line, index) => {
+    if (dynamicElementRe.test(line)) {
+      dynamicElements.push(`${path.relative(path.join(__dirname, '..'), filePath)}:${index + 1}`);
+    }
+  });
+}
+if (dynamicElements.length > 0) {
+  console.error(
+    '❌ Do not use <svelte:element> in src/components: hydration re-inserts it and blurs a focused control inside. Use one {#if} branch per tag over a shared snippet:',
+  );
+  for (const where of dynamicElements) {
+    console.error(`   - ${where}`);
+  }
+  process.exit(1);
+}
+console.log('✓ No dynamic elements in components');
+
 // Everything a consumer may copy from, not only what is packaged: the catalog's
 // code samples, the stories, the docs site and the written docs.
 const repoRoot = path.join(__dirname, '..');

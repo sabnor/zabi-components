@@ -45,7 +45,6 @@
     };
 
     const visualSize = $derived(size ?? level);
-    const Tag = $derived(`h${level}`);
 
     /**
      * Display sizes tighten as they grow. Untracked 36px type with default
@@ -74,10 +73,27 @@
   <style> block, which meant a consumer who rebranded the font token got a
   rebranded body and Nunito Sans headings.
 -->
-<svelte:element this={Tag} class={headingClasses} {...restProps}>
+{#snippet content()}
     {#if children}
         {@render children()}
     {:else}
         {text}
     {/if}
-</svelte:element>
+{/snippet}
+
+<!-- One branch per level, not a dynamic element: hydration takes a dynamic
+element out and puts it back, which blurs a control inside it that the user
+had already tabbed to. -->
+{#if level === 1}
+    <h1 class={headingClasses} {...restProps}>{@render content()}</h1>
+{:else if level === 2}
+    <h2 class={headingClasses} {...restProps}>{@render content()}</h2>
+{:else if level === 3}
+    <h3 class={headingClasses} {...restProps}>{@render content()}</h3>
+{:else if level === 4}
+    <h4 class={headingClasses} {...restProps}>{@render content()}</h4>
+{:else if level === 5}
+    <h5 class={headingClasses} {...restProps}>{@render content()}</h5>
+{:else}
+    <h6 class={headingClasses} {...restProps}>{@render content()}</h6>
+{/if}

@@ -10,6 +10,14 @@
  *      38/46/50 and 32/40/48 respectively, so a `lg` Button stood 14px taller
  *      than the `lg` Input beside it.
  *
+ *      A control whose label may wrap (Button) declares the height as a
+ *      minimum, `min-h-N`, so two lines make it taller instead of painting
+ *      outside it. That only keeps the scale if one line never exceeds the
+ *      minimum: such a box must state its vertical padding (`py-N`), and one
+ *      line of the size's own text, that padding and a 1px border on each
+ *      side must fit in the minimum height. Then a label that fits on one
+ *      line is exactly as tall as the Input beside it.
+ *
  *   2. TOUCH — on a coarse pointer the same controls must be at least 44px tall at
  *      `sm` and `md` (`pointer-coarse:min-h-11` in the size's `box`), and the
  *      square IconButton 44px wide as well. They all grow together, so a row
@@ -85,11 +93,63 @@ function boxesBySize(source, extraSizes = []) {
     return found;
 }
 
-/** The fine-pointer height in a `box` value; a `min-h-*` or a variant-prefixed class does not count. */
+/**
+ * The fine-pointer height in a `box` value: `h-N`, `size-N`, or `min-h-N` for
+ * a control that grows with a wrapped label. A variant-prefixed class
+ * (`pointer-coarse:min-h-11`) does not count.
+ */
 function heightOf(box) {
     if (!box) return null;
-    const m = box.match(/(?<![\w:-])(?:h|size)-(\d+(?:\.\d+)?)(?![\w-])/);
+    const m = box.match(/(?<![\w:-])(?:min-h|h|size)-(\d+(?:\.\d+)?)(?![\w-])/);
     return m ? `h-${m[1]}` : null;
+}
+
+/** The line height that comes with each text size a control may set. */
+const LINE_HEIGHT_PX = { 'text-xs': 16, 'text-sm': 20, 'text-base': 24, 'text-lg': 28 };
+/** A bordered variant (outline) adds 1px above and below. */
+const BORDER_PX = 2;
+
+/** The `text:` value of each arm of the size map, as `boxesBySize` reads `box:`. */
+function textsBySize(source) {
+    const found = { sm: null, md: null, lg: null };
+    for (const size of ['sm', 'lg']) {
+        const arm = new RegExp(`size === "${size}"[\\s\\S]{0,240}?text:\\s*"([^"]+)"`);
+        const m = source.match(arm);
+        if (m) found[size] = m[1];
+    }
+    const tail = source.split(/size === "lg"/).pop() || '';
+    const texts = [...tail.matchAll(/text:\s*"([^"]+)"/g)];
+    if (texts.length) found.md = texts[texts.length - 1][1];
+    return found;
+}
+
+/**
+ * For a box whose height is a minimum: why one line of text could make it
+ * taller than that minimum, or `null` when it cannot.
+ */
+function minHeightProblem(box, text) {
+    if (!box) return null;
+    const min = box.match(/(?<![\w:-])min-h-(\d+(?:\.\d+)?)(?![\w-])/);
+    if (!min) return null;
+    if (/(?<![\w:-])(?:h|size)-\d/.test(box)) return null;
+    const py = box.match(/(?<![\w:-])py-(\d+(?:\.\d+)?)(?![\w-])/);
+    if (!py) {
+        return `has min-h-${min[1]} but no py-N: without a stated vertical padding one line cannot be shown to fit`;
+    }
+    const textClass = (text ?? '').split(/\s+/).find((name) => name in LINE_HEIGHT_PX);
+    if (!textClass) {
+        return `has min-h-${min[1]} but its text size (${text ?? 'none'}) is not one whose line height is known here`;
+    }
+    const linePx = LINE_HEIGHT_PX[textClass];
+    const minPx = Number(min[1]) * 4;
+    const onePx = linePx + 2 * Number(py[1]) * 4 + BORDER_PX;
+    if (onePx > minPx) {
+        return `py-${py[1]}, one ${linePx}px line of ${textClass} and a border are ${onePx}px, taller than min-h-${min[1]} (${minPx}px): a one-line label would leave the height scale`;
+    }
+    if (/(?<![\w-])(?:pt|pb)-\d/.test(box)) {
+        return 'sets pt-N or pb-N beside py-N: the vertical padding must be the one py-N that is checked';
+    }
+    return null;
 }
 
 function heightsBySize(source, extraSizes = []) {
@@ -140,6 +200,11 @@ function main() {
                     `${rel}: size "${size}" is under 44px wide and its box has no ${TOUCH_MIN_WIDTH}`,
                 );
             }
+        }
+        const texts = textsBySize(source);
+        for (const size of ['sm', 'md', 'lg']) {
+            const problem = minHeightProblem(boxes[size], texts[size]);
+            if (problem) failures.push(`${rel}: size "${size}" ${problem}`);
         }
         for (const size of ['sm', 'md', 'lg']) {
             if (!heights[size]) {

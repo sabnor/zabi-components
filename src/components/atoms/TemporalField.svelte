@@ -1,17 +1,16 @@
 <script lang="ts">
     import type { SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
-    import { generateId } from "../util/ssr-safe.js";
     import Input from "./Input.svelte";
 
     /**
      * What DateField and TimeField share. Internal: it is not exported from
      * the package, and its props are those of the two fields.
      *
-     * It is an `Input` with a native `type`, so the box, the sizes, the label
-     * and the error message are Input's own and cannot drift from it. What is
-     * added here is only what a native date or time input needs to look like
-     * one: see the classes and the style block below.
+     * It is an `Input` with a native `type`, so the box, the sizes, the label,
+     * the hint and the error message are Input's own and cannot drift from it.
+     * What is added here is only what a native date or time input needs to
+     * look like one: see the classes and the style block below.
      */
     interface Props {
         kind: "date" | "time";
@@ -54,27 +53,12 @@
         ...restProps
     }: Props = $props();
 
-    const fallbackId = generateId("temporal-field");
-    const fieldId = $derived(idProp ?? fallbackId);
-    const hintId = $derived(`${fieldId}-hint`);
-
-    /**
-     * Input describes the field by its own message only. Here there may also
-     * be a hint, and ids from a FormField around the field.
-     */
-    const describedByIds = $derived(
-        [describedBy, hint ? hintId : "", error ? `${fieldId}-message` : ""]
-            .filter(Boolean)
-            .join(" ") || undefined,
-    );
-
     /** What Input does not declare, but passes on to the `<input>`. */
     const native = $derived({
         min,
         max,
         step,
         readonly: readonly || undefined,
-        "aria-describedby": describedByIds,
         "data-empty": value ? undefined : "",
         ...restProps,
     });
@@ -96,7 +80,7 @@
 
 <div>
     <Input
-        id={fieldId}
+        id={idProp}
         type={kind}
         bind:value
         {name}
@@ -105,14 +89,12 @@
         {required}
         {disabled}
         {size}
-        variant={error ? "error" : "default"}
-        message={error}
+        {hint}
+        {error}
+        aria-describedby={describedBy}
         class={fieldClasses}
         {...native}
     />
-    {#if hint}
-        <p id={hintId} class="mt-2 text-sm text-description">{hint}</p>
-    {/if}
 </div>
 
 <style>

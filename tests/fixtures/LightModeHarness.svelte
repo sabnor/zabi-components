@@ -22,7 +22,8 @@
 </div>
 <div data-testid="tabs"><Tabs {tabs} activeTab="a" /></div>
 <div data-testid="pills"><Tabs {tabs} activeTab="a" variant="pills" /></div>
-<div data-testid="list"><List {items} selectedId="two" ariaLabel="Items" /></div>
+<!-- With something to do: a row without `href` or `onclick` is plain content, not a button. -->
+<div data-testid="list"><List {items} selectedId="two" ariaLabel="Items" onclick={() => {}} /></div>
 <div data-testid="panel">
     <SidebarPanel variant="elevated" title="Projects" showSearch items={[{ id: "p1", label: "Zabi" }]} selectedItemId="p1" />
 </div>

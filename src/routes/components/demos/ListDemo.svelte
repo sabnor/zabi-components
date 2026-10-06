@@ -10,6 +10,8 @@
 
     let { exampleIndex }: DemoRendererProps = $props();
 
+    let opened = $state("nothing yet");
+
     const basicItems: ListItemData[] = [
         { id: "notifications", label: "Notifications" },
         { id: "privacy", label: "Privacy" },
@@ -102,10 +104,17 @@
 </script>
 
 {#if exampleIndex === 0}
-    <div class="w-full">
+    <div class="w-full space-y-2">
         <div class="list-group">
-            <List items={basicItems} ariaLabel="Quick settings" />
+            <List
+                items={basicItems}
+                ariaLabel="Quick settings"
+                onclick={(item) => (opened = item.label)}
+            />
         </div>
+        <p class="text-sm text-description">
+            Opened: <span data-testid="list-demo-opened">{opened}</span>
+        </p>
     </div>
 {:else if exampleIndex === 1}
     <div class="w-full">
@@ -160,7 +169,11 @@
 {:else}
     <div class="w-full">
         <div class="list-group">
-            <List items={basicItems} ariaLabel="Quick settings" />
+            <List
+                items={basicItems}
+                ariaLabel="Quick settings"
+                onclick={(item) => (opened = item.label)}
+            />
         </div>
     </div>
 {/if}

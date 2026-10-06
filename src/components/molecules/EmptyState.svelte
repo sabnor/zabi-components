@@ -41,19 +41,26 @@
 </script>
 
 {#snippet body()}
+    {@const headingClasses = cn("font-semibold text-headline", compact ? "text-base" : "text-lg")}
     {#if media}
         <div class="text-description" aria-hidden="true">
             {@render media()}
         </div>
     {/if}
     <div class={compact ? "space-y-1" : "space-y-2"}>
-        <svelte:element
-            this={`h${headingLevel}`}
-            id={titleId}
-            class={cn("font-semibold text-headline", compact ? "text-base" : "text-lg")}
-        >
-            {title}
-        </svelte:element>
+        {#if headingLevel === 1}
+            <h1 id={titleId} class={headingClasses}>{title}</h1>
+        {:else if headingLevel === 2}
+            <h2 id={titleId} class={headingClasses}>{title}</h2>
+        {:else if headingLevel === 3}
+            <h3 id={titleId} class={headingClasses}>{title}</h3>
+        {:else if headingLevel === 4}
+            <h4 id={titleId} class={headingClasses}>{title}</h4>
+        {:else if headingLevel === 5}
+            <h5 id={titleId} class={headingClasses}>{title}</h5>
+        {:else}
+            <h6 id={titleId} class={headingClasses}>{title}</h6>
+        {/if}
         <p class="text-sm text-description">{description}</p>
     </div>
     {#if action}
@@ -70,8 +77,8 @@
 
      Two branches, not `<svelte:element>`: hydration takes a dynamic element
      out and puts it back, which blurs a control inside it that the user had
-     already tabbed to. The heading below holds no control, so it can stay
-     dynamic. -->
+     already tabbed to. The heading is one branch per level for the same
+     reason. -->
 {#if compact}
     <div class={rootClasses}>
         {@render body()}

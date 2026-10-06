@@ -1,8 +1,10 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import type { HTMLInputAttributes } from "svelte/elements";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
     import {
+        SELECTION_CONTROL_INPUT,
         SELECTION_CONTROL_LABEL_ROW,
         selectionControlRingOverlayClasses,
         selectionControlShellClasses,
@@ -17,7 +19,10 @@
         disabled: boolean;
     };
 
-    interface Props {
+    type Props = Omit<
+        HTMLInputAttributes,
+        "class" | "id" | "name" | "value" | "disabled" | "checked" | "type" | "onchange"
+    > & {
         /** Extra classes for the host element. */
         class?: string;
         id?: string;
@@ -33,7 +38,7 @@
         onChange?: (event: Event) => void;
         onchange?: (event: Event) => void;
         mark?: Snippet<[SelectionControlMarkProps]>;
-    }
+    };
 
     let {
         class: className = "",
@@ -83,7 +88,7 @@
                 {value}
                 {checked}
                 disabled={isDisabled}
-                class="sr-only"
+                class={SELECTION_CONTROL_INPUT}
                 aria-busy={loading ? "true" : undefined}
                 onchange={handleChange}
                 {...restProps}

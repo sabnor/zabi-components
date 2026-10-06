@@ -1,13 +1,36 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
-    import type { HTMLButtonAttributes } from "svelte/elements";
+    import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
 
     /** The shared scale plus `xs`, which only the icon button has. */
     type IconButtonSize = SizeVariant | "xs";
 
+    /**
+     * One type for the button and the link, not a union of the two elements'
+     * attributes: that union is too large for TypeScript to carry through a
+     * wrapper such as a Storybook `Meta`. Event handlers are typed for the
+     * button; on a link they are called with the same event.
+     */
     type Props = Omit<HTMLButtonAttributes, "class"> & {
+        /**
+         * Where the link goes. Makes this an `<a>` that looks the same;
+         * without it, it is a `<button>`. A link cannot be disabled: while
+         * `disabled` or `loading` it has no `href`, is `aria-disabled` and
+         * does nothing when pressed. A link is not
+         * a toggle: `pressed` is ignored.
+         */
+        href?: string;
+        /** With `href`: where the link opens. */
+        target?: HTMLAnchorAttributes["target"];
+        /** With `href`: the link's relationship, such as `noopener`. */
+        rel?: HTMLAnchorAttributes["rel"];
+        /** With `href`: download the address instead of opening it. */
+        download?: HTMLAnchorAttributes["download"];
+        hreflang?: HTMLAnchorAttributes["hreflang"];
+        referrerpolicy?: HTMLAnchorAttributes["referrerpolicy"];
+        ping?: HTMLAnchorAttributes["ping"];
         variant?: ButtonVariant;
         /**
          * `xs` is a 24px box for dense, pointer-first layouts (card headers,
@@ -44,7 +67,8 @@
         pressed = $bindable(),
         disabled = false,
         loading = false,
-        type = "button",
+        type,
+        href,
         label = "",
         class: className = "",
         onclick,
@@ -52,8 +76,19 @@
         ...restProps
     }: Props = $props();
 
-    const isDisabled = $derived(disabled || loading);
-    const isToggle = $derived(pressed !== undefined);
+    const isDisabled = $derived(!!disabled || loading);
+    const isLink = $derived(href !== undefined && href !== null);
+    const isToggle = $derived(pressed !== undefined && !isLink);
+
+    /** A disabled link has no `href`, but a pointer can still press it. */
+    function handleLinkClick(event: MouseEvent) {
+        if (isDisabled) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+        (onclick as ((event: MouseEvent) => void) | null | undefined)?.(event);
+    }
 
     function handleClick(
         event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
@@ -96,27 +131,27 @@
     const variantClass = $derived.by(() => {
         if (isDangerTone) {
             const fill =
-                "text-error hover:bg-action-danger-subtle active:bg-action-danger-subtle-hover active:scale-[0.98] focus-ring--danger";
+                "text-error hover:bg-action-danger-subtle active:bg-action-danger-subtle-hover active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger";
             return variant === "outline"
                 ? `bg-transparent border border-error-border hover:border-error ${fill}`
                 : `bg-transparent ${fill}`;
         }
         switch (variant) {
             case "secondary":
-                return "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active active:scale-[0.98]";
+                return "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active active:scale-[0.98] motion-reduce:active:scale-100";
             case "danger":
-                return "bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] focus-ring--danger";
+                return "bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger";
             case "ghost":
-                return "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active active:scale-[0.98] focus-ring--muted";
+                return "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--muted";
             case "outline":
-                return "bg-transparent border border-border text-headline hover:bg-surface-hover hover:border-border-medium active:bg-surface-active active:scale-[0.98]";
+                return "bg-transparent border border-border text-headline hover:bg-surface-hover hover:border-border-medium active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100";
             case "link":
                 return "bg-transparent text-link hover:text-link-hover focus-ring--muted";
             case "accent":
                 return "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98]";
             case "primary":
             default:
-                return "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98]";
+                return "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] motion-reduce:active:scale-100";
         }
     });
 
@@ -157,22 +192,17 @@
     const buttonClasses = $derived.by(() => {
         const base =
             "inline-flex focus-ring items-center justify-center rounded-control shrink-0 transition-colors duration-150 cursor-pointer select-none";
-        return cn(
-            `${base} ${sizeClass.box} ${variantClass} ${pressedClass} ${disabledClass} ${className}`,
-        );
+        // `disabled:` does not match an `<a>`: a disabled link wears the
+        // disabled pair itself, in place of its variant.
+        const state =
+            isLink && isDisabled
+                ? "bg-(--color-action-disabled) text-action-disabled-text border border-transparent cursor-not-allowed"
+                : `${variantClass} ${isLink ? "" : pressedClass} ${disabledClass}`;
+        return cn(`${base} ${sizeClass.box} ${state} ${className}`);
     });
 </script>
 
-<button
-    {type}
-    class={buttonClasses}
-    disabled={isDisabled}
-    aria-busy={loading ? "true" : undefined}
-    aria-pressed={pressed}
-    onclick={handleClick}
-    aria-label={label || undefined}
-    {...restProps}
->
+{#snippet content()}
     {#if loading}
         <span
             class="inline-block {sizeClass.spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80 motion-reduce:animate-pulse"
@@ -181,4 +211,32 @@
     {:else if children}
         {@render children()}
     {/if}
-</button>
+{/snippet}
+
+{#if isLink}
+    <a
+        href={isDisabled ? undefined : href}
+        class={buttonClasses}
+        role={isDisabled ? "link" : undefined}
+        aria-disabled={isDisabled ? "true" : undefined}
+        aria-busy={loading ? "true" : undefined}
+        aria-label={label || undefined}
+        {...(restProps as unknown as HTMLAnchorAttributes)}
+        onclick={handleLinkClick}
+    >
+        {@render content()}
+    </a>
+{:else}
+    <button
+        type={type ?? "button"}
+        class={buttonClasses}
+        disabled={isDisabled}
+        aria-busy={loading ? "true" : undefined}
+        aria-pressed={pressed}
+        onclick={handleClick}
+        aria-label={label || undefined}
+        {...restProps}
+    >
+        {@render content()}
+    </button>
+{/if}

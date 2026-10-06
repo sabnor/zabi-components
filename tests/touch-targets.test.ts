@@ -41,14 +41,18 @@ describe("touch targets", () => {
         render(Button, { props: { text: "Save", size } });
         const button = screen.getByRole("button", { name: "Save" });
         expect(classes(button)).toContain(COARSE_HEIGHT);
-        // The fine-pointer height is untouched.
-        expect(classes(button)).toContain(size === "sm" ? "h-8" : "h-10");
+        // The fine-pointer height is untouched. It is a minimum, so a label
+        // that wraps makes the button taller; one line is exactly this tall
+        // (scripts/check-control-geometry.js holds the padding to that, and
+        // playwright/button.spec.ts measures 32, 40 and 48px).
+        expect(classes(button)).toContain(size === "sm" ? "min-h-8" : "min-h-10");
+        expect(classes(button)).toContain(size === "sm" ? "py-1" : "py-2");
     });
 
     it("Button lg is 48px already and has no coarse-pointer rule, nor does any size get a minimum width", () => {
         render(Button, { props: { text: "Save", size: "lg" } });
         const button = screen.getByRole("button", { name: "Save" });
-        expect(classes(button)).toContain("h-12");
+        expect(classes(button)).toContain("min-h-12");
         expect(button.className).not.toContain("pointer-coarse:");
         cleanup();
 

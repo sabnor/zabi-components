@@ -2,15 +2,33 @@
     import Dropdown from "../molecules/Dropdown.svelte";
     import Input from "./Input.svelte";
     import ChevronDown from "@lucide/svelte/icons/chevron-down";
-    import CheckCircle from "@lucide/svelte/icons/circle-check-big";
-    import AlertTriangle from "@lucide/svelte/icons/triangle-alert";
-    import AlertCircle from "@lucide/svelte/icons/circle-alert";
+    import type { HTMLButtonAttributes } from "svelte/elements";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
+    import { fieldDescribedBy, fieldMessageState } from "../util/field.js";
+    import FieldMessages from "./FieldMessages.svelte";
 
-    interface Props {
+    /**
+     * Other attributes (`data-*`, `aria-*`, `onfocus`, ...) land on the
+     * trigger, which is a `<button>`: it is the control that takes focus and
+     * that the label names.
+     */
+    type Props = Omit<
+        HTMLButtonAttributes,
+        | "class"
+        | "value"
+        | "name"
+        | "disabled"
+        | "type"
+        | "onchange"
+        | "onclick"
+        | "aria-describedby"
+        | "children"
+    > & {
         /** Extra classes for the host element. */
         class?: string;
+        /** Id of the trigger. Omit to auto-generate. */
+        id?: string;
         value?: string | number | undefined;
         options?: Array<{
             value: string | number;
@@ -41,13 +59,21 @@
         disabled?: boolean;
         size?: "sm" | "md" | "lg";
         variant?: "default" | "success" | "warning" | "error";
+        /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
         message?: string;
+        /** Help text under the field, read out with it. */
+        hint?: string;
+        /** An error under the field. It marks the field invalid and is announced; it wins over `variant` and `message`. */
+        error?: string;
         onchange?: (event: Event) => void;
         onEmptyStateAction?: () => void;
-    }
+        /** Ids of other elements that describe the field. The hint and the message are added after them. */
+        "aria-describedby"?: string | null;
+    };
 
     let {
         class: className = "",
+        id: idProp,
         value = $bindable(undefined),
         options = [],
         searchable = true,
@@ -69,10 +95,15 @@
         size = "md",
         variant = "default",
         message = "",
+        hint = "",
+        error = "",
         onchange,
         onEmptyStateAction,
+        "aria-describedby": describedBy,
         ...restProps
     }: Props = $props();
+
+    const status = $derived(fieldMessageState({ variant, message, hint, error }));
 
     let isOpen = $state(false);
     let selectContainer: HTMLDivElement;
@@ -87,11 +118,11 @@
     });
 
     const variantClass = $derived(() => {
-        return variant === "success"
+        return status.variant === "success"
             ? "border-success focus-visible:border-success"
-            : variant === "warning"
+            : status.variant === "warning"
               ? "border-warning focus-visible:border-warning"
-              : variant === "error"
+              : status.variant === "error"
                 ? "border-error focus-visible:border-error"
                 : "border-input-border enabled:hover:border-input-border-hover";
     });
@@ -108,25 +139,8 @@
         () => "block text-sm font-medium text-label mb-2",
     );
 
-    const messageClasses = $derived(() => {
-        if (variant === "error") {
-            return "text-error text-sm mt-1 flex items-center gap-2 w-full";
-        } else if (variant === "success") {
-            return "text-success text-sm mt-1 flex items-center gap-2 w-full";
-        } else if (variant === "warning") {
-            return "text-warning text-sm mt-1 flex items-center gap-2 w-full";
-        }
-        return "text-description text-sm mt-1 flex items-center gap-2 w-full";
-    });
-
-    const getIcon = $derived(() => {
-        if (variant === "error") return AlertCircle;
-        if (variant === "success") return CheckCircle;
-        if (variant === "warning") return AlertTriangle;
-        return null;
-    });
-
-    const selectId = generateId("select");
+    const fallbackId = generateId("select");
+    const selectId = $derived(idProp ?? fallbackId);
 
     const isEmpty = $derived(() => {
         return value === undefined || value === null || value === "";
@@ -239,8 +253,9 @@
                 class={triggerClasses()}
                 {disabled}
                 onclick={handleTriggerClick}
+                {...restProps}
                 {...aria}
-                aria-describedby={message ? `${selectId}-message` : undefined}
+                aria-describedby={fieldDescribedBy(selectId, status, describedBy)}
             >
                 <!-- An empty trigger shows its placeholder in the placeholder
                 colour, as Input does. A value has no colour class of its own,
@@ -364,18 +379,5 @@
     {#if name}
         <input type="hidden" {name} value={isEmpty() ? "" : String(value)} />
     {/if}
-    {#if message && variant !== "default"}
-        <p
-            id={`${selectId}-message`}
-            class={messageClasses()}
-            role={variant === "error" ? "alert" : "status"}
-            aria-live={variant === "error" ? "assertive" : "polite"}
-        >
-            {#if getIcon()}
-                {@const Icon = getIcon()}
-                <Icon size={14} class="shrink-0" />
-            {/if}
-            <span>{message}</span>
-        </p>
-    {/if}
+    <FieldMessages fieldId={selectId} {status} {hint} gap="mt-1" messageClass="w-full" />
 </div>

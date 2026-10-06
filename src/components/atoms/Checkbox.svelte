@@ -1,8 +1,13 @@
 <script lang="ts">
+    import type { HTMLInputAttributes } from "svelte/elements";
     import SelectionControl from "./SelectionControl.svelte";
     import type { SelectionControlMarkProps } from "./SelectionControl.svelte";
 
-    interface Props {
+    /** Other attributes (`required`, `data-*`, `aria-*`, ...) land on the `<input>`. */
+    type Props = Omit<
+        HTMLInputAttributes,
+        "class" | "id" | "name" | "value" | "disabled" | "checked" | "type" | "onchange"
+    > & {
         /** Extra classes for the host element. */
         class?: string;
         id?: string;
@@ -15,7 +20,7 @@
         checked?: boolean;
         onChange?: (event: Event) => void;
         onchange?: (event: Event) => void;
-    }
+    };
 
     let {
         class: className = "",

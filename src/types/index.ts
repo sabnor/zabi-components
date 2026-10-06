@@ -8,7 +8,13 @@ export * from './page.types.js';
 // Component type definitions
 // Enhanced component type with proper event handling for Svelte 5
 import type { Component, Snippet } from 'svelte';
-import type { HTMLAttributes, HTMLButtonAttributes, HTMLInputAttributes } from 'svelte/elements';
+import type {
+    HTMLAnchorAttributes,
+    HTMLAttributes,
+    HTMLButtonAttributes,
+    HTMLInputAttributes,
+    HTMLTextareaAttributes,
+} from 'svelte/elements';
 import type { BottomTabBarItem } from '../components/util/bottom-tab-bar.js';
 import type { CalendarEvent, CalendarStrings } from '../components/util/calendar.js';
 import type {
@@ -64,6 +70,20 @@ export interface ButtonProps extends Omit<HTMLButtonAttributes, 'class'> {
     disabled?: boolean;
     loading?: boolean;
     type?: 'button' | 'submit' | 'reset';
+    /**
+     * Where the link goes. Makes this an `<a>` that looks the same. While
+     * `disabled` or `loading` it has no `href` and is `aria-disabled`.
+     */
+    href?: string;
+    /** With `href`: where the link opens. */
+    target?: HTMLAnchorAttributes['target'];
+    /** With `href`: the link's relationship, such as `noopener`. */
+    rel?: HTMLAnchorAttributes['rel'];
+    /** With `href`: download the address instead of opening it. */
+    download?: HTMLAnchorAttributes['download'];
+    hreflang?: HTMLAnchorAttributes['hreflang'];
+    referrerpolicy?: HTMLAnchorAttributes['referrerpolicy'];
+    ping?: HTMLAnchorAttributes['ping'];
     text?: string;
     /** Stretch to the width of the container. */
     fullWidth?: boolean;
@@ -123,7 +143,23 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'>
 }
 
 // Input component props and events
-export interface InputProps {
+export interface InputProps
+    extends Omit<
+        HTMLInputAttributes,
+        | 'class'
+        | 'size'
+        | 'value'
+        | 'type'
+        | 'id'
+        | 'name'
+        | 'placeholder'
+        | 'required'
+        | 'disabled'
+        | 'oninput'
+        | 'onblur'
+        | 'aria-label'
+        | 'aria-describedby'
+    > {
     /** Omit to auto-generate. */
     id?: string;
     type?: string;
@@ -138,7 +174,22 @@ export interface InputProps {
     loading?: boolean;
     size?: SizeVariant;
     variant?: SemanticVariant;
+    /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
     message?: string;
+    /** Help text under the field, read out with it. */
+    hint?: string;
+    /** An error under the field. It marks the field invalid and is announced; it wins over `variant` and `message`. */
+    error?: string;
+    /** Ids of other elements that describe the field. The hint and the message are added after them. */
+    'aria-describedby'?: string | null;
+    /** Drawn inside the field, before the text. */
+    leading?: Snippet;
+    /** Drawn inside the field, after the text. */
+    trailing?: Snippet;
+    /** With `type="password"`: adds a button that shows the password as text, and hides it again. */
+    revealable?: boolean;
+    /** Accessible name of that button, the same in both states. */
+    revealLabel?: string;
     oninput?: (event: Event) => void;
     onblur?: (event: Event) => void;
     'aria-label'?: string;
@@ -155,7 +206,11 @@ export interface InputEvents {
 }
 
 // Checkbox component props and events
-export interface CheckboxProps {
+export interface CheckboxProps
+    extends Omit<
+        HTMLInputAttributes,
+        'class' | 'id' | 'name' | 'value' | 'disabled' | 'checked' | 'type' | 'onchange'
+    > {
     id?: string;
     name?: string;
     value?: string;
@@ -177,7 +232,21 @@ export interface CheckboxEvents {
 }
 
 // Select component props and events
-export interface SelectProps {
+export interface SelectProps
+    extends Omit<
+        HTMLButtonAttributes,
+        | 'class'
+        | 'value'
+        | 'name'
+        | 'disabled'
+        | 'type'
+        | 'onchange'
+        | 'onclick'
+        | 'aria-describedby'
+        | 'children'
+    > {
+    /** Id of the trigger. Omit to auto-generate. */
+    id?: string;
     options?: Array<{ value: string | number; label: string; disabled?: boolean }>;
     value?: string | number | undefined;
     searchable?: boolean;
@@ -201,7 +270,14 @@ export interface SelectProps {
     disabled?: boolean;
     size?: SizeVariant;
     variant?: 'default' | 'success' | 'warning' | 'error';
+    /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
     message?: string;
+    /** Help text under the field, read out with it. */
+    hint?: string;
+    /** An error under the field. It marks the field invalid and is announced; it wins over `variant` and `message`. */
+    error?: string;
+    /** Ids of other elements that describe the field. The hint and the message are added after them. */
+    'aria-describedby'?: string | null;
     onchange?: (event: Event) => void;
     class?: string;
     /** @deprecated never accepted by the component; use `class`. */
@@ -213,7 +289,20 @@ export interface SelectEvents {
 }
 
 // Textarea component props and events
-export interface TextareaProps {
+export interface TextareaProps
+    extends Omit<
+        HTMLTextareaAttributes,
+        | 'class'
+        | 'value'
+        | 'id'
+        | 'name'
+        | 'placeholder'
+        | 'required'
+        | 'disabled'
+        | 'rows'
+        | 'oninput'
+        | 'aria-describedby'
+    > {
     id?: string;
     value?: string;
     name?: string;
@@ -226,7 +315,14 @@ export interface TextareaProps {
     loading?: boolean;
     size?: SizeVariant;
     variant?: SemanticVariant;
+    /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
     message?: string;
+    /** Help text under the field, read out with it. */
+    hint?: string;
+    /** An error under the field. It marks the field invalid and is announced; it wins over `variant` and `message`. */
+    error?: string;
+    /** Ids of other elements that describe the field. The hint and the message are added after them. */
+    'aria-describedby'?: string | null;
     oninput?: (event: Event) => void;
     class?: string;
     /** @deprecated never accepted by the component; use `class`. */
@@ -334,7 +430,11 @@ export interface SkeletonProps {
 }
 
 // Toggle component props and events
-export interface ToggleProps {
+export interface ToggleProps
+    extends Omit<
+        HTMLButtonAttributes,
+        'class' | 'id' | 'name' | 'value' | 'disabled' | 'type' | 'role' | 'onclick' | 'onchange' | 'children'
+    > {
     /** Omit to auto-generate. */
     id?: string;
     /** When set, a hidden input submits `value` with native forms while checked. */

@@ -89,3 +89,62 @@ export const Ghost: Story = {
         text: 'Button'
     }
 };
+
+export const AsLink: Story = {
+    args: {
+        text: 'Log in',
+        href: '#log-in'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'With href it is a real link (an a element) that looks like the button: Enter follows it, and it can be opened in a new tab. target, rel and download pass through.'
+            }
+        }
+    }
+};
+
+export const DisabledLink: Story = {
+    args: {
+        text: 'Not yet',
+        href: '#log-in',
+        disabled: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A link cannot be disabled, so while disabled or loading it has no href, is aria-disabled, is not a Tab stop and does nothing when pressed.'
+            }
+        }
+    }
+};
+
+export const InlineLink: Story = {
+    args: {
+        text: 'create one with your e-mail address',
+        href: '#register',
+        variant: 'link'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'variant link with href is a text link: underlined, with no box or minimum height, flowing with the sentence around it and breaking across lines as a link does.'
+            }
+        }
+    }
+};
+
+export const LongLabel: Story = {
+    args: {
+        text: 'Mejla mig en inloggningslänk',
+        size: 'lg',
+        fullWidth: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A label that does not fit on one line wraps, balanced over its lines, and the button grows. Narrow the canvas or enlarge the text to see it. A label that fits is 32, 40 or 48px tall as before.'
+            }
+        }
+    }
+};

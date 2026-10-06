@@ -1,9 +1,14 @@
 <script lang="ts">
+    import type { HTMLButtonAttributes } from "svelte/elements";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
     import { TOUCH_HIT_AREA } from "../util/touch-target.js";
 
-    interface Props {
+    /** Other attributes (`data-*`, `aria-*`, ...) land on the switch, which is a `<button>`. */
+    type Props = Omit<
+        HTMLButtonAttributes,
+        "class" | "id" | "name" | "value" | "disabled" | "type" | "role" | "onclick" | "onchange" | "children"
+    > & {
         /** Extra classes for the host element. */
         class?: string;
         /** Omit to auto-generate; pass to pair with an external `<label for>`. */
@@ -17,7 +22,7 @@
         label?: string;
         onclick?: (event: MouseEvent) => void;
         onchange?: (event: { checked: boolean }) => void;
-    }
+    };
 
     let {
         class: className = "",

@@ -52,6 +52,9 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 
 - ✅ `aria-busy` while loading
 - ✅ Extra attributes such as `aria-label` pass through to the `<button>`; icon-only buttons are `IconButton`
+- ✅ With `href` it is a real `<a>`; a disabled or loading link has no `href` and is `aria-disabled`
+- ✅ A label that does not fit wraps inside the button, also with the text enlarged to 200%
+- ✅ The pressed dip is off under `prefers-reduced-motion`
 
 **Issues Found:**
 - ✅ The two issues of the original audit (no `aria-label`, loading not announced) are resolved
@@ -70,17 +73,18 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 **Current Features:**
 - ✅ Proper label association (`for` attribute)
 - ✅ `aria-invalid` for error states
-- ✅ `aria-describedby` for error messages
-- ✅ Error messages with proper role="alert"
+- ✅ `hint` and `error` tied to the field with `aria-describedby`, hint first; only ids of elements that are rendered are listed
+- ✅ Error messages with proper role="alert"; a hint is not a live region
 - ✅ Focus management
 - ✅ Disabled state support
+- ✅ `revealable` passwords: a toggle with one name and `aria-pressed`, a 44px target on touch, that keeps focus and the caret
+- ✅ Native attributes (`autocomplete`, `inputmode`, `maxlength`, `enterkeyhint`) reach the `<input>` and are typed
 
 **Issues Found:**
-- ✅ No critical issues
+- ✅ A `message` without a `variant` used to leave `aria-describedby` pointing at an id that was not rendered; resolved. Textarea and Select had the same fault
 
 **Recommendations:**
-- Consider adding `aria-required` for required fields
-- Add `aria-autocomplete` for autocomplete inputs
+- None open
 
 **Priority:** Low
 
@@ -273,6 +277,7 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 - ✅ Label association
 - ✅ Disabled state support
 - ✅ Keyboard accessible
+- ✅ The real input lies over the drawn box and takes the press itself (Radio and RadioGroup too), so pointer-driven assistive tools and tests that aim at the control reach it
 
 **Issues Found:**
 - ✅ No critical issues

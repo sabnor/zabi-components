@@ -180,15 +180,23 @@ busy page is still a flick.
 - ✅ **Tab**: Receives focus
 - ✅ **Shift + Tab**: Loses focus
 
+With `href` a Button or an IconButton is a real link (`<a>`), so the keys are a
+link's: **Enter** follows it, and Space does not. While `disabled` or `loading`
+such a link has no `href`: it is read as an unavailable link (`aria-disabled`),
+is not a Tab stop, and does nothing when pressed, as a disabled button is.
+`variant="link"` with `href` is a text link inside its sentence.
+
 **Usage:**
 ```svelte
 <Button onclick={handleClick}>Click me</Button>
+<Button href="/login">Log in</Button>
 ```
 
 **Best Practices:**
 - Buttons should always be keyboard accessible
 - Focus styles must be visible
 - Disabled buttons should not receive focus
+- For navigation pass `href`: a button with an `onclick` that navigates cannot be opened in a new tab
 
 ---
 
@@ -513,6 +521,26 @@ an AppShell that puts it between the content and the tabs in the tab order.
 - ✅ Standard text input keys (typing, backspace, etc.)
 
 The field adds no keys of its own: Escape does not clear it.
+
+What stands inside the field (`leading`, `trailing`, the `revealable` toggle)
+is in the Tab order after the field, in the order it is drawn, when it is a
+control; an icon or a unit is not a stop.
+
+- ✅ **Tab** from a `revealable` password field: to the "Show password" toggle
+- ✅ **Enter / Space** on the toggle: show the password as text, or hide it again
+
+The toggle has one name in both states and says which it is in through
+`aria-pressed`. From the keyboard it keeps focus. A press with a mouse or a
+finger leaves focus and the caret in the field, so the on-screen keyboard
+stays up while a password is being typed. Nothing is announced beyond the
+toggle's own state, and `autocomplete` is never changed.
+
+`hint` and `error` are tied to the field with `aria-describedby`, hint first.
+The hint is read with the field; the error is announced when it appears:
+
+```svelte
+<Input label="Password" type="password" autocomplete="current-password" revealable hint="At least 8 characters." />
+```
 
 **Usage:**
 ```svelte

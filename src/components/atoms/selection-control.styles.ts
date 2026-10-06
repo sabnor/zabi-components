@@ -50,16 +50,33 @@ export function selectionControlShellClasses(shape: SelectionControlShape): stri
 /** Radio circle control; `mt-0.5` aligns with multi-line labels. */
 export const RADIO_GROUP_CONTROL_SHELL = `${SELECTION_CONTROL_SHELL_STATE} mt-0.5 shrink-0 rounded-full`.trim();
 
-/** Full-bleed ring behind the mark (same geometry as SelectionControl inner ring). */
+/**
+ * The real input, stretched over the 20px box and transparent, so a press on
+ * the box lands on the input itself. It used to be `sr-only`: a 1px box under
+ * the ring overlay, where a click aimed at the input (a test's
+ * `getByRole("checkbox").check()`, a pointer-driven assistive tool) hit the
+ * overlay instead. Everything drawn over it lets the press through.
+ *
+ * 2px out on each side: the shell's border is outside its padding box.
+ *
+ * On a coarse pointer it is 44 by 44px, centred on the box (12px further out
+ * on each side), so the input itself is the touch target and not only the
+ * row around it. The row is 44px tall there, so the inputs of two rows never
+ * reach each other.
+ */
+export const SELECTION_CONTROL_INPUT =
+    "absolute -top-0.5 -start-0.5 m-0 size-5 cursor-pointer appearance-none opacity-0 disabled:cursor-not-allowed pointer-coarse:-top-3.5 pointer-coarse:-start-3.5 pointer-coarse:size-11";
+
+/** Full-bleed ring behind the mark (same geometry as SelectionControl inner ring). Lets a press through to the input. */
 export function selectionControlRingOverlayClasses(
     shape: SelectionControlShape,
 ): string {
     const rounding = shape === "circle" ? "rounded-full" : "rounded";
-    return `absolute inset-0 ${rounding}`.trim();
+    return `pointer-events-none absolute inset-0 ${rounding}`.trim();
 }
 
 /** Radio row: circle overlay + `pointer-events-none` so clicks hit the input. */
-export const RADIO_GROUP_RING_OVERLAY = `pointer-events-none ${selectionControlRingOverlayClasses("circle")}`;
+export const RADIO_GROUP_RING_OVERLAY = selectionControlRingOverlayClasses("circle");
 
 /** Checked radio dot (shared with `Radio.svelte`). */
 export const RADIO_CHECKED_DOT_CLASSES =

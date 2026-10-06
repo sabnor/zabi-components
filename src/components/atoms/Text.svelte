@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
 
     import { cn } from "../util/cn.js";
     import type { OnFillTone } from "../types/variants.js";
@@ -7,7 +8,8 @@
     type Size = 'xs' | 'sm' | 'md' | 'lg';
     type Weight = 'normal' | 'medium' | 'semibold' | 'bold';
 
-    interface Props {
+    /** Other attributes (`id`, `data-*`, `aria-*`, ...) land on the element. */
+    type Props = Omit<HTMLAttributes<HTMLElement>, 'class'> & {
         as?: 'p' | 'span' | 'div';
         tone?: Tone;
         size?: Size;
@@ -18,7 +20,7 @@
         weight?: Weight;
         class?: string;
         children?: Snippet;
-    }
+    };
 
     let {
         as: Tag = 'p',
@@ -27,6 +29,7 @@
         weight,
         class: className = '',
         children,
+        ...restProps
     }: Props = $props();
 
     const toneClass: Record<Tone, string> = {
@@ -67,13 +70,18 @@
     /** Labels read as labels by default; callers can still override. */
     const defaultWeight: Weight = $derived(tone === 'label' ? 'medium' : 'normal');
     const resolvedWeight = $derived(weight ?? defaultWeight);
+    const classes = $derived(
+        cn(toneClass[tone], sizeClass[size], weightClass[resolvedWeight], className),
+    );
 </script>
 
-<svelte:element
-    this={Tag}
-    class={cn(toneClass[tone], sizeClass[size], weightClass[resolvedWeight], className)}
->
-    {#if children}
-        {@render children()}
-    {/if}
-</svelte:element>
+<!-- One branch per tag, not a dynamic element: hydration takes a dynamic
+element out and puts it back, which blurs a link or a field inside it that the
+user had already tabbed to. -->
+{#if Tag === 'span'}
+    <span class={classes} {...restProps}>{@render children?.()}</span>
+{:else if Tag === 'div'}
+    <div class={classes} {...restProps}>{@render children?.()}</div>
+{:else}
+    <p class={classes} {...restProps}>{@render children?.()}</p>
+{/if}

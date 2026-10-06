@@ -41,6 +41,11 @@ const EXCEPTIONS: { page: RegExp; match: RegExp; why: string }[] = [
         why: "Button variant link is a text link: 44px tall, and as wide as its text. A minimum width would stop it lining up with the text around it.",
     },
     {
+        page: /^Button$/,
+        match: /^a\|[^|]*\|[^|]*\binline\b[^|]*\bunderline\b/,
+        why: "Button variant link with href is a text link inside a sentence. It flows and breaks with the words around it, so it has no box to make 44px tall; WCAG 2.5.8 exempts a target in a sentence for that reason.",
+    },
+    {
         page: /^(BottomTabBar|AppShell)$/,
         match: /^a\|[^|]*\|focus-ring focus-ring--nav flex min-h-14 w-full min-w-0 flex-col/,
         why: "The docs card is 215px wide at this viewport, 172px inside, which is less than four 44px tabs: they share it edge to edge at 43px each, 56px tall, without overlapping. That is the bar's rule for a bar too narrow for its tabs (playwright/bars-text-size.spec.ts). playwright/app-shell.spec.ts measures the tabs at real phone widths, where they are 44px or more with 8px between them.",

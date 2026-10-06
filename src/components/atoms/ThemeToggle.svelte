@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount, untrack } from "svelte";
+    import type { HTMLButtonAttributes } from "svelte/elements";
     import Sun from "@lucide/svelte/icons/sun";
     import Moon from "@lucide/svelte/icons/moon";
     import Monitor from "@lucide/svelte/icons/monitor";
@@ -18,7 +19,11 @@
         type ThemeToggleLabels,
     } from "../util/theme-mode.js";
 
-    interface Props {
+    /** Other attributes (`data-*`, `aria-*`, `id`, ...) land on the `<button>`. */
+    type Props = Omit<
+        HTMLButtonAttributes,
+        "class" | "disabled" | "type" | "onclick" | "children"
+    > & {
         /** Extra classes for the host element. */
         class?: string;
         size?: "sm" | "md" | "lg";
@@ -45,7 +50,7 @@
         /** Replaces the texts of the accessible name, for another language. */
         labels?: Partial<ThemeToggleLabels>;
         onclick?: (event: Event) => void;
-    }
+    };
 
     let {
         class: className = "",
