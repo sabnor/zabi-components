@@ -12,6 +12,11 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Fixed
+
+- **`cn` knows the named spacing steps** (Z-064): `xs`, `sm`, `md`, `lg`, `xl` and `2xl` (`--spacing-*`) are registered with the class merger as spacing values, so a call-site `p-sm` beats a component's `p-xs`, and the same for margin, gap, inset and the other spacing groups. Until now `p-xs p-sm` kept both classes and the stylesheet order picked the padding. `3xl` is not registered: the library has no `--spacing-3xl`.
+- **`createTheme`: an ink role overridden in one mode keeps the ramp's ink in the other** (Z-061). With `neutralChroma`, a role such as `--color-action-secondary` set under `overrides.light` alone got the library's grey `rgba(250, 250, 250, 0.09)` under the dark selectors; it now gets the tinted `color-mix(in srgb, var(--zabi-base-50) 9%, transparent)` that the option derives, as it does without the override. The same holds the other way: a role set under `overrides.dark` alone keeps the tinted mix in light (it fell back to the library's grey there). Roles: `--color-action-secondary` (and `-hover`, `-active`), `--color-surface-hover`, `--color-surface-active`, `--color-border-overlay`, `--shadow-color`. An app that restated the dark mixes as a workaround can delete them; to keep the old grey in the other mode, set it there.
+
 ## [9.0.0-alpha.3] - 2026-10-06
 
 A third local preview build of the 9.0 visual direction, not published to npm;

@@ -708,6 +708,28 @@ test('a role the app overrides is not replaced by an ink role, in either mode', 
   assert.ok(!('--shadow-color' in result.darkTokens));
 });
 
+test('an ink role overridden in one mode keeps the ramp ink in the other (Z-061)', () => {
+  const base = { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 };
+  const plain = createTheme(base);
+  const tintedDark = 'color-mix(in srgb, var(--zabi-base-50) 9%, transparent)';
+  assert.equal(plain.darkTokens['--color-action-secondary'], tintedDark);
+
+  // Light only: dark is the tinted mix, not the library's rgba(250, 250, 250, 0.09).
+  const lightOnly = createTheme({ ...base, overrides: { light: { '--color-action-secondary': '#dde6ff', '--shadow-color': '1 2 3' } } });
+  assert.equal(lightOnly.tokens['--color-action-secondary'], '#dde6ff');
+  assert.equal(lightOnly.darkTokens['--color-action-secondary'], tintedDark);
+  assert.equal(lightOnly.tokens['--shadow-color'], '1 2 3');
+  assert.equal(lightOnly.darkTokens['--shadow-color'], plain.darkTokens['--shadow-color']);
+  // The roles it did not name are what they are without the override.
+  assert.equal(lightOnly.darkTokens['--color-action-secondary-hover'], plain.darkTokens['--color-action-secondary-hover']);
+  assert.equal(lightOnly.tokens['--color-action-secondary-hover'], plain.tokens['--color-action-secondary-hover']);
+
+  // Dark only: light keeps the ramp ink.
+  const darkOnly = createTheme({ ...base, overrides: { dark: { '--color-action-secondary': '#222233' } } });
+  assert.equal(darkOnly.tokens['--color-action-secondary'], plain.tokens['--color-action-secondary']);
+  assert.equal(darkOnly.darkTokens['--color-action-secondary'], '#222233');
+});
+
 test('neutralChroma works together with pin and keeps the dark half of both', () => {
   const result = createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: true });
   assert.ok(result.pinned.brand);
@@ -898,7 +920,8 @@ test('per-mode overrides take part in the "on" colours and leave pin and the ink
     overrides: { dark: { '--color-surface-hover': 'rgba(255, 255, 255, 0.2)' } },
   });
   assert.equal(ink.darkTokens['--color-surface-hover'], 'rgba(255, 255, 255, 0.2)');
-  assert.equal('--color-surface-hover' in ink.tokens, false);
+  // Light, which it did not name, keeps the ramp's ink (Z-061; until 9.0 it fell back to the library's grey).
+  assert.equal(ink.tokens['--color-surface-hover'], createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 }).tokens['--color-surface-hover']);
 });
 
 test('an overridden ramp token restates the ramp the file writes, not the library default', () => {

@@ -252,28 +252,28 @@ function triplet(hex) {
 }
 
 /**
- * Light and dark declarations for the ink roles over a neutral ramp. Roles the
- * author overrides themselves are left out, so their override stays what both
- * modes show.
+ * Light and dark declarations for the ink roles over a neutral ramp. A role
+ * the author overrides in a mode (or in `both`) is left out for that mode, so
+ * their override is what it shows. The other mode keeps the ramp's ink: a role
+ * set in `light` alone is still the tinted mix in dark, not the library's grey.
  */
-function inkTokens(ramp, overrides) {
+function inkTokens(ramp, modes) {
     const light = {};
     const dark = {};
+    const setIn = (mode, role) => role in modes[mode] || role in modes.both;
     const mix = (step, percent) => `color-mix(in srgb, var(--zabi-base-${step}) ${percent}%, transparent)`;
     for (const role of INK_ROLES) {
-        if (role in overrides) continue;
         const lightPercent = alphaPercent(data.light[role]);
-        if (lightPercent !== null) light[role] = mix(900, lightPercent);
+        if (lightPercent !== null && !setIn('light', role)) light[role] = mix(900, lightPercent);
+        if (setIn('dark', role)) continue;
         const darkPercent = alphaPercent(data.darkOnly[role]);
         // A role the dark theme already points at a ramp step (the overlay edge)
         // keeps that: the light value on `:root` would otherwise win there too.
         if (darkPercent !== null) dark[role] = mix(50, darkPercent);
         else if (data.darkOnly[role] !== undefined) dark[role] = data.darkOnly[role];
     }
-    if (!('--shadow-color' in overrides)) {
-        light['--shadow-color'] = triplet(ramp[900]);
-        dark['--shadow-color'] = '0 0 0';
-    }
+    if (!setIn('light', '--shadow-color')) light['--shadow-color'] = triplet(ramp[900]);
+    if (!setIn('dark', '--shadow-color')) dark['--shadow-color'] = '0 0 0';
     return { light, dark };
 }
 
@@ -819,10 +819,6 @@ export function createTheme(options) {
         throw new TypeError(`${TOOL}: brand is required, for example { brand: "#0026EA" }`);
     }
     const modes = readOverrides(options.overrides ?? {});
-    // Roles the app sets in any mode are left to it: no ink role or pin replaces them.
-    const overridden = {};
-    for (const map of [modes.both, modes.light, modes.dark]) Object.assign(overridden, map);
-
     const inputs = { brand: parseHex(options.brand, 'brand') };
     if (options.accent !== undefined && options.accent !== null) inputs.accent = parseHex(options.accent, 'accent');
     if (options.neutral !== undefined && options.neutral !== null) inputs.neutral = parseHex(options.neutral, 'neutral');
@@ -886,7 +882,7 @@ export function createTheme(options) {
         tokens = { ...tokens, ...rampTokens('base', ramp, BASE_STEPS) };
         if (neutralChroma !== undefined) {
             // Opt-in: without it these roles are the library's grey tints, as before.
-            const ink = inkTokens(ramp, overridden);
+            const ink = inkTokens(ramp, modes);
             tokens = { ...tokens, ...ink.light };
             darkTokens = ink.dark;
         }
