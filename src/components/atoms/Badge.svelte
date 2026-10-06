@@ -41,10 +41,25 @@
         ...restProps
     }: Props = $props();
 
+    /**
+     * 20, 24 and 28px tall for a label on one line, as a minimum: a label that
+     * does not fit wraps and the badge grows. It used to be a fixed height
+     * with `whitespace-nowrap`, and a long label beside a flexible name made
+     * the page wider than a phone at 200% text.
+     *
+     * The vertical padding is what is left of the height after one line of
+     * text and the 1px border on each side (16 + 2 + 2, 16 + 6 + 2 and
+     * 20 + 6 + 2), so a one-line badge is exactly as tall as it was.
+     *
+     * The corner is half of that one-line height, not the pill radius: for
+     * one line that is the same full round end, and a badge of two lines
+     * keeps the same corner and becomes a rounded rectangle, where a pill
+     * radius would have turned it into a lozenge with its text in the curve.
+     */
     const sizeClass = $derived.by(() => {
-        if (size === "sm") return { box: "h-5 px-2 gap-1 text-xs", icon: 12 };
-        if (size === "lg") return { box: "h-7 px-3 gap-2 text-sm", icon: 16 };
-        return { box: "h-6 px-2 gap-1 text-xs", icon: 14 };
+        if (size === "sm") return { box: "min-h-5 py-px px-2 gap-1 text-xs rounded-[0.625rem]", icon: 12 };
+        if (size === "lg") return { box: "min-h-7 py-[3px] px-3 gap-2 text-sm rounded-[0.875rem]", icon: 16 };
+        return { box: "min-h-6 py-[3px] px-2 gap-1 text-xs rounded-[0.75rem]", icon: 14 };
     });
 
     /**
@@ -93,7 +108,10 @@
     });
 
     const badgeClasses = $derived(
-        cn(`inline-flex items-center justify-center whitespace-nowrap rounded-pill border font-medium ${sizeClass.box} ${variantClass} ${className}`),
+        // Never wider than what it is in, and its words break onto the next
+        // line before they push anything out; a word longer than the line
+        // breaks inside. The icon stays centred beside the lines.
+        cn(`inline-flex [max-inline-size:100%] min-w-0 items-center justify-center border font-medium [overflow-wrap:anywhere] ${sizeClass.box} ${variantClass} ${className}`),
     );
 
     /** One outline icon family, so the variants don't look like a rummage. */

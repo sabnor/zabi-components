@@ -200,7 +200,7 @@
                                 <Badge
                                     size="sm"
                                     emphasis="solid"
-                                    class="tabbar-badge absolute start-4 bottom-4 h-[18px] min-w-[18px] px-[5px] text-[11px] leading-[18px]"
+                                    class="tabbar-badge absolute start-4 bottom-4 h-[18px] min-h-[18px] min-w-[18px] px-[5px] py-0 text-[11px] leading-[18px] whitespace-nowrap"
                                 >
                                     {badgeText(count, badgeMax)}
                                 </Badge>

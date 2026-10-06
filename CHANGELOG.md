@@ -85,6 +85,11 @@ Whenever token or CSS import API surface changes, include:
   `$bindable` in the source and fails on a new fallback.
 - **A disabled plain ListItem row no longer carries `aria-disabled`.** With no
   role the attribute exposed nothing; the row is only drawn dimmed.
+- **A Badge with a long label wraps.** The label was held on one line at a
+  fixed height, so a phrase at 200% text widened the page. A Badge is now at
+  least 20, 24 or 28px tall, grows when its label wraps, and is never wider
+  than its container. A one-line badge is unchanged to the pixel; a wrapped
+  one keeps the one-line corner and reads as a rounded rectangle.
 
 ## [8.1.0-beta.2] - 2026-10-06
 

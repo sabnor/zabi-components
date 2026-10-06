@@ -133,6 +133,7 @@ them:
 - **Rating** takes `sm` | `md` | `lg` for the star (20, 24 and 32px); the target around an interactive star stays at 44px or more.
 - **DateField** and **TimeField** take the three sizes of Input and are exactly as tall, on a touch screen too.
 - **Calendar** has no `size`: it is as wide as its container, in seven equal columns, with days at least 44px tall. Give it a width where the container is wide.
+- **Badge** is 20, 24 and 28px tall for a label on one line, and taller when the label wraps; its corner stays that of one line, so a one-line badge has round ends and a wrapped one is a rounded rectangle.
 - **Button** is 32, 40 and 48px tall for a label on one line, and taller when the label wraps: the size is a minimum height. **IconButton**, **Input** and **Select** are fixed at the same three heights.
 - **Stepper** takes `sm` | `md` | `lg` for its markers (1.5, 2 and 2.5rem: 24, 32 and 40px at the default text size) and its text (12, 14 and 16px). It is not a control height: nothing in it is pressed unless `interactive`, and then a completed step is a 44px target on a touch screen at every size. One limit: in the compact layout the segments share the width of the bar, so with more than six steps on a 320px screen (more than seven at 375px) a segment is narrower than 44px, though still 44px tall. A flow that long is better not `interactive` on a phone. As an item of a flex row, or anywhere else that gives it no width, the Stepper asks for 30rem and takes less when there is less.
 
