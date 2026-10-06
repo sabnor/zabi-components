@@ -61,7 +61,7 @@ export const doc: ComponentDoc = makeDoc({
             description:
                 "A label that does not fit on one line wraps and the button grows; one that fits is 32, 40 or 48px tall as before.",
             demoId: demoId("Button", "long"),
-            code: `<Button size="lg" fullWidth>Mejla mig en inloggningslänk</Button>`,
+            code: `<Button size="lg" fullWidth>Email me a sign-in link</Button>`,
         },
     ],
     variantsStates: ["primary", "secondary", "outline", "ghost", "link", "danger", "accent", "disabled"],

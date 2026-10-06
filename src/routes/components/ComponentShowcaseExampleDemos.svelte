@@ -181,22 +181,22 @@
 
     const appShellMainTitle = $derived(appShellLeafTitle(appShellPath));
 
-    /** The Toaster example in Swedish switches the page's one Toaster to these. */
-    let toasterSwedish = $state(false);
-    const toasterSv = {
-        regionLabel: "Aviseringar",
-        successTitle: "Sparat",
-        errorTitle: "Något gick fel",
-        warningTitle: "Kontrollera",
-        infoTitle: "Meddelande",
-        closesIn: (seconds: number) => `Stängs om ${seconds} sekunder.`,
-        pausedClosesIn: (seconds: number) => `Pausad. Stängs om ${seconds} sekunder.`,
-        stop: "Stoppa",
-        okay: "Okej",
-        expand: "Visa mer",
-        collapse: "Visa mindre",
-        dismiss: "Stäng aviseringen",
-        actionAvailable: (label: string) => `${label} finns.`,
+    /** The Toaster example with the app's own words switches the page's one Toaster to these. */
+    let toasterCustom = $state(false);
+    const toasterWords = {
+        regionLabel: "Notices",
+        successTitle: "All done",
+        errorTitle: "That did not work",
+        warningTitle: "Heads up",
+        infoTitle: "For your information",
+        closesIn: (seconds: number) => `Goes away in ${seconds} seconds.`,
+        pausedClosesIn: (seconds: number) => `Paused. Goes away in ${seconds} seconds.`,
+        stop: "Pause",
+        okay: "Got it",
+        expand: "Show more",
+        collapse: "Show less",
+        dismiss: "Dismiss this message",
+        actionAvailable: (label: string) => `${label} is available.`,
     };
 </script>
 
@@ -1715,27 +1715,27 @@
                 <!-- One for the page. This branch runs once per example, and a
                 second Toaster drew every toast twice and announced it twice. -->
                 {#if exampleIndex === 0}
-                    <Toaster strings={toasterSwedish ? toasterSv : undefined} />
+                    <Toaster strings={toasterCustom ? toasterWords : undefined} />
                 {/if}
                 {#if exampleIndex === 2}
-                    <!-- An app in Swedish: its own text in the toast, and the
-                    toaster's own words through `strings`. -->
-                    <div class="flex flex-wrap gap-2" lang="sv">
+                    <!-- An app with its own words: its own text in the toast, and the
+                    toaster's words through `strings`. This is where an app passes its translations. -->
+                    <div class="flex flex-wrap gap-2">
                         <Button
-                            text="Spara utkast"
+                            text="Save draft"
                             onclick={() => {
-                                toasterSwedish = true;
-                                pushToast({ message: "Utkastet är sparat.", type: "success" });
+                                toasterCustom = true;
+                                pushToast({ message: "Draft saved.", type: "success" });
                             }}
                         />
                         <Button
                             variant="outline"
-                            text="Fel"
+                            text="Error"
                             onclick={() => {
-                                toasterSwedish = true;
+                                toasterCustom = true;
                                 pushToast({
-                                    message: "Det gick inte att spara. Kolla uppkopplingen och försök igen.",
-                                    detail: "Servern svarade inte inom tio sekunder.",
+                                    message: "Could not save. Check your connection and try again.",
+                                    detail: "The server did not answer within ten seconds.",
                                     type: "error",
                                     duration: 0,
                                 });

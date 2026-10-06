@@ -1218,14 +1218,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Read-only",
                         description:
-                            "Half stars and the number beside them, formatted for a locale, and a score that is missing; a read-only rating submits nothing",
+                            "Half stars and the number beside them, formatted your own way, and a score that is missing; a read-only rating submits nothing",
                         code: `<Rating label="Pub score" value={3.5} readonly />
 <Rating
-    label="Snitt"
+    label="Average"
     value={4.3}
     readonly
-    formatValue={(value) => value.toFixed(1).replace(".", ",")}
-    strings={{ starLabel: (value, max) => \`\${value} av \${max} stjärnor\` }}
+    formatValue={(value) => value.toFixed(2)}
+    strings={{ starLabel: (value, max) => \`\${value} stars out of \${max}\` }}
 />
 <Rating label="Not rated yet" value={null} readonly />`,
                     },
@@ -1240,15 +1240,15 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Translated",
                         description:
-                            "A disabled rating, and one with Swedish names for the stars and the clear button",
+                            "A disabled rating, and one where the app gives the stars and the clear button names of its own. This is where an app passes its translations",
                         code: `<Rating label="Locked" value={3} disabled />
 <Rating
-    label="Stämning"
+    label="Mood"
     bind:value={mood}
     clearable
     strings={{
-        starLabel: (value, max) => \`\${value} av \${max} stjärnor\`,
-        clearLabel: "Rensa betyg",
+        starLabel: (value, max) => \`\${value} stars out of \${max}\`,
+        clearLabel: "Remove my rating",
     }}
 />`,
                     },
@@ -2202,28 +2202,28 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Once, for the whole app",
                         description:
-                            "Nothing is set on the components inside: their placeholder, search field and accessible names are the provider's.",
+                            "Nothing is set on the components inside: their placeholder, search field and accessible names are the provider's. This is where an app passes its translations.",
                         code: `<script lang="ts">
   import { ZabiStringsProvider, type ZabiStrings } from "zabi-components";
 
-  const sv: ZabiStrings = {
-    common: { required: "(obligatoriskt)", showPassword: "Visa lösenordet", close: "Stäng" },
-    select: { placeholder: "Välj ett alternativ", searchPlaceholder: "Sök", listLabel: "Alternativ" },
+  const appStrings: ZabiStrings = {
+    common: { required: "(needed)", showPassword: "Reveal password", close: "Dismiss" },
+    select: { placeholder: "Pick an option", searchPlaceholder: "Type to filter", listLabel: "Choices" },
   };
 </script>
 
-<ZabiStringsProvider strings={sv}>
+<ZabiStringsProvider strings={appStrings}>
   <Select label="Pub" options={pubs} bind:value={pub} />
-  <Input label="Lösenord" type="password" revealable />
+  <Input label="Password" type="password" revealable />
 </ZabiStringsProvider>`,
                     },
                     {
                         title: "A component's own texts still win",
                         description:
                             "The second Select has a placeholder of its own; the first says the provider's.",
-                        code: `<ZabiStringsProvider strings={sv}>
-  <Select label="Från appen" options={pubs} />
-  <Select label="Med egen text" options={pubs} placeholder="Vilken pub?" />
+                        code: `<ZabiStringsProvider strings={appStrings}>
+  <Select label="From the provider" options={pubs} />
+  <Select label="With its own text" options={pubs} placeholder="Which pub?" />
 </ZabiStringsProvider>`,
                     },
                 ],
@@ -2650,7 +2650,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 <DateField label="Quiz date" name="date" bind:value required />
 
 <!-- 6 okt. 2026 -->
-<p>{formatDate(value, "sv")}</p>`,
+<p>{formatDate(value, "en-GB")}</p>`,
                     },
                     {
                         title: "Limits, a hint, an error, and inside FormField",
@@ -2824,7 +2824,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 <TimeField label="Starts" name="time" bind:value required />
 
 <!-- 19:00 -->
-<p>{formatTime(value, "sv")}</p>`,
+<p>{formatTime(value, "en-GB")}</p>`,
                     },
                     {
                         title: "Limits, a hint, an error, and inside FormField",
@@ -3917,8 +3917,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Translated close button and first focus",
                         description:
-                            "A close label for the reader's language, and focus starting on a field",
-                        code: '&lt;SlideUp bind:isOpen title="Filter" closeLabel="Stäng" initialFocus="#filter-search"&gt;\n  &lt;Input id="filter-search" label="Sök" /&gt;\n&lt;/SlideUp&gt;',
+                            "A close label in the app's own words, and focus starting on a field",
+                        code: '&lt;SlideUp bind:isOpen title="Filter" closeLabel="Dismiss filters" initialFocus="#filter-search"&gt;\n  &lt;Input id="filter-search" label="Search" /&gt;\n&lt;/SlideUp&gt;',
                     },
                     {
                         title: "Swipe down to close",
@@ -4120,7 +4120,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "How long a toast stays",
                         description:
-                            "Say it in words: short is 3 seconds, medium 7, long 14, persistent until it is dismissed. Short is for a few words that need no reading time (Sparat). Anything a person has to read is medium or long. Anything they have to act on, and an error, should stay: persistent. A number is milliseconds, and 0 is persistent. With no duration, an error and a toast with an action stay until dismissed, and the rest go by their title and message together: up to 120 characters gets medium (or the Toaster's defaultDuration), 121 to 240 gets long, more than 240 stays. A mouse over a timed toast, keyboard focus inside it and a finger held on it each stop its timer, which is what keeps a timed toast within WCAG 2.2.1",
+                            "Say it in words: short is 3 seconds, medium 7, long 14, persistent until it is dismissed. Short is for a few words that need no reading time (Saved). Anything a person has to read is medium or long. Anything they have to act on, and an error, should stay: persistent. A number is milliseconds, and 0 is persistent. With no duration, an error and a toast with an action stay until dismissed, and the rest go by their title and message together: up to 120 characters gets medium (or the Toaster's defaultDuration), 121 to 240 gets long, more than 240 stays. A mouse over a timed toast, keyboard focus inside it and a finger held on it each stop its timer, which is what keeps a timed toast within WCAG 2.2.1",
                         code: "import { Toaster, pushToast, TOAST_DURATIONS, type ToastDuration } from 'zabi-components';\n\npushToast({ message: 'Saved', type: 'success', duration: 'short' });\npushToast({ title: 'Export ready', message: 'The file is in Downloads, under the name of the report.', duration: 'long' });\npushToast({ message: 'You are offline. Changes are kept on this device.', type: 'warning', duration: 'persistent' });\n\n<!-- Every toast without a duration of its own -->\n<Toaster defaultDuration=\"long\" />\n\nTOAST_DURATIONS; // { short: 3000, medium: 7000, long: 14000 }",
                     },
                     {
@@ -4135,21 +4135,21 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "A toast shows what it was pushed with: the message, or the title with the message under it. Nothing English is put over it. The words the toaster adds itself come from strings; details that open are the detail field of a toast",
                         code: `<Toaster
     strings={{
-        regionLabel: "Aviseringar",
-        dismiss: "Stäng aviseringen",
-        expand: "Visa mer",
-        collapse: "Visa mindre",
-        okay: "Okej",
-        closesIn: (seconds) => \`Stängs om \${seconds} sekunder.\`,
-        pausedClosesIn: (seconds) => \`Pausad. Stängs om \${seconds} sekunder.\`,
-        actionAvailable: (label) => \`\${label} finns.\`,
+        regionLabel: "Notices",
+        dismiss: "Dismiss this message",
+        expand: "Show more",
+        collapse: "Show less",
+        okay: "Got it",
+        closesIn: (seconds) => \`Goes away in \${seconds} seconds.\`,
+        pausedClosesIn: (seconds) => \`Paused. Goes away in \${seconds} seconds.\`,
+        actionAvailable: (label) => \`\${label} is available.\`,
     }}
 />
 
-pushToast({ message: "Utkastet är sparat.", type: "success" });
+pushToast({ message: "Draft saved.", type: "success" });
 pushToast({
-    message: "Det gick inte att spara. Kolla uppkopplingen och försök igen.",
-    detail: "Servern svarade inte inom tio sekunder.",
+    message: "Could not save. Check your connection and try again.",
+    detail: "The server did not answer within ten seconds.",
     type: "error",
     duration: 0,
 });`,
@@ -6407,14 +6407,14 @@ pushToast({
                     {
                         title: "Days with events, and the selected day's list",
                         description:
-                            "In Swedish, weeks from Monday. A day shows a dot per event, three at most. Press a day and its events are listed below; press it again and nothing changes. The arrow keys move between days and on into the next month",
+                            "Weeks from Monday, with the words the app gives the calendar through strings. A day shows a dot per event, three at most. Press a day and its events are listed below; press it again and nothing changes. The arrow keys move between days and on into the next month",
                         code: `<script lang="ts">
     import { Calendar, type CalendarEvent } from "zabi-components";
 
     const events: CalendarEvent[] = [
-        { date: "2026-10-06", label: "Quiz på The Crown" },
-        { date: "2026-10-06", label: "Musikquiz", tone: "accent" },
-        { date: "2026-10-10", label: "Lagträff", tone: "success" },
+        { date: "2026-10-06", label: "Quiz at The Crown" },
+        { date: "2026-10-06", label: "Music quiz", tone: "accent" },
+        { date: "2026-10-10", label: "Team meetup", tone: "success" },
     ];
 
     let month = $state("2026-10");
@@ -6426,13 +6426,13 @@ pushToast({
     bind:month
     bind:selected
     {events}
-    locale="sv"
+    locale="en-GB"
     strings={{
-        previousMonth: "Föregående månad",
-        nextMonth: "Nästa månad",
-        today: "i dag",
-        selected: "vald",
-        events: (list) => \`\${list.length} händelser: \${list.map((event) => event.label).join(", ")}\`,
+        previousMonth: "Go to previous month",
+        nextMonth: "Go to next month",
+        today: "this is today",
+        selected: "picked",
+        events: (list) => \`\${list.length} on the list: \${list.map((event) => event.label).join(", ")}\`,
     }}
 />
 
@@ -6900,16 +6900,16 @@ pushToast({
                         description:
                             "Every built-in string is replaceable. The state words are part of stepLabel, so a language can order the sentence its own way",
                         code: `<Stepper
-    steps={["Detaljer", "Betyg", "Resultat + anteckningar"]}
+    steps={["Details", "Ratings", "Result + notes"]}
     bind:current
-    label="Förlopp"
+    label="Review progress"
     strings={{
-        position: (step, total) => \`Steg \${step} av \${total}\`,
+        position: (step, total) => \`Part \${step} of \${total}\`,
         stepLabel: (step, total, label, state) =>
-            \`Steg \${step} av \${total}: \${label}, \${
-                { completed: "klart", current: "aktuellt", upcoming: "kommande" }[state]
+            \`Part \${step} of \${total}: \${label}, \${
+                { completed: "done", current: "you are here", upcoming: "still to do" }[state]
             }\`,
-        announcement: (step, total, label) => \`Steg \${step} av \${total}: \${label}\`,
+        announcement: (step, total, label) => \`Now on part \${step} of \${total}: \${label}\`,
     }}
 />`,
                     },
@@ -6986,11 +6986,11 @@ pushToast({
                     {
                         title: "Translated, on another surface",
                         description:
-                            "strings.more in Swedish, and the ring between avatars told which surface is under the group",
+                            "strings.more in the app's own words, and the ring between avatars told which surface is under the group",
                         code: `<AvatarGroup
     {people}
-    label="Vilka som kommer"
-    strings={{ more: (count) => \`och \${count} till\` }}
+    label="Who is coming"
+    strings={{ more: (count) => \`plus \${count} others\` }}
     style="--zabi-avatar-ring: var(--color-surface-base)"
 />`,
                     },

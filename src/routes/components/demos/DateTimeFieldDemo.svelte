@@ -37,10 +37,10 @@
         <!-- The field shows the device's format; this line is the page's. -->
         <p class="text-sm text-description" data-testid="{kind}-field-demo-text">
             {#if kind === "date"}
-                Value: {date || "empty"}. In Swedish: {formatDate(date, "sv") || "–"}. In
-                British English: {formatDate(date, "en-GB") || "–"}.
+                Value: {date || "empty"}. In British English: {formatDate(date, "en-GB") || "–"}. In
+                American English: {formatDate(date, "en-US") || "–"}.
             {:else}
-                Value: {time || "empty"}. In Swedish: {formatTime(time, "sv") || "–"}. In
+                Value: {time || "empty"}. In British English: {formatTime(time, "en-GB") || "–"}. In
                 American English: {formatTime(time, "en-US") || "–"}.
             {/if}
         </p>

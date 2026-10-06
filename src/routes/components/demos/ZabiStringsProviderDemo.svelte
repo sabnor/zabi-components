@@ -8,14 +8,14 @@
 
     let { exampleIndex }: DemoRendererProps = $props();
 
-    /** An app's own words. The library ships no translations. */
-    const sv: ZabiStrings = {
-        common: { required: "(obligatoriskt)", showPassword: "Visa lösenordet", close: "Stäng" },
+    /** An app's own words, in its own language. The library ships no translations; this is where an app passes them. */
+    const appStrings: ZabiStrings = {
+        common: { required: "(needed)", showPassword: "Reveal password", close: "Dismiss" },
         select: {
-            placeholder: "Välj ett alternativ",
-            searchPlaceholder: "Sök",
-            noResults: "Inga träffar",
-            listLabel: "Alternativ",
+            placeholder: "Pick an option",
+            searchPlaceholder: "Type to filter",
+            noResults: "Nothing found",
+            listLabel: "Choices",
         },
     };
 
@@ -29,27 +29,27 @@
 
 {#if exampleIndex === 0}
     <!-- Nothing is set on the components inside: the placeholder, the search
-    field, "(obligatoriskt)" and the password button are the provider's. -->
-    <ZabiStringsProvider strings={sv}>
+    field, "(needed)" and the password button are the provider's. -->
+    <ZabiStringsProvider strings={appStrings}>
         <div class="w-full max-w-lg space-y-4">
             <Select label="Pub" options={pubs} bind:value={pub} />
-            <FormField label="Sällskap" required>
+            <FormField label="Your group" required>
                 {#snippet control(field)}
                     <Input {...field} />
                 {/snippet}
             </FormField>
-            <Input label="Lösenord" type="password" revealable />
+            <Input label="Password" type="password" revealable />
         </div>
     </ZabiStringsProvider>
 {:else}
     <!-- A component's own `strings` and props still win over the provider. -->
-    <ZabiStringsProvider strings={sv}>
+    <ZabiStringsProvider strings={appStrings}>
         <div class="w-full max-w-lg space-y-4">
-            <Select label="Från appen" options={pubs} bind:value={pub} />
+            <Select label="From the provider" options={pubs} bind:value={pub} />
             <Select
-                label="Med egen text"
+                label="With its own text"
                 options={pubs}
-                placeholder="Vilken pub?"
+                placeholder="Which pub?"
                 bind:value={other}
             />
         </div>

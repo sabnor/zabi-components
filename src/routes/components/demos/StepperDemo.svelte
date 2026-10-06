@@ -16,8 +16,8 @@
         { label: "Ratings", description: "Quiz, food and mood" },
         { label: "Result + notes", description: "Score and what happened" },
     ];
-    const swedish = ["Detaljer", "Betyg", "Resultat + anteckningar"];
-    const stateWords = { completed: "klart", current: "aktuellt", upcoming: "kommande" };
+    /** An app passes its own words (its translations) through `strings`. */
+    const stateWords = { completed: "done", current: "you are here", upcoming: "still to do" };
 
     let basic = $state(1);
     let back = $state(2);
@@ -150,23 +150,23 @@
 {:else}
     <div class="w-full space-y-3">
         <Stepper
-            steps={swedish}
+            {steps}
             bind:current={translated}
-            label="Förlopp"
+            label="Review progress"
             strings={{
-                position: (step, total) => `Steg ${step} av ${total}`,
+                position: (step, total) => `Part ${step} of ${total}`,
                 stepLabel: (step, total, label, state) =>
-                    `Steg ${step} av ${total}: ${label}, ${stateWords[state]}`,
-                announcement: (step, total, label) => `Steg ${step} av ${total}: ${label}`,
+                    `Part ${step} of ${total}: ${label}, ${stateWords[state]}`,
+                announcement: (step, total, label) => `Now on part ${step} of ${total}: ${label}`,
             }}
             data-testid="stepper-demo-swedish"
         />
         <div class="flex flex-wrap gap-2">
             <Button variant="outline" disabled={translated === 0} onclick={() => (translated -= 1)}>
-                Tillbaka
+                Back
             </Button>
-            <Button disabled={translated === swedish.length - 1} onclick={() => (translated += 1)}>
-                Nästa
+            <Button disabled={translated === steps.length - 1} onclick={() => (translated += 1)}>
+                Next
             </Button>
         </div>
     </div>

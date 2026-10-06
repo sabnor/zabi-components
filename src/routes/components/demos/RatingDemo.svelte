@@ -30,11 +30,11 @@
     <div class="w-full space-y-4">
         <Rating label="Pub score" value={3.5} readonly data-testid="rating-demo-average" />
         <Rating
-            label="Snitt"
+            label="Average"
             value={4.3}
             readonly
-            formatValue={(value) => value.toFixed(1).replace(".", ",")}
-            strings={{ starLabel: (value, max) => `${value} av ${max} stjärnor` }}
+            formatValue={(value) => value.toFixed(2)}
+            strings={{ starLabel: (value, max) => `${value} stars out of ${max}` }}
         />
         <Rating label="Not rated yet" value={null} readonly />
         <Rating label="Favourites" value={3.5} readonly tone="accent" data-testid="rating-demo-accent" />
@@ -49,12 +49,12 @@
     <div class="w-full space-y-4">
         <Rating label="Locked" value={3} disabled />
         <Rating
-            label="Stämning"
+            label="Mood"
             bind:value={mood}
             clearable
             strings={{
-                starLabel: (value, max) => `${value} av ${max} stjärnor`,
-                clearLabel: "Rensa betyg",
+                starLabel: (value, max) => `${value} stars out of ${max}`,
+                clearLabel: "Remove my rating",
             }}
         />
     </div>

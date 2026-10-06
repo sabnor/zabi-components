@@ -33,8 +33,8 @@
         <div class="rounded-container bg-surface-base p-4">
             <AvatarGroup
                 {people}
-                label="Vilka som kommer"
-                strings={{ more: (count) => `och ${count} till` }}
+                label="Who is coming"
+                strings={{ more: (count) => `plus ${count} others` }}
                 style="--zabi-avatar-ring: var(--color-surface-base)"
             />
         </div>

@@ -23,14 +23,14 @@
     </div>
 {:else if exampleIndex === 1}
     <div class="space-y-4">
-        <Button onclick={() => (open = true)} text="Öppna filter" />
+        <Button onclick={() => (open = true)} text="Open filters" />
         <SlideUp
             bind:isOpen={open}
             title="Filter"
-            closeLabel="Stäng"
+            closeLabel="Dismiss filters"
             initialFocus="#slide-up-demo-search"
         >
-            <Input id="slide-up-demo-search" label="Sök" />
+            <Input id="slide-up-demo-search" label="Search" />
         </SlideUp>
     </div>
 {:else if exampleIndex === 3}

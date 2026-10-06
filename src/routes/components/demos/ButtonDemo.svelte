@@ -44,7 +44,7 @@
 {:else if exampleIndex === 4}
     <div class="w-full space-y-3" data-testid="button-demo-wrap">
         <Button size="lg" fullWidth data-testid="button-demo-long">
-            Mejla mig en inloggningslänk
+            Email me a sign-in link
         </Button>
         <div class="flex flex-wrap items-start gap-2">
             <Button data-testid="button-demo-short">Save</Button>

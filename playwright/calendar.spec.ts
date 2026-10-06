@@ -23,8 +23,8 @@ const grid = (page: Page) => demo(page).getByRole("grid");
 const day = (page: Page, date: string) => demo(page).locator(`[data-date="${date}"]`);
 const title = (page: Page) => demo(page).locator("[aria-live]").first();
 const list = (page: Page) => page.getByTestId("calendar-demo-events");
-const next = (page: Page) => demo(page).getByRole("button", { name: "Nästa månad" });
-const previous = (page: Page) => demo(page).getByRole("button", { name: "Föregående månad" });
+const next = (page: Page) => demo(page).getByRole("button", { name: "Go to next month" });
+const previous = (page: Page) => demo(page).getByRole("button", { name: "Go to previous month" });
 
 async function box(locator: Locator) {
     const rect = await locator.boundingBox();
@@ -60,13 +60,13 @@ test.describe("Calendar — touch", () => {
     test("tap selects a day and the page lists its events; a repeat tap changes nothing", async ({
         page,
     }) => {
-        await expect(list(page)).toContainText("Quiz på The Crown");
-        await expect(list(page)).toContainText("Musikquiz");
+        await expect(list(page)).toContainText("Quiz at The Crown");
+        await expect(list(page)).toContainText("Music quiz");
 
         await day(page, "2026-10-10").tap();
         await expect(day(page, "2026-10-10")).toHaveAttribute("data-selected", "");
-        await expect(list(page)).toContainText("Lördag 10 oktober", { ignoreCase: true });
-        await expect(list(page)).toContainText("Lagträff");
+        await expect(list(page)).toContainText("Saturday 10 October", { ignoreCase: true });
+        await expect(list(page)).toContainText("Team meetup");
         await expect(demo(page).locator("[data-selected]")).toHaveCount(1);
 
         // Again, and again: still selected, the list still there.
@@ -74,26 +74,26 @@ test.describe("Calendar — touch", () => {
         await day(page, "2026-10-10").tap();
         await expect(day(page, "2026-10-10")).toHaveAttribute("data-selected", "");
         await expect(day(page, "2026-10-10").locator("xpath=..")).toHaveAttribute("aria-selected", "true");
-        await expect(list(page)).toContainText("Lagträff");
+        await expect(list(page)).toContainText("Team meetup");
 
         await day(page, "2026-10-12").tap();
-        await expect(list(page)).toContainText("Inga quiz den här dagen.");
+        await expect(list(page)).toContainText("No quizzes on this day.");
         await expect(demo(page).locator("[data-selected]")).toHaveCount(1);
     });
 
     test("the month buttons change the month, announce it, and keep the selection", async ({ page }) => {
-        await expect(title(page)).toHaveText("oktober 2026");
-        await expect(grid(page)).toHaveAccessibleName("oktober 2026");
+        await expect(title(page)).toHaveText("October 2026");
+        await expect(grid(page)).toHaveAccessibleName("October 2026");
         await next(page).tap();
-        await expect(title(page)).toHaveText("november 2026");
-        await expect(grid(page)).toHaveAccessibleName("november 2026");
+        await expect(title(page)).toHaveText("November 2026");
+        await expect(grid(page)).toHaveAccessibleName("November 2026");
         await expect(demo(page).locator("[data-date]")).toHaveCount(30);
         await expect(day(page, "2026-11-03").locator(".dot")).toHaveCount(1);
         // The selected day is in October: still selected, and its events still listed.
-        await expect(list(page)).toContainText("Quiz på The Crown");
+        await expect(list(page)).toContainText("Quiz at The Crown");
 
         await previous(page).tap();
-        await expect(title(page)).toHaveText("oktober 2026");
+        await expect(title(page)).toHaveText("October 2026");
         await expect(day(page, "2026-10-06")).toHaveAttribute("data-selected", "");
     });
 
@@ -115,12 +115,12 @@ test.describe("Calendar — touch", () => {
     });
 
     test("names: the full date, what is true of it, and its events", async ({ page }) => {
-        await expect(day(page, "2026-10-05")).toHaveAccessibleName("måndag 5 oktober 2026, i dag");
+        await expect(day(page, "2026-10-05")).toHaveAccessibleName("Monday, 5 October 2026, this is today");
         await expect(day(page, "2026-10-06")).toHaveAccessibleName(
-            "tisdag 6 oktober 2026, vald, 2 händelser: Quiz på The Crown, Musikquiz",
+            "Tuesday, 6 October 2026, picked, 2 on the list: Quiz at The Crown, Music quiz",
         );
         await expect(day(page, "2026-10-17")).toHaveAccessibleName(
-            "lördag 17 oktober 2026, 4 händelser: Kvartsfinal, Semifinal, Final, Efterfest",
+            "Saturday, 17 October 2026, 4 on the list: Quarter-final, Semi-final, Final, After-party",
         );
         // Four events, three dots.
         await expect(day(page, "2026-10-17").locator(".dot")).toHaveCount(3);
@@ -238,15 +238,15 @@ test.describe("Calendar — sizes on a phone", () => {
                     };
                 }),
             );
-        expect((await shown()).map((cell) => cell.text)).toEqual(["mån", "tis", "ons", "tors", "fre", "lör", "sön"]);
+        expect((await shown()).map((cell) => cell.text)).toEqual(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
         expect((await shown()).every((cell) => cell.inside)).toBe(true);
 
         await page.evaluate(() => (document.documentElement.style.fontSize = "200%"));
-        expect((await shown()).map((cell) => cell.text)).toEqual(["M", "T", "O", "T", "F", "L", "S"]);
+        expect((await shown()).map((cell) => cell.text)).toEqual(["M", "T", "W", "T", "F", "S", "S"]);
         expect((await shown()).every((cell) => cell.inside), "No name reaches into the next column").toBe(true);
         // What is read out does not change with what is shown.
-        await expect(headers.first()).toHaveAccessibleName("måndag");
-        await expect(headers.nth(3)).toHaveAccessibleName("torsdag");
+        await expect(headers.first()).toHaveAccessibleName("Monday");
+        await expect(headers.nth(3)).toHaveAccessibleName("Thursday");
     });
 });
 
@@ -276,7 +276,7 @@ test.describe("Calendar — keyboard", () => {
         await page.keyboard.press("ArrowLeft");
         await page.keyboard.press("Enter");
         await expect(day(page, "2026-10-17")).toHaveAttribute("data-selected", "");
-        await expect(list(page)).toContainText("Kvartsfinal");
+        await expect(list(page)).toContainText("Quarter-final");
         // Again with Space: nothing is cleared.
         await page.keyboard.press("Space");
         await expect(day(page, "2026-10-17")).toHaveAttribute("data-selected", "");
@@ -295,11 +295,11 @@ test.describe("Calendar — keyboard", () => {
     }) => {
         await day(page, "2026-10-31").focus();
         await page.keyboard.press("ArrowRight");
-        await expect(title(page)).toHaveText("november 2026");
+        await expect(title(page)).toHaveText("November 2026");
         await expect(day(page, "2026-11-01")).toBeFocused();
 
         await page.keyboard.press("ArrowLeft");
-        await expect(title(page)).toHaveText("oktober 2026");
+        await expect(title(page)).toHaveText("October 2026");
         await expect(day(page, "2026-10-31")).toBeFocused();
 
         await page.keyboard.press("ArrowDown");
@@ -309,11 +309,11 @@ test.describe("Calendar — keyboard", () => {
         await expect(day(page, "2026-10-07")).toBeFocused();
         await page.keyboard.press("PageDown");
         await page.keyboard.press("PageDown");
-        await expect(title(page)).toHaveText("december 2026");
+        await expect(title(page)).toHaveText("December 2026");
         await expect(day(page, "2026-12-07")).toBeFocused();
 
         await page.keyboard.press("Shift+PageDown");
-        await expect(title(page)).toHaveText("december 2027");
+        await expect(title(page)).toHaveText("December 2027");
         await expect(day(page, "2027-12-07")).toBeFocused();
         await page.keyboard.press("Shift+PageUp");
         await expect(day(page, "2026-12-07")).toBeFocused();
