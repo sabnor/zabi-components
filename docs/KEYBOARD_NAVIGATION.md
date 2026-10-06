@@ -710,6 +710,17 @@ Every word the toaster says by itself is in `strings`, and the region's name
 is `aria-label` or `strings.regionLabel`. `data-paused` on a toast and
 `onpausechange` on the Toaster say when its timer is held.
 
+**SwipeableListItem:** Tab reaches the button at the end of the row (named
+"Actions", `aria-expanded`). Enter or Space opens the row and moves focus to
+its first action; the actions are buttons, reached with Tab. Enter or Space on
+one runs it and closes the row. Escape closes the row and returns focus to the
+button. Opening a row closes any other open row of the same list.
+
+**PullToRefresh:** Tab reaches a Refresh button at the top of the region; it
+is drawn only while it has keyboard focus. Enter or Space refreshes. The button
+keeps focus while the refresh runs, and "Refreshing" and "Updated" are
+announced.
+
 **Toasts while a modal is open:** a toast is drawn over a modal overlay
 (Modal, BottomSheet, SlideUp, Drawer, ConfirmDialog) and its controls are part
 of that overlay's Tab cycle: Tab from the overlay's last control goes to the

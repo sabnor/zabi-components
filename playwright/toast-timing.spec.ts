@@ -54,7 +54,7 @@ async function push(page: Page, name: string) {
 const secondsLeft = (toast: Locator) =>
     toast.evaluate((el) => {
         const sentence = el.querySelector("[data-toast-countdown]")?.textContent;
-        return sentence ? Number(/(\d+) seconds/.exec(sentence)?.[1]) : null;
+        return sentence ? Number(/(\d+) seconds?/.exec(sentence)?.[1]) : null;
     });
 
 test.describe("the length of a toast", () => {

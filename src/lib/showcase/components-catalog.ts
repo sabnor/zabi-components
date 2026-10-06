@@ -5003,6 +5003,167 @@ pushToast({
                 ],
             },
             {
+                name: "SwipeableListItem",
+                category: "molecules",
+                description:
+                    "A row with one or two actions behind its end, shown by a swipe on a touch screen or by the row's own button.",
+                props: [
+                    {
+                        name: "actions",
+                        type: "{ id: string; label: string; icon?: Component; tone?: 'default' | 'danger'; onselect: () => void }[]",
+                        required: true,
+                        description:
+                            "One or two actions, at the inline end of the row. Each is a button with its label as text; the icon is drawn above it. A press runs onselect and closes the row. A swipe only shows the actions: none runs by swiping.",
+                    },
+                    {
+                        name: "open",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Whether the actions are shown. Bindable. In a list (ul, ol, List) opening one row closes the others.",
+                    },
+                    {
+                        name: "onopenchange",
+                        type: "(open: boolean) => void",
+                        required: false,
+                        description: "Runs when the row opens or closes, by whatever means.",
+                    },
+                    {
+                        name: "showMoreButton",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "The button at the end of the row that opens the actions without a swipe: 40px, 44px on a touch screen. Without it the swipe is the only way the component offers, and the app has to give another route to the same actions (WCAG 2.5.1, 2.5.7).",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<SwipeableListItemStrings>",
+                        required: false,
+                        description:
+                            "The words the row says by itself: actions, the name of the button and of the group of actions. Default \"Actions\".",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes on the row. Other attributes are passed to it too.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "The row's content. The component is not a list item: put it inside your own li or ListItem.",
+                    },
+                ],
+                variants: ["open", "showMoreButton"],
+                examples: [
+                    {
+                        title: "Drafts with Archive and Delete",
+                        description:
+                            "Swipe a row towards the start of the line (to the left, or to the right in a right-to-left page) to show its actions; a vertical move scrolls the list as usual. The button at the end of the row opens the same actions for a mouse and a keyboard and moves focus to the first one; Escape or a press elsewhere closes the row and focus goes back to the button. With reduced motion the row does not follow the finger",
+                        code: `<ul>
+    {#each drafts as draft (draft.id)}
+        <li>
+            <SwipeableListItem
+                actions={[
+                    { id: "archive", label: "Archive", icon: Archive, onselect: () => archive(draft) },
+                    { id: "delete", label: "Delete", icon: Trash2, tone: "danger", onselect: () => remove(draft) },
+                ]}
+            >
+                <div class="px-4 py-3">{draft.title}</div>
+            </SwipeableListItem>
+        </li>
+    {/each}
+</ul>`,
+                    },
+                ],
+            },
+            {
+                name: "PullToRefresh",
+                category: "molecules",
+                description:
+                    "A list that reloads when it is pulled down from its top on a touch screen, with a button that does the same.",
+                props: [
+                    {
+                        name: "onrefresh",
+                        type: "() => Promise<void> | void",
+                        required: false,
+                        description:
+                            "Reloads the list. Return the promise: the indicator stays until it settles. A promise that rejects ends the refresh too, and nothing is announced as updated: report the failure yourself, in a toast for example.",
+                    },
+                    {
+                        name: "refreshing",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Whether a refresh is running. Bindable: set it to show the indicator for a refresh the app started. The region is aria-busy meanwhile.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "No pull and no button.",
+                    },
+                    {
+                        name: "threshold",
+                        type: "number",
+                        required: false,
+                        defaultValue: "64",
+                        description:
+                            "How far the indicator has to come out for letting go to refresh, in px. The indicator moves half as far as the finger.",
+                    },
+                    {
+                        name: "showButton",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "A Refresh button at the top of the region, out of sight until keyboard focus reaches it and named for a screen reader. Without it the pull is the only way the component offers, and the app has to give another (WCAG 2.5.1).",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<PullToRefreshStrings>",
+                        required: false,
+                        description:
+                            "The words the component says by itself: pull, release, refreshing (shown and announced), done (announced when it has finished, default \"Updated\") and refresh (the button).",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes on the region. Other attributes are passed to it too.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description: "The list.",
+                    },
+                ],
+                variants: ["refreshing", "disabled", "showButton"],
+                examples: [
+                    {
+                        title: "A list that reloads",
+                        description:
+                            "Pull the list down from its top on a touch screen and let go past the threshold. It acts only while what scrolls the list (the page, or the nearest scrolling ancestor such as the content of an AppShell) is at its top, and sets overscroll-behavior-y: contain on that so the browser's own pull-to-refresh does not fire as well. A mouse does not pull: Tab to the Refresh button. Refreshing and Updated are announced politely. With reduced motion the indicator appears without following the finger",
+                        code: `<PullToRefresh onrefresh={() => loadRounds()}>
+    <ul>
+        {#each rounds as round (round.id)}
+            <li>{round.name}</li>
+        {/each}
+    </ul>
+</PullToRefresh>`,
+                    },
+                ],
+            },
+            {
                 name: "Collapsible",
                 category: "molecules",
                 description:

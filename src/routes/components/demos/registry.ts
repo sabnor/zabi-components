@@ -14,6 +14,8 @@ import MediaGridDemo from "./MediaGridDemo.svelte";
 import SortableListDemo from "./SortableListDemo.svelte";
 import CollapsibleDemo from "./CollapsibleDemo.svelte";
 import CollapsibleGroupDemo from "./CollapsibleGroupDemo.svelte";
+import SwipeableListItemDemo from "./SwipeableListItemDemo.svelte";
+import PullToRefreshDemo from "./PullToRefreshDemo.svelte";
 import ConfirmDialogDemo from "./ConfirmDialogDemo.svelte";
 import DrawerDemo from "./DrawerDemo.svelte";
 import UnsavedChangesBarDemo from "./UnsavedChangesBarDemo.svelte";
@@ -51,6 +53,8 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     SortableList: SortableListDemo,
     Collapsible: CollapsibleDemo,
     CollapsibleGroup: CollapsibleGroupDemo,
+    SwipeableListItem: SwipeableListItemDemo,
+    PullToRefresh: PullToRefreshDemo,
     ConfirmDialog: ConfirmDialogDemo,
     Drawer: DrawerDemo,
     UnsavedChangesBar: UnsavedChangesBarDemo,

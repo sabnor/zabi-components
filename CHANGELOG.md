@@ -22,10 +22,24 @@ Whenever token or CSS import API surface changes, include:
   `people` overlapped as a list, up to `max` (default 4) and the rest as "+3",
   named through `strings.more`. The ring between avatars is
   `--zabi-avatar-ring`, the raised surface by default. Not interactive.
+- **SwipeableListItem.** A row whose one or two `actions` are shown by a
+  swipe towards the inline start (touch and stylus; mirrored in RTL). A swipe
+  only reveals; an action runs on press. The same actions are behind a "more"
+  button, on by default, because a swipe cannot be the only way: with
+  `showMoreButton={false}` the app must offer another route. Bindable `open`,
+  `onopenchange`, `strings.actions`; one row open per list.
+- **PullToRefresh.** Wraps a list: pulling down at the top of the scroller
+  calls `onrefresh` (touch only). Bindable `refreshing`, `disabled`,
+  `threshold` (64px), `strings`. A Refresh button, shown on keyboard focus,
+  does the same, and a status region says "Refreshing" then "Updated". A
+  rejected `onrefresh` ends the busy state silently: report the failure in
+  the app.
 
 ### Changed
 
 ### Fixed
+
+- A toast's countdown says "1 second", not "1 seconds".
 
 ## [8.1.0-beta.4] - 2026-10-06
 

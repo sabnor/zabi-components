@@ -49,6 +49,12 @@ export type {
     SortableListStrings,
 } from '../util/sortable-list.js';
 export { default as Collapsible } from './Collapsible.svelte';
+export { default as SwipeableListItem } from './SwipeableListItem.svelte';
+export { DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS } from '../util/swipeable-list-item.js';
+export type { SwipeableListItemAction, SwipeableListItemStrings } from '../util/swipeable-list-item.js';
+export { default as PullToRefresh } from './PullToRefresh.svelte';
+export { DEFAULT_PULL_TO_REFRESH_STRINGS } from '../util/pull-to-refresh.js';
+export type { PullToRefreshStrings } from '../util/pull-to-refresh.js';
 export { default as CollapsibleGroup } from './CollapsibleGroup.svelte';
 export type {
     CollapsibleHeadingLevel,

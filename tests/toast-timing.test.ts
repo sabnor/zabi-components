@@ -55,7 +55,7 @@ async function shown() {
 function secondsLeft(card: HTMLElement): number | null {
     const sentence = card.querySelector("[data-toast-countdown]")?.textContent;
     if (!sentence) return null;
-    return Number(/(\d+) seconds/.exec(sentence)?.[1]);
+    return Number(/(\d+) seconds?/.exec(sentence)?.[1]);
 }
 
 /** One second of the timer, with the rendering that follows it. */
