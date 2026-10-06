@@ -37,8 +37,20 @@ const RADIUS_GROUPS = [
     "rounded-tl", "rounded-tr", "rounded-br", "rounded-bl",
 ];
 
+/**
+ * The named spacing steps (`--spacing-xs` to `--spacing-2xl`, src/app.css).
+ * tailwind-merge knows the numeric scale only, so `p-xs p-sm` kept both and
+ * stylesheet order picked the padding. Declared as theme spacing, they count
+ * in every group that takes a spacing value: padding, margin, gap, inset,
+ * size, scroll padding and the rest.
+ */
+const SPACING_STEPS = ["xs", "sm", "md", "lg", "xl", "2xl"];
+
 const twMerge = extendTailwindMerge({
     extend: {
+        theme: {
+            spacing: SPACING_STEPS,
+        },
         classGroups: {
             ...Object.fromEntries(RADIUS_GROUPS.map((group) => [group, [{ [group]: RADIUS_ROLES }]])),
             // The control veils are background images, not colours: without
