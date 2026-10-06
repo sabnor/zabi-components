@@ -7003,6 +7003,62 @@ pushToast({
                         description: "Accessible name for the nav landmark",
                     },
                     {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Navigation links",
+                        description:
+                            "Accessible name of the scrolling region between header and footer.",
+                    },
+                    {
+                        name: "mobile",
+                        type: "'none' | 'drawer'",
+                        required: false,
+                        defaultValue: "none",
+                        description:
+                            "What the sidebar is below the lg breakpoint (1024px). none: the rail, as everywhere. drawer: the rail is hidden there and the same regions open in a Drawer from the start edge, always expanded, with the Drawer's focus trap, Escape and backdrop. It closes when a link in it is followed and when the screen reaches lg. From lg up nothing changes.",
+                    },
+                    {
+                        name: "isOpen",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Whether the drawer is open. Bindable. Only used with mobile drawer.",
+                    },
+                    {
+                        name: "trigger",
+                        type: "Snippet<[{ isOpen, toggle, props }]>",
+                        required: false,
+                        defaultValue: "—",
+                        description:
+                            "The button that opens the drawer, rendered in the place of the rail below lg. Spread props on it for aria-haspopup and aria-expanded. Optional: a button of your own that sets isOpen does the same.",
+                    },
+                    {
+                        name: "drawerTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "ariaLabel",
+                        description:
+                            "Heading of the drawer, and its accessible name.",
+                    },
+                    {
+                        name: "closeLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Close",
+                        description:
+                            "Accessible name of the drawer's close button.",
+                    },
+                    {
+                        name: "onclose",
+                        type: "(detail: { reason }) => void",
+                        required: false,
+                        defaultValue: "—",
+                        description:
+                            "Fired when the drawer closes itself. reason is escape, backdrop, close-button, navigate (a link in it was followed) or resize (the screen reached lg).",
+                    },
+                    {
                         name: "header",
                         type: "Snippet<[{ collapsed, insetX }]>",
                         required: false,

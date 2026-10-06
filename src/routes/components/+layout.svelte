@@ -25,6 +25,21 @@
     let { children }: Props = $props();
 
     let sidebarOpen = $state(false);
+
+    /**
+     * SidebarShell's small-screen mode. SidebarNavigation does not declare
+     * these props yet; it hands what it does not know to the SidebarShell it
+     * is built on, so they are spread. `isOpen` cannot be bound through it:
+     * the drawer says when it has closed itself with `onclose`.
+     */
+    const catalogDrawer = $derived({
+        mobile: "drawer" as const,
+        isOpen: sidebarOpen,
+        drawerTitle: "Components",
+        onclose: () => {
+            sidebarOpen = false;
+        },
+    });
     let componentsNavSearch = $state("");
 
     const selectedCategory = $derived.by((): ShowcaseCatalog => {
@@ -125,20 +140,10 @@
     <main
         class="flex h-[calc(100dvh-var(--site-header-height))] min-h-0 w-full max-w-screen"
     >
-        {#if sidebarOpen}
-            <button
-                type="button"
-                class="fixed inset-x-0 bottom-0 top-[var(--site-header-height)] z-20 bg-black/30 md:hidden"
-                onclick={() => (sidebarOpen = false)}
-                aria-label="Close the component sidebar"
-            ></button>
-        {/if}
-
-        <div
-            class="fixed left-0 top-[var(--site-header-height)] z-30 flex h-[calc(100dvh-var(--site-header-height))] min-h-0 w-[min(100vw-1rem,266px)] max-w-[266px] flex-col transform bg-background pb-[env(safe-area-inset-bottom,0px)] transition-transform duration-200 md:static md:z-10 md:h-full md:w-auto md:max-w-none md:min-h-0 md:shrink-0 md:translate-x-0 {sidebarOpen
-                ? 'translate-x-0'
-                : '-translate-x-full'}"
-        >
+        <!-- From `lg` up the catalog is a rail beside the page. Below that
+        SidebarShell's drawer mode shows the same sidebar in a Drawer, opened
+        by the button above the page content. -->
+        <div class="flex h-full min-h-0 shrink-0 flex-col">
             <SidebarNavigation
                 className="min-h-0 flex-1"
                 mode="expanded"
@@ -154,6 +159,7 @@
                 emptyStateTitle="Nothing matches"
                 emptyStateDescription="Try another term to find categories or components."
                 onNavigate={handleDocsSidebarNavigate}
+                {...catalogDrawer}
             />
         </div>
 
@@ -165,13 +171,15 @@
             <div
                 class="relative min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8 pb-[calc(2rem+env(safe-area-inset-bottom,0px))]"
             >
-                <div class="mb-6 flex items-center gap-3 md:hidden">
+                <div class="mb-6 flex items-center gap-3 lg:hidden">
                     <button
                         type="button"
                         onclick={() => (sidebarOpen = !sidebarOpen)}
-                        class="text-description hover:text-headline cursor-pointer text-2xl transition-colors"
-                        aria-label="Toggle the component sidebar"
+                        class="focus-ring text-description hover:text-headline flex size-11 cursor-pointer items-center justify-center rounded-control text-2xl transition-colors"
+                        aria-label="Browse components"
+                        aria-haspopup="dialog"
                         aria-expanded={sidebarOpen}
+                        data-testid="catalog-menu-button"
                     >
                         <span aria-hidden="true">☰</span>
                     </button>

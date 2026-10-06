@@ -517,6 +517,11 @@ export function measurePlacement(
 
     // Out of the box: only the viewport decides now.
     const free = asPlaced(panel, () => measureFit(anchor, panel, preferred, options));
+    // Out of the box it would still not be on screen (a panel that may not
+    // flip, under an anchor near the bottom of the page's own scroller): it
+    // stays where it is, and scrolling brings it into view as it always did.
+    // Fixed, it would hang below the screen until the anchor was scrolled up.
+    if (!free.visible) return { ...inside, fixed: null };
     const origin = fixedOrigin(panel);
     return {
         ...free,

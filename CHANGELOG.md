@@ -66,6 +66,13 @@ Whenever token or CSS import API surface changes, include:
   takes `themeModes="three"` with `onThemeModeChange`.
 - Toggle accepts `aria-label` and `aria-labelledby`; its "Toggle" fallback
   name is used only when it has no label at all.
+- **SidebarShell has a small-screen mode.** With `mobile="drawer"` the
+  sidebar is hidden below `lg` and opens in a Drawer from the start side:
+  `bind:isOpen`, a `trigger` snippet (with `aria-expanded` wiring), 
+  `drawerTitle`, `closeLabel` and `onclose({ reason })`. It closes when a link
+  in it is followed and when the screen widens past 1024px. From `lg` up, and
+  with the default `mobile="none"`, nothing changes. `label` names the
+  scrolling region (default "Navigation links").
 
 ### Changed
 
@@ -136,6 +143,12 @@ Whenever token or CSS import API surface changes, include:
 - ListItem rows show a hover and a pressed fill.
 - Button and IconButton do not scale when pressed under
   `prefers-reduced-motion`.
+- A menu or popover is moved out of a clipping container only when that puts
+  it on screen; ColorPicker's popover could be placed below the viewport at
+  320px.
+- Site: the component catalog's sidebar is a drawer below 1024px, built on
+  SidebarShell's new mode (it was a hand-built panel below 768px and a fixed
+  rail up to 1023px).
 
 ## [8.1.0-beta.1] - 2026-10-06
 

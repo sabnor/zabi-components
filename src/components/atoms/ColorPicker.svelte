@@ -59,14 +59,17 @@
             return;
         }
         const update = () => {
-            // `top-12` less the 2.75rem swatch: 0.25rem, at the text size in use.
+            // `top-12` is 3rem from the top of the box around the swatch,
+            // which can be a little taller than the swatch: the gap is what
+            // is left under that box, so the popover is where the class puts it.
             const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            const gap = rem * 3 - anchor.getBoundingClientRect().height;
             placed = measurePlacement(
                 anchor,
                 panel,
                 { block: "bottom", inline: "end" },
                 // Placed with `right`, in either writing direction, and always below.
-                { margin: 8, gap: rem / 4, flipBlock: false, flipInline: false, rtl: false },
+                { margin: 8, gap, flipBlock: false, flipInline: false, rtl: false },
             );
         };
         update();
