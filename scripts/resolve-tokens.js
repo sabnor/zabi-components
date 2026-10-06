@@ -26,6 +26,8 @@ export {
     resolveTokenColor,
     resolveTokenPaint,
     compositeOver,
+    dimBackdrop,
+    backdropBrightness,
 } from '../create-theme/lib/resolve.js';
 
 /** Custom properties declared directly in a rule or at-rule, later ones winning. */

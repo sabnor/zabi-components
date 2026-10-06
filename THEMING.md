@@ -1270,7 +1270,7 @@ and a soft shadow, applied together by one class.
 | `material-regular` | `--color-material-regular` (from `--color-surface-chrome`) | Bars, the tab bar, a floating sidebar | headline, body, label |
 | `material-thick` | `--color-material-thick` (from `--color-surface-overlay`) | Sheets, menus, modals, toasts, tooltips | all five text roles |
 
-Supporting tokens: `--material-alpha-thin|regular|thick`, `--material-blur-thin|regular|thick`
+Supporting tokens: `--material-alpha-thin|regular|thick`, `--material-backdrop-brightness`, `--material-blur-thin|regular|thick`
 (16, 24 and 32px), `--material-saturate`, `--color-material-highlight`,
 `--color-material-rim` and `--shadow-material`. The highlight and rim are mixes
 of the neutral ramp (`--zabi-base-50` and `--zabi-base-900`) and the shadow is
@@ -1282,15 +1282,21 @@ fails it).
 **The floor.** A material is judged over the worst backdrop of the mode, not
 alone: the fill is composited over `--zabi-base-950` (light) or `--zabi-base-50`
 (dark), the far ends of the neutral ramp, because a photo can be that dark or
-that bright. On that result the roles above need 4.5:1, and regular and thick
-need the focus ring at 3:1 (a thin control's ring is drawn around it, outside
-the material); the same roles are also held over the mode's own page.
-`npm run check:contrast` and `createTheme` both compute this, so a theme with
-a too-thin fill gets a warning. The alphas for thin, regular and thick are
-light 58, 84, 86 and dark 66, 76, 98: the smallest whole 2% that passes with a
-step or two of margin (against the page-colour chrome the floors are thin 50 / 62
-and regular 82 / 72, light / dark), except light thin, which could go lower. Dark needs more because its surfaces are
-close to the backdrop they must hide.
+that bright. In dark that backdrop is first dimmed: the filters are
+`blur() saturate() brightness(var(--material-backdrop-brightness))`, the token is
+`1` in light (an identity) and `0.6` in dark, and `brightness()` multiplies the
+sRGB channels, so the brightest thing behind dark glass is step 50 times 0.6.
+This is what a browser paints, because every fallback below removes the filter
+and makes the fill opaque in the same breath. Only material pairs are dimmed. On
+that result the roles above need 4.5:1, and regular and thick need the focus ring
+at 3:1 (a thin control's ring is drawn around it, outside the material); the same
+roles are also held over the mode's own page. `npm run check:contrast` and
+`createTheme` both compute this, with the mode's own value of the token, so an
+app that sets `--material-backdrop-brightness` back to 1 in dark is warned if its
+alphas then fail. The alphas for thin, regular and thick are light 58, 84, 88
+and dark 60, 68, 72: each is the smallest whole percent that passes plus a
+margin (against the page-colour chrome the floors are thin 50 / 30, regular
+82 / 47 and thick 84 / 68, light / dark).
 
 **Fallbacks.** The three fills become the opaque surface they are made from and
 the blur is removed under `prefers-reduced-transparency: reduce`,

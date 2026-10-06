@@ -38,11 +38,11 @@ const outDir = path.join(root, 'dist', 'create-theme');
 export const GENERATOR_FILES = ['index.js', 'index.d.ts', 'cli.js', 'lib/ramp-math.js', 'lib/resolve.js'];
 export const THEME_DATA_FILE = 'theme-data.js';
 
-// The control veils' strengths are numbers, not colours, but the veil stops are
+// The control veils' strengths, the material backdrop brightness and the material alphas are numbers, not colours, but the veil stops are
 // color-mix() of them: without the strengths the generator cannot resolve a
 // gradient pair, and would skip it without a word.
 const isColourToken = (name) =>
-    name.startsWith('--color-') || name.startsWith('--zabi-') || /^--gradient-control-.*-strength$/.test(name);
+    name.startsWith('--color-') || name.startsWith('--zabi-') || /^--gradient-control-.*-strength$/.test(name) || name === '--material-backdrop-brightness' || /^--material-alpha-/.test(name);
 const pick = (map) => Object.fromEntries(Object.entries(map).filter(([name]) => isColourToken(name)));
 
 /** The default theme as the generator needs it. Pure: same sources, same object. */

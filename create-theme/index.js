@@ -46,7 +46,7 @@ import {
     toOklch,
     toLab,
 } from './lib/ramp-math.js';
-import { resolveTokenColor, resolveTokenPaint, compositeOver } from './lib/resolve.js';
+import { resolveTokenColor, resolveTokenPaint, compositeOver, dimBackdrop, backdropBrightness } from './lib/resolve.js';
 
 /** The neutral ramp's 21 steps. */
 export const BASE_STEPS = [
@@ -338,7 +338,9 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = [], { gradients = true
             if (behind) {
                 // A material: its fill (an alpha paint) laid over what is behind it.
                 const paint = resolveTokenPaint(maps[mode], pair.bg);
-                const backdrop = resolveTokenColor(maps[mode], behind);
+                const flat = resolveTokenColor(maps[mode], behind);
+                // A material's filter dims what is behind it (D137); other `behind` pairs are not filtered.
+                const backdrop = flat && pair.material ? dimBackdrop(flat, backdropBrightness(maps[mode])) : flat;
                 bg = paint && backdrop ? compositeOver(paint, backdrop) : null;
             }
             const fg = resolveTokenColor(maps[mode], pair.fg);

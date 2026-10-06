@@ -94,6 +94,15 @@ export const SURFACE_CLASS = /^(surface-[\w-]+|card(-elevated)?|background|input
  * The worst thing a material can float over: the far end of the neutral ramp.
  * A photo can be that dark or that bright, so light glass is judged over
  * step 950 and dark glass over step 50.
+ *
+ * In dark that backdrop is dimmed before the fill is laid on it (D137): the
+ * material's backdrop-filter carries `brightness(var(--material-backdrop-brightness))`,
+ * which multiplies the sRGB channels of what is behind, so the brightest thing
+ * behind dark glass is step 50 times the factor, not step 50. Pairs flagged
+ * `material: true` are dimmed that way, by the mode's own value of the token
+ * (1 in light, an identity). The dimming is only real while the filter is on;
+ * each fallback that drops the filter also makes the fill the opaque surface.
+ * Other `behind` pairs (canvas wash, control gradients) are not filtered.
  */
 export const WORST_BACKDROP = { light: '--zabi-base-950', dark: '--zabi-base-50' };
 
@@ -106,8 +115,8 @@ export function behindToken(pair, mode) {
 /**
  * The materials (D97) and the roles each may carry, each held to its floor on
  * the worst backdrop AND over the mode's own page (the easy case, so a fill
- * cannot pass by being too dark). The alphas in src/app.css are the smallest
- * whole 2% that passes all of these; a lower one fails here.
+ * cannot pass by being too dark). Each alpha in src/app.css is the smallest
+ * whole percent that passes all of these, plus a margin; a lower one fails here.
  *  thin: a control on a bar (an icon, a short headline-coloured label)
  *  regular: bars, the tab bar, a floating sidebar
  *  thick: sheets, menus, modals, toasts, tooltips: all five text roles
@@ -363,10 +372,10 @@ export function buildPairs() {
     for (const material of MATERIALS) {
         for (const [where, behind] of [['the worst backdrop', WORST_BACKDROP], ['the page', '--color-surface-base']]) {
             for (const role of material.text) {
-                pairs.push({ name: `material ${material.name} · ${role} over ${where}`, bg: material.fill, fg: `--color-${role}`, min: AA_NORMAL, behind });
+                pairs.push({ name: `material ${material.name} · ${role} over ${where}`, bg: material.fill, fg: `--color-${role}`, min: AA_NORMAL, behind, material: true });
             }
             if (material.ring !== false) {
-                pairs.push({ name: `material ${material.name} · focus ring over ${where}`, bg: material.fill, fg: '--color-focus-ring', min: AA_LARGE, behind });
+                pairs.push({ name: `material ${material.name} · focus ring over ${where}`, bg: material.fill, fg: '--color-focus-ring', min: AA_LARGE, behind, material: true });
             }
         }
     }
@@ -380,11 +389,11 @@ export function buildPairs() {
     for (const [where, behind] of [['the worst backdrop', WORST_BACKDROP], ['the page', '--color-surface-base']]) {
         const thick = '--color-material-thick';
         for (const family of ['success', 'error', 'warning']) {
-            pairs.push({ name: `material thick · ${family} text over ${where}`, bg: thick, fg: `--color-${family}-text`, min: AA_NORMAL, behind });
+            pairs.push({ name: `material thick · ${family} text over ${where}`, bg: thick, fg: `--color-${family}-text`, min: AA_NORMAL, behind, material: true });
         }
-        pairs.push({ name: `material thick · link over ${where}`, bg: thick, fg: '--color-link', min: AA_NORMAL, behind });
+        pairs.push({ name: `material thick · link over ${where}`, bg: thick, fg: '--color-link', min: AA_NORMAL, behind, material: true });
         for (const family of ['success', 'error', 'warning', 'info']) {
-            pairs.push({ name: `material thick · ${family} icon over ${where}`, bg: thick, fg: `--color-${family}`, min: AA_LARGE, behind });
+            pairs.push({ name: `material thick · ${family} icon over ${where}`, bg: thick, fg: `--color-${family}`, min: AA_LARGE, behind, material: true });
         }
     }
 

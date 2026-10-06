@@ -188,6 +188,10 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
     'light icon on a held toggled-on fill',
     'light label on a selected pill tab',
     'light active tab label on the tab pill',
+    // The link is also written on the thick material (a Toaster toast), judged over both backdrops.
+    'light material thick · link over the worst backdrop',
+    'light material thick · link over the page',
+    'dark material thick · link over the worst backdrop',
   ]);
   const onPage = warnings.find((w) => w.pair === 'link on page');
   assert.equal(onPage.required, 4.5);
@@ -196,7 +200,7 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#fafafa' });
   assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #fafafa is [\d.]+:1, needs 4\.5:1/);
   // The failure is in the file too, so it is not lost when stderr is.
-  assert.match(result.css, /Contrast: 6 of \d+ role pairs are below WCAG AA:/);
+  assert.match(result.css, /Contrast: 9 of \d+ role pairs are below WCAG AA:/);
 
   // 3:1 pairs are checked as well: a focus ring too pale for the page.
   const ring = createTheme({ brand: '#0026EA', overrides: { '--color-focus': 'var(--zabi-brand-300)' } });
@@ -329,7 +333,7 @@ test('the bin warns on stderr, and --strict turns a failed pair into exit 1', ()
   const lenient = run(...args);
   assert.equal(lenient.status, 0);
   assert.match(lenient.stderr, /warning: light · link on page: .* needs 4\.5:1/);
-  assert.match(lenient.stderr, /6 role pairs below WCAG AA\./);
+  assert.match(lenient.stderr, /9 role pairs below WCAG AA\./);
   assert.match(lenient.stdout, /--color-link: var\(--zabi-brand-400\);/);
 
   const strict = run(...args, '--strict');
@@ -475,9 +479,10 @@ test('a colour that needs a dark label is pinned with one, and its states go lig
   assert.equal(pinned.pinned.brand.light.states, 'lighter');
   // As text on a white card the amber is 3.4:1, so links stay on the ramp. The ring needs 3:1,
   // which the amber reaches on the near-white page (it did not on the old grey one), so it is pinned.
-  assert.deepEqual(pinned.pinned.brand.light.onRamp, ['link']);
+  // The ring is also drawn on glass, where the amber does not reach 3:1 over the worst backdrop (the
+  // material pairs are checked for the default fills since 16c), so it stays on the ramp too.
+  assert.deepEqual(pinned.pinned.brand.light.onRamp, ['focus ring', 'link']);
   assert.equal(resolveTokenColor(light, '--color-link'), pinned.tokens['--zabi-brand-700']);
-  assert.equal(resolveTokenColor(light, '--color-focus-ring'), '#c17b00');
   // It passes on a dark page, so dark takes the colour too.
   assert.equal(pinned.pinned.brand.dark.pinned, true);
   assert.equal(resolveTokenColor(dark, '--color-action-primary'), '#c17b00');
@@ -784,19 +789,20 @@ test('without light or dark overrides the bytes are what they were before the op
   // Then for Z-043: the dark primary and danger are the light steps with a white label (the dark label knob is white, the header counts 4 more pairs: the primary and danger fills against the page and the card).
   // Then for 16a (Z-044): the field edge is guarded on the elevated surface and the overlay (two pairs per mode, so the header counts 4 more), and the dark surfaces, hairline, rim and shadows moved.
   // Then for 16b (Z-057): the dark status tints are mixes over the card surface, so a flat override of the card surface (the `flat` case) restates them and its bytes moved.
+  // Then for 16c: the material alphas and the backdrop brightness reach the generator, so the default material pairs are checked (and can warn), and the dark filters are restated.
   const before = {
-    plain: [{ brand: '#0026EA' }, 'c51e89d11bba1058f8f3b7b341bb58668c7bcfed60e95c0fd5e3d72a339e8a25'],
+    plain: [{ brand: '#0026EA' }, '3303a57d367a8a367bb5e59aa3129666459377edb1c71d6f0624f60329f90ccb'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      '4792bfc881dba0e170df7f3de596c9e01d7c1d70dc42fd038d48e72b5884d24f',
+      'fd2c1cf0a4310b70be00acea7a016c7635bf8d8d567dd948ce8dc7280d99de48',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      '1159408929767ec07f0a1169dacf85133123041e60fc81ed41bdcce33fba777e',
+      '58f9f7e23e0a91f6c62e10b8f645c30b67e7dba7fd2a7fd69e679e3f7eb6bf7d',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      'cc4ed626282444074c986a145ea98df7090fc1bf005e1e7847633566aecb547f',
+      '0278a8094d688783eca1cd35398b9ff36653ed2487d9baca22abc6c4fd039bc7',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -1010,19 +1016,17 @@ test('the library meets its own material floors, and a material one step below f
   };
   assert.equal(guard(css).status, 0, 'the shipped alphas must pass');
   // The floors against the page-colour chrome: light 82% (focus ring over the
-  // worst backdrop), dark 72%; shipped with a step or two of margin. One step
-  // (2%) below the floor fails.
-  assert.ok(css.includes('--material-alpha-regular: 84%;') && css.includes('--material-alpha-regular: 76%;'));
+  // worst backdrop), dark 47% (on the backdrop dimmed by 0.6); shipped with a
+  // margin. Below the floor fails.
+  assert.ok(css.includes('--material-alpha-regular: 84%;') && css.includes('--material-alpha-regular: 68%;'));
   const light = guard(css.replace('--material-alpha-regular: 84%;', '--material-alpha-regular: 80%;'));
   assert.equal(light.status, 1);
   assert.match(light.stderr, /light · material regular · .* over the worst backdrop/);
-  const dark = guard(css.replace('--material-alpha-regular: 76%;', '--material-alpha-regular: 70%;'));
+  const dark = guard(css.replace('--material-alpha-regular: 68%;', '--material-alpha-regular: 44%;'));
   assert.equal(dark.status, 1);
   assert.match(dark.stderr, /dark · material regular · .* over the worst backdrop/);
-  // Thick carries the caption: it fails first on that, in dark. The dark overlay is the
-  // elevated tone now (L 27.4, it was L 39), so the floor fell from 96% to 84%: the
-  // shipped 98% is conservative until the alphas are re-solved. 80% is under the floor.
-  const thick = guard(css.replace('--material-alpha-thick: 98%;', '--material-alpha-thick: 80%;'));
+  // Thick carries the caption: it fails first on that, in dark, where its floor is 68%. 64% is under it.
+  const thick = guard(css.replace('--material-alpha-thick: 72%;', '--material-alpha-thick: 64%;'));
   assert.equal(thick.status, 1);
   assert.match(thick.stderr, /dark · material thick · caption over the worst backdrop/);
 });
@@ -1047,7 +1051,7 @@ test('material tokens are overridable per mode with dark restated, and a too-thi
   assert.ok(warned.some((w) => /over the worst backdrop/.test(w.pair)));
 
   // Dark too thin, and `both`: each mode is read with its own value.
-  const both = createTheme({ brand: '#0026EA', overrides: { '--color-material-thin': MATERIAL_FILL(40) } });
+  const both = createTheme({ brand: '#0026EA', overrides: { '--color-material-thin': MATERIAL_FILL(20) } });
   assert.deepEqual([...new Set(materialWarnings(both, 'thin').map((w) => w.mode))].sort(), ['dark', 'light']);
 
   // The highlight, rim and shadow follow a neutral override.
@@ -1345,4 +1349,43 @@ test('the bin takes --dark-primary', () => {
   const bad = run(...args, '--dark-primary', 'pale');
   assert.equal(bad.status, 2);
   assert.match(bad.stderr, /darkPrimary must be "brand" or "mirror"/);
+});
+
+test('the guard dims only material pairs, and createTheme reads --material-backdrop-brightness per mode', () => {
+  const data = buildThemeData();
+  const flagged = data.pairs.filter((pair) => pair.material);
+  assert.ok(flagged.length > 0 && flagged.every((pair) => pair.bg.startsWith('--color-material-') && pair.behind));
+  // Every other pair with a `behind` (canvas wash, control gradients) is not filtered.
+  assert.ok(data.pairs.some((pair) => pair.behind && !pair.material));
+  assert.ok(data.pairs.filter((pair) => pair.bg.startsWith('--color-material-')).every((pair) => pair.material));
+  assert.equal(data.light['--material-backdrop-brightness'], '1');
+  assert.equal(data.darkOnly['--material-backdrop-brightness'], '0.6');
+
+  assert.deepEqual(materialWarnings(createTheme({ brand: '#0026EA' }), 'thick'), []);
+  const undimmed = createTheme({ brand: '#0026EA', overrides: { dark: { '--material-backdrop-brightness': '1' } } });
+  assert.equal(undimmed.darkTokens['--material-backdrop-brightness'], '1');
+  const warned = ['thin', 'regular', 'thick'].flatMap((level) => materialWarnings(undimmed, level));
+  assert.ok(warned.length > 0 && warned.every((w) => w.mode === 'dark'), JSON.stringify(warned.map((w) => w.message)));
+  assert.ok(warned.some((w) => /over the worst backdrop/.test(w.pair)));
+  // The canvas-wash and control pairs do not read it.
+  const nonMaterial = contrastWarnings(undimmed).filter((w) => !w.pair.startsWith('material '));
+  assert.deepEqual(nonMaterial, contrastWarnings(createTheme({ brand: '#0026EA' })).filter((w) => !w.pair.startsWith('material ')));
+});
+
+test('in dark the filters carry the brightness and every fallback gives none and an opaque fill', () => {
+  const css = fs.readFileSync(path.join(projectRoot, 'src', 'app.css'), 'utf8');
+  const dark = css.slice(css.indexOf('\n.dark {'), css.indexOf('MATERIALS — fallbacks and classes'));
+  for (const level of ['thin', 'regular', 'thick']) {
+    assert.match(dark, new RegExp(`--material-filter-${level}: blur\\(.*\\) saturate\\(.*\\) brightness\\(var\\(--material-backdrop-brightness\\)\\);`));
+  }
+  assert.match(dark, /--material-backdrop-brightness: 0\.6;/);
+  assert.ok(!/--color-material-(thin|regular|thick):/.test(dark), 'dark must not restate the fills');
+  const fallbacks = css.slice(css.indexOf('@materials-fallback-start'), css.indexOf('@materials-fallback-end'));
+  const blocks = fallbacks.match(/(?::root:root|\[data-materials="opaque"\]\[data-materials="opaque"\])\s*\{[^}]*\}/g);
+  assert.equal(blocks.length, 3);
+  for (const block of blocks) {
+    for (const level of ['thin', 'regular', 'thick']) assert.match(block, new RegExp(`--material-filter-${level}: none;`));
+    assert.match(block, /--color-material-thin: var\(--color-surface-chrome\);/);
+    assert.match(block, /--color-material-thick: var\(--color-surface-overlay\);/);
+  }
 });

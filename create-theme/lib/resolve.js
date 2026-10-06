@@ -218,3 +218,21 @@ export function compositeOver(paint, backdropHex) {
     const over = parseHex(paint.hex);
     return toHex(over.map((channel, i) => channel * paint.alpha + under[i] * (1 - paint.alpha)));
 }
+
+/**
+ * The backdrop a material's filter hands to its fill: `brightness()` multiplies
+ * the sRGB-encoded channels, so each channel of `backdropHex` is scaled by
+ * `factor` (a number; 1 is the identity). Material pairs only.
+ */
+export function dimBackdrop(backdropHex, factor) {
+    const f = Number(factor);
+    if (!Number.isFinite(f) || f === 1) return backdropHex;
+    return toHex(parseHex(backdropHex).map((channel) => channel * f));
+}
+
+/** The mode's `--material-backdrop-brightness` as a number; 1 when it is not declared or not a number. */
+export function backdropBrightness(map) {
+    const value = resolveTokenValue(map, '--material-backdrop-brightness');
+    const n = value === null ? NaN : Number(value);
+    return Number.isFinite(n) ? n : 1;
+}

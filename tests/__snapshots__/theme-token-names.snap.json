@@ -310,6 +310,7 @@
   "--material-alpha-regular",
   "--material-alpha-thick",
   "--material-alpha-thin",
+  "--material-backdrop-brightness",
   "--material-blur-regular",
   "--material-blur-thick",
   "--material-blur-thin",

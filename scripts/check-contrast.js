@@ -18,7 +18,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { resolveTokenColor, resolveTokenValue, resolveTokenPaint, compositeOver } from './resolve-tokens.js';
+import { resolveTokenColor, resolveTokenValue, resolveTokenPaint, compositeOver, dimBackdrop, backdropBrightness } from './resolve-tokens.js';
 import { BLOCKS, BLOCK_ROLES, SURFACE_CLASS, behindToken, buildPairs } from './contrast-pairs.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -513,7 +513,9 @@ function main() {
             if (behind) {
                 // A material is a paint with an alpha: what the text sits on is the paint over its backdrop.
                 const paint = resolveTokenPaint(map, pair.bg);
-                const backdrop = resolve(map, behind);
+                const flat = resolve(map, behind);
+                // A material's filter dims what is behind it (D137); other `behind` pairs are not filtered.
+                const backdrop = flat && pair.material ? dimBackdrop(flat, backdropBrightness(map)) : flat;
                 if (!paint || !backdrop) {
                     failures.push(`${themeName} · ${pair.name}: ${!paint ? pair.bg : behind} cannot be resolved to a colour, so the material cannot be composited`);
                     continue;
