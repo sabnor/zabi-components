@@ -544,6 +544,8 @@ export interface AppBarProps extends Omit<HTMLAttributes<HTMLElement>, 'class' |
     largeTitle?: boolean;
     /** The bar's fill: the page colour, none at rest, or the brand colour with on-brand content. Default `default`. */
     tone?: 'default' | 'transparent' | 'brand';
+    /** `sticky` (default), or `static` for a bar in the flow of the page. */
+    position?: 'sticky' | 'static';
     class?: string;
 }
 

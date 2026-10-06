@@ -105,6 +105,15 @@
          * part of the brand block.
          */
         tone?: "default" | "transparent" | "brand";
+        /**
+         * `sticky` (default) keeps the bar at the top of what scrolls.
+         * `static` leaves it where it is in the page, for a bar that sits
+         * inside a block of the content: it scrolls away with the block, is
+         * never glass, and `collapseOnScroll` and the condensing of
+         * `largeTitle` do nothing. `class="static"`, the 8.1 way to say this,
+         * is read as `position="static"`.
+         */
+        position?: "sticky" | "static";
         class?: string;
     };
 
@@ -121,6 +130,7 @@
         scrollEdge = "auto",
         largeTitle = false,
         tone = "default",
+        position = "sticky",
         class: className = "",
         ...restProps
     }: Props = $props();
@@ -131,10 +141,21 @@
 
     let host: HTMLElement | undefined = $state();
 
+    /**
+     * In the flow of the page, not stuck to the top. The material's layer is
+     * placed against the bar, so the bar is always positioned: `relative`
+     * here, and a `static` class from the caller is taken out and read as this.
+     */
+    const classStatic = $derived(/(?:^|\s)static(?:\s|$)/.test(className));
+    const inFlow = $derived(position === "static" || classStatic);
+    const ownClass = $derived(
+        classStatic ? className.replace(/(?:^|\s)static(?=\s|$)/g, " ").trim() : className,
+    );
+
     /** A large title needs a title to be large. */
     const large = $derived(largeTitle && !!title);
     /** The two scroll behaviours fight: with a large title, `collapseOnScroll` is ignored. */
-    const collapses = $derived(collapseOnScroll && !large);
+    const collapses = $derived(collapseOnScroll && !large && !inFlow);
 
     $effect(() => {
         if (!isDevBuild()) return;
@@ -149,7 +170,9 @@
     /** The large row, and its measured height in px: how far the header sticks above the top. Null until measured. */
     let largeRow: HTMLElement | undefined = $state();
     let largeHeight = $state<number | null>(null);
-    const overscroll = $derived(large && largeHeight !== null && largeHeight > 0 ? largeHeight : 0);
+    const overscroll = $derived(
+        large && !inFlow && largeHeight !== null && largeHeight > 0 ? largeHeight : 0,
+    );
 
     $effect(() => {
         const el = largeRow;
@@ -181,7 +204,8 @@
     );
     const scrolledUnder = $derived(
         // An opaque brand bar has no glass and no hairline whatever the mode says.
-        tone === "brand"
+        // Nor has a bar in the flow of the page: nothing scrolls under it.
+        tone === "brand" || inFlow
             ? false
             : resolveScrolledUnder(
                   scrollEdge,
@@ -328,7 +352,7 @@
 
     const headerClasses = $derived(
         cn(
-            large ? "sticky top-0 z-sticky" : "material-bar sticky top-0 z-sticky",
+            cn(!large && "material-bar", inFlow ? "relative" : "sticky top-0 z-sticky"),
             // Clear of the status bar and the notch, and of the corners in landscape. With a
             // large title the status-bar strip is the 56px row's, so it stays covered when stuck.
             large
@@ -341,7 +365,7 @@
             !large && tone === "transparent" && "[--color-bar:transparent]",
             !large && tone === "brand" && "[--color-bar:var(--color-bar-brand)]",
             tone === "brand" && "on-brand",
-            className,
+            ownClass,
         ),
     );
 
@@ -503,7 +527,8 @@
             data-appbar-bar
             data-scrolled-under={String(scrolledUnder)}
             class={cn(
-                "material-bar sticky top-0 pt-[env(safe-area-inset-top)]",
+                "material-bar pt-[env(safe-area-inset-top)]",
+                inFlow ? "relative" : "sticky top-0",
                 tone === "transparent" && "[--color-bar:transparent]",
                 tone === "brand" && "[--color-bar:var(--color-bar-brand)]",
             )}

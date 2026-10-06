@@ -46,12 +46,13 @@ describe("AppBar semantics", () => {
     });
 
     it("stays at the top, clear of the status bar, and merges class", () => {
-        render(AppBarHarness, { props: { class: "static" } });
+        render(AppBarHarness, { props: { class: "mt-2" } });
         expect(bar().className).toContain("env(safe-area-inset-top)");
         expect(bar().className).toContain("top-0");
-        // The call site wins over the bar's own `sticky`.
-        expect(bar().className).toContain("static");
-        expect(bar().className).not.toMatch(/(^|\s)sticky(\s|$)/);
+        expect(bar().className).toMatch(/(^|\s)sticky(\s|$)/);
+        // The call site's class is merged in. `class="static"` is read as
+        // `position="static"` since 9.0: see app-bar-position.test.ts.
+        expect(bar().className).toContain("mt-2");
     });
 });
 

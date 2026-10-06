@@ -5892,6 +5892,14 @@ pushToast({
                             "The bar's fill. default is the page colour at rest. transparent has no fill at rest, for a canvas, an image or a colour block behind the bar, and takes the glass once content is under it. brand is the brand colour with on-brand text and controls, opaque at rest and scrolled, with no glass and no hairline, so a brand block directly under it joins it; with largeTitle the large row is part of the block. Written as data-tone.",
                     },
                     {
+                        name: "position",
+                        type: "'sticky' | 'static'",
+                        required: false,
+                        defaultValue: "sticky",
+                        description:
+                            "sticky keeps the bar at the top of what scrolls. static leaves it in the flow of the page, for a bar inside a block of the content: it scrolls away with the block and is never glass. class=\"static\" is read as position=\"static\".",
+                    },
+                    {
                         name: "title",
                         type: "string",
                         required: false,
