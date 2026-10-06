@@ -2,9 +2,12 @@
     import type { Snippet } from "svelte";
     import { fixedSidebarFlyout } from "../util/fixed-sidebar-flyout.js";
     import { cn } from "../util/cn.js";
+    import { DEFAULT_SIDEBAR_FOOTER_STRINGS, type SidebarFooterStrings } from "../util/sidebar.js";
 
     interface Props {
         collapsed?: boolean;
+        /** The footer's name and the profile button's, for another language. */
+        strings?: Partial<SidebarFooterStrings>;
         showProfile?: boolean;
         profileName?: string;
         profileEmail?: string;
@@ -27,6 +30,7 @@
 
     let {
         collapsed = false,
+        strings,
         showProfile = true,
         profileName = "Zabi",
         profileEmail = "hello@zabi.dev",
@@ -50,6 +54,8 @@
      * Both are merged here so existing call sites keep working. */
     const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
+    const text = $derived({ ...DEFAULT_SIDEBAR_FOOTER_STRINGS, ...strings });
+
     const showFooter = $derived(showProfile || showLogout || showThemeToggle);
     const showPanelLauncher = $derived(showProfile);
 
@@ -71,7 +77,7 @@
     <div class="w-full shrink-0" data-sidebar-flyout-root>
         <footer
             class={cn(`flex w-full shrink-0 flex-col gap-3 border-t border-border pt-3 pb-1 ${className}`)}
-            aria-label="Account and settings"
+            aria-label={text.accountAndSettings}
         >
             {#if showPanelLauncher}
                 <button
@@ -84,8 +90,8 @@
                         ? profilePanelControlsId.trim()
                         : undefined}
                     aria-label={collapsed
-                        ? `Open account panel`
-                        : `Open account panel for ${profileName}`}
+                        ? text.openAccountPanel
+                        : text.openAccountPanelFor(profileName)}
                     onclick={handleProfileClick}
                 >
                     <span class="flex w-full items-center gap-3 text-left">

@@ -396,6 +396,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     "Saturation canvas with a hue slider and a hex field.",
                 props: [
                     {
+                        name: "strings",
+                        type: "Partial<ColorPickerStrings>",
+                        required: false,
+                        description:
+                            "The accessible names of its parts, for another language: hexInput, open, picker, hue.",
+                    },
+                    {
                         name: "value",
                         type: "string",
                         required: false,
@@ -1245,6 +1252,22 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     "Syntax-highlighted code block with a copy button.",
                 props: [
                     {
+                        name: "copyLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Copy code to clipboard",
+                        description:
+                            "Accessible name of the copy button.",
+                    },
+                    {
+                        name: "copiedLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Code copied to clipboard",
+                        description:
+                            "Its name for the two seconds after the code was copied.",
+                    },
+                    {
                         name: "code",
                         type: "string",
                         required: true,
@@ -1773,6 +1796,20 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 description:
                     "Accessible switch-style toggle with optional label and loading state.",
                 props: [
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The switch's accessible name when there is no visible label. It wins over the fallback: a switch with neither label, aria-label nor aria-labelledby is called Toggle, so always give it one of the three.",
+                    },
+                    {
+                        name: "aria-labelledby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The id of an element of the page that names the switch.",
+                    },
                     {
                         name: "checked",
                         type: "boolean",
@@ -2816,6 +2853,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 description:
                     "Name, email, message and a subscribe checkbox, ready to wire up with onsubmit.",
                 props: [
+                    {
+                        name: "strings",
+                        type: "Partial<ContactFormStrings>",
+                        required: false,
+                        description:
+                            "Every label, placeholder, error and the heading. The form is ready-made and in English: an app in another language passes strings, or builds its own form from Form, FormField and the fields.",
+                    },
                     {
                         name: "onsubmit",
                         type: "(event: SubmitEvent) => void",
@@ -3988,6 +4032,14 @@ pushToast({
                     "Accessible field wrapper: label, description, error, and a control snippet for the input.",
                 props: [
                     {
+                        name: "requiredLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "(required)",
+                        description:
+                            "Read by a screen reader after the label of a required field, where the asterisk is only seen. Replace it to translate.",
+                    },
+                    {
                         name: "label",
                         type: "string",
                         required: true,
@@ -4466,6 +4518,13 @@ pushToast({
                     "Brand row for sidebars: logo, wordmark, or collapsed monogram.",
                 props: [
                     {
+                        name: "strings",
+                        type: "Partial<SidebarBrandHeaderStrings>",
+                        required: false,
+                        description:
+                            "brandAlt: the logo's alt text when neither logoAlt nor brandName is given.",
+                    },
+                    {
                         name: "brandName",
                         type: "string",
                         required: false,
@@ -4502,6 +4561,13 @@ pushToast({
                 description:
                     "Sidebar footer with profile chip, theme toggle, and logout; wires optional account panel.",
                 props: [
+                    {
+                        name: "strings",
+                        type: "Partial<SidebarFooterStrings>",
+                        required: false,
+                        description:
+                            "The footer's accessible name and the profile button's: accountAndSettings, openAccountPanel, openAccountPanelFor(name).",
+                    },
                     {
                         name: "profileName",
                         type: "string",
@@ -4562,6 +4628,13 @@ pushToast({
                 description:
                     "Doc helper: Card with title, preview/code toggle, and syntax-highlighted snippet.",
                 props: [
+                    {
+                        name: "strings",
+                        type: "Partial<ComponentDemoStrings>",
+                        required: false,
+                        description:
+                            "The words of the switch between the preview and the code: preview, code, showPreview, showCode.",
+                    },
                     {
                         name: "title",
                         type: "string",
@@ -6340,7 +6413,7 @@ pushToast({
                         required: false,
                         defaultValue: "md",
                         description:
-                            "Size of the markers (24, 32 and 40px at the default text size) and the text. A step that can be pressed is a 44px target on a touch screen at every size.",
+                            "Size of the markers (24, 32 and 40px at the default text size) and the text. A step that can be pressed is a 44px target on a touch screen at every size in the full layout. In the compact layout the segments share the width: with interactive they are narrower than 44px from seven steps on a 320px screen and from eight at 375px, so keep to six there. layout auto suits about five short labels.",
                     },
                     {
                         name: "layout",
@@ -6501,6 +6574,35 @@ pushToast({
                     "Top bar with brand, optional link list, theme toggle and a responsive mobile menu. Use embedded for a link-only strip inside your own header.",
                 props: [
                     {
+                        name: "strings",
+                        type: "Partial<TopNavbarStrings>",
+                        required: false,
+                        description:
+                            "The words the bar says by itself: openMenu and closeMenu (the phone menu's button) and opensInNewTab (read after a link that opens a new tab).",
+                    },
+                    {
+                        name: "themeModes",
+                        type: "'two' | 'three'",
+                        required: false,
+                        defaultValue: "two",
+                        description:
+                            "How the theme toggle steps: two flips light and dark, three goes through system, light and dark. As modes of ThemeToggle.",
+                    },
+                    {
+                        name: "themeStorageKey",
+                        type: "string | null",
+                        required: false,
+                        description:
+                            "The localStorage key the theme choice is kept under; null keeps nothing. As storageKey of ThemeToggle, whose default applies when left out.",
+                    },
+                    {
+                        name: "themeLabels",
+                        type: "Partial<ThemeToggleLabels>",
+                        required: false,
+                        description:
+                            "The texts of the theme toggle's accessible name, for another language. As labels of ThemeToggle.",
+                    },
+                    {
                         name: "brand",
                         type: "string",
                         required: false,
@@ -6576,6 +6678,13 @@ pushToast({
                 description:
                     "Sidebar rail with brand row, grouped links, section labels, badges, collapsed and expanded modes, and an optional card layout.",
                 props: [
+                    {
+                        name: "strings",
+                        type: "Partial<SidebarNavigationStrings>",
+                        required: false,
+                        description:
+                            "The words the sidebar says by itself: primaryNavigation, secondaryNavigation, sectionNavigation(section), noMatchesTitle, noMatchesDescription(term), and those of the footer (accountAndSettings, openAccountPanel, openAccountPanelFor(name)) and the brand header (brandAlt), which it hands on. The account panel is rendered by the app and takes its own strings.",
+                    },
                     {
                         name: "mode",
                         type: "'expanded' | 'collapsed'",
@@ -6998,6 +7107,35 @@ pushToast({
                 description:
                     "Account picker panel: profile, theme row, and logout; composes SidebarPanel with fixed actions.",
                 props: [
+                    {
+                        name: "strings",
+                        type: "Partial<SidebarAccountPanelStrings>",
+                        required: false,
+                        description:
+                            "Every word the panel says by itself: panelLabel, title, closeLabel, account, theme, lightMode, darkMode, systemMode, light, dark, system, signOut. listLabel names the list of rows. The log-out row's first line is logoutLabel.",
+                    },
+                    {
+                        name: "themeModes",
+                        type: "'two' | 'three'",
+                        required: false,
+                        defaultValue: "two",
+                        description:
+                            "two: the theme row flips isLightMode and calls onThemeToggle, and the app switches the page. three: the row steps through system, light and dark, switches the page itself (data-theme on html, as ThemeToggle does) and calls onThemeModeChange.",
+                    },
+                    {
+                        name: "onThemeModeChange",
+                        type: "(mode: ThemeMode) => void",
+                        required: false,
+                        description:
+                            "With themeModes three: called with the mode the row has switched to.",
+                    },
+                    {
+                        name: "themeStorageKey",
+                        type: "string | null",
+                        required: false,
+                        description:
+                            "With themeModes three: the localStorage key the choice is kept under. Default theme, as ThemeToggle; null keeps nothing.",
+                    },
                     {
                         name: "profileName",
                         type: "string",

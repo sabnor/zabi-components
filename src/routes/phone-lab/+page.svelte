@@ -17,6 +17,7 @@
     import BottomTabBar from "../../components/molecules/BottomTabBar.svelte";
     import Drawer from "../../components/molecules/Drawer.svelte";
     import Modal from "../../components/molecules/Modal.svelte";
+    import PhotoViewer from "../../components/molecules/PhotoViewer.svelte";
     import SlideUp from "../../components/molecules/SlideUp.svelte";
     import Page from "../../components/molecules/Page.svelte";
     import Toaster from "../../components/molecules/Toaster.svelte";
@@ -49,6 +50,22 @@
     let plainOpen = $state(false);
     let lastClose = $state("none");
     let swedish = $state(false);
+
+    /** A drawn photo, so nothing is fetched. */
+    const drawn = (fill: string) =>
+        `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="${fill}"/></svg>`)}`;
+    const labPhotos = [
+        { src: drawn("#557"), alt: "Scoreboard", width: 800, height: 600 },
+        { src: drawn("#755"), alt: "Team table", width: 800, height: 600 },
+    ];
+    let viewerOpen = $state(false);
+    let viewerNote = $state("none");
+    /** Five: two as buttons, three in the menu. */
+    const viewerActions = ["Share", "Set as cover", "Download", "Move", "Delete"].map((label) => ({
+        id: label.toLowerCase().replace(/ /g, "-"),
+        label,
+        onclick: () => (viewerNote = label),
+    }));
     let pauses = $state<string[]>([]);
 
     /** An app in another language: every word the toaster says by itself. */
@@ -293,7 +310,11 @@
             <Button variant="secondary" data-testid="drawer-open" onclick={() => (drawerOpen = true)}>
                 Drawer
             </Button>
+            <Button variant="secondary" data-testid="viewer-open" onclick={() => (viewerOpen = true)}>
+                Photos
+            </Button>
         </div>
+        <p class="text-sm text-description" data-testid="viewer-note">Viewer: {viewerNote}</p>
         <p class="text-sm text-description" data-testid="toast-undone">Undone {undone}</p>
         <p class="text-sm text-description" data-testid="toast-pauses">Pauses: {pauses.join(",")}</p>
         <p class="text-sm text-description" data-testid="modal-last-close">Last close: {lastClose}</p>
@@ -418,6 +439,8 @@
         <Button data-testid="drawer-save" onclick={() => (drawerOpen = false)}>Save</Button>
     {/snippet}
 </Drawer>
+
+<PhotoViewer photos={labPhotos} bind:isOpen={viewerOpen} actions={viewerActions} />
 
 {#if topToast}
     <Toast message="The round starts in a minute." />

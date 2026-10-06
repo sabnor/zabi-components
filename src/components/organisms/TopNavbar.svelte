@@ -7,6 +7,8 @@
     import type { Component, Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
+    import type { ThemeToggleLabels } from "../util/theme-mode.js";
+    import { DEFAULT_TOP_NAVBAR_STRINGS, type TopNavbarStrings } from "../util/top-navbar.js";
 
     export interface TopNavbarNavItem {
         label: string;
@@ -25,6 +27,21 @@
         /** `aria-label` on `<nav>` when multiple nav landmarks exist. */
         ariaLabel?: string;
         showThemeToggle?: boolean;
+        /**
+         * How the theme toggle steps: `"two"` flips light and dark, `"three"`
+         * goes through system, light and dark. As `modes` of ThemeToggle.
+         */
+        themeModes?: "two" | "three";
+        /**
+         * The `localStorage` key the theme choice is kept under; `null` keeps
+         * nothing. As `storageKey` of ThemeToggle, whose default applies when
+         * this is left out.
+         */
+        themeStorageKey?: string | null;
+        /** The texts of the theme toggle's name, for another language. As `labels` of ThemeToggle. */
+        themeLabels?: Partial<ThemeToggleLabels>;
+        /** The words the bar says by itself: the menu button's two names and the note on a link that opens a new tab. */
+        strings?: Partial<TopNavbarStrings>;
         class?: string;
         /** @deprecated use `class`. */
         className?: string;
@@ -48,6 +65,10 @@
         brandHref,
         ariaLabel,
         showThemeToggle = true,
+        themeModes = "two",
+        themeStorageKey,
+        themeLabels,
+        strings,
         class: classAttr = "",
         className: legacyClass = "",
         embedded = false,
@@ -67,6 +88,8 @@
     const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     const mobileMenuId = generateId("topnavbar-menu");
+
+    const text = $derived({ ...DEFAULT_TOP_NAVBAR_STRINGS, ...strings });
 
     let isMenuOpen = $state(false);
     let navElement = $state<HTMLElement | null>(null);
@@ -320,7 +343,7 @@
                                 class="shrink-0 text-current opacity-70"
                                 aria-hidden="true"
                             />
-                            <span class="sr-only">(opens in a new tab)</span>
+                            <span class="sr-only">{text.opensInNewTab}</span>
                         {/if}
                     </div>
                 </a>
@@ -385,7 +408,7 @@
                     <div class="ml-4 flex items-center space-x-4">
                         {@render actions?.()}
                         {#if showThemeToggle}
-                            <ThemeToggle />
+                            <ThemeToggle modes={themeModes} storageKey={themeStorageKey} labels={themeLabels} />
                         {/if}
                     </div>
                 </div>
@@ -398,7 +421,7 @@
                     -->
                     <IconButton
                         variant="ghost"
-                        label={isMenuOpen ? "Close menu" : "Open menu"}
+                        label={isMenuOpen ? text.closeMenu : text.openMenu}
                         onclick={toggleMenu}
                         aria-expanded={isMenuOpen}
                         aria-controls={isMenuOpen ? mobileMenuId : undefined}
@@ -437,7 +460,7 @@
                             {@render actions?.()}
                             {#if showThemeToggle}
                                 <div class="mt-2">
-                                    <ThemeToggle />
+                                    <ThemeToggle modes={themeModes} storageKey={themeStorageKey} labels={themeLabels} />
                                 </div>
                             {/if}
                         </div>

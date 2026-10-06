@@ -13,6 +13,10 @@
     import type { Snippet } from "svelte";
     import type { Component } from "svelte";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
+    import {
+        DEFAULT_SIDEBAR_NAVIGATION_STRINGS,
+        type SidebarNavigationStrings,
+    } from "../util/sidebar.js";
 
     export interface SidebarNavigationItem {
         id: string;
@@ -37,6 +41,12 @@
         items?: SidebarNavigationItem[];
         currentPath?: string;
         ariaLabel?: string;
+        /**
+         * The words the sidebar says by itself, for another language: the
+         * names of its lists, the two lines shown when a search finds
+         * nothing, and those of the footer and the brand header in it.
+         */
+        strings?: Partial<SidebarNavigationStrings>;
         class?: string;
         /** @deprecated use `class`. */
         className?: string;
@@ -83,6 +93,7 @@
         currentPath = "",
         activePrimaryHref = "",
         ariaLabel = "Sidebar navigation",
+        strings,
         class: classAttr = "",
         className: legacyClass = "",
         logoSrc = "",
@@ -121,6 +132,8 @@
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
+
+    const text = $derived({ ...DEFAULT_SIDEBAR_NAVIGATION_STRINGS, ...strings });
 
     const isCollapsed = $derived(mode === "collapsed");
     const showBrandRow = $derived(
@@ -291,6 +304,7 @@
     {#snippet header()}
             {#if showBrandRow}
                 <SidebarBrandHeader
+                    {strings}
                     collapsed={isCollapsed}
                     {brandName}
                     logoSrc={logoSrc.trim()}
@@ -367,8 +381,8 @@
                             title={group.sectionLabel ?? ""}
                             sectionKey={`p-${gi}`}
                             listAriaLabel={group.sectionLabel
-                                ? `${group.sectionLabel} navigation`
-                                : "Primary navigation"}
+                                ? text.sectionNavigation(group.sectionLabel)
+                                : text.primaryNavigation}
                             collapsed={isCollapsed}
                         >
                             {#each group.items as item (item.id)}
@@ -453,7 +467,7 @@
                 >
                     <SidebarNavSection
                         sectionKey="secondary"
-                        listAriaLabel="Secondary navigation"
+                        listAriaLabel={text.secondaryNavigation}
                         collapsed={isCollapsed}
                     >
                         {#each filteredSecondaryItems as item (item.id)}
@@ -495,12 +509,12 @@
             >
                 <h3 class="text-sm font-semibold {getTextToneClass()}">
                     {normalizedSearchTerm && searchMode === "input"
-                        ? "No matching navigation items"
+                        ? text.noMatchesTitle
                         : emptyStateTitle}
                 </h3>
                 <p class="mt-1 text-sm {getTextToneClass(true)}">
                     {normalizedSearchTerm && searchMode === "input"
-                        ? `No results found for "${searchValue}". Try another keyword.`
+                        ? text.noMatchesDescription(searchValue)
                         : emptyStateDescription}
                 </p>
                 {#if !(normalizedSearchTerm && searchMode === "input")}
@@ -517,6 +531,7 @@
     {#snippet footer({ insetX })}
         <SidebarFooter
             collapsed={isCollapsed}
+            {strings}
         {showProfile}
         {profileName}
         {profileEmail}

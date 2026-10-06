@@ -55,6 +55,17 @@ Whenever token or CSS import API surface changes, include:
   Select, Checkbox, Radio, Toggle and ThemeToggle are typed on the native
   element, so `autocomplete`, `inputmode`, `maxlength`, `enterkeyhint` and
   `data-*` type-check; Table and Text pass other attributes to their element.
+- **Every built-in text can be replaced.** `strings` on TopNavbar,
+  SidebarFooter, SidebarAccountPanel, SidebarNavigation, SidebarBrandHeader,
+  ColorPicker, ContactForm, PropsTable and ComponentDemo; `requiredLabel` on
+  FormField; `copyLabel` and `copiedLabel` on CodeBlock. The defaults are
+  today's English. The README's "Texts and other languages" lists the prop
+  for each component.
+- **Three theme modes in the bars.** TopNavbar takes `themeModes`,
+  `themeStorageKey` and `themeLabels` for its ThemeToggle; SidebarAccountPanel
+  takes `themeModes="three"` with `onThemeModeChange`.
+- Toggle accepts `aria-label` and `aria-labelledby`; its "Toggle" fallback
+  name is used only when it has no label at all.
 
 ### Changed
 

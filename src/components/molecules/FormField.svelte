@@ -17,6 +17,8 @@
         description?: string;
         error?: string;
         required?: boolean;
+        /** Read after the label of a required field, where the asterisk is only seen. */
+        requiredLabel?: string;
         disabled?: boolean;
         class?: string;
         labelClass?: string;
@@ -30,6 +32,7 @@
         description,
         error,
         required = false,
+        requiredLabel = '(required)',
         disabled = false,
         class: className = '',
         labelClass = '',
@@ -63,7 +66,7 @@
             {label}
             {#if required}
                 <span class="ml-1 text-error" aria-hidden="true">*</span>
-                <span class="sr-only">(required)</span>
+                <span class="sr-only">{requiredLabel}</span>
             {/if}
         </label>
 

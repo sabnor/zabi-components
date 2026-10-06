@@ -12,6 +12,10 @@
         /** @deprecated use `class`. */
         className?: string;
         showCopyButton?: boolean;
+        /** Accessible name of the copy button. */
+        copyLabel?: string;
+        /** Its name for the two seconds after the code was copied. */
+        copiedLabel?: string;
         /** If true, `{@html code}` — only trusted, sanitized input. */
         trustHtml?: boolean;
     }
@@ -22,6 +26,8 @@
         class: classAttr = "",
         className: legacyClass = "",
         showCopyButton = true,
+        copyLabel = "Copy code to clipboard",
+        copiedLabel = "Code copied to clipboard",
         trustHtml = false,
         ...restProps
     }: Props & Record<string, unknown> = $props();
@@ -61,7 +67,7 @@
             <IconButton
                 variant="ghost"
                 size="sm"
-                label={copied ? "Code copied to clipboard" : "Copy code to clipboard"}
+                label={copied ? copiedLabel : copyLabel}
                 onclick={copyToClipboard}
             >
                 {#if copied}

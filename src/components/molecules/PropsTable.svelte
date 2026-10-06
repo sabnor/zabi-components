@@ -2,39 +2,47 @@
     import type { ComponentProp } from "../types/page.types";
     import Table from "../atoms/Table.svelte";
     import { cn } from "../util/cn.js";
+    import {
+        DEFAULT_PROPS_TABLE_STRINGS,
+        type PropsTableStrings,
+    } from "../util/ready-made-strings.js";
 
     interface Props {
         /** Extra classes for the host element. */
         class?: string;
         props: ComponentProp[];
         caption?: string;
+        /** The column headings, Yes and No, and the line for an empty table. */
+        strings?: Partial<PropsTableStrings>;
     }
 
-    let { class: className = "", props, caption = "Props / API" }: Props = $props();
+    let { class: className = "", props, caption = "Props / API", strings }: Props = $props();
+
+    const text = $derived({ ...DEFAULT_PROPS_TABLE_STRINGS, ...strings });
 </script>
 
 {#if props.length === 0}
     <div class={cn("rounded-control border border-border bg-card px-4 py-4 text-sm text-description", className)}>
-        No documented props.
+        {text.empty}
     </div>
 {:else}
     <Table caption={caption}>
         <thead>
             <tr class="bg-surface-elevated">
                 <th class="border-b border-border px-4 py-3 text-left font-semibold text-headline">
-                    Name
+                    {text.name}
                 </th>
                 <th class="border-b border-border px-4 py-3 text-left font-semibold text-headline">
-                    Type
+                    {text.type}
                 </th>
                 <th class="border-b border-border px-4 py-3 text-left font-semibold text-headline">
-                    Required
+                    {text.required}
                 </th>
                 <th class="border-b border-border px-4 py-3 text-left font-semibold text-headline">
-                    Default
+                    {text.default}
                 </th>
                 <th class="border-b border-border px-4 py-3 text-left font-semibold text-headline">
-                    Description
+                    {text.description}
                 </th>
             </tr>
         </thead>
@@ -48,7 +56,7 @@
                         {prop.type}
                     </td>
                     <td class="border-b border-border px-4 py-3 text-description">
-                        {prop.required ? "Yes" : "No"}
+                        {prop.required ? text.yes : text.no}
                     </td>
                     <td class="border-b border-border px-4 py-3 text-description">
                         {prop.defaultValue || "—"}

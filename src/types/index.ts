@@ -444,6 +444,10 @@ export interface ToggleProps
     disabled?: boolean;
     loading?: boolean;
     label?: string;
+    /** The switch's accessible name when there is no visible `label`. */
+    'aria-label'?: string;
+    /** The id of an element of the page that names the switch. */
+    'aria-labelledby'?: string;
     onclick?: (event: MouseEvent) => void;
     onchange?: (event: { checked: boolean }) => void;
     class?: string;

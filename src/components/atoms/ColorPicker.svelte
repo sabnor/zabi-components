@@ -6,6 +6,10 @@
         watchViewport,
         type PanelPlacement,
     } from "../util/fit-in-viewport.js";
+    import {
+        DEFAULT_COLOR_PICKER_STRINGS,
+        type ColorPickerStrings,
+    } from "../util/ready-made-strings.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -14,6 +18,8 @@
         label?: string;
         disabled?: boolean;
         placeholder?: string;
+        /** The accessible names of its parts, for another language. */
+        strings?: Partial<ColorPickerStrings>;
         onchange?: (event: Event) => void;
     }
 
@@ -23,9 +29,12 @@
         label = "",
         disabled = false,
         placeholder = "#000000",
+        strings,
         onchange,
         ...restProps
     }: Props = $props();
+
+    const text = $derived({ ...DEFAULT_COLOR_PICKER_STRINGS, ...strings });
 
     let isOpen = $state(false);
     let isDragging = $state(false);
@@ -283,7 +292,7 @@
             pickerContainer &&
             !pickerContainer.contains(event.target as Node) &&
             !(event.target as HTMLElement).closest(
-                '[aria-label="Open color picker"]',
+                "[data-color-picker-open]",
             )
         ) {
             commitCurrentValue(new Event("change"));
@@ -325,7 +334,7 @@
                 {message}
                 oninput={handleInput}
                 onblur={handleBlur}
-                aria-label="Hex color input"
+                aria-label={text.hexInput}
             />
         </div>
         <div class="relative shrink-0 mt-6">
@@ -335,8 +344,9 @@
                 {disabled}
                 class="focus-ring w-11 h-11 rounded-control border-2 border-card shrink-0 cursor-pointer hover:ring-2 hover:ring-border active:ring-2 active:ring-border-strong transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 style="background-color: {displayColor};"
-                aria-label="Open color picker"
+                aria-label={text.open}
                 aria-expanded={isOpen}
+                data-color-picker-open
             ></button>
 
             {#if isOpen}
@@ -355,7 +365,7 @@
                     style:width={placed?.fixed ? `${placed.fixed.width}px` : undefined}
                     style:max-width={placed && placed.maxWidth !== null ? `${placed.maxWidth}px` : undefined}
                     role="dialog"
-                    aria-label="Color picker"
+                    aria-label={text.picker}
                 >
                     <div class="space-y-4">
                         <div
@@ -395,7 +405,7 @@
                                     value={hue}
                                     oninput={handleHueChange}
                                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    aria-label="Hue slider"
+                                    aria-label={text.hue}
                                 />
                                 <div
                                     class="absolute top-0 bottom-0 w-3 bg-card shadow-sm pointer-events-none my-px rounded-full border border-base-950"

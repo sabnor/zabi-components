@@ -108,3 +108,18 @@ export type {
 export * from './toast-store.js';
 export { DEFAULT_TOASTER_STRINGS } from '../util/toaster.js';
 export type { ToasterStrings, ToastPauseChange } from '../util/toaster.js';
+export {
+    DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS,
+    DEFAULT_SIDEBAR_FOOTER_STRINGS,
+} from '../util/sidebar.js';
+export type { SidebarBrandHeaderStrings, SidebarFooterStrings } from '../util/sidebar.js';
+export {
+    DEFAULT_COMPONENT_DEMO_STRINGS,
+    DEFAULT_CONTACT_FORM_STRINGS,
+    DEFAULT_PROPS_TABLE_STRINGS,
+} from '../util/ready-made-strings.js';
+export type {
+    ComponentDemoStrings,
+    ContactFormStrings,
+    PropsTableStrings,
+} from '../util/ready-made-strings.js';

@@ -135,7 +135,8 @@ test.describe("PhotoGrid", () => {
         // The thumbnail fills its square, cropped.
         const image = tiles(page).nth(0).locator("img");
         expect(await image.evaluate((el) => getComputedStyle(el).objectFit)).toBe("cover");
-        expect(await image.evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
+        // It fades in once it has loaded: the settled value, not one on the way there.
+        await expect(image).toHaveCSS("opacity", "1");
         expect(await image.getAttribute("loading")).toBe("lazy");
 
         const last = tiles(page).nth(7);

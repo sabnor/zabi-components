@@ -304,6 +304,74 @@ cut content off.
 A `Tooltip` opens on a tap as well as on hover and focus, and stays until it is
 dismissed. Do not put information the user needs in one.
 
+## Texts and other languages
+
+Every word a component says by itself, shown or only read out, can be
+replaced. The defaults are English. A component with one or two such texts has
+a prop for each; one with several takes a `strings` object, and whatever you
+leave out of it keeps its default. A `strings` key and an older prop for the
+same text: the prop wins.
+
+| Component | Prop that carries its texts |
+|-----------|-----------------------------|
+| Alert | `closeLabel` |
+| AppBar | `backLabel` |
+| BottomSheet | `closeLabel`, `expandLabel`, `collapseLabel` |
+| BottomTabBar | `label`, `badgeLabel` |
+| Calendar | `strings` |
+| CodeBlock | `copyLabel`, `copiedLabel` |
+| ColorPicker | `strings` |
+| ComponentDemo | `strings` |
+| ConfirmDialog | `confirmLabel`, `cancelLabel`, `loadingLabel` |
+| ContactForm | `strings` (the whole form is ready-made English: pass them all, or build your own from Form and FormField) |
+| Drawer, Modal, SlideUp | `closeLabel` |
+| Dropdown | `ariaLabel` |
+| FormField | `requiredLabel` |
+| ImageUpload | `placeholder`, `browseText`, `changeText`, `removeText`, `selectedText`, `removedText`, `errorTitle` |
+| List | `ariaLabel` |
+| MediaGrid, PhotoGrid, PhotoViewer, SortableList, Stepper, Rating | `strings` (and `label` on PhotoViewer and Stepper) |
+| NavigationMenu | `ariaLabel` |
+| PropsTable | `caption`, `strings` |
+| Select | `placeholder`, `searchPlaceholder`, `noResultsText`, `loadingText`, `emptyStateTitle`, `emptyStateDescription` |
+| SidebarAccountPanel | `strings`, `logoutLabel` |
+| SidebarBrandHeader | `logoAlt`, `strings` |
+| SidebarFooter | `strings` |
+| SidebarNavigation | `strings` (its own, the footer's and the brand header's), `ariaLabel`, `searchPlaceholder`, `logoutLabel`, `emptyStateTitle`, `emptyStateDescription`, `emptyStateActionLabel` |
+| SidebarPanel | `ariaLabel`, `title`, `subtitle`, `searchPlaceholder`, `emptyStateTitle`, `emptyStateDescription`, `selectLabel`, `closeLabel` |
+| SidebarShell | `ariaLabel` |
+| Skeleton | `aria-label` |
+| ThemeToggle | `labels` |
+| Toast | `closeLabel` |
+| Toaster | `strings`, `aria-label` |
+| Toggle | `label`, or `aria-label` / `aria-labelledby` (without any of them it is called "Toggle") |
+| TopNavbar | `strings`, `ariaLabel`, `themeLabels` |
+| UnsavedChangesBar | `message`, `label`, `saveLabel`, `discardLabel` |
+
+Two texts cannot be replaced yet: the name of the option list of a Select
+("Select options") and the name of the list in a SidebarShell ("Navigation
+links").
+
+A toast shows what it was pushed with, so its text is yours already. The
+toaster's own words are the names of its buttons and of its region, and the
+sentence about the time a toast has left:
+
+```svelte
+<Toaster
+    strings={{
+        regionLabel: "Aviseringar",
+        dismiss: "Stäng aviseringen",
+        expand: "Visa mer",
+        collapse: "Visa mindre",
+        okay: "Okej",
+        closesIn: (seconds) => `Stängs om ${seconds} sekunder.`,
+        pausedClosesIn: (seconds) => `Pausad. Stängs om ${seconds} sekunder.`,
+        actionAvailable: (label) => `${label} finns.`,
+    }}
+/>
+
+pushToast({ message: "Utkastet är sparat.", type: "success" });
+```
+
 ## Common pitfalls
 
 | Issue | What goes wrong | Fix |

@@ -20,6 +20,13 @@
         disabled?: boolean;
         loading?: boolean;
         label?: string;
+        /**
+         * The switch's accessible name when there is no visible `label`. With
+         * neither this, `aria-labelledby` nor `label`, it is called "Toggle".
+         */
+        "aria-label"?: string;
+        /** The id of an element of the page that names the switch. */
+        "aria-labelledby"?: string;
         onclick?: (event: MouseEvent) => void;
         onchange?: (event: { checked: boolean }) => void;
     };
@@ -33,6 +40,8 @@
         disabled = false,
         loading = false,
         label = "",
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledby,
         onclick,
         onchange,
         ...restProps
@@ -82,7 +91,8 @@
         role="switch"
         id={toggleId}
         aria-checked={checked}
-        aria-label={label ? undefined : "Toggle"}
+        aria-label={ariaLabel ?? (label || ariaLabelledby ? undefined : "Toggle")}
+        aria-labelledby={ariaLabelledby}
         aria-busy={loading ? "true" : undefined}
         disabled={isDisabled}
         onclick={handleClick}
