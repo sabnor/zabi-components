@@ -2520,7 +2520,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 <FloatingActionButton
     label="New quiz"
     href="/quiz/new"
-    style="--fab-bottom-offset: 65px"
+    style="--fab-bottom-offset: 64px"
 />`,
                     },
                 ],
@@ -4131,7 +4131,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Toaster",
                         description:
                             "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset: 72px for a FloatingActionButton, which it would otherwise cover. That offset is for what is on the page: over a modal overlay the stack keeps off the overlay's header (and its close button) and off a pinned footer by itself, above the panel or between the two, and the offset is not added on top. Over the on-screen keyboard it sits above the keyboard. Tab goes from the overlay into the toasts and back. More toasts than fit scroll. The safe-area insets are zero until the page sets viewport-fit=cover",
-                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: 65px\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
+                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: 64px\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
                     },
                     {
                         title: "How long a toast stays",
@@ -5845,6 +5845,14 @@ pushToast({
                     "Top bar for a phone screen: a title that always has room, a back control and up to two actions; can hide while the page scrolls.",
                 props: [
                     {
+                        name: "scrollEdge",
+                        type: "'auto' | 'always' | 'never'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the top, glass once content is under it; inside an AppShell the shell says when); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
+                    },
+                    {
                         name: "title",
                         type: "string",
                         required: false,
@@ -5961,11 +5969,19 @@ pushToast({
                     "Navigation bar at the bottom of a phone screen: three to five links, each an icon over a short label, with optional counts.",
                 props: [
                     {
+                        name: "scrollEdge",
+                        type: "'auto' | 'always' | 'never'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the end of the content, glass while content is under it; inside an AppShell the shell says when); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
+                    },
+                    {
                         name: "items",
                         type: "BottomTabBarItem[]",
                         required: true,
                         description:
-                            "Three to five destinations, each { href, label, icon, badge? }. icon is a component such as a lucide icon; badge is a count. A development build warns outside three to five. The bar is one 65px row at every text size: a label is one line, grows with the reader's text size up to 1.3 times and no further than its tab has room for, and is cut with an ellipsis, never inside a word, when it still does not fit. A tab narrower than 52px (five tabs below 260px) shows its icon only. The link is always named by the full label, so keep labels to one short word.",
+                            "Three to five destinations, each { href, label, icon, badge? }. icon is a component such as a lucide icon; badge is a count. A development build warns outside three to five. The bar is one 64px row at every text size: a label is one line, grows with the reader's text size up to 1.3 times and no further than its tab has room for, and is cut with an ellipsis, never inside a word, when it still does not fit. A tab narrower than 52px (five tabs below 260px) shows its icon only. The link is always named by the full label, so keep labels to one short word.",
                     },
                     {
                         name: "active",
@@ -6005,7 +6021,7 @@ pushToast({
                         required: false,
                         defaultValue: "fixed (static inside AppShell)",
                         description:
-                            "fixed pins the bar to the bottom of the screen; static leaves it where it is in the page. AppShell places the bar itself. A fixed bar on its own lies over the page: give the page padding-bottom and scroll-padding-bottom of the bar's height, calc(65px + env(safe-area-inset-bottom)) by default, so the last content and a focused field are not under it.",
+                            "fixed pins the bar to the bottom of the screen; static leaves it where it is in the page. AppShell places the bar itself. A fixed bar on its own lies over the page: give the page padding-bottom and scroll-padding-bottom of the bar's height, calc(64px + env(safe-area-inset-bottom)) by default, so the last content and a focused field are not under it.",
                     },
                     {
                         name: "class",
@@ -6237,6 +6253,14 @@ pushToast({
                 description:
                     "Bar that keeps a form's main button at the bottom of the screen and above the on-screen keyboard.",
                 props: [
+                    {
+                        name: "scrollEdge",
+                        type: "'auto' | 'always' | 'never'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the end of the content, glass while content is under it; inside an AppShell the shell says when); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
+                    },
                     {
                         name: "children",
                         type: "Snippet",
@@ -7030,6 +7054,14 @@ pushToast({
                     "Top bar with brand, optional link list, theme toggle and a responsive mobile menu. Use embedded for a link-only strip inside your own header.",
                 props: [
                     {
+                        name: "scrollEdge",
+                        type: "'auto' | 'always' | 'never'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the top, glass once content is under it, and while the phone menu is open); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
+                    },
+                    {
                         name: "strings",
                         type: "Partial<TopNavbarStrings>",
                         required: false,
@@ -7750,6 +7782,14 @@ pushToast({
                     "Phone app layout: a top bar, content that scrolls and a bottom tab bar, as tall as the screen and clear of the safe areas.",
                 props: [
                     {
+                        name: "canvas",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Paints the shell with the page colour and the brand wash (bg-canvas) instead of the plain page colour, and lets the wash show through the header bar at rest.",
+                    },
+                    {
                         name: "header",
                         type: "Snippet",
                         required: false,
@@ -7776,7 +7816,7 @@ pushToast({
                         type: "Snippet",
                         required: false,
                         description:
-                            "The bottom bar, a BottomTabBar. It sits below the scrolling area and handles the safe area below it.",
+                            "The bottom bar, a BottomTabBar. It lies over the bottom of the scrolling area, so content passes beneath it, and handles the safe area below it.",
                     },
                     {
                         name: "class",
@@ -7792,7 +7832,7 @@ pushToast({
                         required: false,
                         defaultValue: '""',
                         description:
-                            "Added after the two custom properties the host sets: --app-shell-top-inset and --app-shell-bottom-inset, the heights of the header and the footer with their safe areas. While the shell is mounted both are also set on the html element, so an overlay moved to the body can read them.",
+                            "Added after the two custom properties the host sets: --app-shell-top-inset and --app-shell-bottom-inset, the heights of the header and the footer with their safe areas. The scroller also sets --app-shell-footer-overlay (the bottom inset with a footer, 0px without), and the host data-scrolled-top and data-scrolled-bottom. While the shell is mounted both are also set on the html element, so an overlay moved to the body can read them.",
                     },
                 ],
                 variants: [],

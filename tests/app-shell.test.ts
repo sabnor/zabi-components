@@ -101,10 +101,10 @@ describe("AppShell custom properties", () => {
     it("starts from the default bar heights where nothing can be measured", () => {
         render(AppShellHarness);
         expect(style()).toContain(
-            "--app-shell-top-inset: calc(57px + env(safe-area-inset-top, 0px))",
+            "--app-shell-top-inset: calc(56px + env(safe-area-inset-top, 0px))",
         );
         expect(style()).toContain(
-            "--app-shell-bottom-inset: calc(65px + env(safe-area-inset-bottom, 0px))",
+            "--app-shell-bottom-inset: calc(64px + env(safe-area-inset-bottom, 0px))",
         );
     });
 
@@ -215,7 +215,7 @@ describe("AppShell insets outside the shell", () => {
         await waitFor(() =>
             expect(rootValue("--app-shell-bottom-inset")).toContain("safe-area-inset-bottom"),
         );
-        expect(rootValue("--app-shell-top-inset")).toContain("57px");
+        expect(rootValue("--app-shell-top-inset")).toContain("56px");
         unmount();
         expect(rootValue("--app-shell-top-inset")).toBe("");
         expect(rootValue("--app-shell-bottom-inset")).toBe("");
@@ -223,7 +223,7 @@ describe("AppShell insets outside the shell", () => {
 
     it("mirrors the shell mounted last, and the one before it again when that goes", async () => {
         const first = render(AppShellHarness);
-        await waitFor(() => expect(rootValue("--app-shell-top-inset")).toContain("57px"));
+        await waitFor(() => expect(rootValue("--app-shell-top-inset")).toContain("56px"));
 
         // A second shell without bars: its insets are the safe areas alone.
         const second = render(AppShellHarness, { props: { withHeader: false, withFooter: false } });
@@ -231,7 +231,7 @@ describe("AppShell insets outside the shell", () => {
             expect(rootValue("--app-shell-top-inset")).toBe("env(safe-area-inset-top, 0px)"),
         );
         second.unmount();
-        expect(rootValue("--app-shell-top-inset")).toContain("57px");
+        expect(rootValue("--app-shell-top-inset")).toContain("56px");
         first.unmount();
         expect(rootValue("--app-shell-top-inset")).toBe("");
     });

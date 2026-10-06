@@ -8,7 +8,9 @@
     import X from "@lucide/svelte/icons/x";
     import type { Component, Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
+    import { getAppShell } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
+    import { resolveScrolledUnder, watchScrollEdge, type ScrollEdgeMode } from "../util/scroll-edge.js";
     import type { ThemeToggleLabels } from "../util/theme-mode.js";
     import { DEFAULT_TOP_NAVBAR_STRINGS, type TopNavbarStrings } from "../util/top-navbar.js";
     import { isInsideToastRegion } from "../util/focus-utils.js";
@@ -61,6 +63,13 @@
         collapseAt?: TopNavbarCollapseAt;
         preventNavigation?: boolean;
         onclick?: (event: Event) => void;
+        /**
+         * When the bar shows the glass and the hairline. `auto` follows the
+         * scroll position: flush at the top, glass once content is under it
+         * (and while the phone menu is open). `always` is glass all the time,
+         * `never` flush all the time.
+         */
+        scrollEdge?: ScrollEdgeMode;
     }
 
     let {
@@ -81,6 +90,7 @@
         collapseAt = "md",
         preventNavigation = false,
         onclick,
+        scrollEdge = "auto",
         nav,
         actions,
         ...restProps
@@ -97,6 +107,21 @@
     const text = $derived(mergeStrings(DEFAULT_TOP_NAVBAR_STRINGS, provided(), strings));
 
     let isMenuOpen = $state(false);
+
+    /** Content is under the bar: from the shell if there is one, else from the window. */
+    const shell = getAppShell();
+    let ownScrolled = $state(false);
+    $effect(() => {
+        if (shell || scrollEdge !== "auto" || embedded) return;
+        return watchScrollEdge(null, (edge) => (ownScrolled = edge.top));
+    });
+    // An open menu sits on the material, whatever the scroll position.
+    const scrolledUnder = $derived(
+        resolveScrolledUnder(
+            scrollEdge,
+            isMenuOpen || (shell ? shell.scrolledTop : ownScrolled),
+        ),
+    );
     let navElement = $state<HTMLElement | null>(null);
     let panelElement = $state<HTMLElement | null>(null);
     let menuButtonHolder = $state<HTMLElement | null>(null);
@@ -384,7 +409,8 @@
 {:else}
     <nav
         bind:this={navElement}
-        class={cn("border-b border-border bg-background sticky top-0 z-sticky", className)}
+        data-scrolled-under={String(scrolledUnder)}
+        class={cn("material-bar sticky top-0 z-sticky", className)}
         aria-label={ariaLabel}
         {...restProps}
     >
@@ -488,7 +514,7 @@
      * The bar is sticky, so an open menu taller than the screen could never be
      * scrolled into view: the page moved under it and its last control stayed
      * below the fold. It takes what is left of the screen under the 4rem bar
-     * (and its 1px border) and scrolls on its own, without handing the scroll
+     * and scrolls on its own, without handing the scroll
      * on to the page when it reaches an end. `dvh` follows a phone's
      * collapsing address bar; `vh` is for browsers without it. In a web app
      * installed to the home screen the bar starts below the status bar, so
@@ -499,8 +525,8 @@
      * script): a scrolling box would clip a Dropdown that opens out of it.
      */
     .topnavbar-menu {
-        max-height: calc(100vh - 4rem - 1px - env(safe-area-inset-top, 0px));
-        max-height: calc(100dvh - 4rem - 1px - env(safe-area-inset-top, 0px));
+        max-height: calc(100vh - 4rem - env(safe-area-inset-top, 0px));
+        max-height: calc(100dvh - 4rem - env(safe-area-inset-top, 0px));
     }
 
     .topnavbar-menu[data-scrolls] {

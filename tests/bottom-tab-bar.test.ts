@@ -73,8 +73,10 @@ describe("BottomTabBar semantics", () => {
         });
         expect(screen.getByTestId("tabs")).toBe(nav());
         expect(nav().className).toContain("md:hidden");
-        expect(nav().className).toContain("bg-surface-elevated");
-        expect(nav().className).toContain("border-border-weak");
+        expect(nav().className).toContain("material-bar");
+        expect(nav().className).not.toContain("bg-surface-elevated");
+        expect(nav().className).not.toContain("border-t");
+        expect(nav().getAttribute("data-bar-edge")).toBe("bottom");
     });
 });
 

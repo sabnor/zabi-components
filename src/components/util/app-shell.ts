@@ -4,14 +4,42 @@ import { getContext, setContext } from "svelte";
 
 const APP_SHELL_CONTEXT = Symbol.for("zabi-components.app-shell");
 
+/**
+ * What a shell tells the pieces inside it. Getters, so a reader sees the
+ * shell's current state; the object itself never changes.
+ */
+export interface AppShellContext {
+    /** Content has scrolled under the header. False on the server and before the first measurement. */
+    readonly scrolledTop: boolean;
+    /** Content is not at the end: it passes under the footer. False on the server and before the first measurement. */
+    readonly scrolledBottom: boolean;
+    /** The footer lies over the bottom of the scroller (true whenever there is a footer). */
+    readonly footerOverlays: boolean;
+    /** The measured height of the footer in px, safe area included; 0 without a footer and until measured. */
+    readonly footerHeight: number;
+}
+
+const NO_SHELL_STATE: AppShellContext = {
+    scrolledTop: false,
+    scrolledBottom: false,
+    footerOverlays: false,
+    footerHeight: 0,
+};
+
 /** Called by `AppShell`, so the bars inside it know the shell lays them out. */
-export function markAppShell(): void {
-    setContext(APP_SHELL_CONTEXT, true);
+export function markAppShell(state: AppShellContext = NO_SHELL_STATE): void {
+    setContext(APP_SHELL_CONTEXT, state);
+}
+
+/** The shell's state for a component rendered inside an `AppShell`, else undefined. */
+export function getAppShell(): AppShellContext | undefined {
+    const value = getContext<AppShellContext | true | undefined>(APP_SHELL_CONTEXT);
+    return value && typeof value === "object" ? value : undefined;
 }
 
 /** True for a component rendered inside an `AppShell`. */
 export function isInsideAppShell(): boolean {
-    return getContext(APP_SHELL_CONTEXT) === true;
+    return getContext(APP_SHELL_CONTEXT) !== undefined;
 }
 
 /**

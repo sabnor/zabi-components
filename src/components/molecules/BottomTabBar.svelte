@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { HTMLAttributes } from "svelte/elements";
     import Badge from "../atoms/Badge.svelte";
-    import { isDevBuild, isInsideAppShell } from "../util/app-shell.js";
+    import { getAppShell, isDevBuild } from "../util/app-shell.js";
     import {
         activeTabHref,
         badgeText,
@@ -9,6 +9,7 @@
         type BottomTabBarItem,
     } from "../util/bottom-tab-bar.js";
     import { cn } from "../util/cn.js";
+    import { resolveScrolledUnder, watchScrollEdge, type ScrollEdgeMode } from "../util/scroll-edge.js";
 
     /**
      * The navigation bar at the bottom of a phone screen: three to five
@@ -19,17 +20,22 @@
      *
      * On its own the bar is fixed over the page and reserves no room. Give the
      * page `padding-bottom` and `scroll-padding-bottom` of the bar's height
-     * (`calc(65px + env(safe-area-inset-bottom))`), or the end of the
+     * (`calc(64px + env(safe-area-inset-bottom))`), or the end of the
      * content, and a focused control there, sits under it. `AppShell` does
      * this for you.
      *
-     * The bar is one row, 65px tall, at every width and text size. It is
+     * The bar is one row, 64px tall, at every width and text size. It is
      * chrome: when the reader enlarges text, the room belongs to the page.
      * So its sizes are in px; a label is one line, grows with the text only
      * up to 1.3 times its size and no further than its tab has room for, and
      * is cut with an ellipsis, never inside a word, when it still does not
      * fit. Where a tab is narrower than 52px (five tabs below 260px) the bar
      * shows icons only. The link is always named by its full label.
+     *
+     * The bar is flush with the page and page-coloured at rest; once content
+     * is under it (not at the end of what scrolls) it turns to frosted glass
+     * with a hairline above it. Inside an `AppShell` the shell says when; on
+     * its own the bar watches the window.
      *
      * ```svelte
      * <BottomTabBar
@@ -67,6 +73,13 @@
          * an `AppShell`, which places the bar itself.
          */
         position?: "fixed" | "static";
+        /**
+         * When the bar shows the glass and the hairline. `auto` follows the
+         * scroll position: flush at the end of the content, glass while
+         * content is under it. `always` is glass all the time, `never` flush
+         * all the time.
+         */
+        scrollEdge?: ScrollEdgeMode;
         class?: string;
     };
 
@@ -77,12 +90,25 @@
         badgeLabel = defaultBadgeLabel,
         badgeMax = 99,
         position,
+        scrollEdge = "auto",
         class: className = "",
         ...restProps
     }: Props = $props();
 
-    const inShell = isInsideAppShell();
+    const shell = getAppShell();
+    const inShell = shell !== undefined;
     const resolvedPosition = $derived(position ?? (inShell ? "static" : "fixed"));
+
+    let host: HTMLElement | undefined = $state();
+    /** Content is under the bar: from the shell if there is one, else from the window. */
+    let ownScrolled = $state(false);
+    $effect(() => {
+        if (shell || scrollEdge !== "auto" || !host) return;
+        return watchScrollEdge(null, (edge) => (ownScrolled = edge.bottom));
+    });
+    const scrolledUnder = $derived(
+        resolveScrolledUnder(scrollEdge, shell ? shell.scrolledBottom : ownScrolled),
+    );
 
     /**
      * The page's own path, used while `active` is not given. Empty on the
@@ -135,7 +161,7 @@
         // the 4px. No gap between pill and label: 32px and a 16px line in a
         // 56px box leave the same 4px above and below as at the sides.
         const base =
-            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-0 rounded-[20px] px-[4px] text-center no-underline transition-colors duration-150 motion-reduce:transition-none";
+            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-0 rounded-[20px] px-[4px] text-center no-underline transition-colors duration-(--duration-base) motion-reduce:transition-none";
         return isActive
             ? cn(base, "font-semibold text-nav-menu-item-active")
             : cn(
@@ -146,13 +172,17 @@
 </script>
 
 <nav
+    bind:this={host}
     aria-label={label}
     data-position={resolvedPosition}
+    data-bar-edge="bottom"
+    data-scrolled-under={String(scrolledUnder)}
     class={cn(
-        "tabbar border-t border-border-weak bg-surface-elevated [--spacing:4px]",
+        "tabbar material-bar [--spacing:4px]",
         // Clear of the home indicator, and of the rounded corners in landscape.
         "pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-        resolvedPosition === "fixed" && "fixed inset-x-0 bottom-0 z-sticky",
+        // The layer of the material is placed against the bar, so it is always positioned.
+        resolvedPosition === "fixed" ? "fixed inset-x-0 bottom-0 z-sticky" : "relative",
         className,
     )}
     style:--tabbar-count={items.length}
@@ -190,7 +220,7 @@
                     <span
                         aria-hidden="true"
                         class={cn(
-                            "flex h-8 w-[min(56px,100%)] shrink-0 items-center justify-center rounded-pill transition-colors duration-150 motion-reduce:transition-none",
+                            "flex h-8 w-[min(56px,100%)] shrink-0 items-center justify-center rounded-pill transition-colors duration-(--duration-base) motion-reduce:transition-none",
                             isActive &&
                                 "bg-nav-menu-active text-(color:--color-action-primary) outline-2 -outline-offset-2 outline-(color:--color-action-primary)",
                         )}

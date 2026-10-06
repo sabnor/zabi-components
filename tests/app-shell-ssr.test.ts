@@ -45,10 +45,10 @@ describe("AppShell on the server", () => {
         const { body } = renderOnServer(AppShellHarness, { props: {} });
         const host = /<div[^>]*data-app-shell(?=[\s>=])[^>]*>/.exec(body)?.[0] ?? "";
         expect(host).toContain(
-            "--app-shell-top-inset: calc(57px + env(safe-area-inset-top, 0px))",
+            "--app-shell-top-inset: calc(56px + env(safe-area-inset-top, 0px))",
         );
         expect(host).toContain(
-            "--app-shell-bottom-inset: calc(65px + env(safe-area-inset-bottom, 0px))",
+            "--app-shell-bottom-inset: calc(64px + env(safe-area-inset-bottom, 0px))",
         );
     });
 

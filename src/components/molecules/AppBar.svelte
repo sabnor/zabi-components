@@ -3,8 +3,9 @@
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import ArrowLeft from "@lucide/svelte/icons/arrow-left";
-    import { findScrollParent } from "../util/app-shell.js";
+    import { findScrollParent, getAppShell } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
+    import { resolveScrolledUnder, watchScrollEdge, type ScrollEdgeMode } from "../util/scroll-edge.js";
 
     /**
      * The bar at the top of a phone screen: where you are, the way back, and
@@ -23,6 +24,11 @@
      * and the actions leave it less (a wide chip in `leading`, a very narrow
      * bar), it takes a second row of its own, as wide as the bar, and they
      * stay together on the first.
+     *
+     * The bar is flush with the page and page-coloured at rest. Once content
+     * has scrolled under it, it turns to frosted glass with a hairline below
+     * it. Inside an `AppShell` the shell says when; on a page of its own the
+     * bar watches the window or its nearest scrolling ancestor.
      */
     type Props = Omit<HTMLAttributes<HTMLElement>, "class" | "title"> & {
         /** The name of the screen, as a heading. */
@@ -68,6 +74,12 @@
          * in px.
          */
         actions?: Snippet;
+        /**
+         * When the bar shows the glass and the hairline. `auto` follows the
+         * scroll position: flush at the top, glass once content is under it.
+         * `always` is glass all the time, `never` flush all the time.
+         */
+        scrollEdge?: ScrollEdgeMode;
         class?: string;
     };
 
@@ -81,6 +93,7 @@
         titleLines = 1,
         leading,
         actions,
+        scrollEdge = "auto",
         class: className = "",
         ...restProps
     }: Props = $props();
@@ -90,6 +103,18 @@
     const backLabel = $derived(backLabelGiven ?? common().back);
 
     let host: HTMLElement | undefined = $state();
+
+    /** Content is under the bar: from the shell if there is one, else from its own scroller. */
+    const shell = getAppShell();
+    let ownScrolled = $state(false);
+    $effect(() => {
+        if (shell || scrollEdge !== "auto" || !host) return;
+        return watchScrollEdge(findScrollParent(host), (edge) => (ownScrolled = edge.top));
+    });
+    const scrolledUnder = $derived(
+        resolveScrolledUnder(scrollEdge, shell ? shell.scrolledTop : ownScrolled),
+    );
+
     /** Scrolled out of view. Only ever true with `collapseOnScroll`. */
     let scrolledAway = $state(false);
     const collapsed = $derived(collapseOnScroll && scrolledAway);
@@ -188,7 +213,7 @@
 
     /** A 48px ghost target, the same as `IconButton` at `variant="ghost" size="lg"`. */
     const backClasses =
-        "focus-ring focus-ring--muted inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-control bg-transparent text-headline transition-colors duration-150 hover:bg-surface-hover active:bg-surface-active";
+        "focus-ring focus-ring--muted inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-control bg-transparent text-headline transition-colors duration-(--duration-base) hover:bg-surface-hover active:bg-surface-active";
 
     const hasBack = $derived(backHref !== undefined || onback !== undefined);
 
@@ -277,11 +302,12 @@
 <header
     bind:this={host}
     data-collapsed={collapseOnScroll ? String(collapsed) : undefined}
+    data-scrolled-under={String(scrolledUnder)}
     class={cn(
-        "sticky top-0 z-sticky border-b border-border-weak bg-surface-elevated",
+        "material-bar sticky top-0 z-sticky",
         // Clear of the status bar and the notch, and of the corners in landscape.
         "pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-        "transition-transform duration-200 ease-out motion-reduce:transition-none",
+        "transition-transform duration-(--duration-moderate) ease-out motion-reduce:transition-none",
         // The strip under the status bar stays, so content never shows through it.
         collapsed && "-translate-y-[calc(100%-env(safe-area-inset-top,0px))]",
         className,
@@ -303,7 +329,7 @@
         style:--appbar-leading-max={leadingMax !== null ? `${leadingMax}px` : undefined}
         class={cn(
             "appbar-row flex min-h-14 items-center gap-2 px-2 py-1 [--spacing:4px]",
-            "transition-opacity duration-200 ease-out motion-reduce:transition-none",
+            "transition-opacity duration-(--duration-moderate) ease-out motion-reduce:transition-none",
             collapsed && "pointer-events-none opacity-0",
         )}
     >

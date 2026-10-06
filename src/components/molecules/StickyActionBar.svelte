@@ -1,10 +1,11 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { findScrollParent } from "../util/app-shell.js";
+    import { findScrollParent, getAppShell } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
     import { watchKeyboardInset } from "../util/keyboard-inset.js";
     import { reserveScrollPaddingBottom } from "../util/scroll-padding.js";
+    import { resolveScrolledUnder, watchScrollEdge, type ScrollEdgeMode } from "../util/scroll-edge.js";
 
     /**
      * Keeps a form's main button on screen: at the bottom of whatever
@@ -47,7 +48,12 @@
      *
      * In an `AppShell`, a screen with a form is a task of its own: leave the
      * tab bar out (no `footer`) and let this bar be the bottom of the screen.
-     * With a tab bar it sits directly above it.
+     * With a tab bar it sits directly above it: the shell's footer lies over
+     * the scroller, and the bar sticks to the footer's top edge, not under it.
+     *
+     * The bar is flush with the page and page-coloured while the form ends
+     * where the bar is; once content is under it, it turns to frosted glass
+     * with a hairline above it.
      *
      * `UnsavedChangesBar` is the other bar at the bottom of a form. That one
      * appears only while there is something to save, announces itself, and
@@ -60,6 +66,13 @@
          * says what the buttons belong to; without it, it is a plain box.
          */
         label?: string;
+        /**
+         * When the bar shows the glass and the hairline. `auto` follows the
+         * scroll position: flush at the end of the content, glass while
+         * content is under it. `always` is glass all the time, `never` flush
+         * all the time.
+         */
+        scrollEdge?: ScrollEdgeMode;
         class?: string;
         /** Added after the offset and margin the bar sets while the keyboard is up. */
         style?: string;
@@ -67,9 +80,35 @@
         children?: Snippet;
     };
 
-    let { label, class: className = "", style = "", children, ...restProps }: Props = $props();
+    let {
+        label,
+        scrollEdge = "auto",
+        class: className = "",
+        style = "",
+        children,
+        ...restProps
+    }: Props = $props();
 
     let host: HTMLDivElement | undefined = $state();
+
+    /**
+     * In a shell with a footer the footer lies over the bottom of the scroller
+     * by this much: the bar sticks above it, and the box it scrolls in
+     * extends under it.
+     */
+    const shell = getAppShell();
+    const underFooter = $derived(shell?.footerOverlays === true);
+    const footerHeight = $derived(shell?.footerHeight ?? 0);
+
+    /** Content is under the bar: from the shell if there is one, else from its own scroller. */
+    let ownScrolled = $state(false);
+    $effect(() => {
+        if (shell || scrollEdge !== "auto" || !host) return;
+        return watchScrollEdge(findScrollParent(host), (edge) => (ownScrolled = edge.bottom));
+    });
+    const scrolledUnder = $derived(
+        resolveScrolledUnder(scrollEdge, shell ? shell.scrolledBottom : ownScrolled),
+    );
     /** Height of the keyboard over the page, in px. 0 on the server and where the page shrinks by itself. */
     let keyboardInset = $state(0);
     /**
@@ -151,7 +190,9 @@
     $effect(() => {
         const bar = host;
         if (!bar) return;
-        const raised = lift;
+        // The bar's own offset from the bottom of the box: what the keyboard
+        // lifts it by, or the footer it sits above, whichever is more.
+        const raised = Math.max(lift, footerHeight);
         const container = findScrollParent(bar) ?? document.documentElement;
         const reservation = reserveScrollPaddingBottom(container);
         const reserve = () => {
@@ -168,6 +209,21 @@
     });
 
     const keyboardOpen = $derived(keyboardInset > 0);
+
+    /**
+     * Where it sticks. On its own the box ends at the bottom and the bar is
+     * lifted by `lift`. Over a footer it sticks above the footer, and the
+     * keyboard lifts it only as far as it reaches past the footer: the box
+     * extends under the footer, so `lift` counts from the box's bottom.
+     */
+    const offsetStyle = $derived.by(() => {
+        const overlay = "var(--app-shell-footer-overlay, 0px)";
+        if (!underFooter) return lift > 0 ? `bottom: ${lift}px; margin-bottom: ${lift}px;` : "";
+        if (lift > 0) {
+            return `bottom: max(${lift}px, ${overlay}); margin-bottom: max(0px, calc(${lift}px - ${overlay}));`;
+        }
+        return `bottom: ${overlay};`;
+    });
 </script>
 
 <!-- Nothing here takes focus by itself, and the bar never moves focus. -->
@@ -176,15 +232,18 @@
     role={label ? "group" : undefined}
     aria-label={label}
     data-keyboard-open={keyboardOpen ? "true" : undefined}
+    data-bar-edge="bottom"
+    data-scrolled-under={String(scrolledUnder)}
     class={cn(
         // `mt-auto`: in a column taller than its fields, the bar goes to the bottom.
-        "sticky bottom-0 z-sticky mt-auto flex flex-wrap items-center justify-end gap-[8px] border-t border-border-weak bg-surface-elevated pt-3",
+        "material-bar sticky bottom-0 z-sticky mt-auto flex flex-wrap items-center justify-end gap-[8px] pt-3",
         "pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]",
-        // The home indicator is under the keyboard while that is up.
-        keyboardOpen ? "pb-3" : "pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+        // The home indicator is under the keyboard while that is up, and under
+        // the footer, which already clears it, when there is one.
+        keyboardOpen || underFooter ? "pb-3" : "pb-[max(0.75rem,env(safe-area-inset-bottom))]",
         className,
     )}
-    style="{lift > 0 ? `bottom: ${lift}px; margin-bottom: ${lift}px;` : ''} {style}"
+    style="{offsetStyle} {style}"
     {...restProps}
 >
     {@render children?.()}

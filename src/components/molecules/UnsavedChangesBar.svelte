@@ -3,6 +3,7 @@
     import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Button from "../atoms/Button.svelte";
+    import { getAppShell } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
 
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class" | "role"> & {
@@ -66,6 +67,10 @@
     const label = $derived(labelGiven ?? provided()?.label ?? DEFAULT_UNSAVED_CHANGES_BAR_TEXTS.label);
     const saveLabel = $derived(saveLabelGiven ?? provided()?.saveLabel ?? DEFAULT_UNSAVED_CHANGES_BAR_TEXTS.saveLabel);
     const discardLabel = $derived(discardLabelGiven ?? provided()?.discardLabel ?? DEFAULT_UNSAVED_CHANGES_BAR_TEXTS.discardLabel);
+
+    /** In a shell whose footer lies over the scroller the bar floats above the footer, which already clears the home indicator. */
+    const shell = getAppShell();
+    const aboveFooter = $derived(shell?.footerOverlays === true);
 
     /** True while a promise returned by `onsave` is pending. */
     let pending = $state(false);
@@ -187,9 +192,14 @@
     class={cn(
         "focus-ring",
         dirty &&
-            "sticky z-sticky flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-container border border-border-overlay bg-surface-overlay px-4 py-3 shadow-lg",
+            "material-layer-regular sticky z-sticky flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-container px-4 py-3",
         // Clear of the home indicator on a phone.
-        dirty && (position === "top" ? "top-2" : "bottom-[max(0.5rem,env(safe-area-inset-bottom))]"),
+        dirty &&
+            (position === "top"
+                ? "top-2"
+                : aboveFooter
+                  ? "bottom-[calc(var(--app-shell-footer-overlay,0px)+0.5rem)]"
+                  : "bottom-[max(0.5rem,env(safe-area-inset-bottom))]"),
         dirty && className,
     )}
     onfocusin={handleFocusIn}
