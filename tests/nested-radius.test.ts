@@ -23,14 +23,14 @@ afterEach(cleanup);
 const classes = (element: Element) => element.className.split(/\s+/);
 
 describe("nested corner radii", () => {
-    it("Alert: the close button's radius is the alert's less its 0.5rem inset and 1px border", () => {
+    it("Alert: the close button's radius is the alert's less its 0.5rem inset and its border width", () => {
         render(Alert, { props: { title: "Saved", closable: true } });
         const close = screen.getByRole("button", { name: "Dismiss alert" });
-        expect(classes(close)).toContain("rounded-[calc(var(--radius-container)-0.5rem-1px)]");
+        expect(classes(close)).toContain("rounded-[calc(var(--radius-container)-0.5rem-var(--zabi-alert-border-width,1px))]");
         expect(classes(close)).not.toContain("rounded-control");
         // The inset the radius is computed from.
         expect(classes(close)).toEqual(expect.arrayContaining(["end-2", "top-2"]));
-        expect(classes(close.parentElement!)).toEqual(expect.arrayContaining(["rounded-container", "border"]));
+        expect(classes(close.parentElement!)).toEqual(expect.arrayContaining(["rounded-container", "border-[length:var(--zabi-alert-border-width,1px)]"]));
     });
 
     it("SidebarFooter: the avatar's radius is the profile button's less its 0.5rem padding", () => {

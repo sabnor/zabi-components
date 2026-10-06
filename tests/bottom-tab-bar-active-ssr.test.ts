@@ -41,6 +41,6 @@ describe("BottomTabBar active mark and floating on the server", () => {
         expect(nav).not.toContain("material-bar");
         expect(nav).toContain('aria-label="Main"');
         expect(body).toContain("material-layer-regular");
-        expect(body).toContain("rounded-[28px]");
+        expect(body).toContain("tabbar-capsule");
     });
 });

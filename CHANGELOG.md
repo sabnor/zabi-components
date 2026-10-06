@@ -42,6 +42,11 @@ Whenever token or CSS import API surface changes, include:
 - **A solid control in the block's own colour is inverted inside a block** (D148). Inside `.on-brand`, `.on-accent` and `.on-fill` (so inside `Card tone="brand"`, a brand `AppBar`, or a block an app already marks), an element with `bg-action-primary` on a brand block (a primary `Button`, a solid brand `Badge`, a checked `Checkbox`), or with `bg-accent` on an accent block, was the same colour as the block; it now takes the block's label colour as its fill and the block's colour as its text, with hover and pressed mixed from the two, and a filled `Rating` star takes the label colour. A surface inside the block restores the theme's values. Outside a block nothing changes.
 - **`AppBar`: the row's fixed pixel scale is documented** (Z-074) on the `leading` and `actions` props: the row sets `--spacing: 4px`, so content placed there should be sized on it (`size-9`, or `calc(var(--spacing) * 9)`), not in rem, or it grows at 200% text while the bar's own controls do not. No behaviour change.
 
+### Fixed
+
+- **The floating `BottomTabBar` capsule is concentric with its tabs** (D154): the tabs sat 8px inside the capsule at its ends but 4px above and below, under a 28px corner. They now sit the same distance inside on all four sides (the list's gap: 8px, less in a very narrow bar), and the capsule's radius is the tab's 20px plus that distance, so outer radius = inner radius + padding holds at every width. The floating bar is 72px tall (was 64px); `--app-shell-bottom-inset` follows, it is measured. The edge-to-edge bar is unchanged.
+- **`Alert`: the close button's radius follows `--zabi-alert-border-width`**, so it stays concentric with the alert when the edge is set to `0px`.
+
 ## [9.0.0-alpha.4] - 2026-10-06
 
 A fourth local preview build of the 9.0 visual direction, not published to npm;

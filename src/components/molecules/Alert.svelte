@@ -145,7 +145,7 @@
         the alert's corner, so the radius is the alert's less that gap. -->
         <button
             onclick={handleDismiss}
-            class="absolute end-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[calc(var(--radius-container)-0.5rem-1px)] text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring focus-ring--muted {TOUCH_HIT_AREA}"
+            class="absolute end-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[calc(var(--radius-container)-0.5rem-var(--zabi-alert-border-width,1px))] text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring focus-ring--muted {TOUCH_HIT_AREA}"
             aria-label={closeLabel}
             type="button"
         >

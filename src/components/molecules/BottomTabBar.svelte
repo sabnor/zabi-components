@@ -210,9 +210,11 @@
     wide; less as the bar narrows, down to none, so the tabs keep the width a
     label needs for as long as there is any. See the style block. -->
     {#if floating}
-        <!-- Radius: the tab's box is 20px and sits 8px inside the capsule at
-        its ends (the list's gap) and 4px above and below, so 20 + 8 = 28. -->
-        <div class="material-layer-regular pointer-events-auto relative rounded-[28px]">
+        <!-- Radius: the tab's box is 20px and sits the list's gap (8px, less
+        in a narrow bar) inside the capsule on all four sides, so the capsule
+        is 20px plus that gap: outer radius = inner radius + padding. See
+        `.tabbar-capsule` in the style block. -->
+        <div class="tabbar-capsule material-layer-regular pointer-events-auto relative">
             {@render tabs()}
         </div>
     {:else}
@@ -305,14 +307,33 @@
      * 8px apart from 308px up (a 320px phone included), closer below that,
      * and touch at 260px.
      */
-    .tabbar-list {
+    .tabbar-list,
+    .tabbar-capsule {
         --tabbar-gap: clamp(
             0px,
             calc((100cqi - var(--tabbar-count) * 52px) / (var(--tabbar-count) + 1)),
             8px
         );
+    }
+
+    .tabbar-list {
         gap: var(--tabbar-gap);
         padding-inline: var(--tabbar-gap);
+    }
+
+    /*
+     * The floating capsule and the tabs inside it are nested rounded shapes,
+     * so they are concentric: the tabs sit the same distance inside the
+     * capsule above and below as at its two ends (the gap, in place of the
+     * edge-to-edge bar's 4px), and the capsule's radius is the tab's 20px
+     * plus that distance. At 8px the capsule is 72px tall with a 28px corner.
+     */
+    .tabbar-capsule {
+        border-radius: calc(20px + var(--tabbar-gap));
+    }
+
+    .tabbar-capsule .tabbar-list {
+        padding-block: var(--tabbar-gap);
     }
 
     /*

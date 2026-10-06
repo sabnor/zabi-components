@@ -67,7 +67,8 @@ describe("BottomTabBar floating", () => {
         expect(nav().className).toContain("env(safe-area-inset-bottom)");
         expect(nav().className).toContain("fixed");
         const layer = nav().querySelector(".material-layer-regular")!;
-        expect(layer.className).toContain("rounded-[28px]");
+        // The radius is the tab's 20px plus the inset, set in the style block.
+        expect(layer.className).toContain("tabbar-capsule");
         expect(layer.className).toContain("relative");
         expect(layer.querySelectorAll("a")).toHaveLength(3);
     });
