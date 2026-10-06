@@ -67,7 +67,7 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
         "--color-action-primary-hover": "var(--color-brand-700)",
         "--color-action-primary-active": "var(--color-brand-800)",
         "--color-action-primary-text": "var(--color-on-brand)",
-        "--color-action-primary-subtle": "var(--color-brand-200)",
+        "--color-action-primary-subtle": "var(--color-brand-100)",
         "--color-action-secondary": "rgba(9, 9, 11, 0.1)",
         "--color-action-secondary-hover": "rgba(9, 9, 11, 0.15)",
         "--color-brand-100": "var(--zabi-brand-100)",

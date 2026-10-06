@@ -31,9 +31,9 @@ export const light = create({
     colorPrimary: '#4f68da', // brand-600, --color-action-primary
     colorSecondary: '#4f68da',
 
-    appBg: '#ececee', // base-150, --color-surface-base
+    appBg: '#fafafa', // base-50, --color-surface-base
     appContentBg: '#ffffff', // --color-surface-raised
-    appPreviewBg: '#ececee', // --color-surface-base
+    appPreviewBg: '#fafafa', // --color-surface-base
     appBorderColor: '#d4d4d8', // base-300, --color-border
 
     textColor: '#18181b', // base-900, --color-headline
