@@ -176,8 +176,24 @@
         }
     }
 
+    let expandButton = $state<HTMLButtonElement>();
+    let dismissButton = $state<HTMLButtonElement>();
+
+    /**
+     * Okay closes the details and goes with them. Focus moves to the button
+     * that opens them again, or it would fall to the page and a keyboard
+     * user would be at the top of it.
+     */
     function handleOkay() {
         isExpanded = false;
+        expandButton?.focus();
+    }
+
+    /** The stop button goes with the sentence it is in: focus stays in the toast. */
+    function handleStop(event: MouseEvent) {
+        const held = event.currentTarget === document.activeElement;
+        stopTimer();
+        if (held) dismissButton?.focus();
     }
 
     function handleFocusOut(event: FocusEvent) {
@@ -266,6 +282,7 @@
                         aria-expanded={isExpanded}
                         aria-controls="toaster-expand-{toast.id}"
                         aria-label={isExpanded ? strings.collapse : strings.expand}
+                        bind:this={expandButton}
                         onclick={() => (isExpanded = !isExpanded)}
                     >
                         <ChevronDown
@@ -281,6 +298,7 @@
                     class="focus-ring cursor-pointer inline-flex items-center justify-center rounded-control p-1 pointer-coarse:min-h-[44px] pointer-coarse:min-w-[44px] text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active focus:outline-none"
                     onclick={handleDismiss}
                     aria-label={strings.dismiss}
+                    bind:this={dismissButton}
                 >
                     <X class="size-5" aria-hidden="true" />
                 </button>
@@ -327,7 +345,7 @@
                 <button
                     type="button"
                     class="focus-ring cursor-pointer rounded-control text-link underline-offset-2 hover:underline active:underline focus:outline-none pointer-coarse:inline-flex pointer-coarse:items-center pointer-coarse:min-h-[44px]"
-                    onclick={stopTimer}
+                    onclick={handleStop}
                 >
                     {strings.stop}
                 </button>

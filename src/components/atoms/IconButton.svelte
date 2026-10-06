@@ -148,7 +148,7 @@
             case "link":
                 return "bg-transparent text-link hover:text-link-hover focus-ring--muted";
             case "accent":
-                return "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98]";
+                return "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98] motion-reduce:active:scale-100";
             case "primary":
             default:
                 return "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] motion-reduce:active:scale-100";

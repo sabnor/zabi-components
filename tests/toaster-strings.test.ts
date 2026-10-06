@@ -188,6 +188,44 @@ describe("the time a toast has left", () => {
     });
 });
 
+describe("a button that goes away when it is pressed", () => {
+    // Focus on a removed button falls to the page: a keyboard user is at the
+    // top of it, and the toast's timer runs again because focus has left it.
+    it("Okay closes the details and leaves focus on the button that opens them", async () => {
+        render(Toaster);
+        pushToast({ message: "Det gick inte att spara.", detail: "Servern svarade inte.", type: "error", duration: 0 });
+        const card = await shown();
+        await fireEvent.click(within(card).getByRole("button", { name: "Expand details" }));
+        const okay = within(card).getByRole("button", { name: "Okay" });
+        okay.focus();
+        await fireEvent.click(okay);
+        await waitFor(() => expect(card.textContent).not.toContain("Servern svarade inte"));
+        expect(document.activeElement).toBe(within(card).getByRole("button", { name: "Expand details" }));
+    });
+
+    it("the stop button leaves focus in the toast, on Dismiss", async () => {
+        render(Toaster, { showCountdown: true });
+        pushToast({ message: "Sparat", duration: 5000 });
+        const card = await shown();
+        const stop = await waitFor(() => within(card).getByRole("button", { name: "Click to stop" }));
+        stop.focus();
+        await fireEvent.click(stop);
+        await waitFor(() => expect(card.querySelector("[data-toast-countdown]")).toBeNull());
+        expect(document.activeElement).toBe(within(card).getByRole("button", { name: "Dismiss notification" }));
+        expect(card.getAttribute("data-paused"), "Focus is still inside").toBe("true");
+    });
+
+    it("the stop button pressed with the pointer does not pull focus to the toast", async () => {
+        render(Toaster, { showCountdown: true });
+        pushToast({ message: "Sparat", duration: 5000 });
+        const card = await shown();
+        const stop = await waitFor(() => within(card).getByRole("button", { name: "Click to stop" }));
+        await fireEvent.click(stop);
+        await waitFor(() => expect(card.querySelector("[data-toast-countdown]")).toBeNull());
+        expect(card.contains(document.activeElement)).toBe(false);
+    });
+});
+
 describe("the pause state", () => {
     it("is `data-paused` on the toast and is reported through onpausechange, with the toast's id", async () => {
         const onpausechange = vi.fn();

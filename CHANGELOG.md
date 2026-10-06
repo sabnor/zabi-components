@@ -12,6 +12,21 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+### Fixed
+
+- `variant="accent"` Button and IconButton do not scale when pressed under
+  `prefers-reduced-motion`.
+- Focus no longer falls to the page after a toast's "Okay" or "Click to stop"
+  is pressed.
+- CodeBlock announces "copied" through a status region; before, only the
+  button's name changed.
+- SidebarAccountPanel's three-mode theme row follows a theme changed elsewhere
+  on the page.
+
 ## [8.1.0-beta.2] - 2026-10-06
 
 An in-between pre-release under the `beta` dist-tag, following 8.1.0-beta.1.

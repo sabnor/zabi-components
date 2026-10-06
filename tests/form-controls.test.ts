@@ -433,7 +433,8 @@ describe("Button: labels wrap, and the press respects reduced motion", () => {
     });
 
     it.each([Button, IconButton])("the pressed dip is off under prefers-reduced-motion", (component) => {
-        for (const variant of ["primary", "secondary", "danger", "ghost", "outline"] as const) {
+        // Every variant that dips: `accent` had the dip without its reduced-motion pair.
+        for (const variant of ["primary", "secondary", "danger", "ghost", "outline", "accent"] as const) {
             render(component as never, { props: { text: "Save", label: "Save", variant } as never });
             const button = classes(screen.getByRole("button"));
             expect(button, variant).toContain("active:scale-[0.98]");

@@ -76,6 +76,9 @@
                     <Copy size={16} class="shrink-0" aria-hidden="true" />
                 {/if}
             </IconButton>
+            <!-- A button's new name is not read out while it keeps focus.
+            This says it: always in the page, filled when the code is copied. -->
+            <span class="sr-only" role="status" data-code-block-status>{copied ? copiedLabel : ""}</span>
         {/if}
     </div>
 

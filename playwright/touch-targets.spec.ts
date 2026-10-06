@@ -44,7 +44,9 @@ const EXCEPTIONS: { page: RegExp; match: RegExp; why: string }[] = [
     },
     {
         page: /^Button$/,
-        match: /^a\|[^|]*\|[^|]*\binline\b[^|]*\bunderline\b/,
+        // Whole class names: `\binline\b` also matched `inline-flex`, and `\bunderline\b`
+        // matched `disabled:no-underline`, so every boxed link Button on the page was let through.
+        match: /^a\|[^|]*\|(?:[^|]*\s)?inline\s(?:[^|]*\s)?underline(?:\s|$)/,
         why: "Button variant link with href is a text link inside a sentence. It flows and breaks with the words around it, so it has no box to make 44px tall; WCAG 2.5.8 exempts a target in a sentence for that reason.",
     },
     {
@@ -175,6 +177,12 @@ test.describe("touch targets on a coarse pointer", () => {
         await openPage(page, "Button");
         const buttons = await measure(page, PREVIEWS);
         expect(buttons.some((control) => EXCEPTIONS[1].match.test(control.id) && !control.hit)).toBe(true);
+        // The link in a sentence, and nothing else: a link drawn as a button has a box, and is measured.
+        const inSentence = buttons.filter((control) => EXCEPTIONS[2].match.test(control.id));
+        expect(inSentence.some((control) => !control.hit)).toBe(true);
+        const boxedLinks = buttons.filter((control) => /^a\|[^|]*\|(?:[^|]*\s)?inline-flex\s/.test(control.id));
+        expect(boxedLinks.length).toBeGreaterThan(0);
+        expect(boxedLinks.filter((control) => EXCEPTIONS[2].match.test(control.id))).toEqual([]);
     });
 
     for (const name of pages) {

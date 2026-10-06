@@ -13,7 +13,7 @@ import {
     DEFAULT_SIDEBAR_FOOTER_STRINGS,
     DEFAULT_SIDEBAR_NAVIGATION_STRINGS,
 } from "../src/components/util/sidebar";
-import { getThemeMode } from "../src/components/util/theme-mode";
+import { getThemeMode, setThemeMode } from "../src/components/util/theme-mode";
 import { DEFAULT_TOP_NAVBAR_STRINGS } from "../src/components/util/top-navbar";
 import StringsHarness from "./fixtures/StringsHarness.svelte";
 
@@ -316,6 +316,24 @@ describe("SidebarAccountPanel theme row", () => {
         expect(getThemeMode()).toBe("auto");
         expect(onThemeModeChange).toHaveBeenLastCalledWith("auto");
         expect(onThemeToggle, "The two-mode callback is not used").not.toHaveBeenCalled();
+    });
+
+    it("three modes: the row follows a mode that something else switched while the panel is open", async () => {
+        document.documentElement.setAttribute("data-theme", "light");
+        const onThemeModeChange = vi.fn();
+        render(StringsHarness, { kind: "SidebarAccountPanel", themeModes: "three", onThemeModeChange });
+        await waitFor(() => expect(row().textContent).toContain("Light mode"));
+
+        // A ThemeToggle in the bar, or the app's own script.
+        setThemeMode("dark", { storageKey: null });
+        await waitFor(() => expect(row().textContent).toContain("Dark mode"));
+        expect(row().textContent).not.toContain("Light mode");
+        expect(onThemeModeChange, "Not the row's own step").not.toHaveBeenCalled();
+
+        // And steps on from there.
+        await fireEvent.click(row());
+        expect(getThemeMode()).toBe("auto");
+        await waitFor(() => expect(row().textContent).toContain("System"));
     });
 
     it("three modes, in the app's words", async () => {

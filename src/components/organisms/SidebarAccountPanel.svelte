@@ -84,10 +84,21 @@
 
     const text = $derived({ ...DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS, ...strings });
 
-    /** With three modes: the page's mode, read when the panel mounts and after each step. */
+    /**
+     * With three modes: the page's mode, read when the panel mounts, after
+     * each step, and when something else switches the page (a ThemeToggle in
+     * the bar, the app's own script) while the panel is there.
+     */
     let themeMode = $state<ThemeMode>("light");
     $effect(() => {
-        if (themeModes === "three") themeMode = getThemeMode();
+        if (themeModes !== "three") return;
+        themeMode = getThemeMode();
+        if (typeof MutationObserver === "undefined") return;
+        const observer = new MutationObserver(() => {
+            themeMode = getThemeMode();
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-theme"] });
+        return () => observer.disconnect();
     });
 
     const items = $derived.by((): SidebarPanelItem[] => {
