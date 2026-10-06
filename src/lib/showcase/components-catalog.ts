@@ -7828,7 +7828,7 @@ pushToast({
                 name: "AppShell",
                 category: "organisms",
                 description:
-                    "Phone app layout: a top bar, content that scrolls and a bottom tab bar, as tall as the screen and clear of the safe areas.",
+                    "App layout: top bar, scrolling content and a bottom bar, as tall as the screen. An optional navigation is tabs, a rail or a sidebar by width.",
                 props: [
                     {
                         name: "canvas",
@@ -7868,6 +7868,21 @@ pushToast({
                             "The bottom bar, a BottomTabBar. It lies over the bottom of the scrolling area, so content passes beneath it, and handles the safe area below it.",
                     },
                     {
+                        name: "navigation",
+                        type: "Snippet<[{ placement: 'tabs' | 'rail' | 'sidebar' }]>",
+                        required: false,
+                        description:
+                            "One navigation, drawn as tabs over the bottom of the screen, a rail or a sidebar by navigationPlacement. Rendered once and placed by CSS, so the server's markup is right at every width. It comes first in the DOM (Tab goes navigation, header, content). As tabs it lies over the bottom like footer, and the footer sits directly above it; as a rail or sidebar it is a full-height column at the inline start and the header, content and footer take the rest. --app-shell-bottom-inset counts the tabs, so a sticky action bar or a floating button clears them; --app-shell-start-inset is the column's width. placement is the forced value, or in auto what the viewport says once mounted (tabs on the server and before mount). AppNavigation is the ready-made content. Without it the shell is exactly what it was.",
+                    },
+                    {
+                        name: "navigationPlacement",
+                        type: "'auto' | 'tabs' | 'rail' | 'sidebar'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "Where the navigation goes. auto follows the viewport in CSS: tabs below 48rem (768px), a rail from 48rem, a sidebar from 64rem (1024px, the breakpoint SidebarShell uses). The others apply at every width. The host carries it as data-navigation-placement.",
+                    },
+                    {
                         name: "class",
                         type: "string",
                         required: false,
@@ -7881,7 +7896,7 @@ pushToast({
                         required: false,
                         defaultValue: '""',
                         description:
-                            "Added after the two custom properties the host sets: --app-shell-top-inset and --app-shell-bottom-inset, the heights of the header and the footer with their safe areas. The scroller also sets --app-shell-footer-overlay (the bottom inset with a footer, 0px without), and the host data-scrolled-top and data-scrolled-bottom. While the shell is mounted both are also set on the html element, so an overlay moved to the body can read them.",
+                            "Added after the custom properties the host sets: --app-shell-top-inset and --app-shell-bottom-inset, the heights of the header and of what lies over the bottom (the footer, and navigation placed as tabs) with their safe areas, and with a navigation --app-shell-start-inset, the width of the rail or sidebar (0px as tabs). The scroller also sets --app-shell-footer-overlay (the bottom inset with a footer, 0px without), and the host data-scrolled-top and data-scrolled-bottom. While the shell is mounted both are also set on the html element, so an overlay moved to the body can read them.",
                     },
                 ],
                 variants: [],
@@ -7931,6 +7946,113 @@ pushToast({
     {#snippet footer()}
         <BottomTabBar {items} active={page.url.pathname} />
     {/snippet}
+</AppShell>`,
+                    },
+                ],
+            },
+            {
+                name: "AppNavigation",
+                category: "organisms",
+                description:
+                    "Content for AppShell's navigation slot: one list drawn as a tab bar, a rail or a sidebar by the shell's placement, in CSS alone.",
+                props: [
+                    {
+                        name: "items",
+                        type: "BottomTabBarItem[]",
+                        required: true,
+                        description:
+                            "The destinations, as for BottomTabBar: { href, label, icon, activeIcon?, badge? }. activeIcon is drawn instead of icon on the active one (without it icon is drawn with a heavier stroke); badge is a count in the attention colour.",
+                    },
+                    {
+                        name: "active",
+                        type: "string",
+                        required: false,
+                        defaultValue: "the current page",
+                        description:
+                            "The href of the active destination, or the path of the current page: the one for that page or the closest one above it gets aria-current. Left out, the address is read in the browser; in SvelteKit pass page.url.pathname so the server marks it too.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Main",
+                        description:
+                            "Accessible name of the navigation landmark. Only one of the two forms is shown, so only one landmark is exposed.",
+                    },
+                    {
+                        name: "badgeLabel",
+                        type: "(count: number, item: BottomTabBarItem) => string",
+                        required: false,
+                        defaultValue: "(count) => `${count} new`",
+                        description:
+                            "What a count adds to the link's accessible name, after the label and a comma: Inbox, 3 new.",
+                    },
+                    {
+                        name: "badgeMax",
+                        type: "number",
+                        required: false,
+                        defaultValue: "99",
+                        description:
+                            "Counts above this show as 99+. The accessible name keeps the real count.",
+                    },
+                    {
+                        name: "floating",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the tab bar form as a floating capsule of glass (see BottomTabBar). The rail and the sidebar are unaffected.",
+                    },
+                    {
+                        name: "header",
+                        type: "Snippet<[{ placement: 'rail' | 'sidebar' }]>",
+                        required: false,
+                        description:
+                            "Above the list in the rail and the sidebar: a logo or a workspace switcher. Not shown as tabs. placement is the shell's; before the shell knows the viewport (the server, before mount) it is sidebar.",
+                    },
+                    {
+                        name: "footer",
+                        type: "Snippet<[{ placement: 'rail' | 'sidebar' }]>",
+                        required: false,
+                        description:
+                            "Below the list in the rail and the sidebar: an account row. Not shown as tabs.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes for the root element.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "One navigation for every width",
+                        description:
+                            "Tabs below 768px, a rail from 768px, a sidebar from 1024px, in the markup the server sends. Resize the window to see it move; nothing is mounted again",
+                        code: `<script lang="ts">
+    import { AppBar, AppNavigation, AppShell } from "zabi-components";
+    import Bell from "@lucide/svelte/icons/bell";
+    import House from "@lucide/svelte/icons/house";
+    import Trophy from "@lucide/svelte/icons/trophy";
+    import { page } from "$app/state";
+
+    const items = [
+        { href: "/", label: "Home", icon: House },
+        { href: "/quiz", label: "Quiz", icon: Trophy },
+        { href: "/inbox", label: "Inbox", icon: Bell, badge: 3 },
+    ];
+</script>
+
+<AppShell>
+    {#snippet navigation()}
+        <AppNavigation {items} active={page.url.pathname} />
+    {/snippet}
+    {#snippet header()}
+        <AppBar title="Quiz" largeTitle />
+    {/snippet}
+    <div class="p-4">…</div>
 </AppShell>`,
                     },
                 ],

@@ -27,6 +27,7 @@
     import AppBar from "../components/molecules/AppBar.svelte";
     import BottomTabBar from "../components/molecules/BottomTabBar.svelte";
     import AppShell from "../components/organisms/AppShell.svelte";
+    import AppNavigation from "../components/organisms/AppNavigation.svelte";
     import FloatingActionButton from "../components/atoms/FloatingActionButton.svelte";
     import BottomSheet from "../components/molecules/BottomSheet.svelte";
     import StickyActionBar from "../components/molecules/StickyActionBar.svelte";
@@ -58,6 +59,7 @@
         AppBarProps,
         BottomTabBarProps,
         AppShellProps,
+        AppNavigationProps,
         FloatingActionButtonProps,
         BottomSheetProps,
         StickyActionBarProps,
@@ -92,6 +94,7 @@
         appBar?: AppBarProps;
         bottomTabBar?: BottomTabBarProps;
         appShell?: AppShellProps;
+        appNavigation?: AppNavigationProps;
         floatingActionButton?: FloatingActionButtonProps;
         bottomSheet?: BottomSheetProps;
         stickyActionBar?: StickyActionBarProps;
@@ -125,6 +128,7 @@
         appBar = {},
         bottomTabBar = { items: [] },
         appShell = {},
+        appNavigation = { items: [] },
         floatingActionButton = { label: "" },
         bottomSheet = { title: "" },
         stickyActionBar = {},
@@ -158,6 +162,7 @@
 <AppBar {...appBar} />
 <BottomTabBar {...bottomTabBar} />
 <AppShell {...appShell} />
+<AppNavigation {...appNavigation} />
 <FloatingActionButton {...floatingActionButton} />
 <BottomSheet {...bottomSheet} />
 <StickyActionBar {...stickyActionBar} />

@@ -66,6 +66,7 @@ export { default as UnsavedChangesBarStories } from './molecules/UnsavedChangesB
 
 // Organisms
 export { default as AppShellStories } from './organisms/AppShell.stories';
+export { default as AppShellGlassStories } from './organisms/AppShellGlass.stories';
 export { default as SidebarNavigationStories } from './organisms/SidebarNavigation.stories';
 export { default as SidebarNavigationAccountPanelDemoStories } from './organisms/SidebarNavigationAccountPanelDemo.stories';
 export { default as SidebarPanelStories } from './organisms/SidebarPanel.stories';
@@ -138,6 +139,7 @@ export const storyCategories = {
     ],
     organisms: [
         'AppShell',
+        'AppShellGlass',
         'SidebarNavigation',
         'SidebarNavigationAccountPanelDemo',
         'SidebarPanel',

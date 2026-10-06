@@ -212,6 +212,16 @@ export { default as SidebarShell } from './organisms/SidebarShell.svelte';
 export { default as SidebarAccountPanel } from './organisms/SidebarAccountPanel.svelte';
 export { default as SidebarPanel } from './organisms/SidebarPanel.svelte';
 export { default as AppShell } from './organisms/AppShell.svelte';
+export { default as AppNavigation } from './organisms/AppNavigation.svelte';
+export {
+    APP_SHELL_RAIL_MIN_WIDTH,
+    APP_SHELL_SIDEBAR_MIN_WIDTH,
+} from './util/app-shell.js';
+export type {
+    AppShellNavigationContext,
+    AppShellNavigationMode,
+    AppShellNavigationPlacement,
+} from './util/app-shell.js';
 
 import { generateId } from './util/ssr-safe.js';
 

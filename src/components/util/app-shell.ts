@@ -4,6 +4,22 @@ import { getContext, setContext } from "svelte";
 
 const APP_SHELL_CONTEXT = Symbol.for("zabi-components.app-shell");
 
+/** Where a shell's `navigation` is drawn: over the bottom (tabs), or a column at the start (rail, sidebar). */
+export type AppShellNavigationPlacement = "tabs" | "rail" | "sidebar";
+
+/** The `navigationPlacement` prop: one of the three, or `auto` to follow the viewport. */
+export type AppShellNavigationMode = "auto" | AppShellNavigationPlacement;
+
+/** The argument the `navigation` snippet receives. */
+export interface AppShellNavigationContext {
+    placement: AppShellNavigationPlacement;
+}
+
+/** In `auto`, the navigation is a rail from this viewport width (768px at the default font size). */
+export const APP_SHELL_RAIL_MIN_WIDTH = "48rem";
+/** In `auto`, the navigation is a sidebar from this viewport width (1024px; the breakpoint `SidebarShell` uses). */
+export const APP_SHELL_SIDEBAR_MIN_WIDTH = "64rem";
+
 /**
  * What a shell tells the pieces inside it. Getters, so a reader sees the
  * shell's current state; the object itself never changes.
@@ -13,10 +29,23 @@ export interface AppShellContext {
     readonly scrolledTop: boolean;
     /** Content is not at the end: it passes under the footer. False on the server and before the first measurement. */
     readonly scrolledBottom: boolean;
-    /** The footer lies over the bottom of the scroller (true whenever there is a footer). */
+    /**
+     * Something lies over the bottom of the scroller: a footer, or a `navigation`
+     * placed as tabs.
+     */
     readonly footerOverlays: boolean;
-    /** The measured height of the footer in px, safe area included; 0 without a footer and until measured. */
+    /**
+     * The measured height in px of what lies over the bottom of the scroller (the
+     * footer, plus the tabs when `navigation` is placed as tabs), safe area
+     * included; 0 with nothing there and until measured.
+     */
     readonly footerHeight: number;
+    /**
+     * Where the shell's `navigation` is: the forced placement, or in `auto` what
+     * the viewport says once mounted. `tabs` on the server, before mount and
+     * without a `navigation`.
+     */
+    readonly navigationPlacement: AppShellNavigationPlacement;
     /**
      * A header with a large title says how far the shell's header wrapper
      * sticks above the top of the scroller (the height of the large row, px):
@@ -32,6 +61,7 @@ const NO_SHELL_STATE: AppShellContext = {
     scrolledBottom: false,
     footerOverlays: false,
     footerHeight: 0,
+    navigationPlacement: "tabs",
     setHeaderOverscroll() {},
 };
 
@@ -71,7 +101,7 @@ export function isDevBuild(): boolean {
 }
 
 /** The shells that are mounted, oldest first, with the insets each last reported. */
-const mountedShells: { top: string; bottom: string }[] = [];
+const mountedShells: { top: string; bottom: string; start?: string }[] = [];
 
 function applyRootInsets(): void {
     const root = document.documentElement;
@@ -79,18 +109,23 @@ function applyRootInsets(): void {
     if (current) {
         root.style.setProperty("--app-shell-top-inset", current.top);
         root.style.setProperty("--app-shell-bottom-inset", current.bottom);
+        if (current.start === undefined) root.style.removeProperty("--app-shell-start-inset");
+        else root.style.setProperty("--app-shell-start-inset", current.start);
     } else {
         root.style.removeProperty("--app-shell-top-inset");
         root.style.removeProperty("--app-shell-bottom-inset");
+        root.style.removeProperty("--app-shell-start-inset");
     }
 }
 
 /**
- * Mirrors a shell's two inset properties onto `<html>` while it is mounted,
+ * Mirrors a shell's inset properties onto `<html>` while it is mounted,
  * so what is rendered outside the shell (an overlay moved to `document.body`,
  * a toast) can stay clear of its bars too. With several shells mounted the
  * one mounted last is the one mirrored; when it goes, the one before it is
  * again, and with none left the properties are removed.
+ *
+ * `start` is `--app-shell-start-inset`, given only by a shell with a `navigation`.
  *
  * Call it in the browser when the shell mounts. `update` reports new values;
  * `leave` is for when the shell is destroyed.
@@ -98,14 +133,16 @@ function applyRootInsets(): void {
 export function publishAppShellInsets(
     top: string,
     bottom: string,
-): { update: (top: string, bottom: string) => void; leave: () => void } {
-    const entry = { top, bottom };
+    start?: string,
+): { update: (top: string, bottom: string, start?: string) => void; leave: () => void } {
+    const entry: { top: string; bottom: string; start?: string } = { top, bottom, start };
     mountedShells.push(entry);
     applyRootInsets();
     return {
-        update(nextTop, nextBottom) {
+        update(nextTop, nextBottom, nextStart) {
             entry.top = nextTop;
             entry.bottom = nextBottom;
+            entry.start = nextStart;
             applyRootInsets();
         },
         leave() {

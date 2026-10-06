@@ -16,6 +16,10 @@ import type {
     HTMLTextareaAttributes,
 } from 'svelte/elements';
 import type { BottomTabBarItem } from '../components/util/bottom-tab-bar.js';
+import type {
+    AppShellNavigationContext,
+    AppShellNavigationMode,
+} from '../components/util/app-shell.js';
 import type { CalendarEvent, CalendarStrings } from '../components/util/calendar.js';
 import type {
     Photo,
@@ -505,6 +509,10 @@ export interface BottomTabBarProps extends Omit<HTMLAttributes<HTMLElement>, 'cl
     badgeMax?: number;
     /** Defaults to `fixed`, or to `static` inside an `AppShell`. */
     position?: 'fixed' | 'static';
+    /** When the bar shows the glass and the hairline: `auto` follows the scroll position, `always`, `never`. Default `auto`. */
+    scrollEdge?: 'auto' | 'always' | 'never';
+    /** Draws the bar as a rounded glass capsule inset from the screen edges. Default false. */
+    floating?: boolean;
     class?: string;
 }
 
@@ -530,6 +538,12 @@ export interface AppBarProps extends Omit<HTMLAttributes<HTMLElement>, 'class' |
     leading?: Snippet;
     /** After the title. At most two icon buttons. */
     actions?: Snippet;
+    /** When the bar shows the glass and the hairline: `auto` follows the scroll position, `always`, `never`. Default `auto`. */
+    scrollEdge?: 'auto' | 'always' | 'never';
+    /** Draws the title large on a second row that scrolls away; the bar then shows it small. */
+    largeTitle?: boolean;
+    /** The bar's fill: the page colour, none at rest, or the brand colour with on-brand content. Default `default`. */
+    tone?: 'default' | 'transparent' | 'brand';
     class?: string;
 }
 
@@ -543,9 +557,36 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'cla
     contentElement?: 'main' | 'div';
     /** The bottom bar, a `BottomTabBar`. */
     footer?: Snippet;
+    /** Paints the shell with the page colour and the brand wash, and lets it show through the header. */
+    canvas?: boolean;
+    /** One navigation, drawn as tabs, a rail or a sidebar; `AppNavigation` is the ready-made content. */
+    navigation?: Snippet<[AppShellNavigationContext]>;
+    /** Where the `navigation` goes. `auto` (default): tabs below 48rem, a rail from 48rem, a sidebar from 64rem. */
+    navigationPlacement?: AppShellNavigationMode;
     class?: string;
     /** Added after the two custom properties the shell sets. */
     style?: string;
+}
+
+// AppNavigation component props
+export interface AppNavigationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
+    /** The destinations, as for `BottomTabBar`. */
+    items: BottomTabBarItem[];
+    /** The href of the active destination, or the path of the current page. Defaults to the current page. */
+    active?: string;
+    /** Accessible name of the navigation landmark. */
+    label?: string;
+    /** What a count adds to the link's accessible name, after the label and a comma. */
+    badgeLabel?: (count: number, item: BottomTabBarItem) => string;
+    /** Counts above this show as `99+`. */
+    badgeMax?: number;
+    /** Draws the tab bar form as a floating capsule of glass. */
+    floating?: boolean;
+    /** Above the list in the rail and the sidebar. */
+    header?: Snippet<[{ placement: 'rail' | 'sidebar' }]>;
+    /** Below the list in the rail and the sidebar. */
+    footer?: Snippet<[{ placement: 'rail' | 'sidebar' }]>;
+    class?: string;
 }
 
 // Rating component props
@@ -623,6 +664,8 @@ export interface FloatingActionButtonProps extends Omit<HTMLAttributes<HTMLEleme
 export interface StickyActionBarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'style'> {
     /** Accessible name. With it the bar is a group. */
     label?: string;
+    /** When the bar shows the glass and the hairline: `auto` follows the scroll position, `always`, `never`. Default `auto`. */
+    scrollEdge?: 'auto' | 'always' | 'never';
     class?: string;
     /** Added after the offset and margin the bar sets while the keyboard is up. */
     style?: string;
@@ -886,6 +929,7 @@ export type Tooltip = ZabiComponent<TooltipProps>;
 export type BottomTabBar = ZabiComponent<BottomTabBarProps>;
 export type AppBar = ZabiComponent<AppBarProps>;
 export type AppShell = ZabiComponent<AppShellProps>;
+export type AppNavigation = ZabiComponent<AppNavigationProps>;
 export type Rating = ZabiComponent<RatingProps>;
 export type SegmentedControl = ZabiComponent<SegmentedControlProps>;
 export type FloatingActionButton = ZabiComponent<FloatingActionButtonProps>;

@@ -9,7 +9,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'The layout of a phone app: a header (an AppBar), content that scrolls in a main element, and a footer (a BottomTabBar). The shell is as tall as the visible screen (100dvh) and only the middle scrolls; the header stays at the top of that scrolling area and the footer sits below it. Safe areas are handled on all four sides: the bars cover top and bottom, the shell covers the sides, and whichever edge has no bar. Two custom properties on the host, --app-shell-top-inset and --app-shell-bottom-inset, give the heights of the bars with their safe areas, so a floating button or a sticky bar inside the shell can stay clear of them. The stories show it in a phone-sized frame.'
+                    'The layout of a phone app: a header (an AppBar), content that scrolls in a main element, and a footer (a BottomTabBar). The shell is as tall as the visible screen (100dvh) and only the middle scrolls; the header stays at the top of that scrolling area and the footer lies over the bottom of it, so content passes beneath both bars. With a navigation, see AppShell (9.0). Safe areas are handled on all four sides: the bars cover top and bottom, the shell covers the sides, and whichever edge has no bar. Two custom properties on the host, --app-shell-top-inset and --app-shell-bottom-inset, give the heights of the bars with their safe areas, so a floating button or a sticky bar inside the shell can stay clear of them. The stories show it in a phone-sized frame.'
             }
         }
     },
