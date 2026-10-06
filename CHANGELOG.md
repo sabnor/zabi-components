@@ -12,15 +12,29 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.2] - 2026-10-06
+
+A second local preview build of the 9.0 visual direction, not published to npm;
+8.1.0 stays the stable version. It adds the first restyled components on top of
+alpha.1's token layer: List and Badge without their double outlines, a sliding
+indicator in Tabs and SegmentedControl, gradient solid buttons with new `tonal`
+and `text` variants and a 56px size, a lighter off Toggle, the seven overlays
+on the thick material and a spring for BottomSheet. Bars, the shell and dark
+mode are not touched yet. No token, prop, variant or export is removed or
+renamed; several defaults change what a consumer sees, and each has a line that
+restores 8.1 where one exists. Built quickly and tested lightly on purpose: the
+type and design checks, the unit run, the theme tests, the package build and a
+scratch install were run on it. NOTHING was rendered: no browser suite, no
+Storybook or visual check in either mode, no accessibility or QA review, so the
+glass, the sliding indicators and the springs have never been seen. Using it is
+the test.
+
 ### Added
 
 - **Button `variant="tonal"`** (Z-047): the tonal fill with its brand label, flat, for secondary actions and chosen answers. IconButton has it too.
 - **Button `variant="text"`** (Z-048): a standalone text action in the link colour (the on-colour inside `.on-brand` and `.on-accent`): no underline, a semibold label, the box and 44px touch target of the other variants, `px-2`, a hover and pressed tint. With `href` it is still a boxed action; `variant="link"` with `href` stays the underlined link for a sentence. IconButton shows it as its link look.
 - **Button `size="xl"`** (Z-047): 56px. Button only; `SizeVariant` is unchanged. New type `ButtonSize` (`SizeVariant | "xl"`), exported with `ButtonVariant`. `scripts/check-control-geometry.js` holds it to the same one-line rule as the other sizes.
 - **`--zabi-button-radius` and `--zabi-button-font-weight`** (Z-047) are now read by Button (and the inline link), through `rounded-button`, `font-button` and `font-button-strong`. Defaults are today's corner and a 500 label (600 for `text`).
-
-Tokens, utilities and generator changes for the new Button, Toggle and FloatingActionButton looks (9.0 package 9a). No component uses them yet except where noted; no token, class or export is removed or renamed.
-
 - **Control gradient, darken-only in light** (design review: "controls are flat"). `--gradient-control-top-strength` is 0% in light (the fill at the top is the control's own colour, so the label keeps its full contrast and an app's brand colour is not altered) and `--gradient-control-bottom-strength` 14% of `--zabi-base-950` (was 4% / 6%); dark stays 22% / 6%. The veil is for primary, accent and danger: `bg-control-gradient` serves danger too, and danger's label is now a guarded gradient pair. New `--gradient-control-accent-top-strength` and `--gradient-control-accent-bottom-strength` (default: the shared strengths) so one control can differ. The highlight now uses Tailwind's inset-shadow variable (`--tw-inset-shadow`) instead of `--tw-shadow`, so a `shadow-*` class on the same element draws as well. `createTheme` flips a veil to lighten-only in a mode where a dark label would fail the darkened bottom (a light accent), writes 0% if no strength passes, and never moves a strength you set. Restore: `--gradient-control-top-strength: 4%; --gradient-control-bottom-strength: 6%` in light.
 - **Tonal action role** (Z-047): `--color-action-tonal`, `--color-action-tonal-hover`, `--color-action-tonal-active`, `--color-action-tonal-text`; classes `bg-action-tonal` (with its hover and pressed states), `text-action-tonal`. Light is the brand-100 tint with a brand-800 label (8.15, 6.94 and 6.25:1 on rest, hover and pressed); dark the deep tint with the light label (9.48, 6.94, 5.86). `.bg-action-tonal` is a surface inside `.on-brand` and `.on-accent`.
 - **Outline edge, guarded at 3:1** (Z-047): `--color-action-outline-border` and `--color-action-outline-border-hover` (the field edge, 4.63:1 on the light page, 4.83:1 on a card; dark 3.67 and 3.12), classes `border-action-outline` and `hover:border-action-outline-hover`; the block's label colour inside `.on-brand` and `.on-accent`. Restore the old edge: `--color-action-outline-border: var(--color-border); --color-action-outline-border-hover: var(--color-border-medium)`.
@@ -46,9 +60,7 @@ Tokens, utilities and generator changes for the new Button, Toggle and FloatingA
 - **The indicators of Tabs and SegmentedControl slide** between items instead of switching. Restore 8.1: `--duration-moderate: 0s` on the component or an ancestor makes the move instant (the token is shared with other components); reduced motion already has none.
 - **List rows have no border of their own; a hairline divides them.** A row inside the bordered `.list-group` shell (or a bare `<List>`) drew a second outline; now rows keep a transparent 1px border (so height and text do not move) and a 1px `--color-border` divider sits in the gap between rows, none above the first or below the last, hidden next to a selected row (which keeps its fill and `border-action-primary` edge). The `.list-group` shell keeps its one border. Row transitions use the motion tokens. Restore 8.1: `--zabi-list-row-border-color: var(--color-border); --zabi-list-divider-color: transparent;` on the list or any ancestor.
 - **A subtle Badge has no visible border.** The 1px border box stays (same height), drawn transparent. Restore 8.1: `bordered` on the Badge. Solid badges are unchanged.
-
 - **BottomSheet arrives on a spring.** The slide in, the move between snap points and the settle after a drag use `--ease-spring` over `--duration-slow` (300ms); they were a literal 200ms ease-out. The slide in reads both tokens from the sheet, so a theme that sets them is followed, and falls back to `ease-out` where the tokens cannot be read or the engine rejects a `linear()` easing. A 2rem filler under the panel's bottom edge keeps the overshoot from showing the page. Reduced motion is unchanged (no slide, no transition), and so are drag, snap logic, focus and scroll lock. Restore 8.1: on the sheet or an ancestor, `--ease-spring: var(--ease-out); --duration-slow: 200ms` (both tokens are shared with other components), or `class="duration-200 ease-out"` on the `BottomSheet`.
-
 - **Overlays are frosted glass** (package 10): BottomSheet, Drawer, Modal, the Dropdown menu, the Select list, the Tooltip bubble and every Toast (and Toaster toast) take the thick material instead of an opaque overlay fill with a border and `shadow-lg`; the material brings its own rim and shadow. Dividers inside a header or footer, row hover and selected fills, and the scrims behind Modal, Drawer and BottomSheet are unchanged. Dark thick is 98% opaque by design for now, so a dark overlay shows almost no glass. In Modal, Drawer and BottomSheet the glass is a layer behind the content: the Drawer panel lost its edge border and the BottomSheet its top and side borders (the rim replaces them), and a Modal's panel no longer scrolls itself: its Card does (`overflow-y-auto` moved from the panel to the Card, `min-h-0` added), and the Card takes the panel's full corner radius. A fixed-position popover inside any of them is placed against the viewport exactly as before, with materials on or off. Restore 8.1: `data-materials="opaque"` on the root or any ancestor (a portaled overlay lives under `body`, so put it on `html` or `body`) gives opaque overlay surfaces. The 8.1 `shadow-lg` and 1px border look itself is not restorable with one token.
 - **The Tooltip bubble is glass with body text and no arrow by default.** The arrow is a second shape on a translucent fill and would show a seam. Restore 8.1: `tone="inverted"` (the dark bubble with its arrow, still reading `--color-tooltip-bg` and `--color-tooltip-fg`).
 - **Toast text uses the status `-text` colour** (`text-success-text`, `text-error-text`, `text-warning-text`) instead of the plain status colour, which is 3.7:1 to 3.9:1 on glass; the border stays the plain colour. The neutral toast draws no second border. A Dropdown danger item uses `text-error-text` for the same reason. Restore 8.1: none by token; the colours are slightly darker in light and lighter in dark.
