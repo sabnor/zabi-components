@@ -511,11 +511,27 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
                 examples: [
                     {
-                        title: "Basic Card",
-                        description: "Simple card with title and content",
-                        code: `<Card title="Card Title">
-  <p>Card content goes here</p>
-</Card>`,
+                        title: "Card variants, link and tones",
+                        description:
+                            "The three surface treatments, a card that is one link, and the tint, brand and accent fills.",
+                        code: `<Card>
+  <CardHeader title="Default" />
+  <CardContent><p>A hairline edge and no shadow.</p></CardContent>
+</Card>
+
+<Card variant="elevated">…</Card>
+<Card variant="flat">…</Card>
+
+<!-- The whole card is one link -->
+<Card href="/pubs/42">
+  <CardHeader title="Link" />
+  <CardContent><p>Hover, pressed and focus states.</p></CardContent>
+</Card>
+
+<!-- Fills: text and controls inside take the fill's label colour -->
+<Card tone="tint">…</Card>
+<Card tone="brand">…</Card>
+<Card tone="accent">…</Card>`,
                     },
                 ],
             },
