@@ -3324,7 +3324,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: "info",
-                        description: "Alert variant",
+                        description: "info | success | warning | error | neutral | energetic | brand. brand is the theme's brand tint with the link colour for the icon.",
                     },
                     {
                         name: "title",
@@ -3354,8 +3354,15 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "Dismiss alert",
                         description: "Accessible name of the close button a closable alert has, for translation.",
                     },
+                    {
+                        name: "bordered",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "false makes the edge transparent; the box keeps its size. To remove the edge from every alert at once, set --zabi-alert-border-width: 0px on any ancestor (default 1px).",
+                    },
                 ],
-                variants: ["info", "success", "warning", "error"],
+                variants: ["info", "success", "warning", "error", "brand"],
                 examples: [
                     {
                         title: "Basic Alert",
@@ -6399,14 +6406,14 @@ pushToast({
                         type: "Snippet",
                         required: false,
                         description:
-                            "After the title. At most two icon buttons, at size lg so each is a 48px target; put anything more in a menu. The limit is not enforced.",
+                            "After the title. At most two icon buttons, at size lg so each is a 48px target; put anything more in a menu. The limit is not enforced. The bar's row is on a fixed pixel scale (--spacing: 4px on the row), so its own controls do not grow with the text size; size what you place here on the same scale (Tailwind numeric classes such as size-9, or calc(var(--spacing) * 9)), not in rem, or it grows at 200% text while the bar's controls do not.",
                     },
                     {
                         name: "leading",
                         type: "Snippet",
                         required: false,
                         description:
-                            "Before the title, after the back control: a logo or an avatar.",
+                            "Before the title, after the back control: a logo or an avatar. The bar's row is on a fixed pixel scale (--spacing: 4px on the row), so its own controls do not grow with the text size; size what you place here on the same scale (Tailwind numeric classes such as size-9, or calc(var(--spacing) * 9)), not in rem, or it grows at 200% text while the bar's controls do not.",
                     },
                     {
                         name: "class",

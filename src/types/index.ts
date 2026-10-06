@@ -430,6 +430,8 @@ export interface AlertProps {
     open?: boolean;
     /** Shrink to content instead of filling the container. */
     inline?: boolean;
+    /** Draws the tinted edge (default `true`). `false` keeps the 1px and makes it transparent; `--zabi-alert-border-width: 0px` on any ancestor removes it for every alert under it. */
+    bordered?: boolean;
     onclick?: (event: Event) => void;
     class?: string;
     /** @deprecated use `class`. */
@@ -649,9 +651,9 @@ export interface AppBarProps extends Omit<HTMLAttributes<HTMLElement>, 'class' |
     collapseOnScroll?: boolean;
     /** How many lines the title may take before it is cut. Default 1. */
     titleLines?: 1 | 2;
-    /** Before the title, after the back control. */
+    /** Before the title, after the back control. The bar's row is on a fixed pixel scale (`--spacing: 4px`), so the bar's own controls do not grow with the text size. Size what you place here on the same scale (Tailwind numeric classes such as `size-9`, or `calc(var(--spacing) * 9)`), not in rem, or it grows at 200% text while the bar's controls do not. */
     leading?: Snippet;
-    /** After the title. At most two icon buttons. */
+    /** After the title. At most two icon buttons. The bar's row is on a fixed pixel scale (`--spacing: 4px`), so the bar's own controls do not grow with the text size. Size what you place here on the same scale (Tailwind numeric classes such as `size-9`, or `calc(var(--spacing) * 9)`), not in rem, or it grows at 200% text while the bar's controls do not. */
     actions?: Snippet;
     /** When the bar shows the glass and the hairline: `auto` follows the scroll position, `always`, `never`. Default `auto`. */
     scrollEdge?: 'auto' | 'always' | 'never';

@@ -70,6 +70,11 @@
          * width; when that leaves the title under 72px the title moves to a
          * row of its own, and a `leading` wider than the row is held to the
          * row's width.
+         * The bar's row is on a fixed pixel scale (`--spacing: 4px` on the
+         * row), so the bar's own controls do not grow with the text size.
+         * Size what you place here on the same scale (Tailwind numeric
+         * classes such as `size-9`, or `calc(var(--spacing) * 9)`), not in
+         * rem, or it grows at 200% text while the bar's controls do not.
          */
         leading?: Snippet;
         /**
@@ -77,6 +82,11 @@
          * a 48px target; put anything more in a menu. Their size does not
          * grow with the text size here: inside the bar the spacing scale is
          * in px.
+         * The bar's row is on a fixed pixel scale (`--spacing: 4px` on the
+         * row), so the bar's own controls do not grow with the text size.
+         * Size what you place here on the same scale (Tailwind numeric
+         * classes such as `size-9`, or `calc(var(--spacing) * 9)`), not in
+         * rem, or it grows at 200% text while the bar's controls do not.
          */
         actions?: Snippet;
         /**
