@@ -40,6 +40,7 @@ import type {
     ButtonVariant,
     CardVariant,
     OnFillTone,
+    SurfaceTone,
     ExtendedSemanticVariant,
     SemanticVariant,
     SizeVariant,
@@ -135,9 +136,36 @@ export interface HeadingProps extends Omit<HTMLAttributes<HTMLHeadingElement>, '
     className?: string;
 }
 
+// Block component props
+export interface BlockProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** `neutral` (the card surface), `tint`, `brand` or `accent`. */
+    tone?: SurfaceTone;
+    /** A fill the app chooses, any CSS colour. Wins over `tone`; the app checks the contrast of the pair. */
+    fill?: string;
+    /** The label colour on `fill`. */
+    onFill?: string;
+    /** Inner space: `none`, `sm`, `md` (default) or `lg`. */
+    padding?: 'none' | 'sm' | 'md' | 'lg';
+    /** The element, `div` by default. */
+    as?: 'div' | 'section' | 'header' | 'footer' | 'article' | 'aside';
+    /** A Block does not break out of a padded parent: put it outside, or pass a negative inline margin (`-mx-4`). */
+    class?: string;
+    children?: Snippet;
+}
+
 // Card component props
 export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
     variant?: CardVariant;
+    /** `neutral` (default), `tint`, `brand` or `accent`; brand and accent re-point text, links and controls inside. */
+    tone?: SurfaceTone;
+    /** A fill the app chooses, any CSS colour. Wins over `tone`; the app checks the contrast of the pair. */
+    fill?: string;
+    /** The label colour on `fill`. */
+    onFill?: string;
+    /** The card is an `<a>`. A link card must not contain other interactive elements. */
+    href?: string;
+    target?: HTMLAnchorAttributes['target'];
+    rel?: string;
     size?: SizeVariant;
     fullWidth?: boolean;
     class?: string;
@@ -988,6 +1016,7 @@ export interface AvatarGroupProps extends Omit<HTMLAttributes<HTMLUListElement>,
 // Component type definitions
 export type Button = ZabiComponent<ButtonProps, ButtonEvents>;
 export type Heading = ZabiComponent<HeadingProps>;
+export type Block = ZabiComponent<BlockProps>;
 export type Card = ZabiComponent<CardProps>;
 export type Input = ZabiComponent<InputProps, InputEvents>;
 export type Checkbox = ZabiComponent<CheckboxProps, CheckboxEvents>;

@@ -2617,6 +2617,71 @@ body {
     --color-action-outline-border-hover: var(--zabi-on-fill, currentColor);
   }
 
+  /**
+   * A solid fill inside a block that is the block's own colour would be a
+   * button-shaped hole: a primary Button (or a solid brand Badge) inside a
+   * brand block is the same colour as what it sits on. So inside a block the
+   * solid fill of the block's own family is inverted: the label colour is its
+   * fill and the block's colour is its text, hover and pressed steps mixed
+   * from the two. A filled Rating star takes the label colour too: its
+   * empty outline is the label colour already, so a star in the block colour
+   * only differed from an empty one by its centre.
+   *
+   * Written as the `--zabi-inv-*` values on the block, taken by the elements
+   * below. A surface inside the block (the rule that restores the theme's
+   * text, further down) sets them back to the theme's own, so a primary
+   * Button on a Card in a brand block is a primary Button. Not in the rules
+   * above: those are the roles the guard measures, and these are not roles.
+   * A fill the app chooses inverts the primary family only, its text is
+   * `--zabi-fill` (the card colour without it).
+   */
+  :where(.on-brand, .on-accent, .on-fill) {
+    --zabi-inv-primary: var(--color-action-primary);
+    --zabi-inv-primary-hover: var(--color-action-primary-hover);
+    --zabi-inv-primary-active: var(--color-action-primary-active);
+    --zabi-inv-primary-text: var(--color-action-primary-text);
+    --zabi-inv-accent: var(--color-accent);
+    --zabi-inv-accent-hover: var(--color-accent-hover);
+    --zabi-inv-accent-active: var(--color-accent-active);
+    --zabi-inv-accent-text: var(--color-on-accent);
+  }
+  :where(.on-brand) {
+    --zabi-inv-primary: var(--color-on-brand);
+    --zabi-inv-primary-hover: color-mix(in srgb, var(--color-on-brand) 88%, var(--color-action-primary));
+    --zabi-inv-primary-active: color-mix(in srgb, var(--color-on-brand) 76%, var(--color-action-primary));
+    --zabi-inv-primary-text: var(--color-action-primary);
+    --zabi-inv-star: var(--color-on-brand);
+  }
+  :where(.on-accent) {
+    --zabi-inv-accent: var(--color-on-accent);
+    --zabi-inv-accent-hover: color-mix(in srgb, var(--color-on-accent) 88%, var(--color-accent));
+    --zabi-inv-accent-active: color-mix(in srgb, var(--color-on-accent) 76%, var(--color-accent));
+    --zabi-inv-accent-text: var(--color-accent);
+    --zabi-inv-star: var(--color-on-accent);
+  }
+  :where(.on-fill) {
+    --zabi-inv-primary: var(--zabi-on-fill, currentColor);
+    --zabi-inv-primary-hover: color-mix(in srgb, var(--zabi-on-fill, currentColor) 88%, var(--zabi-fill, var(--color-card)));
+    --zabi-inv-primary-active: color-mix(in srgb, var(--zabi-on-fill, currentColor) 76%, var(--zabi-fill, var(--color-card)));
+    --zabi-inv-primary-text: var(--zabi-fill, var(--color-card));
+    --zabi-inv-star: var(--zabi-on-fill, currentColor);
+  }
+  :where(.bg-action-primary):where(.on-brand *, .on-accent *, .on-fill *) {
+    --color-action-primary: var(--zabi-inv-primary);
+    --color-action-primary-hover: var(--zabi-inv-primary-hover);
+    --color-action-primary-active: var(--zabi-inv-primary-active);
+    --color-action-primary-text: var(--zabi-inv-primary-text);
+  }
+  :where(.bg-accent):where(.on-brand *, .on-accent *, .on-fill *) {
+    --color-accent: var(--zabi-inv-accent);
+    --color-accent-hover: var(--zabi-inv-accent-hover);
+    --color-accent-active: var(--zabi-inv-accent-active);
+    --color-on-accent: var(--zabi-inv-accent-text);
+  }
+  :where(.rating):where(.on-brand *, .on-accent *, .on-fill *) {
+    --zabi-rating-on: var(--zabi-inv-star);
+  }
+
   /* A surface inside a block: its text and edges are the theme's again. */
   :where(.on-brand, .on-accent, .on-fill)
     :where(
@@ -2643,6 +2708,15 @@ body {
     --color-control-border: var(--zabi-theme-control-border);
     --color-action-outline-border: var(--zabi-theme-action-outline-border);
     --color-action-outline-border-hover: var(--zabi-theme-action-outline-border-hover);
+    --zabi-inv-primary: var(--color-action-primary);
+    --zabi-inv-primary-hover: var(--color-action-primary-hover);
+    --zabi-inv-primary-active: var(--color-action-primary-active);
+    --zabi-inv-primary-text: var(--color-action-primary-text);
+    --zabi-inv-accent: var(--color-accent);
+    --zabi-inv-accent-hover: var(--color-accent-hover);
+    --zabi-inv-accent-active: var(--color-accent-active);
+    --zabi-inv-accent-text: var(--color-on-accent);
+    --zabi-inv-star: initial;
   }
 
   /* And what is inside that surface is ringed in the theme's ring again. */

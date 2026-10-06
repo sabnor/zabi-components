@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import CardWithContent from './CardWithContent.svelte';
 import CardCompound from './CardCompound.svelte';
+import CardTonesStory from './CardTonesStory.svelte';
+import CardLinkStory from './CardLinkStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Card',
@@ -141,4 +143,27 @@ export const CompoundElevated: Story = {
         Component: CardCompound,
         props: args
     })
+};
+
+export const LinkCard: Story = {
+    name: 'Link card',
+    parameters: {
+        docs: {
+            description: {
+                story: 'With `href` the whole card is one `<a>`: the focus ring follows the card edge, there is a hover and pressed state, and it works without scripts. A link card must not contain another link or button.'
+            }
+        }
+    },
+    render: (args) => ({ Component: CardLinkStory, props: args })
+};
+
+export const Tones: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'Neutral, tint, brand, accent and a custom fill with its on-colour. On brand, accent and a custom fill the heading, text, link, Button, Badge and Rating inside take the fill\'s label colour. The library cannot check the contrast of a custom fill: the app must.'
+            }
+        }
+    },
+    render: (args) => ({ Component: CardTonesStory, props: args })
 };

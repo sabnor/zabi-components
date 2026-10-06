@@ -48,6 +48,14 @@ export type OnFillTone = 'inherit' | 'on-brand' | 'on-accent';
 export type CardVariant = 'default' | 'elevated' | 'outlined' | 'flat';
 
 /**
+ * What a Card or Block is filled with: the component's own surface
+ * (`neutral`), the brand tint as a content surface (`tint`), or the brand or
+ * accent colour (`brand`, `accent`), which also re-point the text, links,
+ * controls and focus rings inside to the fill's label colour.
+ */
+export type SurfaceTone = 'neutral' | 'tint' | 'brand' | 'accent';
+
+/**
  * Component size variants - consistent across all components
  */
 export type SizeVariant = 'sm' | 'md' | 'lg';

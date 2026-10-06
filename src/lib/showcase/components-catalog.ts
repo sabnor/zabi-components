@@ -352,10 +352,76 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "Block",
+                category: "atoms",
+                description:
+                    "A full-width, square-cornered colour section, one colour per block. It does not break out of a padded parent: put it outside, or pass -mx-4.",
+                props: [
+                    {
+                        name: "tone",
+                        type: "SurfaceTone",
+                        required: false,
+                        defaultValue: "neutral",
+                        description:
+                            "neutral (the card surface), tint, brand or accent.",
+                    },
+                    {
+                        name: "fill",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A fill of your own, any CSS colour (var(--group-colour)). Wins over tone. The library cannot check the contrast of fill and onFill: you must.",
+                    },
+                    {
+                        name: "onFill",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The label colour on fill, any CSS colour. Without it the label is the block's own text colour.",
+                    },
+                    {
+                        name: "padding",
+                        type: '"none" | "sm" | "md" | "lg"',
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Inner space: sm 16 and 16, md 16 inline and 24 block, lg 24 and 32.",
+                    },
+                    {
+                        name: "as",
+                        type: '"div" | "section" | "header" | "footer" | "article" | "aside"',
+                        required: false,
+                        defaultValue: "div",
+                        description:
+                            "The element. A section needs a name: aria-label or aria-labelledby.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Extra classes, such as -mx-4 to reach the edges of a padded parent.",
+                    },
+                ],
+                variants: ["neutral", "tint", "brand", "accent"],
+                examples: [
+                    {
+                        title: "Two blocks in a page",
+                        description:
+                            "A brand block followed by a tint block, one colour each.",
+                        code: `<Block as="section" tone="brand" aria-labelledby="offer">
+  <Heading id="offer" level={2} text="Join the club" />
+  <Button variant="outline" href="/join" text="Join" />
+</Block>
+<Block tone="tint">...</Block>`,
+                    },
+                ],
+            },
+            {
                 name: "Card",
                 category: "atoms",
                 description:
-                    "Container with four surface treatments, a padding step, and an optional clickable mode.",
+                    "Container with four surface treatments, a tone or a fill of your own, a padding step, and a clickable or link mode.",
                 props: [
                     {
                         name: "variant",
@@ -372,6 +438,47 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "md",
                         description:
                             "Padding step. The corner radius does not change with it.",
+                    },
+                    {
+                        name: "tone",
+                        type: "SurfaceTone",
+                        required: false,
+                        defaultValue: "neutral",
+                        description:
+                            "Fill: neutral (the card surface), tint, brand or accent. A filled card has no border; brand and accent re-point the text, links, Button, Badge and Rating inside to the fill's label colour.",
+                    },
+                    {
+                        name: "fill",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A fill of your own, any CSS colour. Wins over tone. Set onFill beside it; the library cannot check their contrast, you must.",
+                    },
+                    {
+                        name: "onFill",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The label colour on fill, any CSS colour.",
+                    },
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The card itself is a link (an a element): the whole card, with the focus ring on its edge and a pressed state. It works without scripts. A link card must not contain a link, a button or a field.",
+                    },
+                    {
+                        name: "target",
+                        type: "string",
+                        required: false,
+                        description: "With href: where the link opens.",
+                    },
+                    {
+                        name: "rel",
+                        type: "string",
+                        required: false,
+                        description: "With href: the link's relationship, such as noopener.",
                     },
                     {
                         name: "fullWidth",
@@ -2147,12 +2254,17 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Optional label",
                     },
                 ],
-                variants: ["sm", "md", "lg"],
+                variants: ["sm", "md", "lg", "xl"],
                 examples: [
                     {
                         title: "Progress",
                         description: "Value relative to max",
                         code: '<Progress value={40} max={100} label="Upload" />',
+                    },
+                    {
+                        title: "Segmented",
+                        description: "A count such as 4 of 19",
+                        code: '<Progress value={4} max={19} segmented label="Round" />',
                     },
                 ],
             },
@@ -2241,11 +2353,6 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Card footer",
                         description: "Place actions at the bottom of a card",
                         code: "<CardFooter>…</CardFooter>",
-                    },
-                    {
-                        title: "Segmented",
-                        description: "A count such as 4 of 19",
-                        code: '<Progress value={4} max={19} segmented label="Round" />',
                     },
                 ],
             },
