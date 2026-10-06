@@ -316,17 +316,21 @@ test.describe("BottomTabBar at 180px with text at 200%", () => {
 test.describe("AppBar at 180px wide", () => {
     test.use({ viewport: { width: 180, height: 640 }, hasTouch: true, isMobile: true });
 
-    test("is still one row with its three controls on screen; the title has what is left", async ({ page }) => {
+    test("the three controls are one row on screen, and the title, which had no room beside them, has the row under it", async ({ page }) => {
         await gotoLab(page, "", 200);
         const bar = await measureAppBar(page);
         console.log(
             `MEASURED AppBar 180px 200%: height ${round(bar.header.height)}, controls ${bar.controls.map((control) => `${round(control.box.left)}-${round(control.box.right)}`).join(" ")}, title ${round(bar.heading.width)}px wide`,
         );
-        expect(bar.header.height).toBe(57);
+        // Two rows: the controls' 48px and one line of title (playwright/app-bar-title.spec.ts).
+        expect(bar.header.height).toBeGreaterThan(57);
+        expect(bar.header.height).toBeLessThanOrEqual(57 + 48);
+        expect(bar.heading.width).toBeGreaterThanOrEqual(180 - 32);
         expect(bar.pageOverflow).toBe(0);
         for (const control of bar.controls) {
             expect(control.box.left).toBeGreaterThanOrEqual(0);
             expect(control.box.right).toBeLessThanOrEqual(180.1);
+            expect(control.box.bottom).toBeLessThanOrEqual(bar.heading.top + 0.5);
         }
     });
 });

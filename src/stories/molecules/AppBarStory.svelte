@@ -18,6 +18,7 @@
         collapseOnScroll?: boolean;
         /** Width of the phone frame in px. */
         frameWidth?: 320 | 360 | 390;
+        titleLines?: 1 | 2;
     }
 
     let {
@@ -28,6 +29,7 @@
         actionCount = 2,
         withLeading = false,
         collapseOnScroll = false,
+        titleLines = 1,
         frameWidth = 360,
     }: Props = $props();
 
@@ -64,6 +66,7 @@
         {headingLevel}
         {backLabel}
         {collapseOnScroll}
+        {titleLines}
         onback={withBack ? () => (note = 'Back pressed.') : undefined}
         leading={withLeading ? leading : undefined}
         actions={actionCount > 0 ? actions : undefined}

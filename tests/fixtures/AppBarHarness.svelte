@@ -11,6 +11,7 @@
         collapseOnScroll?: boolean;
         withActions?: boolean;
         withLeading?: boolean;
+        titleLines?: 1 | 2;
         /** Put the bar in a scrolling box of its own, as AppShell does. */
         inScroller?: boolean;
         class?: string;
@@ -25,6 +26,7 @@
         collapseOnScroll,
         withActions = false,
         withLeading = false,
+        titleLines = undefined,
         inScroller = false,
         class: className,
     }: Props = $props();
@@ -38,6 +40,7 @@
         {onback}
         {backLabel}
         {collapseOnScroll}
+        {titleLines}
         class={className}
         data-testid="bar"
         leading={withLeading ? leading : undefined}

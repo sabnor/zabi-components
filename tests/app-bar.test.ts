@@ -386,3 +386,45 @@ describe("AppBar collapse on scroll", () => {
         expect(remove).toHaveBeenCalledWith("scroll", expect.any(Function));
     });
 });
+
+describe("AppBar title", () => {
+    const heading = () => within(bar()).getByRole("heading", { level: 1 });
+    const row = () => heading().parentElement!;
+
+    it("is one line with an ellipsis, and two before it is cut with titleLines 2", () => {
+        const first = render(AppBarHarness);
+        expect(heading().className).toContain("truncate");
+        expect(heading().className).not.toContain("line-clamp-2");
+        first.unmount();
+        render(AppBarHarness, { props: { titleLines: 2 } });
+        expect(heading().className).toContain("line-clamp-2");
+        expect(heading().className).not.toContain("truncate");
+    });
+
+    it("keeps its whole text and has no title attribute", () => {
+        const long = "79 poäng, The Bishops Arms på Vasagatan";
+        render(AppBarHarness, { props: { title: long } });
+        expect(heading().textContent).toBe(long);
+        expect(heading().hasAttribute("title")).toBe(false);
+        expect(heading().hasAttribute("aria-label")).toBe(false);
+    });
+
+    it("marks its own parts, and renders leading as it is, between the back control and the title", () => {
+        render(AppBarHarness, { props: { backHref: "/quiz", withLeading: true, withActions: true } });
+        // Back, leading, title, actions in the document, whichever row the title is drawn on.
+        expect([...row().children].map((child) => (child as HTMLElement).dataset.appbarPart ?? child.getAttribute("data-testid"))).toEqual([
+            "back",
+            "leading",
+            "title",
+            "actions",
+        ]);
+        // Nothing was put around the app's markup.
+        expect(screen.getByTestId("leading").parentElement).toBe(row());
+    });
+
+    it("without a layout to measure it stays on the stylesheet's fallback: no row is claimed", () => {
+        render(AppBarHarness, { props: { backHref: "/quiz", withLeading: true, withActions: true } });
+        expect(row().hasAttribute("data-title-row")).toBe(false);
+        expect(row().style.getPropertyValue("--appbar-leading-max")).toBe("");
+    });
+});

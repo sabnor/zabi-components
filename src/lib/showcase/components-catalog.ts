@@ -5517,7 +5517,7 @@ pushToast({
                 name: "AppBar",
                 category: "molecules",
                 description:
-                    "Top bar for a phone screen with a title, a back control and up to two actions, always one 56px row; can hide while the page scrolls.",
+                    "Top bar for a phone screen: a title that always has room, a back control and up to two actions; can hide while the page scrolls.",
                 props: [
                     {
                         name: "title",
@@ -5525,7 +5525,15 @@ pushToast({
                         required: false,
                         defaultValue: '""',
                         description:
-                            "The name of the screen, rendered as a heading on one line. Too long for the row, it is cut with an ellipsis; the heading keeps its full text for a screen reader, so put what names the screen first. It grows with the reader's text size up to 1.3 times (23.4px).",
+                            "The name of the screen, rendered as a heading on one line. Too long for the row, it is cut with an ellipsis; the heading keeps its full text for a screen reader, so put what names the screen first. It grows with the reader's text size up to 1.3 times (23.4px). It never has less than 72px: where the back control, leading and the actions leave less, it is drawn on a second row of its own, as wide as the bar, and they stay on the first; the order in the document does not change.",
+                    },
+                    {
+                        name: "titleLines",
+                        type: "1 | 2",
+                        required: false,
+                        defaultValue: "1",
+                        description:
+                            "How many lines the title may take before it is cut with an ellipsis. The bar is taller only while a second line is in use and does not fit beside the controls.",
                     },
                     {
                         name: "headingLevel",

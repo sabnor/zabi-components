@@ -38,4 +38,17 @@ describe("AppBar on the server", () => {
         const { body } = renderOnServer(AppBarHarness, { props: {} });
         expect(/<header[^>]*>/.exec(body)?.[0]).not.toContain("data-collapsed");
     });
+
+    it("leaves the title's row to the stylesheet until it can be measured in the browser", () => {
+        const { body } = renderOnServer(AppBarHarness, {
+            props: { backHref: "/quiz", withActions: true, withLeading: true, titleLines: 2 },
+        });
+        expect(body).not.toContain("data-title-row");
+        expect(body).toMatch(/<h1[^>]*data-appbar-part="title"/);
+        expect(body).toMatch(/<h1[^>]*class="[^"]*line-clamp-2/);
+        // Back, leading, title, actions, in that order in the markup.
+        const order = ["data-appbar-part=\"back\"", "data-testid=\"leading\"", "data-appbar-part=\"title\"", "data-appbar-part=\"actions\""].map((mark) => body.indexOf(mark));
+        expect(order.every((at) => at > -1)).toBe(true);
+        expect([...order].sort((a, b) => a - b)).toEqual(order);
+    });
 });

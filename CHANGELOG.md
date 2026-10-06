@@ -26,6 +26,10 @@ Whenever token or CSS import API surface changes, include:
 - SidebarNavigation declares and passes on SidebarShell's drawer props
   (`mobile`, `bind:isOpen`, `trigger`, `drawerTitle`, `closeLabel`, `onclose`,
   `label`).
+- **`titleLines` on AppBar.** `titleLines={2}` lets the title run to two
+  lines before it is cut with an ellipsis, for a screen whose title is its
+  only name (default 1). The bar's parts carry `data-appbar-part` (`back`,
+  `title`, `actions`).
 
 ### Changed
 
@@ -90,6 +94,15 @@ Whenever token or CSS import API surface changes, include:
   least 20, 24 or 28px tall, grows when its label wraps, and is never wider
   than its container. A one-line badge is unchanged to the pixel; a wrapped
   one keeps the one-line corner and reads as a rounded rectangle.
+- **An AppBar's title is never squeezed out.** In 8.1.0-beta.2 the title had
+  whatever the back control, `leading` and the actions left, which could be
+  nothing: a wide chip in `leading`, or a bar at 200% text, left a title 0px
+  wide. The title now always has at least 72px. When there is less beside the
+  controls it takes a row of its own under them, as wide as the bar; the bar
+  is one 57px row in every other case, as before. `leading` is still rendered
+  as it is, and one wider than the row is held to the row's width. The bar
+  measures itself in the browser; before hydration and without scripts the
+  title wraps to the second row together with the actions.
 
 ## [8.1.0-beta.2] - 2026-10-06
 

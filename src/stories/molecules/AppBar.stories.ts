@@ -106,7 +106,46 @@ export const LongTitleNarrowPhone: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'At 320px with a title that does not fit. It wraps to two lines before it is cut, and the bar grows with it; the controls keep their size.'
+                story: 'At 320px with a title that does not fit: one line, cut with an ellipsis. The heading keeps its whole text for a screen reader.'
+            }
+        }
+    }
+};
+
+export const TwoLineTitle: Story = {
+    args: {
+        frameWidth: 320,
+        title: 'Musikfrågor från åttiotalet, andra omgången',
+        titleLines: 2,
+    },
+    render: (args) => ({
+        Component: AppBarStory,
+        props: args,
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'The same title with titleLines={2}: it runs to two lines before it is cut. Two lines are as tall as the controls beside them, so the bar keeps its height.'
+            }
+        }
+    }
+};
+
+export const TitleOnItsOwnRow: Story = {
+    args: {
+        frameWidth: 320,
+        title: 'Logga besök',
+        withLeading: true,
+        actionCount: 2,
+    },
+    render: (args) => ({
+        Component: AppBarStory,
+        props: args,
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'The title never has less than 72px. Where the back control, leading and the actions leave it less, it takes a second row as wide as the bar and they stay together on the first. Narrow the frame, or widen what is in leading, to see it move.'
             }
         }
     }

@@ -514,6 +514,8 @@ export interface AppBarProps extends Omit<HTMLAttributes<HTMLElement>, 'class' |
      * Keyboard focus inside the bar holds it and brings it back; focus left by a tap does not.
      */
     collapseOnScroll?: boolean;
+    /** How many lines the title may take before it is cut. Default 1. */
+    titleLines?: 1 | 2;
     /** Before the title, after the back control. */
     leading?: Snippet;
     /** After the title. At most two icon buttons. */
