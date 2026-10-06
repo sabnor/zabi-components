@@ -44,6 +44,16 @@ Whenever token or CSS import API surface changes, include:
 - Overlay titles break at a hyphen in the page's language when the text is
   enlarged, and a word too long for the line no longer sticks out of Drawer
   or SlideUp.
+- **Upgrade note that 8.1.0-beta.2 left out: the theme generator checks four
+  more role pairs.** Since beta.2, `createTheme` and `zabi-theme` also check
+  the accent star outline on an inset surface, the focus ring (or its offset
+  gap) on an accent button, and the label on a selected and on a held selected
+  pill tab. The generated values are the same as before; what changes is that
+  a theme which passed in beta.1 can now report a warning, and fail under
+  `--strict` or in a script that treats warnings as errors. The findings are
+  real for that theme. Fix them with an override (`set`, or `--set`), for
+  example `--color-focus` and `--color-link-hover` one brand step darker, or
+  use `pin`, which moves the focus ring and links with a pinned brand colour.
 
 ### Fixed
 
