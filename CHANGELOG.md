@@ -103,6 +103,20 @@ Whenever token or CSS import API surface changes, include:
   as it is, and one wider than the row is held to the row's width. The bar
   measures itself in the browser; before hydration and without scripts the
   title wraps to the second row together with the actions.
+- **A Select no longer changes its value when the page hydrates** (a defect
+  of the native `<select>` added after 8.1.0-beta.2, never in a build). A
+  bound value with no matching option in the server's markup (options still
+  loading, or a value not among them) was replaced at hydration by `undefined`
+  or by the first option, and reported as a change. Only a real choice made
+  before hydration is adopted now. A value with no option of its own is kept
+  and submitted as itself.
+- **Select at the handover from the native control.** Keyboard focus in the
+  native select moves to the trigger instead of dropping to the page;
+  `aria-label` and `aria-labelledby` name the native select too; with several
+  empty required Selects only the form's first invalid control takes focus;
+  and a form reset returns a Select to the value it was rendered with.
+- **`DEFAULT_SELECT_STRINGS`, `SelectStrings` and `SelectPresentation` are
+  exported from the atoms entry** as well.
 
 ## [8.1.0-beta.2] - 2026-10-06
 

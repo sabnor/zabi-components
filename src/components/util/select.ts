@@ -48,36 +48,57 @@ export type SelectPresentation = "auto" | "popover" | "sheet" | "native";
 export const NATIVE_SELECT_ATTRIBUTE = "data-zabi-select";
 
 /**
- * What each server-rendered native select said before the component took it
- * over.
+ * What a visitor chose in each server-rendered native select before the
+ * component took it over.
  *
  * The server's HTML carries a real `<select>`, and it works at once: a
- * visitor can choose from it while the scripts are still on their way. When
- * the component then hydrates it renders the value it was given, which would
- * silently undo that choice. So the values are noted when this module loads,
- * which is before anything hydrates, and every change after that is noted
- * too; the component asks for its own element's when it mounts.
+ * visitor can choose from it while the scripts are still on their way, and
+ * the browser may put an earlier choice back into it after a reload or a
+ * step back. When the component then hydrates it renders the value it was
+ * given, which would silently undo that. So when this module loads, which is
+ * before anything hydrates, each select's value is noted beside the value
+ * the server rendered it with (its `selected` option, or else its first),
+ * and every change after that is noted too. The component asks for its own
+ * element's when it mounts.
+ *
+ * Only a value that differs from the rendered one is a choice. A select that
+ * nobody touched is not, whatever it shows: it used to be compared with the
+ * component's prop instead, and a value with no option of its own (its
+ * options still loading, or simply not among them) was replaced by whatever
+ * the select happened to fall back to.
  */
-const chosenBeforeMount = new WeakMap<Element, string>();
+const seenBeforeMount = new WeakMap<Element, { rendered: string; value: string }>();
+
+/** The value a select has when nobody has touched it: that of the option with the `selected` attribute, or of the first. */
+function renderedValue(element: HTMLSelectElement): string {
+    const options = [...element.options];
+    return (options.find((option) => option.defaultSelected) ?? options[0])?.value ?? "";
+}
 
 if (typeof document !== "undefined") {
     const selector = `select[${NATIVE_SELECT_ATTRIBUTE}]`;
     for (const element of document.querySelectorAll<HTMLSelectElement>(selector)) {
-        chosenBeforeMount.set(element, element.value);
+        seenBeforeMount.set(element, { rendered: renderedValue(element), value: element.value });
     }
     document.addEventListener(
         "change",
         (event) => {
             const target = event.target;
             if (target instanceof HTMLSelectElement && target.matches(selector)) {
-                chosenBeforeMount.set(target, target.value);
+                const seen = seenBeforeMount.get(target);
+                if (seen) seen.value = target.value;
             }
         },
         true,
     );
 }
 
-/** The value `element` had in the server's HTML or was given by the visitor since; undefined for one this module never saw. */
-export function valueBeforeMount(element: Element): string | undefined {
-    return chosenBeforeMount.get(element);
+/**
+ * What the visitor (or the browser, restoring a form) chose in `element`
+ * before its component mounted; `undefined` when it still has the value the
+ * server rendered, and for an element this module never saw.
+ */
+export function choiceBeforeMount(element: Element): string | undefined {
+    const seen = seenBeforeMount.get(element);
+    return seen && seen.value !== seen.rendered ? seen.value : undefined;
 }

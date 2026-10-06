@@ -2,12 +2,12 @@
     import Dropdown from "../molecules/Dropdown.svelte";
     import Input from "./Input.svelte";
     import ChevronDown from "@lucide/svelte/icons/chevron-down";
-    import { onMount } from "svelte";
+    import { onMount, tick, untrack } from "svelte";
     import type { HTMLButtonAttributes } from "svelte/elements";
     import {
         DEFAULT_SELECT_STRINGS,
         NATIVE_SELECT_ATTRIBUTE,
-        valueBeforeMount,
+        choiceBeforeMount,
         type SelectPresentation,
         type SelectStrings,
     } from "../util/select.js";
@@ -318,8 +318,14 @@
     function handleNativeInvalid(event: Event) {
         if (nativeShown) return;
         event.preventDefault();
-        nativeError = (event.currentTarget as HTMLSelectElement).validationMessage;
-        document.getElementById(selectId)?.focus();
+        const element = event.currentTarget as HTMLSelectElement;
+        nativeError = element.validationMessage;
+        // The browser tells every invalid control, and would focus the first.
+        // So does this: each Select shows its message, and only the first
+        // invalid control of the form takes focus.
+        const controls = [...(element.form?.elements ?? [])] as (Element & Partial<HTMLSelectElement>)[];
+        const first = controls.find((control) => control.willValidate && control.validity?.valid === false);
+        if (!first || first === element) document.getElementById(selectId)?.focus();
     }
 
     $effect(() => {
@@ -328,14 +334,81 @@
         nativeError = "";
     });
 
+    /**
+     * The trigger takes over from the native select. If the keyboard was in
+     * the native select, which now leaves the tab order, focus goes to the
+     * trigger and does not fall to the page.
+     */
+    function handOver() {
+        const hadFocus = !isNative && nativeElement !== null && document.activeElement === nativeElement;
+        mounted = true;
+        if (hadFocus) void tick().then(() => document.getElementById(selectId)?.focus());
+    }
+
+    /** The value the Select was rendered with: what a form reset goes back to. */
+    const initialValue = untrack(() => value);
+
+    /**
+     * The form around the Select was reset. The native select goes back to
+     * what its markup says by itself, which the component would not know of:
+     * the value is put back to the one it was rendered with, and that is
+     * reported once if it is a change. After the browser has done its own
+     * resetting, which is after the event.
+     */
+    function handleFormReset(event: Event) {
+        setTimeout(() => {
+            if (event.defaultPrevented) return;
+            const initiallyEmpty = initialValue === undefined || initialValue === null || initialValue === "";
+            const unchanged = initiallyEmpty ? isEmpty() : isSameValue(value, initialValue);
+            if (!unchanged) choose(initiallyEmpty ? undefined : initialValue);
+            void tick().then(() => {
+                if (nativeElement) nativeElement.value = initiallyEmpty ? "" : String(initialValue);
+            });
+        });
+    }
+
+    /** Whether the browser's own list of the native select is open, where the browser can say (`:open`). */
+    function nativePickerOpen(element: HTMLSelectElement): boolean {
+        try {
+            return element.matches(":open");
+        } catch {
+            return false;
+        }
+    }
+
     onMount(() => {
         // A choice made in the native select before the scripts arrived is
-        // the visitor's: it becomes the value, and is reported once.
-        const before = nativeElement ? valueBeforeMount(nativeElement) : undefined;
+        // the visitor's: it becomes the value, and is reported once. Only a
+        // choice: a select nobody touched keeps the value it was given.
+        const before = nativeElement ? choiceBeforeMount(nativeElement) : undefined;
         if (before !== undefined && before !== (isEmpty() ? "" : String(value))) {
             choose(fromNative(before));
         }
-        mounted = true;
+
+        const element = nativeElement;
+        const form = element?.form ?? null;
+        form?.addEventListener("reset", handleFormReset);
+        const stopListening = () => form?.removeEventListener("reset", handleFormReset);
+
+        // Someone is choosing in the browser's own list right now: taking the
+        // select away would close it under their finger. They keep it until
+        // they have chosen or left, and the trigger takes over then.
+        if (!isNative && element && document.activeElement === element && nativePickerOpen(element)) {
+            const finish = () => {
+                element.removeEventListener("change", finish);
+                element.removeEventListener("blur", finish);
+                handOver();
+            };
+            element.addEventListener("change", finish);
+            element.addEventListener("blur", finish);
+            return () => {
+                element.removeEventListener("change", finish);
+                element.removeEventListener("blur", finish);
+                stopListening();
+            };
+        }
+        handOver();
+        return stopListening;
     });
 
     function handleTriggerClick(event: MouseEvent) {
@@ -394,11 +467,19 @@
         aria-describedby={nativeShown ? fieldDescribedBy(selectId, status, describedBy) : undefined}
         onchange={handleNativeChange}
         oninvalid={handleNativeInvalid}
+        aria-label={nativeShown ? restProps["aria-label"] : undefined}
+        aria-labelledby={nativeShown ? restProps["aria-labelledby"] : undefined}
         {...{ [NATIVE_SELECT_ATTRIBUTE]: "" }}
         {...isNative ? (restProps as Record<string, unknown>) : {}}
     >
         {#if isEmpty()}
             <option value="" selected>{isLoading ? text.loading : text.placeholder}</option>
+        {:else if !selectedOption}
+            <!-- The value has no option of its own: its options are still on
+            their way, or it is not among them. It is still the value, so the
+            select holds it and a form sends it; it is not offered in the list
+            where the browser lets an option be hidden. -->
+            <option value={String(value)} selected hidden>{isLoading ? text.loading : String(value)}</option>
         {/if}
         {#each options as option (option.value)}
             <option
