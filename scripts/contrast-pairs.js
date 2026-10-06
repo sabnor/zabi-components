@@ -11,6 +11,11 @@
  * Each pair is token names only (`bg`, `fg`) and a minimum; resolving them is
  * the reader's job. A pair may name a second foreground, `orFg`: it passes when
  * either foreground reaches the minimum against `bg`.
+ *
+ * A pair may also name `behind`: `bg` is then a translucent paint (a material's
+ * `color-mix(… p%, transparent)`) and the pair is measured on what it makes
+ * laid source-over on that token. `behind` is one token, or `{ light, dark }`
+ * for a token per mode. A material is never judged alone: see MATERIALS.
  */
 
 export const AA_NORMAL = 4.5;
@@ -82,6 +87,38 @@ export const BLOCK_ROLES = [
  * their theme values, or its text is the block's label colour on a card.
  */
 export const SURFACE_CLASS = /^(surface-[\w-]+|card(-elevated)?|background|input(-disabled)?|[\w-]+-subtle|nav-menu-active|action-disabled)$/;
+
+/**
+ * The worst thing a material can float over: the far end of the neutral ramp.
+ * A photo can be that dark or that bright, so light glass is judged over
+ * step 950 and dark glass over step 50.
+ */
+export const WORST_BACKDROP = { light: '--zabi-base-950', dark: '--zabi-base-50' };
+
+/** The token a pair's `behind` names in `mode`, or null for a pair without one. */
+export function behindToken(pair, mode) {
+    if (!pair.behind) return null;
+    return typeof pair.behind === 'string' ? pair.behind : pair.behind[mode];
+}
+
+/**
+ * The materials (D97) and the roles each may carry, each held to its floor on
+ * the worst backdrop AND over the mode's own page (the easy case, so a fill
+ * cannot pass by being too dark). The alphas in src/app.css are the smallest
+ * whole 2% that passes all of these; a lower one fails here.
+ *  thin: a control on a bar (an icon, a short headline-coloured label)
+ *  regular: bars, the tab bar, a floating sidebar
+ *  thick: sheets, menus, modals, toasts, tooltips: all five text roles
+ * Regular and thick also keep the focus ring at 3:1 (WCAG 1.4.11): controls sit
+ * inside a bar or a sheet, so their rings are drawn on the material. Thin does
+ * not (D106): it is a single control, and its ring is drawn around it, outside
+ * the material, against the offset gap.
+ */
+export const MATERIALS = [
+    { name: 'thin', fill: '--color-material-thin', text: ['headline'], ring: false },
+    { name: 'regular', fill: '--color-material-regular', text: ['headline', 'body', 'label'] },
+    { name: 'thick', fill: '--color-material-thick', text: ['headline', 'body', 'label', 'description', 'caption'] },
+];
 
 export function buildPairs() {
     const pairs = [];
@@ -233,6 +270,17 @@ export function buildPairs() {
         // WCAG 1.4.11: the fill of Progress must be seen against its track.
         { name: 'progress fill on track', bg: '--color-progress-track', fg: '--color-progress-fill', min: AA_LARGE },
     );
+
+    for (const material of MATERIALS) {
+        for (const [where, behind] of [['the worst backdrop', WORST_BACKDROP], ['the page', '--color-surface-base']]) {
+            for (const role of material.text) {
+                pairs.push({ name: `material ${material.name} · ${role} over ${where}`, bg: material.fill, fg: `--color-${role}`, min: AA_NORMAL, behind });
+            }
+            if (material.ring !== false) {
+                pairs.push({ name: `material ${material.name} · focus ring over ${where}`, bg: material.fill, fg: '--color-focus-ring', min: AA_LARGE, behind });
+            }
+        }
+    }
 
     return pairs;
 }

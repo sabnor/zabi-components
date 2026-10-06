@@ -393,7 +393,7 @@
                      contrast whatever the image behind them. -->
                 <div
                     class={cn(
-                        "absolute inset-0 p-1 border border-border-overlay bg-surface-overlay/60 backdrop-blur-md opacity-0 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100 transition-opacity motion-reduce:transition-none rounded-container flex items-center justify-center pointer-events-none",
+                        "absolute inset-0 p-1 border border-border-overlay material-thin opacity-0 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100 transition-opacity motion-reduce:transition-none rounded-container flex items-center justify-center pointer-events-none",
                         "pointer-coarse:opacity-100 [@media(hover:none)]:opacity-100",
                         actionsInStrip
                             ? "bottom-auto"

@@ -18,8 +18,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { resolveTokenColor, resolveTokenValue } from './resolve-tokens.js';
-import { BLOCKS, BLOCK_ROLES, SURFACE_CLASS, buildPairs } from './contrast-pairs.js';
+import { resolveTokenColor, resolveTokenValue, resolveTokenPaint, compositeOver } from './resolve-tokens.js';
+import { BLOCKS, BLOCK_ROLES, SURFACE_CLASS, behindToken, buildPairs } from './contrast-pairs.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Optional path, so the guard can be run against another revision of the stylesheet.
@@ -501,15 +501,26 @@ function main() {
     for (const themeName of ['light', 'dark']) {
         const map = themes[themeName];
         for (const pair of pairs) {
-            const bg = resolve(map, pair.bg);
-            const fg = resolve(map, pair.fg);
+            const behind = behindToken(pair, themeName);
             // A token that is not declared at all is a renamed or deleted role,
             // not an alpha value: skipping it would drop its pairs silently.
-            const undeclared = [pair.bg, pair.fg, ...(pair.orFg ? [pair.orFg] : [])].find((token) => !(token in map));
+            const undeclared = [pair.bg, pair.fg, ...(pair.orFg ? [pair.orFg] : []), ...(behind ? [behind] : [])].find((token) => !(token in map));
             if (undeclared) {
                 failures.push(`${themeName} · ${pair.name}: ${undeclared} is not declared, so the pair cannot be checked`);
                 continue;
             }
+            let bg = resolve(map, pair.bg);
+            if (behind) {
+                // A material is a paint with an alpha: what the text sits on is the paint over its backdrop.
+                const paint = resolveTokenPaint(map, pair.bg);
+                const backdrop = resolve(map, behind);
+                if (!paint || !backdrop) {
+                    failures.push(`${themeName} · ${pair.name}: ${!paint ? pair.bg : behind} cannot be resolved to a colour, so the material cannot be composited`);
+                    continue;
+                }
+                bg = compositeOver(paint, backdrop);
+            }
+            const fg = resolve(map, pair.fg);
             if (!bg || !fg) {
                 skipped.push(`${themeName} · ${pair.name} (${!bg ? pair.bg : pair.fg} is not a flat colour)`);
                 continue;

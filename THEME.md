@@ -110,6 +110,7 @@ Components paint with **roles**: tokens that say what a colour is for and are
 already the right value in each mode. Use the same roles in your own CSS.
 
 - `--color-surface-base` / `-raised` / `-elevated` / `-overlay` - Surface levels: page, cards, nested cards, floating panels
+- `--color-material-thin`, `-regular`, `-thick` (`material-thin|regular|thick` classes) - Frosted fills for what floats over content; see THEMING.md, Materials. `data-materials="opaque"` on the root or an ancestor turns them into opaque surfaces
 - `--color-surface-inset` - A recessed area on a card (a well); see THEMING.md, Surface elevation levels
 - `--color-headline`, `--color-body`, `--color-description`, `--color-caption` - Text
 - `--color-border` - Borders and dividers

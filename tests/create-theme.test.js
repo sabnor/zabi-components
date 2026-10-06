@@ -936,3 +936,63 @@ test('the field edge is a guarded foreground: 3:1 on the field fill, the page an
   const shipped = JSON.parse(JSON.stringify(buildThemeData().pairs)).filter((p) => p.fg === '--color-input-border');
   assert.equal(shipped.length, 3);
 });
+
+/* ---------- materials (D97) ---------- */
+
+const MATERIAL_FILL = (percent) => `color-mix(in srgb, var(--color-surface-chrome) ${percent}%, transparent)`;
+const materialWarnings = (result, level) => contrastWarnings(result).filter((w) => w.pair.startsWith(`material ${level} `));
+
+test('the library meets its own material floors, and a material one step below fails the guard', () => {
+  const css = fs.readFileSync(path.join(projectRoot, 'src', 'app.css'), 'utf8');
+  const guard = (source) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'zabi-materials-'));
+    const file = path.join(dir, 'app.css');
+    fs.writeFileSync(file, source);
+    return spawnSync(process.execPath, [path.join(projectRoot, 'scripts', 'check-contrast.js'), file], { encoding: 'utf8' });
+  };
+  assert.equal(guard(css).status, 0, 'the shipped alphas must pass');
+  // The floors: light 80% (focus ring over the worst backdrop), dark 76%. One step (2%) below fails.
+  assert.ok(css.includes('--material-alpha-regular: 80%;') && css.includes('--material-alpha-regular: 76%;'));
+  const light = guard(css.replace('--material-alpha-regular: 80%;', '--material-alpha-regular: 78%;'));
+  assert.equal(light.status, 1);
+  assert.match(light.stderr, /light · material regular · .* over the worst backdrop/);
+  const dark = guard(css.replace('--material-alpha-regular: 76%;', '--material-alpha-regular: 74%;'));
+  assert.equal(dark.status, 1);
+  assert.match(dark.stderr, /dark · material regular · .* over the worst backdrop/);
+  // Thick carries the caption: it fails first on that, in dark, one step below 98%.
+  const thick = guard(css.replace('--material-alpha-thick: 98%;', '--material-alpha-thick: 96%;'));
+  assert.equal(thick.status, 1);
+  assert.match(thick.stderr, /dark · material thick · caption over the worst backdrop/);
+});
+
+test('material tokens are overridable per mode with dark restated, and a too-thin fill is reported', () => {
+  const data = buildThemeData();
+  assert.ok(data.pairs.some((pair) => pair.behind && pair.bg === '--color-material-thick'), 'the material pairs are not in the shared list');
+  const ok = createTheme({
+    brand: '#0026EA',
+    overrides: { light: { '--color-material-regular': MATERIAL_FILL(90) }, dark: { '--color-material-regular': MATERIAL_FILL(92) } },
+  });
+  assert.equal(ok.tokens['--color-material-regular'], MATERIAL_FILL(90));
+  assert.equal(ok.darkTokens['--color-material-regular'], MATERIAL_FILL(92));
+  assert.deepEqual(materialWarnings(ok, 'regular'), []);
+
+  // Light only, too thin: reported in light; dark is restated with the library's own value, so it stays clean.
+  const thin = createTheme({ brand: '#0026EA', overrides: { light: { '--color-material-regular': MATERIAL_FILL(40) } } });
+  assert.equal(thin.tokens['--color-material-regular'], MATERIAL_FILL(40));
+  assert.equal(thin.darkTokens['--color-material-regular'], defaults.light['--color-material-regular']);
+  const warned = materialWarnings(thin, 'regular');
+  assert.ok(warned.length > 0 && warned.every((w) => w.mode === 'light'), JSON.stringify(warned.map((w) => w.message)));
+  assert.ok(warned.some((w) => /over the worst backdrop/.test(w.pair)));
+
+  // Dark too thin, and `both`: each mode is read with its own value.
+  const both = createTheme({ brand: '#0026EA', overrides: { '--color-material-thin': MATERIAL_FILL(40) } });
+  assert.deepEqual([...new Set(materialWarnings(both, 'thin').map((w) => w.mode))].sort(), ['dark', 'light']);
+
+  // The highlight, rim and shadow follow a neutral override.
+  const tinted = createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 });
+  assert.deepEqual(contrastWarnings(tinted), []);
+  const maps = themed({ ...tinted.tokens });
+  assert.match(defaults.light['--color-material-rim'], /var\(--zabi-base-900\)/);
+  assert.match(defaults.darkOnly['--color-material-rim'], /var\(--zabi-base-50\)/);
+  assert.ok(maps.light['--zabi-base-900'] !== defaults.light['--zabi-base-900']);
+});

@@ -46,7 +46,7 @@ import {
     toOklch,
     toLab,
 } from './lib/ramp-math.js';
-import { resolveTokenColor } from './lib/resolve.js';
+import { resolveTokenColor, resolveTokenPaint, compositeOver } from './lib/resolve.js';
 
 /** The neutral ramp's 21 steps. */
 export const BASE_STEPS = [
@@ -330,7 +330,14 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = []) {
     let checked = 0;
     for (const mode of ['light', 'dark']) {
         for (const pair of [...data.pairs, ...extraPairs]) {
-            const bg = resolveTokenColor(maps[mode], pair.bg);
+            const behind = pair.behind ? (typeof pair.behind === 'string' ? pair.behind : pair.behind[mode]) : null;
+            let bg = resolveTokenColor(maps[mode], pair.bg);
+            if (behind) {
+                // A material: its fill (an alpha paint) laid over what is behind it.
+                const paint = resolveTokenPaint(maps[mode], pair.bg);
+                const backdrop = resolveTokenColor(maps[mode], behind);
+                bg = paint && backdrop ? compositeOver(paint, backdrop) : null;
+            }
             const fg = resolveTokenColor(maps[mode], pair.fg);
             if (!bg || !fg) continue; // an alpha tint: not one flat colour
             checked += 1;
@@ -347,7 +354,7 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = []) {
                 required: pair.min,
                 foreground: { token: pair.fg, value: fg },
                 background: { token: pair.bg, value: bg },
-                message: `${mode} · ${pair.name}: ${fg} on ${bg} is ${ratio}:1, needs ${pair.min}:1 (${pair.fg} on ${pair.bg})`,
+                message: `${mode} · ${pair.name}: ${fg} on ${bg} is ${ratio}:1, needs ${pair.min}:1 (${pair.fg} on ${pair.bg}${behind ? ` over ${behind}` : ''})`,
             });
         }
     }

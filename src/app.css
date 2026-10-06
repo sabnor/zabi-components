@@ -660,13 +660,52 @@
 
   /* Shadow Colors
    * Light elevation is carried by the shadow, so it is the ramp's own ink
-   * (base-900) at a strength that still reads on the top and side edges. */
+   * (base-900). Every step is two layers: a tight contact shadow
+   * (--shadow-opacity-contact) that grounds the edge and a wider, softer
+   * ambient one (--shadow-opacity) that carries the distance. Until 8.1 both
+   * layers shared one flat 14%; the 8.1 values are in CHANGELOG.md. */
   --shadow-color: 24 24 27;
-  --shadow-opacity: 0.14;
-  --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-opacity: 0.1;
+  --shadow-opacity-contact: 0.06;
+  --shadow-sm: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 2px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-md: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 6px 14px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-lg: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 10px 30px 0 rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-xl: 0 2px 4px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 20px 50px -8px rgb(var(--shadow-color) / var(--shadow-opacity));
+  /* What a material (glass) casts: the lg step. Its own name so a theme can
+   * retune glass without moving every floating surface. */
+  --shadow-material: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 10px 30px 0 rgb(var(--shadow-color) / var(--shadow-opacity));
+
+  /* Materials — the frosted layer for what floats over content (bars, sheets,
+   * menus). Used through .material-thin|regular|thick (below), never a raw
+   * backdrop-blur. A material is a surface at partial alpha, so it is judged
+   * over the worst backdrop of the mode, not alone: the alpha floors are
+   * enforced by scripts/check-contrast.js (see scripts/contrast-pairs.js,
+   * MATERIALS) and by createTheme for an app's own theme. Each alpha is the
+   * smallest whole 2% that passes every pair its level carries:
+   *   thin    headline                 (a control on a bar: an icon, a short label;
+   *                                    its focus ring is drawn outside it)
+   *   regular + body, label, focus ring (bars, the tab bar, a floating sidebar)
+   *   thick   + description, caption   (sheets, menus, modals, toasts, tooltips)
+   * Dark needs more: its surfaces are close to the backdrop it must hide.
+   * The fallbacks (reduced transparency, more contrast, forced colors, no
+   * backdrop-filter, data-materials="opaque") are below the .dark rule. */
+  --material-alpha-thin: 58%;
+  --material-alpha-regular: 80%;
+  --material-alpha-thick: 86%;
+  --color-material-thin: color-mix(in srgb, var(--color-surface-chrome) var(--material-alpha-thin), transparent);
+  --color-material-regular: color-mix(in srgb, var(--color-surface-chrome) var(--material-alpha-regular), transparent);
+  --color-material-thick: color-mix(in srgb, var(--color-surface-overlay) var(--material-alpha-thick), transparent);
+  --material-blur-thin: 16px;
+  --material-blur-regular: 24px;
+  --material-blur-thick: 32px;
+  --material-saturate: 180%;
+  --material-filter-thin: blur(var(--material-blur-thin)) saturate(var(--material-saturate));
+  --material-filter-regular: blur(var(--material-blur-regular)) saturate(var(--material-saturate));
+  --material-filter-thick: blur(var(--material-blur-thick)) saturate(var(--material-saturate));
+  /* The light top edge and the 1px outline, from the neutral ramp so a
+   * neutral override tints them. */
+  --color-material-highlight: color-mix(in srgb, var(--zabi-base-50) 60%, transparent);
+  --color-material-rim: color-mix(in srgb, var(--zabi-base-900) 9%, transparent);
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -1111,13 +1150,25 @@ body {
   --color-action-danger-subtle-hover: var(--color-error-200);
   --color-action-danger-text: var(--color-error-50);
 
-  /* Shadow Colors — black, not the light theme's ink tint */
+  /* Shadow Colors — black, not the light theme's ink tint. Darker than light:
+   * a shadow barely reads on a dark page. */
   --shadow-color: 0 0 0;
-  --shadow-opacity: 0.3;
-  --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-opacity: 0.24;
+  --shadow-opacity-contact: 0.3;
+  --shadow-sm: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 2px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-md: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 6px 14px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-lg: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 10px 30px 0 rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-xl: 0 2px 4px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 20px 50px -8px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-material: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 10px 30px 0 rgb(var(--shadow-color) / var(--shadow-opacity));
+
+  /* Materials — the alphas differ (see @theme). The fills are not restated:
+   * they follow the surface tokens above, and leaving them out of this rule
+   * is what lets the fallbacks below win in dark. */
+  --material-alpha-thin: 66%;
+  --material-alpha-regular: 76%;
+  --material-alpha-thick: 98%;
+  --color-material-highlight: color-mix(in srgb, var(--zabi-base-50) 14%, transparent);
+  --color-material-rim: color-mix(in srgb, var(--zabi-base-50) 12%, transparent);
 
   /* Not a token: tells the browser the page is dark, so what it draws itself
    * (date and time pickers, scrollbars, autofill, the caret of a native
@@ -1127,6 +1178,101 @@ body {
    * the dark media query, [data-theme="auto"], and every one of them carries
    * it. Until 8.1 only the attributes set it and the class did not. */
   color-scheme: dark;
+}
+
+/* ========================================
+   MATERIALS — fallbacks and classes
+   ======================================== */
+
+/* @materials-fallback-start
+ * Materials are on by default and become the opaque surface they are made from
+ * (blur off) when the user or the platform asks for it: reduced transparency,
+ * more contrast, forced colors, no backdrop-filter, or data-materials="opaque"
+ * on the root or any ancestor (an app's own switch, for a slow phone). The
+ * fallback re-points the TOKENS, so everything that reads a material gets it.
+ * `:root:root` and the doubled attribute are one class more specific than the
+ * `.dark` rule and than an app's generated theme file, so the fallback wins in
+ * both modes and over an app's own fill. Tokens only: the one thing that is
+ * not a token (the rim under forced colors) is below. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
+  :root:root {
+    --color-material-thin: var(--color-surface-chrome);
+    --color-material-regular: var(--color-surface-chrome);
+    --color-material-thick: var(--color-surface-overlay);
+    --material-filter-thin: none;
+    --material-filter-regular: none;
+    --material-filter-thick: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root:root {
+    --color-material-thin: var(--color-surface-chrome);
+    --color-material-regular: var(--color-surface-chrome);
+    --color-material-thick: var(--color-surface-overlay);
+    --material-filter-thin: none;
+    --material-filter-regular: none;
+    --material-filter-thick: none;
+  }
+}
+
+[data-materials="opaque"][data-materials="opaque"] {
+  --color-material-thin: var(--color-surface-chrome);
+  --color-material-regular: var(--color-surface-chrome);
+  --color-material-thick: var(--color-surface-overlay);
+  --material-filter-thin: none;
+  --material-filter-regular: none;
+  --material-filter-thick: none;
+}
+/* @materials-fallback-end */
+
+/* Fill, backdrop filter, edge and shadow, together. They set no position,
+ * radius or overflow: `rounded-*` and the component's own layout still apply,
+ * and the highlight and rim follow the radius. The shadow goes through
+ * Tailwind's own variable and its box-shadow list, so a `focus-ring` on the
+ * same element still draws its ring. */
+.material-thin,
+.material-regular,
+.material-thick {
+  --tw-shadow:
+    inset 0 1px 0 var(--color-material-highlight),
+    inset 0 0 0 1px var(--color-material-rim),
+    var(--shadow-material);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+}
+
+.material-thin {
+  background-color: var(--color-material-thin);
+  -webkit-backdrop-filter: var(--material-filter-thin);
+  backdrop-filter: var(--material-filter-thin);
+}
+
+.material-regular {
+  background-color: var(--color-material-regular);
+  -webkit-backdrop-filter: var(--material-filter-regular);
+  backdrop-filter: var(--material-filter-regular);
+}
+
+.material-thick {
+  background-color: var(--color-material-thick);
+  -webkit-backdrop-filter: var(--material-filter-thick);
+  backdrop-filter: var(--material-filter-thick);
+}
+
+/* Forced colors drops box-shadow, and with it the rim: the edge is an outline
+ * in a system colour instead. Inset, so it never grows the box. */
+@media (forced-colors: active) {
+  .material-thin,
+  .material-regular,
+  .material-thick {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
 }
 
 /* ========================================

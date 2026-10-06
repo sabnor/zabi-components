@@ -189,10 +189,11 @@ short names: the short ones follow.
 | `--radius-overlay` | `1rem` | Modals, sheets, menus, popovers, toasts |
 | `--radius-pill` | `9999px` | Badges, avatars, status dots |
 | `--shadow-color` | `24 24 27` (dark: `0 0 0`) | The colour of `shadow-sm` and `shadow-lg`, as three space-separated RGB channels |
-| `--shadow-opacity` | `0.14` (dark: `0.3`) | Their strength |
+| `--shadow-opacity` | `0.10` (dark: `0.24`) | The strength of the wide, soft layer of each shadow |
+| `--shadow-opacity-contact` | `0.06` (dark: `0.3`) | The strength of the tight contact layer |
 | `--z-dropdown`, `--z-sticky`, `--z-fixed`, `--z-modal-backdrop`, `--z-modal`, `--z-popover`, `--z-tooltip`, `--z-toast` | 1000 to 1080 | The layer of each floating component, when the app has its own stacking order to fit into |
 
-The two shadow tokens are the only ones here with a separate dark value. A
+The shadow tokens are the only ones here with a separate dark value. A
 `:root` override after the imports replaces both; to keep two values, declare
 the dark one under the dark selectors (see
 [One role in dark only](#one-role-in-dark-only)).
@@ -1201,6 +1202,49 @@ it separately.
 
 Enforced by `scripts/check-control-geometry.js`.
 
+### Materials
+
+Frosted glass is the default for the layer that **floats over content**: bars,
+sheets, menus. It is never for cards, lists, inputs or the page. A material is
+a surface at partial alpha with a backdrop blur, a light top edge, a 1px rim
+and a soft shadow, applied together by one class.
+
+| Class | Fill | Use for | Text it may carry |
+|---|---|---|---|
+| `material-thin` | `--color-material-thin` (from `--color-surface-chrome`) | A single control floating on a bar | headline |
+| `material-regular` | `--color-material-regular` (from `--color-surface-chrome`) | Bars, the tab bar, a floating sidebar | headline, body, label |
+| `material-thick` | `--color-material-thick` (from `--color-surface-overlay`) | Sheets, menus, modals, toasts, tooltips | all five text roles |
+
+Supporting tokens: `--material-alpha-thin|regular|thick`, `--material-blur-thin|regular|thick`
+(16, 24 and 32px), `--material-saturate`, `--color-material-highlight`,
+`--color-material-rim` and `--shadow-material`. The highlight and rim are mixes
+of the neutral ramp (`--zabi-base-50` and `--zabi-base-900`) and the shadow is
+built on `--shadow-color`, so a neutral override tints all of them. A class
+sets no position, radius or overflow: add `rounded-*` yourself. A component
+never writes `backdrop-blur-*` or `backdrop-filter` (`scripts/check-token-violations.js`
+fails it).
+
+**The floor.** A material is judged over the worst backdrop of the mode, not
+alone: the fill is composited over `--zabi-base-950` (light) or `--zabi-base-50`
+(dark), the far ends of the neutral ramp, because a photo can be that dark or
+that bright. On that result the roles above need 4.5:1, and regular and thick
+need the focus ring at 3:1 (a thin control's ring is drawn around it, outside
+the material); the same roles are also held over the mode's own page.
+`npm run check:contrast` and `createTheme` both compute this, so a theme with
+a too-thin fill gets a warning. The alphas for thin, regular and thick are
+light 58, 80, 86 and dark 66, 76, 98: the smallest whole 2% that passes, except
+light thin, which could go lower. Dark needs more because its surfaces are
+close to the backdrop they must hide.
+
+**Fallbacks.** The three fills become the opaque surface they are made from and
+the blur is removed under `prefers-reduced-transparency: reduce`,
+`prefers-contrast: more`, `forced-colors: active`, where `backdrop-filter` is
+unsupported, and wherever the app sets `data-materials="opaque"` on the root or
+any ancestor (a way out for a slow phone). The fallback re-points the tokens,
+so every use of them follows, in both modes and over an app's own fill. Under
+forced colors the rim is a 1px `CanvasText` outline. To set a fill per mode:
+`overrides: { light: { '--color-material-regular': … }, dark: { … } }`.
+
 ### Shadow scale
 
 Elevation in light mode is **two steps**, not a ramp. A shadow says "this is
@@ -1225,8 +1269,10 @@ Rules:
   `app.css` never defines, so no token controls it.
 - Shadows carry elevation in **light mode only**. In dark mode the surface
   levels above do the work — see [Surface elevation levels](#surface-elevation-levels).
-- The light shadow is the ramp's own ink (`--shadow-color: 24 24 27`) at
-  `--shadow-opacity: 0.14`. Dark keeps black at 0.3.
+- The light shadow is the ramp's own ink (`--shadow-color: 24 24 27`). Every
+  step is two layers: a tight contact shadow at `--shadow-opacity-contact`
+  (0.06; dark 0.3) and a wider, softer one at `--shadow-opacity` (0.10; dark
+  0.24). Until 8.1 both layers shared one flat 0.14 (dark 0.3).
 
 Enforced by `scripts/check-token-violations.js`.
 

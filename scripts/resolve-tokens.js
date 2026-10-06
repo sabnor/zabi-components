@@ -23,6 +23,8 @@ export {
     evaluateColorMix,
     resolveTokenValue,
     resolveTokenColor,
+    resolveTokenPaint,
+    compositeOver,
 } from '../create-theme/lib/resolve.js';
 
 /** Custom properties declared directly in a rule or at-rule, later ones winning. */

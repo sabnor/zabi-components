@@ -10,6 +10,8 @@
  * Supported, because it is all the stylesheet uses for a flat colour:
  *   - `var(--token)` and `var(--token, fallback)`, anywhere in a value
  *   - `color-mix(in srgb, <opaque> p%, <opaque>)` (either or both percentages)
+ *   - `color-mix(in srgb, <colour> p%, transparent)` and `rgba()`, as a colour
+ *     with an alpha (resolveTokenPaint), for the materials' fills
  * Anything else (`rgba()`, a mix with `transparent`) is returned as written,
  * for the caller to composite over a surface or to skip.
  */
@@ -138,4 +140,81 @@ export function resolveTokenValue(map, token) {
 export function resolveTokenColor(map, token) {
     const value = resolveTokenValue(map, token);
     return value && HEX.test(value) ? value.toLowerCase() : null;
+}
+
+/* ---------- colours with an alpha ---------- */
+
+/** `#rrggbb` + alpha, or null. `transparent` is alpha 0. */
+function parsePaint(text) {
+    const value = text.trim();
+    if (value === 'transparent') return { hex: '#000000', alpha: 0 };
+    if (HEX.test(value)) return { hex: value.toLowerCase().length === 4 ? toHex(parseHex(value)) : value.toLowerCase(), alpha: 1 };
+    const rgba = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:[\s,/]+([\d.]+%?))?\s*\)$/.exec(value);
+    if (rgba) {
+        const a = rgba[4] === undefined ? 1 : rgba[4].endsWith('%') ? Number.parseFloat(rgba[4]) / 100 : Number(rgba[4]);
+        return { hex: toHex([rgba[1], rgba[2], rgba[3]].map(Number)), alpha: a };
+    }
+    if (value.startsWith('color-mix(')) return mixPaint(value);
+    return null;
+}
+
+/**
+ * `color-mix(in srgb, A p%, B q%)` where either side may be `transparent` or
+ * carry an alpha. Premultiplied, as the browser mixes; a sum under 100% leaves
+ * the result that much more transparent. Null when it cannot be reduced.
+ */
+function mixPaint(value) {
+    const match = /^color-mix\(([\s\S]*)\)$/.exec(value.trim());
+    if (!match) return null;
+    const [space, first, second] = splitTopLevel(match[1]);
+    if (!space || !first || !second || space.replace(/\s+/g, ' ') !== 'in srgb') return null;
+    const operand = (text) => {
+        const t = text.trim();
+        let percent = null;
+        let colourText = t;
+        const trailing = /^([\s\S]*\S)\s+(-?[\d.]+)%$/.exec(t);
+        const leading = /^(-?[\d.]+)%\s+([\s\S]*)$/.exec(t);
+        if (trailing) [, colourText, percent] = trailing;
+        else if (leading) [, percent, colourText] = leading;
+        const paint = parsePaint(colourText);
+        return paint ? { paint, percent: percent === null ? null : Number(percent) } : null;
+    };
+    const a = operand(first);
+    const b = operand(second);
+    if (!a || !b) return null;
+    let pa = a.percent;
+    let pb = b.percent;
+    if (pa === null && pb === null) { pa = 50; pb = 50; }
+    else if (pa === null) pa = 100 - pb;
+    else if (pb === null) pb = 100 - pa;
+    const total = pa + pb;
+    if (total <= 0) return null;
+    const wa = (pa / total) * a.paint.alpha;
+    const wb = (pb / total) * b.paint.alpha;
+    const alpha = wa + wb;
+    if (alpha === 0) return { hex: '#000000', alpha: 0 };
+    const ca = parseHex(a.paint.hex);
+    const cb = parseHex(b.paint.hex);
+    return {
+        hex: toHex(ca.map((channel, i) => (channel * wa + cb[i] * wb) / alpha)),
+        alpha: alpha * Math.min(1, total / 100),
+    };
+}
+
+/**
+ * What a token paints, as `{ hex, alpha }`: a flat colour (alpha 1), a
+ * `color-mix()` with `transparent`, or an `rgba()` tint. Null when the token
+ * is not declared or is not one of those.
+ */
+export function resolveTokenPaint(map, token) {
+    if (map[token] === undefined) return null;
+    const substituted = substituteVars(map, map[token], new Set([token]));
+    return substituted === null ? null : parsePaint(substituted);
+}
+
+/** The colour `paint` makes laid source-over on the opaque `backdropHex`, as hex. */
+export function compositeOver(paint, backdropHex) {
+    const under = parseHex(backdropHex);
+    const over = parseHex(paint.hex);
+    return toHex(over.map((channel, i) => channel * paint.alpha + under[i] * (1 - paint.alpha)));
 }
