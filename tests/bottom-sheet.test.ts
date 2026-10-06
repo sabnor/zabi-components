@@ -190,6 +190,16 @@ describe("BottomSheet snap points", () => {
         expect(state()).toBe("open:half");
     });
 
+    it("draws the focus ring of the grip inside its box, clear of the title row", async () => {
+        await openSheet();
+        const classes = grip().className;
+        expect(classes).toContain("focus-ring");
+        expect(classes).toContain("focus-visible:[--tw-ring-offset-shadow:inset_");
+        expect(classes).toContain("inset_0_0_0_4px_var(--zabi-focus-ring-color)");
+        // The ring-offset utilities are guarded against on focus-ring elements.
+        expect(classes).not.toMatch(/(^|\s)ring-offset-/);
+    });
+
     it("works the grip from the keyboard with Enter and Space", async () => {
         const user = await openSheet();
         await waitFor(() => expect(document.activeElement).toBe(grip()));

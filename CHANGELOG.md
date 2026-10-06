@@ -23,6 +23,13 @@ Whenever token or CSS import API surface changes, include:
   surface in dark is not in the guard: a field edge there is about 2.6:1
   against the sheet, and 3:1 against the field's own fill. (Z-038)
 
+### Fixed
+
+- `BottomSheet`: the keyboard focus ring of the drag grip (a button when the
+  sheet has snap points) reached 4px outside its 44px box and cut across the
+  title row, which starts 28px down. It is drawn inside the box now; same gap
+  and ring, same target size, no layout change.
+
 ### Added
 
 - `--color-progress-fill` (default `--color-action-primary`) and

@@ -393,6 +393,15 @@
      */
     const gripClasses =
         "absolute top-0 left-1/2 flex h-[44px] w-[80px] -translate-x-1/2 cursor-grab items-start justify-center rounded-overlay pt-[10px] active:cursor-grabbing";
+
+    /**
+     * The focus ring of the grip button, drawn inside its box. The usual ring
+     * reaches 4px outside it, and the title row starts 28px down, inside the
+     * 44px box: outside, the ring cut across the title. Same gap and ring,
+     * handed to the same property `.focus-ring` uses, only inset.
+     */
+    const gripFocusClasses =
+        "focus-ring focus-visible:[--tw-ring-offset-shadow:inset_0_0_0_2px_var(--zabi-focus-ring-offset-color),inset_0_0_0_4px_var(--zabi-focus-ring-color)]";
 </script>
 
 <!-- The bar of the grip. Drawn in the text colour where colours are forced:
@@ -455,7 +464,7 @@ a background is dropped there, and the grip would be gone. -->
                     <button
                         type="button"
                         data-sheet-grip
-                        class={cn("focus-ring", gripClasses)}
+                        class={cn(gripFocusClasses, gripClasses)}
                         aria-label={stepTo === "full" ? expandLabel : collapseLabel}
                         onclick={stepSnap}
                     >
