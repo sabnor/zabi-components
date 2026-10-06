@@ -60,7 +60,7 @@ export const layers: Layer[] = [
  */
 export function layerPath(id: ComponentMetadata["category"]): string {
     const first = componentsCatalog[id]?.[0];
-    return first ? `/components/${first.name}` : "/components";
+    return first ? `/components/${first.name}?catalog=${id}` : "/components";
 }
 
 export const componentCount = layers.reduce(

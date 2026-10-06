@@ -6,9 +6,9 @@ This route is the **interactive catalog** for Zabi Components. It mirrors the da
 
 - **`/components`** redirects (302) to the first catalog component (currently the first atom).
 - **`/components/{Name}`** — live page for that component, e.g. **`/components/SidebarNavigation`**. Names match `ComponentMetadata.name` (PascalCase). Wrong casing is corrected with a 301 to the canonical name. Unknown names return **404**.
-- **`?catalog=all`** — when the **All** category is selected, the URL includes this query so the full merged list stays visible while you open different components. Other categories do not need a query string; the path alone identifies the component.
+- **`?catalog=atoms|molecules|organisms`** — narrows the left list to one category, and stays in the address while you open components in it. With no query the list shows every component and **All** is marked.
 
-Category rows still use internal `category:` `href`s with `preventDefault` and `goto()` so picking a category jumps to the first component in that slice (with `?catalog=all` only for **All**).
+Category rows are ordinary links to the first component of that category (with `?catalog=` for every row except **All**).
 
 ## Layout
 

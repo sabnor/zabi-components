@@ -7,14 +7,6 @@
     import { componentsCatalog as components } from "$lib/showcase/components-catalog";
     import SiteFooter from "$lib/marketing/SiteFooter.svelte";
     import { categories } from "$lib/showcase/components-showcase-constants";
-    import {
-        getDocsCategoryIcon,
-        getDocsComponentIcon,
-    } from "$lib/showcase/docs-sidebar-helpers";
-
-    interface PageDataShape {
-        component?: ComponentMetadata;
-    }
 
     type ShowcaseCatalog = ComponentMetadata["category"] | "all";
 
@@ -27,18 +19,20 @@
     let sidebarOpen = $state(false);
     let componentsNavSearch = $state("");
 
+    /**
+     * Every component is listed unless the address names one category
+     * (`?catalog=molecules`). So a component opened from anywhere shows the
+     * whole catalog, with All marked.
+     */
     const selectedCategory = $derived.by((): ShowcaseCatalog => {
-        if ($page.url.searchParams.get("catalog") === "all") {
-            return "all";
-        }
-        return (
-            ($page.data as PageDataShape | undefined)?.component
-                ?.category ?? "atoms"
-        );
+        const named = $page.url.searchParams.get("catalog");
+        return named === "atoms" || named === "molecules" || named === "organisms"
+            ? named
+            : "all";
     });
 
     const catalogQuerySuffix = $derived(
-        $page.url.searchParams.get("catalog") === "all" ? "?catalog=all" : "",
+        selectedCategory === "all" ? "" : `?catalog=${selectedCategory}`,
     );
 
     const currentComponents = $derived.by(() => {
@@ -58,7 +52,7 @@
 
     /**
      * Where a category row leads: the first component of the category, with
-     * `?catalog=all` for the row that lists every one. A real address, so
+     * `?catalog=` naming it; the row that lists every one has none. A real address, so
      * the row works as a link does: in a new tab, copied, and before the
      * page has hydrated. (It was `category:molecules`, a scheme that does
      * not exist, caught by a click handler.)
@@ -70,7 +64,7 @@
      */
     function categoryHref(categoryId: string): string {
         const first = firstInCategory(categoryId);
-        const suffix = categoryId === "all" ? "?catalog=all" : "";
+        const suffix = categoryId === "all" ? "" : `?catalog=${categoryId}`;
         return `/components/${first?.name ?? ""}${suffix}#catalog-${categoryId}`;
     }
 
@@ -80,7 +74,6 @@
                 id: `category-${category.id}`,
                 label: category.label,
                 href: categoryHref(category.id),
-                icon: getDocsCategoryIcon(category.id),
                 badgeText:
                     category.id === "all"
                         ? components.atoms.length +
@@ -96,7 +89,6 @@
                 id: `component-${component.name.toLowerCase()}`,
                 label: component.name,
                 href: `/components/${component.name}${catalogQuerySuffix}`,
-                icon: getDocsComponentIcon(component.name, component.category),
                 group: "secondary",
             }),
         );
