@@ -1208,6 +1208,178 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "PickerField",
+                category: "atoms",
+                description:
+                    "A field that looks like a Select and opens whatever the app gives it, such as its own sheet. One button named by its label and value.",
+                props: [
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The label above the field. It is part of the control's name.",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The text of what is chosen: display text, and the second half of the control's name. formValue is what a form sends.",
+                    },
+                    {
+                        name: "placeholder",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Shown in the placeholder colour while there is no value.",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "An icon or an avatar before the text.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Replaces the value text, for rich content. Give value too: it names the control.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Height of the field: 32, 40 or 48px, as Select, Input and Button. 44px on a touch screen for sm and md.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Not pressable. A disabled link has no href and is aria-disabled.",
+                    },
+                    {
+                        name: "variant",
+                        type: "'default' | 'success' | 'warning' | 'error'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "The edge colour. A message shows under it in the other three.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Status text under the field, with a success, warning or error variant.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Help text under the field, read out with it.",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        description:
+                            "An error under the field, announced. A button has no aria-invalid, so the error is the edge colour and the described-by message.",
+                    },
+                    {
+                        name: "haspopup",
+                        type: "\"dialog\" | \"listbox\" | \"menu\" | \"true\"",
+                        required: false,
+                        defaultValue: "\"dialog\"",
+                        description:
+                            "What it opens: aria-haspopup. Not put on a link.",
+                    },
+                    {
+                        name: "expanded",
+                        type: "boolean",
+                        required: false,
+                        description:
+                            "Whether what it opens is open: aria-expanded, and the chevron turns. Not set unless given. Not put on a link.",
+                    },
+                    {
+                        name: "controls",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of what it opens: aria-controls.",
+                    },
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Makes the control a link, which works without scripts: a page that does the picking. With scripts, onclick may call preventDefault() and open a sheet instead.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        description:
+                            "With formValue, a hidden input submits the choice under this name. Without a name there is no hidden input.",
+                    },
+                    {
+                        name: "formValue",
+                        type: "string",
+                        required: false,
+                        description:
+                            "What the form submits, such as an id.",
+                    },
+                    {
+                        name: "element",
+                        type: "HTMLButtonElement | HTMLAnchorElement | null",
+                        required: false,
+                        description:
+                            "Bindable. The inner button or link: focus it when your sheet closes.",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(event: MouseEvent) => void",
+                        required: false,
+                        description:
+                            "Opens your sheet. The component opens nothing itself.",
+                    },
+                    {
+                        name: "aria-describedby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Ids of other elements that describe the field. The hint and the message are added after them.",
+                    },
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of the control. Generated when omitted.",
+                    },
+                ],
+                variants: ["default", "success", "warning", "error"],
+                examples: [
+                    {
+                        title: "Opens the app's sheet",
+                        description: "A field that shows the chosen pub and opens a BottomSheet",
+                        code: '&lt;PickerField label="Pub" value="The Bishops Arms" expanded={open} onclick={() => (open = true)} /&gt;',
+                    },
+                    {
+                        title: "Link without scripts",
+                        description: "A link to a page that does the picking",
+                        code: '&lt;PickerField label="Pub" placeholder="Choose a pub" href="/pubs/choose" /&gt;',
+                    },
+                ],
+            },
+            {
                 name: "Slider",
                 category: "atoms",
                 description:

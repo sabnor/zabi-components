@@ -62,8 +62,15 @@ const CONTROLS = [
     'atoms/IconButton.svelte',
     'atoms/Input.svelte',
     'atoms/Select.svelte',
+    'atoms/PickerField.svelte',
     'atoms/Slider.svelte',
 ];
+
+/** Where a control's size map is written, when it is not in the component itself. Select and PickerField share one. */
+const SIZE_SOURCE = {
+    'atoms/Select.svelte': 'util/field-control.ts',
+    'atoms/PickerField.svelte': 'util/field-control.ts',
+};
 
 /** Sizes below 44px, which have to grow on a coarse pointer. `lg` (48px) does not. */
 const TOUCH_SIZES = ['sm', 'md'];
@@ -182,7 +189,7 @@ function main() {
     // 1. Heights
     const table = {};
     for (const rel of CONTROLS) {
-        const full = path.join(componentsDir, rel);
+        const full = path.join(componentsDir, SIZE_SOURCE[rel] ?? rel);
         if (!fs.existsSync(full)) {
             failures.push(`${rel} not found`);
             continue;

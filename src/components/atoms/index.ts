@@ -11,6 +11,7 @@ export { default as CardContent } from './CardContent.svelte';
 export { default as CardFooter } from './CardFooter.svelte';
 export { default as Input } from './Input.svelte';
 export { default as Textarea } from './Textarea.svelte';
+export { default as PickerField } from './PickerField.svelte';
 export { default as Select } from './Select.svelte';
 export { DEFAULT_SELECT_STRINGS } from '../util/select.js';
 export type { SelectStrings, SelectPresentation } from '../util/select.js';

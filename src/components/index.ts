@@ -11,6 +11,7 @@ export { default as CardContent } from './atoms/CardContent.svelte';
 export { default as CardFooter } from './atoms/CardFooter.svelte';
 export { default as Input } from './atoms/Input.svelte';
 export { default as Textarea } from './atoms/Textarea.svelte';
+export { default as PickerField } from './atoms/PickerField.svelte';
 export { default as Select } from './atoms/Select.svelte';
 export { default as Slider } from './atoms/Slider.svelte';
 export { default as ColorPicker } from './atoms/ColorPicker.svelte';

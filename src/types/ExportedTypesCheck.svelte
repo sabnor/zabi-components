@@ -19,6 +19,7 @@
     import Input from "../components/atoms/Input.svelte";
     import Progress from "../components/atoms/Progress.svelte";
     import Rating from "../components/atoms/Rating.svelte";
+    import PickerField from "../components/atoms/PickerField.svelte";
     import Select from "../components/atoms/Select.svelte";
     import Skeleton from "../components/atoms/Skeleton.svelte";
     import Textarea from "../components/atoms/Textarea.svelte";
@@ -57,6 +58,7 @@
         ProgressProps,
         RatingProps,
         SegmentedControlProps,
+        PickerFieldProps,
         SelectProps,
         SkeletonProps,
         TextareaProps,
@@ -95,6 +97,7 @@
         progress?: ProgressProps;
         rating?: RatingProps;
         segmentedControl?: SegmentedControlProps;
+        pickerField?: PickerFieldProps;
         select?: SelectProps;
         skeleton?: SkeletonProps;
         textarea?: TextareaProps;
@@ -132,6 +135,7 @@
         progress = {},
         rating = {},
         segmentedControl = { options: [] },
+        pickerField = {},
         select = {},
         skeleton = {},
         textarea = {},
@@ -169,6 +173,7 @@
 <Progress {...progress} />
 <Rating {...rating} />
 <SegmentedControl {...segmentedControl} />
+<PickerField {...pickerField} />
 <Select {...select} />
 <Skeleton {...skeleton} />
 <Textarea {...textarea} />

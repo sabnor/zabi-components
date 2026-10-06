@@ -328,6 +328,67 @@ export interface SelectProps
     className?: string;
 }
 
+// PickerField component props
+export interface PickerFieldProps
+    extends Omit<
+        HTMLButtonAttributes,
+        | 'class'
+        | 'value'
+        | 'name'
+        | 'disabled'
+        | 'type'
+        | 'onclick'
+        | 'aria-describedby'
+        | 'aria-haspopup'
+        | 'aria-expanded'
+        | 'aria-controls'
+        | 'children'
+    > {
+    /** Id of the control. Omit to auto-generate. */
+    id?: string;
+    /** The label above the field. It is part of the control's name. */
+    label?: string;
+    /** The text of what is chosen. It is display text; `formValue` is what a form sends. */
+    value?: string;
+    /** Shown in the placeholder colour while there is no `value`. */
+    placeholder?: string;
+    /** An icon or an avatar before the text. */
+    leading?: Snippet;
+    /** Replaces the value text, for rich content. The control is still named by `value`, so give that too. */
+    children?: Snippet;
+    size?: 'sm' | 'md' | 'lg';
+    disabled?: boolean;
+    /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
+    message?: string;
+    variant?: 'default' | 'success' | 'warning' | 'error';
+    /** Help text under the field, read out with it. */
+    hint?: string;
+    /** An error under the field, announced. A button cannot take `aria-invalid`, so the error is the error edge colour and the described-by message; it wins over `variant` and `message`. */
+    error?: string;
+    /** What the control opens: `aria-haspopup`. Default `"dialog"`. Not put on a link. */
+    haspopup?: 'dialog' | 'listbox' | 'menu' | 'true';
+    /** Whether what it opens is open now: `aria-expanded`, and the chevron turns. Leave it out and neither is set. Not put on a link. */
+    expanded?: boolean;
+    /** Id of what it opens: `aria-controls`. */
+    controls?: string;
+    /** Makes the control a link to this address, which works without scripts: a page that does the picking. With scripts, `onclick` may call `preventDefault()` and open a sheet instead. */
+    href?: string;
+    /** With `href`: where the link opens. */
+    target?: HTMLAnchorAttributes['target'];
+    /** With `href`: the link's relationship, such as `noopener`. */
+    rel?: HTMLAnchorAttributes['rel'];
+    /** The name a hidden input submits `formValue` under. Without it there is no hidden input. */
+    name?: string;
+    /** What the form submits for the choice, such as an id. */
+    formValue?: string;
+    /** The inner `<button>` (or `<a>`). Bindable: the app focuses it when its sheet closes, so a keyboard user is back where they were. */
+    element?: HTMLButtonElement | HTMLAnchorElement | null;
+    /** Ids of other elements that describe the field. The hint and the message are added after them. */
+    'aria-describedby'?: string | null;
+    onclick?: (event: MouseEvent) => void;
+    class?: string;
+}
+
 export interface SelectEvents {
     change: { value: string; event: Event };
 }
@@ -420,7 +481,7 @@ export interface ModalEvents {
 
 // Alert component props
 export interface AlertProps {
-    variant?: ExtendedSemanticVariant;
+    variant?: ExtendedSemanticVariant | 'brand';
     title?: string;
     message?: string;
     closable?: boolean;
@@ -1045,6 +1106,7 @@ export type Card = ZabiComponent<CardProps>;
 export type Input = ZabiComponent<InputProps, InputEvents>;
 export type Checkbox = ZabiComponent<CheckboxProps, CheckboxEvents>;
 export type Select = ZabiComponent<SelectProps, SelectEvents>;
+export type PickerField = ZabiComponent<PickerFieldProps>;
 export type Textarea = ZabiComponent<TextareaProps, TextareaEvents>;
 export type Modal = ZabiComponent<ModalProps, ModalEvents>;
 export type Alert = ZabiComponent<AlertProps>;
