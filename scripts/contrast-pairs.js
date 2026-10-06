@@ -34,11 +34,54 @@ const EVERY_SURFACE = Object.keys(SURFACE_TOKEN);
 const UI_PARTS = [
     ['focus ring', '--color-focus-ring', EVERY_SURFACE],
     ['nav focus ring', '--color-nav-menu-focus', EVERY_SURFACE],
-    // `.focus-ring--danger` reads --color-error.
-    ['danger focus ring', '--color-error', EVERY_SURFACE],
+    // `.focus-ring--danger` reads this role, which is --color-error.
+    ['danger focus ring', '--color-focus-ring-danger', EVERY_SURFACE],
     ['muted focus ring', '--color-focus-ring-muted', EVERY_SURFACE],
     ['control boundary', '--color-control-border', EVERY_SURFACE],
 ];
+
+/**
+ * A brand block (`bg-action-primary on-brand`) and an accent block
+ * (`bg-accent on-accent`): the fill, and the label colour the theme holds to
+ * 4.5:1 against it.
+ */
+export const BLOCKS = [
+    { name: 'brand', selector: '.on-brand', fill: '--color-action-primary', on: '--color-on-brand' },
+    { name: 'accent', selector: '.on-accent', fill: '--color-accent', on: '--color-on-accent' },
+];
+
+/**
+ * What a control writes with when it has no fill of its own, and so what is
+ * drawn directly on a block: [role, the least it needs against the fill].
+ * Inside a block every one of these has to be re-pointed, and to something
+ * that reads there. They were the page's colours: a Checkbox label 2.15:1 on
+ * a brand block in light and 1.52:1 in dark, an outline Button's label 3.65
+ * and 2.05, the danger ring 1.06.
+ */
+export const BLOCK_ROLES = [
+    ['--color-headline', AA_NORMAL],
+    ['--color-body', AA_NORMAL],
+    ['--color-label', AA_NORMAL],
+    ['--color-description', AA_NORMAL],
+    ['--color-caption', AA_NORMAL],
+    ['--color-link', AA_NORMAL],
+    ['--color-link-hover', AA_NORMAL],
+    ['--color-border', AA_LARGE],
+    ['--color-border-medium', AA_LARGE],
+    ['--color-border-strong', AA_LARGE],
+    ['--color-control-border', AA_LARGE],
+    ['--color-focus-ring', AA_LARGE],
+    ['--color-focus-ring-muted', AA_LARGE],
+    ['--color-focus-ring-danger', AA_LARGE],
+    ['--color-nav-menu-focus', AA_LARGE],
+];
+
+/**
+ * A `bg-*` class with one of these names is a surface: role text is written
+ * on it. Inside a block it has to be in the list that gives the roles back
+ * their theme values, or its text is the block's label colour on a card.
+ */
+export const SURFACE_CLASS = /^(surface-[\w-]+|card(-elevated)?|background|input(-disabled)?|[\w-]+-subtle|nav-menu-active|action-disabled)$/;
 
 export function buildPairs() {
     const pairs = [];

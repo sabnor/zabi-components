@@ -453,6 +453,11 @@
    * more in light, 2.49:1 on the dark elevated surface. .dark pins it one step
    * lighter; it is held to 3:1 on every surface level in both themes. */
   --color-focus-ring-muted: var(--color-base-500);
+  /* `.focus-ring--danger`: the ring of a destructive control. It is the error
+   * colour; a role of its own so that a brand or accent block can re-point
+   * it with the other rings (the error colour is about 1:1 on a brand fill,
+   * and a focused danger Button there showed no ring). */
+  --color-focus-ring-danger: var(--color-error);
 
   /* Primary Colors */
   --color-primary: var(--color-brand-600);
@@ -1742,8 +1747,10 @@ body {
   }
 
   /** Semantic variants (optional): keep one geometry, swap token. */
+  /** The fallback is what this rule read before the role existed, for an
+   *  app whose own theme file does not declare it. */
   .focus-ring--danger {
-    --zabi-focus-ring-color: var(--color-error);
+    --zabi-focus-ring-color: var(--color-focus-ring-danger, var(--color-error));
   }
 
   /** Neutral ring for ghost and link controls. A role, not a ramp step: see
@@ -1768,14 +1775,79 @@ body {
    *
    * The ring tokens are re-pointed as tokens, so they reach every ring in the
    * block: `.focus-ring`, its muted and nav variants, and the rings components
-   * draw themselves. `.focus-ring--danger` keeps `--color-error`.
+   * draw themselves, the danger ring among them: it is the error colour,
+   * which is about 1:1 against a brand fill.
+   *
+   * It does a third thing, for controls. The roles a control writes with when
+   * it has no fill of its own are re-pointed at the label colour too: the
+   * text roles (a Checkbox's label, a field's label and help text, the label
+   * of an outline, ghost, link or secondary Button) and the edges (an outline
+   * Button's border, the control boundary). They are the page's colours, 1.5:1
+   * to 3.7:1 on a brand fill; every one of them is the label colour here,
+   * which the theme holds to 4.5:1 against the fill
+   * (scripts/check-contrast.js, "on a block").
+   *
+   * Inside a block, anything that paints a background of its own is a
+   * surface again: a Card, a field, an Alert. Its text is on that background,
+   * not on the block, so there the roles go back to the theme's own values.
+   * "Paints its own background" is read from the class: the surface, card,
+   * field and tinted fills listed below (scripts/check-contrast.js fails when
+   * a component uses one that is not listed), and `list-group`. A fill of a
+   * role that brings its own label (`bg-action-primary`, `bg-accent`)
+   * needs nothing, and a translucent one (`bg-action-secondary`, a hover
+   * fill) is still the block showing through. For a background set any other
+   * way, say it with `on-surface`. The rings go back one step further in,
+   * on what is inside the surface: a control's own ring is drawn around it,
+   * on the block.
+   *
+   * To go back, a value has to be kept: a custom property re-pointed on an
+   * element is all its descendants can see. `--zabi-theme-*` are the roles
+   * as they are just outside the block: written on the block's parent, where
+   * they still have the theme's values (light or dark, whichever is in force
+   * there), inherited into the block and never re-pointed. An element that is
+   * itself inside a block does not write them again: there the roles are the
+   * block's, and what it inherited from outside is still right.
+   *
+   * These selectors add no specificity (`:where`), so a block inside a
+   * surface inside a block is a block again.
    */
+  :where(:has(> .on-brand, > .on-accent):not(.on-brand, .on-accent, .on-brand *, .on-accent *)) {
+    --zabi-theme-headline: var(--color-headline);
+    --zabi-theme-body: var(--color-body);
+    --zabi-theme-label: var(--color-label);
+    --zabi-theme-description: var(--color-description);
+    --zabi-theme-caption: var(--color-caption);
+    --zabi-theme-link: var(--color-link);
+    --zabi-theme-link-hover: var(--color-link-hover);
+    --zabi-theme-border: var(--color-border);
+    --zabi-theme-border-medium: var(--color-border-medium);
+    --zabi-theme-border-strong: var(--color-border-strong);
+    --zabi-theme-control-border: var(--color-control-border);
+    --zabi-theme-focus-ring: var(--color-focus-ring);
+    --zabi-theme-focus-ring-muted: var(--color-focus-ring-muted);
+    --zabi-theme-nav-menu-focus: var(--color-nav-menu-focus);
+    --zabi-theme-focus-ring-offset: var(--color-focus-ring-offset);
+    --zabi-theme-focus-ring-danger: var(--color-focus-ring-danger, var(--color-error));
+  }
+
   .on-brand {
     color: var(--color-on-brand);
     --color-focus-ring: var(--color-on-brand);
     --color-focus-ring-muted: var(--color-on-brand);
     --color-nav-menu-focus: var(--color-on-brand);
     --color-focus-ring-offset: var(--color-action-primary);
+    --color-focus-ring-danger: var(--color-on-brand);
+    --color-headline: var(--color-on-brand);
+    --color-body: var(--color-on-brand);
+    --color-label: var(--color-on-brand);
+    --color-description: var(--color-on-brand);
+    --color-caption: var(--color-on-brand);
+    --color-link: var(--color-on-brand);
+    --color-link-hover: var(--color-on-brand);
+    --color-border: var(--color-on-brand);
+    --color-border-medium: var(--color-on-brand);
+    --color-border-strong: var(--color-on-brand);
+    --color-control-border: var(--color-on-brand);
   }
 
   .on-accent {
@@ -1784,6 +1856,62 @@ body {
     --color-focus-ring-muted: var(--color-on-accent);
     --color-nav-menu-focus: var(--color-on-accent);
     --color-focus-ring-offset: var(--color-accent);
+    --color-focus-ring-danger: var(--color-on-accent);
+    --color-headline: var(--color-on-accent);
+    --color-body: var(--color-on-accent);
+    --color-label: var(--color-on-accent);
+    --color-description: var(--color-on-accent);
+    --color-caption: var(--color-on-accent);
+    --color-link: var(--color-on-accent);
+    --color-link-hover: var(--color-on-accent);
+    --color-border: var(--color-on-accent);
+    --color-border-medium: var(--color-on-accent);
+    --color-border-strong: var(--color-on-accent);
+    --color-control-border: var(--color-on-accent);
+  }
+
+  /* A surface inside a block: its text and edges are the theme's again. */
+  :where(.on-brand, .on-accent)
+    :where(
+      .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
+      .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
+      .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
+      .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
+      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-energetic-subtle, .bg-error-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
+      .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
+    ) {
+    color: var(--zabi-theme-body);
+    --color-headline: var(--zabi-theme-headline);
+    --color-body: var(--zabi-theme-body);
+    --color-label: var(--zabi-theme-label);
+    --color-description: var(--zabi-theme-description);
+    --color-caption: var(--zabi-theme-caption);
+    --color-link: var(--zabi-theme-link);
+    --color-link-hover: var(--zabi-theme-link-hover);
+    --color-border: var(--zabi-theme-border);
+    --color-border-medium: var(--zabi-theme-border-medium);
+    --color-border-strong: var(--zabi-theme-border-strong);
+    --color-control-border: var(--zabi-theme-control-border);
+  }
+
+  /* And what is inside that surface is ringed in the theme's ring again. */
+  :where(.on-brand, .on-accent)
+    :where(
+      .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
+      .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
+      .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
+      .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
+      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-energetic-subtle, .bg-error-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
+      .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
+    )
+    > :where(*) {
+    --color-focus-ring: var(--zabi-theme-focus-ring);
+    --color-focus-ring-muted: var(--zabi-theme-focus-ring-muted);
+    --color-nav-menu-focus: var(--zabi-theme-nav-menu-focus);
+    --color-focus-ring-offset: var(--zabi-theme-focus-ring-offset);
+    --color-focus-ring-danger: var(--zabi-theme-focus-ring-danger);
   }
 
   /**

@@ -119,6 +119,7 @@ already the right value in each mode. Use the same roles in your own CSS.
 - `--color-on-accent` - Text on a solid accent fill
 - `--color-link`, `--color-focus-ring` - Links and the focus ring
 - `--color-focus-ring-muted` - The neutral ring of ghost and link controls (`.focus-ring--muted`)
+- `--color-focus-ring-danger` - The ring of a destructive control (`.focus-ring--danger`); `--color-error` by default
 - `--color-control-border` (`border-control-border`) - The edge of a control that has nothing else to be seen by, such as the outline of an empty Rating star. `--color-border-strong` is a decorative edge and is under 3:1 on the dark elevated and overlay surfaces
 - `--color-success`, `--color-warning`, `--color-error`, `--color-info` - States, each with `-subtle`, `-border` and `-text`
 

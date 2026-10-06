@@ -12,6 +12,27 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- **`--color-focus-ring-danger`**, the ring of a danger control (the error
+  colour by default; the on-colour inside a block), and the `on-surface`
+  class for a surface of your own inside a block.
+
+### Changed
+
+### Fixed
+
+- **Controls directly on an `on-brand` or `on-accent` block are legible.**
+  Inside the two block classes the text and edge roles (headline, body, label,
+  description, caption, link, borders, control border) and the danger focus
+  ring now resolve to the block's on-colour, so checkbox and radio labels,
+  outline, ghost and secondary buttons and links read at 4.5:1 or better. A
+  surface inside a block (a card, a field, a list group, or the new
+  `on-surface` class) gets the theme's colours and rings back. Still not
+  legible directly on a block, so put them on a card: an empty or ticked
+  checkbox, radio or toggle, a filled Rating star, and status message text.
+  Needs `:has()`.
+
 ## [8.1.0-beta.3] - 2026-10-06
 
 A local preview build on top of 8.1.0-beta.2, not published to npm. It fixes

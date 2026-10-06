@@ -223,6 +223,7 @@ should too: `var(--color-action-primary)` or the `bg-action-primary` class, not
 | `--color-accent`, `-hover`, `-active`, `-subtle`, `-border`, `-text` | The second brand colour |
 | `--color-focus-ring`, `--color-focus-ring-offset`, `--color-focus` | The focus ring and the gap around it |
 | `--color-focus-ring-muted` | The neutral ring of ghost and link controls (`.focus-ring--muted`); 3:1 or more on every surface level |
+| `--color-focus-ring-danger` | The ring of a destructive control (`.focus-ring--danger`). It is `--color-error`; a role of its own so that a brand or accent block can re-point it |
 | `--color-control-border` | The edge of a control that has nothing else to be seen by, such as an empty Rating star; 3:1 or more on every surface level |
 | `--color-link`, `--color-link-hover` | Links |
 | `--color-headline`, `--color-body`, `--color-description`, `--color-caption`, `--color-label` | Text |
@@ -435,8 +436,9 @@ they are about 2:1 to 3.7:1. Three things make a block work.
 ```
 
 The class sets the block's text colour to the fill's label colour
-(`--color-on-brand` or `--color-on-accent`) and re-points the focus ring for
-everything inside it.
+(`--color-on-brand` or `--color-on-accent`). For everything inside the block
+it re-points the focus rings, and the roles a control writes with when it has
+no fill of its own (see 3).
 
 **2. Give text a tone that belongs on a fill.** `Heading` and `Text` take:
 
@@ -446,57 +448,120 @@ everything inside it.
 | `on-brand` | `--color-on-brand` | on `bg-action-primary`, wherever the element is |
 | `on-accent` | `--color-on-accent` | on `bg-accent` |
 
-`Heading` is `tone="headline"` by default and `Text` `tone="body"`; those are
-for the page and cards. A `Card` placed inside a block is a surface again:
-give its text the usual tones.
+`Heading` is `tone="headline"` by default and `Text` `tone="body"`. Inside a
+block both roles are the block's label colour, so the defaults are legible
+there too; `inherit` says it outright, and is what works on a block of a
+colour of your own.
 
-**3. Use a control that carries its own label.** Only the solid variants bring
-a label colour with them. `secondary`, `outline`, `ghost` and `link` use the
-page's text colours and are not legible on a fill. Measured: the label on the
-control's own fill (4.5:1 needed), and the control's fill against the block
-(3:1 for the button to be seen as a shape).
+**3. Controls on the block.** A control with no fill of its own writes with
+the page's roles: a Checkbox's label is `--color-label`, an outline Button's
+`--color-headline` with a `--color-border` edge, help text
+`--color-description`. On a brand fill those were 1.5:1 to 3.7:1. Inside
+`on-brand` and `on-accent` they are re-pointed at the block's label colour:
 
-On a brand block, `bg-action-primary`:
+- the text roles: `--color-headline`, `--color-body`, `--color-label`,
+  `--color-description`, `--color-caption`, `--color-link`,
+  `--color-link-hover`
+- the edges: `--color-border`, `--color-border-medium`,
+  `--color-border-strong`, `--color-control-border`
+- the rings: `--color-focus-ring`, `--color-focus-ring-muted`,
+  `--color-focus-ring-danger`, `--color-nav-menu-focus`, with the gap
+  (`--color-focus-ring-offset`) in the block's own colour
 
-| `Button variant` | Default theme, light | Default theme, dark | `#0026EA` pinned + `#FDD715` pinned accent, light | The same, dark |
+So every one of them measures what the label colour measures against the
+fill, which the theme holds to 4.5:1 (`scripts/check-contrast.js` fails when a
+block stops re-pointing one, or points it at something that does not read):
+
+| Inside | Default theme, light | Default theme, dark | `#0026EA` pinned + `#FDD715` pinned accent, light | The same, dark |
 |---|---|---|---|---|
-| `accent` | label 5.02, fill 1.03 against the block | label 7.11, fill 1.03 | label 11.66, fill 6.05 | label 11.66, fill 1.60 |
-| `danger` | label 4.78, fill 1.06 | label 7.10, fill 1.04 | label 4.78, fill 1.65 | label 7.10, fill 1.03 |
-| `primary` | the block's own colour: invisible | invisible | invisible | invisible |
-| `secondary` | label 3.14 | label 1.90 | label 1.85 | label 1.90 |
-| `outline`, `ghost` | label 3.65 | label 2.05 | label 2.08 | label 2.05 |
-| `link` | label 1.39 | label 1.34 | label 1.00 | label 1.34 |
+| `on-brand` | 4.86 | 7.21 | 8.52 | 7.07 |
+| `on-accent` | 5.02 | 7.11 | 11.66 | 11.66 |
 
-On an accent block, `bg-accent`:
+That is the label of a Checkbox, Radio, Toggle, Input, Select, Textarea and
+Rating, a field's help text, `Text` and `Heading` in their default tones, a
+plain link, the label of an `outline`, `ghost` and `link` Button and
+IconButton, the border of an `outline` one, and the focus ring of all of
+them, the danger ring included. They were, on a brand block in the default
+theme: labels 2.15 (light) and 1.52 (dark), `outline` and `ghost` 3.65 and
+2.05, `link` 1.39 and 1.34, the danger ring 1.06 and 1.04.
+
+The Button variants, on a brand block (`bg-action-primary`). "Label" is
+against the button's own fill, or against the block where the button has
+none; "fill" is the button's fill against the block (3:1 for the button to be
+seen as a shape):
 
 | `Button variant` | Default theme, light | Default theme, dark | `#0026EA` + `#FDD715` pinned, light | The same, dark |
 |---|---|---|---|---|
+| `outline`, `ghost`, `link` | label 4.86 | label 7.21 | label 8.52 | label 7.07 |
+| `secondary` | label 5.65 | label 7.75 | label 9.58 | label 7.63 |
+| `accent` | label 5.02, fill 1.03 | label 7.11, fill 1.03 | label 11.66, fill 6.05 | label 11.66, fill 1.60 |
+| `danger` | label 4.78, fill 1.06 | label 7.10, fill 1.04 | label 4.78, fill 1.65 | label 7.10, fill 1.03 |
+| `primary` | the block's own colour: invisible | invisible | invisible | invisible |
+
+On an accent block (`bg-accent`):
+
+| `Button variant` | Default theme, light | Default theme, dark | `#0026EA` + `#FDD715` pinned, light | The same, dark |
+|---|---|---|---|---|
+| `outline`, `ghost`, `link` | label 5.02 | label 7.11 | label 11.66 | label 11.66 |
+| `secondary` | label 5.86 | label 7.73 | label 9.43 | label 11.92 |
 | `primary` | label 4.86, fill 1.03 | label 7.21, fill 1.03 | label 8.52, fill 6.05 | label 7.07, fill 1.60 |
 | `danger` | label 4.78, fill 1.03 | label 7.10, fill 1.01 | label 4.78, fill 3.66 | label 7.10, fill 1.65 |
 | `accent` | invisible | invisible | invisible | invisible |
-| `secondary`, `outline`, `ghost` | label 3.03 to 3.53 | label 1.93 to 2.10 | label 10.17 to 12.58 | label 1.25 to 1.28 |
-| `link` | label 1.35 | label 1.37 | label 6.05 | label 1.19 |
 
-So: on a brand block use `variant="accent"`, and on an accent block
-`variant="primary"`. The label always passes. Whether the button also stands
-out as a shape depends on how far apart the two brand colours are: an
+So the quiet variants (`outline`, `ghost`, `link`, `secondary`) are legible on
+either block in any theme. A solid one keeps its own label; whether it also
+stands out as a shape depends on how far apart the two brand colours are: an
 ultramarine and a yellow are 6:1 apart in light, the library's own blue and
-citron 1.03:1. Where they are close, the label is what shows the button; give
-it room, or put the action on a card. The quiet variants are legible on a
-block only by accident of the colours (a dark-text accent in light), not by
-design.
+citron 1.03:1. Where they are close, use a quiet variant for a second action,
+or put the action on a card.
+
+**What a block cannot make legible: put it on a card.** Some parts of a
+control are not written with a role that a block can re-point. They are drawn
+with a neutral step, with the primary fill itself, or with a status colour.
+Against the block:
+
+| Part | On a brand block (default light, dark; pinned light, dark) | On an accent block |
+|---|---|---|
+| Checkbox or Radio box, and the Toggle track, empty | 1.89, 3.44; 3.32, 3.43 | 1.96, 3.35; 1.82, 5.49 |
+| the same, ticked or on, and a filled Rating star (the primary fill) | 1.00 in all four | 1.03, 1.03; 6.05, 1.60 |
+| the text of an error or other status message | 1.47, 1.31; 1.19, 1.31 | 1.42, 1.34; 5.07, 1.22 |
+| the fill of a field (Input, Select, Textarea) | 4.86, 7.31; 8.52, 7.30 | 5.02, 7.12; 1.41, 11.67 |
+
+The label of such a control is legible on the block and the control itself
+may not be: a ticked Checkbox on a brand block is a tick with no box around
+it. Put Checkbox, Radio, Toggle, Calendar and anything that shows a validation
+message on a card inside the block. A field is a surface of its own and
+carries its text; it only disappears on an accent as light as the field (the
+pinned yellow, 1.41). Rating has properties for its colours
+(`--zabi-rating-on`, `--zabi-rating-off`, below).
+
+**A surface inside a block is a surface again.** Anything inside the block
+that paints a surface (a `Card`, a field, an `Alert`, a `list-group`: the
+`bg-card`, `bg-surface-*`, `bg-input` and `bg-*-subtle` fills) gets the
+theme's own roles back, and its own text colour, so a card needs nothing: a
+Checkbox on it has the page's label colour and the theme's focus ring. For a
+background the library cannot recognise (an inline style, a class of your
+own), add `on-surface`:
+
+```svelte
+<section class="bg-action-primary on-brand p-6">
+  <Button variant="outline">Hoppa över</Button>
+  <div class="on-surface rounded-container p-4" style="background: #fffbeb">
+    <Checkbox label="Kom ihåg mig" />
+  </div>
+</section>
+```
+
+A block inside that surface is a block again.
 
 **The focus ring.** The default ring (`--color-focus-ring`) is the primary
 fill, so on a brand block it measures 1.00:1 against the background and only
-its 2px gap shows. Inside `on-brand` the ring is `--color-on-brand` and the gap
-is the block's colour: 4.86:1 (default, light), 7.21:1 (default, dark), 8.52:1
-(`#0026EA` pinned). Inside `on-accent` it is `--color-on-accent`: 5.02:1,
-7.11:1, and 11.66:1 on the pinned yellow. The muted and nav rings follow. The
-danger ring keeps `--color-error`, which is 1.0:1 to 1.7:1 on a brand block:
-do not put a destructive action there.
+its 2px gap shows; the danger ring is the error colour, 1.0:1 to 1.7:1 there.
+Inside a block every ring is the block's label colour and the gap is the
+block's colour: the numbers of the first table above.
 
-To do the same on a block of another colour, set the two tokens on it
-yourself:
+To do the same on a block of another colour, set the colour and the ring on
+it yourself, and give text `tone="inherit"`:
 
 ```css
 .my-block {
@@ -505,6 +570,12 @@ yourself:
   --color-focus-ring-offset: #7a1f5c; /* the block's own colour */
 }
 ```
+
+The roles of 3 are not re-pointed there: a quiet Button or a Checkbox on such
+a block keeps the page's colours. Re-point the ones you need the same way
+(`--color-label: #ffffff`, `--color-headline: #ffffff`, `--color-border:
+#ffffff`), and then mark any card inside it `on-surface` and set them back
+there.
 
 ## Component-level properties
 
@@ -997,7 +1068,7 @@ needs a new one, add the rule there; `tests/state-variants.test.ts`
 render — through the same token chain the CSS uses — in **both** themes, and
 fails below WCAG AA. It also holds the focus ring to 3:1 against the page, a
 card, and the offset gap that separates it from a primary button. The muted
-ring (`--color-focus-ring-muted`), the danger ring and the control boundary
+ring (`--color-focus-ring-muted`), the danger ring (`--color-focus-ring-danger`) and the control boundary
 (`--color-control-border`), and the brand and nav rings, are held to 3:1 on
 all five surfaces: page, card, inset, elevated and overlay. The colour a focus-ring rule
 uses must be a token in that list (`scripts/contrast-pairs.js`), so a ring

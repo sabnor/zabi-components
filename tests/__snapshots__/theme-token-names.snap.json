@@ -130,6 +130,7 @@
   "--color-focus",
   "--color-focus-medium",
   "--color-focus-ring",
+  "--color-focus-ring-danger",
   "--color-focus-ring-muted",
   "--color-focus-ring-offset",
   "--color-focus-strong",

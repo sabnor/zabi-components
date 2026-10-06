@@ -19,7 +19,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { resolveTokenColor, resolveTokenValue } from './resolve-tokens.js';
-import { buildPairs } from './contrast-pairs.js';
+import { BLOCKS, BLOCK_ROLES, SURFACE_CLASS, buildPairs } from './contrast-pairs.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Optional path, so the guard can be run against another revision of the stylesheet.
@@ -362,6 +362,130 @@ function checkFocusRingSources(css, themes, pairs) {
     return { failures, checked: sources.size };
 }
 
+/**
+ * Controls inside a brand or accent block.
+ *
+ * `.on-brand` and `.on-accent` re-point the roles a control writes with when
+ * it has no fill of its own (scripts/contrast-pairs.js, BLOCK_ROLES). The
+ * pair list measures a role where the theme declares it, on the root; what a
+ * block does to it is in a rule of the stylesheet, so that rule is read here:
+ *
+ *  1. Every such role is re-pointed in each block, at a flat colour that
+ *     reads against the block's fill, in both themes.
+ *  2. Whatever a block re-points can be given back: the role as it is
+ *     outside the block is kept as `--zabi-theme-<role>`, on the block's
+ *     parent, and a rule for surfaces inside a block restores it. A role re-pointed and not restored would put the block's
+ *     label colour on every card inside it (white on white, in light).
+ *  3. Every surface fill a component uses is in the selector of that rule.
+ */
+function checkBlocks(css, themes, componentsDir) {
+    const failures = [];
+    let checked = 0;
+    const declarations = (body) => {
+        const map = {};
+        const re = /(--[\w-]+|color)\s*:\s*([^;]+);/g;
+        let m;
+        while ((m = re.exec(body))) map[m[1]] = m[2].trim();
+        return map;
+    };
+    const ruleBody = (selector) => {
+        const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const match = css.match(new RegExp(`\\n\\s*${escaped}\\s*\\{([^}]*)\\}`));
+        return match ? declarations(match[1]) : null;
+    };
+
+    // The roles as they are outside the block, kept under another name on the block's parent.
+    const kept = css.match(/\n\s*([^{}\n]*:has\([^{}]*)\{([^{}]*--zabi-theme-[\w-]+\s*:[^{}]*)\}/);
+    if (!kept) {
+        return { failures: ['the rule that keeps the theme values (--zabi-theme-*) on the parent of a block was not found'], checked };
+    }
+    const copies = declarations(kept[2]);
+    for (const block of BLOCKS) {
+        // Written on a block, or inside one, a kept value would be the block's own colour.
+        for (const selector of [`> ${block.selector}`, `${block.selector} *`, `${block.selector},`]) {
+            if (!kept[1].includes(selector)) {
+                failures.push(`the rule that keeps the theme values must hold "${selector.replace(/,$/, '')}" in its selector: ${kept[1].trim()}`);
+            }
+        }
+    }
+
+    // The two rules that give them back: on a surface inside a block, and on what is inside that surface.
+    const resets = [...css.matchAll(/:where\(\.on-brand, \.on-accent\)\s*:where\(([^)]*)\)(\s*>\s*:where\(\*\))?\s*\{([^}]*)\}/g)];
+    const restored = {};
+    const surfaces = new Set();
+    for (const reset of resets) {
+        Object.assign(restored, declarations(reset[3]));
+        for (const name of reset[1].split(',')) surfaces.add(name.trim());
+    }
+    if (resets.length < 2) failures.push('the rules that restore the theme values on a surface inside a block were not found');
+
+    for (const block of BLOCKS) {
+        const own = ruleBody(block.selector);
+        if (!own) {
+            failures.push(`${block.selector} was not found in the stylesheet`);
+            continue;
+        }
+        for (const [role, min] of BLOCK_ROLES) {
+            const value = own[role];
+            const token = value?.match(/^var\(\s*(--[\w-]+)\s*\)$/)?.[1];
+            if (!token) {
+                failures.push(`${block.selector} does not re-point ${role} at a token: on the block it is the page's colour`);
+                continue;
+            }
+            for (const themeName of ['light', 'dark']) {
+                const map = themes[themeName];
+                const fill = resolve(map, block.fill);
+                const colour = resolve(map, token);
+                if (!fill || !colour) {
+                    failures.push(`${themeName} · ${role} in the ${block.name} block: ${!fill ? block.fill : token} is not a flat colour`);
+                    continue;
+                }
+                const ratio = contrast(fill, colour);
+                checked += 1;
+                if (ratio < min) {
+                    failures.push(`${themeName} · ${role} in the ${block.name} block: ${colour} on ${fill} = ${ratio}:1 (needs ${min}:1)`);
+                }
+            }
+        }
+        for (const role of Object.keys(own)) {
+            if (role === 'color') continue;
+            const copy = `--zabi-theme-${role.replace(/^--color-/, '')}`;
+            if (!copies[copy]?.startsWith(`var(${role}`)) {
+                failures.push(`${block.selector} re-points ${role}, but its theme value is not kept as ${copy}`);
+            } else if (restored[role] !== `var(${copy})`) {
+                failures.push(`${block.selector} re-points ${role}, but no rule gives it back on a surface inside the block`);
+            }
+        }
+    }
+
+    // Every surface fill a component paints at rest (no variant in front of the class).
+    const used = new Set();
+    const walk = (dir) => {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const full = path.join(dir, entry.name);
+            if (entry.isDirectory()) walk(full);
+            else if (/\.(svelte|ts)$/.test(entry.name)) {
+                for (const m of fs.readFileSync(full, 'utf8').matchAll(/(?:^|["'`\s])bg-([a-z0-9-]+)(?=["'`\s]|$)/gm)) used.add(m[1]);
+            }
+        }
+    };
+    if (fs.existsSync(componentsDir)) walk(componentsDir);
+    let surfaceFills = 0;
+    for (const name of used) {
+        if (!SURFACE_CLASS.test(name) || !(`--color-${name}` in themes.light)) continue;
+        // A translucent fill is the block showing through, not a surface.
+        if (!resolve(themes.light, `--color-${name}`)) continue;
+        surfaceFills += 1;
+        if (!surfaces.has(`.bg-${name}`)) {
+            failures.push(
+                `bg-${name} is a surface a component paints, but it is not in the rule that restores the theme's text ` +
+                    'on a surface inside a brand or accent block (src/app.css, below .on-accent)',
+            );
+        }
+    }
+    return { failures, checked, surfaceFills };
+}
+
 /* ---------- the pairs components actually render ---------- */
 
 
@@ -430,6 +554,9 @@ function main() {
     const rings = checkFocusRingSources(css, themes, pairs);
     failures.push(...rings.failures);
 
+    const blocks = checkBlocks(css, themes, path.join(path.dirname(appCssPath), 'components'));
+    failures.push(...blocks.failures);
+
     if (failures.length) {
         console.error('\n❌ Contrast check failed:\n');
         failures.forEach((f) => console.error('  • ' + f));
@@ -440,7 +567,10 @@ function main() {
     console.log(`✓ ${pairs.length * 2 - skipped.length} colour pairs pass WCAG AA in both themes`);
     console.log(`✓ ${fills.checked} interaction fills are distinguishable from the surface they sit on`);
     console.log(`✓ ${tints.checked} alpha tints read at ${MIN_TINT_CONTRAST}:1 or more over the surface they land on`);
-    console.log(`✓ ${rings.checked} focus-ring colours are each measured against the surfaces a control lands on\n`);
+    console.log(`✓ ${rings.checked} focus-ring colours are each measured against the surfaces a control lands on`);
+    console.log(
+        `✓ ${blocks.checked} role colours inside a brand or accent block read against its fill, and ${blocks.surfaceFills} surface fills get the theme's back\n`,
+    );
 }
 
 main();
