@@ -61,7 +61,7 @@ for (const width of [375, 320]) {
             expect(box.bottom).toBeCloseTo(740, 0);
 
             const list = dialog.getByRole("listbox");
-            await expect(list).toHaveAttribute("aria-label", "Select options");
+            await expect(list).toHaveAttribute("aria-label", "Pub");
             const options = dialog.getByRole("option");
             await expect(options).toHaveCount(12);
             const sizes = await options.evaluateAll((elements) =>
