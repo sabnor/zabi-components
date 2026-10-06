@@ -1,6 +1,6 @@
 {
   "name": "zabi-components",
-  "version": "9.0.0-alpha.3",
+  "version": "9.0.0-alpha.4",
   "description": "Svelte 5 UI component library: accessible components with TypeScript types, Tailwind CSS v4 design tokens, light and dark themes, and SSR support for SvelteKit.",
   "type": "module",
   "main": "dist/index.js",

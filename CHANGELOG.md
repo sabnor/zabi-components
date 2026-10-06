@@ -12,6 +12,33 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.4] - 2026-10-06
+
+A fourth local preview build of the 9.0 visual direction, not published to npm;
+8.1.0 stays the stable version. It is dark mode on its own terms: the dark
+surfaces are steps of the neutral ramp, so a tinted neutral keeps its hue and
+chroma on every level, in two tone steps, with overlays set apart by a rim and
+a shadow instead of by grey; the primary and danger buttons keep their colour
+in dark under a white label; the dark status tints are low-chroma tints of the
+card; and dark sheets, menus and bars show glass again, because the dark
+material dims what is behind it. Light does not change, with one exception:
+the light thick material is 88% instead of 86%. `createTheme` gains
+`darkPrimary`, now checks the material pairs it was silently skipping (a theme
+may get a warning it did not get before), and keeps the ramp's ink in the mode
+an override did not name. AppShell gains `flushTop` and AppBar a fourth tone,
+`inherit`; `cn` merges the named spacing steps. No token, prop, variant or
+export is removed or renamed; `tokens/surface-ladder.js` (not a published
+file) exports steps instead of wash alphas. Several dark defaults change what a
+consumer sees, and each has a line that restores the earlier look. Built
+quickly and tested lightly on purpose: the type and design checks, the unit
+run, the theme tests, the package build and a scratch install were run on it,
+and the shell, Card, Alert, Badge, Button, Progress, Toggle, SegmentedControl,
+Select, Modal and BottomSheet stories were looked at once in Storybook in dark
+and light at phone and desktop widths. No browser suite was run (the library's
+Playwright specs will need updating for the new looks), there was no
+accessibility or QA review, and nothing was tried on a real phone, in Safari or
+Firefox, at 200% text or with a keyboard.
+
 ### Added
 
 - **`AppShell flushTop`** (Z-065; D140): without a `header`, the content no longer gets the top safe-area padding, so a colour block at the top of a tab screen runs under the status bar and the content handles the safe area itself (`--app-shell-top-inset` keeps its value; an `AppBar position="static"` in the block pads by it). Default `false`; with a `header` it does nothing.
