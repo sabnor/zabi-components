@@ -3,10 +3,11 @@
  *
  * The guards and the theme tests all need the colour a token ends up as. They
  * used to follow `var()` chains to a hex literal and stop, which was enough
- * while every dark surface was a baked hex. The surface ladder is now
- * `color-mix(in srgb, var(--zabi-base-50) 6.4%, var(--zabi-base-900))`, so
- * that it follows an app's neutral override — and a resolver that cannot
- * evaluate that would silently skip every pair measured against a dark card.
+ * while every dark surface was a baked hex. The material fills and the control
+ * ramps are `color-mix()` over the neutral ramp, so that they follow an app's
+ * neutral override — and a resolver that cannot evaluate that would silently
+ * skip every pair measured against them. (The dark surfaces themselves are plain
+ * `var(--zabi-base-N)` steps since D133.)
  *
  * Supported, because it is all the stylesheet uses for a flat colour:
  *   - `var(--token)` and `var(--token, fallback)`, anywhere in a value

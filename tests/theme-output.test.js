@@ -288,15 +288,17 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-border-strong': '#71717a',
         '--color-control-border': '#a1a1aa',
         '--color-focus-ring-muted': '#a1a1aa',
-        '--color-input-active': '#353538',
+        '--color-input-active': '#2f2f31',
         '--color-link': '#b5c6ff',
-        // The ladder was four baked hex values; it is now color-mix() over the
-        // neutral ramp and has to land on exactly the same four.
+        // The dark surfaces are plain steps of the neutral ramp (D133/D134): page 900,
+        // card 850, elevated and overlay 800 (two tone steps), overlay hover 750, inset 900.
         '--color-surface-base': '#18181b',
-        '--color-surface-raised': '#262629',
-        '--color-surface-elevated': '#363638',
-        '--color-surface-overlay': '#454547',
-        '--color-surface-overlay-hover': '#52525b',
+        '--color-surface-raised': '#1f1f22',
+        '--color-surface-elevated': '#27272a',
+        '--color-surface-overlay': '#27272a',
+        '--color-surface-overlay-hover': '#333338',
+        '--color-surface-inset': '#18181b',
+        '--color-border': '#333338',
         '--color-headline': '#f4f4f5',
         '--color-base-50': '#09090b',
         '--color-base-950': '#fafafa',
@@ -428,8 +430,8 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
     for (const name of Object.keys(overrides)) assert.ok(!(name in maps.darkOnly), `dark re-declares ${name}`);
     const { light, dark } = themed(maps, overrides);
 
-    // The four dark levels an app's neutral produces, from the same ladder the
-    // build uses: its step 50 washed over its step 900.
+    // The dark surface roles an app's neutral produces, from the same ladder the
+    // build uses: its own steps 900, 850, 800 and 750, hue and chroma kept.
     const ladder = generateSurfaceLadder(stone);
 
     const expected = {
@@ -451,14 +453,14 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-surface-raised': ladder['surface-raised'],
         '--color-surface-elevated': ladder['surface-elevated'],
         '--color-surface-overlay': ladder['surface-overlay'],
-        '--color-surface-overlay-hover': stone[600],
-        '--color-surface-inset': stone[850],
+        '--color-surface-overlay-hover': stone[750],
+        '--color-surface-inset': stone[900],
         '--color-card': ladder['surface-raised'],
         '--color-background': stone[900],
         '--color-headline': stone[100],
         '--color-body': stone[200],
         '--color-description': stone[300],
-        '--color-border': stone[700],
+        '--color-border': stone[750],
         '--color-input-border': stone[500],
         '--color-neutral-subtle': stone[700],
         '--color-action-disabled': stone[800],

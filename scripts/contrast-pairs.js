@@ -313,13 +313,16 @@ export function buildPairs() {
     // WCAG 1.4.11: the edge of a form field is what finds the field, and on a
     // white card the field fill is the card, so the edge is all there is. It was
     // base-350 in light (1.9:1 on white) and was in no pair at all. Held to 3:1
-    // against the fill, the page and the card. Not the overlay: the dark overlay
-    // (#454547) needs a lighter step than the other three (base-600, not
-    // base-500), which is a separate decision; light overlay is the card.
+    // against the fill, the page, the card, the elevated surface and the overlay
+    // (a field in a modal or a sheet). The dark overlay is the elevated tone now
+    // (#27272a), where base-500 is 3.08:1; it used to be a lighter grey that needed
+    // a lighter step than the other three.
     pairs.push(
         { name: 'field edge on the field fill', bg: '--color-input', fg: '--color-input-border', min: AA_LARGE },
         { name: 'field edge on page', bg: '--color-background', fg: '--color-input-border', min: AA_LARGE },
         { name: 'field edge on card', bg: '--color-surface-raised', fg: '--color-input-border', min: AA_LARGE },
+        { name: 'field edge on elevated', bg: '--color-surface-elevated', fg: '--color-input-border', min: AA_LARGE },
+        { name: 'field edge on overlay', bg: '--color-surface-overlay', fg: '--color-input-border', min: AA_LARGE },
         // WCAG 1.4.11: the selected segment of a SegmentedControl is told from the
         // others by its edge. The track is translucent ink, so it is measured over
         // the page and over a card, the two surfaces it is placed on.

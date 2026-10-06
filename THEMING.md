@@ -1061,18 +1061,20 @@ Every surface uses one of four semantic levels. Use these tokens instead of raw 
 | Level | Token / utility | Use for | Light (OKLCH L) | Dark (OKLCH L) |
 |---|---|---|---|---|
 | Base | `--color-surface-base` · `bg-surface-base` | Page / app shell (the darkest level in both themes) | `base-150` · 94 | `--zabi-base-900` `#18181b` · 21 |
-| Raised | `--color-surface-raised` · `bg-surface-raised` | Cards, panels, sidebars | `#ffffff` · 100 | 6.4% wash `#262629` · 27 |
-| Elevated | `--color-surface-elevated` · `bg-surface-elevated` | Nested cards, hover and active fills | `base-100` · 97 | 13.1% wash `#363638` · 33 |
-| Overlay | `--color-surface-overlay` · `bg-surface-overlay` | Modals, sheets, dropdown/select menus, navigation panels, toasts | `#ffffff` · 100 | 19.7% wash `#454547` · 39 |
-| Inset | `--color-surface-inset` · `bg-surface-inset` | A recessed area on a raised surface: a well, a stat strip, a code sample inside a card | `base-100` · 97 | `base-150` `#1f1f22` · 24 |
+| Raised | `--color-surface-raised` · `bg-surface-raised` | Cards, panels, sidebars | `#ffffff` · 100 | `--zabi-base-850` `#1f1f22` · 24 |
+| Elevated | `--color-surface-elevated` · `bg-surface-elevated` | Nested cards, hover and active fills | `base-100` · 97 | `--zabi-base-800` `#27272a` · 27 |
+| Overlay | `--color-surface-overlay` · `bg-surface-overlay` | Modals, sheets, dropdown/select menus, navigation panels, toasts | `#ffffff` · 100 | `--zabi-base-800` `#27272a` · 27 (same tone as elevated; set apart by rim and shadow) |
+| Inset | `--color-surface-inset` · `bg-surface-inset` | A recessed area on a raised surface: a well, a stat strip, a code sample inside a card | `base-100` · 97 | `--zabi-base-900` `#18181b` · 21 (the page step) |
 
 **Inset is not a fifth rung.** The four levels say how far a surface is lifted;
-inset says it is cut into the card it sits on. It is the ramp step between the
-page and the raised surface in both themes, about 3 lightness points below
-`raised`, and every text token passes AA on it. In dark it is the step the input
-field has always used, and `--color-input` now points at it. In light it shares
+inset says it is cut into the card it sits on. In light it is the ramp step
+below the raised surface, about 3 lightness points under it, and every text token
+passes AA on it. In dark it is the page step (3 points below the card), and
+`--color-input` points at it: a field on the page is told apart by its 3:1
+edge, as a white field on the near-white light page is. In light it shares
 `base-100` with `elevated`: under a white card the only direction left is down,
-so a nested card and a well are the same colour there and differ only in dark.
+so a nested card and a well are the same colour there. In dark the well and the
+page are the same colour, so a well on the page needs the edge too.
 Do not use `--color-input` for a well. It is white in light mode, because a
 light field is a raised surface.
 
@@ -1086,39 +1088,47 @@ raised and separated from it by `shadow-lg` and the overlay edge. The page is
 `base-150`, not `base-100`: at `base-100` a card was 1.10:1 on the page and a
 nested card 1.04:1 on its parent.
 
-**The dark levels are generated, not hand-picked.** The page is
-`--zabi-base-900`, and each level above it is `--zabi-base-50` — the same light
-as the dark hover tint `--color-surface-hover` — washed over the page at
-6.4% / 13.1% / 19.7%, so every level is literally the level below it with more
-light on it. The ladder lives in `tokens/surface-ladder.js`; edit the alphas
+**The dark levels are steps of the neutral ramp** (9.0, decisions D133/D134).
+The page is `--zabi-base-900`, the card `--zabi-base-850`, elevated and overlay
+`--zabi-base-800` (default `#18181b` / `#1f1f22` / `#27272a`, OKLCH L 21.0 /
+24.1 / 27.4): two tone steps in all. The overlay hover is one step lighter
+(`--zabi-base-750`, `#333338`) and the inset (a field, a well) is the page step.
+The ladder lives in `tokens/surface-ladder.js` (`SURFACE_STEP`); edit the steps
 there and run `npm run sync:tokens`, never the values in `app.css`.
 
-The levels ship as `color-mix()` over the neutral ramp, not as baked hex:
+Each role is a plain alias of its step and nothing else:
 
 ```css
 --color-surface-base: var(--zabi-base-900);
---color-surface-raised: color-mix(in srgb, var(--zabi-base-50) 6.4%, var(--zabi-base-900));
+--color-surface-raised: var(--zabi-base-850);
+--color-surface-overlay: var(--zabi-base-800);
 ```
 
-That is how the ladder follows an app's `--zabi-base-*` override: a warm grey
-gets four warm dark levels, with no surface tokens of its own. Mixing two
-opaque colours in sRGB is the same arithmetic as the old build-time composite,
-so the default theme resolves to exactly the hex in the table, and an overlay
-is still opaque. The static checks evaluate the mix themselves
-(`scripts/resolve-tokens.js`), so `check-contrast.js` still resolves every AA
-pair against a dark surface and `check-surface-elevation.js` still measures the
-steps. The trade is unchanged: nesting past the four levels is not automatic. A
-card inside a card does not self-lighten, it names the next level up.
+That keeps the ramp's own hue and chroma. Until 8.1 the levels were a white
+wash mixed into the darkest neutral, which lost chroma at every level on a
+tinted neutral (`createTheme({ neutral, neutralChroma })`): the higher the
+surface, the greyer. Now `neutral: '#607296', neutralChroma: 0.08` gives a
+`#111828` page, `#18202f` card and `#202837` overlay, and a `--zabi-base-*`
+override carries all of them.
 
-Two things to know. The step size depends on the app's neutrals: the alphas are
-solved for the default greys, and a ramp whose 900 or 50 step is far from
-`#18181b` / `#fafafa` can land outside the 5–8 point window the guard holds the
-default to. And wherever Tailwind compiles the dark file (the
-`zabi-components/css` bundle, or an app's own build) it adds a static fallback,
-the default hex, before each mix for browsers without `color-mix()`; those get
-the default dark surfaces whatever the app overrides.
+**An overlay is told apart by its edge and its shadow, not by being greyer.**
+Its tone equals elevated. `--color-material-rim` (14% of `--zabi-base-50`) laid
+over the overlay is 1.85:1 on the page, 1.72:1 on the card and 1.56:1 on the
+overlay itself, and the dark `--shadow-opacity` / `--shadow-opacity-contact`
+(0.5 / 0.4) are much stronger than light's. The decorative hairline
+`--color-border` is `--color-base-250` (`#333338`) in dark: 1.41:1 on the page
+and 1.31:1 on the card. A field on the page is told apart by its 3:1 edge
+(`--color-input-border`), which is guarded on the field, page, card, elevated
+and overlay surfaces in both themes.
 
-**Why dark mode steps lightness instead of using shadows:** a drop shadow simulates light blocked by a raised object, which reads on a light page. On a dark page the shadow is as dark as the background, so the signal disappears. In dark mode each level is therefore **lighter** than the one below it, by +6 OKLCH lightness points on the neutral base hue. Light mode keeps white surfaces and uses shadows for elevation.
+Two things to know. The step distances depend on the app's neutrals: a ramp
+whose 900, 850 and 800 steps are far from the defaults can land outside the
+2 to 5 point window the guard holds. And wherever Tailwind compiles the dark
+file (the `zabi-components/css` bundle, or an app's own build) it may add a
+static fallback, the default hex, before an alias for browsers without
+`var()`-in-colour support.
+
+**Why dark mode steps lightness, and so little of it:** a drop shadow simulates light blocked by a raised object, which reads on a light page. On a dark page the shadow is as dark as the background, so the signal comes from tone: each level is **lighter** than the one below it, by about 3 OKLCH lightness points, with the overlay at the elevated tone and set apart by its rim and a stronger shadow. Light mode keeps white surfaces and uses shadows for elevation.
 
 **Rules:**
 - Anything that floats above content must use a lighter level than what it floats over. Floating components (Modal, SlideUp, Dropdown/Select menu, NavigationMenu panel, Toaster/Toast) use `bg-surface-overlay`.
@@ -1126,15 +1136,17 @@ the default dark surfaces whatever the app overrides.
 - Existing tokens remain as aliases: `background` → base, `card` / `surface-1` → raised, `surface-2` / `card-hover` → elevated, `surface-3` → overlay (dark), `card-elevated` → overlay (light) / elevated (dark).
 
 **Enforced by** `scripts/check-surface-elevation.js`, which `validate-theme.js` runs during `npm run build:css`. It fails when:
-- dark levels aren't strictly increasing;
-- any dark step is outside 5–8 OKLCH L points;
+- a dark level, the overlay hover or the inset is not declared as one step of the ramp (`var(--zabi-base-N)` or `var(--color-base-N)`), for example a `color-mix()` with a wash;
+- dark lightness decreases base to raised to elevated to overlay, or raised is not lighter than the page;
+- raised, elevated and overlay use more than two distinct tones above the page, a tone step is outside 2 to 5 OKLCH L points, or the top is more than 8 points above the page;
+- the rim over the overlay is under 1.5:1 on the page or the card, or under 1.3:1 on the overlay; or the dark `--color-border` is under 1.2:1 on the page or the card;
 - the light levels are not ordered base < elevated < raised, either step is under 2 points, or the overlay is darker than raised;
 - the inset surface is less than 2 points below raised, or darker than the page, in either theme;
 - a text token falls below AA on any level or on the inset surface;
 - overlay hover or tooltip fills are darker than the overlay;
 - a floating component paints a surface class below overlay.
 
-To retune the dark levels, edit `SURFACE_ALPHA` in `tokens/surface-ladder.js`, run `npm run sync:tokens`, and then `node scripts/check-surface-elevation.js`.
+To retune the dark levels, edit `SURFACE_STEP` in `tokens/surface-ladder.js`, run `npm run sync:tokens`, and then `node scripts/check-surface-elevation.js`.
 
 > The light surface tokens must stay **below** the `/* Background Colors */` marker in `@theme`. `scripts/sync-theme-tokens.js` regenerates everything between the base-scale aliases and that marker.
 
@@ -1437,7 +1449,7 @@ Parts of `src/app.css` are generated too, so edit the source instead:
 |---|---|---|
 | A chromatic ramp (`brand`, `citron`, `pine`, `iris`, `warning`, `error`) | `hue` / `peakChroma` in `tokens/chromatic-scales.js` | `npm run sync:tokens` |
 | The neutral ramp | `tokens/base-scale.js` | `npm run sync:tokens` |
-| The dark surface levels | `SURFACE_ALPHA` in `tokens/surface-ladder.js` | `npm run sync:tokens` |
+| The dark surface levels | `SURFACE_STEP` in `tokens/surface-ladder.js` | `npm run sync:tokens` |
 | A role, a font, a radius | `src/app.css` | nothing in development |
 
 Before a release, `npm run build:css` regenerates the `dist/` files and

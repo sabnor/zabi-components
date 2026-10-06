@@ -65,7 +65,7 @@ export const dark = create({
     colorSecondary: '#4f68da',
 
     appBg: '#18181b', // dark --color-surface-base
-    appContentBg: '#262629', // dark --color-surface-raised
+    appContentBg: '#1f1f22', // dark --color-surface-raised
     appPreviewBg: '#18181b', // dark --color-surface-base
     appBorderColor: '#3f3f46', // base-700
 
@@ -78,14 +78,14 @@ export const dark = create({
     barHoverColor: '#b5c6ff', // brand-300
     barSelectedColor: '#92a9ff',
 
-    inputBg: '#262629',
+    inputBg: '#1f1f22',
     inputBorder: '#52525b', // base-600
     inputTextColor: '#f4f4f5',
 
-    buttonBg: '#262629',
+    buttonBg: '#1f1f22',
     buttonBorder: '#3f3f46',
     booleanBg: '#18181b',
-    booleanSelectedBg: '#363638' // dark --color-surface-elevated
+    booleanSelectedBg: '#27272a' // dark --color-surface-elevated
 });
 
 /** Follows the operating system, as the site does before anyone uses its toggle. */

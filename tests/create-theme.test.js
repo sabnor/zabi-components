@@ -776,19 +776,20 @@ test('without light or dark overrides the bytes are what they were before the op
   // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193 to 195, then the segment thumb pairs; the flat hash moved when the pressed field became a mix of the field:
   // the field edge on the field fill, the page and the card, then the progress fill on its track, each in both modes).
   // They moved again for 9a: the generator now resolves the control veil pairs (the strengths are in its data) and the tonal, outline and toggle pairs were added, so the header counts 260; the bar pairs (active tab pill, on-brand bar, headline on a bar) moved the header and the bytes again, and so did the chrome token and the bar tokens; and the pinned amber's veil is flipped to lighten-only (its label is dark).
+  // Then for 16a (Z-044): the field edge is guarded on the elevated surface and the overlay (two pairs per mode, so the header counts 4 more), and the dark surfaces, hairline, rim and shadows moved.
   const before = {
-    plain: [{ brand: '#0026EA' }, '9882543b47419758d4390af0baf023892dd914aba1cce6c0e695d5d24446c765'],
+    plain: [{ brand: '#0026EA' }, 'e73413e55b672845e0b85a088f52496f7fdaabeb1f5bbfc47c865b3c760549fc'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      'c67c0f32ac7ecbd7882f3d522a6b4bc62c8e6f2ee708a902824032e9da02ed07',
+      '28c0aa6fdede48c3350b86d1606ba4835de1b2756010819f28604cc23bbfb5fd',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      'c4c7bfa9e52dc068aed3741fa17652e04883d4eaea2a7d867f58840146138500',
+      '736bb12352058872b246bb1a1b8f61fbb6d9f47220c22414bc88c80217622492',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '31ab3edfe3411a30f825447ed9818514de4856fa2702cffd82e3eb94da0f22a3',
+      '9d437ff701dc461b129bc9d2b1f523cb29924da8aa3ff4967dffe5a7106726be',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -953,7 +954,7 @@ test('the bin takes --set-light and --set-dark, and --set alone is still the fla
     light.stdout,
     createTheme({ brand: '#0026EA', overrides: { light: { '--color-surface-raised': '#f8faff', '--color-surface-overlay': '#f8faff' } } }).css,
   );
-  assert.match(light.stdout, /\.dark,\n\[data-theme="dark"\] \{\n {2}--color-surface-raised: color-mix/);
+  assert.match(light.stdout, /\.dark,\n\[data-theme="dark"\] \{\n {2}--color-surface-raised: var\(--zabi-base-850\)/);
 
   const mixed = run('--brand', '#0026EA', '--set', '--color-link=var(--color-brand-800)', '--set-dark', '--color-surface-raised=#101820');
   assert.equal(mixed.status, 0, mixed.stderr);
@@ -975,16 +976,16 @@ test('the bin takes --set-light and --set-dark, and --set alone is still the fla
   assert.match(help, /--set-dark <t>=<v>/);
 });
 
-test('the field edge is a guarded foreground: 3:1 on the field fill, the page and the card', async () => {
+test('the field edge is a guarded foreground: 3:1 on the field fill, the page, the card, the elevated surface and the overlay', async () => {
   const { buildPairs } = await import('../scripts/contrast-pairs.js');
   const pairs = buildPairs().filter((p) => p.fg === '--color-input-border' && !p.behind);
   assert.deepEqual(
     pairs.map((p) => [p.bg, p.min]).sort(),
-    [['--color-background', 3], ['--color-input', 3], ['--color-surface-raised', 3]],
+    [['--color-background', 3], ['--color-input', 3], ['--color-surface-elevated', 3], ['--color-surface-overlay', 3], ['--color-surface-raised', 3]],
   );
   // The generator ships the same list, so a consumer's theme is checked too.
   const shipped = JSON.parse(JSON.stringify(buildThemeData().pairs)).filter((p) => p.fg === '--color-input-border' && !p.behind);
-  assert.equal(shipped.length, 3);
+  assert.equal(shipped.length, 5);
 });
 
 /* ---------- materials (D97) ---------- */
@@ -1011,8 +1012,10 @@ test('the library meets its own material floors, and a material one step below f
   const dark = guard(css.replace('--material-alpha-regular: 76%;', '--material-alpha-regular: 70%;'));
   assert.equal(dark.status, 1);
   assert.match(dark.stderr, /dark · material regular · .* over the worst backdrop/);
-  // Thick carries the caption: it fails first on that, in dark, one step below 98%.
-  const thick = guard(css.replace('--material-alpha-thick: 98%;', '--material-alpha-thick: 96%;'));
+  // Thick carries the caption: it fails first on that, in dark. The dark overlay is the
+  // elevated tone now (L 27.4, it was L 39), so the floor fell from 96% to 84%: the
+  // shipped 98% is conservative until the alphas are re-solved. 80% is under the floor.
+  const thick = guard(css.replace('--material-alpha-thick: 98%;', '--material-alpha-thick: 80%;'));
   assert.equal(thick.status, 1);
   assert.match(thick.stderr, /dark · material thick · caption over the worst backdrop/);
 });

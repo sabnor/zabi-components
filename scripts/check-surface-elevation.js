@@ -2,25 +2,38 @@
 /**
  * Surface elevation guard, both themes.
  *
- * Shadows don't read on dark backgrounds, so elevation must come from lightness. This check:
  * 1. Resolves the four semantic surface levels (`--color-surface-base|raised|elevated|overlay`)
  *    from `src/app.css` in both themes (`.dark` overrides `@theme`) and requires all four to exist.
- * 2. Dark mode: OKLCH lightness must strictly increase base → raised → elevated → overlay,
- *    with every step between MIN_STEP and MAX_STEP points (L × 100).
- * 3. Dark mode: `--color-surface-overlay-hover` must be lighter than the overlay, and
- *    `--color-tooltip-bg` must not be darker than the overlay.
- * 4. Floating components (modals, sheets, menus, toasts) must paint `bg-surface-overlay`
+ * 2. Dark mode, decisions D133/D134. Dark art-directs its own surfaces: plain steps of the
+ *    neutral ramp, with elevation in at most two tone steps, and overlays told apart by their
+ *    edge and shadow rather than by being greyer:
+ *    a. The four levels, `--color-surface-overlay-hover` and `--color-surface-inset` are each
+ *       DECLARED as one step of the ramp (`var(--zabi-base-N)` or `var(--color-base-N)`), not a
+ *       `color-mix()` with a wash. That is what keeps the ramp's hue and chroma on a tinted
+ *       neutral. The declared value is checked, not only the hex it resolves to.
+ *    b. Lightness never decreases base → raised → elevated → overlay, and raised is strictly
+ *       lighter than the page.
+ *    c. At most DARK_MAX_TONE_STEPS distinct tone steps above the page across raised, elevated
+ *       and overlay; each distinct step is DARK_MIN_TONE_STEP to DARK_MAX_TONE_STEP OKLCH L
+ *       points; the top is at most DARK_MAX_TOTAL points above the page.
+ *    d. Tone no longer separates an overlay, so its edge does: `--color-material-rim` laid over
+ *       the overlay surface reaches OVERLAY_EDGE_MIN_CONTRAST:1 against the page and the card
+ *       and OVERLAY_EDGE_MIN_CONTRAST_SELF:1 against the overlay itself; and the card edge
+ *       (`--color-border`) reaches CARD_EDGE_MIN_CONTRAST:1 against the page and the card.
+ *    e. `--color-surface-overlay-hover` is lighter than the overlay, and `--color-tooltip-bg`
+ *       is not darker than it.
+ * 3. Floating components (modals, sheets, menus, toasts) must paint `bg-surface-overlay`
  *    and must not use a lower surface class for their panel.
- * 5. Both themes: text tokens (`TEXT_TOKENS`) must reach WCAG AA (MIN_TEXT_CONTRAST) on every
+ * 4. Both themes: text tokens (`TEXT_TOKENS`) must reach WCAG AA (MIN_TEXT_CONTRAST) on every
  *    surface level and on the inset surface, so secondary text stays readable wherever a
  *    component is placed.
- * 6. Light mode (decision D102): the page is a near-white and the card is told apart from it by
+ * 5. Light mode (decision D102): the page is a near-white and the card is told apart from it by
  *    an edge, not by lightness, so the light ladder is ordered like this: raised and overlay no
  *    darker than the page; elevated sits at least LIGHT_MIN_STEP points below raised; and the
  *    card edge (`--color-border`, what Card's default variant draws) reaches
  *    CARD_EDGE_MIN_CONTRAST:1 against both the page and the raised surface. (Until 8.1 the page
  *    was a grey and a lightness ladder separated page, nested card and card.)
- * 7. Both themes: `--color-surface-inset` must sit at least INSET_MIN_STEP points below the
+ * 6. Both themes: `--color-surface-inset` must sit at least INSET_MIN_STEP points below the
  *    raised surface it is cut into. In dark it must also not be darker than the page.
  *
  * Run standalone (`node scripts/check-surface-elevation.js`) or via `scripts/validate-theme.js`.
@@ -31,21 +44,34 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import postcss from 'postcss';
 import { converter, wcagContrast, wcagLuminance } from 'culori';
-import { resolveTokenValue } from './resolve-tokens.js';
+import { resolveTokenValue, resolveTokenPaint, compositeOver } from './resolve-tokens.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
 const appCssPath = path.join(root, 'src', 'app.css');
 
 export const SURFACE_LEVELS = ['surface-base', 'surface-raised', 'surface-elevated', 'surface-overlay'];
-export const MIN_STEP = 5;
-export const MAX_STEP = 8;
-/** Light steps are smaller than dark ones (shadows share the work) but never below this. */
-export const LIGHT_MIN_STEP = 2;
 /** The recessed surface inside a card, checked in both themes. */
 export const INSET_SURFACE = 'surface-inset';
 export const INSET_MIN_STEP = 2;
-/** The card's 1px edge against the page and against the card, light (D102). */
+/**
+ * Dark surfaces are steps of the neutral ramp (D133/D134): the roles that must be declared as
+ * one, the fewest tone steps above the page, and how far apart they may be, in OKLCH L points.
+ */
+export const DARK_RAMP_ROLES = [...SURFACE_LEVELS, 'surface-overlay-hover', INSET_SURFACE];
+export const DARK_MAX_TONE_STEPS = 2;
+export const DARK_MIN_TONE_STEP = 2;
+export const DARK_MAX_TONE_STEP = 5;
+export const DARK_MAX_TOTAL = 8;
+/** `var(--zabi-base-N)` or `var(--color-base-N)` and nothing else: no `color-mix()`, no wash. */
+export const RAMP_STEP_DECLARATION = /^var\(\s*--(?:zabi|color)-base-\d+\s*\)$/;
+/** Overlays are set apart by their edge: the rim over the overlay vs page, card and itself. */
+export const OVERLAY_EDGE_TOKEN = '--color-material-rim';
+export const OVERLAY_EDGE_MIN_CONTRAST = 1.5;
+export const OVERLAY_EDGE_MIN_CONTRAST_SELF = 1.3;
+/** Light steps are smaller than dark ones (shadows share the work) but never below this. */
+export const LIGHT_MIN_STEP = 2;
+/** The card's 1px edge against the page and against the card, both themes (D102, D134). */
 export const CARD_EDGE_TOKEN = '--color-border';
 export const CARD_EDGE_MIN_CONTRAST = 1.2;
 
@@ -178,24 +204,96 @@ export function checkSurfaceElevation({ log = console.log, cssPath = appCssPath 
   }
 
   const darkLevels = report.dark;
+  // 2a. Every dark surface role is declared as one step of the ramp.
+  {
+    const merged = { ...Object.fromEntries(light), ...Object.fromEntries(dark) };
+    for (const role of DARK_RAMP_ROLES) {
+      const prop = `--color-${role}`;
+      const declared = dark.get(prop) ?? merged[prop];
+      if (declared === undefined || !RAMP_STEP_DECLARATION.test(declared)) {
+        errors.push(
+          `dark: ${prop} is declared as \`${declared}\`; it must be one step of the neutral ramp ` +
+            `(var(--zabi-base-N) or var(--color-base-N)), not a mix or a literal, so it keeps the ramp's hue and chroma`,
+        );
+      }
+    }
+  }
   if (darkLevels.length === SURFACE_LEVELS.length) {
+    const [base, raised, elevated, overlay] = darkLevels;
+    // 2b. Never lighter downwards; the card is lighter than the page.
     for (let i = 1; i < darkLevels.length; i++) {
       const prev = darkLevels[i - 1];
       const cur = darkLevels[i];
-      const step = cur.L - prev.L;
-      if (step <= 0) {
-        errors.push(`dark: ${cur.level} (L ${cur.L.toFixed(1)}) is not lighter than ${prev.level} (L ${prev.L.toFixed(1)})`);
-      } else if (step < MIN_STEP || step > MAX_STEP) {
-        errors.push(`dark: ${prev.level} → ${cur.level} steps ${step.toFixed(1)} OKLCH L points (allowed ${MIN_STEP}–${MAX_STEP})`);
+      if (cur.L < prev.L - 0.05) {
+        errors.push(`dark: ${cur.level} (L ${cur.L.toFixed(1)}) is darker than ${prev.level} (L ${prev.L.toFixed(1)})`);
       }
     }
-    const overlayL = darkLevels[darkLevels.length - 1].L;
+    if (!(raised.L > base.L + 0.05)) {
+      errors.push(`dark: ${raised.level} (L ${raised.L.toFixed(1)}) must be lighter than the page ${base.level} (L ${base.L.toFixed(1)})`);
+    }
+    // 2c. At most two tone steps above the page, each 2 to 5 points, the top within 8.
+    const tones = [];
+    for (const level of [raised, elevated, overlay]) {
+      if (!tones.some((L) => Math.abs(L - level.L) < 0.05)) tones.push(level.L);
+    }
+    tones.sort((a, b) => a - b);
+    if (tones.length > DARK_MAX_TONE_STEPS) {
+      errors.push(`dark: raised, elevated and overlay use ${tones.length} distinct tones above the page (at most ${DARK_MAX_TONE_STEPS})`);
+    }
+    let previousL = base.L;
+    for (const L of tones) {
+      const step = L - previousL;
+      if (step < DARK_MIN_TONE_STEP || step > DARK_MAX_TONE_STEP) {
+        errors.push(`dark: a tone step of ${step.toFixed(1)} OKLCH L points (L ${previousL.toFixed(1)} → ${L.toFixed(1)}); each must be ${DARK_MIN_TONE_STEP}–${DARK_MAX_TONE_STEP}`);
+      }
+      previousL = L;
+    }
+    const total = previousL - base.L;
+    if (total > DARK_MAX_TOTAL) {
+      errors.push(`dark: the top surface is ${total.toFixed(1)} OKLCH L points above the page (at most ${DARK_MAX_TOTAL})`);
+    }
+    // 2d. The overlay is told apart by its edge, and the card by its hairline.
+    const merged = {};
+    for (const scope of [light, dark]) for (const [prop, value] of scope) merged[prop] = value;
+    const rim = resolveTokenPaint(merged, OVERLAY_EDGE_TOKEN);
+    if (!rim) {
+      errors.push(`dark: ${OVERLAY_EDGE_TOKEN} is missing or not a colour with alpha`);
+    } else {
+      const edge = compositeOver(rim, overlay.color);
+      const rows = [];
+      for (const [against, min] of [
+        [base, OVERLAY_EDGE_MIN_CONTRAST],
+        [raised, OVERLAY_EDGE_MIN_CONTRAST],
+        [overlay, OVERLAY_EDGE_MIN_CONTRAST_SELF],
+      ]) {
+        const ratio = wcagContrast(edge, against.color);
+        rows.push(`${against.level.replace('surface-', '')} ${ratio.toFixed(2)}:1`);
+        if (ratio < min) {
+          errors.push(`dark: ${OVERLAY_EDGE_TOKEN} over the overlay (${edge}) on --color-${against.level} is ${ratio.toFixed(2)}:1 (needs ≥ ${min}:1)`);
+        }
+      }
+      report.dark.overlayEdge = rows;
+    }
+    const hairline = resolveVar(CARD_EDGE_TOKEN, themes.dark);
+    if (!hairline || lightness(hairline) === undefined) {
+      errors.push(`dark: ${CARD_EDGE_TOKEN} is missing or not a resolvable color (got ${hairline})`);
+    } else {
+      report.dark.edge = [];
+      for (const against of [base, raised]) {
+        const ratio = wcagContrast(hairline, against.color);
+        report.dark.edge.push(`${against.level} ${ratio.toFixed(2)}:1`);
+        if (ratio < CARD_EDGE_MIN_CONTRAST) {
+          errors.push(`dark: ${CARD_EDGE_TOKEN} (${hairline}) on --color-${against.level} is ${ratio.toFixed(2)}:1 (needs ≥ ${CARD_EDGE_MIN_CONTRAST}:1)`);
+        }
+      }
+    }
+    // 2e. Hover on an overlay is lighter than it; a tooltip is not darker than it.
     const hover = resolveVar('--color-surface-overlay-hover', themes.dark);
-    if (!hover || !(lightness(hover) > overlayL)) {
+    if (!hover || !(lightness(hover) > overlay.L)) {
       errors.push(`dark: --color-surface-overlay-hover (${hover}) must be lighter than --color-surface-overlay`);
     }
     const tooltip = resolveVar('--color-tooltip-bg', themes.dark);
-    if (tooltip && lightness(tooltip) !== undefined && lightness(tooltip) < overlayL) {
+    if (tooltip && lightness(tooltip) !== undefined && lightness(tooltip) < overlay.L) {
       errors.push(`dark: --color-tooltip-bg (${tooltip}) is darker than --color-surface-overlay; tooltips must float lighter`);
     }
   }
@@ -241,7 +339,9 @@ export function checkSurfaceElevation({ log = console.log, cssPath = appCssPath 
     const row = report[theme]
       .map((r) => `${r.level.replace('surface-', '')} ${r.color} L${r.L.toFixed(1)}`)
       .join(' → ');
-    const edgeNote = report[theme].edge ? ` · card edge ${report[theme].edge.join(', ')}` : '';
+    const edgeNote =
+      (report[theme].edge ? ` · card edge ${report[theme].edge.join(', ')}` : '') +
+      (report[theme].overlayEdge ? ` · overlay rim ${report[theme].overlayEdge.join(', ')}` : '');
     const insetNote = inset[theme] ? ` · inset ${inset[theme].color} L${inset[theme].L.toFixed(1)}` : '';
     log(`  ${theme}: ${row}${insetNote}${edgeNote}`);
   }

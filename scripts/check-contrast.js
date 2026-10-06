@@ -104,9 +104,9 @@ function parseTheme(css) {
 
 /**
  * A token as one flat colour, or null. `var()` chains are followed and an
- * opaque `color-mix()` is evaluated — the dark surface levels are mixes of two
- * neutral steps, and returning null for them would skip every pair measured
- * against a dark card instead of checking it.
+ * opaque `color-mix()` is evaluated — the pressed field and the control fills are
+ * mixes of two neutral steps, and returning null for them would skip every pair
+ * measured against them instead of checking it.
  */
 function resolve(map, token) {
     return resolveTokenColor(map, token); // null: rgba() or a mix with transparent; see resolveOver()
