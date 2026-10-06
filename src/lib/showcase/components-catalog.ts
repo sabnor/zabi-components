@@ -625,6 +625,114 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "Chip",
+                category: "atoms",
+                description:
+                    "A pill for filtering and choosing: a link, a toggle button, a checkbox or a radio, with one tonal selected look.",
+                props: [
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Makes the chip a link. It works without scripts. A disabled link has no href and is aria-disabled.",
+                    },
+                    {
+                        name: "current",
+                        type: '"page" | "true" | "step" | "location" | "date" | "time"',
+                        required: false,
+                        defaultValue: '"true"',
+                        description: "With href: what aria-current says while the chip is selected.",
+                    },
+                    {
+                        name: "type",
+                        type: '"checkbox" | "radio"',
+                        required: false,
+                        description:
+                            "A real input under the chip, which submits in a form without scripts. Without it, and without href, the chip is a toggle button (aria-pressed). Inside a ChipGroup with a type, the group's.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        description: "Name the input submits under. Inside a ChipGroup with a name, the group's.",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        description: "What the input submits, and what a ChipGroup's value holds when the chip is chosen.",
+                    },
+                    {
+                        name: "selected",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "The chip is chosen (bind:selected). One prop for checked, aria-pressed and aria-current. A toggle button or a checkbox chip turns off when pressed again; a radio never does.",
+                    },
+                    {
+                        name: "size",
+                        type: '"sm" | "md" | "lg"',
+                        required: false,
+                        defaultValue: '"md"',
+                        description:
+                            "28, 32 or 40px tall. On a coarse pointer the touch target reaches 44px; the box does not grow.",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        description: "An icon or an avatar before the label.",
+                    },
+                    {
+                        name: "checkmark",
+                        type: "boolean",
+                        required: false,
+                        description:
+                            "A check icon before the label while selected. On for a checkbox and a toggle button, off for a link and a radio.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Half transparent and out of reach.",
+                    },
+                    {
+                        name: "required",
+                        type: "boolean",
+                        required: false,
+                        description: "For an input chip: it must be chosen for the form to submit.",
+                    },
+                    {
+                        name: "form",
+                        type: "string",
+                        required: false,
+                        description: "The id of the form the chip belongs to.",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(selected: boolean) => void",
+                        required: false,
+                        description: "Called with the new selected when a person changes it.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Link chips",
+                        description: "Plain links that work before and without scripts",
+                        code: '&lt;Chip href="/pubs?filter=open" selected&gt;Open&lt;/Chip&gt;\n&lt;Chip href="/pubs?filter=all"&gt;All&lt;/Chip&gt;',
+                    },
+                    {
+                        title: "Toggle button",
+                        description: "Pressed or not",
+                        code: "&lt;Chip bind:selected&gt;Open now&lt;/Chip&gt;",
+                    },
+                ],
+            },
+            {
                 name: "Checkbox",
                 category: "atoms",
                 description:
@@ -658,6 +766,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "",
                         description: "Checkbox label",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Drawn inside the one label, between the box and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
                     },
                     {
                         name: "name",
@@ -752,6 +868,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Visible label text",
                     },
                     {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Drawn inside the one label, between the dot and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
+                    },
+                    {
                         name: "checked",
                         type: "boolean",
                         required: false,
@@ -765,14 +889,6 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description: "Initial checked state for uncontrolled usage",
-                    },
-                    {
-                        name: "leading",
-                        type: "Snippet",
-                        required: false,
-                        defaultValue: "undefined",
-                        description:
-                            "Drawn inside the one label, between the box and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
                     },
                     {
                         name: "disabled",
@@ -865,14 +981,6 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "60dvh",
                         description: "Max height for the options list. dvh follows a phone's collapsing browser bars.",
-                    },
-                    {
-                        name: "leading",
-                        type: "Snippet",
-                        required: false,
-                        defaultValue: "undefined",
-                        description:
-                            "Drawn inside the one label, between the dot and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
                     },
                     {
                         name: "presentation",
@@ -1890,6 +1998,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Visible label. On a touch screen the switch takes taps a little past its edge: give two toggles side by side 16px between them, or a row each.",
                     },
                     {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Drawn inside the one label, between the switch and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,
@@ -1993,14 +2109,6 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "0",
                         description: "Current value",
-                    },
-                    {
-                        name: "leading",
-                        type: "Snippet",
-                        required: false,
-                        defaultValue: "undefined",
-                        description:
-                            "Drawn inside the one label, between the switch and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
                     },
                     {
                         name: "max",
@@ -4265,6 +4373,103 @@ pushToast({
   options={[{ value: 'a', label: 'Basic' }, { value: 'b', label: 'Pro' }]}
   bind:value
 />`,
+                    },
+                ],
+            },
+            {
+                name: "ChipGroup",
+                category: "molecules",
+                description:
+                    "A named set of chips. Wraps, or is one row that scrolls sideways with an edge fade. Radio and checkbox groups hold the value.",
+                props: [
+                    {
+                        name: "layout",
+                        type: '"wrap" | "row"',
+                        required: false,
+                        defaultValue: '"wrap"',
+                        description:
+                            "wrap breaks onto as many lines as it needs. row is one line that scrolls sideways, with the chosen chip brought into view on load.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "The group's accessible name. Not shown unless showLabel. aria-label and aria-labelledby also work.",
+                    },
+                    {
+                        name: "showLabel",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Shows label as text above the group (beside it, in a sub-group).",
+                    },
+                    {
+                        name: "type",
+                        type: '"radio" | "checkbox"',
+                        required: false,
+                        description:
+                            "The chips are inputs that share this group's name and value. Without it the group only lays out its chips (links, toggle buttons). A radio group has the radiogroup role.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        description: "Name the inputs submit under.",
+                    },
+                    {
+                        name: "value",
+                        type: "string | string[] | undefined",
+                        required: false,
+                        description:
+                            "What is chosen (bind:value): a string, or undefined for none, for radio; an array of strings for checkbox.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Disables every chip in the group.",
+                    },
+                    {
+                        name: "edge",
+                        type: '"fade" | "none"',
+                        required: false,
+                        defaultValue: '"fade"',
+                        description:
+                            "With layout row: fade dims a side that has more chips beyond it (a mask, so it works on any background); none never does.",
+                    },
+                    {
+                        name: "scrollSelectedIntoView",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "With layout row: bring the chosen chip into view when the row appears. Only the row scrolls.",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(value: string | string[] | undefined) => void",
+                        required: false,
+                        description: "Called with the new value when a person changes it.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Radio group",
+                        description: "Choose one",
+                        code: `<ChipGroup label="Plan" type="radio" name="plan" bind:value>
+  <Chip value="basic">Basic</Chip>
+  <Chip value="pro">Pro</Chip>
+</ChipGroup>`,
+                    },
+                    {
+                        title: "One row of link chips",
+                        description: "Scrolls sideways, the chosen one in view",
+                        code: `<ChipGroup label="Filter" layout="row">
+  <Chip href="/pubs?f=all">All</Chip>
+  <Chip href="/pubs?f=open" selected>Open</Chip>
+</ChipGroup>`,
                     },
                 ],
             },

@@ -424,6 +424,60 @@ export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'class
     className?: string;
 }
 
+// Chip component props
+export interface ChipProps
+    extends Omit<HTMLButtonAttributes, 'class' | 'type' | 'value' | 'onchange' | 'children'> {
+    /** Makes the chip a link to this address, which works without scripts. */
+    href?: string;
+    target?: HTMLAnchorAttributes['target'];
+    rel?: HTMLAnchorAttributes['rel'];
+    download?: HTMLAnchorAttributes['download'];
+    hreflang?: HTMLAnchorAttributes['hreflang'];
+    /** With `href`: what `aria-current` says while `selected`. Default `"true"`. */
+    current?: 'page' | 'true' | 'step' | 'location' | 'date' | 'time';
+    /** `checkbox` or `radio`: a real input under the chip. Without it (and without `href`) the chip is a toggle button. */
+    type?: 'checkbox' | 'radio';
+    name?: string;
+    value?: string;
+    /** The chip is chosen. Bindable. */
+    selected?: boolean;
+    required?: boolean;
+    form?: string;
+    /** 28, 32 or 40px tall. Default `md`. */
+    size?: 'sm' | 'md' | 'lg';
+    /** An icon or an avatar before the label. */
+    leading?: Snippet;
+    /** A check icon before the label while selected. On for a checkbox and a toggle button, off for a link and a radio. */
+    checkmark?: boolean;
+    /** Called with the new `selected` when a person changes it. */
+    onchange?: (selected: boolean) => void;
+    class?: string;
+    children?: Snippet;
+}
+
+// ChipGroup component props
+export interface ChipGroupProps
+    extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'onchange' | 'children'> {
+    class?: string;
+    /** `wrap` (default) or `row`: one line that scrolls sideways. */
+    layout?: 'wrap' | 'row';
+    /** The group's accessible name. Not shown unless `showLabel`. */
+    label?: string;
+    showLabel?: boolean;
+    /** `radio` or `checkbox`: the chips are inputs sharing this group's `name` and `value`. */
+    type?: 'radio' | 'checkbox';
+    name?: string;
+    /** Bindable: a string (or `undefined`) for `radio`, an array of strings for `checkbox`. */
+    value?: string | string[] | undefined;
+    disabled?: boolean;
+    /** With `layout="row"`: `fade` (default) or `none`. */
+    edge?: 'fade' | 'none';
+    /** With `layout="row"`: bring the chosen chip into view on load. Default `true`. */
+    scrollSelectedIntoView?: boolean;
+    onchange?: (value: string | string[] | undefined) => void;
+    children?: Snippet;
+}
+
 // Progress component props
 export interface ProgressProps {
     value?: number;
@@ -936,6 +990,8 @@ export type Textarea = ZabiComponent<TextareaProps, TextareaEvents>;
 export type Modal = ZabiComponent<ModalProps, ModalEvents>;
 export type Alert = ZabiComponent<AlertProps>;
 export type Badge = ZabiComponent<BadgeProps>;
+export type Chip = ZabiComponent<ChipProps>;
+export type ChipGroup = ZabiComponent<ChipGroupProps>;
 export type Progress = ZabiComponent<ProgressProps>;
 export type Skeleton = ZabiComponent<SkeletonProps>;
 export type Toggle = ZabiComponent<ToggleProps, ToggleEvents>;

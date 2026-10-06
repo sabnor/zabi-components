@@ -1,5 +1,6 @@
 export { default as Toggle } from './atoms/Toggle.svelte';
 export { default as Badge } from './atoms/Badge.svelte';
+export { default as Chip } from './atoms/Chip.svelte';
 export { default as Button } from './atoms/Button.svelte';
 export { default as IconButton } from './atoms/IconButton.svelte';
 export { default as Card } from './atoms/Card.svelte';
@@ -75,6 +76,7 @@ export { default as Modal } from './molecules/Modal.svelte';
 export { default as SlideUp } from './molecules/SlideUp.svelte';
 export { default as Tabs } from './molecules/Tabs.svelte';
 export { default as RadioGroup } from './molecules/RadioGroup.svelte';
+export { default as ChipGroup } from './molecules/ChipGroup.svelte';
 export { default as SegmentedControl } from './molecules/SegmentedControl.svelte';
 export type {
     SegmentedControlIcon,

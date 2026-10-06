@@ -9,6 +9,8 @@
      * component takes; they were never props.
      */
     import Badge from "../components/atoms/Badge.svelte";
+    import Chip from "../components/atoms/Chip.svelte";
+    import ChipGroup from "../components/molecules/ChipGroup.svelte";
     import Button from "../components/atoms/Button.svelte";
     import Card from "../components/atoms/Card.svelte";
     import Checkbox from "../components/atoms/Checkbox.svelte";
@@ -42,6 +44,8 @@
     import type {
         AlertProps,
         BadgeProps,
+        ChipProps,
+        ChipGroupProps,
         ButtonProps,
         CardProps,
         CheckboxProps,
@@ -76,6 +80,8 @@
     interface Props {
         alert?: AlertProps;
         badge?: BadgeProps;
+        chip?: ChipProps;
+        chipGroup?: ChipGroupProps;
         /** `variant` still lists four values Button never had; see the interface. */
         button?: Omit<ButtonProps, "variant">;
         card?: CardProps;
@@ -111,6 +117,8 @@
     let {
         alert = {},
         badge = {},
+        chip = {},
+        chipGroup = {},
         button = {},
         card = {},
         checkbox = {},
@@ -145,6 +153,8 @@
 
 <Alert {...alert} />
 <Badge {...badge} />
+<Chip {...chip} />
+<ChipGroup {...chipGroup} />
 <Button {...button} />
 <Card {...card} />
 <Checkbox {...checkbox} />
