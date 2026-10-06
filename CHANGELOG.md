@@ -12,6 +12,70 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [8.1.0-beta.2] - 2026-10-06
+
+An in-between pre-release under the `beta` dist-tag, following 8.1.0-beta.1.
+It holds what was ready; more fixes follow in the next build.
+
+### Known limitations of this beta
+
+- **Gate-tested, not yet QA-reviewed.** The changes in this build passed the
+  library's own gates (type and design checks, unit tests, theme tests, the
+  full browser suite, the package build) but have not yet had the separate
+  accessibility and QA pass that earlier changes had. A prop name may still
+  change after that pass.
+- For the form-control changes (hint and error, Input slots, `href` on
+  Button, wrapping labels, native attributes, plain list rows) the new tests
+  were not run against the code before the change, and four of the ten fixes
+  were made from reports without being reproduced first.
+- Still verified in desktop Chromium only, with phone widths, touch, safe
+  areas and the on-screen keyboard emulated. Nothing has been checked on a
+  real phone, in Safari or Firefox, or with a screen reader; the device
+  checklists under 8.1.0-beta.0 and beta.1 still apply, and now also cover
+  Select opening as a sheet, the password reveal keeping the keyboard up, and
+  the sidebar drawer.
+- Not in this build, and known: a choice made in Checkbox, Radio, RadioGroup,
+  Rating or SegmentedControl before the page hydrates is undone by hydration;
+  RadioGroup with `bind:value` on `undefined` throws on hydration; Select is
+  as wide as its label rather than its container, cannot be operated without
+  scripts, and its list name "Select options" cannot be set; a long Badge
+  label does not wrap; BottomSheet's header and footer grow with the text
+  size.
+- With five tabs, BottomTabBar's labels stay 11 to 12px even at 200% text
+  (the full names remain the accessible names), and at 180px wide AppBar
+  shows no title beside a back control and two actions.
+
+### Upgrade notes (since 8.1.0-beta.1)
+
+Nothing exported was removed or renamed against 8.0.0, and no token name.
+These are visible without a code change:
+
+- **Toasts show your message.** A toast with a `message` and no `title` shows
+  the message, not a default heading; only a toast with `detail` can be
+  expanded; the countdown sentence is off unless `showCountdown`.
+- **Select opens as a bottom sheet on a phone** (a touch screen narrower than
+  640px). `presentation="popover"` keeps the pop-over.
+- **AppBar and BottomTabBar stay one row**: titles and labels are cut with an
+  ellipsis instead of wrapping, and the bars no longer grow with the text
+  size.
+- **Button labels wrap** and the button grows when a label does not fit.
+- **A List row with no `href` and no `onclick` is plain content**, not a
+  focusable button.
+- **Checkbox and Radio inputs** are stretched invisibly over their box
+  instead of being visually hidden.
+- **`font-sans` and `font-mono` follow the theme's font tokens**, not
+  Tailwind's system stacks.
+- **A menu or popover leaves a clipping container only when that puts it on
+  screen.**
+- Textarea and Select status messages use the same text colour step as
+  Input's; DateField and TimeField generated ids start with `input-`.
+- The docs site's catalog sidebar is a drawer below 1024px.
+
+New surface, following the changelog policy above: no exported path added or
+removed. Tokens added: `--font-sans`, `--font-mono`, `--font-heading`. New
+classes in the published theme: `on-brand`, `on-accent`, and the restated
+accent, info and nav state variants. `CHANGELOG.md` is now in the package.
+
 ### Added
 
 - **Toaster takes `strings`**, every built-in word of a toast: the region
