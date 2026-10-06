@@ -12,6 +12,68 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [8.1.0-beta.3] - 2026-10-06
+
+A local preview build on top of 8.1.0-beta.2, not published to npm. It fixes
+the AppBar title regression of beta.2, keeps choices made before hydration,
+and adds the progressive Select.
+
+### Known limitations of this beta
+
+- **Select's trigger does not say it is invalid.** With `error`, or after a
+  failed `required` check, the custom trigger has no `aria-invalid` and no
+  `aria-required` (the native control before hydration and in
+  `presentation="native"` has both). The trigger becomes a `combobox` in the
+  next build.
+- **A disabled Select submits its value once the page has hydrated**, as in
+  8.1.0-beta.2, and does not before hydration, with scripts off, or in
+  `presentation="native"`.
+- **A long label in the native select is cut with an ellipsis**, before
+  hydration and in `presentation="native"`; the custom trigger wraps it, so
+  the field can grow by a line or more when it takes over.
+- **A press on a toast still closes an open Select or Dropdown.** The other
+  menus stay open.
+- **In an open Select list the chosen option is marked only by its edge
+  colour, and every option is a Tab stop.** Fixed in the next build.
+- **BottomTabBar's active tab, with labels hidden, is told apart only by
+  colours under 3:1** (and by `aria-current`).
+- **Controls placed directly on an `on-brand` or `on-accent` block** (checkbox
+  and radio labels, outline and ghost buttons, the danger focus ring) are
+  below contrast. Put them on a card.
+- **A loading Button is `disabled`, so it drops keyboard focus** while it
+  loads.
+- **The inline message of a `required` Select is the browser's**, in the
+  browser's language.
+- Tested in Chromium only, with touch emulated. No real phone, Safari,
+  Firefox or screen reader was run. The Safari picker offers the stand-in
+  option that holds a value with no option of its own.
+
+### Upgrade notes (since 8.1.0-beta.2)
+
+- **Select is as wide as its container.** A Select in a flex row or a toolbar
+  now takes the row's free width where it used to be as wide as its label;
+  give it a width (`class="w-48"` is honoured now) or wrap it. Workarounds
+  that forced it to fill a column can go.
+- **Select's form control is a native `<select name>`**, not a hidden input.
+  Code that looked for `input[type=hidden]` must look for the select.
+  `required` now blocks the form.
+- **A form reset returns a Select to the value it was rendered with.** Before,
+  a reset left it alone.
+- **Toasts with no duration close after 7 s, not 14 s**, unless the text is
+  longer than 120 characters (14 s) or 240 characters (stays). An error toast
+  with no duration stays until it is dismissed. Pass `duration` (`"short"`
+  3 s, `"medium"` 7 s, `"long"` 14 s, `"persistent"`, or milliseconds) to
+  choose. On a touch screen `onpausechange` now reports `paused` then
+  `running` for a tap, where it reported a single `paused`.
+- **An unnamed RadioGroup submits nothing.** Give it a `name`.
+- **AppBar can be two rows tall** when the title would have under 72px beside
+  the controls. A `leading` wider than the row is held to the row's width
+  (`min-width: 0` and a `max-width` are set on it).
+- **The theme generator checks four more role pairs** (since beta.2; see
+  below). A theme that passed in beta.1 can now report warnings.
+- **Bindable props have no fallback expression any more.** Nothing changes
+  for a caller; `bind:x={undefined}` now works on every one of them.
+
 ### Added
 
 - **Select works without scripts.** The server renders a real `<select>` with
