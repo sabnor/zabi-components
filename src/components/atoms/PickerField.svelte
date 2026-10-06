@@ -107,7 +107,7 @@
         rel,
         name = "",
         formValue = "",
-        element = $bindable(null),
+        element = $bindable(),
         "aria-describedby": describedBy,
         onclick,
         ...restProps

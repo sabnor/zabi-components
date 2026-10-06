@@ -164,7 +164,7 @@ describe("BottomTabBar active tab", () => {
         const idle = links()[0];
         const pill = active.querySelector("span")!.className;
         expect(pill).toContain("forced-colors:outline-2");
-        expect(pill).toContain("forced-colors:outline-(color:Highlight)");
+        expect(pill).toContain("forced-colors:outline-[color:Highlight]");
         expect(idle.querySelector("span")!.className).not.toContain("outline");
     });
 

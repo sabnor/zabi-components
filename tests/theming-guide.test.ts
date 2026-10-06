@@ -77,6 +77,9 @@ const COMPONENT_PROPERTIES: Record<string, string> = {
     "--zabi-rating-on-active": "src/components/atoms/Rating.svelte",
     "--zabi-rating-on-edge": "src/components/atoms/Rating.svelte",
     "--zabi-rating-off": "src/components/atoms/Rating.svelte",
+    "--zabi-rating-off-fill": "src/components/atoms/Rating.svelte",
+    // The label colour of a block an app fills itself, read by the `on-fill` scope.
+    "--zabi-on-fill": "src/app.css",
     // Button reads these through `rounded-button` and `font-button`, which are in the stylesheet.
     "--zabi-button-radius": "src/app.css",
     "--zabi-button-font-weight": "src/app.css",

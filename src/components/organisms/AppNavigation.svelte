@@ -132,7 +132,7 @@
 
     /** The active mark in forced colours: the fill is dropped there, so the shape is an outline. */
     const FORCED =
-        "forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-(color:Highlight)";
+        "forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[color:Highlight]";
 </script>
 
 <!-- The wrapper is what the stylesheet shows or hides: one form per placement. -->

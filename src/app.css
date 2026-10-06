@@ -2517,7 +2517,7 @@ body {
    *
    * `on-fill` is the same scope for a fill the app chooses: put it on the
    * block and set the label colour beside the fill,
-   * `<div class="on-fill" style="background: #123; --zabi-on-fill: #fff">`.
+   * `<div class="on-fill">` with a background and `--zabi-on-fill` set to `#fff`.
    * Everything above applies with `--zabi-on-fill` as the label colour (the
    * text roles, links, edges and rings inside; a surface inside gets the
    * theme's back). Without the property the label is `currentColor`, so the

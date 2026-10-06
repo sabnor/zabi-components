@@ -256,7 +256,7 @@
                         class={cn(
                             "flex h-8 w-[min(56px,100%)] shrink-0 items-center justify-center rounded-pill transition-colors duration-(--duration-base) motion-reduce:transition-none",
                             isActive &&
-                                "bg-tabbar-active text-nav-menu-item-active forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-(color:Highlight)",
+                                "bg-tabbar-active text-nav-menu-item-active forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[color:Highlight]",
                         )}
                     >
                         <!-- The badge is placed against the icon's own 24px

@@ -1,6 +1,7 @@
 import { createRawSnippet, flushSync, mount, unmount, type Component } from "svelte";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import Chip from "../src/components/atoms/Chip.svelte";
 import Checkbox from "../src/components/atoms/Checkbox.svelte";
 import ColorPicker from "../src/components/atoms/ColorPicker.svelte";
 import DateField from "../src/components/atoms/DateField.svelte";
@@ -15,6 +16,7 @@ import Toggle from "../src/components/atoms/Toggle.svelte";
 import Alert from "../src/components/molecules/Alert.svelte";
 import BottomSheet from "../src/components/molecules/BottomSheet.svelte";
 import Calendar from "../src/components/molecules/Calendar.svelte";
+import ChipGroup from "../src/components/molecules/ChipGroup.svelte";
 import Collapsible from "../src/components/molecules/Collapsible.svelte";
 import ConfirmDialog from "../src/components/molecules/ConfirmDialog.svelte";
 import Drawer from "../src/components/molecules/Drawer.svelte";
@@ -83,6 +85,8 @@ const cases: Case[] = [
     { name: "Checkbox with defaultChecked", component: Checkbox, prop: "checked", becomes: true, props: { label: "Terms", defaultChecked: true } },
     { name: "Radio", component: Radio, prop: "checked", becomes: false, props: { label: "Yes" } },
     { name: "Toggle", component: Toggle, prop: "checked", becomes: false, props: { label: "Notify" } },
+    { name: "Chip", component: Chip, prop: "selected", becomes: false },
+    { name: "ChipGroup", component: ChipGroup, prop: "value", becomes: [], props: { label: "Days", type: "checkbox" } },
     { name: "Input", component: Input, prop: "value", becomes: "", props: { label: "Name" } },
     { name: "Textarea", component: Textarea, prop: "value", becomes: "", props: { label: "Notes" } },
     { name: "DateField", component: DateField, prop: "value", becomes: "", props: { label: "Date" } },
@@ -189,6 +193,8 @@ describe("bind:…={undefined}", () => {
             "Calendar.month",
             "SortableList.items",
             "ThemeToggle.mode",
+            // The trigger's element, handed to the app once it is mounted.
+            "PickerField.element",
         ]);
         const tested = new Set(
             cases.map((entry) => `${entry.name.split(" ")[0]}.${entry.prop}`),
