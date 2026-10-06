@@ -230,13 +230,13 @@ async function buildCSS() {
     // Not a token, so it is not in the @theme block: the light theme's own scheme.
     colorsCss += LIGHT_SCHEME_CSS_MINIFIED + '\n';
   }
-  // The materials' fallbacks are token-only, so a vanilla-CSS app gets them too.
+  // The materials' fallbacks and the reduced-motion block are token-only, so a vanilla-CSS app gets them too.
   const fallback = [];
   let inFallback = false;
   appAst.each((node) => {
     if (node.type === 'comment') {
-      if (node.text.includes('@materials-fallback-start')) inFallback = true;
-      if (node.text.includes('@materials-fallback-end')) inFallback = false;
+      if (/@(materials-fallback|motion-reduced)-start/.test(node.text)) inFallback = true;
+      if (/@(materials-fallback|motion-reduced)-end/.test(node.text)) inFallback = false;
       return;
     }
     if (inFallback) {

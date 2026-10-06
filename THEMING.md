@@ -198,6 +198,22 @@ The shadow tokens are the only ones here with a separate dark value. A
 the dark one under the dark selectors (see
 [One role in dark only](#one-role-in-dark-only)).
 
+### Motion
+
+| Token | Default | What follows |
+|---|---|---|
+| `--duration-fast`, `--duration-base`, `--duration-moderate`, `--duration-slow` | 100, 150, 200, 300ms | `--duration-base` is Tailwind's default transition duration; use the others as `duration-(--duration-moderate)` |
+| `--ease-standard` | `cubic-bezier(0.2, 0, 0, 1)` | Tailwind's default transition curve, and the `ease-standard` utility |
+| `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` | The `ease-out` utility (Tailwind's own name and value) |
+| `--ease-spring` | a `linear()` spring, one small overshoot | The `ease-spring` utility; browsers without `linear()` get a cubic-bezier with a similar overshoot |
+
+Under `prefers-reduced-motion: reduce` the durations are `0s` and
+`--ease-spring` is the standard curve. This re-points the tokens with
+`:root:root`, so it also wins over an app's own value: to keep motion for
+reduced-motion users, set the token inside your own
+`@media (prefers-reduced-motion: reduce) { :root:root:root { … } }`. To get
+Tailwind's old curve back, set `--default-transition-timing-function`.
+
 ### Not on the list
 
 These tokens exist, and their names are kept, but setting them does not restyle
