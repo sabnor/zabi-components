@@ -21,10 +21,14 @@ export interface ScrollEdge {
 const END_TOLERANCE = 1;
 
 /** The edges for a scroll position, clamped against rubber-banding past either end. */
-export function measureScrollEdge(position: number, scrollable: number): ScrollEdge {
+export function measureScrollEdge(
+    position: number,
+    scrollable: number,
+    topThreshold = 0,
+): ScrollEdge {
     const end = Math.max(0, scrollable);
     const at = Math.min(Math.max(0, position), end);
-    return { top: at > 0, bottom: end - at > END_TOLERANCE };
+    return { top: at > topThreshold, bottom: end - at > END_TOLERANCE };
 }
 
 /** The value a bar writes as `data-scrolled-under`: the mode, or what the scroll position says. */
@@ -40,10 +44,15 @@ export function resolveScrolledUnder(mode: ScrollEdgeMode | undefined, auto: boo
  * where `ResizeObserver` exists, to the size of the container and of what is
  * in it, since content that grows or shrinks moves the end. Returns the
  * cleanup. Call it in the browser.
+ *
+ * `topThreshold` (px, default 0) is how far it has to scroll before `top` is
+ * true: a bar with a large title is only over content once the large row has
+ * gone under it. Call it again to change it.
  */
 export function watchScrollEdge(
     container: HTMLElement | null,
     onChange: (edge: ScrollEdge) => void,
+    topThreshold = 0,
 ): () => void {
     const target: HTMLElement | Window = container ?? window;
     let last: ScrollEdge | undefined;
@@ -51,8 +60,8 @@ export function watchScrollEdge(
     const measure = () => {
         const root = document.documentElement;
         const edge = container
-            ? measureScrollEdge(container.scrollTop, container.scrollHeight - container.clientHeight)
-            : measureScrollEdge(window.scrollY, root.scrollHeight - window.innerHeight);
+            ? measureScrollEdge(container.scrollTop, container.scrollHeight - container.clientHeight, topThreshold)
+            : measureScrollEdge(window.scrollY, root.scrollHeight - window.innerHeight, topThreshold);
         if (last && last.top === edge.top && last.bottom === edge.bottom) return;
         last = edge;
         onChange(edge);

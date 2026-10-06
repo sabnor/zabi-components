@@ -17,6 +17,14 @@ export interface AppShellContext {
     readonly footerOverlays: boolean;
     /** The measured height of the footer in px, safe area included; 0 without a footer and until measured. */
     readonly footerHeight: number;
+    /**
+     * A header with a large title says how far the shell's header wrapper
+     * sticks above the top of the scroller (the height of the large row, px):
+     * the shell sets the wrapper's `top` to minus that, reports the condensed
+     * height as `--app-shell-top-inset`, and counts content as under the
+     * header only once scrolled past it. `0` puts it back.
+     */
+    setHeaderOverscroll(px: number): void;
 }
 
 const NO_SHELL_STATE: AppShellContext = {
@@ -24,6 +32,7 @@ const NO_SHELL_STATE: AppShellContext = {
     scrolledBottom: false,
     footerOverlays: false,
     footerHeight: 0,
+    setHeaderOverscroll() {},
 };
 
 /** Called by `AppShell`, so the bars inside it know the shell lays them out. */

@@ -33,7 +33,8 @@
      * take, safe areas included, so anything inside the shell can stay clear
      * of them:
      *
-     * - `--app-shell-top-inset`: the height of the header;
+     * - `--app-shell-top-inset`: the height of the header (with an `AppBar`
+     *   `largeTitle`, the height it condenses to);
      * - `--app-shell-bottom-inset`: the height of the footer.
      *
      * Without a bar the value is the safe-area inset alone. With a footer the
@@ -140,6 +141,8 @@
     /** Content is under the header / the footer. False until the browser has measured. */
     let scrolledTop = $state(false);
     let scrolledBottom = $state(false);
+    /** How far the header wrapper sticks above the top of the scroller: a large title's row (px). */
+    let headerOverscroll = $state(0);
 
     markAppShell({
         get scrolledTop() {
@@ -154,14 +157,22 @@
         get footerHeight() {
             return footer ? (footerHeight ?? 0) : 0;
         },
+        setHeaderOverscroll(px) {
+            headerOverscroll = px > 0 ? px : 0;
+        },
     });
 
     $effect(() => {
         if (!scroller) return;
-        return watchScrollEdge(scroller, (edge) => {
-            scrolledTop = edge.top;
-            scrolledBottom = edge.bottom;
-        });
+        // Under the header means past the large title's row, when there is one.
+        return watchScrollEdge(
+            scroller,
+            (edge) => {
+                scrolledTop = edge.top;
+                scrolledBottom = edge.bottom;
+            },
+            headerOverscroll,
+        );
     });
 
     $effect(() => track(headerRegion, (height) => (headerHeight = height)));
@@ -172,7 +183,8 @@
             ? "env(safe-area-inset-top, 0px)"
             : headerHeight === null
               ? HEADER_ESTIMATE
-              : `${headerHeight}px`,
+              : // What covers content while scrolled: the header less the large row that scrolls away.
+                `${Math.max(0, headerHeight - headerOverscroll)}px`,
     );
     const bottomInset = $derived(
         !footer
@@ -238,6 +250,7 @@
             <div
                 bind:this={headerRegion}
                 data-app-shell-header
+                style:top={headerOverscroll > 0 ? `-${headerOverscroll}px` : undefined}
                 class={cn(
                     "pointer-events-none sticky top-0 z-sticky shrink-0 *:pointer-events-auto",
                     // The wash shows through a bar at rest (glass still takes over once scrolled).

@@ -3,6 +3,9 @@
     import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
+    import { isDevBuild } from "../util/app-shell.js";
+    import { badgeText, defaultBadgeLabel } from "../util/bottom-tab-bar.js";
+    import Badge from "./Badge.svelte";
 
     /** The shared scale plus `xs`, which only the icon button has. */
     type IconButtonSize = SizeVariant | "xs";
@@ -56,6 +59,19 @@
         loading?: boolean;
         /** Required for icon-only usage (no visible text). */
         label?: string;
+        /**
+         * A count drawn on the button, in the attention colour, inside the
+         * button's own box (so a bar or an `overflow` ancestor cannot cut it).
+         * Nothing is drawn for 0, a negative number or when it is left out;
+         * while `loading` it is hidden. At `xs` and `sm` there is no room for
+         * a number: a dot is drawn instead. Needs `label`: the accessible name
+         * becomes the label, a comma and `countLabel(count)`.
+         */
+        count?: number;
+        /** What the count adds to the accessible name, after the label. Default: "3 new". */
+        countLabel?: (count: number) => string;
+        /** Above this the badge reads `99+`. The accessible name keeps the real count. */
+        countMax?: number;
         class?: string;
         children?: Snippet;
     };
@@ -70,6 +86,9 @@
         type,
         href,
         label = "",
+        count,
+        countLabel = defaultBadgeLabel,
+        countMax = 99,
         class: className = "",
         onclick,
         children,
@@ -77,6 +96,22 @@
     }: Props = $props();
 
     const isDisabled = $derived(!!disabled || loading);
+
+    /** A count is drawn only for a positive number, and not while loading. */
+    const hasCount = $derived(typeof count === "number" && count > 0);
+    const showCount = $derived(hasCount && !loading);
+    /** `xs` and `sm` have no room for a number beside the icon: a dot. */
+    const countAsDot = $derived(size === "xs" || size === "sm");
+    const accessibleName = $derived(
+        showCount && label ? `${label}, ${countLabel(count as number)}` : label || undefined,
+    );
+
+    $effect(() => {
+        if (!isDevBuild() || !hasCount || label) return;
+        console.warn(
+            "[zabi-components] IconButton: `count` needs a `label`; without it the count has no accessible name.",
+        );
+    });
     /**
      * Loading without `disabled`: unavailable, and still where focus is.
      *
@@ -249,7 +284,8 @@
             isDisabled && (isLink || isBusy)
                 ? "bg-(--color-action-disabled) text-action-disabled-text border border-transparent cursor-not-allowed"
                 : `${variantClass} ${isLink ? "" : pressedClass} ${disabledClass}`;
-        return cn(`${base} ${sizeClass.box} ${state} ${className}`);
+        // Relative only for the badge: it is placed against the button's own box.
+        return cn(`${base} ${showCount ? "relative " : ""}${sizeClass.box} ${state} ${className}`);
     });
 </script>
 
@@ -261,6 +297,29 @@
         ></span>
     {:else if children}
         {@render children()}
+    {/if}
+    {#if showCount}
+        <!-- Inside the box, in its upper end corner, whatever the size: the box
+        edge is the outer edge, so nothing outside it can cut it. Decorative; the
+        name carries the count. -->
+        {#if countAsDot}
+            <span
+                class="pointer-events-none absolute end-0.5 top-0.5 size-2 rounded-full bg-error"
+                aria-hidden="true"
+                data-icon-button-count="dot"
+            ></span>
+        {:else}
+            <Badge
+                size="sm"
+                emphasis="solid"
+                variant="error"
+                aria-hidden="true"
+                data-icon-button-count="badge"
+                class="pointer-events-none absolute end-0.5 top-0.5 h-[18px] min-h-[18px] min-w-[18px] px-[5px] py-0 text-[11px] leading-[18px] whitespace-nowrap"
+            >
+                {badgeText(count as number, countMax)}
+            </Badge>
+        {/if}
     {/if}
 {/snippet}
 
@@ -274,7 +333,7 @@
         role={isDisabled ? "link" : undefined}
         aria-disabled={isDisabled ? "true" : undefined}
         aria-busy={loading ? "true" : undefined}
-        aria-label={label || undefined}
+        aria-label={accessibleName}
         {...(restProps as unknown as HTMLAnchorAttributes)}
         onclick={handleLinkClick}
     >
@@ -289,7 +348,7 @@
         aria-busy={loading ? "true" : undefined}
         aria-pressed={pressed}
         onclick={handleClick}
-        aria-label={label || undefined}
+        aria-label={accessibleName}
         {...restProps}
     >
         {@render content()}

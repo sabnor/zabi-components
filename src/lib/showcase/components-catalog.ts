@@ -148,6 +148,29 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Accessible label for icon-only buttons",
                     },
                     {
+                        name: "count",
+                        type: "number",
+                        required: false,
+                        description:
+                            "A count drawn on the button in the attention colour, inside its own box, so a bar or an overflow ancestor cannot cut it. Nothing for 0, a negative number or undefined; hidden while loading. At xs and sm a dot is drawn instead of the number. Needs label: the accessible name becomes the label, a comma and countLabel(count).",
+                    },
+                    {
+                        name: "countLabel",
+                        type: "(count: number) => string",
+                        required: false,
+                        defaultValue: '"N new"',
+                        description:
+                            "What the count adds to the accessible name, after the label.",
+                    },
+                    {
+                        name: "countMax",
+                        type: "number",
+                        required: false,
+                        defaultValue: "99",
+                        description:
+                            "Above this the badge reads 99+. The accessible name keeps the real count.",
+                    },
+                    {
                         name: "href",
                         type: "string",
                         required: false,
@@ -5853,6 +5876,22 @@ pushToast({
                             "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the top, glass once content is under it; inside an AppShell the shell says when); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
                     },
                     {
+                        name: "largeTitle",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the title large (30px bold, two lines at most) on a second row under the 56px bar. The row scrolls away with the content, nothing is animated, and the bar's own title fades in once it has gone under. The heading is the large title; the small one is hidden from assistive technology. Needs title. collapseOnScroll is ignored with it (a dev-build warning says so). Inside an AppShell, --app-shell-top-inset reports the condensed height. Before measurement, on the server and without scripts, the whole header sticks at full height.",
+                    },
+                    {
+                        name: "tone",
+                        type: "'default' | 'transparent' | 'brand'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "The bar's fill. default is the page colour at rest. transparent has no fill at rest, for a canvas, an image or a colour block behind the bar, and takes the glass once content is under it. brand is the brand colour with on-brand text and controls, opaque at rest and scrolled, with no glass and no hairline, so a brand block directly under it joins it; with largeTitle the large row is part of the block. Written as data-tone.",
+                    },
+                    {
                         name: "title",
                         type: "string",
                         required: false,
@@ -5931,6 +5970,8 @@ pushToast({
                 ],
                 variants: [
                     "collapseOnScroll",
+                    "largeTitle",
+                    "tone",
                 ],
                 examples: [
                     {

@@ -12,6 +12,9 @@
         withActions?: boolean;
         withLeading?: boolean;
         titleLines?: 1 | 2;
+        largeTitle?: boolean;
+        tone?: "default" | "transparent" | "brand";
+        scrollEdge?: "auto" | "always" | "never";
         /** Put the bar in a scrolling box of its own, as AppShell does. */
         inScroller?: boolean;
         class?: string;
@@ -27,6 +30,9 @@
         withActions = false,
         withLeading = false,
         titleLines = undefined,
+        largeTitle = undefined,
+        tone = undefined,
+        scrollEdge = undefined,
         inScroller = false,
         class: className,
     }: Props = $props();
@@ -41,6 +47,9 @@
         {backLabel}
         {collapseOnScroll}
         {titleLines}
+        {largeTitle}
+        {tone}
+        {scrollEdge}
         class={className}
         data-testid="bar"
         leading={withLeading ? leading : undefined}
