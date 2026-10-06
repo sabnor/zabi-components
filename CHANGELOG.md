@@ -12,6 +12,15 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [8.1.0-beta.6] - 2026-10-06
+
+A local preview build on top of 8.1.0-beta.5, not published to npm. It answers
+the theme requests in the app team's gaps file (Z-036 to Z-039) and fixes one
+focus ring. Built quickly and tested lightly on purpose: the type and design
+checks, one unit run, the theme tests, the package build, and a scratch
+install were run on it. The browser suite was NOT run; nothing has had an
+accessibility or QA review. Using it is the test.
+
 ### Upgrade notes
 
 - The edge of a form field is now guarded at 3:1 (WCAG 1.4.11) on the field
@@ -20,7 +29,7 @@ Whenever token or CSS import API surface changes, include:
   both, and `--color-input-border-hover` is base-550 in light. Field edges
   get darker. The generator checks the same three pairs, so a theme of yours
   that overrides the edge can now report a pair below 3:1. The overlay
-  surface in dark is not in the guard: a field edge there is about 2.6:1
+  surface in dark is not in the guard: a field edge there is about 2:1
   against the sheet, and 3:1 against the field's own fill. (Z-038)
 
 ### Fixed
@@ -38,7 +47,6 @@ Whenever token or CSS import API surface changes, include:
   follows a pinned primary action instead of brand step 600; in the default
   theme the fill is the primary action's colour in light and dark. Fill on
   track is guarded at 3:1. (Z-039)
-
 - Theme generator: `neutralChroma` (CLI `--neutral-chroma`), the OKLCH chroma
   at the neutral ramp's peak, 0 to 0.1, for a clearly tinted neutral such as a
   blue-slate. Needs `neutral`. With it, the translucent ink roles
