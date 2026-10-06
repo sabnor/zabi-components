@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
@@ -90,7 +91,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("swipeableListItem");
-    const text = $derived({ ...DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS, provided(), strings));
     const groupId = generateId("swipeable-actions");
 
     let root = $state<HTMLDivElement>();

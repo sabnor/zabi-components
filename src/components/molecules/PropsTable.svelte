@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import type { ComponentProp } from "../types/page.types";
     import Table from "../atoms/Table.svelte";
@@ -21,7 +22,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("propsTable");
-    const text = $derived({ ...DEFAULT_PROPS_TABLE_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_PROPS_TABLE_STRINGS, provided(), strings));
 </script>
 
 {#if props.length === 0}

@@ -1,4 +1,5 @@
 <script lang="ts" generics="T">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
@@ -122,7 +123,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("mediaGrid");
-    const text = $derived({ ...MEDIA_GRID_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(MEDIA_GRID_STRINGS, provided(), strings));
     const keys = $derived(items.map(getKey));
     const tileSize = $derived(
         typeof minTileSize === "number" ? `${minTileSize}px` : minTileSize,

@@ -115,3 +115,23 @@ export const DEFAULT_COMPONENT_DEMO_STRINGS: ComponentDemoStrings = {
     showPreview: "Show preview",
     showCode: "Show code",
 };
+
+/**
+ * Lays `strings` layers over a component's defaults, later layers winning. A
+ * key whose value is `undefined` is skipped, so `strings={{ close: t.close }}`
+ * with `t.close` missing keeps the default instead of blanking it. `null` and
+ * the empty string are kept: those are choices.
+ */
+export function mergeStrings<T extends object>(
+    defaults: T,
+    ...layers: Array<Partial<T> | null | undefined>
+): T {
+    const merged = { ...defaults } as Record<string, unknown>;
+    for (const layer of layers) {
+        if (!layer) continue;
+        for (const [key, value] of Object.entries(layer)) {
+            if (value !== undefined) merged[key] = value;
+        }
+    }
+    return merged as T;
+}

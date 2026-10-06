@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
@@ -81,7 +82,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("pullToRefresh");
-    const text = $derived({ ...DEFAULT_PULL_TO_REFRESH_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_PULL_TO_REFRESH_STRINGS, provided(), strings));
 
     let root = $state<HTMLDivElement>();
     /** How far the indicator is out under a finger, in px; null when no pull is going on. */

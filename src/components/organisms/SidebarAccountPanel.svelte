@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import SidebarPanel, {
         type SidebarPanelItem,
@@ -96,7 +97,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("sidebarAccountPanel");
-    const text = $derived({ ...DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS, provided(), strings));
 
     /**
      * With three modes: the page's mode, read when the panel mounts, after

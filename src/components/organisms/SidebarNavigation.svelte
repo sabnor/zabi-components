@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor, zabiCommonStrings } from "../util/zabi-strings.js";
     import Badge from "../atoms/Badge.svelte";
     import Button from "../atoms/Button.svelte";
@@ -182,9 +183,9 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("sidebarNavigation");
-    const text = $derived({ ...DEFAULT_SIDEBAR_NAVIGATION_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_SIDEBAR_NAVIGATION_STRINGS, provided(), strings));
     /** For the brand header and the footer: the provider's words for this sidebar, then the instance's. */
-    const handedOn = $derived({ ...provided(), ...strings });
+    const handedOn = $derived(mergeStrings<Partial<SidebarNavigationStrings>>({}, provided(), strings));
 
     const isCollapsed = $derived(mode === "collapsed");
     const showBrandRow = $derived(

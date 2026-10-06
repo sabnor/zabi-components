@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
@@ -132,7 +133,7 @@
     const titleId = generateId("calendar-title");
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("calendar");
-    const text = $derived({ ...DEFAULT_CALENDAR_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_CALENDAR_STRINGS, provided(), strings));
 
     let grid: HTMLTableElement | undefined = $state();
 

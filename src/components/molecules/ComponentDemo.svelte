@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import CodeBlock from "../atoms/CodeBlock.svelte";
     import Card from "../atoms/Card.svelte";
@@ -41,7 +42,7 @@
     let showCode = $state(false);
 
     const provided = zabiStringsFor("componentDemo");
-    const text = $derived({ ...DEFAULT_COMPONENT_DEMO_STRINGS, ...provided(), ...(strings as Partial<ComponentDemoStrings> | undefined) });
+    const text = $derived(mergeStrings(DEFAULT_COMPONENT_DEMO_STRINGS, provided(), (strings as Partial<ComponentDemoStrings> | undefined)));
 </script>
 
 <div class="relative">

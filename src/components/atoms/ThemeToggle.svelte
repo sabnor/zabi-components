@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import { onMount, untrack } from "svelte";
     import type { HTMLButtonAttributes } from "svelte/elements";
@@ -77,7 +78,7 @@
     };
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("themeToggle");
-    const text = $derived({ ...DEFAULT_LABELS, ...provided(), ...labels });
+    const text = $derived(mergeStrings(DEFAULT_LABELS, provided(), labels));
 
     /** Whether the page is dark right now, whichever way it is switched. */
     let isDark = $state(false);

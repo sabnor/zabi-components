@@ -1,4 +1,5 @@
 <script lang="ts" generics="T">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
@@ -94,7 +95,7 @@
     const descriptionId = generateId("sortable-list-help");
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("sortableList");
-    const text = $derived({ ...SORTABLE_LIST_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(SORTABLE_LIST_STRINGS, provided(), strings));
 
     let listElement: HTMLUListElement | undefined = $state();
     let announcement = $state("");

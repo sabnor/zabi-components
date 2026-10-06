@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiCommonStrings, zabiStringsFor } from "../util/zabi-strings.js";
     import Dropdown from "../molecules/Dropdown.svelte";
     import Input from "./Input.svelte";
@@ -143,13 +144,17 @@
     const provided = zabiStringsFor("select");
     const common = zabiCommonStrings();
     const text = $derived<SelectStrings>({
-        ...DEFAULT_SELECT_STRINGS,
-        // The sheet's three buttons say what every sheet's do.
-        closeLabel: common().close,
-        expandLabel: common().expand,
-        collapseLabel: common().collapse,
-        ...provided(),
-        ...strings,
+        ...mergeStrings(
+            {
+                ...DEFAULT_SELECT_STRINGS,
+                // The sheet's three buttons say what every sheet's do.
+                closeLabel: common().close,
+                expandLabel: common().expand,
+                collapseLabel: common().collapse,
+            },
+            provided(),
+            strings,
+        ),
         ...(placeholder !== undefined && { placeholder }),
         ...(searchPlaceholder !== undefined && { searchPlaceholder }),
         ...(noResultsText !== undefined && { noResults: noResultsText }),

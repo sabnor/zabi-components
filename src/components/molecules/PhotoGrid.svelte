@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import { untrack } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
@@ -119,7 +120,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("photoGrid");
-    const text = $derived({ ...PHOTO_GRID_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(PHOTO_GRID_STRINGS, provided(), strings));
     const hintId = generateId("photo-grid-hint");
 
     const counts = $derived(visibleCount(photos.length, max));

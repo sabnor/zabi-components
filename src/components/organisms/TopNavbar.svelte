@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import ThemeToggle from "../atoms/ThemeToggle.svelte";
     import IconButton from "../atoms/IconButton.svelte";
@@ -93,7 +94,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("topNavbar");
-    const text = $derived({ ...DEFAULT_TOP_NAVBAR_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_TOP_NAVBAR_STRINGS, provided(), strings));
 
     let isMenuOpen = $state(false);
     let navElement = $state<HTMLElement | null>(null);

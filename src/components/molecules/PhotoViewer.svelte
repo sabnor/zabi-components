@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick, untrack } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
@@ -144,7 +145,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("photoViewer");
-    const text = $derived({ ...PHOTO_VIEWER_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(PHOTO_VIEWER_STRINGS, provided(), strings));
     const count = $derived(photos.length);
     const current = $derived(clampIndex(index, count));
     const photo = $derived<Photo | undefined>(photos[current]);

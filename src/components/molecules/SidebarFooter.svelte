@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import type { Snippet } from "svelte";
     import { fixedSidebarFlyout } from "../util/fixed-sidebar-flyout.js";
@@ -68,7 +69,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("sidebarFooter");
-    const text = $derived({ ...DEFAULT_SIDEBAR_FOOTER_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_SIDEBAR_FOOTER_STRINGS, provided(), strings));
 
     const showFooter = $derived(showProfile || showLogout || showThemeToggle);
     const showPanelLauncher = $derived(showProfile);

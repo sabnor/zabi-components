@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import type { HTMLAttributes } from "svelte/elements";
     import Avatar from "../atoms/Avatar.svelte";
@@ -60,7 +61,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("avatarGroup");
-    const text = $derived({ ...DEFAULT_AVATAR_GROUP_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_AVATAR_GROUP_STRINGS, provided(), strings));
     const split = $derived(splitGroup(people.length, max));
     const shown = $derived(people.slice(0, split.shown));
     const hiddenNames = $derived(people.slice(split.shown).map((person) => person.name));
