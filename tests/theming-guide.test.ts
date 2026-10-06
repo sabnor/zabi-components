@@ -39,9 +39,15 @@ const NOT_TOKENS = new Set([
     "--out",
     "--strict",
     "--set",
+    "--set-light",
+    "--set-dark",
+    "--neutral-chroma",
     "--help",
     "--pin",
     "--pin-accent",
+    // placeholders the docs use for a token of your own
+    "--my-gap",
+    "--token",
     // other commands the docs quote
     "--exit-code",
     "--dry-run",

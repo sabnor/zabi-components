@@ -46,7 +46,7 @@ export const light = create({
     barSelectedColor: '#4f68da',
 
     inputBg: '#ffffff',
-    inputBorder: '#babac1', // base-350, --color-input-border
+    inputBorder: '#71717a', // base-500, --color-input-border
     inputTextColor: '#18181b',
 
     buttonBg: '#ffffff',
