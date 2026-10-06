@@ -39,5 +39,12 @@ dist-ssr
 /static/storybook/
 /.lib-tmp/
 
-# Agent worktrees (also keeps Tailwind from scanning them)
-/.claude/worktrees/
+# Agent definitions, skills and worktrees (also keeps Tailwind from scanning them)
+/.claude/
+
+# Team working docs: decisions, design reviews and audits
+/docs/decisions/
+/docs/design-review/
+/docs/DESIGN_REVIEW*.md
+/docs/DESIGN_SYSTEM_*.md
+/docs/AUDIT_*.md
