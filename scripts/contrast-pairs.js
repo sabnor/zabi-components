@@ -75,6 +75,8 @@ export const BLOCK_ROLES = [
     ['--color-border-medium', AA_LARGE],
     ['--color-border-strong', AA_LARGE],
     ['--color-control-border', AA_LARGE],
+    ['--color-action-outline-border', AA_LARGE],
+    ['--color-action-outline-border-hover', AA_LARGE],
     ['--color-focus-ring', AA_LARGE],
     ['--color-focus-ring-muted', AA_LARGE],
     ['--color-focus-ring-danger', AA_LARGE],
@@ -131,6 +133,11 @@ export const CANVAS_TEXT = ['headline', 'body', 'label', 'description', 'caption
  * The solid controls that take a gradient: a translucent veil (start on top,
  * end at the bottom) over the control's own fill, per state. The label is
  * held at 4.5:1 on both ends of each state.
+ *
+ * `strengths` are the two tokens that set the veil's top and bottom, which
+ * createTheme moves when an app's label makes the default veil fail. Primary
+ * and danger share one veil (the class `bg-control-gradient`), so they share
+ * strengths: a change for one is a change for both.
  */
 export const CONTROL_GRADIENTS = [
     {
@@ -139,6 +146,15 @@ export const CONTROL_GRADIENTS = [
         end: '--color-control-gradient-end',
         on: '--color-action-primary-text',
         fills: [['rest', '--color-action-primary'], ['hover', '--color-action-primary-hover'], ['active', '--color-action-primary-active']],
+        strengths: ['--gradient-control-top-strength', '--gradient-control-bottom-strength'],
+    },
+    {
+        name: 'danger',
+        start: '--color-control-gradient-start',
+        end: '--color-control-gradient-end',
+        on: '--color-action-danger-text',
+        fills: [['rest', '--color-action-danger'], ['hover', '--color-action-danger-hover'], ['active', '--color-action-danger-active']],
+        strengths: ['--gradient-control-top-strength', '--gradient-control-bottom-strength'],
     },
     {
         name: 'accent',
@@ -146,6 +162,7 @@ export const CONTROL_GRADIENTS = [
         end: '--color-control-gradient-accent-end',
         on: '--color-on-accent',
         fills: [['rest', '--color-accent'], ['hover', '--color-accent-hover'], ['active', '--color-accent-active']],
+        strengths: ['--gradient-control-accent-top-strength', '--gradient-control-accent-bottom-strength'],
     },
 ];
 
@@ -309,6 +326,23 @@ export function buildPairs() {
         { name: 'segment thumb edge on the track over the page', bg: '--color-action-secondary', fg: '--color-segment-thumb-border', min: AA_LARGE, behind: '--color-surface-base' },
         { name: 'segment thumb edge on the track over a card', bg: '--color-action-secondary', fg: '--color-segment-thumb-border', min: AA_LARGE, behind: '--color-surface-raised' },
         { name: 'segment thumb text on the thumb', bg: '--color-segment-thumb', fg: '--color-segment-thumb-text', min: AA_NORMAL },
+        // Button variant="tonal": the brand as text on the brand tint, rest,
+        // hovered and held. The label is the link role, the lightest brand step
+        // that holds 4.5:1 on all three.
+        { name: 'tonal label', bg: '--color-action-tonal', fg: '--color-action-tonal-text', min: AA_NORMAL },
+        { name: 'tonal label :hover', bg: '--color-action-tonal-hover', fg: '--color-action-tonal-text', min: AA_NORMAL },
+        { name: 'tonal label :active', bg: '--color-action-tonal-active', fg: '--color-action-tonal-text', min: AA_NORMAL },
+        { name: 'held tonal fill against its resting fill', bg: '--color-action-tonal', fg: '--color-action-tonal-active', min: MIN_PRESSED },
+        // WCAG 1.4.11: the edge of an outline Button is its only boundary. It
+        // was the card edge, 1.25:1 on the page.
+        { name: 'outline button edge on page', bg: '--color-surface-base', fg: '--color-action-outline-border', min: AA_LARGE },
+        { name: 'outline button edge on card', bg: '--color-surface-raised', fg: '--color-action-outline-border', min: AA_LARGE },
+        { name: 'outline button edge :hover on page', bg: '--color-surface-base', fg: '--color-action-outline-border-hover', min: AA_LARGE },
+        { name: 'outline button edge :hover on card', bg: '--color-surface-raised', fg: '--color-action-outline-border-hover', min: AA_LARGE },
+        // WCAG 1.4.11: the off Toggle's track is a light tint, so its edge is
+        // what finds the switch on the page and on a card.
+        { name: 'toggle track edge on page', bg: '--color-surface-base', fg: '--color-toggle-track-border', min: AA_LARGE },
+        { name: 'toggle track edge on card', bg: '--color-surface-raised', fg: '--color-toggle-track-border', min: AA_LARGE },
         // WCAG 1.4.11: the fill of Progress must be seen against its track.
         { name: 'progress fill on track', bg: '--color-progress-track', fg: '--color-progress-fill', min: AA_LARGE },
     );
@@ -340,7 +374,7 @@ export function buildPairs() {
     for (const control of CONTROL_GRADIENTS) {
         for (const [state, fill] of control.fills) {
             for (const [end, bg] of [['top', control.start], ['bottom', control.end]]) {
-                pairs.push({ name: `${control.name} gradient ${end} · ${state}`, bg, fg: control.on, min: AA_NORMAL, behind: fill });
+                pairs.push({ name: `${control.name} gradient ${end} · ${state}`, bg, fg: control.on, min: AA_NORMAL, behind: fill, gradient: control.name });
             }
         }
     }

@@ -324,12 +324,15 @@ function themeMaps(tokens, darkTokens = {}) {
     };
 }
 
-function checkPairs(tokens, darkTokens = {}, extraPairs = []) {
+function checkPairs(tokens, darkTokens = {}, extraPairs = [], { gradients = true } = {}) {
     const maps = themeMaps(tokens, darkTokens);
     const warnings = [];
     let checked = 0;
     for (const mode of ['light', 'dark']) {
         for (const pair of [...data.pairs, ...extraPairs]) {
+            // The control veils are settled last (settleControlGradients), so a
+            // choice made before then must not be steered by them.
+            if (!gradients && pair.gradient) continue;
             const behind = pair.behind ? (typeof pair.behind === 'string' ? pair.behind : pair.behind[mode]) : null;
             let bg = resolveTokenColor(maps[mode], pair.bg);
             if (behind) {
@@ -529,7 +532,7 @@ function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs,
         const root = { ...tokens, ...knobs, ...lightRoles, ...userOverrides };
         const darkRule = { ...earlierDark, ...darkRoles };
         const [knob, value] = chooseOn(name, mode, root, darkRule);
-        const result = checkPairs({ ...root, [knob]: value }, darkRule, extraPairs);
+        const result = checkPairs({ ...root, [knob]: value }, darkRule, extraPairs, { gradients: false });
         return { knob, value, failures: failing(result.warnings, mode) };
     };
     const noWorse = (after, before) => [...after].every((pair) => before.has(pair));
@@ -605,6 +608,116 @@ function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs,
     knobs[darkCurrent.knob] = darkCurrent.value;
 
     return { light, dark: { ...restated(), ...dark }, knobs, report };
+}
+
+/* ---------- links that follow the primary ---------- */
+
+/** What the app's overrides say a role is in `mode`, or undefined. */
+const overrideIn = (modes, mode, role) => modes[mode][role] ?? modes.both[role];
+
+/**
+ * Sets roles for one mode, answering a light value with the library's own
+ * dark one so that dark does not move (as overrideMaps does for `light`).
+ */
+function setRoles(tokens, darkTokens, mode, roles) {
+    if (mode === 'light') {
+        const dark = { ...darkTokens };
+        for (const role of Object.keys(roles)) if (!(role in dark)) dark[role] = data.darkOnly[role] ?? data.light[role];
+        return { tokens: { ...tokens, ...roles }, darkTokens: dark };
+    }
+    return { tokens, darkTokens: { ...darkTokens, ...roles } };
+}
+
+/** The pairs failing in `mode` with these tokens. */
+const failingIn = (tokens, darkTokens, mode) => failing(checkPairs(tokens, darkTokens).warnings, mode);
+
+/**
+ * `--color-link` follows an overridden primary, as a pinned colour's link
+ * does (PIN_ROLES): the library's link is the brand's step 700 because step
+ * 600, its primary, does not hold 4.5:1 as text on tints. An app that sets
+ * its own primary (a deeper step, say) otherwise has links beside buttons in
+ * a different blue. In each mode where the app sets `--color-action-primary`
+ * and not `--color-link`, link is that primary and, if the app set a primary
+ * hover too, link-hover is that (otherwise the ramp's link-hover stays: the
+ * library's hover is a step the app's primary does not use), but only if no
+ * guarded pair fails that did not fail before; otherwise the ramp's link
+ * stays in that mode.
+ * An explicit `--color-link` always wins.
+ */
+function followPrimaryWithLink(tokens, darkTokens, modes) {
+    for (const mode of ['light', 'dark']) {
+        const primary = overrideIn(modes, mode, '--color-action-primary');
+        if (primary === undefined || overrideIn(modes, mode, '--color-link') !== undefined) continue;
+        const hover = overrideIn(modes, mode, '--color-action-primary-hover');
+        const before = failingIn(tokens, darkTokens, mode);
+        for (const roles of [
+            ...(hover === undefined ? [] : [{ '--color-link': primary, '--color-link-hover': hover }]),
+            { '--color-link': primary },
+        ]) {
+            const next = setRoles(tokens, darkTokens, mode, roles);
+            const after = failingIn(next.tokens, next.darkTokens, mode);
+            if ([...after].every((pair) => before.has(pair))) {
+                ({ tokens, darkTokens } = next);
+                break;
+            }
+        }
+    }
+    return { tokens, darkTokens };
+}
+
+/* ---------- control gradients ---------- */
+
+/** The strongest veil tried: the library's own cap. */
+const MAX_VEIL = 14;
+
+/**
+ * The veil of a solid control is a light stop on top and a dark one at the
+ * bottom, over the control's own fill. The library's light default darkens
+ * only (top 0, bottom 14%): a darker fill can only help a light label. An app
+ * whose fill takes a DARK label (a light accent, an amber) loses contrast to
+ * that darkening, so for each veil and each mode: if every pair passes, nothing
+ * is written; if not, the veil is flipped to lighten-only (the top at the
+ * largest whole percent up to 14 that passes, the bottom 0), or the other way
+ * if the label is the light one; if neither direction passes, both are 0%,
+ * which is no veil. A strength the app set itself is never moved: the pair
+ * check reports it. Primary and danger share one veil, so they flip together.
+ */
+function settleControlGradients(tokens, darkTokens, modes) {
+    const veils = new Map();
+    for (const control of data.controlGradients) {
+        const key = control.strengths.join('|');
+        if (!veils.has(key)) veils.set(key, { strengths: control.strengths, controls: [] });
+        veils.get(key).controls.push(control);
+    }
+    for (const mode of ['light', 'dark']) {
+        for (const { strengths, controls } of veils.values()) {
+            if (strengths.some((role) => overrideIn(modes, mode, role) !== undefined)) continue;
+            const failed = (t, d) =>
+                [...failingIn(t, d, mode)].filter((pair) => controls.some((control) => pair.startsWith(`${control.name} gradient `)));
+            if (failed(tokens, darkTokens).length === 0) continue;
+            const [top, bottom] = strengths;
+            const maps = themeMaps(tokens, darkTokens)[mode];
+            const labelIsDark = controls.some((control) => {
+                const label = resolveTokenColor(maps, control.on);
+                const fill = resolveTokenColor(maps, control.fills[0][1]);
+                return label && fill && luminance(label) < luminance(fill);
+            });
+            const directions = labelIsDark ? ['lighten', 'darken'] : ['darken', 'lighten'];
+            let chosen = { [top]: '0%', [bottom]: '0%' };
+            search: for (const direction of directions) {
+                for (let percent = MAX_VEIL; percent >= 1; percent -= 1) {
+                    const roles = direction === 'lighten' ? { [top]: `${percent}%`, [bottom]: '0%' } : { [top]: '0%', [bottom]: `${percent}%` };
+                    const next = setRoles(tokens, darkTokens, mode, roles);
+                    if (failed(next.tokens, next.darkTokens).length === 0) {
+                        chosen = roles;
+                        break search;
+                    }
+                }
+            }
+            ({ tokens, darkTokens } = setRoles(tokens, darkTokens, mode, chosen));
+        }
+    }
+    return { tokens, darkTokens };
 }
 
 /* ---------- output ---------- */
@@ -806,11 +919,15 @@ export function createTheme(options) {
     tokens = { ...tokens, ...own.root };
     darkTokens = { ...darkTokens, ...own.dark };
 
+    // What the generator settles once the app's own values are in place.
+    if (!pin.brand) ({ tokens, darkTokens } = followPrimaryWithLink(tokens, darkTokens, modes));
+    ({ tokens, darkTokens } = settleControlGradients(tokens, darkTokens, modes));
+
     const { warnings: contrastWarnings, checked } = checkPairs(tokens, darkTokens, extraPairs);
     warnings.push(...contrastWarnings);
 
     const css = render({ inputs, closest, tokens, darkTokens, pinned: pinning ? pinned : null, neutralChroma, contrastWarnings, checked });
-    const hasDark = pinning || neutralChroma !== undefined || Object.keys(own.dark).length > 0;
+    const hasDark = pinning || neutralChroma !== undefined || Object.keys(darkTokens).length > 0;
     return {
         css,
         tokens,

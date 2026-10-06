@@ -765,6 +765,7 @@ modes; with `--set-light` or `--set-dark`, only in that mode.
   are paler than the mid steps. To match an owner's page colour exactly, do not
   raise `neutralChroma` (that tints the mid steps and muted text too); set the
   page per mode instead: `overrides: { light: { '--color-surface-base': '#e3edff' } }`.
+- **Links follow an overridden primary.** If `overrides` set `--color-action-primary` (and not `--color-link`), links take that colour in each mode the override applies to, and `--color-link-hover` the primary hover if you set one, as long as no guarded pair fails that did not before; otherwise the ramp's link stays in that mode. An explicit `--color-link` always wins. To put the library's link back: `overrides: { '--color-link': 'var(--color-brand-700)', '--color-link-hover': 'var(--color-brand-800)' }`.
 - **"On" colours.** It sets `--zabi-on-brand` and `--zabi-on-brand-dark` (and
   the accent pair when `--accent` is given) to white or the ramp's 950 step,
   whichever reaches 4.5:1 on the fill, its hover and its active step.
@@ -1276,8 +1277,20 @@ forced colors the rim is a 1px `CanvasText` outline. To set a fill per mode:
 Two gradients, as tokens, so a rebrand carries through. Contrast is never measured against a gradient; the guard checks the worst stop of each.
 
 - **Canvas.** `--gradient-canvas` is two soft radial washes from `--color-brand-300` and `--color-accent-300` (stops `--color-canvas-wash-brand|accent`, strength `--gradient-canvas-strength`, light 55%, dark 25%). Glass over a flat page shows nothing; put `bg-canvas` (page colour plus the wash) on a fixed-height shell or a scroll container, where the wash stays put as content moves. The library never applies it to `body`. Text roles, link, focus ring and field edge are held on each stop over the page.
-- **Solid controls.** `bg-control-gradient` (primary) and `bg-control-gradient-accent` lay a veil over the control's own `background-color`: a light neutral at the top, a slight dark one at the bottom (`--color-control-gradient-start|end`, `--color-control-gradient-accent-start|end`), plus an inset top edge (`--shadow-control-highlight`). Hover and pressed fills still show through. The label is held at 4.5:1 on both ends over rest, hover and pressed. Progress does not take a gradient.
+- **Solid controls.** `bg-control-gradient` (primary and danger; the veil is neutral) and `bg-control-gradient-accent` lay a veil over the control's own `background-color`: a light neutral at the top, a slight dark one at the bottom (`--color-control-gradient-start|end`, `--color-control-gradient-accent-start|end`), plus an inset top edge (`--shadow-control-highlight`). Hover and pressed fills still show through. The label is held at 4.5:1 on both ends over rest, hover and pressed, for primary, accent and danger. Progress does not take a gradient.
+  - Light is darken-only: `--gradient-control-top-strength: 0%` (the top is the control's own colour, so the label keeps its full contrast and your brand colour is not altered) and `--gradient-control-bottom-strength: 14%`. Dark is 22% / 6%. The accent has strengths of its own, `--gradient-control-accent-top-strength` and `-bottom-strength`, which follow the shared ones.
+  - The highlight is written to Tailwind's inset-shadow variable, so a `shadow-*` class and `focus-ring` on the same element still draw.
+  - `createTheme` does not hand you a veil that fails: where the darkened bottom takes a dark label under 4.5:1 (a light accent), it flips that veil to lighten-only in that mode (top up to 14%, bottom 0); if no strength passes it writes both as 0%. A strength you set yourself is never moved, only reported.
 - Override per mode with `createTheme` `overrides` and restate dark; a strength too high is reported as a contrast warning.
+
+### Buttons and the Toggle
+
+Tokens and classes the 9.0 Button, Toggle and FloatingActionButton read. All settable like any role; dark is restated.
+
+- **Tonal** (`bg-action-tonal`, `text-action-tonal`): `--color-action-tonal` (the brand tint), `-hover`, `-active`, and `--color-action-tonal-text` (brand step 800, 4.5:1 or more on all three fills in both modes; step 700 fails the pressed fill on a saturated brand).
+- **Outline edge** (`border-action-outline`): `--color-action-outline-border` and `-hover`, the field edge by default (3:1 on the page and a card in both modes). Inside `.on-brand` and `.on-accent` it is the block's label colour.
+- **Button corner and label weight**, apart from fields: `rounded-button` reads `--zabi-button-radius` and falls back to `--radius-control`; `font-button` (500) and `font-button-strong` (600) read `--zabi-button-font-weight`. Declared nowhere, so set them on any ancestor (or in `createTheme` `overrides`).
+- **Off Toggle** (`bg-toggle-track`, `ring-toggle-track`): `--color-toggle-track`, `-hover`, `-active` and `--color-toggle-track-border`. The track is a light tint; its edge is what holds 3:1 on the page and a card (WCAG 1.4.11). `--color-control-track*` is unchanged and still the Slider's.
 
 ### Shadow scale
 

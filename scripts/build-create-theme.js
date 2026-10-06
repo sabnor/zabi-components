@@ -26,7 +26,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readThemeMaps } from './resolve-tokens.js';
-import { buildPairs } from './contrast-pairs.js';
+import { buildPairs, CONTROL_GRADIENTS } from './contrast-pairs.js';
 import { DARK_CLASS, DARK_ATTRIBUTE, AUTO_ATTRIBUTE, AUTO_MEDIA } from './dark-selectors.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -38,7 +38,11 @@ const outDir = path.join(root, 'dist', 'create-theme');
 export const GENERATOR_FILES = ['index.js', 'index.d.ts', 'cli.js', 'lib/ramp-math.js', 'lib/resolve.js'];
 export const THEME_DATA_FILE = 'theme-data.js';
 
-const isColourToken = (name) => name.startsWith('--color-') || name.startsWith('--zabi-');
+// The control veils' strengths are numbers, not colours, but the veil stops are
+// color-mix() of them: without the strengths the generator cannot resolve a
+// gradient pair, and would skip it without a word.
+const isColourToken = (name) =>
+    name.startsWith('--color-') || name.startsWith('--zabi-') || /^--gradient-control-.*-strength$/.test(name);
 const pick = (map) => Object.fromEntries(Object.entries(map).filter(([name]) => isColourToken(name)));
 
 /** The default theme as the generator needs it. Pure: same sources, same object. */
@@ -48,6 +52,7 @@ export function buildThemeData() {
         light: pick(light),
         darkOnly: pick(darkOnly),
         pairs: buildPairs(),
+        controlGradients: CONTROL_GRADIENTS,
         darkSelectors: { always: `${DARK_CLASS},\n${DARK_ATTRIBUTE}`, auto: AUTO_ATTRIBUTE, media: AUTO_MEDIA },
     };
 }

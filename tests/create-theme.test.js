@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import postcss from 'postcss';
-import { readThemeMaps, resolveTokenColor } from '../scripts/resolve-tokens.js';
+import { readThemeMaps, resolveTokenColor, resolveTokenValue } from '../scripts/resolve-tokens.js';
 import { buildThemeData, renderThemeData, GENERATOR_FILES, THEME_DATA_FILE } from '../scripts/build-create-theme.js';
 import { TARGET_LIGHTNESS, measureLightness } from '../tokens/chromatic-scales.js';
 
@@ -751,19 +751,20 @@ test('without light or dark overrides the bytes are what they were before the op
   // Hashes of the css from the generator before per-mode overrides. The header
   // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193 to 195, then the segment thumb pairs; the flat hash moved when the pressed field became a mix of the field:
   // the field edge on the field fill, the page and the card, then the progress fill on its track, each in both modes).
+  // They moved again for 9a: the generator now resolves the control veil pairs (the strengths are in its data) and the tonal, outline and toggle pairs were added, so the header counts 260; and the pinned amber's veil is flipped to lighten-only (its label is dark).
   const before = {
-    plain: [{ brand: '#0026EA' }, '7f3a3cc6af3352e2c7ec5ef01385aec554511984748575b49e697284aa789ca6'],
+    plain: [{ brand: '#0026EA' }, 'cfb6b828927ea0254a88733806d2446cba829033e7c1320d3991fa759d94eae9'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      'd767dd45f9bf294f234711fa3ff1f73f127da9aba5dc2a8ccacb65ddd72a03c1',
+      '9b0d3eae0fcf2f2ef9f49a1119704274871c72a7baeb2b2ea12212eafd84969b',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      'c70dc84a6046d780e208c448ff6fd49b4fd5b870a4f42dbb23735c96579088c9',
+      '678503dd5353580d6d54fcc8fa4635476cf6160a395dc696e73aeb94a7731332',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '4f0cfe3fc17085980128a0385a052844539344d12b406275d2a701f83e567d22',
+      'fff9463c8a797220df6a2729bb82b8dc126f6238cee7c22b71e5b65b6d213eee',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -1016,9 +1017,11 @@ test('the gradient worst-case pairs pass as shipped, and one step above the solv
   const dark = guard(css.replace('--gradient-canvas-strength: 25%;', '--gradient-canvas-strength: 30%;'));
   assert.equal(dark.status, 1);
   assert.match(dark.stderr, /dark · canvas wash (brand|accent) · field edge/);
-  const veil = guard(css.replace('--gradient-control-top-strength: 4%;', '--gradient-control-top-strength: 6%;'));
+  // Light is darken-only: a lightened top takes the white label under 4.5:1.
+  assert.ok(css.includes('--gradient-control-top-strength: 0%;') && css.includes('--gradient-control-bottom-strength: 14%;'));
+  const veil = guard(css.replace('--gradient-control-top-strength: 0%;', '--gradient-control-top-strength: 10%;'));
   assert.equal(veil.status, 1);
-  assert.match(veil.stderr, /light · (primary|accent) gradient top · rest/);
+  assert.match(veil.stderr, /light · (primary|accent|danger) gradient top · /);
 });
 
 test('gradient tokens follow a rebrand and are overridable per mode with dark restated', () => {
@@ -1057,4 +1060,113 @@ test('a light card override does not break the pressed field: the pressed colour
   // The pressed colour is derived, in both modes, not a ramp step.
   assert.match(defaults.light['--color-input-active'], /^color-mix\(/);
   assert.match(defaults.darkOnly['--color-input-active'], /^color-mix\(/);
+});
+
+/* ---------- 9a: control gradients, link follow, button and toggle tokens ---------- */
+
+test('the default call emits no gradient strengths and no link role', () => {
+  const result = createTheme({ brand: '#0026EA' });
+  for (const name of Object.keys(result.tokens)) {
+    assert.ok(!/^--gradient-control-/.test(name) && name !== '--color-link', name);
+  }
+  assert.equal(result.darkTokens, undefined);
+  // The veil pairs are checked by the generator now (the strengths are in its data),
+  // for primary, accent and danger, and all pass.
+  const veil = buildThemeData().pairs.filter((pair) => pair.gradient);
+  assert.deepEqual([...new Set(veil.map((pair) => pair.gradient))].sort(), ['accent', 'danger', 'primary']);
+  assert.deepEqual(contrastWarnings(result), []);
+});
+
+test('an accent with a dark label gets a lighten-only veil, not a warning', () => {
+  // A light pink fill with a navy label (5.9, 5.1 and 4.7:1): darkening the bottom
+  // by 14% takes the label under 4.5:1 on hover and pressed.
+  const accent = { '--color-accent': '#E27AA6', '--color-accent-hover': '#D96C9B', '--color-accent-active': '#D4639A', '--color-on-accent': '#0B1B4D' };
+  const result = createTheme({ brand: '#0026EA', overrides: accent });
+  const veil = (r) => r.warnings.filter((w) => / gradient /.test(w.pair));
+  assert.deepEqual(veil(result), []);
+  assert.equal(result.tokens['--gradient-control-accent-top-strength'], '14%');
+  assert.equal(result.tokens['--gradient-control-accent-bottom-strength'], '0%');
+  // Primary and danger keep the shared veil.
+  assert.ok(!('--gradient-control-top-strength' in result.tokens));
+  // Light was flipped, so dark says its own: here it fails too and flips as well.
+  assert.ok('--gradient-control-accent-top-strength' in result.darkTokens);
+  assert.ok('--gradient-control-accent-bottom-strength' in result.darkTokens);
+  // The flipped veil is what a page computes.
+  const page = themed({ ...result.tokens });
+  assert.match(resolveTokenValue(page.light, '--gradient-control-accent-top-strength'), /^14%$/);
+
+  // An explicit strength wins and is only warned about.
+  const explicit = createTheme({
+    brand: '#0026EA',
+    overrides: { ...accent, '--gradient-control-accent-top-strength': '0%', '--gradient-control-accent-bottom-strength': '14%' },
+  });
+  assert.equal(explicit.tokens['--gradient-control-accent-bottom-strength'], '14%');
+  assert.ok(veil(explicit).some((w) => w.mode === 'light' && /accent gradient bottom/.test(w.pair)));
+});
+
+test('a fill no veil can save gets no veil rather than a failing one', () => {
+  // The pressed fill alone is 4.39:1 under its label: every strength fails.
+  const result = createTheme({
+    brand: '#0026EA',
+    overrides: { '--color-accent': '#E27AA6', '--color-accent-hover': '#D96C9B', '--color-accent-active': '#CF5C94', '--color-on-accent': '#0B1B4D' },
+  });
+  assert.equal(result.tokens['--gradient-control-accent-top-strength'], '0%');
+  assert.equal(result.tokens['--gradient-control-accent-bottom-strength'], '0%');
+  assert.ok(result.warnings.some((w) => w.pair === 'accent fill :active'));
+});
+
+test('--color-link follows an overridden primary where every guarded pair still passes', () => {
+  const primary = {
+    '--color-action-primary': 'var(--color-brand-800)',
+    '--color-action-primary-hover': 'var(--color-brand-900)',
+    '--color-action-primary-active': 'var(--color-brand-950)',
+  };
+  const app = createTheme({ brand: '#0026EA', overrides: primary });
+  assert.equal(app.tokens['--color-link'], 'var(--color-brand-800)');
+  assert.equal(app.tokens['--color-link-hover'], 'var(--color-brand-900)');
+  assert.deepEqual(contrastWarnings(app), []);
+  // Both modes follow, since the override reaches both.
+  assert.equal(app.darkTokens['--color-link'], 'var(--color-brand-800)');
+
+  // Without a hover override only the link moves: the library's hover step is not the app's.
+  const noHover = createTheme({ brand: '#0026EA', overrides: { '--color-action-primary': 'var(--color-brand-800)' } });
+  assert.equal(noHover.tokens['--color-link'], 'var(--color-brand-800)');
+  assert.ok(!('--color-link-hover' in noHover.tokens));
+
+  // Only in the mode the override is set in: a light primary leaves dark's link on the library's.
+  const lightOnly = createTheme({ brand: '#0026EA', overrides: { light: primary } });
+  assert.equal(lightOnly.tokens['--color-link'], 'var(--color-brand-800)');
+  assert.equal(lightOnly.darkTokens['--color-link'], defaults.darkOnly['--color-link'] ?? defaults.light['--color-link']);
+
+  // A primary that fails a link pair (brand-300 as text on the page) leaves the link on the ramp.
+  const pale = createTheme({ brand: '#0026EA', overrides: { light: { '--color-action-primary': 'var(--color-brand-300)' } } });
+  assert.ok(!('--color-link' in pale.tokens));
+  assert.ok(!('--color-link' in (pale.darkTokens ?? {})));
+
+  // An explicit link wins, in the mode it is set in.
+  const explicit = createTheme({ brand: '#0026EA', overrides: { ...primary, '--color-link': 'var(--color-brand-700)' } });
+  assert.equal(explicit.tokens['--color-link'], 'var(--color-brand-700)');
+  assert.ok(!('--color-link-hover' in explicit.tokens));
+});
+
+test('the button and toggle tokens exist in both modes and take overrides', () => {
+  for (const name of [
+    '--color-action-tonal', '--color-action-tonal-hover', '--color-action-tonal-active', '--color-action-tonal-text',
+    '--color-action-outline-border', '--color-action-outline-border-hover',
+    '--color-toggle-track', '--color-toggle-track-hover', '--color-toggle-track-active', '--color-toggle-track-border',
+    '--gradient-control-accent-top-strength', '--gradient-control-accent-bottom-strength',
+  ]) {
+    assert.ok(name in defaults.light, `light ${name}`);
+    assert.ok(name in defaults.darkOnly, `dark ${name}`);
+  }
+  // Read through a fallback, declared nowhere: setting them is only an override.
+  assert.ok(!('--zabi-button-radius' in defaults.light) && !('--zabi-button-font-weight' in defaults.light));
+  const result = createTheme({
+    brand: '#0026EA',
+    overrides: { '--zabi-button-radius': '9999px', light: { '--zabi-button-font-weight': '600' } },
+  });
+  assert.equal(result.tokens['--zabi-button-radius'], '9999px');
+  assert.equal(result.tokens['--zabi-button-font-weight'], '600');
+  assert.match(result.css, /--zabi-button-radius: 9999px;/);
+  assert.deepEqual(contrastWarnings(result), []);
 });

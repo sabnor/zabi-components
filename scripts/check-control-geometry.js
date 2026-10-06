@@ -29,6 +29,13 @@
  *      Radius is chosen by role (`rounded-control` / `rounded-container` /
  *      `rounded-overlay` / `rounded-pill`), never by size. The library
  *      previously had eight radii in play, from a 2px Badge to a 24px Modal.
+ *      `rounded-button` is the control radius by default (src/app.css reads
+ *      `--zabi-button-radius` and falls back to `--radius-control`), so an app
+ *      can round its buttons without rounding its fields (Z-047). It is a
+ *      rule change to match a decided design, not a loosened threshold: it is
+ *      the same role radius, and a Button may use either class. The stylesheet
+ *      is checked to keep that fallback, so `rounded-button` cannot drift off
+ *      the control corner.
  *
  * Run: node scripts/check-control-geometry.js
  */
@@ -244,9 +251,15 @@ function main() {
     }
     if (radiusOffenders.length) {
         failures.push(
-            't-shirt radii found — use rounded-control / rounded-container / rounded-overlay / rounded-pill:\n      ' +
+            't-shirt radii found — use rounded-control / rounded-button / rounded-container / rounded-overlay / rounded-pill:\n      ' +
             radiusOffenders.join('\n      '),
         );
+    }
+
+    // `rounded-button` stands for the control radius by default.
+    const appCss = fs.readFileSync(path.join(__dirname, '../src/app.css'), 'utf8');
+    if (!/\.rounded-button\s*\{\s*border-radius:\s*var\(--zabi-button-radius,\s*var\(--radius-control\)\);/.test(appCss)) {
+        failures.push('src/app.css: .rounded-button must be `border-radius: var(--zabi-button-radius, var(--radius-control))`, the control radius unless an app sets the button radius');
     }
 
     if (failures.length) {

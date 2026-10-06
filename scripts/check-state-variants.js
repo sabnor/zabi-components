@@ -348,6 +348,10 @@ export const NOT_A_STATE = new Map([
     // states of `.bg-action-primary`, which has its own state rules.
     ['text-action-primary|hover', 'text-action-primary is the label on the primary fill; action-primary-hover is a state of the fill'],
     ['text-action-primary|active', 'text-action-primary is the label on the primary fill; action-primary-active is a state of the fill'],
+    // `.text-action-tonal` is the label on the tonal fill (--color-action-tonal-text);
+    // tonal-hover and tonal-active are states of `.bg-action-tonal`, which has its own state rules.
+    ['text-action-tonal|hover', 'text-action-tonal is the label on the tonal fill; action-tonal-hover is a state of the fill'],
+    ['text-action-tonal|active', 'text-action-tonal is the label on the tonal fill; action-tonal-active is a state of the fill'],
 ]);
 
 function roleSiblingErrors({ colourTokens, baseClasses, variantRules, baseStateRules }) {

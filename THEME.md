@@ -116,6 +116,10 @@ already the right value in each mode. Use the same roles in your own CSS.
 - `--color-border` - Borders and dividers
 - `--color-action-primary`, `-hover`, `-active` - Primary actions
 - `--color-on-brand` - Text on a primary fill (`--color-action-primary-text` follows it)
+- `--color-action-tonal`, `-hover`, `-active`, `-text` (`bg-action-tonal`, `text-action-tonal`) - A brand tint with a brand label, for a quieter action beside a primary or a chosen answer. Label held to 4.5:1 on all three fills
+- `--color-action-outline-border`, `-hover` (`border-action-outline`) - The edge of an outline button: the field edge, 3:1 on the page and the card
+- `--color-toggle-track`, `-hover`, `-active`, `-track-border` (`bg-toggle-track`, `ring-toggle-track`) - The off switch: a light tint with an edge that holds 3:1 (`--color-control-track*` stays the Slider's)
+- `--zabi-button-radius`, `--zabi-button-font-weight` (`rounded-button`, `font-button`) - Button corner and label weight, set on any ancestor; they default to `--radius-control` and 500
 - `--color-accent`, `-hover`, `-active`, `-subtle`, `-border`, `-text` - The second brand colour
 - `--color-on-accent` - Text on a solid accent fill
 - `--color-link`, `--color-focus-ring` - Links and the focus ring
