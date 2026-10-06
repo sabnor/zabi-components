@@ -13,6 +13,9 @@
     import { cn } from "../util/cn.js";
     import {
         DEFAULT_TOASTER_STRINGS,
+        resolveToastDuration,
+        TOAST_SECONDS_AFTER_HOLD,
+        type ToastDuration,
         type ToasterStrings,
         type ToastPauseChange,
     } from "../util/toaster.js";
@@ -25,7 +28,9 @@
         strings?: ToasterStrings;
         /** Shows the time left as a sentence, with a button that stops the timer. */
         showCountdown?: boolean;
-        /** Called when the pointer or focus starts or stops holding the timer. */
+        /** What a toast pushed without a duration gets, in place of medium; the Toaster passes its own. */
+        defaultDuration?: ToastDuration;
+        /** Called when a pointer, a finger or focus starts or stops holding the timer. */
         onpausechange?: (detail: ToastPauseChange) => void;
     }
 
@@ -34,29 +39,21 @@
         toast,
         strings = DEFAULT_TOASTER_STRINGS,
         showCountdown = false,
+        defaultDuration,
         onpausechange,
     }: Props = $props();
-
-    /**
-     * Seconds until auto-dismiss; `0` means no countdown (manual dismiss only).
-     * A toast with an action and no duration of its own stays: the user has to
-     * be able to reach the button, and nothing pauses the timer on the way there.
-     */
-    function autoDismissSeconds(duration: number | undefined, hasAction: boolean): number {
-        if (duration === undefined) return hasAction ? 0 : 14;
-        if (duration <= 0) return 0;
-        return Math.max(1, Math.ceil(duration / 1000));
-    }
-
-    const maxSeconds = $derived(autoDismissSeconds(toast.duration, !!toast.action));
 
     let count = $state(0);
     let timerActive = $state(false);
     let isExpanded = $state(false);
-    /** Hover or keyboard focus inside the toast pauses auto-dismiss (WCAG 2.2.1). */
+    /**
+     * What holds the timer (WCAG 2.2.1): a mouse or a stylus over the toast,
+     * a finger on it, keyboard focus inside it.
+     */
     let hovered = $state(false);
+    let held = $state(false);
     let focusWithin = $state(false);
-    const paused = $derived(hovered || focusWithin);
+    const paused = $derived(hovered || held || focusWithin);
 
     let intervalRef: ReturnType<typeof setInterval> | undefined;
 
@@ -88,6 +85,25 @@
      */
     const expandableText = $derived((toast.detail ?? "").trim());
     const hasExpandable = $derived(expandableText.length > 0);
+
+    /**
+     * Seconds until the toast closes by itself; `0` is never. What the app
+     * said for this toast wins. Otherwise it goes by what the toast is and by
+     * how much there is to read in it: the two lines that are shown, not the
+     * detail behind its button.
+     */
+    const maxSeconds = $derived.by(() => {
+        const ms = resolveToastDuration(
+            {
+                duration: toast.duration,
+                type: toast.type,
+                hasAction: !!toast.action,
+                textLength: headerTitle.length + secondLine.length,
+            },
+            defaultDuration,
+        );
+        return ms <= 0 ? 0 : Math.max(1, Math.ceil(ms / 1000));
+    });
 
     /** The time left as words: for the sentence, or for a screen reader to find. */
     const countdownText = $derived(
@@ -143,7 +159,7 @@
             // The state, not the `paused` derived: a tick can land while the
             // toast is animating out, and reading a derived then warns
             // (`derived_inert`).
-            if (hovered || focusWithin) return;
+            if (hovered || held || focusWithin) return;
             count -= 1;
             if (count <= 0) {
                 stopTimer();
@@ -196,6 +212,43 @@
         if (held) dismissButton?.focus();
     }
 
+    /**
+     * The kind of pointer last seen on the toast. After a tap a browser makes
+     * up mouse events for it, `mouseenter` among them and never a
+     * `mouseleave`: taken for a mouse, a tap held the timer for good.
+     */
+    let lastPointer: string | undefined;
+
+    function handlePointerEnter(event: PointerEvent) {
+        lastPointer = event.pointerType;
+        // A mouse, or a stylus in range. A finger is over the toast only while it is on it.
+        if (event.pointerType !== "touch") hovered = true;
+    }
+
+    function handlePointerLeave(event: PointerEvent) {
+        if (event.pointerType !== "touch") hovered = false;
+    }
+
+    function handleMouseEnter() {
+        if (lastPointer !== "touch") hovered = true;
+    }
+
+    function handlePointerDown(event: PointerEvent) {
+        lastPointer = event.pointerType;
+        if (event.pointerType === "touch") held = true;
+    }
+
+    /**
+     * The finger lifts, or the browser takes the touch for a scroll. The
+     * timer runs again, with time left to do something about the toast: it
+     * was held because someone was reading it.
+     */
+    function handlePointerRelease(event: PointerEvent) {
+        if (event.pointerType !== "touch" || !held) return;
+        held = false;
+        if (timerActive) count = Math.max(count, Math.min(TOAST_SECONDS_AFTER_HOLD, maxSeconds));
+    }
+
     function handleFocusOut(event: FocusEvent) {
         const next = event.relatedTarget as Node | null;
         if (!next || !(event.currentTarget as HTMLElement).contains(next)) {
@@ -218,7 +271,12 @@
     class={cn("pointer-events-auto relative w-full min-w-[min(18rem,100%)] shrink-0 overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg", className)}
     in:fly={toastEnter}
     out:fly={toastLeave}
-    onmouseenter={() => (hovered = true)}
+    onpointerenter={handlePointerEnter}
+    onpointerleave={handlePointerLeave}
+    onpointerdown={handlePointerDown}
+    onpointerup={handlePointerRelease}
+    onpointercancel={handlePointerRelease}
+    onmouseenter={handleMouseEnter}
     onmouseleave={() => (hovered = false)}
     onfocusin={() => (focusWithin = true)}
     onfocusout={handleFocusOut}
@@ -240,15 +298,18 @@
                 role={toast.type === 'error' ? 'alert' : 'status'}
                 aria-atomic="true"
             >
-            <div class="shrink-0 mt-0.5">
+            <!-- 20px at every text size, as the padding and the gap beside it
+            are px: an icon that grew with the text took the room the text
+            needed. Lowered so it stays at the middle of the first line. -->
+            <div class="shrink-0 mt-[calc((1.5rem_-_20px)_/_2)]">
                 {#if toast.type === 'success'}
-                    <CheckCircle class="size-5 {statusIconClass}" aria-hidden="true" />
+                    <CheckCircle class="size-[20px] {statusIconClass}" aria-hidden="true" />
                 {:else if toast.type === 'error'}
-                    <AlertCircle class="size-5 {statusIconClass}" aria-hidden="true" />
+                    <AlertCircle class="size-[20px] {statusIconClass}" aria-hidden="true" />
                 {:else if toast.type === 'warning'}
-                    <AlertTriangle class="size-5 {statusIconClass}" aria-hidden="true" />
+                    <AlertTriangle class="size-[20px] {statusIconClass}" aria-hidden="true" />
                 {:else}
-                    <Info class="size-5 {statusIconClass}" aria-hidden="true" />
+                    <Info class="size-[20px] {statusIconClass}" aria-hidden="true" />
                 {/if}
             </div>
             <div class="min-w-0 flex-1">
@@ -280,7 +341,7 @@
                         type="button"
                         class="focus-ring cursor-pointer inline-flex items-center justify-center rounded-control p-1 pointer-coarse:min-h-[44px] pointer-coarse:min-w-[44px] text-description transition-colors hover:bg-surface-overlay-hover hover:text-headline active:bg-surface-active focus:outline-none"
                         aria-expanded={isExpanded}
-                        aria-controls="toaster-expand-{toast.id}"
+                        aria-controls={isExpanded ? `toaster-expand-${toast.id}` : undefined}
                         aria-label={isExpanded ? strings.collapse : strings.expand}
                         bind:this={expandButton}
                         onclick={() => (isExpanded = !isExpanded)}
@@ -306,8 +367,8 @@
         </div>
 
         {#if toast.action}
-            <!-- Indented to the title: past the 20px status icon and its gap. -->
-            <div class="mt-3 pl-[calc(1.25rem+12px)]">
+            <!-- Indented to the title: past the 20px status icon and its 12px gap. -->
+            <div class="mt-3 pl-[32px]">
                 <Button
                     variant="secondary"
                     size="sm"

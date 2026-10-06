@@ -30,6 +30,11 @@ Whenever token or CSS import API surface changes, include:
   lines before it is cut with an ellipsis, for a screen whose title is its
   only name (default 1). The bar's parts carry `data-appbar-part` (`back`,
   `title`, `actions`).
+- **Toast durations by name.** `duration` on `pushToast` and the new
+  `defaultDuration` on `Toaster` take `"short"` (3 s), `"medium"` (7 s),
+  `"long"` (14 s) or `"persistent"` (stays until dismissed), as well as a
+  number of milliseconds as before. `TOAST_DURATIONS` and the `ToastDuration`
+  type are exported. A duration given on a toast always wins.
 
 ### Changed
 
@@ -63,6 +68,16 @@ Whenever token or CSS import API surface changes, include:
   there to group the radios, but they are kept out of the surrounding form, as
   in Rating. Give the group a `name` to submit it.
 - **`Checkbox` is exported from the atoms entry** as well as from the root.
+- **Toast timing when no duration is given: the default is 7 s, was 14 s.**
+  A toast with up to 120 characters of title and message stays 7 s
+  (`"medium"`); one with 121 to 240 stays 14 s (`"long"`), as before; a longer
+  one stays until it is dismissed. An error toast now also stays until it is
+  dismissed, like a toast with an action. `defaultDuration` on `Toaster`
+  replaces the 7 s only. `"short"` is for a few words that need no reading
+  time; hover, keyboard focus and a held finger pause every timed toast.
+- **A toast's status icon stays 20px when the text is enlarged**, so the text
+  column keeps its width at 320px and 200% text. `aria-controls` on the expand
+  button is set only while the detail is open.
 
 ### Fixed
 
@@ -117,6 +132,17 @@ Whenever token or CSS import API surface changes, include:
   and a form reset returns a Select to the value it was rendered with.
 - **`DEFAULT_SELECT_STRINGS`, `SelectStrings` and `SelectPresentation` are
   exported from the atoms entry** as well.
+- **Holding a finger on a toast pauses it.** On a touch screen a held finger
+  did not pause the countdown, and a tap paused it for good. A finger down now
+  pauses for as long as it is held, lifting resumes with at least 3 s left,
+  and a tap neither sticks nor dismisses. `data-paused` and `onpausechange`
+  report each change once. Hover and keyboard focus pause as before.
+- **Pressing a toast no longer closes what is open under it.** The TopNavbar
+  menu, a NavigationMenu panel and the ColorPicker treated the toast region as
+  "outside" and closed.
+- **Drawer content clears the home indicator.** The panel pads for
+  `env(safe-area-inset-bottom)`, so the last link and a footer button are not
+  under it.
 
 ## [8.1.0-beta.2] - 2026-10-06
 

@@ -165,8 +165,8 @@ export {
     type ToastAction,
     type ToastLevel,
 } from './molecules/toast-store.js';
-export { DEFAULT_TOASTER_STRINGS } from './util/toaster.js';
-export type { ToasterStrings, ToastPauseChange } from './util/toaster.js';
+export { DEFAULT_TOASTER_STRINGS, TOAST_DURATIONS } from './util/toaster.js';
+export type { ToasterStrings, ToastPauseChange, ToastDuration } from './util/toaster.js';
 export { DEFAULT_SELECT_STRINGS } from './util/select.js';
 export type { SelectStrings, SelectPresentation } from './util/select.js';
 export { DEFAULT_TOP_NAVBAR_STRINGS } from './util/top-navbar.js';

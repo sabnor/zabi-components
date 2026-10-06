@@ -3961,11 +3961,19 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Shows the time a toast has left as a sentence under it, with a button that stops the timer. Without it the bar along the bottom of the toast shows the time, and the sentence is in the toast for a screen reader only, outside the live region, so it is found when the toast is read and not spoken every second.",
                     },
                     {
+                        name: "defaultDuration",
+                        type: "'short' | 'medium' | 'long' | 'persistent' | number",
+                        required: false,
+                        defaultValue: "'medium'",
+                        description:
+                            "How long a toast stays when it was pushed without a duration: short is 3 seconds, medium 7, long 14, persistent until it is dismissed; a number is milliseconds. An error and a toast with an action still stay until dismissed, a toast with 121 to 240 characters of title and message still gets at least long, and a longer one still stays. A duration on the toast itself always wins. The three lengths are exported as TOAST_DURATIONS, the type as ToastDuration.",
+                    },
+                    {
                         name: "onpausechange",
                         type: "(detail: { id: string; paused: boolean }) => void",
                         required: false,
                         description:
-                            "Called when the pointer or keyboard focus starts or stops holding a toast's timer, with the toast's id. The same state is the data-paused attribute on the toast (data-toast-id), which is supported: an app with a timer of its own can read either.",
+                            "Called when a mouse over the toast, a finger on it or keyboard focus inside it starts or stops holding its timer, with the toast's id; each change is reported once. A finger that lifts leaves the toast at least three seconds, so holding a short toast starts it again. The same state is the data-paused attribute on the toast (data-toast-id), which is supported: an app with a timer of its own can read either.",
                     },
                     {
                         name: "class",
@@ -3983,6 +3991,12 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset: 72px for a FloatingActionButton, which it would otherwise cover. That offset is for what is on the page: over a modal overlay the stack keeps off the overlay's header (and its close button) and off a pinned footer by itself, above the panel or between the two, and the offset is not added on top. Over the on-screen keyboard it sits above the keyboard. Tab goes from the overlay into the toasts and back. More toasts than fit scroll. The safe-area insets are zero until the page sets viewport-fit=cover",
                         code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: 65px\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
+                    },
+                    {
+                        title: "How long a toast stays",
+                        description:
+                            "Say it in words: short is 3 seconds, medium 7, long 14, persistent until it is dismissed. Short is for a few words that need no reading time (Sparat). Anything a person has to read is medium or long. Anything they have to act on, and an error, should stay: persistent. A number is milliseconds, and 0 is persistent. With no duration, an error and a toast with an action stay until dismissed, and the rest go by their title and message together: up to 120 characters gets medium (or the Toaster's defaultDuration), 121 to 240 gets long, more than 240 stays. A mouse over a timed toast, keyboard focus inside it and a finger held on it each stop its timer, which is what keeps a timed toast within WCAG 2.2.1",
+                        code: "import { Toaster, pushToast, TOAST_DURATIONS, type ToastDuration } from 'zabi-components';\n\npushToast({ message: 'Saved', type: 'success', duration: 'short' });\npushToast({ title: 'Export ready', message: 'The file is in Downloads, under the name of the report.', duration: 'long' });\npushToast({ message: 'You are offline. Changes are kept on this device.', type: 'warning', duration: 'persistent' });\n\n<!-- Every toast without a duration of its own -->\n<Toaster defaultDuration=\"long\" />\n\nTOAST_DURATIONS; // { short: 3000, medium: 7000, long: 14000 }",
                     },
                     {
                         title: "Toast with an action",

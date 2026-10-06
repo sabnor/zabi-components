@@ -9,6 +9,7 @@
     import { cn } from "../util/cn.js";
     import type { ThemeToggleLabels } from "../util/theme-mode.js";
     import { DEFAULT_TOP_NAVBAR_STRINGS, type TopNavbarStrings } from "../util/top-navbar.js";
+    import { isInsideToastRegion } from "../util/focus-utils.js";
 
     export interface TopNavbarNavItem {
         label: string;
@@ -134,7 +135,9 @@
         if (focusInside) focusMenuButton();
     }
 
+    /** A toast lies over the menu; a press on it, or focus in it, is not leaving the bar. */
     function isOutside(event: Event): boolean {
+        if (isInsideToastRegion(event.target)) return false;
         return !!navElement && !(event.target instanceof Node && navElement.contains(event.target));
     }
 

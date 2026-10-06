@@ -82,6 +82,40 @@ export async function touchTap(
 }
 
 /**
+ * A finger put down at `point` and left there. `lift` takes it off again;
+ * `cancel` is the browser taking the touch for itself. What happens in
+ * between is the test's: it moves the page's clock, not this process's.
+ * Both events carry a timestamp of their own, `heldFor` ms apart, so the
+ * browser never sees a tap however late the second one is sent.
+ */
+export async function touchHold(
+    page: Page,
+    point: Point,
+): Promise<{ lift: (heldFor?: number) => Promise<void>; cancel: () => Promise<void> }> {
+    const cdp = await page.context().newCDPSession(page);
+    const began = Date.now();
+    await cdp.send("Input.dispatchTouchEvent", {
+        type: "touchStart",
+        touchPoints: [{ x: Math.round(point.x), y: Math.round(point.y), id: 1 }],
+        timestamp: began / 1000,
+    });
+    return {
+        async lift(heldFor = 3000) {
+            await cdp.send("Input.dispatchTouchEvent", {
+                type: "touchEnd",
+                touchPoints: [],
+                timestamp: (began + heldFor) / 1000,
+            });
+            await cdp.detach();
+        },
+        async cancel() {
+            await cdp.send("Input.dispatchTouchEvent", { type: "touchCancel", touchPoints: [] });
+            await cdp.detach();
+        },
+    };
+}
+
+/**
  * Two fingers on the glass, moved together from one pair of points to
  * another, through the DevTools protocol: a pinch when the pairs differ in
  * how far apart they are, a two-finger drag when they do not. `hold` is how

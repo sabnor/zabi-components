@@ -2,6 +2,7 @@
     import type { Snippet } from "svelte";
     import { getContext } from "svelte";
     import { cn } from "../util/cn.js";
+    import { isInsideToastRegion } from "../util/focus-utils.js";
     import { measurePlacement, watchViewport } from "../util/fit-in-viewport.js";
     import {
         NAVIGATION_MENU_CONTEXT_KEY,
@@ -100,6 +101,8 @@
 
         function handleClickOutside(event: MouseEvent) {
             const target = event.target as Node;
+            // A toast lies over the panel; a press on it is for the toast.
+            if (isInsideToastRegion(target)) return;
             if (!panel.contains(target) && !parentItem?.contains(target)) {
                 context?.setActiveItem(null);
             }

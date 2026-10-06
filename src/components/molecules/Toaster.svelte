@@ -6,6 +6,7 @@
     import { topOverlayFooter, topOverlayHeader, watchOverlayFooters } from "../util/overlay.js";
     import {
         DEFAULT_TOASTER_STRINGS,
+        type ToastDuration,
         type ToasterStrings,
         type ToastPauseChange,
     } from "../util/toaster.js";
@@ -43,10 +44,24 @@
      * and Escape in a toast returns focus to where it came from.
      *
      * A toast shows what it was pushed with: its `title`, its `message`
-     * under it, or the message alone. Its timer stops while the pointer is
-     * over it or focus is inside it; `data-paused` on the toast says so, and
-     * `onpausechange` is called. Every word the toaster says by itself is in
-     * `strings`:
+     * under it, or the message alone.
+     *
+     * How long it stays is said in words, per toast (`pushToast({ duration:
+     * "short" })`) or for all of them here (`defaultDuration`): `"short"` is
+     * 3 seconds, for a few words that need no reading time ("Saved");
+     * anything a person has to read is `"medium"` (7 seconds) or `"long"`
+     * (14); what they have to act on, and an error, should stay:
+     * `"persistent"`. A number is milliseconds. A toast given no duration
+     * gets medium up to 120 characters of text, long up to 240, and stays
+     * beyond that; an error and a toast with an action stay until they are
+     * dismissed.
+     *
+     * Its timer stops while a mouse is over it, a finger is on it or focus
+     * is inside it, which is what lets a timed toast be read in the reader's
+     * own time (WCAG 2.2.1). A finger that lifts leaves it at least three
+     * seconds, so holding a short toast starts it again.
+     * `data-paused` on the toast says so, and `onpausechange` is called.
+     * Every word the toaster says by itself is in `strings`:
      *
      * ```svelte
      * <Toaster
@@ -75,9 +90,18 @@
          */
         showCountdown?: boolean;
         /**
-         * Called when the pointer or focus starts or stops holding a toast's
-         * timer, with the toast's id. The same state is `data-paused` on the
-         * toast.
+         * How long a toast stays when it was pushed without a `duration`, in
+         * place of `"medium"`: `"short"`, `"medium"`, `"long"`,
+         * `"persistent"` or milliseconds. An error and a toast with an action
+         * still stay until dismissed, a text of 121 to 240 characters still
+         * gets at least `"long"`, and a longer one still stays. A `duration`
+         * on the toast wins.
+         */
+        defaultDuration?: ToastDuration;
+        /**
+         * Called when a pointer, a finger or focus starts or stops holding a
+         * toast's timer, with the toast's id. The same state is `data-paused`
+         * on the toast.
          */
         onpausechange?: (detail: ToastPauseChange) => void;
         class?: string;
@@ -87,6 +111,7 @@
         strings,
         "aria-label": ariaLabel,
         showCountdown = false,
+        defaultDuration,
         onpausechange,
         class: className = '',
         ...restProps
@@ -333,6 +358,6 @@
 >
     <!-- Each toast owns its role="status"/"alert"; a region-level aria-live would announce twice. -->
     {#each $toastStore as toast (toast.id)}
-        <ToasterToast {toast} strings={words} {showCountdown} {onpausechange} />
+        <ToasterToast {toast} strings={words} {showCountdown} {defaultDuration} {onpausechange} />
     {/each}
 </div>

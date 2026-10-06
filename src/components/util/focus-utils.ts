@@ -29,6 +29,19 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
 export const TOAST_REGION_SELECTOR = "[data-zabi-toaster]";
 
 /**
+ * Whether an event's target is in a toast. A toast is drawn over whatever is
+ * open, and a press on it is for the toast (to hold it, read it, dismiss it):
+ * a menu or a panel that closes on a press outside itself asks this first,
+ * and leaves a press on a toast alone.
+ */
+export function isInsideToastRegion(target: unknown): boolean {
+    if (typeof Node === "undefined" || !(target instanceof Node)) return false;
+    // A press on text can report the text node.
+    const element = target instanceof Element ? target : target.parentElement;
+    return !!element?.closest(TOAST_REGION_SELECTOR);
+}
+
+/**
  * The controls of the toasts on screen. A toast is drawn over a modal
  * overlay and can cover its buttons, so a focus trap that kept the keyboard
  * out of it would leave no way to dismiss it: the trap takes these in, after

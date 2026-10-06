@@ -2,15 +2,36 @@
     import Toaster from '../../components/molecules/Toaster.svelte';
     import Button from '../../components/atoms/Button.svelte';
     import { pushToast } from '../../components/molecules/toast-store.js';
+    import type { ToastDuration } from '../../components/util/toaster.js';
 
     interface Props {
         /** An app in Swedish: its own toasts, and the toaster's own words in Swedish too. */
         swedish?: boolean;
         /** Shows the time left as a sentence, with a button that stops the timer. */
         showCountdown?: boolean;
+        /** One of the named lengths: the story then pushes toasts of that length. */
+        length?: "short" | "medium" | "long" | "persistent";
+        /** What a toast pushed without a duration gets, in place of medium. */
+        defaultDuration?: ToastDuration;
     }
 
-    let { swedish = false, showCountdown = false }: Props = $props();
+    let { swedish = false, showCountdown = false, length, defaultDuration }: Props = $props();
+
+    /** A text that suits each length: what it is for. */
+    const samples = {
+        short: { message: "Saved", type: "success" },
+        medium: { title: "Invitation sent", message: "Maria will get an email with a link to the round.", type: "info" },
+        long: {
+            title: "Export ready",
+            message: "The file is in your Downloads folder, under the name of the report.",
+            type: "success",
+        },
+        persistent: {
+            title: "You are offline",
+            message: "Changes are kept on this device and sent when the connection is back.",
+            type: "warning",
+        },
+    } as const;
 
     const sv = {
         regionLabel: "Aviseringar",
@@ -29,7 +50,15 @@
 };
 </script>
 
-{#if swedish}
+{#if length}
+    <div class="space-y-4">
+        <Button
+            text={`Push a ${length} toast`}
+            onclick={() => pushToast({ ...samples[length], duration: length })}
+        />
+        <Toaster showCountdown={length !== "persistent"} />
+    </div>
+{:else if swedish}
     <div class="space-y-4" lang="sv">
         <div class="flex flex-wrap gap-2">
             <Button
@@ -106,6 +135,6 @@
                 })}
         />
     </div>
-    <Toaster {showCountdown} />
+    <Toaster {showCountdown} {defaultDuration} />
 </div>
 {/if}

@@ -106,6 +106,23 @@
         "Välj Lägg till på hemskärmen i listan. Du kan behöva bläddra nedåt för att hitta valet.",
         "Bekräfta med Lägg till. Appen får en egen ikon och öppnas utan adressfält nästa gång.",
     ];
+    let drawerPlainOpen = $state(false);
+    /** Toast lengths (playwright/toast-timing.spec.ts): what each button pushes. */
+    const LONG_TEXT =
+        "The export could not be finished because the connection to the server was lost halfway through. Check that you are online, then start the export again from the Reports page when you are ready.";
+    const timedToasts = {
+        "default": { message: "Draft saved." },
+        "default-long": { message: LONG_TEXT },
+        "default-longest": { message: `${LONG_TEXT} ${LONG_TEXT}` },
+        "error": { message: "Could not save the draft.", type: "error" },
+        "short": { message: "Draft saved.", duration: "short" },
+        "medium": { message: "Draft saved.", duration: "medium" },
+        "long": { message: "Draft saved.", duration: "long" },
+        "persistent": { message: "Draft saved.", duration: "persistent" },
+        "error-short": { message: "Could not save the draft.", type: "error", duration: "short" },
+        "fourteen": { message: LONG_TEXT, type: "warning", duration: 14000 },
+        "detail": { message: "Could not save the draft.", detail: "The server did not answer within ten seconds.", duration: 0 },
+    } as const;
     let rowsOpen = $state(false);
     let rowsExtended = $state(false);
 
@@ -347,6 +364,24 @@
             {/each}
         </div>
     </section>
+    <section class="space-y-3" aria-labelledby="lab-lengths">
+        <h2 id="lab-lengths" class="text-lg font-medium text-headline">Toast lengths</h2>
+        <div class="flex flex-wrap gap-2">
+            {#each Object.entries(timedToasts) as [name, options] (name)}
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    data-testid={`len-${name}`}
+                    onclick={() => pushToast({ ...options })}
+                >
+                    {name}
+                </Button>
+            {/each}
+            <Button variant="secondary" size="sm" data-testid="drawer-plain-open" onclick={() => (drawerPlainOpen = true)}>
+                links
+            </Button>
+        </div>
+    </section>
     <!-- Room to scroll a trigger to the top of the screen. -->
     <div class="h-dvh" aria-hidden="true"></div>
 </main>
@@ -513,6 +548,15 @@ a Swedish title with a word of ten letters, three paragraphs, one large button. 
         {@render installText()}
     </SlideUp>
 </div>
+
+<!-- A drawer of links and no footer: the last link has to end above the home indicator. -->
+<Drawer bind:isOpen={drawerPlainOpen} title="Rounds" side="start" data-testid="lab-drawer-plain">
+    <ul class="space-y-1">
+        {#each rows as row (row)}
+            <li><a href="#lab-lengths" class="focus-ring block rounded-control px-2 py-3 text-body" data-drawer-link>{row}</a></li>
+        {/each}
+    </ul>
+</Drawer>
 
 <PhotoViewer photos={labPhotos} bind:isOpen={viewerOpen} actions={viewerActions} />
 

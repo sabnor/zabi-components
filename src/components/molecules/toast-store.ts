@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import type { ToastDuration } from '../util/toaster.js';
 
 export type ToastLevel = 'success' | 'error' | 'warning' | 'info';
 
@@ -6,7 +7,7 @@ export type ToastLevel = 'success' | 'error' | 'warning' | 'info';
  * One action offered inside a toast, such as Undo.
  *
  * A toast with an action stays until it is dismissed, unless you give it a
- * `duration`: a keyboard user has to reach the button first, and the toaster
+ * `duration` (a named length or milliseconds): a keyboard user has to reach the button first, and the toaster
  * may be far away in the tab order (WCAG 2.2.1). `focusToasts()` moves focus
  * there. The action must still not be the only way to do the thing: offer it
  * elsewhere in the page as well.
@@ -35,11 +36,19 @@ export interface ToastItem {
      */
     detail?: string;
     /**
-     * Auto-dismiss duration in milliseconds.
-     * When omitted, the toaster uses 14s, or keeps a toast that has an
-     * `action` until it is dismissed. Use `0` to keep any toast until dismissed manually.
+     * How long the toast stays: `"short"` (3 s, a few words that need no
+     * reading time), `"medium"` (7 s), `"long"` (14 s), `"persistent"`
+     * (until it is dismissed: what the user has to act on, and errors), or
+     * a number of milliseconds, where `0` is persistent too. What is given
+     * here always wins.
+     *
+     * When omitted, the toaster decides: an error and a toast with an
+     * `action` stay until dismissed. Everything else goes by its title and
+     * message together: up to 120 characters gets `medium` (or the
+     * Toaster's `defaultDuration`), 121 to 240 gets `long`, and more than
+     * 240 stays until dismissed.
      */
-    duration?: number;
+    duration?: ToastDuration;
     /** An action button in the toast, such as Undo. */
     action?: ToastAction;
 }
@@ -57,7 +66,7 @@ function createToastStore() {
             message: string;
             type?: ToastLevel;
             /** Same semantics as {@link ToastItem.duration}. */
-            duration?: number;
+            duration?: ToastDuration;
             id?: string;
             title?: string;
             detail?: string;
@@ -90,7 +99,7 @@ export function pushToast(options: {
     message: string;
     type?: ToastLevel;
     /** Same semantics as {@link ToastItem.duration}. */
-    duration?: number;
+    duration?: ToastDuration;
     title?: string;
     detail?: string;
     /** An action button in the toast, such as Undo. See {@link ToastAction}. */

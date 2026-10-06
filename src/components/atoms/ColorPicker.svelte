@@ -1,6 +1,7 @@
 <script lang="ts">
     import Input from "./Input.svelte";
     import { onMount, tick } from "svelte";
+    import { isInsideToastRegion } from "../util/focus-utils.js";
     import {
         measurePlacement,
         watchViewport,
@@ -302,6 +303,8 @@
     }
 
     function handleClickOutside(event: MouseEvent) {
+        // A toast lies over the panel; a press on it is for the toast.
+        if (isInsideToastRegion(event.target)) return;
         if (
             pickerContainer &&
             !pickerContainer.contains(event.target as Node) &&

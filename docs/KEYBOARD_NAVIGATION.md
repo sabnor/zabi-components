@@ -654,9 +654,19 @@ pinned.
 
 **Toasts** (Toaster): a toast is announced when it appears (`role="status"`,
 or `alert` for an error) with what it was pushed with: its title and its
-message, both of which are also its visible text. Its timer (14 seconds unless
-`duration` says otherwise; none for a toast with an action) stops while the
-pointer is over it or keyboard focus is inside it. The time left is shown by
+message, both of which are also its visible text. How long it stays is said
+in words: `duration: "short"` (3 seconds), `"medium"` (7), `"long"` (14) or
+`"persistent"` (until it is dismissed); a number is milliseconds. Short is
+for a few words that need no reading time ("Sparat"). Anything a person has
+to read is medium or long. Anything they have to act on, and an error, should
+stay: persistent. With no `duration`, an error and a toast with an action stay
+until dismissed, and the rest go by their title and message together: up to
+120 characters gets medium (or the Toaster's `defaultDuration`), 121 to 240
+gets long, and more than 240 stays. A mouse over a timed toast, keyboard focus
+inside it and a finger held on it each stop its timer for as long as they
+last, which is what keeps a timed toast within WCAG 2.2.1; a finger that lifts
+leaves it at least three seconds, so holding a short toast starts it again.
+The time left is shown by
 the bar along its bottom edge, and is in the toast as a sentence for a screen
 reader, outside the live region: it is found when the toast is read and is not
 spoken every second. `showCountdown` on the Toaster shows that sentence to

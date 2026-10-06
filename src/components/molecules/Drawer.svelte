@@ -304,6 +304,10 @@
             bind:this={panel}
             class={cn(
                 "absolute inset-y-0 flex cursor-default flex-col border-border-overlay bg-surface-overlay shadow-lg",
+                // Above the home indicator: the last row, or the footer, ends
+                // where a finger can reach it. Over a keyboard that is under
+                // the keyboard.
+                "pb-[env(safe-area-inset-bottom,0px)] group-data-keyboard-open/overlay:pb-0",
                 sizeClasses,
                 sideClasses,
                 className,

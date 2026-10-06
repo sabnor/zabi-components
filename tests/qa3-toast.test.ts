@@ -223,7 +223,7 @@ describe("Toaster action (QA-3)", () => {
 
 describe("Toaster action reachability (QA-3)", () => {
     // Was QA-3 finding 3: nothing pauses the timer while a keyboard user tabs
-    // towards the toast, so with the 14s default the action was gone first.
+    // towards the toast, so with the default (14s then) the action was gone first.
     it("does not auto-dismiss a toast with an action and no duration", async () => {
         vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
         render(Toaster);
@@ -246,11 +246,12 @@ describe("Toaster action reachability (QA-3)", () => {
         await waitFor(() => expect(screen.queryByRole("group")).toBeNull());
     });
 
-    it("keeps the 14s default for a toast without an action", async () => {
+    // The default was 14s until toasts got named lengths; it is "medium", 7s (tests/toast-timing.test.ts).
+    it("keeps the 7s default for a toast without an action", async () => {
         render(Toaster);
         pushToast({ message: "Saved" });
         const toast = await screen.findByRole("group");
-        await waitFor(() => expect(toast.textContent).toContain("14 seconds"));
+        await waitFor(() => expect(toast.textContent).toContain("7 seconds"));
     });
 
     it("is a named region, and focusToasts() moves focus to the newest toast's action", async () => {
