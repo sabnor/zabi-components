@@ -297,7 +297,7 @@
                 <button
                     bind:this={moreButton}
                     type="button"
-                    class="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-control text-description transition-colors hover:bg-surface-hover hover:text-headline active:bg-surface-active focus:outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus-ring motion-reduce:transition-none pointer-coarse:size-11"
+                    class="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-control text-description transition-colors hover:bg-surface-hover hover:text-headline active:bg-surface-active focus:outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus-ring motion-reduce:transition-none pointer-coarse:size-[44px]"
                     aria-label={text.actions}
                     aria-expanded={open}
                     aria-controls={groupId}
@@ -315,7 +315,7 @@
             id={groupId}
             role="group"
             aria-label={text.actions}
-            class={cn("flex shrink-0 items-stretch", !shown && "invisible")}
+            class={cn("flex [max-inline-size:66%] shrink-0 items-stretch", !shown && "invisible")}
             inert={!open}
             data-swipeable-actions
         >
@@ -325,7 +325,7 @@
                         {@const Icon = action.icon}
                         <span class="flex" aria-hidden="true"><Icon size={20} /></span>
                     {/if}
-                    <span>{action.label}</span>
+                    <span class="min-w-0 text-balance break-words">{action.label}</span>
                 </button>
             {/each}
         </div>
