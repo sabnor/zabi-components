@@ -1,5 +1,6 @@
 export { default as Toggle } from './atoms/Toggle.svelte';
 export { default as Badge } from './atoms/Badge.svelte';
+export { default as Stat } from './atoms/Stat.svelte';
 export { default as Chip } from './atoms/Chip.svelte';
 export { default as Button } from './atoms/Button.svelte';
 export { default as IconButton } from './atoms/IconButton.svelte';

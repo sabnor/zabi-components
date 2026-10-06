@@ -3,6 +3,7 @@
     import type { HTMLAttributes } from "svelte/elements";
     import { cn } from "../util/cn.js";
     import type { OnFillTone } from "../types/variants.js";
+    import { displayVoice } from "../util/display-voice.js";
 
     /** Semantic heading level — also the default visual size. */
     type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
@@ -23,6 +24,13 @@
          * `on-accent`.
          */
         tone?: "headline" | OnFillTone;
+        /**
+         * `heading` is the document heading voice. `display` is the second
+         * face (`--font-family-display`) with larger steps, for a hero, a
+         * score or a big number; its weight and tracking are the custom
+         * properties `--zabi-display-weight` and `--zabi-display-tracking`.
+         */
+        variant?: "heading" | "display";
         class?: string;
         children?: Snippet;
     };
@@ -32,6 +40,7 @@
         size,
         text = "",
         tone = "headline",
+        variant = "heading",
         class: className = "",
         children,
         ...restProps
@@ -61,8 +70,25 @@
         6: "text-base leading-6 font-semibold",
     };
 
+    /**
+     * Display steps: 60px (48 on a phone), 48 (36), 36 (30), 30, 24, 20. Weight and tracking come from
+     * `displayVoice`, so no size carries its own.
+     */
+    const displaySizeClasses: Record<HeadingLevel, string> = {
+        1: "text-5xl sm:text-6xl leading-[1.0]",
+        2: "text-4xl sm:text-5xl leading-[1.05]",
+        3: "text-3xl sm:text-4xl leading-[1.1]",
+        4: "text-3xl leading-[1.2]",
+        5: "text-2xl leading-[1.2]",
+        6: "text-xl leading-[1.2]",
+    };
+
     const headingClasses = $derived(
-        cn(`${toneClasses[tone] ?? toneClasses.headline} ${sizeClasses[visualSize] ?? sizeClasses[6]} ${className}`),
+        variant === "display"
+            ? cn(
+                  `${toneClasses[tone] ?? toneClasses.headline} font-display text-balance ${displayVoice} ${displaySizeClasses[visualSize] ?? displaySizeClasses[6]} ${className}`,
+              )
+            : cn(`${toneClasses[tone] ?? toneClasses.headline} ${sizeClasses[visualSize] ?? sizeClasses[6]} ${className}`),
     );
 </script>
 

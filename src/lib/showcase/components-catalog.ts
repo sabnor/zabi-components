@@ -732,6 +732,67 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "Stat",
+                category: "atoms",
+                description:
+                    "A figure with a label and an optional unit, in the display face, in three sizes.",
+                props: [
+                    {
+                        name: "value",
+                        type: "string | number",
+                        required: true,
+                        description: "The figure, shown as given. The app formats numbers for its locale.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description: "Text under the figure (or above it with labelPosition).",
+                    },
+                    {
+                        name: "unit",
+                        type: "string",
+                        required: false,
+                        description: "Drawn after the value, smaller, on the same baseline: value 4 and unit av 19.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description: "The value at 24, 36 or 48px.",
+                    },
+                    {
+                        name: "align",
+                        type: "'start' | 'center' | 'end'",
+                        required: false,
+                        defaultValue: "start",
+                        description: "Where the figure and label sit in the width they are given.",
+                    },
+                    {
+                        name: "labelPosition",
+                        type: "'below' | 'above'",
+                        required: false,
+                        defaultValue: "below",
+                        description: "The label follows the figure in reading order, or comes first.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description: "Replaces value for a figure that needs markup, such as a superscript.",
+                    },
+                ],
+                variants: ["sm", "md", "lg", "start", "center", "end", "below", "above"],
+                examples: [
+                    {
+                        title: "Value, unit and label",
+                        description: "A score with its total",
+                        code: '&lt;Stat value="4" unit="av 19" label="pubar besökta" size="lg" /&gt;',
+                    },
+                ],
+            },
+            {
                 name: "Chip",
                 category: "atoms",
                 description:
@@ -1375,7 +1436,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "size",
-                        type: "'sm' | 'md' | 'lg'",
+                        type: "'sm' | 'md' | 'lg' | 'xl' | 'display'",
                         required: false,
                         defaultValue: "md",
                         description:
@@ -1388,6 +1449,22 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "false",
                         description:
                             "Shows a score as one image with one name; a star can be partly filled. A read-only rating has no inputs, so it submits nothing, even with name.",
+                    },
+                    {
+                        name: "compact",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "A score for a list: one filled star and the number (\"4,0\") from the real value and max, with one accessible name (\"4 of 5 stars\"). Implies readonly; clearable, name, onchange and showValue are ignored. Sizes sm to display: 14, 16, 20, 28 and 40px stars.",
+                    },
+                    {
+                        name: "empty",
+                        type: "'outline' | 'soft'",
+                        required: false,
+                        defaultValue: "outline",
+                        description:
+                            "What an empty star looks like: a hollow outline, or a soft fill with no outline (--zabi-rating-off-fill, default --color-control-track). The soft fill is below 3:1 against the page, so use it with a visible label and value. An outline in forced colours.",
                     },
                     {
                         name: "clearable",
@@ -1447,22 +1524,6 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         description:
                             "Id of the element that names the rating, when there is no label.",
-                    },
-                    {
-                        name: "compact",
-                        type: "boolean",
-                        required: false,
-                        defaultValue: "false",
-                        description:
-                            "A score for a list: one filled star and the number (\"4,0\") from the real value and max, with one accessible name (\"4 of 5 stars\"). Implies readonly; clearable, name, onchange and showValue are ignored. Sizes sm to display: 14, 16, 20, 28 and 40px stars.",
-                    },
-                    {
-                        name: "empty",
-                        type: "'outline' | 'soft'",
-                        required: false,
-                        defaultValue: "outline",
-                        description:
-                            "What an empty star looks like: a hollow outline, or a soft fill with no outline (--zabi-rating-off-fill, default --color-control-track). The soft fill is below 3:1 against the page, so use it with a visible label and value. An outline in forced colours.",
                     },
                     {
                         name: "onchange",
@@ -1703,6 +1764,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Text colour. On a filled block: inherit takes the block's own colour, on-brand and on-accent are the label colours of the primary and accent fills.",
                     },
+                    {
+                        name: "variant",
+                        type: "'heading' | 'display'",
+                        required: false,
+                        defaultValue: "heading",
+                        description:
+                            "display sets the line in --font-family-display with larger steps (60px for level 1, 48 on a phone). Weight and tracking come from --zabi-display-weight and --zabi-display-tracking.",
+                    },
                 ],
 
                 examples: [
@@ -1712,9 +1781,9 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         code: "&lt;Heading level={1}&gt;Main Title&lt;/Heading&gt;",
                     },
                     {
-                        title: "Variants",
-                        description: "Different heading variants",
-                        code: '&lt;Heading level={1} variant="display"&gt;Display Heading&lt;/Heading&gt;\n&lt;Heading level={2} variant="subtitle"&gt;Subtitle&lt;/Heading&gt;',
+                        title: "Display",
+                        description: "The display face and larger steps",
+                        code: '&lt;Heading level={1} variant="display"&gt;Display Heading&lt;/Heading&gt;\n&lt;Heading level={2} variant="display"&gt;Display level 2&lt;/Heading&gt;',
                     },
                 ],
             },

@@ -96,3 +96,38 @@ export const WithSlot: Story = {
         children: ['Slot Content']
     })
 };
+
+export const Display: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'The display face (`--font-family-display`) with its own, larger steps: 60px for level 1 (48px on a phone) down to 20px for level 6. Weight and tracking are `--zabi-display-weight` and `--zabi-display-tracking`.'
+            }
+        }
+    },
+    render: () => ({
+        Component: 'div' as any,
+        props: { style: 'display: flex; flex-direction: column; gap: 1rem;' },
+        children: [1, 2, 3, 4, 5, 6].map((level) => ({
+            Component: Heading,
+            props: { level, variant: 'display', text: `Display ${level}` }
+        }))
+    } as any)
+};
+
+export const DisplayWithOwnFace: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'A second typeface is a token, not a CSS rule: set `--font-family-display` (and, if the face wants it, `--zabi-display-weight`) on any ancestor.'
+            }
+        }
+    },
+    render: () => ({
+        Component: 'div' as any,
+        props: { style: '--font-family-display: Georgia, serif; --zabi-display-weight: 400;' },
+        children: [{ Component: Heading, props: { level: 1, variant: 'display', text: 'Ett annat typsnitt' } }]
+    } as any)
+};

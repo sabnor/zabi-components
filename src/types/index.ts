@@ -130,6 +130,8 @@ export interface HeadingProps extends Omit<HTMLAttributes<HTMLHeadingElement>, '
     text?: string;
     /** Text colour: `headline` by default; `inherit`, `on-brand` or `on-accent` on a filled block. */
     tone?: 'headline' | OnFillTone;
+    /** `heading` (default) or `display`: the second face and larger steps. */
+    variant?: 'heading' | 'display';
     class?: string;
     children?: Snippet;
     /** @deprecated never accepted by the component; use `class`. */
@@ -435,6 +437,21 @@ export interface AlertProps {
     children?: Snippet;
     /** @deprecated never accepted by the component; use `variant`. */
     type?: 'success' | 'error' | 'warning' | 'info';
+}
+
+// Stat component props
+export interface StatProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
+    /** The figure, shown as given. */
+    value: string | number;
+    label?: string;
+    /** Drawn after the value, smaller, on the same baseline. */
+    unit?: string;
+    size?: 'sm' | 'md' | 'lg';
+    align?: 'start' | 'center' | 'end';
+    labelPosition?: 'below' | 'above';
+    class?: string;
+    /** Replaces `value` for a figure that needs markup. */
+    children?: Snippet;
 }
 
 // Badge component props
@@ -1030,6 +1047,7 @@ export type Textarea = ZabiComponent<TextareaProps, TextareaEvents>;
 export type Modal = ZabiComponent<ModalProps, ModalEvents>;
 export type Alert = ZabiComponent<AlertProps>;
 export type Badge = ZabiComponent<BadgeProps>;
+export type Stat = ZabiComponent<StatProps>;
 export type Chip = ZabiComponent<ChipProps>;
 export type ChipGroup = ZabiComponent<ChipGroupProps>;
 export type Progress = ZabiComponent<ProgressProps>;
