@@ -12,6 +12,50 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [8.1.0-beta.4] - 2026-10-06
+
+A local preview build on top of 8.1.0-beta.3, not published to npm. Built
+quickly and tested lightly on purpose: type and design checks, the unit
+suite and the package build were run on it; the browser suite was run once
+and nothing here has had an accessibility or QA review. Using it is the test.
+
+### Upgrade notes (since 8.1.0-beta.3)
+
+- **A Select is found by role `combobox`, not `button`.** Its trigger now
+  has `role="combobox"` and reports `aria-invalid`, `aria-required` and
+  `aria-busy`. Tests and selectors that looked for a button must change.
+- **A loading Button or IconButton is `aria-disabled="true"` and
+  `aria-busy="true"`, not `disabled`.** It keeps keyboard focus and swallows
+  the press. CSS or tests that matched it with `:disabled`, `[disabled]` or a
+  strict `toBeDisabled()` must use `[aria-busy="true"]`.
+- **Mount the Toaster inside `ZabiStringsProvider`** if you use the provider;
+  a Toaster outside it keeps its own `strings` or the English defaults.
+- A Select list and a Dropdown menu are one Tab stop; options have
+  `tabindex` 0 or -1. `getFocusableElements` skips `tabindex="-1"`.
+- Inside `on-brand` and `on-accent` blocks, labels, links, borders and quiet
+  buttons change colour to the block's on-colour; a card inside a block gets
+  the page's colours back. Custom properties named `--zabi-theme-*` appear on
+  a block's parent.
+- UnsavedChangesBar and ConfirmDialog leave focus on the pressed button while
+  busy, where they moved it to their container.
+- SidebarAccountPanel's `systemMode` default text is "Follows the system".
+
+### Known limitations of this beta
+
+- Not reviewed for accessibility; Chromium only; no real phone, Safari,
+  Firefox or screen reader.
+- `ZabiStringsProvider` does not cover single-text props whose default is a
+  sentence (landmark `ariaLabel`s, CodeBlock, ImageUpload, UnsavedChangesBar,
+  Toast and Alert's close labels).
+- Directly on a brand or accent block these are still not legible: an empty
+  or ticked checkbox, radio or toggle, a filled Rating star, status message
+  text. Put them on a card. A card inside a block needs `:has()`.
+- In forced colours every option of a Select list has the same border; the
+  chosen one is told apart by its check mark only.
+- A disabled Select submits its value once the page has hydrated and not
+  before; a long label is cut in the native select; the inline message of a
+  `required` Select is the browser's.
+
 ### Added
 
 - **`--color-focus-ring-danger`**, the ring of a danger control (the error
