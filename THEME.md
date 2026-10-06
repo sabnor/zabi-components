@@ -115,7 +115,7 @@ already the right value in each mode. Use the same roles in your own CSS.
 - `--color-surface-inset` - A recessed area on a card (a well); see THEMING.md, Surface elevation levels
 - `--color-headline`, `--color-body`, `--color-description`, `--color-caption` - Text
 - `--color-border` - Borders and dividers
-- `--color-action-primary`, `-hover`, `-active` - Primary actions
+- `--color-action-primary`, `-hover`, `-active` - Primary actions. The brand step 600, 700 and 800 in light and in dark (the fill keeps its hue; the label is white in both). `createTheme({ darkPrimary: 'mirror' })` restores the 8.1 pale dark fills. Danger follows the same rule
 - `--color-on-brand` - Text on a primary fill (`--color-action-primary-text` follows it)
 - `--color-action-tonal`, `-hover`, `-active`, `-text` (`bg-action-tonal`, `text-action-tonal`) - A brand tint with a brand label, for a quieter action beside a primary or a chosen answer. Label held to 4.5:1 on all three fills
 - `--color-action-outline-border`, `-hover` (`border-action-outline`) - The edge of an outline button: the field edge, 3:1 on the page and the card
@@ -128,7 +128,7 @@ already the right value in each mode. Use the same roles in your own CSS.
 - `--color-focus-ring-danger` - The ring of a destructive control (`.focus-ring--danger`); `--color-error` by default
 - `--color-control-border` (`border-control-border`) - The edge of a control that has nothing else to be seen by, such as the outline of an empty Rating star. `--color-border-strong` is a decorative edge, and is only 3.08:1 on the dark elevated and overlay surfaces
 - `--color-input-border` (`border-input-border`) - The edge of a form field (Input, Textarea, Select, DateField, TimeField). Held to 3:1 on the field fill (`--color-input`), the page and the card in both themes (WCAG 1.4.11); `--color-input-border-hover` is one step darker in light
-- `--color-progress-fill`, `--color-progress-track` (`bg-progress-fill`, `bg-progress-track`) - The fill and the track of Progress. The fill is `--color-action-primary` and the track `--color-input`, so the bar follows a pinned primary action. Held to 3:1 (fill on track) in both themes
+- `--color-progress-fill`, `--color-progress-track` (`bg-progress-fill`, `bg-progress-track`) - The fill and the track of Progress. The fill is `--color-action-primary` and the track `--color-input` (a darker well, `--color-base-75`, in dark), so the bar follows a pinned primary action. Held to 3:1 (fill on track) in both themes
 - `--color-success`, `--color-warning`, `--color-error`, `--color-info` - States, each with `-subtle`, `-border` and `-text`
 
 The full list is in [THEMING.md](./THEMING.md#roles-read-them-do-not-set-them).

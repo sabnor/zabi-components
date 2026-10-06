@@ -45,6 +45,20 @@ export interface CreateThemeOptions {
      */
     neutralChroma?: number;
     /**
+     * What the dark primary and danger fills are. `'brand'` (the default) is
+     * what the library does: the same steps as light (600, 700, 800) with a
+     * white label, so the main action keeps its colour in dark, and nothing
+     * extra is written. `'mirror'` restores the 8.1 behaviour: under the dark
+     * selectors the primary is the mirrored `--color-brand-600 | 700 | 800`
+     * (pale steps in dark), danger the mirrored `--color-error-600 | 700 | 800`,
+     * the label is chosen by the contrast check, and the control veil is the
+     * lighten-heavy 22% / 6%. A `dark` or `both` override of any of these roles
+     * wins over both settings. With `pin`, dark takes the pinned colour only
+     * when no guarded pair fails with it, and otherwise keeps what this option
+     * gives.
+     */
+    darkPrimary?: 'brand' | 'mirror';
+    /**
      * Extra declarations written after the ramps, for example
      * `{ "--color-link": "var(--color-brand-800)" }`. They apply in light and in
      * dark, and take part in the contrast check and in the choice of the "on"
@@ -144,14 +158,14 @@ export interface ClosestStep {
 export interface CreateThemeResult {
     /**
      * The stylesheet: a header comment and one `:root { … }` rule. With `pin`,
-     * `neutralChroma` or `light` / `dark` overrides, two more rules follow, with the dark values of those roles:
+     * `neutralChroma`, `darkPrimary: 'mirror'` or `light` / `dark` overrides, two more rules follow, with the dark values of those roles:
      * `.dark, [data-theme="dark"] { … }` and the same declarations for
      * `[data-theme="auto"]` inside `@media (prefers-color-scheme: dark)`.
      */
     css: string;
     /** Every declaration of the `:root` rule, name to value, in output order. */
     tokens: Record<string, string>;
-    /** Only with `pin`, `neutralChroma` or `light` / `dark` overrides: every declaration of the dark rules. */
+    /** Only with `pin`, `neutralChroma`, `darkPrimary: 'mirror'` or `light` / `dark` overrides: every declaration of the dark rules. */
     darkTokens?: Record<string, string>;
     /** Only with `pin`: what was pinned and which roles took the colour. */
     pinned?: { brand?: PinReport; accent?: PinReport };
@@ -165,7 +179,7 @@ export interface CreateThemeResult {
  * every guarded role pair in light and dark. Deterministic: the same options
  * give the same bytes.
  *
- * @throws {TypeError} when `brand` is missing, a colour is not a hex value, or `neutralChroma` is not a number from 0 to 0.1 or is given without `neutral`.
+ * @throws {TypeError} when `brand` is missing, a colour is not a hex value, `neutralChroma` is not a number from 0 to 0.1 or is given without `neutral`, or `darkPrimary` is not `'brand'` or `'mirror'`.
  */
 export function createTheme(options: CreateThemeOptions): CreateThemeResult;
 export default createTheme;

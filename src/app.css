@@ -646,16 +646,19 @@
   /* "On brand" — the label on a primary fill.
    * White rather than brand-50: the ramp's lightest tint lands at exactly
    * 4.50:1 on brand-600 — passing, but with no margin. Pure white gives 4.86:1.
-   * Dark uses the dark end of the ramp on the light fill (7.21:1).
+   * Dark has the same fill (step 600, physical) and the same label: white on
+   * it is 4.76:1 on any ramp, since every ramp is on one lightness curve.
    *
    * A light brand (amber, yellow) cannot carry white text, so both values are
    * knobs an app sets once on :root, like the ramps:
    *   --zabi-on-brand        label in light mode
-   *   --zabi-on-brand-dark   label in dark mode
+   *   --zabi-on-brand-dark   label in dark mode: follows the light label (white),
+   *                          since the dark fill is the same step; set it to a dark
+   *                          one for a pale dark primary
    * --color-on-brand is the role, remapped by .dark; components keep using
    * --color-action-primary-text, which follows it. */
   --zabi-on-brand: #ffffff;
-  --zabi-on-brand-dark: var(--zabi-brand-950);
+  --zabi-on-brand-dark: var(--zabi-on-brand);
   --color-on-brand: var(--zabi-on-brand);
   --color-action-primary-text: var(--color-on-brand);
 
@@ -799,7 +802,9 @@
    * fill took the white label (about 4.6:1) under 4.5:1, which is why it was
    * 4% before. The bottom is 14% of base-950, the strongest whole percent that
    * passes every pair (the label only gains from a darker fill); it is the
-   * depth. Dark keeps its solved 22 / 6: a lighter top, a slight dark bottom.
+   * depth. Dark is the same darken-only veil (the fill is a mid step with a white
+   * label, as in light); only the accent, whose dark fill is light under a dark
+   * label, keeps the lighter top, 22 / 6, in its own strengths.
    *
    * Canvas: two soft radial washes from brand 300 and accent 300 for glass to
    * show something. A background-image only; .bg-canvas adds the page colour.
@@ -1164,9 +1169,13 @@ body {
   --color-input: var(--color-surface-inset);
   /* Restated here: the root value of a var() alias is resolved at :root. */
   --color-progress-fill: var(--color-action-primary);
-  /* The field step is the page now, so the track takes its own: base-250
-   * (#333338), 1.41:1 on the page and 1.31:1 on the card. */
-  --color-progress-track: var(--color-base-250);
+  /* The field step is the page now, so the track takes its own: base-75
+   * (#101013), a well just below the page: 1.06:1 on the page, 1.14:1 on the
+   * card, 1.45:1 on the elevated surface. It was base-250 (#333338, 1.41:1 on
+   * the page). The fill is a mid step now (brand-600), and 3:1 on its rail
+   * needs a track this dark: 3.91:1 here with the default brand (2.59:1 on
+   * base-250, 2.94:1 for an amber brand on base-200). */
+  --color-progress-track: var(--color-base-75);
   /* base-500 (the mirror's fixed point): 3.67:1 on the dark field and the page,
    * 3.40:1 on the card, 3.08:1 on the elevated surface and the overlay.
    * base-300 was 1.70, 1.57 and 1.43. */
@@ -1274,13 +1283,22 @@ body {
      ACTION COLORS - Dark Mode Overrides
      ======================================== */
   
-  /* Primary Actions - Background adapts automatically via brand color inversion */
-  /* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit the --zabi-brand-* physical ramp in @theme (semantic --color-brand-* follows the mirror) */
-  /* "On brand" in dark: --zabi-on-brand-dark, by default the physical dark end
-   * of the brand ramp on the physical light end used as the dark-mode primary
-   * fill (7.21:1). --color-action-primary-text is restated, as it always
-   * was here, so that an app's light-only override of it does not carry a
-   * white label onto the light dark-mode fill. */
+  /* Primary Actions - the brand hue in dark too: the same physical steps as
+   * light (600 / 700 / 800), not the mirrored ones, which would be the pale
+   * 400 / 300 / 200. White on step 600 is 4.76 to 4.86:1 (every ramp is on one
+   * lightness curve); with the default brand the fill is 3.65:1 on the page,
+   * 3.39:1 on the card and 3.07:1 on the overlay (3:1 holds on all three, WCAG
+   * 1.4.11). Hover and pressed go darker, as in light.
+   * createTheme({ darkPrimary: 'mirror' }) writes the mirrored fills instead.
+   * 🎯 TO CHANGE bg-action-primary IN DARK MODE: override --color-action-primary under `dark`. */
+  --color-action-primary: var(--zabi-brand-600);
+  --color-action-primary-hover: var(--zabi-brand-700);
+  --color-action-primary-active: var(--zabi-brand-800);
+  /* "On brand" in dark: --zabi-on-brand-dark, which follows the light label (white). If an app
+   * moves the dark primary to a pale step, it sets the knob to a dark one.
+   * --color-action-primary-text is restated, as it always was here, so that an
+   * app's light-only override of it does not carry a different label onto the
+   * dark fill. */
   --color-on-brand: var(--zabi-on-brand-dark);
   --color-action-primary-text: var(--color-on-brand);
   /* Pinned like the other tints: light moved these a step darker. */
@@ -1314,19 +1332,18 @@ body {
   --color-action-disabled: var(--color-base-200);
   --color-action-disabled-border: var(--color-base-250);
 
-  /* Danger Actions — restated as aliases, not re-pointed.
-   * These resolve through the mirrored --color-error-* scale, so dark danger
-   * is the same step of the same ramp as light danger. They are repeated here
-   * only because `zabi-components/theme-dark-only` has to stand alone as a
-   * complete import (validate-theme.js enforces that). The raw hex this
-   * replaced pinned dark danger brighter than light, which is why the
-   * destructive action was the loudest element on a dark page. */
-  --color-action-danger: var(--color-error-600);
-  --color-action-danger-hover: var(--color-error-700);
-  --color-action-danger-active: var(--color-error-800);
+  /* Danger Actions — the same physical steps as light danger (600 / 700 / 800
+   * of --zabi-error-*) with the same label (step 50), so a destructive button
+   * is one red in both modes and shares the primary's veil. Physical, not
+   * through the mirror, which would be the pale 400 / 300 / 200. Restated
+   * because `zabi-components/theme-dark-only` has to stand alone as a complete
+   * import (validate-theme.js enforces that). The subtle tints stay mirrored. */
+  --color-action-danger: var(--zabi-error-600);
+  --color-action-danger-hover: var(--zabi-error-700);
+  --color-action-danger-active: var(--zabi-error-800);
   --color-action-danger-subtle: var(--color-error-100);
   --color-action-danger-subtle-hover: var(--color-error-200);
-  --color-action-danger-text: var(--color-error-50);
+  --color-action-danger-text: var(--zabi-error-50);
 
   /* Shadow Colors — black, not the light theme's ink tint. Much stronger than
    * light (0.1 / 0.06): an overlay is the same tone as the elevated surface
@@ -1352,12 +1369,13 @@ body {
 
   /* Gradients: the wash is quieter in dark (see @theme). The stops follow. */
   --gradient-canvas-strength: 25%;
-  --gradient-control-top-strength: 22%;
-  --gradient-control-bottom-strength: 6%;
-  /* The accent's own strengths follow the shared ones. Restated: the root
-   * value of a var() alias is resolved at :root. */
-  --gradient-control-accent-top-strength: var(--gradient-control-top-strength);
-  --gradient-control-accent-bottom-strength: var(--gradient-control-bottom-strength);
+  --gradient-control-top-strength: 0%;
+  --gradient-control-bottom-strength: 14%;
+  /* The accent's own strengths, no longer the shared ones: in dark its fill is
+   * the light step with a dark label, which a darkening veil would fail, so it
+   * keeps the lighter top and slight dark bottom it had (22 / 6). */
+  --gradient-control-accent-top-strength: 22%;
+  --gradient-control-accent-bottom-strength: 6%;
   --shadow-control-highlight: inset 0 1px 0 color-mix(in srgb, var(--zabi-base-50) 25%, transparent);
 
   /* Not a token: tells the browser the page is dark, so what it draws itself

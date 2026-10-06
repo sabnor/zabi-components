@@ -59,9 +59,8 @@ export const dark = create({
     base: 'dark',
     ...shared,
 
-    colorPrimary: '#92a9ff', // brand-400, the dark --color-action-primary
-    // Selected rows put white text on this, so it stays at brand-600 (4.9:1)
-    // instead of following the lighter dark-mode action colour.
+    colorPrimary: '#4f68da', // brand-600, the dark --color-action-primary (it keeps its hue in dark)
+    // Selected rows put white text on this: the same step (4.9:1).
     colorSecondary: '#4f68da',
 
     appBg: '#18181b', // dark --color-surface-base

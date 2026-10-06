@@ -42,6 +42,7 @@ const NOT_TOKENS = new Set([
     "--set-light",
     "--set-dark",
     "--neutral-chroma",
+    "--dark-primary",
     "--help",
     "--pin",
     "--pin-accent",

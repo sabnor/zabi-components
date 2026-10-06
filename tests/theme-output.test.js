@@ -277,9 +277,11 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-energetic': '#5d7900',
       },
       dark: {
-        '--color-action-primary': '#92a9ff',
-        '--color-action-primary-text': '#111d49',
-        '--color-on-brand': '#111d49',
+        // The primary keeps its hue in dark (Z-043): the light steps, a white label.
+        // The ring, link and tints stay on the mirrored (light) steps.
+        '--color-action-primary': '#4f68da',
+        '--color-action-primary-text': '#ffffff',
+        '--color-on-brand': '#ffffff',
         '--color-focus-ring': '#92a9ff',
         '--color-nav-menu-focus': '#92a9ff',
         // The decorative edge stays on the mirror's fixed point; the two roles
@@ -331,9 +333,11 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-nav-menu-active': amber[100],
       },
       dark: {
-        '--color-action-primary': amber[400],
-        '--color-action-primary-hover': amber[300],
-        '--color-action-primary-active': amber[200],
+        // The dark fill is the same physical steps as light, so an override of
+        // the ramp restyles it; the roles that are text or rings stay mirrored.
+        '--color-action-primary': amber[600],
+        '--color-action-primary-hover': amber[700],
+        '--color-action-primary-active': amber[800],
         '--color-action-primary-subtle': amber[900],
         '--color-primary': amber[400],
         '--color-focus-ring': amber[400],
@@ -341,8 +345,8 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-link': amber[300],
         '--color-link-hover': amber[200],
         '--color-nav-menu-active': amber[900],
-        // The dark label is the dark end of whatever ramp the app supplied.
-        '--color-action-primary-text': amber[950],
+        // The dark label follows the light one (white): same fill, same label.
+        '--color-action-primary-text': '#ffffff',
       },
     };
     for (const [token, hex] of Object.entries(expected.light)) assert.equal(resolveTokenColor(light, token), hex, `light ${token}`);
@@ -378,7 +382,12 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
     assert.equal(resolveTokenColor(darkKnob.light, '--color-action-primary-text'), '#ffffff');
     assert.equal(resolveTokenColor(darkKnob.dark, '--color-action-primary-text'), '#ffffff');
     const lightKnob = themed(maps, { '--zabi-on-brand': '#000000' });
-    assert.equal(resolveTokenColor(lightKnob.dark, '--color-action-primary-text'), '#111d49');
+    // The dark fill is the light fill, so the light label carries to dark
+    // unless the dark knob is set (an amber brand sets one knob, not two).
+    assert.equal(resolveTokenColor(lightKnob.dark, '--color-action-primary-text'), '#000000');
+    const darkOnly = themed(maps, { '--zabi-on-brand-dark': '#111d49' });
+    assert.equal(resolveTokenColor(darkOnly.light, '--color-action-primary-text'), '#ffffff');
+    assert.equal(resolveTokenColor(darkOnly.dark, '--color-action-primary-text'), '#111d49');
   });
 
   test(`${sourceName}: one :root override of --zabi-accent-* restyles light and dark`, () => {

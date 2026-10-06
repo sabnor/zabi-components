@@ -146,12 +146,16 @@ have your own ramps.
 | `--zabi-accent-50` … `--zabi-accent-950` | the same 11 | `--color-accent` and its roles: `bg-accent`, `text-accent`, `border-accent`. Defaults to the citron ramp. |
 | `--zabi-base-50` … `--zabi-base-950` | 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 925, 950 | Text, borders, inputs, the page, cards and the four dark surface levels |
 | `--zabi-on-brand` | | Label on a primary fill in light. Default `#ffffff`. |
-| `--zabi-on-brand-dark` | | The same in dark. Default `var(--zabi-brand-950)`. |
+| `--zabi-on-brand-dark` | | The same in dark. Default `var(--zabi-on-brand)` (white): the dark primary is the same step as light. Set a dark label here if the dark primary is a pale step. |
 | `--zabi-on-accent` | | Label on a solid accent fill in light. Default `#ffffff`. |
 | `--zabi-on-accent-dark` | | The same in dark. Default `var(--zabi-accent-950)`. |
 
 Each ramp runs light (50) to dark (950). Light mode puts fills on step 600;
-dark mode mirrors the ramp, so the fill is step 400.
+the primary and danger fills stay on step 600 in dark too (the physical
+`--zabi-*` steps, with a white label), so the main action keeps its colour. The
+other roles mirror the ramp in dark (the ring, links and tints are the light
+steps there). `createTheme({ darkPrimary: "mirror" })` restores the 8.1 pale
+dark fills.
 
 A ramp you write by hand should keep the library's lightness per step, or the
 contrast the roles were designed with is gone. Run it through
@@ -733,8 +737,9 @@ What it decides, and how:
   neither, so both stay on the ramp. The header lists which followed.
 - **Dark is not pinned unless the colour passes there.** `#0026EA` is 2.08:1
   against a dark page and 1.77:1 against a dark card, where a fill needs 3:1:
-  no label makes that a button. Dark keeps the
-  mirrored step 400, exactly as without `--pin`, and the header says so. A
+  no label makes that a button. Dark keeps
+  step 600 (the mirrored step 400 with `darkPrimary: "mirror"`), exactly as
+  without `--pin`, and the header says so. A
   colour that does pass in dark (the amber, the yellow) is pinned there too,
   with lighter states.
 
@@ -768,7 +773,17 @@ modes; with `--set-light` or `--set-dark`, only in that mode.
 - **Links follow an overridden primary.** If `overrides` set `--color-action-primary` (and not `--color-link`), links take that colour in each mode the override applies to, and `--color-link-hover` the primary hover if you set one, as long as no guarded pair fails that did not before; otherwise the ramp's link stays in that mode. An explicit `--color-link` always wins. To put the library's link back: `overrides: { '--color-link': 'var(--color-brand-700)', '--color-link-hover': 'var(--color-brand-800)' }`.
 - **"On" colours.** It sets `--zabi-on-brand` and `--zabi-on-brand-dark` (and
   the accent pair when `--accent` is given) to white or the ramp's 950 step,
-  whichever reaches 4.5:1 on the fill, its hover and its active step.
+  whichever reaches 4.5:1 on the fill, its hover and its active step. In dark
+  the brand label tries white first (the dark primary is step 600), and falls
+  back to the 950 step when an app has moved the dark primary to a pale step.
+- **`darkPrimary`.** `"brand"` (default) writes nothing: the library's dark
+  primary and danger are step 600 with a white label. `"mirror"` writes the 8.1
+  fills under the dark selectors: primary and danger on the mirrored 600, 700
+  and 800 (pale in dark), danger's label as it was, the label chosen by the
+  contrast check, and the control veil at 22% / 6%. An override of those roles
+  in `dark` or `both` always wins. CLI: `--dark-primary brand|mirror`. A
+  `--set --color-action-primary=...` that applies to both modes keeps its dark
+  value; move it under `--set-light` to take the dark default.
 - **Contrast check.** Every pair the library holds itself to is resolved in
   light and dark with the new ramps in place: 4.5:1 for text and
   3:1 for focus rings and UI parts.
@@ -870,6 +885,7 @@ const { css, tokens, warnings, closest } = createTheme({
   neutralChroma: 0.05, // optional, 0 to 0.1, needs neutral: a clearly tinted neutral; the ink roles follow it
   overrides: { "--color-link": "var(--color-brand-800)" }, // optional; both modes. Or { light, dark, both }
   pin: true, // optional: the exact brand on the primary action; or { brand: true, accent: true }
+  darkPrimary: "brand", // optional: "brand" (default, step 600 in dark too) or "mirror" (the 8.1 pale dark fills)
 });
 
 for (const warning of warnings) console.warn(warning.message);
@@ -881,9 +897,9 @@ writeFileSync("src/lib/brand.generated.css", css);
 
 | Returned | |
 |---|---|
-| `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin`, `neutralChroma` or `light` / `dark` overrides, two dark rules follow it. |
+| `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin`, `neutralChroma`, `darkPrimary: "mirror"` or `light` / `dark` overrides, two dark rules follow it. |
 | `tokens` | Every declaration of the `:root` rule, name to value. |
-| `darkTokens` | Only with `pin`, `neutralChroma` or `light` / `dark` overrides: every declaration of the dark rules. |
+| `darkTokens` | Only with `pin`, `neutralChroma`, `darkPrimary: "mirror"` or `light` / `dark` overrides: every declaration of the dark rules. |
 | `pinned` | Only with `pin`: `{ brand?, accent? }`, each `{ hex, light: { followed, onRamp, states }, dark: { pinned, followed, onRamp, states?, failed? } }`. |
 | `warnings` | `{ type: "contrast", pair, mode, ratio, required, foreground, background, message }` for each role pair below AA, and `{ type: "input", option, message }` notes about the colours given. Empty when everything passes. |
 | `closest` | `{ brand, accent?, neutral? }`, each `{ step, hex, deltaE, exact }`: where the input landed in its ramp. |
@@ -911,7 +927,7 @@ rule (`both`, then `light`); `darkTokens` holds what the dark rules say: the
 
 It throws a `TypeError` when `brand` is missing, a colour is not hex,
 `pin.accent` is set without `accent`, `neutralChroma` is not a number from 0
-to 0.1 or is given without `neutral`, or an override is not a custom property
+to 0.1 or is given without `neutral`, `darkPrimary` is not `"brand"` or `"mirror"`, or an override is not a custom property
 name with a non-empty string value (the message names the key path, for example
 `overrides.light["--color-link"]`). Without these options the result and the
 file are exactly what they were before the option existed.
@@ -1489,18 +1505,25 @@ three, or if the `auto` copy differs from `.dark`.
 
 ### Dark mode action colours
 
-- **Primary.** No dark override: `--color-brand-*` mirrors, so `brand-800` in
-  light is `brand-200` in dark. The label is `--color-on-brand`, which `.dark`
-  points at `--zabi-on-brand-dark`.
+- **Primary.** The same physical steps as light: `.dark` points
+  `--color-action-primary`, `-hover` and `-active` at `--zabi-brand-600`, `700`
+  and `800` (not the mirrored `--color-brand-*`, which are the pale 400, 300
+  and 200). The label is `--color-on-brand`, which `.dark` points at
+  `--zabi-on-brand-dark` (white). The fill is 3.72:1 on the dark page, 3.43:1
+  on a card and 3.10:1 on the overlay, held by guarded pairs. The ring, links,
+  `-subtle` tints, `-border`, the tonal roles and the nav-active roles stay on
+  the mirrored steps (they are text, rings and tints on a dark surface).
+  `--color-primary*` is unchanged (still mirrored; no component reads it).
 - **Secondary.** No dark override: `--color-base-*` mirrors the same way.
-- **Danger.** Resolves through `--color-error-*`, which mirrors like every
-  other ramp. The `.dark` block restates the aliases only so that
+- **Danger.** The same physical steps as light danger (`--zabi-error-600`,
+  `700`, `800`, label `--zabi-error-50`), so a destructive button is one red in
+  both modes. The `-subtle` tints stay mirrored. Restated in `.dark` so that
   `zabi-components/theme-dark-only` remains a complete standalone import
   (`validate-theme.js` enforces that).
 
-Hover and active always move toward the dark end in light mode, and the mirror
-flips that, so "more pressed" means "more contrast against the page" in both
-themes. Never point `-active` at a step on the far side of the ramp; that is
+Hover and active move toward the dark end for the primary and danger fills in
+both modes (one recipe). For the mirrored roles the mirror flips that, so "more
+pressed" means "more contrast against the page" in both themes. Never point `-active` at a step on the far side of the ramp; that is
 how the pressed primary label once ended up at 1.66:1.
 
 ### Building the generator

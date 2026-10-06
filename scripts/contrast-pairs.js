@@ -294,6 +294,12 @@ export function buildPairs() {
         // primary button it is the 2px offset gap that separates the two.
         { name: 'focus offset gap on primary button', bg: '--color-action-primary', fg: '--color-focus-ring-offset', min: AA_LARGE },
         { name: 'focus ring against its offset gap', bg: '--color-focus-ring-offset', fg: '--color-focus-ring', min: AA_LARGE },
+        // WCAG 1.4.11: a solid fill has to be seen against what it sits on.
+        // `pin` held its own colour to this; the library's fills are held too.
+        { name: 'primary fill against the page', bg: '--color-surface-base', fg: '--color-action-primary', min: AA_LARGE },
+        { name: 'primary fill against a card', bg: '--color-surface-raised', fg: '--color-action-primary', min: AA_LARGE },
+        { name: 'danger fill against the page', bg: '--color-surface-base', fg: '--color-action-danger', min: AA_LARGE },
+        { name: 'danger fill against a card', bg: '--color-surface-raised', fg: '--color-action-danger', min: AA_LARGE },
     );
 
     // WCAG 1.4.11 again, on the rest of the ladder. The four pairs above stop

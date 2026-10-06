@@ -81,6 +81,10 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
     // Only what `.dark` actually restates; the rest resolves through
     // `--color-brand-*`, which is why the light entries above hold in dark too.
     dark: {
+        // The primary keeps its hue in dark: the physical steps, not the mirrored ones.
+        "--color-action-primary": "var(--zabi-brand-600)",
+        "--color-action-primary-hover": "var(--zabi-brand-700)",
+        "--color-action-primary-active": "var(--zabi-brand-800)",
         "--color-action-primary-text": "var(--color-on-brand)",
         "--color-action-primary-subtle": "var(--color-brand-100)",
         "--color-action-secondary": "rgba(250, 250, 250, 0.09)",

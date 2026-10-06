@@ -380,14 +380,18 @@ const ON_ROLES = {
 /**
  * The label for a solid fill: white or the ramp's dark end, whichever reaches
  * 4.5:1 on the fill, its hover and its active step. The library's own choice
- * for the mode is tried first; if neither passes, the better one is kept and
+ * for the role and mode is tried first (white, except the accent in dark); if neither passes, the better one is kept and
  * the pair check reports it.
  */
 function chooseOn(name, mode, tokens, darkTokens = {}) {
     const { role, fills } = ON_ROLES[name];
     const knob = mode === 'dark' ? `--zabi-on-${name}-dark` : `--zabi-on-${name}`;
     const darkEnd = `var(--zabi-${name}-950)`;
-    const candidates = mode === 'dark' ? [darkEnd, WHITE] : [WHITE, darkEnd];
+    // White first for the brand in both modes: the library's dark primary is the
+    // same mid step as light. A pale dark primary (an app's own override, or
+    // darkPrimary: 'mirror') fails white and keeps the ramp's dark end. The
+    // accent's dark fill is the light step, so its dark end still goes first.
+    const candidates = mode === 'dark' && name === 'accent' ? [darkEnd, WHITE] : [WHITE, darkEnd];
     let best = null;
     for (const value of candidates) {
         const map = themeMaps({ ...tokens, [knob]: value }, darkTokens)[mode];
@@ -401,6 +405,36 @@ function chooseOn(name, mode, tokens, darkTokens = {}) {
         if (!best || worst > best.worst) best = { value, worst };
     }
     return [knob, best.value];
+}
+
+/* ---------- dark primary ---------- */
+
+/**
+ * What `darkPrimary: 'mirror'` writes under the dark selectors: the 8.1 dark
+ * fills, which are the mirrored semantic steps (pale in dark), the danger
+ * aliases with the label they had, and the lighten-heavy control veil made for
+ * a pale fill. The label knob is chosen by chooseOn like any other.
+ */
+const MIRRORED_DARK = {
+    '--color-action-primary': 'var(--color-brand-600)',
+    '--color-action-primary-hover': 'var(--color-brand-700)',
+    '--color-action-primary-active': 'var(--color-brand-800)',
+    '--color-action-danger': 'var(--color-error-600)',
+    '--color-action-danger-hover': 'var(--color-error-700)',
+    '--color-action-danger-active': 'var(--color-error-800)',
+    '--color-action-danger-text': 'var(--color-error-50)',
+    '--gradient-control-top-strength': '22%',
+    '--gradient-control-bottom-strength': '6%',
+};
+
+function readDarkPrimary(value) {
+    if (value === undefined || value === null) return 'brand';
+    if (value !== 'brand' && value !== 'mirror') {
+        throw new TypeError(
+            `${TOOL}: darkPrimary must be "brand" or "mirror" (got ${typeof value === 'string' ? `"${value}"` : JSON.stringify(value)})`,
+        );
+    }
+    return value;
 }
 
 /* ---------- pinning ---------- */
@@ -518,10 +552,15 @@ const failing = (warnings, mode) => new Set(warnings.filter((w) => w.mode === mo
  * 3:1, and no label makes that a button. So dark takes the colour only when nothing guarded fails with it,
  * and otherwise keeps what it has without `pin`: the mirrored ramp step.
  */
-function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs, skip) {
+function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs, skip, darkPrimary = 'brand') {
     const roles = PIN_ROLES[name];
     const keep = (group) => Object.fromEntries(Object.entries(group).filter(([role]) => !skip.has(role)));
-    const libraryDark = (role) => data.darkOnly[role] ?? data.light[role];
+    // What dark has for a role without the pin: what the file already says for
+    // dark (the mirrored fills under darkPrimary: 'mirror'), then the library.
+    const libraryDark = (role) => earlierDark[role] ?? data.darkOnly[role] ?? data.light[role];
+    // The brand's dark fill is the light recipe (the same steps, darker states)
+    // unless it is mirrored; the accent's dark fill is still the pale step.
+    const recipe = (mode) => (mode === 'dark' && name === 'brand' && darkPrimary === 'brand' ? 'light' : mode);
     const light = {};
     const dark = {};
     const knobs = {};
@@ -545,8 +584,8 @@ function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs,
      */
     const bestFill = (mode, tryWith) => {
         let best = null;
-        for (const direction of SHADE_DIRECTIONS[mode]) {
-            const states = shades(colour, mode, direction);
+        for (const direction of SHADE_DIRECTIONS[recipe(mode)]) {
+            const states = shades(colour, recipe(mode), direction);
             if (!states) continue;
             const result = tryWith(keep(roles.fill(colour.hex, states)));
             if (!best || result.failures.size < best.result.failures.size) best = { direction, states, result };
@@ -726,7 +765,7 @@ function rampTokens(name, ramp, steps) {
     return Object.fromEntries(steps.map((step) => [`--zabi-${name}-${step}`, ramp[step]]));
 }
 
-function render({ inputs, closest, tokens, darkTokens, pinned, neutralChroma, contrastWarnings, checked }) {
+function render({ inputs, closest, tokens, darkTokens, pinned, neutralChroma, darkPrimary, contrastWarnings, checked }) {
     const describeInput = (name) =>
         inputs[name]
             ? `${inputs[name]}  closest step ${closest[name].step} (${closest[name].hex}, ` +
@@ -741,6 +780,12 @@ function render({ inputs, closest, tokens, darkTokens, pinned, neutralChroma, co
         ` *   brand    ${describeInput('brand')}`,
         ` *   accent   ${describeInput('accent')}`,
         ` *   neutral  ${describeInput('neutral')}`,
+        ...(darkPrimary === 'mirror'
+            ? [
+                  ' *   dark primary: mirror. The primary and danger fills use the mirrored (pale) steps in',
+                  ' *   dark, as in 8.1, with the label and control veil chosen for them.',
+              ]
+            : []),
         ...(neutralChroma === undefined
             ? []
             : [
@@ -799,8 +844,8 @@ function pinnedNotes(pinned) {
             if (report.dark.followed.length) lines.push(` *   dark, also this colour: ${list(report.dark.followed)}`);
             if (report.dark.onRamp.length) lines.push(` *   dark, left on the ramp: ${list(report.dark.onRamp)}`);
         } else {
-            lines.push(' *   dark: NOT pinned. The colour fails there, so dark keeps the mirrored ramp step, as it');
-            lines.push(' *   does without pin. With the colour, these would fail:');
+            lines.push(' *   dark: NOT pinned. The colour fails there, so dark keeps the ramp step it has');
+            lines.push(' *   without pin. With the colour, these would fail:');
             for (const pair of report.dark.failed) lines.push(` *     - ${pair}`);
             lines.push(' *   To force a dark value all the same, write the role in your own dark rule after this file.');
         }
@@ -809,7 +854,7 @@ function pinnedNotes(pinned) {
 }
 
 /**
- * @param {{ brand: string, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string> | { light?: Record<string, string>, dark?: Record<string, string>, both?: Record<string, string> } & Record<string, unknown>, pin?: boolean | { brand?: boolean, accent?: boolean } }} options
+ * @param {{ brand: string, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string> | { light?: Record<string, string>, dark?: Record<string, string>, both?: Record<string, string> } & Record<string, unknown>, pin?: boolean | { brand?: boolean, accent?: boolean }, darkPrimary?: 'brand' | 'mirror' }} options
  */
 export function createTheme(options) {
     if (options === null || typeof options !== 'object') {
@@ -837,6 +882,7 @@ export function createTheme(options) {
         neutralChroma = value;
     }
 
+    const darkPrimary = readDarkPrimary(options.darkPrimary);
     const pin = readPin(options.pin);
     if (pin.accent && !inputs.accent) throw new TypeError(`${TOOL}: pin.accent needs an accent colour`);
     const pinning = pin.brand || pin.accent;
@@ -863,7 +909,7 @@ export function createTheme(options) {
                 message:
                     `${name} ${colour.hex} is not in the ramp built from it: the nearest step is ` +
                     `${closest[name].step} (${closest[name].hex}, ΔE ${closest[name].deltaE.toFixed(1)}). ` +
-                    'The ramp keeps its hue on the library\'s lightness curve; fills use step 600 in light and 400 in dark.',
+                    'The ramp keeps its hue on the library\'s lightness curve; fills use step 600 in light and in dark (400 in dark with darkPrimary: "mirror").',
             });
         }
         tokens = { ...tokens, ...rampTokens(name, ramp, RAMP_STEPS) };
@@ -888,6 +934,15 @@ export function createTheme(options) {
         }
     }
 
+    // darkPrimary: 'mirror' writes the 8.1 dark fills under the dark selectors,
+    // except for a role the app sets itself in dark or in both modes.
+    if (darkPrimary === 'mirror') {
+        for (const [role, value] of Object.entries(MIRRORED_DARK)) {
+            if (role in modes.dark || role in modes.both) continue;
+            darkTokens = { ...darkTokens, [role]: value };
+        }
+    }
+
     // Overrides take part in choosing the labels, and are written last. Each
     // mode sees its own values.
     for (const name of ['brand', 'accent']) {
@@ -906,7 +961,7 @@ export function createTheme(options) {
     for (const name of ['brand', 'accent']) {
         if (!pin[name]) continue;
         const own = overrideMaps(modes, tokens, darkTokens);
-        const result = pinColour(name, described[name], tokens, { ...darkTokens, ...own.dark }, own.root, extraPairs, own.skip);
+        const result = pinColour(name, described[name], tokens, { ...darkTokens, ...own.dark }, own.root, extraPairs, own.skip, darkPrimary);
         tokens = { ...tokens, ...result.knobs, ...result.light };
         darkTokens = { ...darkTokens, ...result.dark };
         pinned[name] = result.report;
@@ -922,7 +977,7 @@ export function createTheme(options) {
     const { warnings: contrastWarnings, checked } = checkPairs(tokens, darkTokens, extraPairs);
     warnings.push(...contrastWarnings);
 
-    const css = render({ inputs, closest, tokens, darkTokens, pinned: pinning ? pinned : null, neutralChroma, contrastWarnings, checked });
+    const css = render({ inputs, closest, tokens, darkTokens, pinned: pinning ? pinned : null, neutralChroma, darkPrimary, contrastWarnings, checked });
     const hasDark = pinning || neutralChroma !== undefined || Object.keys(darkTokens).length > 0;
     return {
         css,

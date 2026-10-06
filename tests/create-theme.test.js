@@ -125,12 +125,14 @@ for (const brand of BRANDS) {
     assert.equal(resolveTokenColor(light, '--color-focus-ring'), step(600));
     assert.equal(resolveTokenColor(light, '--color-link'), step(700));
     assert.equal(resolveTokenColor(light, '--color-action-primary-text'), '#ffffff');
-    assert.equal(resolveTokenColor(dark, '--color-action-primary'), step(400));
-    assert.equal(resolveTokenColor(dark, '--color-action-primary-hover'), step(300));
-    // The same step as the dark primary fill: brand-500 was under 3:1 on the overlay.
+    // The primary keeps its hue in dark (Z-043): the same steps as light, a white label.
+    assert.equal(resolveTokenColor(dark, '--color-action-primary'), step(600));
+    assert.equal(resolveTokenColor(dark, '--color-action-primary-hover'), step(700));
+    assert.equal(resolveTokenColor(dark, '--color-action-primary-active'), step(800));
+    // The ring and the link stay on the light mirrored steps: brand-500 was under 3:1 on the overlay.
     assert.equal(resolveTokenColor(dark, '--color-focus-ring'), step(400));
     assert.equal(resolveTokenColor(dark, '--color-link'), step(300));
-    assert.equal(resolveTokenColor(dark, '--color-action-primary-text'), step(950));
+    assert.equal(resolveTokenColor(dark, '--color-action-primary-text'), '#ffffff');
   });
 }
 
@@ -149,10 +151,10 @@ test('the input colour supplies hue and chroma and is reported against its close
 });
 
 test('the "on" colours are chosen so the label passes on the fill', () => {
-  // Default recipe: fill at 600 carries white; the mirrored dark fill carries the ramp's dark end.
+  // Default recipe: fill at 600 carries white, in light and in dark (the same fill).
   const plain = createTheme({ brand: '#C17B00', accent: '#ff3366' });
   assert.equal(plain.tokens['--zabi-on-brand'], '#ffffff');
-  assert.equal(plain.tokens['--zabi-on-brand-dark'], 'var(--zabi-brand-950)');
+  assert.equal(plain.tokens['--zabi-on-brand-dark'], '#ffffff');
   assert.equal(plain.tokens['--zabi-on-accent'], '#ffffff');
   assert.equal(plain.tokens['--zabi-on-accent-dark'], 'var(--zabi-accent-950)');
 
@@ -379,7 +381,7 @@ test('without pin the output is what it was: no dark rule, no new fields', () =>
   // The frozen bytes of the unpinned ultramarine theme: the header and the first and last declarations.
   const { css } = createTheme({ brand: '#0026EA' });
   assert.ok(css.includes(' * is not pinned to a step: the exact hex may not appear below.\n'));
-  assert.ok(css.endsWith('  --zabi-on-brand-dark: var(--zabi-brand-950);\n}\n'));
+  assert.ok(css.endsWith('  --zabi-on-brand-dark: #ffffff;\n}\n'));
 });
 
 test('pin puts the exact colour on the light primary action and leaves dark as it was', () => {
@@ -422,11 +424,11 @@ test('pin puts the exact colour on the light primary action and leaves dark as i
   for (const token of guardedTokens) {
     assert.equal(resolveTokenColor(dark, token), resolveTokenColor(plainDark, token), `dark ${token}`);
   }
-  assert.equal(resolveTokenColor(dark, '--color-action-primary'), plain.tokens['--zabi-brand-400']);
+  assert.equal(resolveTokenColor(dark, '--color-action-primary'), plain.tokens['--zabi-brand-600']);
   assert.equal(resolveTokenColor(dark, '--color-link'), plain.tokens['--zabi-brand-300']);
   // The dark rule only remaps roles: no hex, as in the library's own dark block.
   for (const [role, value] of Object.entries(pinned.darkTokens)) {
-    assert.match(value, /^var\(--color-brand-\d+\)$/, `${role}: ${value}`);
+    assert.match(value, /^var\(--(color|zabi)-brand-\d+\)$/, `${role}: ${value}`);
     assert.ok(role in pinned.tokens, `${role} is restated in dark without being set on :root`);
   }
 
@@ -493,7 +495,10 @@ test('a colour that cannot be a light button is pinned anyway, and every failing
   const failed = contrastWarnings(pinned).map((w) => `${w.mode} ${w.pair}`);
   assert.deepEqual(failed, [
     'light focus offset gap on primary button',
-    // Pale yellow on the white track: the progress bar follows the primary, so it is as pale.
+    // A pale yellow fill is not seen against the white page or card, and the
+    // progress bar follows the primary, so it is as pale on its track.
+    'light primary fill against the page',
+    'light primary fill against a card',
     'light progress fill on track',
     'light pinned primary fill against the page',
     'light pinned primary fill against a card',
@@ -776,20 +781,21 @@ test('without light or dark overrides the bytes are what they were before the op
   // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193 to 195, then the segment thumb pairs; the flat hash moved when the pressed field became a mix of the field:
   // the field edge on the field fill, the page and the card, then the progress fill on its track, each in both modes).
   // They moved again for 9a: the generator now resolves the control veil pairs (the strengths are in its data) and the tonal, outline and toggle pairs were added, so the header counts 260; the bar pairs (active tab pill, on-brand bar, headline on a bar) moved the header and the bytes again, and so did the chrome token and the bar tokens; and the pinned amber's veil is flipped to lighten-only (its label is dark).
+  // Then for Z-043: the dark primary and danger are the light steps with a white label (the dark label knob is white, the header counts 4 more pairs: the primary and danger fills against the page and the card).
   // Then for 16a (Z-044): the field edge is guarded on the elevated surface and the overlay (two pairs per mode, so the header counts 4 more), and the dark surfaces, hairline, rim and shadows moved.
   const before = {
-    plain: [{ brand: '#0026EA' }, 'e73413e55b672845e0b85a088f52496f7fdaabeb1f5bbfc47c865b3c760549fc'],
+    plain: [{ brand: '#0026EA' }, 'c51e89d11bba1058f8f3b7b341bb58668c7bcfed60e95c0fd5e3d72a339e8a25'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      '28c0aa6fdede48c3350b86d1606ba4835de1b2756010819f28604cc23bbfb5fd',
+      'd95354405f3916816e0ee5f47cb6dcca046131cbfd73424591005f2f4d778533',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      '736bb12352058872b246bb1a1b8f61fbb6d9f47220c22414bc88c80217622492',
+      '1159408929767ec07f0a1169dacf85133123041e60fc81ed41bdcce33fba777e',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '9d437ff701dc461b129bc9d2b1f523cb29924da8aa3ff4967dffe5a7106726be',
+      'cc4ed626282444074c986a145ea98df7090fc1bf005e1e7847633566aecb547f',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -1222,4 +1228,120 @@ test('the button and toggle tokens exist in both modes and take overrides', () =
   assert.equal(result.tokens['--zabi-button-font-weight'], '600');
   assert.match(result.css, /--zabi-button-radius: 9999px;/);
   assert.deepEqual(contrastWarnings(result), []);
+});
+
+/* ---------- darkPrimary (Z-043): the primary action keeps its hue in dark ---------- */
+
+const flatDarkOverrides = {
+  '--zabi-brand-800': '#0026ea',
+  '--color-action-primary': 'var(--color-brand-800)',
+  '--color-action-primary-hover': 'var(--color-brand-900)',
+  '--color-action-primary-active': 'var(--color-brand-950)',
+  '--color-accent': '#eb8ffe',
+  '--color-accent-hover': 'var(--zabi-accent-300)',
+  '--color-accent-active': 'var(--zabi-accent-200)',
+  '--zabi-on-accent': '#183a89',
+  '--zabi-on-accent-dark': '#183a89',
+  '--color-focus': 'var(--color-brand-800)',
+  '--color-link-hover': 'var(--color-brand-900)',
+  '--color-progress-track': 'var(--color-base-250)',
+};
+const appInput = { brand: '#0026EA', accent: '#EB8FFE', neutral: '#607296', neutralChroma: 0.08 };
+
+test('darkPrimary "brand" is the default and writes nothing extra; bad values are TypeErrors', () => {
+  const plain = createTheme({ brand: '#0026EA' });
+  assert.deepEqual(createTheme({ brand: '#0026EA', darkPrimary: 'brand' }), plain);
+  assert.deepEqual(createTheme({ brand: '#0026EA', darkPrimary: undefined }), plain);
+  assert.equal(plain.darkTokens, undefined);
+  assert.ok(!plain.css.includes('.dark'));
+  for (const bad of ['Mirror', 'light', true, 1, {}]) {
+    assert.throws(() => createTheme({ brand: '#0026EA', darkPrimary: bad }), (error) => error instanceof TypeError && /darkPrimary must be "brand" or "mirror"/.test(error.message), String(bad));
+  }
+});
+
+test('darkPrimary "mirror" restores the 8.1 dark fills, label and veil, and every pair passes', () => {
+  for (const brand of BRANDS) {
+    const result = createTheme({ brand, darkPrimary: 'mirror' });
+    assert.deepEqual(contrastWarnings(result), [], brand);
+    assert.deepEqual(result.darkTokens, {
+      '--color-action-primary': 'var(--color-brand-600)',
+      '--color-action-primary-hover': 'var(--color-brand-700)',
+      '--color-action-primary-active': 'var(--color-brand-800)',
+      '--color-action-danger': 'var(--color-error-600)',
+      '--color-action-danger-hover': 'var(--color-error-700)',
+      '--color-action-danger-active': 'var(--color-error-800)',
+      '--color-action-danger-text': 'var(--color-error-50)',
+      '--gradient-control-top-strength': '22%',
+      '--gradient-control-bottom-strength': '6%',
+    });
+    // The label is chosen for the pale fill: the ramp's dark end, as in 8.1.
+    assert.equal(result.tokens['--zabi-on-brand-dark'], 'var(--zabi-brand-950)');
+    const { dark } = themedPinned(result);
+    assert.equal(resolveTokenColor(dark, '--color-action-primary'), result.tokens['--zabi-brand-400']);
+    assert.equal(resolveTokenColor(dark, '--color-action-primary-text'), result.tokens['--zabi-brand-950']);
+    for (const selector of ['.dark,', '[data-theme="auto"]']) assert.ok(result.css.includes(selector));
+  }
+});
+
+test('darkPrimary "mirror" gives way to an app override of the same role', () => {
+  const result = createTheme({ brand: '#0026EA', darkPrimary: 'mirror', overrides: { dark: { '--color-action-primary': 'var(--color-brand-700)' }, both: { '--color-action-danger': 'var(--color-error-700)' } } });
+  assert.equal(result.darkTokens['--color-action-primary'], 'var(--color-brand-700)');
+  assert.ok(!('--color-action-danger' in result.darkTokens));
+  assert.ok(result.darkTokens['--color-action-primary-hover']);
+});
+
+test('the dark label tries white first, and keeps the ramp dark end when white fails', () => {
+  assert.equal(createTheme({ brand: '#0026EA' }).tokens['--zabi-on-brand-dark'], '#ffffff');
+  // An app that moves the dark primary to a pale step (the mirrored steps) keeps a dark label.
+  const pale = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-action-primary': 'var(--color-brand-600)', '--color-action-primary-hover': 'var(--color-brand-700)', '--color-action-primary-active': 'var(--color-brand-800)' } } });
+  assert.equal(pale.tokens['--zabi-on-brand-dark'], 'var(--zabi-brand-950)');
+  assert.deepEqual(contrastWarnings(pale), []);
+});
+
+test('darkPrimary with pin: dark takes the pin only where nothing fails, else what it has without pin', () => {
+  // This blue fails against the dark page: dark keeps step 600 (or the mirrored step).
+  const brand = createTheme({ brand: '#0026EA', pin: true });
+  assert.equal(brand.pinned.brand.dark.pinned, false);
+  assert.equal(brand.darkTokens['--color-action-primary'], 'var(--zabi-brand-600)');
+  assert.equal(brand.darkTokens['--color-action-primary-active'], 'var(--zabi-brand-800)');
+  assert.deepEqual(contrastWarnings(brand), []);
+  const mirror = createTheme({ brand: '#0026EA', pin: true, darkPrimary: 'mirror' });
+  assert.equal(mirror.pinned.brand.dark.pinned, false);
+  assert.equal(mirror.darkTokens['--color-action-primary'], 'var(--color-brand-600)');
+  assert.equal(mirror.darkTokens['--color-action-danger'], 'var(--color-error-600)');
+  assert.deepEqual(contrastWarnings(mirror), []);
+  // A mid blue passes in dark: it is pinned there, with darker states as in light.
+  const mid = createTheme({ brand: '#2b65ff', pin: true });
+  assert.equal(mid.pinned.brand.dark.pinned, true);
+  assert.equal(mid.pinned.brand.dark.states, 'darker');
+  assert.equal(mid.darkTokens['--color-action-primary'], '#2b65ff');
+});
+
+test('an app that sets the primary flat for both modes gets no warnings and keeps its dark primary', () => {
+  const result = createTheme({ ...appInput, overrides: flatDarkOverrides });
+  assert.deepEqual(result.warnings, []);
+  assert.ok(!('--color-action-primary' in result.darkTokens), 'the flat override is left alone in dark');
+  const { dark } = themedPinned(result);
+  assert.equal(resolveTokenColor(dark, '--color-action-primary'), result.tokens['--zabi-brand-200']);
+});
+
+test('the same override under light gives the brand step 600 with a white label in dark', () => {
+  const { '--color-action-primary': p, '--color-action-primary-hover': h, '--color-action-primary-active': a, ...rest } = flatDarkOverrides;
+  const result = createTheme({ ...appInput, overrides: { both: rest, light: { '--color-action-primary': p, '--color-action-primary-hover': h, '--color-action-primary-active': a } } });
+  const { light, dark } = themedPinned(result);
+  assert.equal(resolveTokenColor(dark, '--color-action-primary'), '#2b65ff');
+  assert.equal(resolveTokenColor(dark, '--color-action-primary-text'), '#ffffff');
+  assert.equal(resolveTokenColor(light, '--color-action-primary'), '#0026ea');
+  // The app's own track override (base-250 in both modes) is the one pair that
+  // fails: the 600 fill is 2.62:1 on it. Reported, not hidden.
+  assert.deepEqual(result.warnings.map((w) => `${w.mode} ${w.pair}`), ['dark progress fill on track']);
+});
+
+test('the bin takes --dark-primary', () => {
+  const args = ['--brand', '#0026EA'];
+  assert.equal(run(...args, '--dark-primary', 'brand').stdout, createTheme({ brand: '#0026EA' }).css);
+  assert.equal(run(...args, '--dark-primary=mirror').stdout, createTheme({ brand: '#0026EA', darkPrimary: 'mirror' }).css);
+  const bad = run(...args, '--dark-primary', 'pale');
+  assert.equal(bad.status, 2);
+  assert.match(bad.stderr, /darkPrimary must be "brand" or "mirror"/);
 });
