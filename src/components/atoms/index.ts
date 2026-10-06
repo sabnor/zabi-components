@@ -20,6 +20,7 @@ export { default as Divider } from './Divider.svelte';
 export { default as Container } from './Container.svelte';
 export { default as Text } from './Text.svelte';
 export { default as Table } from './Table.svelte';
+export { default as Checkbox } from './Checkbox.svelte';
 export { default as Radio } from './Radio.svelte';
 export { default as Spinner } from './Spinner.svelte';
 export { default as Rating } from './Rating.svelte';

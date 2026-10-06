@@ -89,8 +89,8 @@
         max,
         onopen,
         selectable,
-        selected = $bindable(null),
-        selectedKeys = $bindable([]),
+        selected = $bindable<Exclude<Props["selected"], undefined>>(),
+        selectedKeys = $bindable<Exclude<Props["selectedKeys"], undefined>>(),
         onselect,
         onadd,
         strings,
@@ -99,6 +99,18 @@
         "aria-labelledby": ariaLabelledby,
         ...restProps
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (selected === undefined) selected = null;
+        if (selectedKeys === undefined) selectedKeys = [];
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     /** The add tile's place among the tile keys. No photo has this key: it is not an address. */
     const ADD_KEY = "\u0000add";

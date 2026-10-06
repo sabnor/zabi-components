@@ -82,7 +82,7 @@
         class: className = "",
         id: idProp,
         label = "",
-        value = $bindable(null),
+        value = $bindable<Exclude<Props["value"], undefined>>(),
         disabled = false,
         accept = "image/*",
         placeholder = "No image selected",
@@ -108,6 +108,17 @@
         children: _children,
         ...restProps
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (value === undefined) value = null;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     const fallbackId = generateId("image-upload");
     const controlId = $derived(idProp ?? fallbackId);

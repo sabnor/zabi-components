@@ -2,8 +2,10 @@
     import type { HTMLAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
+    import { resetValueOf, groupBinding } from "../util/hydration.js";
     import { isRtl, radioKeyIndex } from "../util/radio-keys.js";
     import type { SegmentedControlOption } from "../util/segmented-control.js";
+    import { generateId } from "../util/ssr-safe.js";
 
     /** Other attributes (`data-*`, `id`, ...) land on the host element. */
     type Props = Omit<
@@ -26,7 +28,11 @@
         size?: SizeVariant;
         /** Equal-width segments that fill the row. Off: each segment is as wide as its label. */
         fullWidth?: boolean;
-        /** Name the value is submitted under in a form. */
+        /**
+         * Name the value is submitted under in a form. Without a name the
+         * control is not part of the form around it: it submits nothing and a
+         * form reset leaves it alone.
+         */
         name?: string;
         disabled?: boolean;
         /** Called with the new value when the user picks another segment. */
@@ -56,6 +62,18 @@
         }
     });
 
+    /**
+     * The radios always share a name, the caller's or one made here: without
+     * one they are not a group to the browser, and before the page hydrates a
+     * second choice would leave the first one checked beside it.
+     *
+     * With a name made here they are also kept out of any form around them
+     * (`form` names a form that does not exist), so nothing is submitted
+     * that the caller did not name, as before.
+     */
+    const fallbackName = generateId("segmented");
+    const groupName = $derived(name || fallbackName);
+
     const enabled = $derived(
         options.filter((option) => !disabled && !option.disabled),
     );
@@ -73,6 +91,21 @@
         value = next;
         onchange?.(next);
     }
+
+    /**
+     * The radios are bound, so a segment picked before the page hydrated is
+     * kept: Svelte's binding hands it over here instead of overwriting it
+     * (see util/hydration.ts), and it goes through `select` like any other
+     * choice, `onchange` included. A form reset empties the selection, as it
+     * empties a bound native input.
+     */
+    const chosen = groupBinding<string>(
+        () => value,
+        (next) => select(next),
+        () => {
+            if (!disabled) value = resetValueOf<string>(Object.values(inputs));
+        },
+    );
 
     /** `focused` is the value of the segment the key was pressed on, which need not be the selected one. */
     function handleKeydown(event: KeyboardEvent, focused: string) {
@@ -110,12 +143,12 @@ one changes nothing, and the value goes with a form. -->
                 bind:this={inputs[option.value]}
                 type="radio"
                 class="sr-only"
-                name={name || undefined}
+                name={groupName}
+                form={name ? undefined : groupName}
                 value={option.value}
-                checked={value === option.value}
+                bind:group={chosen.value}
                 disabled={optionDisabled}
                 tabindex={option.value === tabStop ? 0 : -1}
-                onchange={() => select(option.value)}
                 onkeydown={(event) => handleKeydown(event, option.value)}
             />
             <span class="segment-face text-sm font-medium">

@@ -1,4 +1,4 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator, Page, Route } from "@playwright/test";
 
 /**
  * Waiting for the page to be interactive.
@@ -41,4 +41,26 @@ export async function waitForHydration(target: Page | Locator): Promise<void> {
 export async function gotoHydrated(page: Page, url: string): Promise<void> {
     await page.goto(url, { waitUntil: "domcontentloaded" });
     await waitForHydration(page);
+}
+
+/**
+ * Holds every script of the page until the returned `release()` is called, so
+ * a test can use the server-rendered markup as a visitor on a slow connection
+ * does: before any handler is attached. Call it before `page.goto`, and go
+ * with `waitUntil: "commit"`: no load event comes while the scripts are held.
+ */
+export async function holdScripts(page: Page): Promise<() => Promise<void>> {
+    const held: Route[] = [];
+    let open = false;
+    await page.route(
+        (url) => /\.(?:js|ts|svelte)(?:\?|$)/.test(url.pathname + url.search) || url.pathname.includes("/@"),
+        async (route) => {
+            if (open) await route.continue();
+            else held.push(route);
+        },
+    );
+    return async () => {
+        open = true;
+        await Promise.all(held.splice(0).map((route) => route.continue()));
+    };
 }

@@ -17,16 +17,21 @@
     import IconButton from "../components/atoms/IconButton.svelte";
     import Input from "../components/atoms/Input.svelte";
     import Radio from "../components/atoms/Radio.svelte";
+    import Rating from "../components/atoms/Rating.svelte";
     import Select from "../components/atoms/Select.svelte";
     import Table from "../components/atoms/Table.svelte";
     import Text from "../components/atoms/Text.svelte";
     import Textarea from "../components/atoms/Textarea.svelte";
     import ThemeToggle from "../components/atoms/ThemeToggle.svelte";
     import Toggle from "../components/atoms/Toggle.svelte";
+    import RadioGroup from "../components/molecules/RadioGroup.svelte";
+    import SegmentedControl from "../components/molecules/SegmentedControl.svelte";
     import type {
         ButtonProps,
         CheckboxProps,
         InputProps,
+        RatingProps,
+        SegmentedControlProps,
         SelectProps,
         TextareaProps,
         ToggleProps,
@@ -72,6 +77,14 @@
         "data-testid": "notify",
         "aria-describedby": "elsewhere",
     };
+    const rating: RatingProps = { label: "Quiz", id: "quiz", "data-testid": "quiz", "aria-describedby": "elsewhere" };
+    const segmented: SegmentedControlProps = {
+        label: "Storlek",
+        options: [{ value: "s", label: "S" }, { value: "m", label: "M" }],
+        id: "size",
+        "data-testid": "size",
+        "aria-describedby": "elsewhere",
+    };
     // `variant` aside: the exported type still lists deprecated values the component never took.
     const link: Omit<ButtonProps, "variant"> = { href: "/login", target: "_blank", rel: "noopener", download: true };
 </script>
@@ -112,6 +125,30 @@
 
 <Text inputmode="none" enterkeyhint="done" data-testid="text" id="intro">Text</Text>
 <Table caption="Besök" inputmode="none" enterkeyhint="done" data-testid="visits" id="visits" />
+
+<!-- The groups: rest attributes land on the host (a div with role="radiogroup", or a fieldset). -->
+<Rating {...rating} />
+<Rating label="Quiz" id="quiz" data-testid="quiz" aria-describedby="elsewhere" inputmode="none" enterkeyhint="done" />
+<SegmentedControl {...segmented} />
+<SegmentedControl
+    label="Storlek"
+    options={[{ value: "s", label: "S" }, { value: "m", label: "M" }]}
+    id="size"
+    data-testid="size"
+    aria-describedby="elsewhere"
+    inputmode="none"
+    enterkeyhint="done"
+/>
+<RadioGroup
+    legend="Svar"
+    options={[{ value: "ja", label: "Ja" }]}
+    id="answer"
+    data-testid="answer"
+    aria-describedby="elsewhere"
+    inputmode="none"
+    enterkeyhint="done"
+    form="visit"
+/>
 
 <!-- A link takes a link's attributes, and a button still takes a button's. -->
 <Button {...link} />

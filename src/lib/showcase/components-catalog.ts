@@ -575,7 +575,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: "md",
-                        description: "Badge size",
+                        description:
+                            "20, 24 or 28px tall for a label on one line. A label that does not fit wraps and the badge grows, keeping the corner of one line.",
                     },
                 ],
                 variants: ["default", "success", "warning", "error", "info", "neutral", "energetic", "accent"],
@@ -1148,7 +1149,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: '""',
                         description:
-                            "Name the value is submitted under in a form. Nothing is submitted without a rating, or when readonly.",
+                            "Name the value is submitted under in a form. Nothing is submitted without a rating, or when readonly. Without a name the rating is not part of the form around it: it submits nothing and a form reset leaves it alone.",
                     },
                     {
                         name: "showValue",
@@ -4034,7 +4035,15 @@ pushToast({
                         type: "string | undefined",
                         required: false,
                         defaultValue: "undefined",
-                        description: "Selected value (bind:value)",
+                        description:
+                            "Selected value (bind:value). undefined is no selection, and may be bound.",
+                    },
+                    {
+                        name: "defaultValue",
+                        type: "string | undefined",
+                        required: false,
+                        description:
+                            "The selection to start with when value is undefined as the group is created. Applied once, on the server too; it never replaces a choice.",
                     },
                     {
                         name: "legend",
@@ -4207,7 +4216,7 @@ pushToast({
                         required: false,
                         defaultValue: '""',
                         description:
-                            "Name the value is submitted under in a form.",
+                            "Name the value is submitted under in a form. Without a name the control is not part of the form around it: it submits nothing and a form reset leaves it alone.",
                     },
                     {
                         name: "disabled",

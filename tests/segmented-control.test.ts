@@ -234,10 +234,24 @@ describe("SegmentedControl", () => {
         expect(data().get("answer")).toBe("no");
     });
 
-    it("leaves the radios without a name when none is given", () => {
+    it("without a name the radios are still one group, and are kept out of any form", () => {
+        // They used to have no name at all. Then they were not a group to the
+        // browser: before the page hydrated, a second choice left the first
+        // one checked beside it. The name is the component's own, and `form`
+        // points at no form, so nothing is submitted that the caller did not name.
         render(SegmentedControl, { props: { label: "Period", options: four, value: "week" } });
-        expect(segments().every((input) => !input.hasAttribute("name"))).toBe(true);
+        const names = new Set(segments().map((input) => input.getAttribute("name")));
+        expect(names.size).toBe(1);
+        const [name] = [...names];
+        expect(name).toBeTruthy();
+        expect(segments().every((input) => input.getAttribute("form") === name && input.form === null)).toBe(true);
+        expect(document.getElementById(name!)).toBeNull();
         expect(checked()).toEqual(["week"]);
+    });
+
+    it("with a name the radios carry it and belong to the form around them", () => {
+        render(SegmentedControl, { props: { label: "Period", options: four, value: "week", name: "given" } });
+        expect(segments().every((input) => input.getAttribute("name") === "given" && !input.hasAttribute("form"))).toBe(true);
     });
 
     it("says whether it fills the row, and which size it is", () => {

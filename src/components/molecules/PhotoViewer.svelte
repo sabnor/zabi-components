@@ -111,8 +111,8 @@
 
     let {
         photos,
-        index = $bindable(0),
-        isOpen = $bindable(false),
+        index = $bindable<Exclude<Props["index"], undefined>>(),
+        isOpen = $bindable<Exclude<Props["isOpen"], undefined>>(),
         actions = [],
         portal = true,
         onclose,
@@ -121,6 +121,18 @@
         class: className = "",
         ...restProps
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (index === undefined) index = 0;
+        if (isOpen === undefined) isOpen = false;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     /** Room between two photos while one is swiped to the next, in px. */
     const GAP = 16;

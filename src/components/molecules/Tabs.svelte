@@ -29,12 +29,23 @@
     let {
         class: className = "",
         tabs = [],
-        activeTab = $bindable(""),
+        activeTab = $bindable<Exclude<Props["activeTab"], undefined>>(),
         variant = "default",
         fullWidth = false,
         children,
         ...restProps
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (activeTab === undefined) activeTab = "";
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     const tabsBaseId = generateId("tabs");
 

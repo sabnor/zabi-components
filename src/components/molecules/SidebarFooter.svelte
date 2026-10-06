@@ -39,7 +39,7 @@
         logoutLabel = "Logout",
         showThemeToggle = true,
         lightModeLabel = "Light mode",
-        isLightMode = $bindable(false),
+        isLightMode = $bindable<Exclude<Props["isLightMode"], undefined>>(),
         onLogout,
         onThemeToggle,
         class: classAttr = "",
@@ -49,6 +49,17 @@
         onProfileClick,
         profilePanel,
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (isLightMode === undefined) isLightMode = false;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */

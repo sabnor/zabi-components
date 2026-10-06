@@ -32,7 +32,7 @@
         message = "",
         closable = false,
         closeLabel = "Dismiss alert",
-        open = $bindable(true),
+        open = $bindable<Exclude<Props["open"], undefined>>(),
         inline = false,
         class: classProp = "",
         className = "",
@@ -40,6 +40,17 @@
         children,
         ...restProps
     }: Props & { children?: any } = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (open === undefined) open = true;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     function handleDismiss(event: MouseEvent) {
         open = false;

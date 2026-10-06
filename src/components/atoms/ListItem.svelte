@@ -161,7 +161,10 @@
         {@render rowContent()}
     </button>
 {:else}
-    <div class={itemClasses} aria-disabled={item.disabled ? "true" : undefined} {...restProps}>
+    <!-- A plain row has no role, so `aria-disabled` on it would say nothing
+    to anyone: a disabled one is only drawn dimmed. There is nothing in it to
+    press, enabled or not. -->
+    <div class={itemClasses} {...restProps}>
         {@render rowContent()}
     </div>
 {/if}

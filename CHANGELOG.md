@@ -54,6 +54,11 @@ Whenever token or CSS import API surface changes, include:
   real for that theme. Fix them with an override (`set`, or `--set`), for
   example `--color-focus` and `--color-link-hover` one brand step darker, or
   use `pin`, which moves the focus ring and links with a pinned brand colour.
+- **An unnamed RadioGroup submits nothing.** A RadioGroup without `name` used
+  to submit under a generated `radiogroup-…` name. The generated name is still
+  there to group the radios, but they are kept out of the surrounding form, as
+  in Rating. Give the group a `name` to submit it.
+- **`Checkbox` is exported from the atoms entry** as well as from the root.
 
 ### Fixed
 
@@ -65,6 +70,21 @@ Whenever token or CSS import API surface changes, include:
   button's name changed.
 - SidebarAccountPanel's three-mode theme row follows a theme changed elsewhere
   on the page.
+- **A choice made before the page hydrates is kept.** A Checkbox, Radio,
+  RadioGroup, Rating or SegmentedControl that the user changed in the server's
+  markup, before the scripts had loaded, was set back to the value the page was
+  rendered with. The controls now adopt what the native input holds at
+  hydration: the bound value follows it and the change callback fires once.
+  A Select does the same through its native `<select>`. A form reset still
+  returns to the rendered value.
+- **`bind:value={undefined}` no longer stops the page from hydrating.** A
+  bindable prop with a fallback throws in Svelte 5 when it is bound to
+  `undefined`; RadioGroup did, and so could 36 other bindable props across the
+  library. None has a fallback now: the default is applied inside the
+  component, so `let value = $state()` works everywhere. A test reads every
+  `$bindable` in the source and fails on a new fallback.
+- **A disabled plain ListItem row no longer carries `aria-disabled`.** With no
+  role the attribute exposed nothing; the row is only drawn dimmed.
 
 ## [8.1.0-beta.2] - 2026-10-06
 

@@ -128,7 +128,7 @@
         showSearch = true,
         searchMode = "input",
         searchPlaceholder = "Search...",
-        searchValue = $bindable(""),
+        searchValue = $bindable<Exclude<Props["searchValue"], undefined>>(),
         searchTriggerIcon = Command,
         searchTriggerVariant = "outline",
         searchTriggerSize = "sm",
@@ -136,7 +136,7 @@
         logoutLabel = "Logout",
         showThemeToggle = true,
         lightModeLabel = "Light mode",
-        isLightMode = $bindable(false),
+        isLightMode = $bindable<Exclude<Props["isLightMode"], undefined>>(),
         emptyStateTitle = "Create your first navigation item",
         emptyStateDescription = "Add your first sidebar item so users can start navigating your product.",
         emptyStateActionLabel = "Add navigation item",
@@ -150,7 +150,7 @@
         profilePanelControlsId = "",
         profilePanel,
         mobile = "none",
-        isOpen = $bindable(false),
+        isOpen = $bindable<Exclude<Props["isOpen"], undefined>>(),
         trigger,
         drawerTitle,
         closeLabel,
@@ -158,6 +158,19 @@
         label,
         ...restProps
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (searchValue === undefined) searchValue = "";
+        if (isLightMode === undefined) isLightMode = false;
+        if (isOpen === undefined) isOpen = false;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */

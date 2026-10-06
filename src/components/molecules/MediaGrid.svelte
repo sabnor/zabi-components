@@ -86,9 +86,9 @@
         getUrl,
         getType,
         getPoster,
-        selected = $bindable(null),
+        selected = $bindable<Exclude<Props["selected"], undefined>>(),
         multiple = false,
-        selectedKeys = $bindable([]),
+        selectedKeys = $bindable<Exclude<Props["selectedKeys"], undefined>>(),
         onselect,
         ondelete,
         isItemDeletable,
@@ -103,6 +103,18 @@
         "aria-labelledby": ariaLabelledby,
         ...restProps
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (selected === undefined) selected = null;
+        if (selectedKeys === undefined) selectedKeys = [];
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     /** How long to wait for a confirmation dialog to give focus up after a delete. */
     const FOCUS_WAIT_MS = 2000;

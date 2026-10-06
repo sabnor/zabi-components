@@ -4,6 +4,7 @@
     import type { HTMLAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
+    import { resetValueOf, groupBinding } from "../util/hydration.js";
     import { isRtl, radioKeyIndex } from "../util/radio-keys.js";
     import {
         RATING_STRINGS,
@@ -53,7 +54,11 @@
          */
         clearable?: boolean;
         disabled?: boolean;
-        /** Name the value is submitted under in a form. Nothing is submitted without a rating. */
+        /**
+         * Name the value is submitted under in a form. Nothing is submitted
+         * without a rating. Without a name the rating is not part of the form
+         * around it: it submits nothing and a form reset leaves it alone.
+         */
         name?: string;
         /** Shows the number beside the stars. On by default when `readonly`. */
         showValue?: boolean;
@@ -67,7 +72,7 @@
 
     let {
         class: className = "",
-        value = $bindable(null),
+        value = $bindable<Exclude<Props["value"], undefined>>(),
         max = 5,
         label = "",
         hideLabel = false,
@@ -86,9 +91,30 @@
         ...restProps
     }: Props = $props();
 
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (value === undefined) value = null;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
+
     const baseId = generateId("rating");
     const labelId = `${baseId}-label`;
     const valueId = `${baseId}-value`;
+    /**
+     * The radios always share a name, the caller's or one made here: without
+     * one they are not a group to the browser, and before the page hydrates a
+     * second choice would leave the first one checked beside it.
+     *
+     * With a name made here they are also kept out of any form around them
+     * (`form` names a form that does not exist), so nothing is submitted
+     * that the caller did not name, as before.
+     */
+    const groupName = $derived(name || `${baseId}-group`);
 
     const text = $derived({ ...RATING_STRINGS, ...strings });
     const count = $derived(starCount(max));
@@ -118,6 +144,21 @@
         value = next;
         onchange?.(next);
     }
+
+    /**
+     * The radios are bound, so a star picked before the page hydrated is kept:
+     * Svelte's binding hands it over here instead of overwriting it (see
+     * util/hydration.ts), and it goes through `select` like any other choice,
+     * `onchange` included. A form reset empties the rating, as it empties
+     * a bound native input.
+     */
+    const chosen = groupBinding<number>(
+        () => value,
+        (star) => select(star),
+        () => {
+            if (!disabled) value = resetValueOf<number>(inputs) ?? null;
+        },
+    );
 
     /** The clear button hides once there is nothing to clear, so focus goes back to the stars. */
     function clear() {
@@ -227,13 +268,13 @@
                             bind:this={inputs[index]}
                             type="radio"
                             class="sr-only"
-                            name={name || undefined}
+                            name={groupName}
+                            form={name ? undefined : groupName}
                             value={star}
-                            checked={value === star}
+                            bind:group={chosen.value}
                             {disabled}
                             tabindex={star === tabStop ? 0 : -1}
                             aria-label={text.starLabel(format(star), count)}
-                            onchange={() => select(star)}
                             onkeydown={(event) => handleKeydown(event, index)}
                         />
                         {@render glyph(undefined)}
