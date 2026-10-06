@@ -707,6 +707,38 @@
   --color-material-highlight: color-mix(in srgb, var(--zabi-base-50) 60%, transparent);
   --color-material-rim: color-mix(in srgb, var(--zabi-base-900) 9%, transparent);
 
+  /* Gradients (D99). Contrast is never measured against a gradient: each one
+   * is built from named stops, and scripts/contrast-pairs.js holds the worst
+   * stop of each to the pairs that sit on it. The strengths are the strongest
+   * whole 5% (canvas) and 2% (control veils) at which every pair passes, capped
+   * at the prototype (canvas 85 / 45, top veil 22). Light canvas 55 (caption and
+   * link on the wash), dark canvas 25 (field edge on the wash); light top veil 4
+   * (white label on the 600 fill is only about 4.6:1 to begin with), dark 22.
+   *
+   * Canvas: two soft radial washes from brand 300 and accent 300 for glass to
+   * show something. A background-image only; .bg-canvas adds the page colour.
+   * The library does not paint it on body. */
+  --gradient-canvas-strength: 55%;
+  --color-canvas-wash-brand: color-mix(in srgb, var(--color-brand-300) var(--gradient-canvas-strength), transparent);
+  --color-canvas-wash-accent: color-mix(in srgb, var(--color-accent-300) var(--gradient-canvas-strength), transparent);
+  --gradient-canvas:
+    radial-gradient(90% 46% at 8% 0%, var(--color-canvas-wash-brand), transparent 70%),
+    radial-gradient(80% 40% at 100% 4%, var(--color-canvas-wash-accent), transparent 70%);
+
+  /* Solid controls: a veil laid over the control's own background-color, so
+   * hover and pressed fills keep working. The start and end tokens are the veil
+   * colours (translucent neutral, from the ramp so a neutral override tints
+   * them): a light one on top, a slight dark one at the bottom. */
+  --gradient-control-top-strength: 4%;
+  --gradient-control-bottom-strength: 6%;
+  --color-control-gradient-start: color-mix(in srgb, var(--zabi-base-50) var(--gradient-control-top-strength), transparent);
+  --color-control-gradient-end: color-mix(in srgb, var(--zabi-base-950) var(--gradient-control-bottom-strength), transparent);
+  --gradient-control: linear-gradient(to bottom, var(--color-control-gradient-start), var(--color-control-gradient-end));
+  --color-control-gradient-accent-start: color-mix(in srgb, var(--zabi-base-50) var(--gradient-control-top-strength), transparent);
+  --color-control-gradient-accent-end: color-mix(in srgb, var(--zabi-base-950) var(--gradient-control-bottom-strength), transparent);
+  --gradient-control-accent: linear-gradient(to bottom, var(--color-control-gradient-accent-start), var(--color-control-gradient-accent-end));
+  --shadow-control-highlight: inset 0 1px 0 color-mix(in srgb, var(--zabi-base-50) 40%, transparent);
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -1170,6 +1202,12 @@ body {
   --color-material-highlight: color-mix(in srgb, var(--zabi-base-50) 14%, transparent);
   --color-material-rim: color-mix(in srgb, var(--zabi-base-50) 12%, transparent);
 
+  /* Gradients: the wash is quieter in dark (see @theme). The stops follow. */
+  --gradient-canvas-strength: 25%;
+  --gradient-control-top-strength: 22%;
+  --gradient-control-bottom-strength: 6%;
+  --shadow-control-highlight: inset 0 1px 0 color-mix(in srgb, var(--zabi-base-50) 25%, transparent);
+
   /* Not a token: tells the browser the page is dark, so what it draws itself
    * (date and time pickers, scrollbars, autofill, the caret of a native
    * select) is dark too. It is the last declaration on purpose:
@@ -1273,6 +1311,41 @@ body {
     outline: 1px solid CanvasText;
     outline-offset: -1px;
   }
+}
+
+/* Gradients (D99). Utilities only; nothing in the library applies them yet.
+ *
+ * .bg-canvas: the page colour with the wash over it. The wash is in the
+ * element's own box (background-attachment: scroll), so on a scroll container
+ * it stays put while the content moves, and on a plain block it scrolls with
+ * the page. Put it on a fixed-height shell or scroller, not on body. */
+.bg-canvas {
+  background-color: var(--color-surface-base);
+  background-image: var(--gradient-canvas);
+  background-repeat: no-repeat;
+}
+
+/* A veil over the control's own background-color: hover and pressed fills
+ * (hover:bg-action-primary-hover, active:...) show through it. The highlight
+ * goes through Tailwind's shadow variable and its box-shadow list, so a
+ * `focus-ring` on the same element still draws. */
+.bg-control-gradient,
+.bg-control-gradient-accent {
+  --tw-shadow: var(--shadow-control-highlight);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+}
+
+.bg-control-gradient {
+  background-image: var(--gradient-control);
+}
+
+.bg-control-gradient-accent {
+  background-image: var(--gradient-control-accent);
 }
 
 /* ========================================

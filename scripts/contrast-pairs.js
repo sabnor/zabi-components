@@ -120,6 +120,35 @@ export const MATERIALS = [
     { name: 'thick', fill: '--color-material-thick', text: ['headline', 'body', 'label', 'description', 'caption'] },
 ];
 
+/** The two named stops of the canvas wash (--gradient-canvas) and the text roles on it. */
+export const CANVAS_STOPS = [
+    { name: 'brand', token: '--color-canvas-wash-brand' },
+    { name: 'accent', token: '--color-canvas-wash-accent' },
+];
+export const CANVAS_TEXT = ['headline', 'body', 'label', 'description', 'caption'];
+
+/**
+ * The solid controls that take a gradient: a translucent veil (start on top,
+ * end at the bottom) over the control's own fill, per state. The label is
+ * held at 4.5:1 on both ends of each state.
+ */
+export const CONTROL_GRADIENTS = [
+    {
+        name: 'primary',
+        start: '--color-control-gradient-start',
+        end: '--color-control-gradient-end',
+        on: '--color-action-primary-text',
+        fills: [['rest', '--color-action-primary'], ['hover', '--color-action-primary-hover'], ['active', '--color-action-primary-active']],
+    },
+    {
+        name: 'accent',
+        start: '--color-control-gradient-accent-start',
+        end: '--color-control-gradient-accent-end',
+        on: '--color-on-accent',
+        fills: [['rest', '--color-accent'], ['hover', '--color-accent-hover'], ['active', '--color-accent-active']],
+    },
+];
+
 export function buildPairs() {
     const pairs = [];
 
@@ -278,6 +307,27 @@ export function buildPairs() {
             }
             if (material.ring !== false) {
                 pairs.push({ name: `material ${material.name} · focus ring over ${where}`, bg: material.fill, fg: '--color-focus-ring', min: AA_LARGE, behind });
+            }
+        }
+    }
+
+    // Gradients (D99): never judged as a gradient, only at their worst stops.
+    // The canvas wash is strongest at its centre, where it is the stop colour
+    // over the page; every text role that can sit on the canvas is held there.
+    for (const stop of CANVAS_STOPS) {
+        for (const role of CANVAS_TEXT) {
+            pairs.push({ name: `canvas wash ${stop.name} · ${role}`, bg: stop.token, fg: `--color-${role}`, min: AA_NORMAL, behind: '--color-surface-base' });
+        }
+        pairs.push({ name: `canvas wash ${stop.name} · link`, bg: stop.token, fg: '--color-link', min: AA_NORMAL, behind: '--color-surface-base' });
+        pairs.push({ name: `canvas wash ${stop.name} · focus ring`, bg: stop.token, fg: '--color-focus-ring', min: AA_LARGE, behind: '--color-surface-base' });
+        pairs.push({ name: `canvas wash ${stop.name} · field edge`, bg: stop.token, fg: '--color-input-border', min: AA_LARGE, behind: '--color-surface-base' });
+    }
+    // The control gradient is a veil over the control's own fill, so each state
+    // is the veil stop over that state's fill, and the label must hold on both ends.
+    for (const control of CONTROL_GRADIENTS) {
+        for (const [state, fill] of control.fills) {
+            for (const [end, bg] of [['top', control.start], ['bottom', control.end]]) {
+                pairs.push({ name: `${control.name} gradient ${end} · ${state}`, bg, fg: control.on, min: AA_NORMAL, behind: fill });
             }
         }
     }

@@ -1245,6 +1245,14 @@ so every use of them follows, in both modes and over an app's own fill. Under
 forced colors the rim is a 1px `CanvasText` outline. To set a fill per mode:
 `overrides: { light: { '--color-material-regular': … }, dark: { … } }`.
 
+### Gradients
+
+Two gradients, as tokens, so a rebrand carries through. Contrast is never measured against a gradient; the guard checks the worst stop of each.
+
+- **Canvas.** `--gradient-canvas` is two soft radial washes from `--color-brand-300` and `--color-accent-300` (stops `--color-canvas-wash-brand|accent`, strength `--gradient-canvas-strength`, light 55%, dark 25%). Glass over a flat page shows nothing; put `bg-canvas` (page colour plus the wash) on a fixed-height shell or a scroll container, where the wash stays put as content moves. The library never applies it to `body`. Text roles, link, focus ring and field edge are held on each stop over the page.
+- **Solid controls.** `bg-control-gradient` (primary) and `bg-control-gradient-accent` lay a veil over the control's own `background-color`: a light neutral at the top, a slight dark one at the bottom (`--color-control-gradient-start|end`, `--color-control-gradient-accent-start|end`), plus an inset top edge (`--shadow-control-highlight`). Hover and pressed fills still show through. The label is held at 4.5:1 on both ends over rest, hover and pressed. Progress does not take a gradient.
+- Override per mode with `createTheme` `overrides` and restate dark; a strength too high is reported as a contrast warning.
+
 ### Shadow scale
 
 Elevation in light mode is **two steps**, not a ramp. A shadow says "this is

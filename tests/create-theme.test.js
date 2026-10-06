@@ -927,13 +927,13 @@ test('the bin takes --set-light and --set-dark, and --set alone is still the fla
 
 test('the field edge is a guarded foreground: 3:1 on the field fill, the page and the card', async () => {
   const { buildPairs } = await import('../scripts/contrast-pairs.js');
-  const pairs = buildPairs().filter((p) => p.fg === '--color-input-border');
+  const pairs = buildPairs().filter((p) => p.fg === '--color-input-border' && !p.behind);
   assert.deepEqual(
     pairs.map((p) => [p.bg, p.min]).sort(),
     [['--color-background', 3], ['--color-input', 3], ['--color-surface-raised', 3]],
   );
   // The generator ships the same list, so a consumer's theme is checked too.
-  const shipped = JSON.parse(JSON.stringify(buildThemeData().pairs)).filter((p) => p.fg === '--color-input-border');
+  const shipped = JSON.parse(JSON.stringify(buildThemeData().pairs)).filter((p) => p.fg === '--color-input-border' && !p.behind);
   assert.equal(shipped.length, 3);
 });
 
@@ -995,4 +995,49 @@ test('material tokens are overridable per mode with dark restated, and a too-thi
   assert.match(defaults.light['--color-material-rim'], /var\(--zabi-base-900\)/);
   assert.match(defaults.darkOnly['--color-material-rim'], /var\(--zabi-base-50\)/);
   assert.ok(maps.light['--zabi-base-900'] !== defaults.light['--zabi-base-900']);
+});
+
+/* ---------- gradients (D99) ---------- */
+
+test('the gradient worst-case pairs pass as shipped, and one step above the solved strength fails the guard', () => {
+  const css = fs.readFileSync(path.join(projectRoot, 'src', 'app.css'), 'utf8');
+  const guard = (source) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'zabi-gradients-'));
+    const file = path.join(dir, 'app.css');
+    fs.writeFileSync(file, source);
+    return spawnSync(process.execPath, [path.join(projectRoot, 'scripts', 'check-contrast.js'), file], { encoding: 'utf8' });
+  };
+  assert.equal(guard(css).status, 0, 'the shipped strengths must pass');
+  assert.ok(css.includes('--gradient-canvas-strength: 55%;') && css.includes('--gradient-canvas-strength: 25%;'));
+  const light = guard(css.replace('--gradient-canvas-strength: 55%;', '--gradient-canvas-strength: 60%;'));
+  assert.equal(light.status, 1);
+  assert.match(light.stderr, /light · canvas wash (brand|accent) · /);
+  const dark = guard(css.replace('--gradient-canvas-strength: 25%;', '--gradient-canvas-strength: 30%;'));
+  assert.equal(dark.status, 1);
+  assert.match(dark.stderr, /dark · canvas wash (brand|accent) · field edge/);
+  const veil = guard(css.replace('--gradient-control-top-strength: 4%;', '--gradient-control-top-strength: 6%;'));
+  assert.equal(veil.status, 1);
+  assert.match(veil.stderr, /light · (primary|accent) gradient top · rest/);
+});
+
+test('gradient tokens follow a rebrand and are overridable per mode with dark restated', () => {
+  const brandOnly = createTheme({ brand: '#0026EA' });
+  const rebrand = createTheme({ brand: '#B4231C', accent: '#0F766E' });
+  const resolved = (r) => themed({ ...r.tokens });
+  // The wash reads the brand and accent ramps, which a rebrand regenerates.
+  assert.match(resolved(rebrand).light['--color-canvas-wash-brand'], /--color-brand-300/);
+  assert.match(resolved(rebrand).light['--color-canvas-wash-accent'], /--color-accent-300/);
+  assert.notEqual(brandOnly.tokens['--zabi-brand-300'], rebrand.tokens['--zabi-brand-300']);
+  assert.notEqual(brandOnly.tokens['--zabi-accent-300'], rebrand.tokens['--zabi-accent-300']);
+  assert.ok(buildThemeData().pairs.some((p) => p.behind && p.bg === '--color-canvas-wash-brand'));
+  const gradientWarnings = (r) => contrastWarnings(r).filter((w) => /canvas wash|gradient (top|bottom)/.test(w.pair));
+  assert.deepEqual(gradientWarnings(rebrand), []);
+
+  const set = createTheme({
+    brand: '#0026EA',
+    overrides: { light: { '--gradient-canvas-strength': '95%' }, dark: { '--gradient-canvas-strength': '40%' } },
+  });
+  assert.equal(set.tokens['--gradient-canvas-strength'], '95%');
+  assert.equal(set.darkTokens['--gradient-canvas-strength'], '40%');
+  assert.ok(gradientWarnings(set).some((w) => w.mode === 'light' && /canvas wash/.test(w.pair)));
 });
