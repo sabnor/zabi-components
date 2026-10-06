@@ -47,6 +47,8 @@ Whenever token or CSS import API surface changes, include:
 - **The floating `BottomTabBar` capsule is concentric with its tabs** (D154): the tabs sat 8px inside the capsule at its ends but 4px above and below, under a 28px corner. They now sit the same distance inside on all four sides (the list's gap: 8px, less in a very narrow bar), and the capsule's radius is the tab's 20px plus that distance, so outer radius = inner radius + padding holds at every width. The floating bar is 72px tall (was 64px); `--app-shell-bottom-inset` follows, it is measured. The edge-to-edge bar is unchanged.
 - **`Alert`: the close button's radius follows `--zabi-alert-border-width`**, so it stays concentric with the alert when the edge is set to `0px`.
 - **The active tab's forced-colours outline is the system highlight colour** in `BottomTabBar` and `AppNavigation`: the class `forced-colors:outline-(color:Highlight)` was never emitted (that form is for custom properties), so the outline fell back to the text colour. It is `forced-colors:outline-[color:Highlight]` now. `ring-(color:--color-bar)`, the ring around a tab's count, was checked in the built stylesheet and is emitted.
+- **`TimeField` picker: the chosen minute is in view and the chosen row is legible** (found in the look at this build): the columns centred their chosen row from `offsetTop`, which counts from the sheet, so only the focused hours column was right; and the chosen row's label kept the body colour on the primary fill in light. Both corrected before the build was packed.
+- **Storybook: `Heading / All levels`, `Display` and `Display with own face` render** (they passed a string as a component), and the `Stat` row on a brand block wraps on a phone.
 
 ## [9.0.0-alpha.4] - 2026-10-06
 

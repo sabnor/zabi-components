@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Heading from '../../components/atoms/Heading.svelte';
+import HeadingDisplayStory from './HeadingDisplayStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Heading',
@@ -71,18 +72,7 @@ export const AllLevels: Story = {
         level: 1,
         text: 'Heading'
     },
-    render: () => ({
-        Component: 'div' as any,
-        props: { style: 'display: flex; flex-direction: column; gap: 1rem;' },
-        children: [
-            { Component: Heading, props: { level: 1, text: 'Heading 1 - Bold' } },
-            { Component: Heading, props: { level: 2, text: 'Heading 2 - Bold' } },
-            { Component: Heading, props: { level: 3, text: 'Heading 3 - Medium' } },
-            { Component: Heading, props: { level: 4, text: 'Heading 4 - Medium' } },
-            { Component: Heading, props: { level: 5, text: 'Heading 5 - Medium' } },
-            { Component: Heading, props: { level: 6, text: 'Heading 6 - Medium' } }
-        ]
-    } as any)
+    render: () => ({ Component: HeadingDisplayStory, props: { mode: 'levels' } }) as any
 };
 
 export const WithSlot: Story = {
@@ -106,14 +96,7 @@ export const Display: Story = {
             }
         }
     },
-    render: () => ({
-        Component: 'div' as any,
-        props: { style: 'display: flex; flex-direction: column; gap: 1rem;' },
-        children: [1, 2, 3, 4, 5, 6].map((level) => ({
-            Component: Heading,
-            props: { level, variant: 'display', text: `Display ${level}` }
-        }))
-    } as any)
+    render: () => ({ Component: HeadingDisplayStory, props: { mode: 'display' } }) as any
 };
 
 export const DisplayWithOwnFace: Story = {
@@ -125,9 +108,5 @@ export const DisplayWithOwnFace: Story = {
             }
         }
     },
-    render: () => ({
-        Component: 'div' as any,
-        props: { style: '--font-family-display: Georgia, serif; --zabi-display-weight: 400;' },
-        children: [{ Component: Heading, props: { level: 1, variant: 'display', text: 'Ett annat typsnitt' } }]
-    } as any)
+    render: () => ({ Component: HeadingDisplayStory, props: { mode: 'ownFace' } }) as any
 };

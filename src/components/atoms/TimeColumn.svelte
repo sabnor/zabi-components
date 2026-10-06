@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import { cn } from "../util/cn.js";
     import type { TimeChoice } from "../util/temporal-field.js";
 
@@ -36,15 +36,25 @@
     );
 
     /**
-     * The chosen row is put in the middle of the column as it opens. Set
+     * The chosen row is put in the middle of the column as it opens, and
+     * again when the choice changes (a new hour can move the minute). Measured
+     * from the two boxes, not `offsetTop`, which counts from the sheet. Set
      * straight on `scrollTop`: nothing here scrolls smoothly, so there is no
      * motion for `prefers-reduced-motion` to remove.
      */
-    onMount(() => {
+    function centreSelected() {
         const column = box;
         const row = column?.querySelector<HTMLElement>('[aria-selected="true"]');
-        if (!column || !row) return;
-        column.scrollTop = row.offsetTop - column.clientHeight / 2 + row.offsetHeight / 2;
+        if (!column || !row || !column.clientHeight) return;
+        const offset = row.getBoundingClientRect().top - column.getBoundingClientRect().top;
+        column.scrollTop += offset - (column.clientHeight - row.offsetHeight) / 2;
+    }
+
+    onMount(centreSelected);
+
+    $effect(() => {
+        void selected;
+        void tick().then(centreSelected);
     });
 
     const rows = () => [...(box?.querySelectorAll<HTMLElement>('[role="option"]') ?? [])];
@@ -114,8 +124,12 @@
             aria-disabled={option.disabled ? "true" : undefined}
             tabindex={option.value === tabStop ? 0 : -1}
             class={cn(
-                "focus-ring flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-control text-base text-body transition-colors duration-(--duration-base) motion-reduce:transition-none focus:outline-none focus-visible:outline-none",
-                "hover:bg-input-hover aria-selected:bg-action-primary aria-selected:text-action-primary",
+                "focus-ring flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-control text-base transition-colors duration-(--duration-base) motion-reduce:transition-none focus:outline-none focus-visible:outline-none",
+                // Two class lists, never both: the hand-written colour classes
+                // sit outside the cascade layers, so a variant cannot beat them.
+                option.value === selected
+                    ? "bg-action-primary text-action-primary font-semibold"
+                    : "text-body hover:bg-input-hover",
                 "aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-transparent",
             )}
             onfocus={() => (focusedValue = option.value)}
