@@ -303,6 +303,12 @@ export function buildPairs() {
         { name: 'field edge on the field fill', bg: '--color-input', fg: '--color-input-border', min: AA_LARGE },
         { name: 'field edge on page', bg: '--color-background', fg: '--color-input-border', min: AA_LARGE },
         { name: 'field edge on card', bg: '--color-surface-raised', fg: '--color-input-border', min: AA_LARGE },
+        // WCAG 1.4.11: the selected segment of a SegmentedControl is told from the
+        // others by its edge. The track is translucent ink, so it is measured over
+        // the page and over a card, the two surfaces it is placed on.
+        { name: 'segment thumb edge on the track over the page', bg: '--color-action-secondary', fg: '--color-segment-thumb-border', min: AA_LARGE, behind: '--color-surface-base' },
+        { name: 'segment thumb edge on the track over a card', bg: '--color-action-secondary', fg: '--color-segment-thumb-border', min: AA_LARGE, behind: '--color-surface-raised' },
+        { name: 'segment thumb text on the thumb', bg: '--color-segment-thumb', fg: '--color-segment-thumb-text', min: AA_NORMAL },
         // WCAG 1.4.11: the fill of Progress must be seen against its track.
         { name: 'progress fill on track', bg: '--color-progress-track', fg: '--color-progress-fill', min: AA_LARGE },
     );

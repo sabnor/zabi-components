@@ -595,6 +595,8 @@ export interface SegmentedControlProps
     /** Equal-width segments that fill the row. */
     fullWidth?: boolean;
     name?: string;
+    /** Look of the selected segment: a card-coloured thumb (`neutral`, default) or the solid primary fill. */
+    tone?: 'neutral' | 'primary';
     disabled?: boolean;
     onchange?: (value: string) => void;
 }

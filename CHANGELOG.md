@@ -14,12 +14,16 @@ Whenever token or CSS import API surface changes, include:
 
 ### Added
 
+- **`SegmentedControl tone`** (Z-052): `"neutral"` (default) or `"primary"`. Neutral draws the selected segment as a thumb: card colour, headline-coloured label, `--shadow-sm` and a 1px edge, on the tinted track. New tokens `--color-segment-thumb` (light: the raised surface; dark: the overlay surface), `--color-segment-thumb-text` and `--color-segment-thumb-border` (the control boundary, held to 3:1 against the track over the page and over a card, with the thumb text held to 4.5:1 on the thumb).
+- **A sliding indicator in Tabs and SegmentedControl.** After mount the selected item's mark (the underline, the pill, the thumb or the primary fill) is one element that moves and resizes to the selected item over `--duration-moderate`: with `--ease-spring` for the pill and the thumb, `--ease-standard` for the underline. It is measured, so it follows resizes, zoomed text (a wrapped SegmentedControl moves the thumb in two dimensions), right-to-left layouts and a scrolling tablist. Server-rendered, before hydration, without ResizeObserver or layout, and under forced colours the selected item draws its own mark as before. No motion under reduced motion.
 - **`Badge variant="brand"`** (Z-056 part 3): the primary brand colour as a badge, subtle (brand tint, link-coloured text) and solid (the primary fill with its label). New token `--color-action-primary-border` (the brand tint's edge), and the guarded pairs `badge subtle · brand` and `badge solid · brand`.
 - **`Badge bordered`** (Z-056 part 2): puts a subtle badge's family edge back. Default `false`.
 - **`--zabi-list-row-border-color`** (default `transparent`) and **`--zabi-list-divider-color`** (default `var(--color-border)`): set on a list or any ancestor.
 
 ### Changed (visible in 9.0)
 
+- **SegmentedControl: the selected segment is a neutral thumb, not a solid primary fill** (Z-052), so the control is no longer louder than the screen's main button. Restore 8.1: `tone="primary"`.
+- **The indicators of Tabs and SegmentedControl slide** between items instead of switching. Restore 8.1: `--duration-moderate: 0s` on the component or an ancestor makes the move instant (the token is shared with other components); reduced motion already has none.
 - **List rows have no border of their own; a hairline divides them.** A row inside the bordered `.list-group` shell (or a bare `<List>`) drew a second outline; now rows keep a transparent 1px border (so height and text do not move) and a 1px `--color-border` divider sits in the gap between rows, none above the first or below the last, hidden next to a selected row (which keeps its fill and `border-action-primary` edge). The `.list-group` shell keeps its one border. Row transitions use the motion tokens. Restore 8.1: `--zabi-list-row-border-color: var(--color-border); --zabi-list-divider-color: transparent;` on the list or any ancestor.
 - **A subtle Badge has no visible border.** The 1px border box stays (same height), drawn transparent. Restore 8.1: `bordered` on the Badge. Solid badges are unchanged.
 

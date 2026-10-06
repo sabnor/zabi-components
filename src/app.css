@@ -456,6 +456,15 @@
    * lighter for that reason. */
   --color-control-border: var(--color-base-500);
 
+  /* Segmented control thumb (tone neutral): the selected segment, a card-coloured
+   * piece on the tinted track. The edge is what identifies it (WCAG 1.4.11), as
+   * the 1.1:1 fill step alone would not. It is the control boundary, which dark
+   * lifts a step (base-600) because the input edge is only 2.4:1 on this track; it is held to 3:1 against the track
+   * over the page and over a card (scripts/contrast-pairs.js). */
+  --color-segment-thumb: var(--color-surface-raised);
+  --color-segment-thumb-text: var(--color-headline);
+  --color-segment-thumb-border: var(--color-control-border);
+
   /* Focus Colors
    * brand-600, not brand-500: a focus indicator needs 3:1 against what is
    * around it, and brand-500 was 2.99:1 on the page. brand-600 is also the
@@ -1123,6 +1132,13 @@ body {
    * mirrors to --zabi-base-400 (#a1a1aa): 3.73:1 on the overlay, the lightest
    * surface, and more on every level below it. base-550 is 2.76:1 there. */
   --color-control-border: var(--color-base-600);
+
+  /* Segmented control thumb — restated: the aliases resolve at :root, so without
+   * these dark would keep the light card colour. The overlay surface is the
+   * lightest step of the dark ladder, clearly above the track. */
+  --color-segment-thumb: var(--color-surface-overlay);
+  --color-segment-thumb-text: var(--color-headline);
+  --color-segment-thumb-border: var(--color-control-border);
 
   /* Focus Colors — the same steps as light, through the mirror: brand-600 is
    * --zabi-brand-400 here, which is also the dark primary fill, so on a

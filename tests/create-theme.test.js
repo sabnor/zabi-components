@@ -749,21 +749,21 @@ const declarationOf = (block, name) => new RegExp(`${name}: ([^;]+);`).exec(bloc
 
 test('without light or dark overrides the bytes are what they were before the option existed', () => {
   // Hashes of the css from the generator before per-mode overrides. The header
-  // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193 to 195; the flat hash moved when the pressed field became a mix of the field:
+  // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193 to 195, then the segment thumb pairs; the flat hash moved when the pressed field became a mix of the field:
   // the field edge on the field fill, the page and the card, then the progress fill on its track, each in both modes).
   const before = {
-    plain: [{ brand: '#0026EA' }, '53931871346ce404794a04b57fd27bed340d0746e297a40e60d4c55157967c59'],
+    plain: [{ brand: '#0026EA' }, '7f3a3cc6af3352e2c7ec5ef01385aec554511984748575b49e697284aa789ca6'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      '059371a5506e1667d2964cd0b58bd0e90cdd56989e45f3a39b4795f5a5008a17',
+      'd767dd45f9bf294f234711fa3ff1f73f127da9aba5dc2a8ccacb65ddd72a03c1',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      'a61ab737612d77dd48b5e1dcdb24e86d6f452fcafd8bfde5d39f0d9a046686ee',
+      'c70dc84a6046d780e208c448ff6fd49b4fd5b870a4f42dbb23735c96579088c9',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '7529a9a41e8e0f931a3cd7b354f4b48620cd8aeb62ecd39e46ea2e0e619edd87',
+      '4f0cfe3fc17085980128a0385a052844539344d12b406275d2a701f83e567d22',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {

@@ -2,6 +2,12 @@
     import type { Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
+    import {
+        afterFrame,
+        measureIndicator,
+        observeSizes,
+        type IndicatorBox,
+    } from "../util/sliding-indicator.js";
 
     interface Props {
         /** Extra classes for the host element. */
@@ -141,6 +147,50 @@
     });
 
     /**
+     * The sliding indicator: the underline, or the pill. Until a box has been
+     * measured (on the server, before hydration, with no layout) it is null and
+     * the selected tab draws its own mark; with a box, that mark moves to the
+     * indicator, which slides between tabs. It lives in the scrolling list and
+     * is placed against the list's content, so it stays on its tab as the list
+     * scrolls.
+     */
+    let indicator = $state<IndicatorBox | null>(null);
+    /** Off for the first placement, so the indicator appears in place and does not fly in. */
+    let indicatorMotion = $state(false);
+
+    function measure() {
+        const tab = tabElements[activeTab];
+        indicator = listElement && tab ? measureIndicator(listElement, tab) : null;
+    }
+
+    $effect(() => {
+        void [tabs, activeTab, variant, fullWidth, listElement];
+        measure();
+    });
+
+    // The tabs resize with a loaded font, zoomed text or a wider row.
+    $effect(() => {
+        const list = listElement;
+        void tabs.length;
+        if (!list) return;
+        return observeSizes([list, ...Object.values(tabElements)], measure);
+    });
+
+    $effect(() => {
+        if (!indicator || indicatorMotion) return;
+        return afterFrame(() => (indicatorMotion = true));
+    });
+
+    /** The underline is the bottom 2px of the tab's box; the pill is all of it. */
+    const indicatorStyle = $derived.by(() => {
+        if (!indicator) return "";
+        const { x, y, width, height } = indicator;
+        const line = variant === "pills" ? height : 2;
+        const top = variant === "pills" ? y : y + height - 2;
+        return `transform: translate(${x}px, ${top}px); width: ${width}px; height: ${line}px;`;
+    });
+
+    /**
      * Arrow keys and Tab move focus to a tab that may be out of view. Keyboard
      * focus only: a press focuses the tab on the way down, and moving the list
      * then would take the tab from under the pointer before the click lands.
@@ -211,7 +261,7 @@
     }
 
     const TAB_BASE =
-        "focus-ring cursor-pointer border-b-2 px-4 py-2 pointer-coarse:min-h-11 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed";
+        "focus-ring relative cursor-pointer border-b-2 px-4 py-2 pointer-coarse:min-h-11 text-sm font-medium transition-colors focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed";
     // A tab keeps its width and the list scrolls; sharing the row, it may shrink and its label wrap.
     const TAB_NATURAL = "shrink-0 whitespace-nowrap";
     // `min-w-min` is the tab's longest word: a label wraps between words, never
@@ -231,9 +281,20 @@
     const TAB_SELECTED_PILL =
         "border-brand-500 bg-action-primary-subtle text-link active:bg-action-primary-subtle-active";
 
+    // With the indicator the tab keeps its label colour and its pressed fill
+    // only. Forced colours drop backgrounds, so the underline of the tab itself
+    // stays there and the indicator is hidden.
+    const TAB_SELECTED_MOVED =
+        "border-brand-500 not-forced-colors:border-transparent text-body active:bg-surface-active";
+    const TAB_SELECTED_PILL_MOVED =
+        "border-brand-500 not-forced-colors:border-transparent text-link active:bg-action-primary-subtle-active";
+
     function tabClasses(tabId: string): string {
         const base = `${TAB_BASE} ${fullWidth ? TAB_SHARED : TAB_NATURAL}`;
         if (activeTab !== tabId) return `${base} ${TAB_IDLE}`;
+        if (indicator) {
+            return `${base} ${variant === "pills" ? TAB_SELECTED_PILL_MOVED : TAB_SELECTED_MOVED}`;
+        }
         return `${base} ${variant === "pills" ? TAB_SELECTED_PILL : TAB_SELECTED}`;
     }
 </script>
@@ -253,7 +314,7 @@
     <!-- `tabindex="-1"`: a scrolling box is otherwise a Tab stop of its own. -->
     <div
         bind:this={listElement}
-        class="tabs-list flex"
+        class="tabs-list relative flex"
         role="presentation"
         tabindex="-1"
         data-fade-left={fadeLeft ? "" : undefined}
@@ -261,6 +322,22 @@
         onfocusin={handleFocusIn}
         onscroll={updateFades}
     >
+        {#if indicator}
+            <!-- Under the tabs (they are positioned and come later), and never in their way. -->
+            <span
+                class={cn(
+                    "pointer-events-none absolute top-0 left-0 forced-colors:hidden",
+                    variant === "pills" ? "bg-action-primary-subtle border-b-2 border-brand-500" : "bg-brand-500",
+                    // The underline must not overshoot; the pill may spring.
+                    indicatorMotion &&
+                        "transition-[transform,width,height] duration-(--duration-moderate) motion-reduce:transition-none",
+                    indicatorMotion && (variant === "pills" ? "ease-spring" : "ease-standard"),
+                )}
+                aria-hidden="true"
+                data-indicator={variant}
+                style={indicatorStyle}
+            ></span>
+        {/if}
         {#each tabs as tab (tab.id)}
             <button
                 bind:this={tabElements[tab.id]}

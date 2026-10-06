@@ -4366,6 +4366,14 @@ pushToast({
                             "Name the value is submitted under in a form. Without a name the control is not part of the form around it: it submits nothing and a form reset leaves it alone.",
                     },
                     {
+                        name: "tone",
+                        type: "'neutral' | 'primary'",
+                        required: false,
+                        defaultValue: "neutral",
+                        description:
+                            "Look of the selected segment. neutral: a card-coloured thumb with the headline colour on a tinted track. primary: the solid primary fill, as in 8.1.",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,
@@ -4386,6 +4394,7 @@ pushToast({
                     "md",
                     "lg",
                     "fullWidth",
+                    "primary",
                     "disabled",
                 ],
                 examples: [

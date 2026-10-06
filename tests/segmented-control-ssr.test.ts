@@ -39,6 +39,15 @@ describe("SegmentedControl on the server", () => {
         expect(body).toContain("Can't");
     });
 
+    it("is neutral by default and renders no indicator, so the checked segment draws its own look", () => {
+        const { body } = renderOnServer(SegmentedControlHarness, { props: { initial: "maybe" } });
+        const group = /<div[^>]*role="radiogroup"[^>]*>/.exec(body)?.[0] ?? "";
+        expect(group).toContain('data-tone="neutral"');
+        expect(group).not.toContain("data-indicator");
+        expect(body).not.toContain("segment-indicator");
+        expect(/\schecked/.test(radios(body)[1])).toBe(true);
+    });
+
     it("renders nothing checked without a value, and warns about nothing", () => {
         const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
         const { body } = renderOnServer(SegmentedControl, {
