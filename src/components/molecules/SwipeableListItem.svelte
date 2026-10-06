@@ -315,7 +315,8 @@
             id={groupId}
             role="group"
             aria-label={text.actions}
-            class={cn("flex [max-inline-size:66%] shrink-0 items-stretch", !shown && "invisible")}
+            class={cn("flex shrink-0 items-stretch", !shown && "invisible")}
+            style:max-inline-size="max(66%, {actions.length * 72}px)"
             inert={!open}
             data-swipeable-actions
         >
