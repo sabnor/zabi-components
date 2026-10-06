@@ -22,6 +22,12 @@ Whenever token or CSS import API surface changes, include:
   in light, `--shadow-color`) follow the neutral ramp instead of staying grey,
   and the file restates the dark values under the dark selectors. Without the
   option the output is exactly what it was. (Z-036)
+- Theme generator: per-mode overrides. `overrides` still takes a flat map
+  (both modes); it now also takes `{ light, dark, both }`, and the CLI has
+  `--set-light` and `--set-dark` beside `--set`. A light-only override is
+  restated with the library's own dark value in the dark rules, so a tinted
+  light card no longer paints the dark one; the contrast check reads each
+  mode's own value. Without them the output is exactly what it was. (Z-037)
 
 ## [8.1.0-beta.5] - 2026-10-06
 

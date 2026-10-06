@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -733,4 +734,168 @@ test('the bin takes --neutral-chroma and refuses a bad one with exit 2', () => {
     assert.match(bad.stderr, /neutral-chroma|neutralChroma/);
   }
   assert.match(run('--help').stdout, /--neutral-chroma/);
+});
+
+/* ---------- per-mode overrides ---------- */
+
+const sha = (text) => crypto.createHash('sha256').update(text).digest('hex');
+const darkRule = (css) => css.slice(css.indexOf('.dark,'), css.indexOf('@media'));
+const mediaRule = (css) => css.slice(css.indexOf('@media'));
+const declarationOf = (block, name) => new RegExp(`${name}: ([^;]+);`).exec(block)?.[1];
+
+test('without light or dark overrides the bytes are what they were before the option existed', () => {
+  // Hashes of the css from the generator before per-mode overrides.
+  const before = {
+    plain: [{ brand: '#0026EA' }, '808c7500e6a13af60cf034d595a0776f4d56075339b0c357a6c1ca276a44be19'],
+    flat: [
+      { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
+      '55167e7f3d7af380d4c213842b41b7e919b46681a0292d46cf2ec39647767112',
+    ],
+    pinned: [
+      { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
+      '8fd65a24771b2e1b1bbfbd99692cacc663902967e848873f81c68682b07fc67b',
+    ],
+    neutral: [
+      { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
+      '58cf2f57213e8c1cf186960ab3b49f962761e2b5df11dc0d8dcfb693132bf883',
+    ],
+  };
+  for (const [name, [options, hash]] of Object.entries(before)) {
+    assert.equal(sha(createTheme(options).css), hash, name);
+  }
+  // `both` is the flat form, and empty mode maps write nothing.
+  const flat = { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' };
+  const css = createTheme({ brand: '#0026EA', overrides: flat }).css;
+  assert.equal(createTheme({ brand: '#0026EA', overrides: { both: flat } }).css, css);
+  assert.equal(createTheme({ brand: '#0026EA', overrides: { ...flat, light: {}, dark: {} } }).css, css);
+  assert.equal(createTheme({ brand: '#0026EA', overrides: { both: flat } }).darkTokens, undefined);
+});
+
+test('a light override stays in light: :root has it and every dark block restates the library dark value', () => {
+  const tinted = { '--color-surface-raised': '#f8faff', '--color-surface-overlay': '#f8faff' };
+  const result = createTheme({ brand: '#0026EA', overrides: { light: tinted } });
+  assert.equal(result.tokens['--color-surface-raised'], '#f8faff');
+  assert.equal(result.tokens['--color-surface-overlay'], '#f8faff');
+  for (const name of Object.keys(tinted)) {
+    assert.equal(result.darkTokens[name], defaults.darkOnly[name]);
+    assert.notEqual(result.darkTokens[name], '#f8faff');
+  }
+  const root = result.css.slice(0, result.css.indexOf('.dark,'));
+  assert.equal(declarationOf(root, '--color-surface-raised'), '#f8faff');
+  for (const block of [darkRule(result.css), mediaRule(result.css)]) {
+    for (const name of Object.keys(tinted)) assert.equal(declarationOf(block, name), defaults.darkOnly[name]);
+  }
+  assert.deepEqual(contrastWarnings(result).filter((w) => w.mode === 'dark'), []);
+});
+
+test('a dark override is written only under the dark selectors', () => {
+  const result = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-surface-raised': '#101820' } } });
+  assert.equal('--color-surface-raised' in result.tokens, false);
+  assert.equal(result.darkTokens['--color-surface-raised'], '#101820');
+  const root = result.css.slice(0, result.css.indexOf('.dark,'));
+  assert.doesNotMatch(root, /--color-surface-raised/);
+  assert.equal(declarationOf(darkRule(result.css), '--color-surface-raised'), '#101820');
+  assert.equal(declarationOf(mediaRule(result.css), '--color-surface-raised'), '#101820');
+});
+
+test('both, flat keys and a mode: the specific mode wins in its mode', () => {
+  const result = createTheme({
+    brand: '#0026EA',
+    overrides: {
+      '--color-link': 'var(--color-brand-800)', // flat, counts as both
+      both: { '--color-surface-raised': '#f8faff', '--color-surface-overlay': '#f0f4ff' },
+      light: { '--color-surface-raised': '#ffffff' },
+      dark: { '--color-surface-overlay': '#202830' },
+    },
+  });
+  assert.equal(result.tokens['--color-surface-raised'], '#ffffff'); // light beats both
+  assert.equal(result.darkTokens['--color-surface-raised'], '#f8faff'); // dark keeps both
+  assert.equal(result.tokens['--color-surface-overlay'], '#f0f4ff'); // both on :root
+  assert.equal(result.darkTokens['--color-surface-overlay'], '#202830'); // dark beats both
+  assert.equal(result.tokens['--color-link'], 'var(--color-brand-800)');
+  assert.equal('--color-link' in (result.darkTokens ?? {}), false);
+});
+
+test('the contrast check uses each mode\'s own value of a token', () => {
+  // A near-black card would fail every dark-on-light text pair if light saw it, and
+  // a white one would fail light text on a dark card: each is only wrong in its own mode.
+  const lightOnly = createTheme({ brand: '#0026EA', overrides: { light: { '--color-surface-raised': '#101010' } } });
+  const lightWarnings = contrastWarnings(lightOnly);
+  assert.ok(lightWarnings.length > 0);
+  assert.ok(lightWarnings.every((w) => w.mode === 'light'), 'a light-only card must not warn in dark');
+  assert.ok(lightWarnings.some((w) => w.background.token === '--color-surface-raised' && w.background.value === '#101010'));
+
+  const darkOnly = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-surface-raised': '#ffffff' } } });
+  const darkWarnings = contrastWarnings(darkOnly);
+  assert.ok(darkWarnings.length > 0);
+  assert.ok(darkWarnings.every((w) => w.mode === 'dark'), 'a dark-only card must not warn in light');
+
+  // The same value in both modes reports where it fails, as before.
+  const both = createTheme({ brand: '#0026EA', overrides: { both: { '--color-surface-raised': '#101010' } } });
+  assert.ok(contrastWarnings(both).some((w) => w.mode === 'light'));
+});
+
+test('per-mode overrides take part in the "on" colours and leave pin and the ink roles alone', () => {
+  // The app sets the primary fill in light only: pin does not write it, in either mode.
+  const pinned = createTheme({ brand: '#0026EA', pin: true, overrides: { light: { '--color-action-primary': '#123456' } } });
+  assert.equal(pinned.tokens['--color-action-primary'], '#123456');
+  assert.equal(pinned.darkTokens['--color-action-primary'], defaults.darkOnly['--color-action-primary'] ?? defaults.light['--color-action-primary']);
+  // An ink role set in dark only is not replaced by the neutral-chroma ink in dark.
+  const ink = createTheme({
+    brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05,
+    overrides: { dark: { '--color-surface-hover': 'rgba(255, 255, 255, 0.2)' } },
+  });
+  assert.equal(ink.darkTokens['--color-surface-hover'], 'rgba(255, 255, 255, 0.2)');
+  assert.equal('--color-surface-hover' in ink.tokens, false);
+});
+
+test('an overridden ramp token restates the ramp the file writes, not the library default', () => {
+  const result = createTheme({ brand: '#0026EA', overrides: { light: { '--zabi-brand-600': '#112233' } } });
+  assert.equal(result.tokens['--zabi-brand-600'], '#112233');
+  assert.match(result.darkTokens['--zabi-brand-600'], /^#[0-9a-f]{6}$/);
+  assert.notEqual(result.darkTokens['--zabi-brand-600'], '#112233');
+  assert.equal(result.darkTokens['--zabi-brand-600'], createTheme({ brand: '#0026EA' }).tokens['--zabi-brand-600']);
+});
+
+test('per-mode overrides are validated, and the errors name the key path', () => {
+  const bad = (overrides) => () => createTheme({ brand: '#0026EA', overrides });
+  assert.throws(bad({ light: 'red' }), /overrides\.light must be an object/);
+  assert.throws(bad({ dark: null }), /overrides\.dark must be an object/);
+  assert.throws(bad({ both: ['x'] }), /overrides\.both must be an object/);
+  assert.throws(bad({ light: { 'color-link': 'red' } }), /overrides\.light\["color-link"\]/);
+  assert.throws(bad({ dark: { '--color-link': '' } }), /overrides\.dark\["--color-link"\]/);
+  assert.throws(bad({ both: { '--color-link': 4 } }), /overrides\.both\["--color-link"\].*got --color-link: 4/);
+  assert.throws(bad({ light: {}, link: 'red' }), /overrides has no "link"/);
+  assert.throws(bad({ light: {}, '--color-link': '  ' }), /overrides\["--color-link"\]/);
+  // The flat form keeps its message.
+  assert.throws(bad({ 'color-link': 'red' }), /overrides must map custom property names/);
+});
+
+test('the bin takes --set-light and --set-dark, and --set alone is still the flat form', () => {
+  const light = run('--brand', '#0026EA', '--set-light', '--color-surface-raised=#f8faff', '--set-light=--color-surface-overlay=#f8faff');
+  assert.equal(light.status, 0, light.stderr);
+  assert.equal(
+    light.stdout,
+    createTheme({ brand: '#0026EA', overrides: { light: { '--color-surface-raised': '#f8faff', '--color-surface-overlay': '#f8faff' } } }).css,
+  );
+  assert.match(light.stdout, /\.dark,\n\[data-theme="dark"\] \{\n {2}--color-surface-raised: color-mix/);
+
+  const mixed = run('--brand', '#0026EA', '--set', '--color-link=var(--color-brand-800)', '--set-dark', '--color-surface-raised=#101820');
+  assert.equal(mixed.status, 0, mixed.stderr);
+  assert.equal(
+    mixed.stdout,
+    createTheme({ brand: '#0026EA', overrides: { both: { '--color-link': 'var(--color-brand-800)' }, dark: { '--color-surface-raised': '#101820' } } }).css,
+  );
+
+  const flat = run('--brand', '#0026EA', '--set', '--color-link=var(--color-brand-800)');
+  assert.equal(flat.stdout, createTheme({ brand: '#0026EA', overrides: { '--color-link': 'var(--color-brand-800)' } }).css);
+
+  for (const flag of ['--set-light', '--set-dark']) {
+    const badUse = run('--brand', '#0026EA', flag, 'nonsense');
+    assert.equal(badUse.status, 2);
+    assert.match(badUse.stderr, new RegExp(`${flag} needs <token>=<value>`));
+  }
+  const help = run('--help').stdout;
+  assert.match(help, /--set-light <t>=<v>/);
+  assert.match(help, /--set-dark <t>=<v>/);
 });

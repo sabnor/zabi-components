@@ -106,6 +106,75 @@ function inputWarnings(option, colour) {
     return out;
 }
 
+/* ---------- overrides ---------- */
+
+const MODE_KEYS = ['light', 'dark', 'both'];
+
+function checkDeclarations(map, where, flat) {
+    for (const [name, value] of Object.entries(map)) {
+        if (!name.startsWith('--') || typeof value !== 'string' || !value.trim()) {
+            throw new TypeError(
+                flat
+                    ? `${TOOL}: overrides must map custom property names ("--color-link") to values (got ${name}: ${value})`
+                    : `${TOOL}: ${where}["${name}"] must map a custom property name ("--color-link") to a non-empty string value (got ${name}: ${typeof value === 'string' ? `"${value}"` : String(value)})`,
+            );
+        }
+    }
+}
+
+/**
+ * `overrides` is a flat map of `--token: value` (both modes), or an object with
+ * any of `light`, `dark` and `both`, each a flat map. Flat keys beside them
+ * count as `both`. Returns the maps by mode.
+ */
+function readOverrides(overrides) {
+    if (overrides === null || typeof overrides !== 'object' || Array.isArray(overrides)) {
+        throw new TypeError(`${TOOL}: overrides must be an object of token names to values`);
+    }
+    const nested = MODE_KEYS.some((key) => key in overrides);
+    const out = { light: {}, dark: {}, both: {} };
+    if (!nested) {
+        checkDeclarations(overrides, 'overrides', true);
+        out.both = { ...overrides };
+        return out;
+    }
+    for (const [key, value] of Object.entries(overrides)) {
+        if (MODE_KEYS.includes(key)) {
+            if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+                throw new TypeError(`${TOOL}: overrides.${key} must be an object of token names to values (got ${JSON.stringify(value)})`);
+            }
+            checkDeclarations(value, `overrides.${key}`, false);
+            out[key] = { ...out[key], ...value };
+        } else {
+            if (!key.startsWith('--')) {
+                throw new TypeError(`${TOOL}: overrides has no "${key}"; it takes light, dark, both, or custom property names ("--color-link")`);
+            }
+            checkDeclarations({ [key]: value }, 'overrides', false);
+            out.both[key] = value;
+        }
+    }
+    return out;
+}
+
+/**
+ * What the overrides write. `root` goes on `:root`: both, then light. `dark` is
+ * what the dark rules must say so that `:root` does not reach dark: the dark
+ * override; for a token set in `light` alone, dark's own value without it; for
+ * one also set in `both`, that value. `own` is that dark value, from what the
+ * file writes already, then the library's dark theme, then its light default.
+ */
+function overrideMaps({ light, dark, both }, tokens, darkTokens) {
+    const root = { ...both, ...light };
+    const out = { ...dark };
+    for (const name of Object.keys(light)) {
+        if (name in dark) continue;
+        out[name] = both[name] ?? darkTokens[name] ?? data.darkOnly[name] ?? tokens[name] ?? data.light[name];
+    }
+    for (const name of Object.keys(out)) if (out[name] === undefined) delete out[name];
+    const skip = new Set([...Object.keys(root), ...Object.keys(dark)]);
+    return { root, dark: out, skip };
+}
+
 /* ---------- chromatic ramps ---------- */
 
 /** The chroma envelope at any L*, by linear interpolation between the steps. */
@@ -439,9 +508,9 @@ const failing = (warnings, mode) => new Set(warnings.filter((w) => w.mode === mo
  * 3:1, and no label makes that a button. So dark takes the colour only when nothing guarded fails with it,
  * and otherwise keeps what it has without `pin`: the mirrored ramp step.
  */
-function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs) {
+function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs, skip) {
     const roles = PIN_ROLES[name];
-    const keep = (group) => Object.fromEntries(Object.entries(group).filter(([role]) => !(role in userOverrides)));
+    const keep = (group) => Object.fromEntries(Object.entries(group).filter(([role]) => !skip.has(role)));
     const libraryDark = (role) => data.darkOnly[role] ?? data.light[role];
     const light = {};
     const dark = {};
@@ -620,7 +689,7 @@ function pinnedNotes(pinned) {
 }
 
 /**
- * @param {{ brand: string, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string>, pin?: boolean | { brand?: boolean, accent?: boolean } }} options
+ * @param {{ brand: string, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string> | { light?: Record<string, string>, dark?: Record<string, string>, both?: Record<string, string> } & Record<string, unknown>, pin?: boolean | { brand?: boolean, accent?: boolean } }} options
  */
 export function createTheme(options) {
     if (options === null || typeof options !== 'object') {
@@ -629,13 +698,10 @@ export function createTheme(options) {
     if (options.brand === undefined || options.brand === null) {
         throw new TypeError(`${TOOL}: brand is required, for example { brand: "#0026EA" }`);
     }
-    const overrides = options.overrides ?? {};
-    if (typeof overrides !== 'object') throw new TypeError(`${TOOL}: overrides must be an object of token names to values`);
-    for (const [name, value] of Object.entries(overrides)) {
-        if (!name.startsWith('--') || typeof value !== 'string' || !value.trim()) {
-            throw new TypeError(`${TOOL}: overrides must map custom property names ("--color-link") to values (got ${name}: ${value})`);
-        }
-    }
+    const modes = readOverrides(options.overrides ?? {});
+    // Roles the app sets in any mode are left to it: no ink role or pin replaces them.
+    const overridden = {};
+    for (const map of [modes.both, modes.light, modes.dark]) Object.assign(overridden, map);
 
     const inputs = { brand: parseHex(options.brand, 'brand') };
     if (options.accent !== undefined && options.accent !== null) inputs.accent = parseHex(options.accent, 'accent');
@@ -700,17 +766,19 @@ export function createTheme(options) {
         tokens = { ...tokens, ...rampTokens('base', ramp, BASE_STEPS) };
         if (neutralChroma !== undefined) {
             // Opt-in: without it these roles are the library's grey tints, as before.
-            const ink = inkTokens(ramp, overrides);
+            const ink = inkTokens(ramp, overridden);
             tokens = { ...tokens, ...ink.light };
             darkTokens = ink.dark;
         }
     }
 
-    // Overrides take part in choosing the labels, and are written last.
+    // Overrides take part in choosing the labels, and are written last. Each
+    // mode sees its own values.
     for (const name of ['brand', 'accent']) {
         if (!inputs[name] || pin[name]) continue;
+        const own = overrideMaps(modes, tokens, darkTokens);
         for (const mode of ['light', 'dark']) {
-            const [knob, value] = chooseOn(name, mode, { ...tokens, ...overrides });
+            const [knob, value] = chooseOn(name, mode, { ...tokens, ...own.root }, { ...darkTokens, ...own.dark });
             tokens[knob] = value;
         }
     }
@@ -721,18 +789,21 @@ export function createTheme(options) {
     const extraPairs = ['brand', 'accent'].flatMap((name) => (pin[name] ? PIN_ROLES[name].pairs : []));
     for (const name of ['brand', 'accent']) {
         if (!pin[name]) continue;
-        const result = pinColour(name, described[name], tokens, darkTokens, overrides, extraPairs);
+        const own = overrideMaps(modes, tokens, darkTokens);
+        const result = pinColour(name, described[name], tokens, { ...darkTokens, ...own.dark }, own.root, extraPairs, own.skip);
         tokens = { ...tokens, ...result.knobs, ...result.light };
         darkTokens = { ...darkTokens, ...result.dark };
         pinned[name] = result.report;
     }
-    tokens = { ...tokens, ...overrides };
+    const own = overrideMaps(modes, tokens, darkTokens);
+    tokens = { ...tokens, ...own.root };
+    darkTokens = { ...darkTokens, ...own.dark };
 
     const { warnings: contrastWarnings, checked } = checkPairs(tokens, darkTokens, extraPairs);
     warnings.push(...contrastWarnings);
 
     const css = render({ inputs, closest, tokens, darkTokens, pinned: pinning ? pinned : null, neutralChroma, contrastWarnings, checked });
-    const hasDark = pinning || neutralChroma !== undefined;
+    const hasDark = pinning || neutralChroma !== undefined || Object.keys(own.dark).length > 0;
     return {
         css,
         tokens,

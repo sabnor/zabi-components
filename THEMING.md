@@ -645,7 +645,9 @@ npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out sr
 | `--neutral-chroma <n>` | OKLCH chroma at the neutral ramp's peak, 0 to 0.1; needs `--neutral`. Lifts the 0.03 cap (0.04 to 0.06 gives a clearly tinted neutral such as a blue-slate), and makes the ink roles follow the neutral ramp. See [`--neutral-chroma`](#neutral-chroma-a-strongly-tinted-neutral). |
 | `--out <file>` | Where to write. Omitted: stdout. |
 | `--strict` | Exit 1 when a role pair is below WCAG AA. |
-| `--set <token>=<value>` | Also write this declaration; repeatable. |
+| `--set <token>=<value>` | Also write this declaration, in light and dark; repeatable. |
+| `--set-light <token>=<value>` | The same for light only: dark keeps the library's value. Repeatable. See [`--set` and overrides](#--set-and-overrides). |
+| `--set-dark <token>=<value>` | The same for dark only. Repeatable. |
 | `--help` | Usage. |
 
 Colours are hex, `#rgb` or `#rrggbb`. Warnings and the one-line summary go to
@@ -674,7 +676,8 @@ alpha the library gives each role:
 `--shadow-color` becomes the RGB triplet of step 900 in light and stays `0 0 0`
 in dark. The modal scrim `--color-overlay` stays black. Because a role on
 `:root` is one value in both modes, the file restates the dark values under the
-dark selectors, as `--pin` does. A role you set with `--set` keeps your value.
+dark selectors, as `--pin` does. A role you set with `--set`, `--set-light` or
+`--set-dark` keeps your value.
 The contrast check does not evaluate these translucent roles, with or without
 the option; the library's own guard (`npm run check:design`) does for the
 defaults.
@@ -723,8 +726,9 @@ alone would be one value in both modes. To force a dark value the generator
 declined, write the role in your own dark rule after the file (see
 [One role in dark only](#one-role-in-dark-only)).
 
-A role you pass with `--set` is left to you in both modes: `--pin` does not
-write it.
+A role you pass with `--set` (or `--set-light`, `--set-dark`) is left to you:
+`--pin` does not write it in either mode. With `--set` it is your value in both
+modes; with `--set-light` or `--set-dark`, only in that mode.
 
 ### What it does
 
@@ -784,7 +788,7 @@ npx zabi-theme --brand "#C17B00" --neutral "#78716c" --strict --out src/lib/bran
 
 `--set` writes one more declaration into the file. It applies in light and in
 dark, and it takes part in the contrast check and in the choice of the "on"
-colours.
+colours. `--set-light` and `--set-dark` do the same for one mode.
 
 ```bash
 npx zabi-theme --brand "#C17B00" --set "--color-link=var(--color-brand-800)" --out src/lib/brand.generated.css
@@ -799,6 +803,30 @@ the same dark brown in both modes, and as a link colour it fails in dark:
 zabi-theme: warning: dark · link on page: #613b00 on #18181b is 1.8:1, needs 4.5:1 (--color-link on --color-surface-base)
 ```
 
+#### One mode only: `--set-light` and `--set-dark`
+
+Dark is derived from light, so `--set "--color-surface-raised=#f8faff"` also
+paints the dark cards `#f8faff`. To tint the light card and keep the dark mix
+the library gives it:
+
+```bash
+npx zabi-theme --brand "#0026EA" \
+  --set-light "--color-surface-raised=#f8faff" --set-light "--color-surface-overlay=#f8faff" \
+  --out src/lib/brand.generated.css
+```
+
+The value goes on `:root`. A `:root` value would win in dark too, so the file
+restates, under both dark selectors, the library's own dark value of every token
+you set in light only (the ramp the file writes, for a ramp step; the light
+default if the library has no dark value for it). `--set-dark` writes only under
+the dark selectors. A token given to `--set` and to a mode flag takes the mode's
+value in that mode. The contrast check evaluates each mode with that mode's own
+values, and a warning names the mode as before.
+
+A token the library has no dark value for, or one you made up
+(`--set-light "--my-gap=4px"`), cannot be put back in dark: it keeps the light
+value there unless you also pass `--set-dark`.
+
 ### `createTheme()`
 
 The same thing as a function, for a build script:
@@ -812,7 +840,7 @@ const { css, tokens, warnings, closest } = createTheme({
   accent: "#ff3366", // optional
   neutral: "#78716c", // optional
   neutralChroma: 0.05, // optional, 0 to 0.1, needs neutral: a clearly tinted neutral; the ink roles follow it
-  overrides: { "--color-link": "var(--color-brand-800)" }, // optional
+  overrides: { "--color-link": "var(--color-brand-800)" }, // optional; both modes. Or { light, dark, both }
   pin: true, // optional: the exact brand on the primary action; or { brand: true, accent: true }
 });
 
@@ -825,17 +853,40 @@ writeFileSync("src/lib/brand.generated.css", css);
 
 | Returned | |
 |---|---|
-| `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin` or `neutralChroma`, two dark rules follow it. |
+| `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin`, `neutralChroma` or `light` / `dark` overrides, two dark rules follow it. |
 | `tokens` | Every declaration of the `:root` rule, name to value. |
-| `darkTokens` | Only with `pin` or `neutralChroma`: every declaration of the dark rules. |
+| `darkTokens` | Only with `pin`, `neutralChroma` or `light` / `dark` overrides: every declaration of the dark rules. |
 | `pinned` | Only with `pin`: `{ brand?, accent? }`, each `{ hex, light: { followed, onRamp, states }, dark: { pinned, followed, onRamp, states?, failed? } }`. |
 | `warnings` | `{ type: "contrast", pair, mode, ratio, required, foreground, background, message }` for each role pair below AA, and `{ type: "input", option, message }` notes about the colours given. Empty when everything passes. |
 | `closest` | `{ brand, accent?, neutral? }`, each `{ step, hex, deltaE, exact }`: where the input landed in its ramp. |
 
+`overrides` is either the flat map above, one value for both modes, or an object
+with any of `light`, `dark` and `both`, each a flat map:
+
+```js
+createTheme({
+  brand: "#0026EA",
+  overrides: {
+    light: { "--color-surface-raised": "#f8faff", "--color-surface-overlay": "#f8faff" }, // dark keeps its mix
+    dark: { "--color-link": "var(--color-brand-300)" }, // dark only
+    both: { "--color-focus": "var(--color-brand-700)" }, // same as the flat form
+  },
+});
+```
+
+Flat `--token` keys beside the three count as `both`. A token in `both` and in
+`light` or `dark` takes the mode's value in that mode. `tokens` holds the `:root`
+rule (`both`, then `light`); `darkTokens` holds what the dark rules say: the
+`dark` map, and for every token set in `light`, the library's dark value for it
+(or the `both` value), so `:root` does not reach dark. See
+[One mode only](#one-mode-only---set-light-and---set-dark).
+
 It throws a `TypeError` when `brand` is missing, a colour is not hex,
-`pin.accent` is set without `accent`, or `neutralChroma` is not a number from 0
-to 0.1 or is given without `neutral`. Without `pin` the result and the file are
-exactly what they were before the option existed.
+`pin.accent` is set without `accent`, `neutralChroma` is not a number from 0
+to 0.1 or is given without `neutral`, or an override is not a custom property
+name with a non-empty string value (the message names the key path, for example
+`overrides.light["--color-link"]`). Without these options the result and the
+file are exactly what they were before the option existed.
 
 ## What does not follow an override
 

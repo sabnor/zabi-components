@@ -20,6 +20,7 @@ Usage
   zabi-theme --brand <hex> [--pin] [--accent <hex>] [--pin-accent] [--neutral <hex>]
              [--neutral-chroma <n>]
              [--out <file>] [--strict] [--set <token>=<value> ...]
+             [--set-light <token>=<value> ...] [--set-dark <token>=<value> ...]
 
 Options
   --brand <hex>     Brand colour (required). Builds --zabi-brand-50 … 950.
@@ -37,6 +38,12 @@ Options
   --strict          Exit 1 when any role pair is below WCAG AA.
   --set <t>=<v>     Also write this declaration, e.g. --set "--color-link=var(--color-brand-800)".
                     Repeatable. It applies in light and dark and is contrast-checked.
+  --set-light <t>=<v>
+                    The same, for light only. Dark keeps the library's own value for that
+                    token: the file restates it under the dark selectors. Repeatable.
+  --set-dark <t>=<v>
+                    The same, for dark only. Repeatable. A token given to --set and to
+                    --set-light or --set-dark: the mode-specific value wins in its mode.
   --help            Show this text.
 
 Each ramp is built on the library's lightness curve. Your colour supplies hue
@@ -71,12 +78,14 @@ function parseArgs(argv) {
         if (arg === '-h') { options.help = true; continue; }
         if (!arg.startsWith('--')) usageError(`unexpected argument "${arg}"`);
         const [name, inline] = arg.slice(2).split(/=(.*)/s, 2);
-        if (name === 'set') {
+        if (name === 'set' || name === 'set-light' || name === 'set-dark') {
             // The value is itself a custom property name, so it starts with "--".
             const pair = inline !== undefined ? inline : argv[(i += 1)];
             const match = /^(--[\w-]+)\s*[=:]\s*(.+)$/s.exec(pair ?? '');
-            if (!match) usageError('--set needs <token>=<value>, for example --set "--color-link=var(--color-brand-800)"');
-            options.overrides = { ...options.overrides, [match[1]]: match[2].trim() };
+            if (!match) usageError(`--${name} needs <token>=<value>, for example --${name} "--color-link=var(--color-brand-800)"`);
+            // `--set` alone stays the flat map; a mode flag adds its own map.
+            const key = name === 'set' ? 'both' : name === 'set-light' ? 'light' : 'dark';
+            options.modes = { ...options.modes, [key]: { ...options.modes?.[key], [match[1]]: match[2].trim() } };
         } else if (FLAG_OPTIONS.includes(name)) {
             if (inline !== undefined) usageError(`--${name} takes no value`);
             options[name] = true;
@@ -115,7 +124,8 @@ try {
         neutral: options.neutral,
         // Left out when not asked for, so the options are what they always were.
         ...(options['neutral-chroma'] !== undefined ? { neutralChroma: parseChroma(options['neutral-chroma']) } : {}),
-        overrides: options.overrides,
+        // `--set` alone is the flat map, as it always was; a mode flag makes it { light, dark, both }.
+        overrides: options.modes && (options.modes.light || options.modes.dark) ? options.modes : options.modes?.both,
         // Left out when not asked for, so the options are what they always were.
         ...(options.pin || options['pin-accent'] ? { pin: { brand: !!options.pin, accent: !!options['pin-accent'] } } : {}),
     });

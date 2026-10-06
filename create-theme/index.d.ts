@@ -1,6 +1,15 @@
 /** A hex colour: `#rgb` or `#rrggbb`, with or without the `#`. */
 export type HexColor = string;
 
+/** A map of custom property names to values. */
+export type TokenMap = Record<string, string>;
+
+/**
+ * Either one map for both modes, or `light`, `dark` and `both` maps. The two
+ * forms may be mixed: a `--token` key beside them counts as `both`.
+ */
+export type Overrides = TokenMap | ({ light?: TokenMap; dark?: TokenMap; both?: TokenMap } & { [token: `--${string}`]: string });
+
 export interface CreateThemeOptions {
     /**
      * The brand colour. Supplies hue and chroma for `--zabi-brand-50 … 950`:
@@ -40,8 +49,21 @@ export interface CreateThemeOptions {
      * `{ "--color-link": "var(--color-brand-800)" }`. They apply in light and in
      * dark, and take part in the contrast check and in the choice of the "on"
      * colours.
+     *
+     * Or per mode: `{ light, dark, both }`, each a map of the same shape.
+     * `both` is the flat form (flat keys beside the three also count as `both`).
+     * A token in `light` goes on `:root`, and the file restates the library's
+     * own dark value for it under the dark selectors, so dark does not move; a
+     * token in `dark` is written only under the dark selectors. A token set in
+     * `both` and in a mode takes the mode's value in that mode. The contrast
+     * check uses each mode's own values. A token the library defines no dark
+     * value for (or one you invented) cannot be put back in dark: it stays what
+     * `light` says there unless you also set it in `dark`.
+     *
+     * @example
+     * overrides: { light: { "--color-surface-raised": "#f8faff" } }
      */
-    overrides?: Record<string, string>;
+    overrides?: Overrides;
     /**
      * Put the exact colour on the solid fill, where the ramp would use its
      * step 600. `true` pins the brand: in light, `--color-action-primary` is
@@ -121,15 +143,15 @@ export interface ClosestStep {
 
 export interface CreateThemeResult {
     /**
-     * The stylesheet: a header comment and one `:root { … }` rule. With `pin`
-     * or `neutralChroma`, two more rules follow, with the dark values of those roles:
+     * The stylesheet: a header comment and one `:root { … }` rule. With `pin`,
+     * `neutralChroma` or `light` / `dark` overrides, two more rules follow, with the dark values of those roles:
      * `.dark, [data-theme="dark"] { … }` and the same declarations for
      * `[data-theme="auto"]` inside `@media (prefers-color-scheme: dark)`.
      */
     css: string;
     /** Every declaration of the `:root` rule, name to value, in output order. */
     tokens: Record<string, string>;
-    /** Only with `pin` or `neutralChroma`: every declaration of the dark rules. */
+    /** Only with `pin`, `neutralChroma` or `light` / `dark` overrides: every declaration of the dark rules. */
     darkTokens?: Record<string, string>;
     /** Only with `pin`: what was pinned and which roles took the colour. */
     pinned?: { brand?: PinReport; accent?: PinReport };
