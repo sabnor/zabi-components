@@ -16,8 +16,9 @@ Whenever token or CSS import API surface changes, include:
 
 - **Select works without scripts.** The server renders a real `<select>` with
   the options, which is the working control before the page hydrates and with
-  JavaScript off; on mount the custom list takes over with no layout shift,
-  and a choice made before that is kept and reported once.
+  JavaScript off; on mount the custom list takes over (a label longer than one line is cut
+  in the native select and wraps in the custom one, so the field can grow
+  then), and a choice made before that is kept and reported once.
   `presentation="native"` renders only the native select.
 - **Select takes `strings`** for all its texts, including the list's name
   (`listLabel`); the six text props still work and win. `DEFAULT_SELECT_STRINGS`
