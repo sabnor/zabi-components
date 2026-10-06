@@ -121,6 +121,7 @@ already the right value in each mode. Use the same roles in your own CSS.
 - `--color-focus-ring-muted` - The neutral ring of ghost and link controls (`.focus-ring--muted`)
 - `--color-focus-ring-danger` - The ring of a destructive control (`.focus-ring--danger`); `--color-error` by default
 - `--color-control-border` (`border-control-border`) - The edge of a control that has nothing else to be seen by, such as the outline of an empty Rating star. `--color-border-strong` is a decorative edge and is under 3:1 on the dark elevated and overlay surfaces
+- `--color-input-border` (`border-input-border`) - The edge of a form field (Input, Textarea, Select, DateField, TimeField). Held to 3:1 on the field fill (`--color-input`), the page and the card in both themes (WCAG 1.4.11); `--color-input-border-hover` is one step darker in light
 - `--color-success`, `--color-warning`, `--color-error`, `--color-info` - States, each with `-subtle`, `-border` and `-text`
 
 The full list is in [THEMING.md](./THEMING.md#roles-read-them-do-not-set-them).

@@ -12,6 +12,17 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Upgrade notes
+
+- The edge of a form field is now guarded at 3:1 (WCAG 1.4.11) on the field
+  fill, the page and the card, in light and dark. `--color-input-border` was
+  base-350 in light (1.9:1 on white) and base-300 in dark; it is base-500 in
+  both, and `--color-input-border-hover` is base-550 in light. Field edges
+  get darker. The generator checks the same three pairs, so a theme of yours
+  that overrides the edge can now report a pair below 3:1. The overlay
+  surface in dark is not in the guard: a field edge there is about 2.6:1
+  against the sheet, and 3:1 against the field's own fill. (Z-038)
+
 ### Added
 
 - Theme generator: `neutralChroma` (CLI `--neutral-chroma`), the OKLCH chroma

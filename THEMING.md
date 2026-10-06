@@ -230,7 +230,7 @@ should too: `var(--color-action-primary)` or the `bg-action-primary` class, not
 | `--color-surface-base`, `-raised`, `-elevated`, `-overlay`, `-inset` | The page, cards, nested cards, floating panels, wells |
 | `--color-surface-hover`, `--color-surface-active`, `--color-surface-overlay-hover` | Hover and pressed fills |
 | `--color-border`, `-weak`, `-medium`, `-strong`, `--color-border-overlay` | Borders and dividers |
-| `--color-input`, `-border`, `-border-hover`, `-hover`, `-active`, `-focus`, `-disabled`, `-placeholder` | Form fields; `-active` is the pressed Select trigger |
+| `--color-input`, `-border`, `-border-hover`, `-hover`, `-active`, `-focus`, `-disabled`, `-placeholder` | Form fields; `-active` is the pressed Select trigger; `--color-input-border` is the field edge, 3:1 or more on the field fill, the page and the card in both themes |
 | `--color-<family>`, `-weak`, `-medium`, `-strong`, `-subtle`, `-border`, `-text` | `success`, `warning`, `error`, `info`, `energetic`, `neutral` (see [Semantic families](#semantic-families)) |
 
 Aliases kept from earlier versions resolve to the same values: `--color-background`,
@@ -1157,7 +1157,11 @@ ring (`--color-focus-ring-muted`), the danger ring (`--color-focus-ring-danger`)
 (`--color-control-border`), and the brand and nav rings, are held to 3:1 on
 all five surfaces: page, card, inset, elevated and overlay. The colour a focus-ring rule
 uses must be a token in that list (`scripts/contrast-pairs.js`), so a ring
-cannot read a raw ramp step. Run it after
+cannot read a raw ramp step.
+`--color-input-border`, the edge of a form field, is held to 3:1 on the field
+fill (`--color-input`), the page and the card (WCAG 1.4.11). The same pairs are
+in the list `createTheme` checks, so a generated theme that lets a field's edge
+fall below 3:1 is reported. Run it after
 re-pointing any token:
 
 ```bash

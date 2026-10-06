@@ -744,20 +744,22 @@ const mediaRule = (css) => css.slice(css.indexOf('@media'));
 const declarationOf = (block, name) => new RegExp(`${name}: ([^;]+);`).exec(block)?.[1];
 
 test('without light or dark overrides the bytes are what they were before the option existed', () => {
-  // Hashes of the css from the generator before per-mode overrides.
+  // Hashes of the css from the generator before per-mode overrides. The header
+  // counts the contrast pairs, so they move when a pair is added (188 to 192:
+  // the field edge on the field fill, the page and the card, in both modes).
   const before = {
-    plain: [{ brand: '#0026EA' }, '808c7500e6a13af60cf034d595a0776f4d56075339b0c357a6c1ca276a44be19'],
+    plain: [{ brand: '#0026EA' }, '7834d416b0d7f9d6e8463f8f68f902499ed6882960c7c0f172ce09524a6fe5da'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      '55167e7f3d7af380d4c213842b41b7e919b46681a0292d46cf2ec39647767112',
+      'f2b6f451a9fd1e63c49a1f1d996bc166b6535a39ba3152ba3a68255f89fb31e3',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      '8fd65a24771b2e1b1bbfbd99692cacc663902967e848873f81c68682b07fc67b',
+      '7dfaa59ec0df8e75b7dad2c055a0759a1ab897e6d95c4eaac480884b2e505f59',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '58cf2f57213e8c1cf186960ab3b49f962761e2b5df11dc0d8dcfb693132bf883',
+      '93fdb3dbfbbe3b44c0c0c2ebe92d891098564dc61c54eb8b9b1e60c0e143050f',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -898,4 +900,16 @@ test('the bin takes --set-light and --set-dark, and --set alone is still the fla
   const help = run('--help').stdout;
   assert.match(help, /--set-light <t>=<v>/);
   assert.match(help, /--set-dark <t>=<v>/);
+});
+
+test('the field edge is a guarded foreground: 3:1 on the field fill, the page and the card', async () => {
+  const { buildPairs } = await import('../scripts/contrast-pairs.js');
+  const pairs = buildPairs().filter((p) => p.fg === '--color-input-border');
+  assert.deepEqual(
+    pairs.map((p) => [p.bg, p.min]).sort(),
+    [['--color-background', 3], ['--color-input', 3], ['--color-surface-raised', 3]],
+  );
+  // The generator ships the same list, so a consumer's theme is checked too.
+  const shipped = JSON.parse(JSON.stringify(buildThemeData().pairs)).filter((p) => p.fg === '--color-input-border');
+  assert.equal(shipped.length, 3);
 });
