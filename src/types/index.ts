@@ -418,6 +418,10 @@ export interface ProgressProps {
     max?: number;
     size?: SizeVariant;
     label?: string;
+    /** Names the progressbar when there is no visible `label`. */
+    'aria-label'?: string;
+    /** Points the progressbar at another element's id for its name. */
+    'aria-labelledby'?: string;
     class?: string;
     /** @deprecated never accepted by the component; use `class`. */
     className?: string;
