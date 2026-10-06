@@ -175,7 +175,7 @@ describe("Select strings", () => {
         });
         expect(triggerOf(container).textContent).toContain("Välj");
         await user.click(triggerOf(container));
-        expect(await screen.findByRole("listbox", { name: "Alternativ" })).toBeTruthy();
+        expect(await screen.findByRole("listbox", { name: "Lag" })).toBeTruthy();
         const search = screen.getByRole("textbox", { name: "Sök lag" });
         await user.type(search, "zzz");
         expect(await screen.findByText("Inget")).toBeTruthy();
@@ -186,7 +186,7 @@ describe("Select strings", () => {
         const { container } = render(Select, { label: "Team", options, presentation: "popover" });
         expect(triggerOf(container).textContent).toContain("Select an option");
         await user.click(triggerOf(container));
-        expect(await screen.findByRole("listbox", { name: "Select options" })).toBeTruthy();
+        expect(await screen.findByRole("listbox", { name: "Team" })).toBeTruthy();
         expect(screen.getByRole("textbox", { name: "Search options" })).toBeTruthy();
     });
 });

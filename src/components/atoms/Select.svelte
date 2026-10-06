@@ -526,7 +526,8 @@
         placement="bottom-start"
         selectedValue={value}
         onOptionClick={handleOptionClick}
-        ariaLabel={text.listLabel}
+        ariaLabel={label || (restProps["aria-label"] as string | undefined) || text.listLabel}
+        ariaLabelledby={label ? undefined : (restProps["aria-labelledby"] as string | undefined)}
         menuRole="listbox"
         fullWidth
         presentation={presentation === "native" ? "popover" : presentation}

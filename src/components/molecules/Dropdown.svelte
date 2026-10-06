@@ -67,6 +67,8 @@
         /** The same, while it takes the sheet down a step. */
         sheetCollapseLabel?: string;
         ariaLabel?: string;
+        /** Id of an element that names the list; wins over `ariaLabel` for the pop-over list. */
+        ariaLabelledby?: string;
         /** `listbox` for Select-style; `menu` for actions. */
         menuRole?: 'menu' | 'listbox';
         selectedValue?: string | number | null;
@@ -95,6 +97,7 @@
         sheetExpandLabel: sheetExpandLabelGiven,
         sheetCollapseLabel: sheetCollapseLabelGiven,
         ariaLabel = 'Menu',
+        ariaLabelledby = undefined,
         menuRole = 'menu',
         selectedValue = null,
         options = [],
@@ -658,7 +661,8 @@
             <div
                 id={menuId}
                 role={menuRole === 'listbox' ? 'listbox' : 'menu'}
-                aria-label={ariaLabel}
+                aria-label={ariaLabelledby ? undefined : ariaLabel}
+                aria-labelledby={ariaLabelledby}
                 class={options.length > 0 ? 'mx-1 min-h-0' : 'min-h-0'}
                 data-dropdown-scroller
                 style:overflow={fit.maxWidth !== null || fit.maxHeight !== null ? 'auto' : undefined}

@@ -62,6 +62,24 @@ describe("Select: the trigger is a select-only combobox", () => {
         expect(list.id).toBe(trigger().getAttribute("aria-controls"));
     });
 
+    it("names the pop-over list by the label, or by Select options without one", async () => {
+        const user = userEvent.setup();
+        const { unmount } = render(Select, { label: "Team", options, presentation: "popover" });
+        await user.click(trigger());
+        expect((await screen.findByRole("listbox")).getAttribute("aria-label")).toBe("Team");
+        unmount();
+        cleanup();
+
+        render(Select, { options, presentation: "popover", "aria-label": "Plain" });
+        await user.click(screen.getByRole("combobox"));
+        expect((await screen.findByRole("listbox")).getAttribute("aria-label")).toBe("Plain");
+        cleanup();
+
+        render(Select, { options, presentation: "popover" });
+        await user.click(screen.getByRole("combobox"));
+        expect((await screen.findByRole("listbox")).getAttribute("aria-label")).toBe("Select options");
+    });
+
     it("says nothing about validity, requirement or work when there is none", () => {
         render(Select, { label: "Team", options });
         for (const name of ["aria-invalid", "aria-required", "aria-busy"]) {
