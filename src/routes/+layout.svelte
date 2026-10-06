@@ -122,8 +122,8 @@
      */
     :global(:root) {
         --font-family-heading:
-            "Familjen Grotesk", "Familjen Grotesk Fallback", "Nunito Sans", ui-sans-serif,
-            system-ui, sans-serif;
+            "Familjen Grotesk", "Familjen Grotesk Fallback",
+            var(--font-family-sans);
     }
 
     /* The header's height, for layouts that fill the rest of the screen. */

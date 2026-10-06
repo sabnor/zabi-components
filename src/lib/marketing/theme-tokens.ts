@@ -56,9 +56,9 @@ export const COLOR_TOKENS: TokenRow[] = [
 ];
 
 export const TYPE_TOKENS: TokenRow[] = [
-    { tokens: ["--font-family-sans"], value: "Nunito Sans", follows: "Body text and every component" },
+    { tokens: ["--font-family-sans"], value: "the platform UI face (San Francisco, Segoe UI, Roboto)", follows: "Body text and every component" },
     { tokens: ["--font-family-heading"], value: "the sans family", follows: "h1 to h6 and the Heading component" },
-    { tokens: ["--font-family-mono"], value: "Monaco, Menlo", follows: "CodeBlock" },
+    { tokens: ["--font-family-mono"], value: "ui-monospace, SF Mono, Menlo, Consolas", follows: "CodeBlock" },
     {
         tokens: [
             "--font-weight-regular",

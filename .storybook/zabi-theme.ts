@@ -18,7 +18,7 @@ const shared = {
     // landing page.
     brandUrl: '../',
     brandTarget: '_self' as const,
-    fontBase: '"Nunito Sans", ui-sans-serif, system-ui, sans-serif',
+    fontBase: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     fontCode: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
     appBorderRadius: 8,
     inputBorderRadius: 8

@@ -161,15 +161,21 @@ contrast the roles were designed with is gone. Run it through
 
 | Token | Default | What follows |
 |---|---|---|
-| `--font-family-sans` | `'Nunito Sans', ui-sans-serif, system-ui, sans-serif` | Body text and every component |
+| `--font-family-sans` | the platform UI face: `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"` | Body text and every component |
 | `--font-family-heading` | `var(--font-family-sans)` | `h1` to `h6` and the Heading component |
-| `--font-family-mono` | `"Monaco", "Menlo", "Ubuntu Mono", monospace` | CodeBlock |
+| `--font-family-mono` | `ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace` | CodeBlock |
 | `--font-weight-regular` | `400` | `font-normal` |
 | `--font-weight-medium` | `500` | `font-medium` |
 | `--font-weight-semibold` | `600` | `font-semibold` |
 | `--font-weight-bold` | `700` | `font-bold` |
 
-Loading the font files is up to the app. The heading face is applied in the
+The default is the platform's own face (San Francisco on Apple devices, Segoe
+UI on Windows, Roboto on Android), so a default install downloads no font. It
+differs by platform, and text widths differ from 8.1's Nunito Sans. Loading any
+other font files is up to the app. To get the 8.1 face back, load Nunito Sans
+yourself and set
+`--font-family-sans: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif`
+on `:root` after the imports. The heading face is applied in the
 base layer, so a `font-*` utility on a heading still wins.
 
 Tailwind's own font utilities follow these tokens: `font-sans` is

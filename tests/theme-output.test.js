@@ -493,7 +493,8 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
   test(`${sourceName}: font tokens default to today's values and follow one override`, () => {
     const { light } = load();
     assert.equal(resolveTokenValue(light, '--font-family-heading'), resolveTokenValue(light, '--font-family-sans'));
-    assert.equal(resolveTokenValue(light, '--font-family-mono'), '"Monaco", "Menlo", "Ubuntu Mono", monospace');
+    assert.equal(resolveTokenValue(light, '--font-family-sans'), 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"');
+    assert.equal(resolveTokenValue(light, '--font-family-mono'), 'ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace');
     assert.equal(resolveTokenValue(light, '--font-weight-regular'), '400');
     assert.equal(resolveTokenValue(light, '--font-weight-normal'), '400');
     assert.equal(resolveTokenValue(light, '--font-weight-medium'), '500');
