@@ -201,6 +201,8 @@
   "--color-primary-medium",
   "--color-primary-strong",
   "--color-primary-weak",
+  "--color-progress-fill",
+  "--color-progress-track",
   "--color-secondary",
   "--color-secondary-medium",
   "--color-secondary-strong",

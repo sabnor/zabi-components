@@ -230,6 +230,8 @@ export function buildPairs() {
         { name: 'field edge on the field fill', bg: '--color-input', fg: '--color-input-border', min: AA_LARGE },
         { name: 'field edge on page', bg: '--color-background', fg: '--color-input-border', min: AA_LARGE },
         { name: 'field edge on card', bg: '--color-surface-raised', fg: '--color-input-border', min: AA_LARGE },
+        // WCAG 1.4.11: the fill of Progress must be seen against its track.
+        { name: 'progress fill on track', bg: '--color-progress-track', fg: '--color-progress-fill', min: AA_LARGE },
     );
 
     return pairs;

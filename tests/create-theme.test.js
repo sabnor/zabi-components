@@ -490,6 +490,8 @@ test('a colour that cannot be a light button is pinned anyway, and every failing
   const failed = contrastWarnings(pinned).map((w) => `${w.mode} ${w.pair}`);
   assert.deepEqual(failed, [
     'light focus offset gap on primary button',
+    // Pale yellow on the white track: the progress bar follows the primary, so it is as pale.
+    'light progress fill on track',
     'light pinned primary fill against the page',
     'light pinned primary fill against a card',
   ]);
@@ -745,21 +747,21 @@ const declarationOf = (block, name) => new RegExp(`${name}: ([^;]+);`).exec(bloc
 
 test('without light or dark overrides the bytes are what they were before the option existed', () => {
   // Hashes of the css from the generator before per-mode overrides. The header
-  // counts the contrast pairs, so they move when a pair is added (188 to 192:
-  // the field edge on the field fill, the page and the card, in both modes).
+  // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193:
+  // the field edge on the field fill, the page and the card, then the progress fill on its track, each in both modes).
   const before = {
-    plain: [{ brand: '#0026EA' }, '7834d416b0d7f9d6e8463f8f68f902499ed6882960c7c0f172ce09524a6fe5da'],
+    plain: [{ brand: '#0026EA' }, 'e6f5363cea616208faf1d96cb8356ef30343b8e1ab69f9078b3594c8db187a81'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      'f2b6f451a9fd1e63c49a1f1d996bc166b6535a39ba3152ba3a68255f89fb31e3',
+      '906b8bc12d9f39a7bae9537deb6cdbb6a50d0b1ef604ab2b0f00b82fe0ef3d18',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      '7dfaa59ec0df8e75b7dad2c055a0759a1ab897e6d95c4eaac480884b2e505f59',
+      'f2a95b9f00ea0aeab36130047eb9eb2127abe1a79f7488ddf2a95dfc11f2c8d5',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '93fdb3dbfbbe3b44c0c0c2ebe92d891098564dc61c54eb8b9b1e60c0e143050f',
+      '53c9d24b5323a68052bfee711725a4cf9da2ba373d6da10d91a38dbba905dba8',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {

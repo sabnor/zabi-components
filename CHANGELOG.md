@@ -25,6 +25,13 @@ Whenever token or CSS import API surface changes, include:
 
 ### Added
 
+- `--color-progress-fill` (default `--color-action-primary`) and
+  `--color-progress-track` (default `--color-input`), with the utilities
+  `bg-progress-fill` and `bg-progress-track`. `Progress` uses them, so the bar
+  follows a pinned primary action instead of brand step 600; in the default
+  theme the fill is the primary action's colour in light and dark. Fill on
+  track is guarded at 3:1. (Z-039)
+
 - Theme generator: `neutralChroma` (CLI `--neutral-chroma`), the OKLCH chroma
   at the neutral ramp's peak, 0 to 0.1, for a clearly tinted neutral such as a
   blue-slate. Needs `neutral`. With it, the translucent ink roles

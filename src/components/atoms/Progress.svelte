@@ -45,7 +45,7 @@
 
     <div
         id={progressId}
-        class="w-full border border-input-border bg-input rounded-full overflow-hidden {sizeClasses[size]}"
+        class="w-full border border-input-border bg-progress-track rounded-full overflow-hidden {sizeClasses[size]}"
         role="progressbar"
         aria-labelledby={label ? labelId : undefined}
         aria-valuenow={value}
@@ -54,7 +54,7 @@
         {...restProps}
     >
         <div
-            class="h-full bg-brand-600 rounded-full"
+            class="h-full bg-progress-fill rounded-full"
             style="width: {percentage}%"
         ></div>
     </div>

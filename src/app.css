@@ -349,6 +349,11 @@
   --color-control-track-hover: var(--color-base-450);
   --color-control-track-active: var(--color-base-500);
 
+  /* Progress — the bar of Progress. The fill is the primary action, so it
+   * follows a pinned primary; the track is the field fill it always was. */
+  --color-progress-fill: var(--color-action-primary);
+  --color-progress-track: var(--color-input);
+
   /* Interaction fills — surface-relative on purpose.
    * A hard-coded ramp step (e.g. base-100) can coincide exactly with the
    * surface it sits on, which is how ghost hover became invisible: in dark
@@ -977,6 +982,9 @@ body {
    * Dark fields are INSET: one step below the raised surface they sit on,
    * which is the dark-mode equivalent of a white field on a grey page. */
   --color-input: var(--color-surface-inset);
+  /* Restated here: the root value of a var() alias is resolved at :root. */
+  --color-progress-fill: var(--color-action-primary);
+  --color-progress-track: var(--color-input);
   /* base-500 (the mirror's fixed point): 3.40:1 on the dark field, 3.67:1 on
    * the page and 3.12:1 on the card. base-300 was 1.57, 1.70 and 1.44. */
   --color-input-border: var(--color-base-500);
