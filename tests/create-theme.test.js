@@ -748,13 +748,13 @@ const declarationOf = (block, name) => new RegExp(`${name}: ([^;]+);`).exec(bloc
 
 test('without light or dark overrides the bytes are what they were before the option existed', () => {
   // Hashes of the css from the generator before per-mode overrides. The header
-  // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193:
+  // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193; the flat hash moved when the pressed field became a mix of the field:
   // the field edge on the field fill, the page and the card, then the progress fill on its track, each in both modes).
   const before = {
     plain: [{ brand: '#0026EA' }, 'e6f5363cea616208faf1d96cb8356ef30343b8e1ab69f9078b3594c8db187a81'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      'cec6b2bbb494cb97ed8b349e60ada1cc86baf2b95c8a96429eda47efe5a9e089',
+      '29b1f5aa5409215e56af83c135da513fff662d6568e53cb57b7fda3b18724391',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
@@ -1040,4 +1040,20 @@ test('gradient tokens follow a rebrand and are overridable per mode with dark re
   assert.equal(set.tokens['--gradient-canvas-strength'], '95%');
   assert.equal(set.darkTokens['--gradient-canvas-strength'], '40%');
   assert.ok(gradientWarnings(set).some((w) => w.mode === 'light' && /canvas wash/.test(w.pair)));
+});
+
+test('a light card override does not break the pressed field: the pressed colour follows the field', () => {
+  // Z-040: with the card at #f8faff the pressed field was a fixed base-200,
+  // 1.21:1 against it, below the 1.25 the generator holds.
+  const result = createTheme({
+    brand: '#0026EA',
+    neutral: '#607296',
+    neutralChroma: 0.08,
+    overrides: { light: { '--color-surface-raised': '#f8faff' } },
+  });
+  const pressed = contrastWarnings(result).filter((w) => /pressed field/.test(w.pair));
+  assert.deepEqual(pressed.map((w) => `${w.mode} ${w.pair}`), []);
+  // The pressed colour is derived, in both modes, not a ramp step.
+  assert.match(defaults.light['--color-input-active'], /^color-mix\(/);
+  assert.match(defaults.darkOnly['--color-input-active'], /^color-mix\(/);
 });

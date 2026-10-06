@@ -761,6 +761,10 @@ modes; with `--set-light` or `--set-dark`, only in that mode.
 - **Neutral ramp.** It keeps the base scale's own 21 lightness steps and takes
   only the hue, at low chroma (0.03 at most). A saturated colour gives a tinted
   grey, not a coloured page. `neutralChroma` lifts that cap.
+  The chroma tapers towards the light end of the ramp, so the lightest steps
+  are paler than the mid steps. To match an owner's page colour exactly, do not
+  raise `neutralChroma` (that tints the mid steps and muted text too); set the
+  page per mode instead: `overrides: { light: { '--color-surface-base': '#e3edff' } }`.
 - **"On" colours.** It sets `--zabi-on-brand` and `--zabi-on-brand-dark` (and
   the accent pair when `--accent` is given) to white or the ramp's 950 step,
   whichever reaches 4.5:1 on the fill, its hover and its active step.

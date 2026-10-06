@@ -266,8 +266,8 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-border-strong': '#71717a',
         '--color-control-border': '#71717a',
         '--color-focus-ring-muted': '#71717a',
-        // The pressed Select trigger: a step past hover (#f4f4f5).
-        '--color-input-active': '#e4e4e7',
+        // The pressed Select trigger: 12% of the ink into the white field.
+        '--color-input-active': '#e3e3e4',
         '--color-link': '#3c52ba',
         '--color-surface-base': '#fafafa',
         '--color-surface-raised': '#ffffff',
@@ -288,7 +288,7 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-border-strong': '#71717a',
         '--color-control-border': '#a1a1aa',
         '--color-focus-ring-muted': '#a1a1aa',
-        '--color-input-active': '#333338',
+        '--color-input-active': '#353538',
         '--color-link': '#b5c6ff',
         // The ladder was four baked hex values; it is now color-mix() over the
         // neutral ramp and has to land on exactly the same four.

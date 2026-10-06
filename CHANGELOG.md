@@ -12,6 +12,21 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Fixed
+
+- **Z-040: the pressed field follows the field.** `--color-input-active` (the
+  pressed Select trigger) is now derived from `--color-input`, so an app that
+  sets the light card colour through `createTheme` `overrides.light` no longer
+  trips "pressed field against the resting field". Light mixes 12% of the ink
+  (`--zabi-base-900`) into the field, dark 10% of the light end
+  (`--zabi-base-50`). On the default theme light moves from `#e4e4e7` to
+  `#e3e3e4` and dark from `#333338` to `#353538`. An app that overrode
+  `--color-input-active` by hand to get past the check can delete that override.
+  Restore: `--color-input-active: var(--color-base-200)` in light,
+  `var(--color-base-250)` in dark. The neutral chroma at the light end is not a
+  new option: set the page per mode (`overrides.light`, `--color-surface-base`),
+  see THEMING.md.
+
 ## [9.0.0-alpha.1] - 2026-10-06
 
 A local preview build of the 9.0 visual direction, not published to npm; 8.1.0
