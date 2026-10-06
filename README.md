@@ -307,10 +307,100 @@ dismissed. Do not put information the user needs in one.
 ## Texts and other languages
 
 Every word a component says by itself, shown or only read out, can be
-replaced. The defaults are English. A component with one or two such texts has
-a prop for each; one with several takes a `strings` object, and whatever you
-leave out of it keeps its default. A `strings` key and an older prop for the
-same text: the prop wins.
+replaced. The defaults are English.
+
+### Once, for the whole app
+
+Put a `ZabiStringsProvider` around the app with its words, and every component
+inside says those instead of English, without a prop on any of them:
+
+```svelte
+<!-- src/routes/+layout.svelte -->
+<script lang="ts">
+    import { ZabiStringsProvider, type ZabiStrings } from "zabi-components";
+
+    let { children } = $props();
+
+    const sv: ZabiStrings = {
+        // Words that many components' single-text props default to.
+        common: {
+            close: "Stäng",
+            back: "Tillbaka",
+            expand: "Visa mer",
+            collapse: "Visa mindre",
+            required: "(obligatoriskt)",
+            showPassword: "Visa lösenordet",
+            search: "Sök…",
+            confirm: "Bekräfta",
+            cancel: "Avbryt",
+        },
+        // One entry per component that has a `strings` object: the same keys.
+        select: {
+            placeholder: "Välj ett alternativ",
+            searchPlaceholder: "Sök",
+            noResults: "Inga träffar",
+            loading: "Hämtar alternativ…",
+            emptyTitle: "Inga alternativ",
+            emptyDescription: "Lägg till ett alternativ för att kunna välja.",
+            listLabel: "Alternativ",
+        },
+        stepper: {
+            position: (step, total) => `Steg ${step} av ${total}`,
+            stepLabel: (step, total, label, state) =>
+                `Steg ${step} av ${total}: ${label}, ${{ completed: "klart", current: "pågår", upcoming: "kommer" }[state]}`,
+            announcement: (step, total, label) => `Steg ${step} av ${total}: ${label}`,
+        },
+        calendar: {
+            previousMonth: "Föregående månad",
+            nextMonth: "Nästa månad",
+            today: "i dag",
+            selected: "vald",
+            unavailable: "inte valbar",
+        },
+    };
+</script>
+
+<ZabiStringsProvider strings={sv}>
+    {@render children()}
+</ZabiStringsProvider>
+```
+
+What a component says is decided in this order, the later winning:
+
+1. its built-in English;
+2. the provider's entry for it (`select`, `stepper`, …), or `common` for a
+   single-text prop such as `closeLabel`;
+3. the `strings` object passed to that one component;
+4. a single-text prop passed to it.
+
+So a provider changes nothing for a component that already has its texts set,
+and outside a provider everything is as it was. The entries are `calendar`,
+`colorPicker`, `componentDemo`, `contactForm`, `mediaGrid`, `photoGrid`,
+`photoViewer`, `propsTable`, `rating`, `select`, `sidebarAccountPanel`,
+`sidebarBrandHeader`, `sidebarFooter`, `sidebarNavigation`, `sortableList`,
+`stepper`, `themeToggle`, `toaster` and `topNavbar`; the type is `ZabiStrings`,
+and `ZabiCommonStrings` lists the common words. Leave out what the app does not
+use: there is nothing to translate for a component it never renders.
+
+The provider is Svelte context. On a server it belongs to the request being
+rendered, so two languages can be served at once; a provider inside another
+replaces only the words it gives, for its part of the page; and a dialog or
+sheet drawn in `<body>` still reads the provider it was written under. It adds
+no element to the page. `getZabiStrings()` gives app code the same words: call
+it while a component initialises and read `.current` where they are used.
+
+The library ships no translations. The object is the app's.
+
+Not every text is behind the provider yet. A single-text prop whose default is
+a sentence of its own (`ariaLabel="Sidebar navigation"`, CodeBlock's
+`copyLabel`, ImageUpload's texts, UnsavedChangesBar's, the `label` of a
+PhotoViewer or a Stepper) is still set on the component, as in the table below.
+
+### On one component
+
+A component with one or two such texts has a prop for each; one with several
+takes a `strings` object, and whatever you leave out of it keeps its default.
+A `strings` key and an older prop for the same text: the prop wins.
 
 | Component | Prop that carries its texts |
 |-----------|-----------------------------|

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Drawer from "../molecules/Drawer.svelte";
@@ -115,7 +116,7 @@
         mobile = "none",
         isOpen = $bindable<Exclude<Props["isOpen"], undefined>>(),
         drawerTitle = undefined,
-        closeLabel = "Close",
+        closeLabel: closeLabelGiven,
         onclose,
         trigger,
         class: classAttr = "",
@@ -136,6 +137,10 @@
     };
     applyDefaults();
     $effect.pre(applyDefaults);
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const closeLabel = $derived(closeLabelGiven ?? common().close);
 
     const className = $derived(cn(classAttr, legacyClass));
     const isCollapsed = $derived(mode === "collapsed");

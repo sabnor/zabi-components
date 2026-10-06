@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import Check from "@lucide/svelte/icons/check";
     import { tick, untrack } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
@@ -73,7 +74,9 @@
     applyDefaults();
     $effect.pre(applyDefaults);
 
-    const text = $derived({ ...STEPPER_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("stepper");
+    const text = $derived({ ...STEPPER_STRINGS, ...provided(), ...strings });
     const items = $derived(normalizeSteps(steps));
     /** The step shown as current: `current` held within the steps. */
     const shown = $derived(clampStep(current, items.length));

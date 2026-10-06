@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import Input from "./Input.svelte";
     import { onMount, tick } from "svelte";
     import { isInsideToastRegion } from "../util/focus-utils.js";
@@ -46,7 +47,9 @@
     applyDefaults();
     $effect.pre(applyDefaults);
 
-    const text = $derived({ ...DEFAULT_COLOR_PICKER_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("colorPicker");
+    const text = $derived({ ...DEFAULT_COLOR_PICKER_STRINGS, ...provided(), ...strings });
 
     let isOpen = $state(false);
     /** The pointer that is down on the colour map, if one is. */

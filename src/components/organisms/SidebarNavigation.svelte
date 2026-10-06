@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor, zabiCommonStrings } from "../util/zabi-strings.js";
     import Badge from "../atoms/Badge.svelte";
     import Button from "../atoms/Button.svelte";
     import IconButton from "../atoms/IconButton.svelte";
@@ -127,7 +128,7 @@
         profileInitials = "ZA",
         showSearch = true,
         searchMode = "input",
-        searchPlaceholder = "Search...",
+        searchPlaceholder: searchPlaceholderGiven,
         searchValue = $bindable<Exclude<Props["searchValue"], undefined>>(),
         searchTriggerIcon = Command,
         searchTriggerVariant = "outline",
@@ -172,10 +173,18 @@
     applyDefaults();
     $effect.pre(applyDefaults);
 
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const searchPlaceholder = $derived(searchPlaceholderGiven ?? common().search);
+
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
 
-    const text = $derived({ ...DEFAULT_SIDEBAR_NAVIGATION_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("sidebarNavigation");
+    const text = $derived({ ...DEFAULT_SIDEBAR_NAVIGATION_STRINGS, ...provided(), ...strings });
+    /** For the brand header and the footer: the provider's words for this sidebar, then the instance's. */
+    const handedOn = $derived({ ...provided(), ...strings });
 
     const isCollapsed = $derived(mode === "collapsed");
     const showBrandRow = $derived(
@@ -359,7 +368,7 @@
     {#snippet header()}
             {#if showBrandRow}
                 <SidebarBrandHeader
-                    {strings}
+                    strings={handedOn}
                     collapsed={isCollapsed}
                     {brandName}
                     logoSrc={logoSrc.trim()}
@@ -586,7 +595,7 @@
     {#snippet footer({ insetX })}
         <SidebarFooter
             collapsed={isCollapsed}
-            {strings}
+            strings={handedOn}
         {showProfile}
         {profileName}
         {profileEmail}

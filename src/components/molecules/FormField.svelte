@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import type { Snippet } from 'svelte';
     import { generateId } from "../util/ssr-safe.js";
 
@@ -32,13 +33,17 @@
         description,
         error,
         required = false,
-        requiredLabel = '(required)',
+        requiredLabel: requiredLabelGiven,
         disabled = false,
         class: className = '',
         labelClass = '',
         control,
         meta,
     }: Props = $props();
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const requiredLabel = $derived(requiredLabelGiven ?? common().required);
 
     const fallbackId = generateId('field');
     const fieldId = $derived(idProp ?? fallbackId);

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import { untrack } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Check from "@lucide/svelte/icons/check";
@@ -116,7 +117,9 @@
     const ADD_KEY = "\u0000add";
     type TileKey = PhotoKey;
 
-    const text = $derived({ ...PHOTO_GRID_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("photoGrid");
+    const text = $derived({ ...PHOTO_GRID_STRINGS, ...provided(), ...strings });
     const hintId = generateId("photo-grid-hint");
 
     const counts = $derived(visibleCount(photos.length, max));

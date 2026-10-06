@@ -32,3 +32,6 @@ export { default as DateField } from './DateField.svelte';
 export { default as TimeField } from './TimeField.svelte';
 export { DEFAULT_COLOR_PICKER_STRINGS } from '../util/ready-made-strings.js';
 export type { ColorPickerStrings } from '../util/ready-made-strings.js';
+export { default as ZabiStringsProvider } from './ZabiStringsProvider.svelte';
+export { DEFAULT_ZABI_COMMON_STRINGS, getZabiStrings } from '../util/zabi-strings.js';
+export type { ZabiStrings, ZabiCommonStrings, ZabiStringsContext } from '../util/zabi-strings.js';

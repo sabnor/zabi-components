@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import type { Snippet } from "svelte";
     import { fixedSidebarFlyout } from "../util/fixed-sidebar-flyout.js";
     import { cn } from "../util/cn.js";
@@ -65,7 +66,9 @@
      * Both are merged here so existing call sites keep working. */
     const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
-    const text = $derived({ ...DEFAULT_SIDEBAR_FOOTER_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("sidebarFooter");
+    const text = $derived({ ...DEFAULT_SIDEBAR_FOOTER_STRINGS, ...provided(), ...strings });
 
     const showFooter = $derived(showProfile || showLogout || showThemeToggle);
     const showPanelLauncher = $derived(showProfile);

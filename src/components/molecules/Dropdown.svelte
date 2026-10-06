@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import { generateId } from "../util/ssr-safe.js";
     import { onMount, setContext, type Snippet } from 'svelte';
     import { cn } from "../util/cn.js";
@@ -89,9 +90,9 @@
         fullWidth = false,
         sheetTitle = undefined,
         sheetSnap = undefined,
-        sheetCloseLabel = 'Close',
-        sheetExpandLabel = 'Expand',
-        sheetCollapseLabel = 'Collapse',
+        sheetCloseLabel: sheetCloseLabelGiven,
+        sheetExpandLabel: sheetExpandLabelGiven,
+        sheetCollapseLabel: sheetCollapseLabelGiven,
         ariaLabel = 'Menu',
         menuRole = 'menu',
         selectedValue = null,
@@ -113,6 +114,12 @@
     };
     applyDefaults();
     $effect.pre(applyDefaults);
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const sheetCloseLabel = $derived(sheetCloseLabelGiven ?? common().close);
+    const sheetExpandLabel = $derived(sheetExpandLabelGiven ?? common().expand);
+    const sheetCollapseLabel = $derived(sheetCollapseLabelGiven ?? common().collapse);
 
     // `DropdownItem` reads its role from here, in `options` and in `children` alike.
     setContext<DropdownContext>(DROPDOWN_CONTEXT_KEY, {

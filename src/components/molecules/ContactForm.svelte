@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import Form from "./Form.svelte";
     import Input from "../atoms/Input.svelte";
     import Textarea from "../atoms/Textarea.svelte";
@@ -35,7 +36,9 @@
         onsubmit,
     }: Props = $props();
 
-    const text = $derived({ ...DEFAULT_CONTACT_FORM_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("contactForm");
+    const text = $derived({ ...DEFAULT_CONTACT_FORM_STRINGS, ...provided(), ...strings });
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */

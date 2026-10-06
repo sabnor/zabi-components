@@ -17,6 +17,19 @@ Whenever token or CSS import API surface changes, include:
 - **`--color-focus-ring-danger`**, the ring of a danger control (the error
   colour by default; the on-colour inside a block), and the `on-surface`
   class for a surface of your own inside a block.
+- **`ZabiStringsProvider`: the library's texts in one place.** Wrap the app
+  in `<ZabiStringsProvider strings={…}>` and every component under it uses
+  those words unless an instance says otherwise: one entry per component that
+  has a `strings` object, and a `common` group (close, back, expand, collapse,
+  required, showPassword, search, confirm, cancel) for the single-text props.
+  Order, later wins: the built-in English, the provider, the instance's
+  `strings`, the instance's own text props. It is Svelte context, so it is
+  per request on the server, can be nested, and reaches portalled overlays.
+  `getZabiStrings()`, `DEFAULT_ZABI_COMMON_STRINGS` and the types are
+  exported. Nothing changes outside a provider. No translations ship; the
+  README has a complete Swedish example. Not covered yet: single-text props
+  whose default is a sentence (landmark `ariaLabel`s, CodeBlock, ImageUpload,
+  UnsavedChangesBar, Toast and Alert's close labels).
 
 ### Changed
 

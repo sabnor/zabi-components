@@ -1,4 +1,5 @@
 <script lang="ts" generics="T">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import ChevronDown from "@lucide/svelte/icons/chevron-down";
@@ -91,7 +92,9 @@
     const NBSP = String.fromCharCode(160);
 
     const descriptionId = generateId("sortable-list-help");
-    const text = $derived({ ...SORTABLE_LIST_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("sortableList");
+    const text = $derived({ ...SORTABLE_LIST_STRINGS, ...provided(), ...strings });
 
     let listElement: HTMLUListElement | undefined = $state();
     let announcement = $state("");

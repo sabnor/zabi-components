@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import Eye from "@lucide/svelte/icons/eye";
     import EyeOff from "@lucide/svelte/icons/eye-off";
     import { tick, type Snippet } from "svelte";
@@ -96,7 +97,7 @@
         leading,
         trailing,
         revealable = false,
-        revealLabel = "Show password",
+        revealLabel: revealLabelGiven,
         oninput,
         onblur,
         "aria-describedby": describedBy,
@@ -113,6 +114,10 @@
     };
     applyDefaults();
     $effect.pre(applyDefaults);
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const revealLabel = $derived(revealLabelGiven ?? common().showPassword);
 
     const fallbackId = generateId("input");
     const inputId = $derived(idProp ?? fallbackId);

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick, untrack } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import ChevronLeft from "@lucide/svelte/icons/chevron-left";
@@ -141,7 +142,9 @@
     /** A photo that loads faster than this never shows a spinner. */
     const SLOW_MS = 400;
 
-    const text = $derived({ ...PHOTO_VIEWER_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("photoViewer");
+    const text = $derived({ ...PHOTO_VIEWER_STRINGS, ...provided(), ...strings });
     const count = $derived(photos.length);
     const current = $derived(clampIndex(index, count));
     const photo = $derived<Photo | undefined>(photos[current]);

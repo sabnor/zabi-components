@@ -260,3 +260,6 @@ export { default as Zap } from '@lucide/svelte/icons/zap';
 export { default as Briefcase } from '@lucide/svelte/icons/briefcase';
 export { default as Clipboard } from '@lucide/svelte/icons/clipboard';
 export { default as Settings } from '@lucide/svelte/icons/settings';
+export { default as ZabiStringsProvider } from './atoms/ZabiStringsProvider.svelte';
+export { DEFAULT_ZABI_COMMON_STRINGS, getZabiStrings } from './util/zabi-strings.js';
+export type { ZabiStrings, ZabiCommonStrings, ZabiStringsContext } from './util/zabi-strings.js';

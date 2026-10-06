@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import SidebarPanel, {
         type SidebarPanelItem,
     } from "./SidebarPanel.svelte";
@@ -93,7 +94,9 @@
 
     let selectedItemId = $state("");
 
-    const text = $derived({ ...DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("sidebarAccountPanel");
+    const text = $derived({ ...DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS, ...provided(), ...strings });
 
     /**
      * With three modes: the page's mode, read when the panel mounts, after

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import Input from "../atoms/Input.svelte";
     import Badge from "../atoms/Badge.svelte";
     import Search from "@lucide/svelte/icons/search";
@@ -47,7 +48,7 @@
         title = "Items",
         subtitle = "Choose an item to continue",
         showSearch = true,
-        searchPlaceholder = "Search...",
+        searchPlaceholder: searchPlaceholderGiven,
         searchValue = $bindable<Exclude<Props["searchValue"], undefined>>(),
         items = [],
         selectedItemId = $bindable<Exclude<Props["selectedItemId"], undefined>>(),
@@ -73,6 +74,10 @@
     };
     applyDefaults();
     $effect.pre(applyDefaults);
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const searchPlaceholder = $derived(searchPlaceholderGiven ?? common().search);
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */

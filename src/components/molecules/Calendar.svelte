@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import ChevronLeft from "@lucide/svelte/icons/chevron-left";
@@ -129,7 +130,9 @@
     $effect.pre(applyDefaults);
 
     const titleId = generateId("calendar-title");
-    const text = $derived({ ...DEFAULT_CALENDAR_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("calendar");
+    const text = $derived({ ...DEFAULT_CALENDAR_STRINGS, ...provided(), ...strings });
 
     let grid: HTMLTableElement | undefined = $state();
 

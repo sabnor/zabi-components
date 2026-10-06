@@ -1,4 +1,5 @@
 <script lang="ts" generics="T">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Check from "@lucide/svelte/icons/check";
@@ -119,7 +120,9 @@
     /** How long to wait for a confirmation dialog to give focus up after a delete. */
     const FOCUS_WAIT_MS = 2000;
 
-    const text = $derived({ ...MEDIA_GRID_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("mediaGrid");
+    const text = $derived({ ...MEDIA_GRID_STRINGS, ...provided(), ...strings });
     const keys = $derived(items.map(getKey));
     const tileSize = $derived(
         typeof minTileSize === "number" ? `${minTileSize}px` : minTileSize,

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import type { ComponentProp } from "../types/page.types";
     import Table from "../atoms/Table.svelte";
     import { cn } from "../util/cn.js";
@@ -18,7 +19,9 @@
 
     let { class: className = "", props, caption = "Props / API", strings }: Props = $props();
 
-    const text = $derived({ ...DEFAULT_PROPS_TABLE_STRINGS, ...strings });
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("propsTable");
+    const text = $derived({ ...DEFAULT_PROPS_TABLE_STRINGS, ...provided(), ...strings });
 </script>
 
 {#if props.length === 0}

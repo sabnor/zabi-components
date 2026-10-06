@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import { untrack, type Snippet } from "svelte";
     import Info from "@lucide/svelte/icons/info";
     import OctagonAlert from "@lucide/svelte/icons/octagon-alert";
@@ -67,8 +68,8 @@
         title,
         message = "",
         variant = "info",
-        confirmLabel = "Confirm",
-        cancelLabel = "Cancel",
+        confirmLabel: confirmLabelGiven,
+        cancelLabel: cancelLabelGiven,
         loading = false,
         loadingLabel = "Working…",
         onconfirm,
@@ -90,6 +91,11 @@
     };
     applyDefaults();
     $effect.pre(applyDefaults);
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const confirmLabel = $derived(confirmLabelGiven ?? common().confirm);
+    const cancelLabel = $derived(cancelLabelGiven ?? common().cancel);
 
     const messageId = generateId("confirm-dialog-message");
 

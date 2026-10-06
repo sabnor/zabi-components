@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import ArrowLeft from "@lucide/svelte/icons/arrow-left";
@@ -75,7 +76,7 @@
         headingLevel = 1,
         backHref,
         onback,
-        backLabel = "Back",
+        backLabel: backLabelGiven,
         collapseOnScroll = false,
         titleLines = 1,
         leading,
@@ -83,6 +84,10 @@
         class: className = "",
         ...restProps
     }: Props = $props();
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const backLabel = $derived(backLabelGiven ?? common().back);
 
     let host: HTMLElement | undefined = $state();
     /** Scrolled out of view. Only ever true with `collapseOnScroll`. */

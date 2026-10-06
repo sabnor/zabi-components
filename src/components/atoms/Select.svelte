@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings, zabiStringsFor } from "../util/zabi-strings.js";
     import Dropdown from "../molecules/Dropdown.svelte";
     import Input from "./Input.svelte";
     import Check from "@lucide/svelte/icons/check";
@@ -137,9 +138,16 @@
         ...restProps
     }: Props = $props();
 
-    /** The defaults, then `strings`, then the older props where they are set. */
+    /** The defaults, then a provider's words, then `strings`, then the older props where they are set. */
+    const provided = zabiStringsFor("select");
+    const common = zabiCommonStrings();
     const text = $derived<SelectStrings>({
         ...DEFAULT_SELECT_STRINGS,
+        // The sheet's three buttons say what every sheet's do.
+        closeLabel: common().close,
+        expandLabel: common().expand,
+        collapseLabel: common().collapse,
+        ...provided(),
         ...strings,
         ...(placeholder !== undefined && { placeholder }),
         ...(searchPlaceholder !== undefined && { searchPlaceholder }),

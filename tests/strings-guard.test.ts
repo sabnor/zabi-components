@@ -16,7 +16,14 @@ import {
 import { getThemeMode, setThemeMode } from "../src/components/util/theme-mode";
 import { DEFAULT_SELECT_STRINGS } from "../src/components/util/select";
 import { DEFAULT_TOP_NAVBAR_STRINGS } from "../src/components/util/top-navbar";
+import { DEFAULT_CALENDAR_STRINGS } from "../src/components/util/calendar";
+import { MEDIA_GRID_STRINGS } from "../src/components/util/media-grid";
+import { PHOTO_GRID_STRINGS, PHOTO_VIEWER_STRINGS } from "../src/components/util/photo";
+import { SORTABLE_LIST_STRINGS } from "../src/components/util/sortable-list";
+import { STEPPER_STRINGS } from "../src/components/util/stepper";
+import { DEFAULT_ZABI_COMMON_STRINGS, type ZabiStrings } from "../src/components/util/zabi-strings";
 import StringsHarness from "./fixtures/StringsHarness.svelte";
+import ZabiStringsHarness from "./fixtures/ZabiStringsHarness.svelte";
 
 /**
  * No English an app cannot replace, for the components that have words of
@@ -408,5 +415,238 @@ describe("TopNavbar and its theme toggle", () => {
     it("two modes by default", async () => {
         render(StringsHarness, { kind: "TopNavbar" });
         await waitFor(() => expect(screen.getAllByRole("button", { name: "Dark mode" }).length).toBeGreaterThan(0));
+    });
+});
+
+/**
+ * The same, with the words set once for the whole app: every component that
+ * reads a `ZabiStringsProvider` is rendered under one whose every value is a
+ * sentinel, with nothing set on the component itself. No default English may
+ * be left; and under no provider each says exactly what it always said.
+ */
+const THEME_TOGGLE_DEFAULTS: Words = {
+    auto: "system",
+    light: "light",
+    dark: "dark",
+    describe: ((current: string, next: string) => `Theme: ${current}. Switch to ${next}`) as never,
+    darkMode: "Dark mode",
+    beforeMount: "Theme toggle",
+};
+
+const ENTRY_DEFAULTS: Record<Exclude<keyof ZabiStrings, "rating" | "toaster">, Words> = {
+    common: DEFAULT_ZABI_COMMON_STRINGS as unknown as Words,
+    calendar: DEFAULT_CALENDAR_STRINGS as unknown as Words,
+    colorPicker: DEFAULT_COLOR_PICKER_STRINGS as unknown as Words,
+    componentDemo: DEFAULT_COMPONENT_DEMO_STRINGS as unknown as Words,
+    contactForm: DEFAULT_CONTACT_FORM_STRINGS as unknown as Words,
+    mediaGrid: MEDIA_GRID_STRINGS as unknown as Words,
+    photoGrid: PHOTO_GRID_STRINGS as unknown as Words,
+    photoViewer: PHOTO_VIEWER_STRINGS as unknown as Words,
+    propsTable: DEFAULT_PROPS_TABLE_STRINGS as unknown as Words,
+    select: DEFAULT_SELECT_STRINGS as unknown as Words,
+    sidebarAccountPanel: DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS as unknown as Words,
+    sidebarBrandHeader: DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS as unknown as Words,
+    sidebarFooter: DEFAULT_SIDEBAR_FOOTER_STRINGS as unknown as Words,
+    sidebarNavigation: DEFAULT_SIDEBAR_NAVIGATION_STRINGS as unknown as Words,
+    sortableList: SORTABLE_LIST_STRINGS as unknown as Words,
+    stepper: STEPPER_STRINGS as unknown as Words,
+    themeToggle: THEME_TOGGLE_DEFAULTS,
+    topNavbar: DEFAULT_TOP_NAVBAR_STRINGS as unknown as Words,
+};
+
+/** The mark every word of `entry` starts with: its place in the list, not its name, which is English itself. */
+const markOf = (entry: string) => `¤${Object.keys(ENTRY_DEFAULTS).indexOf(entry)}:`;
+
+/** A provider's worth of sentinels: every entry, every key, each marked with numbers only. */
+function sentinelProvider(): ZabiStrings {
+    return Object.fromEntries(
+        Object.entries(ENTRY_DEFAULTS).map(([entry, defaults]) => [
+            entry,
+            Object.fromEntries(
+                Object.entries(defaults).map(([key, value], index) => [
+                    key,
+                    typeof value === "function"
+                        ? (...input: unknown[]) => `${markOf(entry)}${index}(${input.join(",")})`
+                        : `${markOf(entry)}${index}`,
+                ]),
+            ),
+        ]),
+    ) as ZabiStrings;
+}
+
+/** The sentinel for one common word. */
+const commonMark = (key: keyof typeof DEFAULT_ZABI_COMMON_STRINGS) =>
+    `${markOf("common")}${Object.keys(DEFAULT_ZABI_COMMON_STRINGS).indexOf(key)}`;
+
+/**
+ * Each converted component, the entries it reads, and the common words it
+ * says. `common` lists only the words this component itself falls back to:
+ * a dialog it sits in may still say "Close" until that dialog reads the
+ * provider too.
+ */
+const PROVIDED: {
+    kind: string;
+    entries: (keyof typeof ENTRY_DEFAULTS)[];
+    common?: (keyof typeof DEFAULT_ZABI_COMMON_STRINGS)[];
+    /**
+     * A word of an entry that this state also says through a single-text
+     * prop with a sentence of its own for a default, which no provider entry
+     * covers yet. Named here so the gap is in one place and in sight.
+     */
+    stillEnglish?: string[];
+}[] = [
+    { kind: "ColorPicker", entries: ["colorPicker"] },
+    { kind: "ContactForm", entries: ["contactForm"] },
+    { kind: "PropsTable", entries: ["propsTable"] },
+    { kind: "ComponentDemo", entries: ["componentDemo"] },
+    { kind: "SidebarBrandHeader", entries: ["sidebarBrandHeader"] },
+    { kind: "SidebarFooter", entries: ["sidebarFooter"] },
+    { kind: "SidebarAccountPanel", entries: ["sidebarAccountPanel"] },
+    // `ariaLabel` defaults to "Sidebar navigation"; `sectionNavigation` ends in the same word.
+    { kind: "SidebarNavigation", entries: ["sidebarNavigation"], common: ["search"], stillEnglish: ["navigation"] },
+    { kind: "TopNavbar", entries: ["topNavbar", "themeToggle"] },
+    { kind: "Select", entries: ["select"] },
+    { kind: "Calendar", entries: ["calendar"] },
+    { kind: "MediaGrid", entries: ["mediaGrid"] },
+    { kind: "SortableList", entries: ["sortableList"] },
+    { kind: "Stepper", entries: ["stepper"] },
+    { kind: "Gallery", entries: ["photoGrid", "photoViewer"] },
+    { kind: "ThemeToggle", entries: ["themeToggle"] },
+    { kind: "AppBar", entries: [], common: ["back"] },
+    { kind: "RequiredField", entries: [], common: ["required"] },
+    { kind: "PasswordField", entries: [], common: ["showPassword"] },
+    { kind: "SidebarPanel", entries: [], common: ["search"] },
+    { kind: "ConfirmDialog", entries: [], common: ["confirm", "cancel"] },
+    { kind: "DropdownSheet", entries: [], common: ["close", "expand", "collapse"] },
+    { kind: "SidebarDrawer", entries: [], common: ["close"] },
+    // Select's own entry names the sheet's buttons too, and wins over `common`: see the test for that below.
+    { kind: "SelectSheet", entries: ["select"] },
+];
+
+/** Brings a provider-harness kind into the state that says the most. */
+async function revealProvided(kind: string) {
+    if (kind === "SelectSheet") {
+        await fireEvent.click(document.querySelector<HTMLElement>('button[aria-haspopup="listbox"]')!);
+        await waitFor(() => expect(document.querySelector('[role="dialog"]')).not.toBeNull());
+        return;
+    }
+    if (kind === "DropdownSheet" || kind === "SidebarDrawer" || kind === "ConfirmDialog" || kind === "Gallery") {
+        await waitFor(() => expect(document.querySelector('[role="dialog"], [role="alertdialog"]')).not.toBeNull());
+        return;
+    }
+    await reveal[kind]?.();
+}
+
+describe.each(PROVIDED)("$kind under a ZabiStringsProvider", ({ kind, entries, common, stillEnglish }) => {
+    /** A sentence that takes something other than text (Calendar's takes a list of events) is left out. */
+    const englishOf = (defaults: Words) =>
+        Object.entries(defaults).flatMap(([key, value]) => {
+            try {
+                return english({ [key]: value });
+            } catch {
+                return [];
+            }
+        });
+    const wordsOf = () => [
+        ...entries.flatMap((entry) => englishOf(ENTRY_DEFAULTS[entry])),
+        ...(common ?? []).map((key) => DEFAULT_ZABI_COMMON_STRINGS[key]),
+    ];
+
+    it("with nothing set on the component, no default English is left", async () => {
+        // What it says by default, to know which of its words this state shows at all.
+        const plain = render(ZabiStringsHarness, { kind });
+        await revealProvided(kind);
+        const before = everythingSaid();
+        plain.unmount();
+        cleanup();
+        const shown = wordsOf().filter((word) => before.includes(word) && !(stillEnglish ?? []).includes(word));
+        expect(shown.length, `${kind} shows none of its default words in this state`).toBeGreaterThan(0);
+
+        render(ZabiStringsHarness, { kind, strings: sentinelProvider() });
+        await revealProvided(kind);
+        const said = everythingSaid();
+        for (const word of shown) {
+            expect(said, `"${word}" is still said`).not.toContain(word);
+        }
+        // And the provider's own words are what is said instead: one per entry it reads.
+        for (const entry of entries) expect(said).toContain(markOf(entry));
+        // A common word this state showed in English is now the provider's.
+        for (const key of common ?? []) {
+            if (before.includes(DEFAULT_ZABI_COMMON_STRINGS[key])) expect(said, key).toContain(commonMark(key));
+        }
+    });
+
+    it("without a provider it says what it always said", async () => {
+        render(ZabiStringsHarness, { kind });
+        await revealProvided(kind);
+        expect(everythingSaid()).not.toContain("¤");
+    });
+});
+
+describe("ZabiStringsProvider", () => {
+    it("the common words are today's English, word for word", () => {
+        expect(DEFAULT_ZABI_COMMON_STRINGS).toEqual({
+            close: "Close",
+            back: "Back",
+            expand: "Expand",
+            collapse: "Collapse",
+            required: "(required)",
+            showPassword: "Show password",
+            search: "Search...",
+            confirm: "Confirm",
+            cancel: "Cancel",
+        });
+    });
+
+    it("an instance's strings win over the provider, and a single-text prop over both", async () => {
+        const { default: Select } = await import("../src/components/atoms/Select.svelte");
+        const { default: Wrapper } = await import("./fixtures/ZabiStringsOrderHarness.svelte");
+        render(Wrapper, { component: Select });
+        const triggers = [...document.querySelectorAll('button[aria-haspopup="listbox"]')].map((button) =>
+            button.textContent!.trim(),
+        );
+        // Provider only; provider + strings; provider + strings + the placeholder prop.
+        expect(triggers).toEqual(["Från appen", "Från instansen", "Från propen"]);
+    });
+
+    it("Select's sheet says the common words when the provider gives no words for Select itself", async () => {
+        render(ZabiStringsHarness, {
+            kind: "SelectSheet",
+            strings: { common: { close: "Stäng", expand: "Visa mer", collapse: "Visa mindre" } },
+        });
+        await revealProvided("SelectSheet");
+        expect(screen.getByRole("button", { name: "Stäng" })).toBeTruthy();
+        expect(screen.getByRole("button", { name: /Visa mer|Visa mindre/ })).toBeTruthy();
+    });
+
+    it("an inner provider replaces only the words it gives", async () => {
+        render(ZabiStringsHarness, {
+            kind: "DropdownSheet",
+            strings: { common: { close: "Stäng", expand: "Visa mer", collapse: "Visa mindre" } },
+            inner: { common: { close: "Stäng menyn" } },
+        });
+        await waitFor(() => expect(document.querySelector('[role="dialog"]')).not.toBeNull());
+        expect(screen.getByRole("button", { name: "Stäng menyn" })).toBeTruthy();
+        // From the outer one, untouched by the inner.
+        expect(screen.getByRole("button", { name: /Visa mer|Visa mindre/ })).toBeTruthy();
+        // And outside the inner provider the outer word still stands.
+        expect(screen.getByTestId("outer-probe").textContent).toBe("Stäng");
+    });
+
+    it("overlays rendered in <body> still read the provider they were written under", async () => {
+        render(ZabiStringsHarness, { kind: "Portals", strings: { common: { close: "Stäng" } } });
+        await waitFor(() => expect(document.querySelectorAll('[role="dialog"]').length).toBe(3));
+        for (const id of ["in-page", "in-modal", "in-drawer", "in-sheet"]) {
+            expect(screen.getByTestId(id).textContent, id).toBe("Stäng");
+        }
+        // Each overlay is in <body>, not inside the harness's own container.
+        expect(screen.getByTestId("in-modal").closest('[role="dialog"]')!.closest("[data-overlay-depth]")!.parentElement).toBe(
+            document.body,
+        );
+    });
+
+    it("app code outside any provider reads nothing", () => {
+        render(ZabiStringsHarness, { kind: "Portals" });
+        expect(screen.getByTestId("in-page").textContent).toBe("(none)");
     });
 });
