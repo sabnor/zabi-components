@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import Input from "./Input.svelte";
     import { onMount, tick } from "svelte";
@@ -49,7 +50,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("colorPicker");
-    const text = $derived({ ...DEFAULT_COLOR_PICKER_STRINGS, ...provided(), ...strings });
+    const text = $derived(mergeStrings(DEFAULT_COLOR_PICKER_STRINGS, provided(), strings));
 
     let isOpen = $state(false);
     /** The pointer that is down on the colour map, if one is. */
@@ -91,7 +92,8 @@
         update();
         return watchViewport(update, panel);
     });
-    let colorMap: HTMLCanvasElement | undefined;
+    let colorMap = $state<HTMLCanvasElement | undefined>();
+    let swatchButton: HTMLButtonElement | undefined;
     let colorMapContainer: HTMLDivElement | undefined;
 
     // Working color in HSL (h: 0–360; s, l: 0–100).
@@ -206,7 +208,7 @@
         commitCurrentValue(event);
     }
 
-    async function togglePicker() {
+    async function togglePicker(event?: MouseEvent) {
         if (!disabled) {
             if (isOpen) {
                 commitCurrentValue(new Event("change"));
@@ -215,12 +217,40 @@
             if (isOpen && value && isValidHex(value)) {
                 updateFromHex(value);
             }
-            if (isOpen) {
+            // A click from the keyboard has no pointer (`detail` is 0): focus
+            // goes in, to the first stop of the popover. A press keeps it.
+            if (isOpen && event && event.detail === 0) {
                 await tick();
-                drawColorMap();
+                saturationInput?.focus({ preventScroll: true });
             }
         }
     }
+
+    /** Escape inside the popover, or on the swatch while it is open: close, and back to the swatch. */
+    function handleEscape(event: KeyboardEvent) {
+        if (event.key !== "Escape" || !isOpen) return;
+        // Consumed here: a Modal or Drawer around the picker stays open.
+        event.stopPropagation();
+        event.preventDefault();
+        commitCurrentValue(new Event("change"));
+        isOpen = false;
+        swatchButton?.focus({ preventScroll: true });
+    }
+
+    // The map is drawn for the hue it is open at, and again for any change of
+    // it: the hue slider, a typed hex, or a `value` set from outside.
+    $effect(() => {
+        void hue;
+        if (isOpen && colorMap) drawColorMap();
+    });
+
+    // A `value` changed from outside while open (not the one the sliders just made).
+    $effect(() => {
+        if (!isOpen || !value || !isValidHex(value)) return;
+        if (expandHex(value).toLowerCase() !== hslToHex(hue, saturation, lightness)) {
+            updateFromHex(value);
+        }
+    });
 
     function drawColorMap() {
         if (!colorMap) return;
@@ -328,7 +358,6 @@
         const target = event.target as HTMLInputElement;
         hue = parseInt(target.value);
         updateHexFromHsl();
-        drawColorMap();
     }
 
     function setPickerContainer(node: HTMLDivElement) {
@@ -414,7 +443,7 @@
                 {message}
                 oninput={handleInput}
                 onblur={handleBlur}
-                aria-label={text.hexInput}
+                aria-label={label ? undefined : text.hexInput}
             />
         </div>
         <div class="relative shrink-0 mt-6">
@@ -424,7 +453,9 @@
                 {disabled}
                 class="focus-ring w-11 h-11 rounded-control border-2 border-card shrink-0 cursor-pointer hover:ring-2 hover:ring-border active:ring-2 active:ring-border-strong transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 style="background-color: {displayColor};"
-                aria-label={text.open}
+                aria-label={label ? `${label}, ${text.open}` : text.open}
+                bind:this={swatchButton}
+                onkeydown={handleEscape}
                 aria-expanded={isOpen}
                 data-color-picker-open
             ></button>
@@ -446,6 +477,8 @@
                     style:max-width={placed && placed.maxWidth !== null ? `${placed.maxWidth}px` : undefined}
                     role="dialog"
                     aria-label={text.picker}
+                    tabindex="-1"
+                    onkeydown={handleEscape}
                 >
                     <div class="space-y-4">
                         <!-- The sliders inside are the controls; the pointer

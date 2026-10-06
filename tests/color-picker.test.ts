@@ -191,3 +191,85 @@ describe("ColorPicker's colour map: any pointer", () => {
         expect(hue.parentElement!.className.split(/\s+/)).toEqual(expect.arrayContaining(["h-6", "pointer-coarse:h-11"]));
     });
 });
+
+describe("ColorPicker: Escape, the map redraw and the names", () => {
+    it("opens with the keyboard into the popover, and Escape closes it and returns focus to the swatch", async () => {
+        const user = userEvent.setup();
+        render(ColorPicker, { props: { value: "#bf4040" } });
+        const swatch = screen.getByRole("button", { name: /color picker/i });
+        swatch.focus();
+        await user.keyboard("{Enter}");
+        const dialog = await screen.findByRole("dialog");
+        expect(dialog.contains(document.activeElement)).toBe(true);
+        await user.tab();
+        expect(dialog.contains(document.activeElement)).toBe(true);
+        await user.keyboard("{Escape}");
+        expect(screen.queryByRole("dialog")).toBeNull();
+        expect(document.activeElement).toBe(swatch);
+    });
+
+    it("closes on Escape from the swatch while open, and does not reach a parent unless it was open", async () => {
+        const user = userEvent.setup();
+        const parentKey = vi.fn();
+        document.body.addEventListener("keydown", parentKey);
+        render(ColorPicker, { props: { value: "#bf4040" } });
+        const swatch = screen.getByRole("button", { name: /color picker/i });
+        swatch.focus();
+        await user.keyboard("{Escape}");
+        expect(parentKey).toHaveBeenCalledTimes(1);
+        parentKey.mockClear();
+        await user.keyboard("{Enter}");
+        await screen.findByRole("dialog");
+        parentKey.mockClear();
+        swatch.focus();
+        await user.keyboard("{Escape}");
+        expect(screen.queryByRole("dialog")).toBeNull();
+        expect(parentKey).not.toHaveBeenCalled();
+        document.body.removeEventListener("keydown", parentKey);
+    });
+
+    it("a press outside closes it without taking focus from what was pressed", async () => {
+        const { user } = await open();
+        const other = document.createElement("button");
+        document.body.appendChild(other);
+        other.focus();
+        await fireEvent.mouseDown(other);
+        expect(screen.queryByRole("dialog")).toBeNull();
+        expect(document.activeElement).toBe(other);
+        other.remove();
+        void user;
+    });
+
+    it("redraws the map when the hex is typed", async () => {
+        const fills: string[] = [];
+        vi.restoreAllMocks();
+        vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+            set fillStyle(v: string) {
+                fills.push(v);
+            },
+            fillRect() {},
+        } as unknown as CanvasRenderingContext2D);
+        const { user } = await open();
+        await new Promise((r) => setTimeout(r, 0));
+        fills.length = 0;
+        const input = screen.getByRole("textbox");
+        // Focus by key, not a press: a press on the field is outside the popover.
+        (input as HTMLInputElement).focus();
+        (input as HTMLInputElement).select();
+        await user.keyboard("#00cc33");
+        await new Promise((r) => setTimeout(r, 0));
+        expect(fills.length).toBeGreaterThan(0);
+        // hue 135 at the full-saturation, mid-lightness column: green-dominant
+        expect(fills.some((c) => c === "#00ff44" || c === "#00ff45" || /^#00[a-f0-9]{2}[0-4][0-9a-f]$/.test(c))).toBe(true);
+    });
+
+    it("names the field and the swatch from the visible label, and keeps today's names without one", async () => {
+        const { unmount } = render(ColorPicker, { props: { value: "#bf4040", label: "Brand colour" } });
+        expect(screen.getByRole("textbox", { name: "Brand colour" })).toBeTruthy();
+        expect(screen.getByRole("button", { name: /^Brand colour, / })).toBeTruthy();
+        unmount();
+        render(ColorPicker, { props: { value: "#bf4040" } });
+        expect(screen.getByRole("textbox", { name: "Hex color input" })).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Open color picker" })).toBeTruthy();
+    });
+});
