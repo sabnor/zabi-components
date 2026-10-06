@@ -5,6 +5,7 @@
     import type { SidebarNavigationItem } from "../../components/organisms/SidebarNavigation.svelte";
     import type { ComponentMetadata } from "../../types/page.types";
     import { componentsCatalog as components } from "$lib/showcase/components-catalog";
+    import SiteFooter from "$lib/marketing/SiteFooter.svelte";
     import { categories } from "$lib/showcase/components-showcase-constants";
     import {
         getDocsCategoryIcon,
@@ -121,7 +122,7 @@
 </script>
 
 <div class="bg-background">
-    <main
+    <div
         class="flex h-[calc(100dvh-var(--site-header-height))] min-h-0 w-full max-w-screen"
     >
         <!-- From `lg` up the catalog is a rail beside the page. Below that
@@ -155,8 +156,9 @@
             content is not clipped by this scroller, and it stretches the
             document itself: blank space to scroll through under the page. -->
             <div
-                class="relative min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8 pb-[calc(2rem+env(safe-area-inset-bottom,0px))]"
+                class="relative flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain"
             >
+                <main class="flex-1 p-8">
                 <div class="mb-6 flex items-center gap-3 lg:hidden">
                     <button
                         type="button"
@@ -175,7 +177,11 @@
                 </div>
 
                 {@render children()}
+                </main>
+                <!-- The end of the scroll area, so it shows once a page is read to the
+                bottom. It sits outside <main>, which keeps it the page's contentinfo. -->
+                <SiteFooter />
             </div>
         </div>
-    </main>
+    </div>
 </div>
