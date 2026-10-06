@@ -149,6 +149,8 @@ Whenever token or CSS import API surface changes, include:
 - Site: the component catalog's sidebar is a drawer below 1024px, built on
   SidebarShell's new mode (it was a hand-built panel below 768px and a fixed
   rail up to 1023px).
+- PhotoViewer times a double tap from the touch events themselves, so a busy
+  page no longer turns it into two single taps.
 
 ## [8.1.0-beta.1] - 2026-10-06
 

@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { gotoHydrated } from "./helpers/hydration";
+
 /**
  * Table's stacked layout in a real browser. jsdom applies no stylesheet and
  * no media queries, so the unit tests can only pin class names; whether the
@@ -33,7 +35,7 @@ async function layout(page: Page) {
 test.describe("Table — stacked below the sm breakpoint", () => {
     test("desktop: an ordinary table with its header row", async ({ page }) => {
         await page.setViewportSize({ width: 1024, height: 900 });
-        await page.goto(PATH, { waitUntil: "domcontentloaded" });
+        await gotoHydrated(page, PATH);
 
         const facts = await layout(page);
         expect(facts.tableDisplay).toBe("table");
@@ -47,7 +49,7 @@ test.describe("Table — stacked below the sm breakpoint", () => {
         page,
     }) => {
         await page.setViewportSize({ width: 390, height: 844 });
-        await page.goto(PATH, { waitUntil: "domcontentloaded" });
+        await gotoHydrated(page, PATH);
 
         const facts = await layout(page);
         expect(facts.tableDisplay).toBe("block");
@@ -64,7 +66,7 @@ test.describe("Table — stacked below the sm breakpoint", () => {
         page,
     }) => {
         await page.setViewportSize({ width: 390, height: 844 });
-        await page.goto(PATH, { waitUntil: "domcontentloaded" });
+        await gotoHydrated(page, PATH);
 
         // The header row is out of view but still in the tree, giving the
         // cells their column headers.

@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Dropdown and Select in a real browser: where focus goes when the menu
  * closes. jsdom keeps `document.activeElement` on a removed node's ancestor
@@ -9,13 +11,12 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 /** The page is usable before it hydrates; a key or click that lands early is lost. */
 async function openWith(page: Page, trigger: Locator, popup: Locator): Promise<void> {
-    await expect(async () => {
-        if ((await popup.count()) === 0) {
-            await trigger.focus();
-            await page.keyboard.press("Enter");
-        }
-        await expect(popup).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    if ((await popup.count()) === 0) {
+        await trigger.focus();
+        await page.keyboard.press("Enter");
+    }
+    await expect(popup).toBeVisible();
 }
 
 test.describe("Dropdown — focus when the menu closes", () => {

@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Tabs that do not fit their row.
  *
@@ -68,11 +70,10 @@ test.describe("Tabs on the docs page at 320px", () => {
         expect(measured.overflowX).toBe("auto");
 
         // The last tab can be reached, and is then inside the card.
-        await expect(async () => {
-            await tabs.nth(0).focus();
-            await page.keyboard.press("End");
-            await expect(tabs.nth(2)).toBeFocused({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await tabs.nth(0).focus();
+        await page.keyboard.press("End");
+        await expect(tabs.nth(2)).toBeFocused();
         await expect
             .poll(async () => {
                 const outer = (await list.boundingBox())!;

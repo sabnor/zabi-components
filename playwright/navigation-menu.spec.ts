@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * NavigationMenu at phone widths, on its docs page.
  *
@@ -26,10 +28,9 @@ async function openPanel(page: Page, name: string): Promise<Locator> {
     const button = trigger(page, name);
     await button.scrollIntoViewIfNeeded();
     const panel = button.locator("xpath=..").locator("[data-navigation-menu-content]");
-    await expect(async () => {
-        if ((await button.getAttribute("aria-expanded")) !== "true") await button.click();
-        await expect(panel).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    if ((await button.getAttribute("aria-expanded")) !== "true") await button.click();
+    await expect(panel).toBeVisible();
     return panel;
 }
 

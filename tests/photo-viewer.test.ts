@@ -55,6 +55,25 @@ function clock() {
 }
 
 /**
+ * The same, with the two clocks apart: `events` moves the time the events
+ * say they happened at, `handled` the time the page gets round to them.
+ */
+function clocks() {
+    let stamp = 1000;
+    let handled = 1000;
+    vi.spyOn(performance, "now").mockImplementation(() => handled);
+    vi.spyOn(Event.prototype, "timeStamp", "get").mockImplementation(() => stamp);
+    return {
+        events: (ms: number) => {
+            stamp += ms;
+        },
+        handled: (ms: number) => {
+            handled += ms;
+        },
+    };
+}
+
+/**
  * jsdom has no layout: a 375 by 740 screen, and a 4:3 photo fitted to it,
  * 375 by 281. The stage's centre is at (187.5, 370).
  */
@@ -543,6 +562,38 @@ describe("PhotoViewer zooming", () => {
         await tap(60, CENTRE.y, tick, 100);
         await tap(300, CENTRE.y, tick, 500);
         expect(zoom()).toBeNull();
+    });
+
+    it("a tap is timed by when the finger touched, not by when the page got to it", async () => {
+        await open();
+        const time = clocks();
+        // Two taps 140ms apart, on a page that was 600ms late with the second.
+        const both = (ms: number) => (time.events(ms), time.handled(ms));
+        await tap(CENTRE.x, CENTRE.y, both);
+        time.handled(600);
+        await tap(CENTRE.x, CENTRE.y, both, 600);
+        expect(zoom(), "Handled late, still a double tap").toEqual({ x: 0, y: 0, scale: 2.5 });
+
+        // And back out, to start again from the fitted photo.
+        await tap(CENTRE.x, CENTRE.y, both);
+        await tap(CENTRE.x, CENTRE.y, both, 600);
+        expect(zoom()).toBeNull();
+
+        // Two taps 540ms apart, which the page handled in the same moment.
+        await tap(CENTRE.x, CENTRE.y, time.events, 500);
+        await tap(CENTRE.x, CENTRE.y, time.events, 500);
+        expect(zoom(), "Handled together, still two taps").toBeNull();
+    });
+
+    it("events that all carry one stamp are timed by the clock", async () => {
+        await open();
+        const time = clocks();
+        await tap(CENTRE.x, CENTRE.y, time.handled, 500);
+        await tap(CENTRE.x, CENTRE.y, time.handled, 500);
+        expect(zoom(), "540ms apart by the clock: two taps").toBeNull();
+        await tap(CENTRE.x, CENTRE.y, time.handled);
+        await tap(CENTRE.x, CENTRE.y, time.handled, 600);
+        expect(zoom(), "140ms apart by the clock: a double tap").toEqual({ x: 0, y: 0, scale: 2.5 });
     });
 
     it("a double click with the mouse zooms as well", async () => {

@@ -2,6 +2,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { touchDrag } from "./helpers/touch";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * BottomSheet and SlideUp under a finger: the parts jsdom cannot show.
  *
@@ -24,10 +26,9 @@ const state = (page: Page) => page.getByTestId("bottom-sheet-demo-state");
 
 /** The page is usable before it hydrates; a click that lands early is lost. */
 async function openWith(trigger: Locator, target: Locator): Promise<void> {
-    await expect(async () => {
-        if ((await target.count()) === 0) await trigger.click();
-        await expect(target).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(trigger);
+    if ((await target.count()) === 0) await trigger.click();
+    await expect(target).toBeVisible();
 }
 
 /** Geometry is only meaningful once the slide and the height change have finished. */

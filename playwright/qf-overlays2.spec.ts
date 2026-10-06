@@ -377,11 +377,19 @@ test.describe("Tooltip with a mouse and a keyboard together", () => {
         const start = { x: from.x + from.width / 2, y: from.y + from.height - 6 };
         const end = { x: to.x + 6, y: to.y + to.height - 6 };
         await page.mouse.move(start.x, start.y);
+        // The page's clock is held, and moved by hand: 100ms a step. A pointer
+        // that stops for 300ms is rightly taken to have stopped short, and on
+        // a busy machine this process is that slow between two steps. At a
+        // step every 100ms the whole way takes three seconds, so the wait has
+        // to start again with each move for the bubble to last it.
+        await page.clock.install();
+        await page.clock.pauseAt(Date.now() + 60_000);
         let outside = 0;
         for (let step = 1; step <= 30; step += 1) {
             const x = start.x + ((end.x - start.x) * step) / 30;
             const y = start.y + ((end.y - start.y) * step) / 30;
             await page.mouse.move(x, y);
+            await page.clock.runFor(100);
             const on = await page.evaluate(
                 ({ px, py }) => Boolean(document.elementFromPoint(px, py)?.closest(".tooltip-container")),
                 { px: x, py: y },
@@ -390,8 +398,9 @@ test.describe("Tooltip with a mouse and a keyboard together", () => {
             await expect(tooltip, `Open at step ${step}`).toHaveAttribute("data-visible", "true");
         }
         expect(outside, "The way did leave the tooltip, or this proves nothing").toBeGreaterThan(0);
-        await page.waitForTimeout(500);
+        await page.clock.runFor(500);
         await expect(tooltip, "It arrived: the tooltip stays").toBeVisible();
+        await page.clock.resume();
 
         // Straying off to the side closes it at once; so does stopping short for long.
         await page.mouse.move(end.x, end.y + 300, { steps: 4 });
@@ -404,10 +413,28 @@ test.describe("Tooltip with a mouse and a keyboard together", () => {
         const tooltip = page.locator(`[id="${await trigger.getAttribute("aria-describedby")}"]`);
         await expect(tooltip).toHaveCSS("opacity", "1");
         const from = await box(trigger);
+        // Timed in the page, from the pointer's last move to the bubble
+        // closing. A pointer on its way to the bubble is given 300ms; one
+        // that strays is given none, so the close comes with the move itself.
+        // Timed from out here, the same close is as late as this process is.
+        await tooltip.evaluate((bubble) => {
+            const store = window as unknown as { __closedAfter?: number };
+            delete store.__closedAfter;
+            let moved = performance.now();
+            window.addEventListener("mousemove", () => (moved = performance.now()), true);
+            new MutationObserver(() => {
+                if (bubble.getAttribute("data-visible") !== "false") return;
+                store.__closedAfter ??= performance.now() - moved;
+            }).observe(bubble, { attributes: true, attributeFilter: ["data-visible"] });
+        });
         // Downwards, away from a bubble that is above.
         await page.mouse.move(from.x + from.width / 2, from.y + from.height + 30, { steps: 3 });
         await page.mouse.move(from.x + from.width / 2, from.y + from.height + 60, { steps: 3 });
-        await expect(tooltip).toHaveAttribute("data-visible", "false", { timeout: 250 });
+        await expect(tooltip).toHaveAttribute("data-visible", "false");
+        const waited = await page.evaluate(
+            () => (window as unknown as { __closedAfter?: number }).__closedAfter,
+        );
+        expect(waited, "Closed by the move that strayed, not by the wait").toBeLessThan(250);
     });
 });
 

@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * The brand menu in the site's header must open inside the viewport.
  *
@@ -18,20 +20,18 @@ const menu = (page: Page) =>
 
 /** The page is usable before it hydrates; a click that lands early is lost. */
 async function openMenu(page: Page): Promise<void> {
-    await expect(async () => {
-        if ((await menu(page).count()) === 0) await trigger(page).click();
-        await expect(menu(page)).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    if ((await menu(page).count()) === 0) await trigger(page).click();
+    await expect(menu(page)).toBeVisible();
 }
 
 /** Below the header's breakpoint the control is inside the phone menu. */
 async function revealTrigger(page: Page): Promise<void> {
-    await expect(async () => {
-        if ((await trigger(page).count()) === 0) {
-            await page.getByRole("button", { name: "Open menu" }).click();
-        }
-        await expect(trigger(page)).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    if ((await trigger(page).count()) === 0) {
+        await page.getByRole("button", { name: "Open menu" }).click();
+    }
+    await expect(trigger(page)).toBeVisible();
 }
 
 async function expectMenuInsideViewport(page: Page, width: number): Promise<void> {

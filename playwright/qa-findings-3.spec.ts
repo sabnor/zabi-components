@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Findings from the QA pass on the radius work, one describe per finding.
  * Each test fails without its fix. The capped Dropdown's scrolling box is in
@@ -17,10 +19,9 @@ async function openPage(page: Page, name: string) {
 
 /** Clicks until the popup is there: the page is usable before it hydrates. */
 async function openPopup(opener: Locator, popup: Locator) {
-    await expect(async () => {
-        if (!(await popup.isVisible())) await opener.click();
-        await expect(popup).toBeVisible({ timeout: 1_500 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(opener);
+    if (!(await popup.isVisible())) await opener.click();
+    await expect(popup).toBeVisible();
     // An entry animation moves the panel: measure it at rest.
     await popup.page().waitForTimeout(400);
 }
@@ -154,10 +155,9 @@ test.describe("Docs site demos", () => {
         await page.setViewportSize({ width: 1280, height: 900 });
         await openPage(page, "Toaster");
         const push = page.locator(PREVIEWS).getByRole("button", { name: "Push sample toast" }).first();
-        await expect(async () => {
-            if ((await page.locator("[data-toast-id]").count()) === 0) await push.click();
-            await expect(page.locator("[data-toast-id]").first()).toBeVisible({ timeout: 1_500 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if ((await page.locator("[data-toast-id]").count()) === 0) await push.click();
+        await expect(page.locator("[data-toast-id]").first()).toBeVisible();
         await page.waitForTimeout(300);
         const ids = await page
             .locator("[data-toast-id]")

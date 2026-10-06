@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * DateField and TimeField in a real browser: the parts jsdom cannot show.
  *
@@ -60,10 +62,9 @@ for (const field of fields) {
     /** The page is usable before it hydrates; a value typed early is not bound. */
     async function open(page: Page) {
         await page.goto(`/components/${field.name}`, { waitUntil: "domcontentloaded" });
-        await expect(async () => {
-            await main(page).fill(field.next);
-            await expect(text(page)).toContainText(`Value: ${field.next}.`, { timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await main(page).fill(field.next);
+        await expect(text(page)).toContainText(`Value: ${field.next}.`);
         await main(page).fill(field.value);
         await expect(text(page)).toContainText(`Value: ${field.value}.`);
     }

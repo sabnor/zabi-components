@@ -41,6 +41,15 @@
             themeColor = dark ? THEME_COLOR.dark : THEME_COLOR.light;
         }),
     );
+
+    // The page is served as markup and looks ready before its handlers are
+    // attached: a click that lands in between does nothing. This runs once
+    // the whole tree (this layout and the page inside it) has hydrated, since
+    // a parent's effects run after its children's. The browser tests wait
+    // for it before they press anything (playwright/helpers/hydration.ts).
+    $effect(() => {
+        document.documentElement.dataset.zabiHydrated = "true";
+    });
 </script>
 
 <svelte:head>

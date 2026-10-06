@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * FloatingActionButton in a real browser: the parts jsdom cannot show.
  *
@@ -26,12 +28,9 @@ async function box(locator: Locator) {
 async function gotoHydrated(page: Page) {
     await page.goto("/components/FloatingActionButton", { waitUntil: "domcontentloaded" });
     await shellOf(page, 0).scrollIntoViewIfNeeded();
-    await expect(async () => {
-        await round(page).click({ timeout: 1_000 });
-        await expect(page.getByTestId("fab-demo-count-0")).not.toHaveText("Pressed 0 times.", {
-            timeout: 1_000,
-        });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    await round(page).click();
+    await expect(page.getByTestId("fab-demo-count-0")).not.toHaveText("Pressed 0 times.");
 }
 
 test.describe("FloatingActionButton in an AppShell", () => {

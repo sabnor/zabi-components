@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * TopNavbar's phone menu, from a review of the docs site at phone sizes.
  *
@@ -41,10 +43,9 @@ test.describe("TopNavbar phone menu at 375px", () => {
         await page.goto("/", { waitUntil: "domcontentloaded" });
         const button = page.getByRole("button", { name: /^(Open|Close) menu$/ });
         // The page is usable before it hydrates; a tap that lands early does nothing.
-        await expect(async () => {
-            if ((await button.getAttribute("aria-expanded")) !== "true") await button.click();
-            await expect(button).toHaveAttribute("aria-expanded", "true", { timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if ((await button.getAttribute("aria-expanded")) !== "true") await button.click();
+        await expect(button).toHaveAttribute("aria-expanded", "true");
 
         await page.locator("[id^='topnavbar-menu']").getByRole("link", { name: "Docs" }).tap();
         await expect(page).toHaveURL(/\/docs$/);

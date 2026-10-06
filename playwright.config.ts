@@ -6,6 +6,8 @@ const baseURL =
 
 export default defineConfig({
     testDir: "playwright",
+    // Opens every route once before the first test; PLAYWRIGHT_WARMUP=0 skips it (see RELEASING.md).
+    globalSetup: "./playwright/global-setup.ts",
     timeout: 60_000,
     expect: { timeout: 15_000 },
     fullyParallel: true,
@@ -13,7 +15,8 @@ export default defineConfig({
     retries: process.env.CI ? 1 : 0,
     /** First failure is enough for this small suite; speeds up CI signal. */
     maxFailures: process.env.CI ? 1 : 0,
-    workers: process.env.CI ? 2 : undefined,
+    // PLAYWRIGHT_WORKERS sets the count for one run (see RELEASING.md); unset, nothing changes.
+    workers: Number(process.env.PLAYWRIGHT_WORKERS) || (process.env.CI ? 2 : undefined),
     reporter: process.env.CI
         ? [
               ["github"],

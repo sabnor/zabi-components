@@ -1,5 +1,7 @@
 import { devices, expect, test, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * ImageUpload in a real browser (QA review of b76dace, and the fixes that
  * followed): the parts jsdom cannot show. jsdom evaluates no media queries,
@@ -22,12 +24,11 @@ const actions = (page: Page) => page.getByTestId("image-upload-actions").first()
 /** Picks a file through the real chooser, from the keyboard. */
 async function pickImage(page: Page): Promise<void> {
     await page.goto(PATH, { waitUntil: "networkidle" });
-    await expect(async () => {
-        const chooser = page.waitForEvent("filechooser", { timeout: 2_000 });
-        await dropzone(page).focus();
-        await page.keyboard.press("Enter");
-        await (await chooser).setFiles({ name: "cover.png", mimeType: "image/png", buffer: PNG });
-    }, "The route must hydrate before the dropzone opens the chooser").toPass();
+    await waitForHydration(page);
+    const chooser = page.waitForEvent("filechooser");
+    await dropzone(page).focus();
+    await page.keyboard.press("Enter");
+    await (await chooser).setFiles({ name: "cover.png", mimeType: "image/png", buffer: PNG });
     await expect(actions(page)).toBeAttached();
 }
 
@@ -78,11 +79,10 @@ test.describe("ImageUpload — names, focus and the overlay", () => {
         page,
     }) => {
         await page.goto(PATH, { waitUntil: "networkidle" });
-        await expect(async () => {
-            const chooser = page.waitForEvent("filechooser", { timeout: 2_000 });
-            await dropzone(page).click();
-            await (await chooser).setFiles({ name: "cover.png", mimeType: "image/png", buffer: PNG });
-        }, "The route must hydrate before the dropzone opens the chooser").toPass();
+        await waitForHydration(page);
+        const chooser = page.waitForEvent("filechooser");
+        await dropzone(page).click();
+        await (await chooser).setFiles({ name: "cover.png", mimeType: "image/png", buffer: PNG });
         await expect(actions(page)).toBeAttached();
         await page.mouse.move(1, 1);
 

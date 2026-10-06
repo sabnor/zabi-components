@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Stepper in a browser: the parts jsdom cannot show.
  *
@@ -27,13 +29,12 @@ const status = (host: Locator) => host.locator("[data-stepper-status]");
 /** The page is usable before it hydrates; a press that lands early changes nothing. */
 async function gotoHydrated(page: Page) {
     await page.goto("/components/Stepper", { waitUntil: "domcontentloaded" });
-    await expect(async () => {
-        // Back and forth, so the example ends where it started: at the second step.
-        const before = await basicValue(page).textContent();
-        const button = page.getByTestId(before === "1" ? "stepper-demo-basic-back" : "stepper-demo-basic-next");
-        await button.click();
-        await expect(basicValue(page)).not.toHaveText(before!, { timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    // Back and forth, so the example ends where it started: at the second step.
+    const before = await basicValue(page).textContent();
+    const button = page.getByTestId(before === "1" ? "stepper-demo-basic-back" : "stepper-demo-basic-next");
+    await button.click();
+    await expect(basicValue(page)).not.toHaveText(before!);
     if ((await basicValue(page).textContent()) !== "1") {
         await page.getByTestId("stepper-demo-basic-next").click();
     }

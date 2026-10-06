@@ -2,6 +2,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { touchTap } from "./helpers/touch";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Tooltip, Toaster, Modal and Page on a phone: the parts jsdom cannot show.
  *
@@ -659,10 +661,9 @@ test.describe("Modal on a desktop", () => {
     test("default props: the size and place measured before fullScreen existed", async ({ page }) => {
         await page.goto("/components/Modal", { waitUntil: "domcontentloaded" });
         const panel = page.getByRole("dialog", { name: "Confirm changes" });
-        await expect(async () => {
-            await page.getByRole("button", { name: "Open modal" }).first().click({ timeout: 1_000 });
-            await expect(panel).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await page.getByRole("button", { name: "Open modal" }).first().click();
+        await expect(panel).toBeVisible();
 
         expect(await box(panel)).toEqual({ x: 416, y: 311, width: 448, height: 178 });
         expect(await box(panel.getByRole("button", { name: "Close" }))).toEqual({

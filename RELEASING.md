@@ -60,6 +60,25 @@ dev servers busy beside it, tests time out in places that have nothing wrong
 with them (a click that takes a minute, a page that does not hydrate in 30
 seconds). Run it again by itself before reading anything into such a failure.
 
+When the machine cannot be left idle, give the run fewer workers instead:
+`PLAYWRIGHT_WORKERS=2 npm run test:e2e`. Unset, the count is Playwright's own
+(half the cores), or 2 in CI. A higher number than that is a way to put the
+suite under load on purpose, to see which tests depend on the machine.
+
+Before the first test, every route the suite visits is opened once
+(`playwright/global-setup.ts`): the dev server compiles a page the first time
+it is asked for, and without this the first minute of a run is workers
+waiting on pages that are still being built. It prints how long it took. If a
+route does not hydrate within two minutes the run stops there and names the
+route. `PLAYWRIGHT_WARMUP=0 npx playwright test playwright/drawer.spec.ts`
+skips it, which is quicker for a run of one file.
+
+A test waits for the page to hydrate before it presses anything, with
+`waitForHydration` or `gotoHydrated` from `playwright/helpers/hydration.ts`.
+It does not press, look for a second and press again: under load the second
+press undoes the first. A test that is about speed times it in the page, from
+the events' own times, never from how long the test process waited.
+
 A failure that says a control is `inactive` where it should be focused is a
 different thing, and worth finding. Modal, Drawer, SlideUp and BottomSheet
 move focus to their first control a task after they open. A test that moves

@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * MediaGrid in a real browser: the parts jsdom cannot show.
  *
@@ -19,10 +21,9 @@ const tiles = (scope: Locator) => scope.locator("[data-media-grid-item]");
 async function gotoHydrated(page: Page) {
     await page.goto("/components/MediaGrid", { waitUntil: "domcontentloaded" });
     const probe = item(library(page), "office.jpg");
-    await expect(async () => {
-        if ((await probe.getAttribute("aria-pressed")) !== "true") await probe.click();
-        await expect(probe).toHaveAttribute("aria-pressed", "true", { timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    if ((await probe.getAttribute("aria-pressed")) !== "true") await probe.click();
+    await expect(probe).toHaveAttribute("aria-pressed", "true");
     // Back to the demo's starting selection.
     await item(library(page), "team.png").click();
     await expect(page.getByTestId("media-demo-selected")).toHaveText("team.png");

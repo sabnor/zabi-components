@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * UnsavedChangesBar in a real browser: the parts jsdom cannot show.
  *
@@ -17,12 +19,9 @@ const bio = (page: Page) => scroller(page).getByLabel("Bio");
 /** The page is usable before it hydrates; typing that lands early changes nothing. */
 async function gotoHydrated(page: Page) {
     await page.goto("/components/UnsavedChangesBar", { waitUntil: "domcontentloaded" });
-    await expect(async () => {
-        await nameField(page).fill("Ada L");
-        await expect(bar(page).getByRole("button", { name: "Save" })).toBeVisible({
-            timeout: 1_000,
-        });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    await nameField(page).fill("Ada L");
+    await expect(bar(page).getByRole("button", { name: "Save" })).toBeVisible();
     await nameField(page).fill("Ada Lovelace");
     await expect(bar(page).getByRole("button", { name: "Save" })).toHaveCount(0);
 }

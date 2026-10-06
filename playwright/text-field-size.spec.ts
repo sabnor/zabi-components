@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { gotoHydrated } from "./helpers/hydration";
+
 /**
  * iOS Safari zooms the page when a focused field is under 16px, so the text
  * of Input, Select and Textarea is 16px below the `sm` breakpoint and keeps
@@ -36,7 +38,7 @@ for (const { name, path, field, height } of fields) {
         page,
     }) => {
         await page.setViewportSize(DESKTOP);
-        await page.goto(path, { waitUntil: "domcontentloaded" });
+        await gotoHydrated(page, path);
         await expect(field(page)).toHaveCSS("font-size", "14px");
         const desktop = await field(page).boundingBox();
 
@@ -55,7 +57,7 @@ for (const { name, path, field, height } of fields) {
 
 test("labels keep their size on a phone", async ({ page }) => {
     await page.setViewportSize(PHONE);
-    await page.goto("/components/Input", { waitUntil: "domcontentloaded" });
+    await gotoHydrated(page, "/components/Input");
 
     await expect(page.locator("label", { hasText: "Email address" }).first()).toHaveCSS(
         "font-size",

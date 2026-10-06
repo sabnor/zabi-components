@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * ConfirmDialog in a real browser: the parts jsdom cannot show.
  *
@@ -12,10 +14,9 @@ const dialog = (page: Page) => page.getByRole("alertdialog");
 
 /** The page is usable before it hydrates; a click that lands early is lost. */
 async function openDialog(page: Page, opener: Locator): Promise<Locator> {
-    await expect(async () => {
-        if ((await dialog(page).count()) === 0) await opener.click();
-        await expect(dialog(page)).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    if ((await dialog(page).count()) === 0) await opener.click();
+    await expect(dialog(page)).toBeVisible();
     return dialog(page);
 }
 

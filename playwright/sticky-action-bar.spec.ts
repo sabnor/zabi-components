@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * StickyActionBar in a real browser: the parts jsdom cannot show.
  *
@@ -33,10 +35,9 @@ async function box(locator: Locator) {
 /** The page is usable before it hydrates; a click that lands early opens nothing. */
 async function openFormScreen(page: Page) {
     await page.goto("/components/StickyActionBar", { waitUntil: "domcontentloaded" });
-    await expect(async () => {
-        await page.getByRole("button", { name: "Open full screen" }).click({ timeout: 1_000 });
-        await expect(fullScreen(page)).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    await page.getByRole("button", { name: "Open full screen" }).click();
+    await expect(fullScreen(page)).toBeVisible();
 }
 
 /** See the note at the top: the visual viewport reports a keyboard; none is shown. */
@@ -224,13 +225,11 @@ test.describe("StickyActionBar — in a form of its own, and display modes", () 
     });
 
     test("submitting from the bar saves", async ({ page }) => {
-        await expect(async () => {
-            await plain(page).getByRole("button", { name: "Save visit" }).click();
-            await expect(page.getByTestId("sticky-action-bar-demo-outcome")).toHaveText(
-                "Saved the visit to The Crown.",
-                { timeout: 1_000 },
-            );
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await plain(page).getByRole("button", { name: "Save visit" }).click();
+        await expect(page.getByTestId("sticky-action-bar-demo-outcome")).toHaveText(
+            "Saved the visit to The Crown.",
+        );
     });
 
     test("fits a 320px screen without sideways scroll, also with the text enlarged to 200%", async ({
@@ -238,10 +237,9 @@ test.describe("StickyActionBar — in a form of its own, and display modes", () 
     }) => {
         // Full screen: the framed examples are narrower than any phone.
         await page.setViewportSize({ width: 320, height: 568 });
-        await expect(async () => {
-            await page.getByRole("button", { name: "Open full screen" }).click({ timeout: 1_000 });
-            await expect(fullScreen(page)).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await page.getByRole("button", { name: "Open full screen" }).click();
+        await expect(fullScreen(page)).toBeVisible();
         const check = async () => {
             for (const region of [shell(page), scroller(page), bar(page)]) {
                 expect(await region.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
@@ -261,10 +259,9 @@ test.describe("StickyActionBar — in a form of its own, and display modes", () 
     test("right to left: the actions are at the left end, in the same order from the start", async ({
         page,
     }) => {
-        await expect(async () => {
-            await page.getByRole("button", { name: "Open full screen" }).click({ timeout: 1_000 });
-            await expect(fullScreen(page)).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await page.getByRole("button", { name: "Open full screen" }).click();
+        await expect(fullScreen(page)).toBeVisible();
         await page.evaluate(() => (document.documentElement.dir = "rtl"));
         const draft = await box(bar(page).getByRole("button", { name: "Save draft" }));
         const save = await box(bar(page).getByRole("button", { name: "Save visit" }));
@@ -352,12 +349,11 @@ test.describe("StickyActionBar — the keyboard, and where the bar's own box end
     test("in a BottomSheet: the bar stays inside the sheet's content", async ({ page }) => {
         await page.goto("/components/StickyActionBar", { waitUntil: "domcontentloaded" });
         const sheet = page.getByRole("dialog", { name: "Add a visit" });
-        await expect(async () => {
-            if ((await sheet.count()) === 0) {
-                await page.getByTestId("sticky-action-bar-demo-sheet-open").click();
-            }
-            await expect(sheet).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if ((await sheet.count()) === 0) {
+            await page.getByTestId("sticky-action-bar-demo-sheet-open").click();
+        }
+        await expect(sheet).toBeVisible();
         await expect.poll(() => sheet.evaluate((el) => el.getAnimations().length)).toBe(0);
         const content = sheet.locator("[data-bottom-sheet-content]");
         const inSheet = page.getByTestId("sticky-action-bar-demo-in-sheet");
@@ -404,10 +400,9 @@ test.describe("StickyActionBar — the keyboard, and where the bar's own box end
         page,
     }) => {
         await page.goto("/components/StickyActionBar", { waitUntil: "domcontentloaded" });
-        await expect(async () => {
-            await page.getByRole("button", { name: "Open with a tab bar" }).click({ timeout: 1_000 });
-            await expect(fullScreen(page)).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await page.getByRole("button", { name: "Open with a tab bar" }).click();
+        await expect(fullScreen(page)).toBeVisible();
         const tabs = shell(page).getByRole("navigation", { name: "Main" });
         const footer = await box(tabs);
         const rest = await box(bar(page));

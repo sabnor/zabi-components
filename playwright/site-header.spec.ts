@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * The site's own header: five links, the brand menu and the theme toggle.
  *
@@ -54,14 +56,11 @@ for (const mode of ["light", "dark"] as const) {
             }
 
             // The page is usable before it hydrates; a click that lands early is lost.
-            await expect(async () => {
-                if ((await page.getByRole("button", { name: "Close menu" }).count()) === 0) {
-                    await page.getByRole("button", { name: "Open menu" }).click();
-                }
-                await expect(header(page).getByRole("link", { name: "Theming" })).toBeVisible({
-                    timeout: 1_000,
-                });
-            }).toPass({ timeout: 30_000 });
+            await waitForHydration(page);
+            if ((await page.getByRole("button", { name: "Close menu" }).count()) === 0) {
+                await page.getByRole("button", { name: "Open menu" }).click();
+            }
+            await expect(header(page).getByRole("link", { name: "Theming" })).toBeVisible();
 
             for (const name of LINKS) {
                 await expect(header(page).getByRole("link", { name }).first()).toBeVisible();

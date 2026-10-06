@@ -1,5 +1,7 @@
 import { devices, expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Drawer in a real browser: the parts jsdom cannot show.
  *
@@ -12,10 +14,9 @@ const drawer = (page: Page) => page.getByRole("dialog", { name: "Choose a projec
 
 /** The page is usable before it hydrates; a click that lands early is lost. */
 async function openWith(opener: Locator, target: Locator): Promise<void> {
-    await expect(async () => {
-        if ((await target.count()) === 0) await opener.click();
-        await expect(target).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(opener);
+    if ((await target.count()) === 0) await opener.click();
+    await expect(target).toBeVisible();
 }
 
 /** The slide is 200ms; geometry is only meaningful once it has finished. */
@@ -23,6 +24,52 @@ async function settled(panel: Locator): Promise<void> {
     await expect
         .poll(() => panel.evaluate((el) => el.getAnimations().length))
         .toBe(0);
+}
+
+interface Entrance {
+    duration: number;
+    from: string;
+    to: string;
+}
+
+/**
+ * What is animating a dialog on the first frame it is drawn in.
+ *
+ * Asked for before the press that opens it, and read in the page: the slide
+ * lasts 200ms, and a test that looks for it from out here, after the dialog
+ * has been seen, finds it over whenever this process is slow to look. An
+ * animation started while the dialog mounts is there on that first frame
+ * however late the frame comes, since its clock starts with the frame.
+ */
+async function watchEntrance(page: Page): Promise<() => Promise<Entrance[]>> {
+    await page.evaluate(() => {
+        const store = window as unknown as { __entrance?: Entrance[] };
+        delete store.__entrance;
+        const look = () => {
+            const dialog = document.querySelector('[role="dialog"]');
+            if (!dialog) return;
+            observer.disconnect();
+            requestAnimationFrame(() => {
+                store.__entrance = dialog.getAnimations().map((animation) => {
+                    const effect = animation.effect as KeyframeEffect;
+                    const frames = effect.getKeyframes();
+                    return {
+                        duration: Number(effect.getTiming().duration),
+                        from: String(frames[0]?.transform),
+                        to: String(frames[frames.length - 1]?.transform),
+                    };
+                });
+            });
+        };
+        const observer = new MutationObserver(look);
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+    return async () => {
+        const handle = await page.waitForFunction(
+            () => (window as unknown as { __entrance?: Entrance[] }).__entrance,
+        );
+        return (await handle.jsonValue()) as Entrance[];
+    };
 }
 
 const lockCount = (page: Page) =>
@@ -93,16 +140,22 @@ test.describe("Drawer — edge, focus and closing", () => {
     test("slides in, and does not under prefers-reduced-motion", async ({ page }) => {
         const opener = page.getByRole("button", { name: "Choose project" });
         const panel = drawer(page);
+        await waitForHydration(page);
+        let entrance = await watchEntrance(page);
         await openWith(opener, panel);
-        // Sampled right after it appears: the slide is still running.
-        expect(await panel.evaluate((el) => el.getAnimations().length)).toBe(1);
+        // From the right edge to its place, in 200ms.
+        expect(await entrance()).toEqual([
+            { duration: 200, from: "translateX(100%)", to: "translateX(0px)" },
+        ]);
         await settled(panel);
         await page.keyboard.press("Escape");
         await expect(panel).toBeHidden();
 
         await page.emulateMedia({ reducedMotion: "reduce" });
+        entrance = await watchEntrance(page);
         await opener.click();
         await expect(panel).toBeVisible();
+        expect(await entrance(), "Nothing moves it").toEqual([]);
         expect(await panel.evaluate((el) => el.getAnimations().length)).toBe(0);
     });
 
@@ -270,10 +323,9 @@ test.describe("Drawer — phone", () => {
 
         const opener = page.getByRole("button", { name: "Choose project" });
         const panel = drawer(page);
-        await expect(async () => {
-            if ((await panel.count()) === 0) await opener.tap();
-            await expect(panel).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if ((await panel.count()) === 0) await opener.tap();
+        await expect(panel).toBeVisible();
         await settled(panel);
 
         const box = (await panel.boundingBox())!;
@@ -299,10 +351,9 @@ test.describe("Drawer — phone", () => {
         await page.goto("/components/Drawer", { waitUntil: "domcontentloaded" });
         const opener = page.getByRole("button", { name: "Choose project" });
         const panel = drawer(page);
-        await expect(async () => {
-            if ((await panel.count()) === 0) await opener.tap();
-            await expect(panel).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if ((await panel.count()) === 0) await opener.tap();
+        await expect(panel).toBeVisible();
         await settled(panel);
 
         const close = panel.getByRole("button", { name: "Close" });
@@ -343,10 +394,9 @@ test.describe("Drawer — phone", () => {
         const viewport = page.viewportSize()!;
         const opener = page.getByRole("button", { name: "Filters" });
         const panel = page.getByRole("dialog", { name: "Filters" });
-        await expect(async () => {
-            if ((await panel.count()) === 0) await opener.tap();
-            await expect(panel).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if ((await panel.count()) === 0) await opener.tap();
+        await expect(panel).toBeVisible();
         await settled(panel);
 
         const box = (await panel.boundingBox())!;

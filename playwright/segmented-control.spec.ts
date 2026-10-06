@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * SegmentedControl on a phone: the parts jsdom cannot show.
  *
@@ -24,12 +26,11 @@ const segment = (host: Locator, label: string) =>
 /** The page is usable before it hydrates; a tap that lands early checks the radio but not the bound value. */
 async function gotoHydrated(page: Page) {
     await page.goto("/components/SegmentedControl", { waitUntil: "domcontentloaded" });
-    await expect(async () => {
-        await segment(view(page), "Month").tap();
-        await segment(view(page), "List").tap();
-        await segment(view(page), "Month").tap();
-        await expect(viewValue(page)).toHaveText("month", { timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    await segment(view(page), "Month").tap();
+    await segment(view(page), "List").tap();
+    await segment(view(page), "Month").tap();
+    await expect(viewValue(page)).toHaveText("month");
     await segment(view(page), "List").tap();
     await expect(viewValue(page)).toHaveText("list");
 }

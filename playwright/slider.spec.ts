@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Slider in a real browser: the parts jsdom cannot show.
  *
@@ -18,13 +20,10 @@ const quality = (page: Page) => page.getByTestId("slider-demo-quality");
 /** The page is usable before it hydrates; a key that lands early changes the input but not the bound value. */
 async function gotoHydrated(page: Page) {
     await page.goto("/components/Slider", { waitUntil: "domcontentloaded" });
-    await expect(async () => {
-        await volume(page).focus();
-        await page.keyboard.press("End");
-        await expect(page.getByTestId("slider-demo-volume-value")).toHaveText("100", {
-            timeout: 1_000,
-        });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    await volume(page).focus();
+    await page.keyboard.press("End");
+    await expect(page.getByTestId("slider-demo-volume-value")).toHaveText("100");
     await volume(page).fill("40");
     await expect(page.getByTestId("slider-demo-volume-value")).toHaveText("40");
     await volume(page).blur();

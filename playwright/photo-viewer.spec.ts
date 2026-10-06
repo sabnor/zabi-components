@@ -2,6 +2,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { touchDrag, touchPinch, touchTap } from "./helpers/touch";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * PhotoGrid and PhotoViewer under a finger: the parts jsdom cannot show.
  *
@@ -48,10 +50,9 @@ async function settled(page: Page) {
 /** The page is usable before it hydrates; a press that lands early opens nothing. */
 async function openAt(page: Page, name: string, path = "/components/PhotoViewer") {
     await page.goto(path, { waitUntil: "domcontentloaded" });
-    await expect(async () => {
-        if ((await viewer(page).count()) === 0) await tile(page, name).click({ timeout: 1_000 });
-        await expect(viewer(page)).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    if ((await viewer(page).count()) === 0) await tile(page, name).click();
+    await expect(viewer(page)).toBeVisible();
     await settled(page);
 }
 
@@ -62,28 +63,28 @@ const scale = (page: Page) =>
 const centre = { x: PHONE.width / 2, y: PHONE.height / 2 };
 
 /**
- * Two taps of a finger close together, until they count as a double tap: the
- * photo ends up zoomed in when `zoomsIn`, and fitted when not.
+ * Two taps of a finger close together: 40ms on the glass each, 100ms between
+ * them. The photo ends up zoomed in when `zoomsIn`, and fitted when not.
  *
- * Whether two taps arrive within the 300ms that makes them a double tap
- * depends on how busy the machine driving them is. Two that came too far
- * apart are two single taps, which change nothing, so they are made again.
+ * Each event carries the time the taps say they happened at, and the viewer
+ * times a tap by that: how late this process sends them, or the page handles
+ * them, does not make two single taps of them. Made once.
  * (The timing itself is tested with a clock in tests/photo-viewer.test.ts.)
  */
 async function doubleTap(page: Page, point: { x: number; y: number }, zoomsIn: boolean) {
-    await expect(async () => {
-        // Clear of the pair before, which may have been two single taps.
-        await page.waitForTimeout(400);
-        const cdp = await page.context().newCDPSession(page);
-        const at = [{ x: Math.round(point.x), y: Math.round(point.y), id: 1 }];
-        for (let tap = 0; tap < 2; tap += 1) {
-            await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: at });
-            await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
-        }
-        await cdp.detach();
-        if (zoomsIn) await expect(viewer(page)).toHaveAttribute("data-zoomed", "true", { timeout: 1_000 });
-        else await expect(viewer(page)).not.toHaveAttribute("data-zoomed", "true", { timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    // Clear of a single tap before, which was sent at the time it was made.
+    await page.waitForTimeout(400);
+    const cdp = await page.context().newCDPSession(page);
+    const at = [{ x: Math.round(point.x), y: Math.round(point.y), id: 1 }];
+    const began = Date.now();
+    const when = (ms: number) => (began + ms) / 1000;
+    for (const start of [0, 140]) {
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: at, timestamp: when(start) });
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [], timestamp: when(start + 40) });
+    }
+    await cdp.detach();
+    if (zoomsIn) await expect(viewer(page)).toHaveAttribute("data-zoomed", "true");
+    else await expect(viewer(page)).not.toHaveAttribute("data-zoomed", "true");
     await settled(page);
 }
 /** Opaque black, however the browser writes a colour it computed from another. */
@@ -165,10 +166,9 @@ test.describe("PhotoGrid", () => {
 
     test("the count tile opens the viewer at its own photo, and focus comes back to it", async ({ page }) => {
         const last = tiles(page).nth(7);
-        await expect(async () => {
-            if ((await viewer(page).count()) === 0) await last.click({ timeout: 1_000 });
-            await expect(viewer(page)).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if ((await viewer(page).count()) === 0) await last.click();
+        await expect(viewer(page)).toBeVisible();
         await expect(counter(page)).toHaveText("8 / 14");
         // On to a photo the grid does not show: focus has only the opener to go back to.
         await page.keyboard.press("End");
@@ -210,10 +210,9 @@ test.describe("PhotoGrid", () => {
         const bar = multiple.getByRole("button", { name: "The bar at The Crown", exact: true });
         const open = multiple.getByRole("button", { name: "Open The bar at The Crown" });
 
-        await expect(async () => {
-            await bar.click({ position: { x: 20, y: 20 }, timeout: 1_000 });
-            await expect(bar).toHaveAttribute("aria-pressed", "true", { timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await bar.click({ position: { x: 20, y: 20 } });
+        await expect(bar).toHaveAttribute("aria-pressed", "true");
         await expect(chosen).toHaveText("1 selected.");
         await expect(bar.locator("[data-photo-grid-check]")).toBeVisible();
         await bar.click({ position: { x: 20, y: 20 } });
@@ -241,10 +240,9 @@ test.describe("PhotoGrid", () => {
         const cover = page.getByTestId("photo-grid-demo-cover");
         await single.scrollIntoViewIfNeeded();
         const trophy = single.getByRole("button", { name: "Trophy on the shelf" });
-        await expect(async () => {
-            await trophy.click({ timeout: 1_000 });
-            await expect(trophy).toHaveAttribute("aria-pressed", "true", { timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await trophy.click();
+        await expect(trophy).toHaveAttribute("aria-pressed", "true");
         await expect(cover).toHaveText("Cover: Trophy on the shelf.");
         await trophy.click();
         await trophy.click();
@@ -264,10 +262,9 @@ test.describe("PhotoGrid", () => {
         const multiple = page.getByTestId("photo-grid-demo-multiple");
         await multiple.scrollIntoViewIfNeeded();
         const bar = multiple.getByRole("button", { name: "The bar at The Crown", exact: true });
-        await expect(async () => {
-            if ((await bar.getAttribute("aria-pressed")) !== "true") await bar.click({ position: { x: 20, y: 20 }, timeout: 1_000 });
-            await expect(bar.locator("[data-photo-grid-check]")).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if ((await bar.getAttribute("aria-pressed")) !== "true") await bar.click({ position: { x: 20, y: 20 } });
+        await expect(bar.locator("[data-photo-grid-check]")).toBeVisible();
         const radius = (locator: Locator) =>
             locator.evaluate((el) => parseFloat(getComputedStyle(el).borderTopLeftRadius));
         const outer = await box(bar);
@@ -385,14 +382,13 @@ test.describe("PhotoViewer — touch", () => {
         await settled(page);
         await expect(counter(page)).toHaveText("2 / 14");
         // How fast a flick arrives depends on how busy the machine driving it
-        // is. One that came through too slowly springs back and changes
-        // nothing, so it is simply made again. (The speed itself is tested
-        // with a clock in tests/photo-viewer.test.ts.)
-        await expect(async () => {
-            await settled(page);
-            await touchDrag(page, { x: 300, y: 370 }, { x: 240, y: 370 }, { duration: 0, hold: 0, steps: 2 });
-            await expect(counter(page)).toHaveText("3 / 14", { timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        // is. The events carry their own times (helpers/touch.ts) and the
+        // viewer reads the speed from those, so the flick is as fast as it
+        // says however late this process sends it: made once. (The speed
+        // itself is tested with a clock in tests/photo-viewer.test.ts.)
+        await settled(page);
+        await touchDrag(page, { x: 300, y: 370 }, { x: 240, y: 370 }, { duration: 0, hold: 0, steps: 2 });
+        await expect(counter(page)).toHaveText("3 / 14");
     });
 
     test("pinch zooms about the point between the fingers, up to four times", async ({ page }) => {
@@ -1030,12 +1026,11 @@ test.describe("PhotoViewer — captions", () => {
         const captions = page.getByTestId("photo-viewer-demo-captions");
         const dialog = page.getByRole("dialog", { name: "Photos with captions" });
         await captions.scrollIntoViewIfNeeded();
-        await expect(async () => {
-            if ((await dialog.count()) === 0) {
-                await captions.getByRole("button", { name: "Score sheet after round three" }).click({ timeout: 1_000 });
-            }
-            await expect(dialog).toBeVisible({ timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if ((await dialog.count()) === 0) {
+            await captions.getByRole("button", { name: "Score sheet after round three" }).click();
+        }
+        await expect(dialog).toBeVisible();
 
         const caption = dialog.locator("[data-photo-viewer-caption]");
         const text = caption.locator("p");

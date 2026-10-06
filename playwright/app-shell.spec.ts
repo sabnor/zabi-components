@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * AppShell, AppBar and BottomTabBar on a phone-sized screen: the parts jsdom
  * cannot show.
@@ -32,10 +34,9 @@ const floating = (page: Page) => shell(page).getByRole("button", { name: "New qu
 /** The page is usable before it hydrates; a click that lands early opens nothing. */
 async function openShell(page: Page) {
     await page.goto("/components/AppShell", { waitUntil: "domcontentloaded" });
-    await expect(async () => {
-        await page.getByRole("button", { name: "Open full screen" }).click({ timeout: 1_000 });
-        await expect(fullScreen(page)).toBeVisible({ timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    await page.getByRole("button", { name: "Open full screen" }).click();
+    await expect(fullScreen(page)).toBeVisible();
 }
 
 async function box(locator: Locator) {
@@ -503,14 +504,13 @@ test.describe("AppBar and BottomTabBar on their own", () => {
         expect(back.height).toBeGreaterThanOrEqual(44);
 
         // Hydrated when scrolling moves it.
-        await expect(async () => {
-            await frame.evaluate((el) => (el.scrollTop = 0));
-            for (let step = 0; step < 8; step += 1) {
-                await frame.evaluate((el) => el.scrollBy(0, 40));
-                await page.waitForTimeout(16);
-            }
-            await expect(header).toHaveAttribute("data-collapsed", "true", { timeout: 1_000 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        await frame.evaluate((el) => (el.scrollTop = 0));
+        for (let step = 0; step < 8; step += 1) {
+            await frame.evaluate((el) => el.scrollBy(0, 40));
+            await page.waitForTimeout(16);
+        }
+        await expect(header).toHaveAttribute("data-collapsed", "true");
 
         const outer = await box(frame);
         await expect

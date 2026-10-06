@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Rating on a phone: the parts jsdom cannot show.
  *
@@ -24,11 +26,10 @@ const radio = (host: Locator, star: number) => host.getByRole("radio").nth(star 
 /** The page is usable before it hydrates; a tap that lands early checks the radio but not the bound value. */
 async function gotoHydrated(page: Page) {
     await page.goto("/components/Rating", { waitUntil: "domcontentloaded" });
-    await expect(async () => {
-        await target(quiz(page), 1).tap();
-        await target(quiz(page), 2).tap();
-        await expect(quizValue(page)).toHaveText("2", { timeout: 1_000 });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(page);
+    await target(quiz(page), 1).tap();
+    await target(quiz(page), 2).tap();
+    await expect(quizValue(page)).toHaveText("2");
 }
 
 async function boxes(locator: Locator) {

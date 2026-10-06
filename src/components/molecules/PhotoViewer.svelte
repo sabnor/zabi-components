@@ -285,7 +285,7 @@
     // --- Pointers ------------------------------------------------------------
 
     type Gesture =
-        | { kind: "pending"; start: Point; time: number; base: PhotoTransform }
+        | { kind: "pending"; start: Point; at: Moment; base: PhotoTransform }
         | { kind: "pan"; start: Point; base: PhotoTransform }
         | { kind: "swipe"; start: Point }
         | { kind: "close"; start: Point }
@@ -294,10 +294,24 @@
 
     const pointers = new Map<number, Point>();
     let gesture: Gesture | null = null;
-    let lastTap: { time: number; point: Point } | null = null;
+    let lastTap: { at: Moment; point: Point } | null = null;
     const speedX = createVelocityTracker();
     const speedY = createVelocityTracker();
-    const now = () => performance.now();
+
+    /**
+     * When a pointer event happened. `time` is the event's own, which is
+     * when the finger touched or lifted; `clock` is when it was handled,
+     * later by however busy the page is. A tap is timed by the first, as a
+     * flick is: handled late, two quick taps were two single taps.
+     */
+    interface Moment {
+        time: number;
+        clock: number;
+    }
+    const momentOf = (event: Event): Moment => ({ time: timeOf(event), clock: performance.now() });
+    /** Some browsers hand every event of one frame the same stamp: then the clock says how long. */
+    const elapsed = (from: Moment, to: Moment) =>
+        to.time !== from.time ? to.time - from.time : to.clock - from.clock;
 
     function pinchNow(): PinchSample {
         const [first, second] = [...pointers.values()];
@@ -318,7 +332,7 @@
             gesture = {
                 kind: "pending",
                 start: { x: event.clientX, y: event.clientY },
-                time: now(),
+                at: momentOf(event),
                 base: zoom,
             };
         } else {
@@ -397,9 +411,11 @@
 
         switch (ended.kind) {
             case "pending": {
-                if (now() - ended.time > TAP_MS) break;
-                const tap = { time: now(), point: lifted };
-                if (isDoubleTap(lastTap, tap)) {
+                const at = momentOf(event);
+                if (elapsed(ended.at, at) > TAP_MS) break;
+                const tap = { at, point: lifted };
+                const before = lastTap && { time: 0, point: lastTap.point };
+                if (isDoubleTap(before, { time: lastTap ? elapsed(lastTap.at, at) : 0, point: lifted })) {
                     lastTap = null;
                     setZoom(
                         doubleTapTransform(zoom, fromCentre(lifted.x, lifted.y), fit(), viewSize()),

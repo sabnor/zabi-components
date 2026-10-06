@@ -2,6 +2,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { componentsCatalog } from "../src/lib/showcase/components-catalog";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Touch targets and pressed states, measured on every component's docs page.
  *
@@ -214,10 +216,9 @@ test.describe("touch targets on a coarse pointer", () => {
             const opener = entry.open(page).first();
             const root = page.locator(entry.root).first();
             // The page is usable before it hydrates, and a second click would close it again.
-            await expect(async () => {
-                if (!(await root.isVisible())) await opener.click();
-                await expect(root).toBeVisible({ timeout: 1_500 });
-            }).toPass({ timeout: 30_000 });
+            await waitForHydration(page);
+            if (!(await root.isVisible())) await opener.click();
+            await expect(root).toBeVisible();
             // Let an entry animation finish: a control is hit-tested where it is drawn.
             await page.waitForTimeout(500);
             // The showcase renders an example once per card with one shared open state, so

@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * A second round of QA findings, one `describe` per finding. Each is something
  * jsdom cannot see: where an element is in a right-to-left layout, what a
@@ -290,10 +292,9 @@ test.describe("Select: the list's default height follows the visible viewport", 
         await gotoLab(page, "/chaos-lab/dropdown");
         const trigger = page.getByTestId("lab-select-default").locator('button[aria-haspopup="listbox"]');
         const list = page.getByTestId("lab-select-default").getByRole("listbox");
-        await expect(async () => {
-            if (!(await list.isVisible())) await trigger.click();
-            await expect(list).toBeVisible({ timeout: 1_500 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if (!(await list.isVisible())) await trigger.click();
+        await expect(list).toBeVisible();
         const scroller = list.locator(".overflow-y-auto").first();
         // What the component asked for, and what it comes to here: 60% of a 667px screen.
         expect(await scroller.evaluate((element) => element.style.maxHeight)).toBe("60dvh");
@@ -310,10 +311,9 @@ test.describe("Modal: the close button beside a title that wraps", () => {
         await openPage(page, "Modal");
         const opener = page.locator(PREVIEWS).getByRole("button", { name: "Open modal" }).first();
         const dialog = page.getByRole("dialog").last();
-        await expect(async () => {
-            if (!(await dialog.isVisible())) await opener.click();
-            await expect(dialog).toBeVisible({ timeout: 1_500 });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if (!(await dialog.isVisible())) await opener.click();
+        await expect(dialog).toBeVisible();
         await page.waitForTimeout(400);
 
         const title = dialog.locator("h2").first();

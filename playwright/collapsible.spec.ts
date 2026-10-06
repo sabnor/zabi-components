@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { waitForHydration } from "./helpers/hydration";
+
 /**
  * Collapsible in a real browser: the parts jsdom cannot show.
  *
@@ -10,14 +12,11 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 /** The page is usable before it hydrates; a click that lands early is lost. */
 async function setOpen(trigger: Locator, open: boolean): Promise<void> {
-    await expect(async () => {
-        if ((await trigger.getAttribute("aria-expanded")) !== String(open)) {
-            await trigger.click();
-        }
-        await expect(trigger).toHaveAttribute("aria-expanded", String(open), {
-            timeout: 1_000,
-        });
-    }).toPass({ timeout: 30_000 });
+    await waitForHydration(trigger);
+    if ((await trigger.getAttribute("aria-expanded")) !== String(open)) {
+        await trigger.click();
+    }
+    await expect(trigger).toHaveAttribute("aria-expanded", String(open));
 }
 
 async function panelOf(page: Page, trigger: Locator): Promise<Locator> {
@@ -89,15 +88,12 @@ test.describe("Collapsible — hydrated wiring and focus", () => {
         const save = page.getByRole("button", { name: "Save and close" });
         // This example is served open, so nothing above waited for hydration:
         // a key pressed before it is lost.
-        await expect(async () => {
-            if (await save.isVisible()) {
-                await save.focus();
-                await page.keyboard.press("Enter");
-            }
-            await expect(trigger).toHaveAttribute("aria-expanded", "false", {
-                timeout: 1_000,
-            });
-        }).toPass({ timeout: 30_000 });
+        await waitForHydration(page);
+        if (await save.isVisible()) {
+            await save.focus();
+            await page.keyboard.press("Enter");
+        }
+        await expect(trigger).toHaveAttribute("aria-expanded", "false");
 
         await expect(save).toBeHidden();
         await expect(trigger).toBeFocused();
