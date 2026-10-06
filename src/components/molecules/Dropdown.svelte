@@ -179,6 +179,8 @@
         // keeps Tab inside, on its grip and close button too.
         if (asSheet && (event.key === 'Escape' || event.key === 'Tab')) return;
 
+        if (typedIntoList(event)) return;
+
         switch (event.key) {
             case 'Escape':
                 event.preventDefault();
@@ -203,11 +205,122 @@
                 event.preventDefault();
                 focusLastItem();
                 break;
-            case 'Tab':
-                isOpen = false;
+            case 'Tab': {
+                // The list is one stop and a field above it (Select's search)
+                // another: Shift+Tab from an item goes to the field, Tab from
+                // the field to the list. Any other Tab leaves, and closes.
+                const field = headerField();
+                const onItem = getMenuItems().includes(event.target as HTMLElement);
+                if (field && onItem && event.shiftKey) {
+                    event.preventDefault();
+                    field.focus();
+                } else if (field && event.target === field && !event.shiftKey && getMenuItems().length > 0) {
+                    event.preventDefault();
+                    tabStop()?.focus();
+                } else {
+                    isOpen = false;
+                }
                 break;
+            }
         }
     }
+
+    /** The text field in the popup's header, when there is one: Select's search. */
+    function headerField(): HTMLElement | null {
+        const popup = sheetElement ?? popoverElement();
+        if (!popup) return null;
+        return (
+            [...popup.querySelectorAll<HTMLElement>('input, textarea')].find(
+                (candidate) => isTextEntryTarget(candidate) && !(candidate as HTMLInputElement).disabled,
+            ) ?? null
+        );
+    }
+
+    /** The item that is the list's one Tab stop. */
+    function tabStop(): HTMLElement | undefined {
+        const items = getMenuItems();
+        return items.find((item) => item.tabIndex === 0) ?? items[0];
+    }
+
+    /** How long a pause ends a word typed on the list, in ms. */
+    const TYPEAHEAD_PAUSE = 600;
+    let typed = '';
+    let typedAt = 0;
+
+    /**
+     * A printable character typed while focus is on an item. With a text
+     * field above the list it is meant for that field: focus moves there and
+     * the character is typed into it. Without one it is typeahead: focus goes
+     * to the next item that starts with what has been typed. Returns true
+     * when the key was taken.
+     */
+    function typedIntoList(event: KeyboardEvent): boolean {
+        if (event.key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey) return false;
+        const items = getMenuItems();
+        const at = items.indexOf(event.target as HTMLElement);
+        if (at === -1) return false;
+        const now = event.timeStamp || Date.now();
+        const word = now - typedAt > TYPEAHEAD_PAUSE ? '' : typed;
+        // A space activates the item, unless it is in the middle of a word.
+        if (event.key === ' ' && word === '') return false;
+
+        const field = headerField();
+        if (field) {
+            // Focus moves during keydown, so the character lands in the field.
+            field.focus();
+            return true;
+        }
+
+        event.preventDefault();
+        typed = word + event.key.toLocaleLowerCase();
+        typedAt = now;
+        const starts = (item: HTMLElement) =>
+            (item.textContent ?? '').trim().toLocaleLowerCase().startsWith(typed);
+        // One letter again and again steps through the items that start with it.
+        const from = typed.length === 1 ? at + 1 : at;
+        const order = [...items.slice(from), ...items.slice(0, from)];
+        order.find(starts)?.focus();
+        return true;
+    }
+
+    /**
+     * One Tab stop for the whole list, on the item that has focus, or the
+     * chosen one, or the first: the roving tabindex of a listbox or a menu.
+     * With every item a stop, a field above twelve options was twelve
+     * Shift+Tabs away. Kept as the items change (a search filters them).
+     */
+    $effect(() => {
+        const popup = sheetElement ?? menuElement;
+        if (!isOpen || !popup) return;
+        const rove = (current?: HTMLElement) => {
+            const items = getMenuItems();
+            const stop =
+                (current && items.includes(current) ? current : undefined) ??
+                items.find((item) => item === document.activeElement) ??
+                items.find((item) => item.tabIndex === 0 && item.hasAttribute('data-roving')) ??
+                items.find(
+                    (item) =>
+                        item.getAttribute('aria-selected') === 'true' ||
+                        item.getAttribute('aria-checked') === 'true',
+                ) ??
+                items[0];
+            for (const item of items) {
+                item.tabIndex = item === stop ? 0 : -1;
+                item.setAttribute('data-roving', '');
+            }
+        };
+        rove();
+        const onFocusIn = (event: FocusEvent) => {
+            if (getMenuItems().includes(event.target as HTMLElement)) rove(event.target as HTMLElement);
+        };
+        popup.addEventListener('focusin', onFocusIn);
+        const changes = new MutationObserver(() => rove());
+        changes.observe(popup, { childList: true, subtree: true });
+        return () => {
+            popup.removeEventListener('focusin', onFocusIn);
+            changes.disconnect();
+        };
+    });
 
     let menuElement = $state<HTMLElement | null>(null);
     const popoverElement = () => menuElement;

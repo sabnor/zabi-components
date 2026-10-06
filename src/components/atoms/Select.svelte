@@ -1,6 +1,7 @@
 <script lang="ts">
     import Dropdown from "../molecules/Dropdown.svelte";
     import Input from "./Input.svelte";
+    import Check from "@lucide/svelte/icons/check";
     import ChevronDown from "@lucide/svelte/icons/chevron-down";
     import { onMount, tick, untrack } from "svelte";
     import type { HTMLButtonAttributes } from "svelte/elements";
@@ -610,14 +611,12 @@
                                 <button
                                     type="button"
                                     role="option"
-                                    aria-selected={isSameValue(value, option.value)
-                                        ? true
-                                        : undefined}
-                                    class="focus-ring flex w-full items-center justify-start rounded-control border-2 px-3 py-2 pointer-coarse:py-3 text-left text-sm font-medium transition-colors focus:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 {isSameValue(
+                                    aria-selected={isSameValue(value, option.value)}
+                                    class="focus-ring flex w-full items-center justify-start gap-2 rounded-control border-2 px-3 py-2 pointer-coarse:py-3 text-start text-sm font-medium transition-colors focus:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 {isSameValue(
                                         value,
                                         option.value,
                                     )
-                                        ? 'border-action-primary bg-transparent text-headline'
+                                        ? 'border-transparent bg-surface-overlay-hover text-headline active:bg-surface-active'
                                         : option.disabled
                                           ? 'border-transparent bg-transparent text-body'
                                           : 'border-transparent bg-transparent text-body hover:bg-surface-overlay-hover active:bg-surface-active'}"
@@ -626,7 +625,15 @@
                                     onclick={() =>
                                         handleOptionClick(option.value)}
                                 >
-                                    {option.label}
+                                    <span class="min-w-0 flex-1">{option.label}</span>
+                                    <!-- The chosen option's mark: a check and a
+                                    fill. It used to be an edge in the action
+                                    colour, which is what the focus ring draws:
+                                    the chosen and the focused option could
+                                    not be told apart. -->
+                                    {#if isSameValue(value, option.value)}
+                                        <Check size={16} class="shrink-0" aria-hidden="true" />
+                                    {/if}
                                 </button>
                             </div>
                         {/each}

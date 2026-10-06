@@ -490,7 +490,8 @@ hit area is 44px around the same 32px button.
 - ✅ **Tab**: Close the menu and move on
 
 Focus moves between the items themselves, so `aria-activedescendant` is not
-used. The trigger carries `aria-expanded`, `aria-haspopup` and `aria-controls`;
+used. The items are one Tab stop between them (a roving `tabindex`); a letter
+typed on an item moves focus to the next item that starts with it. The trigger carries `aria-expanded`, `aria-haspopup` and `aria-controls`;
 the popup is `role="menu"`, or `role="listbox"` with `menuRole="listbox"`.
 Items with `role="menuitem"`, `menuitemradio`, `menuitemcheckbox` or `option`
 are all in the arrow-key order. A disabled item is `aria-disabled`: it keeps
@@ -910,6 +911,12 @@ Tabs when each choice shows a panel of its own.
 With `searchable` (the default) a search field sits above the options, outside
 the listbox. Typing in it filters the options, and Space types a space there
 instead of choosing.
+
+The list is one Tab stop:
+- ✅ **Shift + Tab** on an option: To the search field, in one step
+- ✅ **Tab** in the search field: To the list, on the option it was last on
+- ✅ **A letter or digit** on an option, searchable: Focus moves to the search field and the character is typed there
+- ✅ **A letter or digit** on an option, not searchable: Focus moves to the next option that starts with what was typed; letters typed within 0.6 seconds are one word
 
 On a phone (`presentation="auto"`, the default: a touch screen narrower than
 640px) the list opens in a BottomSheet titled by the field's label, with the

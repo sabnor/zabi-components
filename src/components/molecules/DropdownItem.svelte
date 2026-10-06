@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Check from "@lucide/svelte/icons/check";
     import { getContext, type Snippet } from "svelte";
     import type { HTMLButtonAttributes } from "svelte/elements";
     import { generateId } from "../util/ssr-safe.js";
@@ -74,6 +75,9 @@
                 : tone === "danger"
                   ? "cursor-pointer hover:bg-action-danger-subtle active:bg-action-danger-subtle-hover"
                   : "cursor-pointer hover:bg-surface-overlay-hover active:bg-surface-active",
+            // The chosen option has a fill and a check: a mark of its own,
+            // which is neither the focus ring nor colour alone.
+            itemRole === "option" && selected && "bg-surface-overlay-hover text-headline",
             className,
         ),
     );
@@ -84,7 +88,7 @@
 <button
     type="button"
     role={itemRole}
-    aria-selected={itemRole === "option" && selected ? true : undefined}
+    aria-selected={itemRole === "option" ? selected : undefined}
     aria-disabled={disabled ? "true" : undefined}
     aria-labelledby={description && (label || children) ? labelId : undefined}
     aria-describedby={description ? descriptionId : undefined}
@@ -110,4 +114,9 @@
             </span>
         {/if}
     </span>
+    {#if itemRole === "option" && selected}
+        <span class="mt-0.5 shrink-0 text-headline" aria-hidden="true">
+            <Check size={16} />
+        </span>
+    {/if}
 </button>

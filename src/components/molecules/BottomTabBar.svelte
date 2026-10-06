@@ -177,17 +177,22 @@
                     aria-current={isActive ? "page" : undefined}
                     aria-label={count > 0 ? `${item.label}, ${badgeLabel(count, item)}` : undefined}
                 >
-                    <!-- The pill is the active mark that does not depend on colour;
-                    the icon on it takes the action colour. Decorative with all
-                    it holds: the label names the tab. Its fill is dropped in
-                    forced-colors mode, where the transparent outline is drawn
-                    instead, so the active tab keeps a shape there too. -->
+                    <!-- The pill is the active mark. Its fill is within a shade of
+                    the bar (1.24:1 in light, 1.07:1 in dark), so by itself it
+                    marks nothing for an eye that needs contrast: the 2px
+                    outline inside it, in the action colour, is what reaches
+                    3:1 against the bar in both themes, with the labels and
+                    in the icon-only bar alike. The icon takes the same
+                    colour. In forced-colors mode the fill is dropped and the
+                    outline is drawn in a system colour, so the active tab
+                    keeps a shape there too. Decorative with all it holds:
+                    the label names the tab. -->
                     <span
                         aria-hidden="true"
                         class={cn(
                             "flex h-8 w-[min(56px,100%)] shrink-0 items-center justify-center rounded-pill transition-colors duration-150 motion-reduce:transition-none",
                             isActive &&
-                                "bg-nav-menu-active text-(color:--color-action-primary) outline-2 -outline-offset-2 outline-transparent",
+                                "bg-nav-menu-active text-(color:--color-action-primary) outline-2 -outline-offset-2 outline-(color:--color-action-primary)",
                         )}
                     >
                         <!-- The badge is placed against the icon's own 24px

@@ -19,6 +19,11 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
 
     return Array.from(container.querySelectorAll<HTMLElement>(selector)).filter(
         (el) => {
+            // `tabindex="-1"` takes a control out of the Tab order whatever it
+            // is: the items of a list with one roving Tab stop are buttons,
+            // and counting them made a focus trap think the last of them was
+            // its last stop, so Tab from the real one left the dialog.
+            if (el.getAttribute('tabindex') === '-1') return false;
             const style = window.getComputedStyle(el);
             return style.display !== 'none' && style.visibility !== 'hidden';
         }

@@ -50,6 +50,17 @@ Whenever token or CSS import API surface changes, include:
   SidebarPanel and TopNavbar: an outline on the current item.
 - `check-package-links` also reads reference-style links and HTML `href` and
   `src`.
+- **The chosen option in a Select or listbox Dropdown has a check mark** at
+  the inline end and a fill, in the pop-over and in the sheet; it was marked
+  by an edge colour that looked like the focus ring. Every option carries
+  `aria-selected`.
+- **A Select list and a Dropdown menu are one Tab stop** (roving tabindex).
+  Shift+Tab from the list goes to the search field in one step; a character
+  typed on an option goes to the search field, or moves to the matching item
+  when there is none. `getFocusableElements` no longer returns elements with
+  `tabindex="-1"`.
+- **BottomTabBar's active tab has a 2px outline in the action colour**, so it
+  can be told apart at 3:1 with labels hidden and in dark.
 
 ## [8.1.0-beta.3] - 2026-10-06
 

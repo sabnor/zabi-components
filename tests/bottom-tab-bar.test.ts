@@ -151,7 +151,10 @@ describe("BottomTabBar active tab", () => {
         const idle = links()[0];
         // A transparent outline is invisible until the system paints it.
         expect(active.querySelector("span")!.className).toContain("outline-2");
-        expect(active.querySelector("span")!.className).toContain("outline-transparent");
+        // A 2px outline in the action colour: the mark that reaches 3:1 against the bar.
+        expect(active.querySelector("span")!.className).toContain("outline-2");
+        expect(active.querySelector("span")!.className).toContain("outline-(color:--color-action-primary)");
+        expect(active.querySelector("span")!.className).not.toContain("outline-transparent");
         expect(idle.querySelector("span")!.className).not.toContain("outline-2");
     });
 

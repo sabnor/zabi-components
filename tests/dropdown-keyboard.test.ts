@@ -180,12 +180,15 @@ describe("Dropdown items in a listbox", () => {
         await user.click(screen.getByRole("button", { name: "Actions" }));
 
         const options = await screen.findAllByRole("option");
+        // Every option says whether it is the chosen one.
         expect(options.map((option) => option.getAttribute("aria-selected"))).toEqual([
-            null,
-            null,
+            "false",
+            "false",
             "true",
-            null,
+            "false",
         ]);
+        // And the chosen one has a check, which the others do not.
+        expect(options.map((option) => option.querySelectorAll("svg.lucide-check").length)).toEqual([0, 0, 1, 0]);
         expect(options.map((option) => option.getAttribute("data-value"))).toEqual([
             "edit",
             "archive",
