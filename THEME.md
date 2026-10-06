@@ -129,7 +129,7 @@ already the right value in each mode. Use the same roles in your own CSS.
 - `--color-control-border` (`border-control-border`) - The edge of a control that has nothing else to be seen by, such as the outline of an empty Rating star. `--color-border-strong` is a decorative edge, and is only 3.08:1 on the dark elevated and overlay surfaces
 - `--color-input-border` (`border-input-border`) - The edge of a form field (Input, Textarea, Select, DateField, TimeField). Held to 3:1 on the field fill (`--color-input`), the page and the card in both themes (WCAG 1.4.11); `--color-input-border-hover` is one step darker in light
 - `--color-progress-fill`, `--color-progress-track` (`bg-progress-fill`, `bg-progress-track`) - The fill and the track of Progress. The fill is `--color-action-primary` and the track `--color-input` (a darker well, `--color-base-75`, in dark), so the bar follows a pinned primary action. Held to 3:1 (fill on track) in both themes
-- `--color-success`, `--color-warning`, `--color-error`, `--color-info` - States, each with `-subtle`, `-border` and `-text`
+- `--color-success`, `--color-warning`, `--color-error`, `--color-info` - States, each with `-subtle`, `-border` and `-text`. In dark the tint and edge are the hue thinned (16% / 36%) into the card surface, not a deep saturated step
 
 The full list is in [THEMING.md](./THEMING.md#roles-read-them-do-not-set-them).
 

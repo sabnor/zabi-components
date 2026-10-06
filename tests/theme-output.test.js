@@ -13,6 +13,13 @@ import {
 } from '../scripts/resolve-tokens.js';
 import { generateSurfaceLadder } from '../tokens/surface-ladder.js';
 
+/** `p`% of `a` over `b`, in sRGB, the way `color-mix(in srgb, a p%, b)` rounds. */
+function mixHex(a, p, b) {
+  const ch = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const [x, y] = [ch(a), ch(b)];
+  return '#' + x.map((v, i) => Math.round((v * p) / 100 + (y[i] * (100 - p)) / 100).toString(16).padStart(2, '0')).join('');
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, '..');
@@ -410,8 +417,9 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-accent': pink[400],
         '--color-accent-hover': pink[300],
         '--color-accent-active': pink[200],
-        '--color-accent-subtle': pink[900],
-        '--color-accent-border': pink[800],
+        // The hue thinned into the card surface (16% / 36% of step 500 over #1f1f22), not a mirrored step.
+        '--color-accent-subtle': mixHex(pink[500], 16, '#1f1f22'),
+        '--color-accent-border': mixHex(pink[500], 36, '#1f1f22'),
         '--color-accent-text': pink[300],
         '--color-on-accent': pink[950],
       },

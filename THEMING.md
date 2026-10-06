@@ -1050,8 +1050,8 @@ Each family exposes the same roles, built from the same steps:
 | `--color-<family>-weak` | 700 | pressed / emphasis |
 | `--color-<family>-medium` | 800 | strongest fill |
 | `--color-<family>-strong` | 900 | darkest |
-| `--color-<family>-subtle` | 200 (dark: 100) | tinted fill — badges, alerts |
-| `--color-<family>-border` | 300 (dark: 200) | tinted edge |
+| `--color-<family>-subtle` | 200 (dark: 16% of step 500 over the card surface) | tinted fill — badges, alerts |
+| `--color-<family>-border` | 300 (dark: 36% of step 500 over the card surface) | tinted edge |
 | `--color-<family>-text` | 700 | text on a subtle fill or a page surface |
 
 Families: `success`, `warning`, `error`, `info`, `energetic`, `neutral`.
@@ -1511,13 +1511,21 @@ three, or if the `auto` copy differs from `.dark`.
   and 200). The label is `--color-on-brand`, which `.dark` points at
   `--zabi-on-brand-dark` (white). The fill is 3.72:1 on the dark page, 3.43:1
   on a card and 3.10:1 on the overlay, held by guarded pairs. The ring, links,
-  `-subtle` tints, `-border`, the tonal roles and the nav-active roles stay on
-  the mirrored steps (they are text, rings and tints on a dark surface).
+  the tonal roles and the nav-active roles stay on the mirrored steps (they are
+  text, rings and tints on a dark surface).
   `--color-primary*` is unchanged (still mirrored; no component reads it).
+- **Status tints.** In dark, `--color-<success|warning|error|info|energetic|accent>-subtle`
+  is the hue thinned into the card surface: `color-mix(in srgb, var(--zabi-<ramp>-500) 16%, var(--color-surface-raised))`;
+  `-border` is the same mix at 36%. A badge or alert is a low-chroma tint of its
+  card (never darker than it) and the hue is carried by the icon and the text,
+  which are unchanged. Because the base is a `var()`, an app's override of the
+  card surface (or `neutralChroma`) carries through. `neutral` and the brand
+  tints are unchanged.
 - **Secondary.** No dark override: `--color-base-*` mirrors the same way.
 - **Danger.** The same physical steps as light danger (`--zabi-error-600`,
   `700`, `800`, label `--zabi-error-50`), so a destructive button is one red in
-  both modes. The `-subtle` tints stay mirrored. Restated in `.dark` so that
+  both modes. Its `-subtle` tint is the error tint (`--color-error-subtle`), with
+  `-subtle-hover` (20%) and `-subtle-active` (32%) stronger mixes. Restated in `.dark` so that
   `zabi-components/theme-dark-only` remains a complete standalone import
   (`validate-theme.js` enforces that).
 

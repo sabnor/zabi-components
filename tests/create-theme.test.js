@@ -783,11 +783,12 @@ test('without light or dark overrides the bytes are what they were before the op
   // They moved again for 9a: the generator now resolves the control veil pairs (the strengths are in its data) and the tonal, outline and toggle pairs were added, so the header counts 260; the bar pairs (active tab pill, on-brand bar, headline on a bar) moved the header and the bytes again, and so did the chrome token and the bar tokens; and the pinned amber's veil is flipped to lighten-only (its label is dark).
   // Then for Z-043: the dark primary and danger are the light steps with a white label (the dark label knob is white, the header counts 4 more pairs: the primary and danger fills against the page and the card).
   // Then for 16a (Z-044): the field edge is guarded on the elevated surface and the overlay (two pairs per mode, so the header counts 4 more), and the dark surfaces, hairline, rim and shadows moved.
+  // Then for 16b (Z-057): the dark status tints are mixes over the card surface, so a flat override of the card surface (the `flat` case) restates them and its bytes moved.
   const before = {
     plain: [{ brand: '#0026EA' }, 'c51e89d11bba1058f8f3b7b341bb58668c7bcfed60e95c0fd5e3d72a339e8a25'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      'd95354405f3916816e0ee5f47cb6dcca046131cbfd73424591005f2f4d778533',
+      '4792bfc881dba0e170df7f3de596c9e01d7c1d70dc42fd038d48e72b5884d24f',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },

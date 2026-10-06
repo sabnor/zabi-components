@@ -91,17 +91,17 @@
 
 {#snippet icon()}
     {#if visualVariant === "info"}
-        <Info size={20} aria-hidden="true" />
+        <Info size={20} strokeWidth={2.5} aria-hidden="true" />
     {:else if visualVariant === "success"}
-        <Check size={20} aria-hidden="true" />
+        <Check size={20} strokeWidth={2.5} aria-hidden="true" />
     {:else if visualVariant === "warning"}
-        <TriangleAlert size={20} aria-hidden="true" />
+        <TriangleAlert size={20} strokeWidth={2.5} aria-hidden="true" />
     {:else if visualVariant === "error"}
-        <X size={20} aria-hidden="true" />
+        <X size={20} strokeWidth={2.5} aria-hidden="true" />
     {:else if visualVariant === "neutral"}
-        <Info size={20} aria-hidden="true" />
+        <Info size={20} strokeWidth={2.5} aria-hidden="true" />
     {:else}
-        <Zap size={20} aria-hidden="true" />
+        <Zap size={20} strokeWidth={2.5} aria-hidden="true" />
     {/if}
 {/snippet}
 

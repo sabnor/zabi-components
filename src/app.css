@@ -1253,25 +1253,28 @@ body {
 
   /* Secondary Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Tinted fills and edges — pinned at steps 100 and 200.
-   * The solid, weak, medium, strong and text steps need no override: they
-   * resolve through the mirrored ramps. The tints do, because light moved them
-   * to steps 200 and 300 to read on a white card, and the mirror of those is
-   * too heavy on a dark surface. */
-  --color-success-subtle: var(--color-pine-100);
-  --color-success-border: var(--color-pine-200);
-  --color-warning-subtle: var(--color-warning-100);
-  --color-warning-border: var(--color-warning-200);
-  --color-error-subtle: var(--color-error-100);
-  --color-error-border: var(--color-error-200);
-  --color-energetic-subtle: var(--color-citron-100);
-  --color-energetic-border: var(--color-citron-200);
-  --color-accent-subtle: var(--color-accent-100);
-  --color-accent-border: var(--color-accent-200);
+  /* Tinted fills and edges — the hue thinned into the card surface, not the
+   * mirrored step 100 / 200 (physical 900 / 800: deep, saturated, the loudest
+   * area on a dark screen). A tint here is a low-chroma tint of the card, and
+   * the hue is carried by the icon and the text. The mid step (500) is where
+   * the ramp's chroma peaks and the mirror's fixed point. The base is the card
+   * surface, so a badge or alert on a card is never darker than the card, and
+   * an app's override of the card surface carries through. The edge is the
+   * same mix, stronger. */
+  --color-success-subtle: color-mix(in srgb, var(--zabi-pine-500) 16%, var(--color-surface-raised));
+  --color-success-border: color-mix(in srgb, var(--zabi-pine-500) 36%, var(--color-surface-raised));
+  --color-warning-subtle: color-mix(in srgb, var(--zabi-warning-500) 16%, var(--color-surface-raised));
+  --color-warning-border: color-mix(in srgb, var(--zabi-warning-500) 36%, var(--color-surface-raised));
+  --color-error-subtle: color-mix(in srgb, var(--zabi-error-500) 16%, var(--color-surface-raised));
+  --color-error-border: color-mix(in srgb, var(--zabi-error-500) 36%, var(--color-surface-raised));
+  --color-energetic-subtle: color-mix(in srgb, var(--zabi-citron-500) 16%, var(--color-surface-raised));
+  --color-energetic-border: color-mix(in srgb, var(--zabi-citron-500) 36%, var(--color-surface-raised));
+  --color-accent-subtle: color-mix(in srgb, var(--zabi-accent-500) 16%, var(--color-surface-raised));
+  --color-accent-border: color-mix(in srgb, var(--zabi-accent-500) 36%, var(--color-surface-raised));
   /* Label on a solid accent fill: the dark end of the ramp on its light end. */
   --color-on-accent: var(--zabi-on-accent-dark);
-  --color-info-subtle: var(--color-iris-100);
-  --color-info-border: var(--color-iris-200);
+  --color-info-subtle: color-mix(in srgb, var(--zabi-iris-500) 16%, var(--color-surface-raised));
+  --color-info-border: color-mix(in srgb, var(--zabi-iris-500) 36%, var(--color-surface-raised));
 
   /* Neutral Colors — base-550 mirrors to L* 57, which is only 4.35:1 on a
    * raised surface. One step lighter clears AA on every dark surface level. */
@@ -1337,12 +1340,13 @@ body {
    * is one red in both modes and shares the primary's veil. Physical, not
    * through the mirror, which would be the pale 400 / 300 / 200. Restated
    * because `zabi-components/theme-dark-only` has to stand alone as a complete
-   * import (validate-theme.js enforces that). The subtle tints stay mirrored. */
+   * import (validate-theme.js enforces that). The subtle tints are the thin mix below. */
   --color-action-danger: var(--zabi-error-600);
   --color-action-danger-hover: var(--zabi-error-700);
   --color-action-danger-active: var(--zabi-error-800);
-  --color-action-danger-subtle: var(--color-error-100);
-  --color-action-danger-subtle-hover: var(--color-error-200);
+  --color-action-danger-subtle: var(--color-error-subtle);
+  --color-action-danger-subtle-hover: color-mix(in srgb, var(--zabi-error-500) 20%, var(--color-surface-raised));
+  --color-action-danger-subtle-active: color-mix(in srgb, var(--zabi-error-500) 32%, var(--color-surface-raised));
   --color-action-danger-text: var(--zabi-error-50);
 
   /* Shadow Colors — black, not the light theme's ink tint. Much stronger than
