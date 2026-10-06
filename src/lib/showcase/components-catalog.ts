@@ -828,11 +828,19 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "presentation",
-                        type: "'auto' | 'popover' | 'sheet'",
+                        type: "'auto' | 'popover' | 'sheet' | 'native'",
                         required: false,
                         defaultValue: "auto",
                         description:
-                            "How the list is shown. auto: in a BottomSheet on a phone (a touch screen narrower than 640px), under the field everywhere else, decided each time it opens. The sheet is titled by the label, keeps the search field under its header, has 48px rows and opens with the chosen option focused and in view; choosing closes it and returns focus to the field. The list, its roles, the keys and the form value are the same in both. popover and sheet are always the one or the other.",
+                            "How the list is shown. auto: in a BottomSheet on a phone (a touch screen narrower than 640px), under the field everywhere else, decided each time it opens. The sheet is titled by the label, keeps the search field under its header, has 48px rows and opens with the chosen option focused and in view; choosing closes it and returns focus to the field. The list, its roles, the keys and the form value are the same in both. popover and sheet are always the one or the other. native: only the browser's own select, styled as the field, with the platform's picker; it shows the options' labels and nothing else (no search field, descriptions, or loading and empty states).",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<SelectStrings>",
+                        required: false,
+                        defaultValue: "DEFAULT_SELECT_STRINGS",
+                        description:
+                            "The component's own texts, for another language: placeholder, searchPlaceholder, noResults, loading, emptyTitle, emptyDescription, listLabel (the name of the option list), closeLabel, expandLabel and collapseLabel (the sheet on a phone). What is left out keeps its English default. The six older single-text props win over it.",
                     },
                     {
                         name: "hint",
@@ -2966,6 +2974,30 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "Close",
                         description:
                             "Accessible name of the sheet's close button.",
+                    },
+                    {
+                        name: "sheetExpandLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Expand",
+                        description:
+                            "Accessible name of the sheet's grip while its button takes the sheet up a step.",
+                    },
+                    {
+                        name: "sheetCollapseLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Collapse",
+                        description:
+                            "The same, while it takes the sheet down a step.",
+                    },
+                    {
+                        name: "fullWidth",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "The host fills its container instead of being as wide as its trigger, and the menu is at least as wide as the host. For a trigger that is a field, as in Select.",
                     },
                     {
                         name: "onOptionClick",
@@ -6719,6 +6751,62 @@ pushToast({
                         required: false,
                         defaultValue: "\u2014",
                         description: "Parent nav href to highlight when currentPath is a deeper leaf",
+                    },
+                    {
+                        name: "mobile",
+                        type: "'none' | 'drawer'",
+                        required: false,
+                        defaultValue: "none",
+                        description:
+                            "What the sidebar is below the lg breakpoint (1024px). drawer: the rail is hidden there and the sidebar opens in a Drawer from the start edge, closing when a link in it is followed. This and the next six are passed to SidebarShell.",
+                    },
+                    {
+                        name: "isOpen",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Whether the drawer is open. Bindable.",
+                    },
+                    {
+                        name: "trigger",
+                        type: "Snippet<[{ isOpen, toggle, props }]>",
+                        required: false,
+                        defaultValue: "—",
+                        description:
+                            "The button that opens the drawer, rendered in the place of the rail below lg. Optional: a button of your own that sets isOpen does the same.",
+                    },
+                    {
+                        name: "drawerTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "ariaLabel",
+                        description:
+                            "Heading of the drawer, and its accessible name.",
+                    },
+                    {
+                        name: "closeLabel",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Close",
+                        description:
+                            "Accessible name of the drawer's close button.",
+                    },
+                    {
+                        name: "onclose",
+                        type: "(detail: { reason }) => void",
+                        required: false,
+                        defaultValue: "—",
+                        description:
+                            "Fired when the drawer closes itself: escape, backdrop, close-button, navigate or resize.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Navigation links",
+                        description:
+                            "Accessible name of the scrolling region between header and footer.",
                     },
                     {
                         name: "ariaLabel",

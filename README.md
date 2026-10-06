@@ -325,14 +325,14 @@ same text: the prop wins.
 | ConfirmDialog | `confirmLabel`, `cancelLabel`, `loadingLabel` |
 | ContactForm | `strings` (the whole form is ready-made English: pass them all, or build your own from Form and FormField) |
 | Drawer, Modal, SlideUp | `closeLabel` |
-| Dropdown | `ariaLabel` |
+| Dropdown | `ariaLabel`; in a sheet also `sheetTitle`, `sheetCloseLabel`, `sheetExpandLabel`, `sheetCollapseLabel` |
 | FormField | `requiredLabel` |
 | ImageUpload | `placeholder`, `browseText`, `changeText`, `removeText`, `selectedText`, `removedText`, `errorTitle` |
 | List | `ariaLabel` |
 | MediaGrid, PhotoGrid, PhotoViewer, SortableList, Stepper, Rating | `strings` (and `label` on PhotoViewer and Stepper) |
 | NavigationMenu | `ariaLabel` |
 | PropsTable | `caption`, `strings` |
-| Select | `placeholder`, `searchPlaceholder`, `noResultsText`, `loadingText`, `emptyStateTitle`, `emptyStateDescription` |
+| Select | `strings` (every text, the name of the option list included); the older `placeholder`, `searchPlaceholder`, `noResultsText`, `loadingText`, `emptyStateTitle`, `emptyStateDescription` still work and win over it |
 | SidebarAccountPanel | `strings`, `logoutLabel` |
 | SidebarBrandHeader | `logoAlt`, `strings` |
 | SidebarFooter | `strings` |
@@ -347,9 +347,10 @@ same text: the prop wins.
 | TopNavbar | `strings`, `ariaLabel`, `themeLabels` |
 | UnsavedChangesBar | `message`, `label`, `saveLabel`, `discardLabel` |
 
-Two texts cannot be replaced yet: the name of the option list of a Select
-("Select options") and the name of the list in a SidebarShell ("Navigation
-links").
+The name of the list in a SidebarShell is its `label` prop. One text is the
+browser's, not the library's: when a `required` Select is sent empty, the
+message under it is the browser's own validation message, in the browser's
+language; pass `error` to say it yourself.
 
 A toast shows what it was pushed with, so its text is yours already. The
 toaster's own words are the names of its buttons and of its region, and the

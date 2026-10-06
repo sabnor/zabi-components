@@ -25,21 +25,6 @@
     let { children }: Props = $props();
 
     let sidebarOpen = $state(false);
-
-    /**
-     * SidebarShell's small-screen mode. SidebarNavigation does not declare
-     * these props yet; it hands what it does not know to the SidebarShell it
-     * is built on, so they are spread. `isOpen` cannot be bound through it:
-     * the drawer says when it has closed itself with `onclose`.
-     */
-    const catalogDrawer = $derived({
-        mobile: "drawer" as const,
-        isOpen: sidebarOpen,
-        drawerTitle: "Components",
-        onclose: () => {
-            sidebarOpen = false;
-        },
-    });
     let componentsNavSearch = $state("");
 
     const selectedCategory = $derived.by((): ShowcaseCatalog => {
@@ -159,7 +144,9 @@
                 emptyStateTitle="Nothing matches"
                 emptyStateDescription="Try another term to find categories or components."
                 onNavigate={handleDocsSidebarNavigate}
-                {...catalogDrawer}
+                mobile="drawer"
+                bind:isOpen={sidebarOpen}
+                drawerTitle="Components"
             />
         </div>
 

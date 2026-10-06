@@ -1,6 +1,7 @@
 <script lang="ts">
     import CodeBlock from "../../src/components/atoms/CodeBlock.svelte";
     import ColorPicker from "../../src/components/atoms/ColorPicker.svelte";
+    import Select from "../../src/components/atoms/Select.svelte";
     import Toggle from "../../src/components/atoms/Toggle.svelte";
     import ComponentDemo from "../../src/components/molecules/ComponentDemo.svelte";
     import ContactForm from "../../src/components/molecules/ContactForm.svelte";
@@ -119,4 +120,20 @@
             { label: "Källkod", href: "https://example.se/kod" },
         ]}
     />
+{:else if kind === "Select"}
+    <!-- Four of them, because no one state says everything: a list with a
+    search that finds nothing, one still loading, one with no options, and
+    one in a sheet (its close button and grip). -->
+    <div data-select="search">
+        <Select label="Lag" strings={words} options={[{ value: "a", label: "Alfa" }]} presentation="popover" />
+    </div>
+    <div data-select="loading">
+        <Select label="Laddar" strings={words} isLoading presentation="popover" />
+    </div>
+    <div data-select="empty">
+        <Select label="Tom" strings={words} options={[]} searchable={false} presentation="popover" />
+    </div>
+    <div data-select="sheet">
+        <Select label="Ark" strings={words} options={[{ value: "a", label: "Alfa" }]} presentation="sheet" />
+    </div>
 {/if}

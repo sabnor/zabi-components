@@ -188,3 +188,48 @@ export const InASheet: Story = {
         ]
     }
 };
+
+/**
+ * Only the browser's own select, styled as the field: the platform's picker.
+ * It shows the options' labels and nothing else. Every Select also renders
+ * this element on the server, where it is the control until the page has
+ * hydrated, and all there is without scripts.
+ */
+export const Native: Story = {
+    args: {
+        label: 'Frequency',
+        name: 'frequency',
+        presentation: 'native',
+        value: 'biweekly',
+        options: [
+            { value: 'weekly', label: 'Every week' },
+            { value: 'biweekly', label: 'Every other week' },
+            { value: 'monthly', label: 'Every month' },
+            { value: 'never', label: 'Never', disabled: true }
+        ]
+    }
+};
+
+/** Every text of the component's own in another language, through `strings`. */
+export const Swedish: Story = {
+    args: {
+        label: 'Hur ofta',
+        options: [
+            { value: 'vecka', label: 'Varje vecka' },
+            { value: 'varannan', label: 'Varannan vecka på torsdagar' },
+            { value: 'manad', label: 'Första torsdagen i varje månad' }
+        ],
+        strings: {
+            placeholder: 'Välj ett alternativ',
+            searchPlaceholder: 'Sök',
+            noResults: 'Inga träffar',
+            loading: 'Hämtar alternativ…',
+            emptyTitle: 'Inga alternativ',
+            emptyDescription: 'Lägg till ett alternativ för att kunna välja.',
+            listLabel: 'Alternativ',
+            closeLabel: 'Stäng',
+            expandLabel: 'Visa mer',
+            collapseLabel: 'Visa mindre'
+        }
+    }
+};

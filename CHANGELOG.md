@@ -14,7 +14,27 @@ Whenever token or CSS import API surface changes, include:
 
 ### Added
 
+- **Select works without scripts.** The server renders a real `<select>` with
+  the options, which is the working control before the page hydrates and with
+  JavaScript off; on mount the custom list takes over with no layout shift,
+  and a choice made before that is kept and reported once.
+  `presentation="native"` renders only the native select.
+- **Select takes `strings`** for all its texts, including the list's name
+  (`listLabel`); the six text props still work and win. `DEFAULT_SELECT_STRINGS`
+  is exported. Dropdown takes `sheetExpandLabel`, `sheetCollapseLabel` and
+  `fullWidth`.
+- SidebarNavigation declares and passes on SidebarShell's drawer props
+  (`mobile`, `bind:isOpen`, `trigger`, `drawerTitle`, `closeLabel`, `onclose`,
+  `label`).
+
 ### Changed
+
+- **Select fills its container**, as Input does, and no longer changes width
+  with the chosen option. A label too long for the trigger wraps and the
+  trigger grows, instead of being cut.
+- **Select's form control is a `<select name>`**, not a hidden input, and
+  `required` now blocks an empty form: the browser's message is shown as the
+  field's error and focus goes to the trigger.
 
 ### Fixed
 

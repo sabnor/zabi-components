@@ -108,6 +108,8 @@ export type {
 export * from './toast-store.js';
 export { DEFAULT_TOASTER_STRINGS } from '../util/toaster.js';
 export type { ToasterStrings, ToastPauseChange } from '../util/toaster.js';
+export { DEFAULT_SELECT_STRINGS } from '../util/select.js';
+export type { SelectStrings, SelectPresentation } from '../util/select.js';
 export {
     DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS,
     DEFAULT_SIDEBAR_FOOTER_STRINGS,

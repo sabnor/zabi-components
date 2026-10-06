@@ -8,6 +8,10 @@
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
     import Tooltip from "../atoms/Tooltip.svelte";
     import SidebarShell from "./SidebarShell.svelte";
+    import type {
+        SidebarDrawerCloseReason,
+        SidebarTriggerContext,
+    } from "./SidebarShell.svelte";
     import Command from "@lucide/svelte/icons/command";
     import Search from "@lucide/svelte/icons/search";
     import type { Snippet } from "svelte";
@@ -84,6 +88,24 @@
         profilePanel?: Snippet;
         /** Parent nav href to highlight when `currentPath` is a deeper leaf (e.g. category row). */
         activePrimaryHref?: string;
+        /**
+         * What the sidebar is below the `lg` breakpoint. `drawer`: the rail is
+         * hidden there and the sidebar opens in a Drawer from the start edge.
+         * This and the six props after it are SidebarShell's; see there.
+         */
+        mobile?: "none" | "drawer";
+        /** Whether the drawer is open. Bindable. */
+        isOpen?: boolean;
+        /** The button that opens the drawer, rendered in the rail's place below `lg`. */
+        trigger?: Snippet<[SidebarTriggerContext]>;
+        /** Heading of the drawer. Without it, `ariaLabel` is. */
+        drawerTitle?: string;
+        /** Accessible name of the drawer's close button. */
+        closeLabel?: string;
+        /** Fired when the drawer closes itself, with why. */
+        onclose?: (detail: { reason: SidebarDrawerCloseReason }) => void;
+        /** Accessible name of the scrolling region between header and footer. */
+        label?: string;
     }
 
     let {
@@ -127,6 +149,13 @@
         profilePanelOpen = false,
         profilePanelControlsId = "",
         profilePanel,
+        mobile = "none",
+        isOpen = $bindable(false),
+        trigger,
+        drawerTitle,
+        closeLabel,
+        onclose,
+        label,
         ...restProps
     }: Props = $props();
 
@@ -299,6 +328,13 @@
     {ariaLabel}
     class={classAttr}
     className={legacyClass}
+    {mobile}
+    bind:isOpen
+    {trigger}
+    {drawerTitle}
+    {closeLabel}
+    {onclose}
+    {label}
     {...restProps}
 >
     {#snippet header()}

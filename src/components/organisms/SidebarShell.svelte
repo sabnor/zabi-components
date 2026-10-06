@@ -68,7 +68,9 @@
         insetX: string;
     }
 
-    type Props = Omit<HTMLAttributes<HTMLElement>, "class" | "onclose"> & {
+    // `children` here is a snippet that takes the region context; the one in
+    // `HTMLAttributes` takes nothing, and the two together accepted neither.
+    type Props = Omit<HTMLAttributes<HTMLElement>, "class" | "onclose" | "children"> & {
         mode?: "expanded" | "collapsed";
         /** `rail` attaches to the viewport edge; `card` is a floating panel. */
         layout?: "rail" | "card";

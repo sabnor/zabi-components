@@ -14,6 +14,7 @@ import {
     DEFAULT_SIDEBAR_NAVIGATION_STRINGS,
 } from "../src/components/util/sidebar";
 import { getThemeMode, setThemeMode } from "../src/components/util/theme-mode";
+import { DEFAULT_SELECT_STRINGS } from "../src/components/util/select";
 import { DEFAULT_TOP_NAVBAR_STRINGS } from "../src/components/util/top-navbar";
 import StringsHarness from "./fixtures/StringsHarness.svelte";
 
@@ -102,6 +103,25 @@ const reveal: Record<string, () => Promise<void>> = {
         // The other face of the switch.
         await fireEvent.click(document.querySelector("button")!);
     },
+    async Select() {
+        const open = async (which: string) => {
+            const field = document.querySelector(`[data-select="${which}"]`)!;
+            await fireEvent.click(field.querySelector<HTMLElement>('button[aria-haspopup="listbox"]')!);
+        };
+        // The list, and a search that finds nothing.
+        await open("search");
+        const search = await waitFor(() => {
+            const input = document.querySelector<HTMLInputElement>('[data-select="search"] input[type="text"]');
+            expect(input).not.toBeNull();
+            return input!;
+        });
+        search.value = "zzz";
+        await fireEvent.input(search);
+        // No options at all, and the sheet with its close button and grip.
+        await open("empty");
+        await open("sheet");
+        await waitFor(() => expect(document.querySelector('[role="dialog"]')).not.toBeNull());
+    },
     async TopNavbar() {
         const menu = document.querySelector<HTMLElement>("[aria-expanded]")!;
         await fireEvent.click(menu);
@@ -125,6 +145,7 @@ const CASES: { kind: string; defaults: Words; extra?: Record<string, unknown>; a
         defaults: { copyLabel: "Copy code to clipboard", copiedLabel: "Code copied to clipboard" },
     },
     { kind: "ColorPicker", defaults: DEFAULT_COLOR_PICKER_STRINGS as unknown as Words },
+    { kind: "Select", defaults: DEFAULT_SELECT_STRINGS as unknown as Words },
     { kind: "ContactForm", defaults: DEFAULT_CONTACT_FORM_STRINGS as unknown as Words },
     { kind: "PropsTable", defaults: DEFAULT_PROPS_TABLE_STRINGS as unknown as Words },
     { kind: "ComponentDemo", defaults: DEFAULT_COMPONENT_DEMO_STRINGS as unknown as Words },
@@ -182,6 +203,18 @@ describe("the defaults are today's English", () => {
             open: "Open color picker",
             picker: "Color picker",
             hue: "Hue slider",
+        });
+        expect(DEFAULT_SELECT_STRINGS).toEqual({
+            placeholder: "Select an option",
+            searchPlaceholder: "Search options",
+            noResults: "No results found",
+            loading: "Loading options...",
+            emptyTitle: "No options available",
+            emptyDescription: "Add an option to start making selections.",
+            listLabel: "Select options",
+            closeLabel: "Close",
+            expandLabel: "Expand",
+            collapseLabel: "Collapse",
         });
         expect(DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS).toEqual({ brandAlt: "Brand" });
         expect(DEFAULT_SIDEBAR_FOOTER_STRINGS.accountAndSettings).toBe("Account and settings");

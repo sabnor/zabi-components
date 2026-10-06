@@ -182,7 +182,7 @@ describe("Select presentation", () => {
         await waitFor(() => expect(document.activeElement).toBe(chosen));
     });
 
-    it("on a phone: choosing sets the value and the hidden input, closes, and focus returns to the field", async () => {
+    it("on a phone: choosing sets the value and the form control, closes, and focus returns to the field", async () => {
         device(true);
         const user = userEvent.setup();
         const { container } = render(Select, { label: "Team", name: "team", options, value: "c" });
@@ -193,7 +193,7 @@ describe("Select presentation", () => {
         expect(screen.getByRole("dialog")).toBeTruthy();
         await user.click(screen.getByRole("option", { name: "Alpha" }));
         await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-        expect(container.querySelector<HTMLInputElement>('input[name="team"]')?.value).toBe("a");
+        expect(container.querySelector<HTMLSelectElement>('select[name="team"]')?.value).toBe("a");
         await waitFor(() => expect(document.activeElement).toBe(field()));
     });
 
@@ -205,7 +205,7 @@ describe("Select presentation", () => {
         await screen.findByRole("dialog");
         await user.click(screen.getByRole("option", { name: "Gamma" }));
         await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-        expect(container.querySelector<HTMLInputElement>('input[name="team"]')?.value).toBe("c");
+        expect(container.querySelector<HTMLSelectElement>('select[name="team"]')?.value).toBe("c");
     });
 
     it("without a phone, and with presentation popover on one, the list is under the field", async () => {

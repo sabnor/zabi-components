@@ -44,6 +44,13 @@
          * opens, in the browser.
          */
         presentation?: DropdownPresentation;
+        /**
+         * The host fills its container instead of being as wide as its
+         * trigger's content, and the menu is at least as wide as the host.
+         * For a trigger that is a field (Select); a menu on an icon button
+         * stays as it is.
+         */
+        fullWidth?: boolean;
         /** Heading of the sheet. Without it, `ariaLabel` is. */
         sheetTitle?: string;
         /**
@@ -53,6 +60,10 @@
         sheetSnap?: BottomSheetSnap;
         /** Accessible name of the sheet's close button. */
         sheetCloseLabel?: string;
+        /** Accessible name of the sheet's grip while its button takes the sheet up a step. */
+        sheetExpandLabel?: string;
+        /** The same, while it takes the sheet down a step. */
+        sheetCollapseLabel?: string;
         ariaLabel?: string;
         /** `listbox` for Select-style; `menu` for actions. */
         menuRole?: 'menu' | 'listbox';
@@ -75,9 +86,12 @@
         isOpen = $bindable(false),
         placement = 'bottom-start',
         presentation = 'popover',
+        fullWidth = false,
         sheetTitle = undefined,
         sheetSnap = undefined,
         sheetCloseLabel = 'Close',
+        sheetExpandLabel = 'Expand',
+        sheetCollapseLabel = 'Collapse',
         ariaLabel = 'Menu',
         menuRole = 'menu',
         selectedValue = null,
@@ -423,7 +437,7 @@
 
 <div
     bind:this={rootEl}
-    class={cn("relative inline-block", className)}
+    class={cn("relative", fullWidth ? "block w-full min-w-0" : "inline-block", className)}
     data-placement={placement}
     onkeydown={handleKeydown}
     {...restProps}
@@ -442,6 +456,8 @@
             snap={sheetSnap ?? (options.length > 6 ? 'full' : 'half')}
             title={sheetTitle || ariaLabel}
             closeLabel={sheetCloseLabel}
+            expandLabel={sheetExpandLabel}
+            collapseLabel={sheetCollapseLabel}
         >
             <!-- svelte-ignore a11y_no_static_element_interactions -->
             <div
@@ -493,7 +509,11 @@
             style:margin={fit.fixed ? '0' : undefined}
             style:width={fit.fixed ? `${fit.fixed.width}px` : undefined}
             style:max-width={fit.maxWidth !== null ? `${fit.maxWidth}px` : undefined}
-            style:min-width={fit.maxWidth !== null ? `${fit.maxWidth}px` : undefined}
+            style:min-width={fit.maxWidth !== null
+                ? `${fit.maxWidth}px`
+                : fullWidth
+                  ? 'max(12rem, 100%)'
+                  : undefined}
             style:max-height={fit.maxHeight !== null ? `${fit.maxHeight}px` : undefined}
             style:overflow={fit.maxWidth !== null ? 'hidden' : undefined}
         >

@@ -299,6 +299,11 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 - ✅ Arrow keys, Home and End move between options
 - ✅ A disabled option is `aria-disabled` and stays in the arrow-key order
 - ✅ The message below the field is `role="alert"` for an error and `role="status"` otherwise
+- ✅ It works before the scripts arrive and without them. The server's HTML carries a native `<select>` with the same options, named by the label, with `name`, `required` and the disabled options; until the component has mounted that is the control, and it has the field's box, so nothing moves when the trigger replaces it. A choice made in it before hydration is kept and reported once. After mounting it stays as the form control, kept at the same value, `visibility: hidden` and `aria-hidden`, out of the tab order and not hit-testable, so assistive technology meets one control, the trigger
+- ✅ `required` is checked by the browser. On a mounted Select the browser's own bubble would point at a control nobody sees: instead its message, in the browser's language, is shown under the field as the error (`role="alert"`, in the trigger's `aria-describedby`) and focus goes to the trigger. A choice clears it
+- ✅ `presentation="native"` is the native `<select>` alone, styled as the field: the platform's picker, labels only (no search, descriptions, loading or empty states)
+- ✅ The trigger fills its container, like an Input, and may be narrower than its label; the label wraps instead of being cut, and the trigger grows by lines from its 32, 40 or 48px (44px on a coarse pointer). The chevron stays in the middle of the box
+- ✅ Every text of its own is in `strings` (the name of the option list and the sheet's buttons included)
 
 **Issues Found:**
 - ✅ The ARIA and keyboard issues of the original audit are resolved
