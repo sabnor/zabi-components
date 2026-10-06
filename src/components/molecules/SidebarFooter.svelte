@@ -1,10 +1,15 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import type { Snippet } from "svelte";
     import { fixedSidebarFlyout } from "../util/fixed-sidebar-flyout.js";
     import { cn } from "../util/cn.js";
+    import { DEFAULT_SIDEBAR_FOOTER_STRINGS, type SidebarFooterStrings } from "../util/sidebar.js";
 
     interface Props {
         collapsed?: boolean;
+        /** The footer's name and the profile button's, for another language. */
+        strings?: Partial<SidebarFooterStrings>;
         showProfile?: boolean;
         profileName?: string;
         profileEmail?: string;
@@ -27,6 +32,7 @@
 
     let {
         collapsed = false,
+        strings,
         showProfile = true,
         profileName = "Zabi",
         profileEmail = "hello@zabi.dev",
@@ -35,7 +41,7 @@
         logoutLabel = "Logout",
         showThemeToggle = true,
         lightModeLabel = "Light mode",
-        isLightMode = $bindable(false),
+        isLightMode = $bindable<Exclude<Props["isLightMode"], undefined>>(),
         onLogout,
         onThemeToggle,
         class: classAttr = "",
@@ -46,15 +52,32 @@
         profilePanel,
     }: Props = $props();
 
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (isLightMode === undefined) isLightMode = false;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
+
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
     const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("sidebarFooter");
+    const text = $derived(mergeStrings(DEFAULT_SIDEBAR_FOOTER_STRINGS, provided(), strings));
+
     const showFooter = $derived(showProfile || showLogout || showThemeToggle);
     const showPanelLauncher = $derived(showProfile);
 
+    // Nested corners: the avatar sits 0.5rem (`px-2 py-2`) inside the profile
+    // button, so its radius is the button's less that gap.
     const avatarClasses =
-        "size-10 rounded-container bg-action-primary text-action-primary flex items-center justify-center text-sm font-semibold shrink-0 ring-1 ring-border-focus";
+        "size-10 rounded-[calc(var(--radius-container)-0.5rem)] bg-action-primary text-action-primary flex items-center justify-center text-sm font-semibold shrink-0 ring-1 ring-border";
 
     function getTextToneClass(isMuted = false): string {
         return isMuted ? "text-description" : "text-headline";
@@ -69,21 +92,21 @@
     <div class="w-full shrink-0" data-sidebar-flyout-root>
         <footer
             class={cn(`flex w-full shrink-0 flex-col gap-3 border-t border-border pt-3 pb-1 ${className}`)}
-            aria-label="Account and settings"
+            aria-label={text.accountAndSettings}
         >
             {#if showPanelLauncher}
                 <button
                     type="button"
                     data-sidebar-flyout-anchor="profile"
-                    class="w-full cursor-pointer rounded-container px-2 py-2 outline-none transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover hover:ring-1 hover:ring-border/60 active:bg-surface-active focus-ring focus-ring--nav"
+                    class="w-full cursor-pointer rounded-container px-2 py-2 outline-none transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover hover:ring-1 hover:ring-border active:bg-surface-active focus-ring focus-ring--nav"
                     aria-haspopup="dialog"
                     aria-expanded={profilePanelOpen}
                     aria-controls={profilePanelControlsId.trim()
                         ? profilePanelControlsId.trim()
                         : undefined}
                     aria-label={collapsed
-                        ? `Open account panel`
-                        : `Open account panel for ${profileName}`}
+                        ? text.openAccountPanel
+                        : text.openAccountPanelFor(profileName)}
                     onclick={handleProfileClick}
                 >
                     <span class="flex w-full items-center gap-3 text-left">

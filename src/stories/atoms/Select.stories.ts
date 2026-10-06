@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Atoms/Select',
     component: Select,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Dropdown with type-ahead search, scrollable options and validation states.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs']
@@ -158,5 +164,72 @@ export const EmptyState: Story = {
             console.log('Empty state primary action clicked');
         },
         options: []
+    }
+};
+
+/**
+ * Always in a BottomSheet, as `presentation="auto"` (the default) opens it on
+ * a phone: titled by the label, the search field under the header, 48px rows.
+ */
+export const InASheet: Story = {
+    args: {
+        label: 'Pub',
+        placeholder: 'Choose a pub',
+        presentation: 'sheet',
+        options: [
+            { value: '1', label: 'Akkurat' },
+            { value: '2', label: 'Bishops Arms' },
+            { value: '3', label: 'Carmen' },
+            { value: '4', label: 'Dovas', disabled: true },
+            { value: '5', label: 'Engelen' },
+            { value: '6', label: 'Flying Elk' },
+            { value: '7', label: 'Half Way Inn' },
+            { value: '8', label: 'Kvarnen' }
+        ]
+    }
+};
+
+/**
+ * Only the browser's own select, styled as the field: the platform's picker.
+ * It shows the options' labels and nothing else. Every Select also renders
+ * this element on the server, where it is the control until the page has
+ * hydrated, and all there is without scripts.
+ */
+export const Native: Story = {
+    args: {
+        label: 'Frequency',
+        name: 'frequency',
+        presentation: 'native',
+        value: 'biweekly',
+        options: [
+            { value: 'weekly', label: 'Every week' },
+            { value: 'biweekly', label: 'Every other week' },
+            { value: 'monthly', label: 'Every month' },
+            { value: 'never', label: 'Never', disabled: true }
+        ]
+    }
+};
+
+/** Every text of the component's own in another language, through `strings`. */
+export const Swedish: Story = {
+    args: {
+        label: 'Hur ofta',
+        options: [
+            { value: 'vecka', label: 'Varje vecka' },
+            { value: 'varannan', label: 'Varannan vecka på torsdagar' },
+            { value: 'manad', label: 'Första torsdagen i varje månad' }
+        ],
+        strings: {
+            placeholder: 'Välj ett alternativ',
+            searchPlaceholder: 'Sök',
+            noResults: 'Inga träffar',
+            loading: 'Hämtar alternativ…',
+            emptyTitle: 'Inga alternativ',
+            emptyDescription: 'Lägg till ett alternativ för att kunna välja.',
+            listLabel: 'Alternativ',
+            closeLabel: 'Stäng',
+            expandLabel: 'Visa mer',
+            collapseLabel: 'Visa mindre'
+        }
     }
 };

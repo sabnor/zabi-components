@@ -8,7 +8,7 @@ const meta = {
         layout: 'centered',
         docs: {
             description: {
-                component: 'A theme toggle component that switches between light and dark modes. Supports different sizes and variants, with automatic theme persistence and system preference detection.'
+                component: 'Switches the page between light and dark, or with modes="three" steps through system, light and dark. It reads and writes the theme on the html element (data-theme, or the dark class on a page without the attribute), stores the choice, and follows whatever else changes the theme.'
             }
         }
     },
@@ -23,6 +23,15 @@ const meta = {
             control: 'select',
             options: ['default', 'ghost', 'outline'],
             description: 'Visual variant of the toggle button'
+        },
+        modes: {
+            control: 'inline-radio',
+            options: ['two', 'three'],
+            description: 'two flips light and dark; three steps system, light, dark and writes data-theme'
+        },
+        storageKey: {
+            control: 'text',
+            description: 'localStorage key for the choice; null keeps nothing'
         }
     }
 } satisfies Meta<typeof ThemeToggle>;
@@ -62,5 +71,27 @@ export const Outline: Story = {
     args: {
         size: 'md',
         variant: 'outline'
+    }
+};
+
+/** System, light, dark. The name states the mode and what a press does: "Theme: system. Switch to light". */
+export const ThreeModes: Story = {
+    args: {
+        modes: 'three',
+        // A key of its own, so the story does not overwrite Storybook's own theme choice.
+        storageKey: 'zabi-storybook-theme-toggle'
+    }
+};
+
+export const ThreeModesInSwedish: Story = {
+    args: {
+        modes: 'three',
+        storageKey: 'zabi-storybook-theme-toggle',
+        labels: {
+            auto: 'följ telefonen',
+            light: 'ljust',
+            dark: 'mörkt',
+            describe: (current: string, next: string) => `Tema: ${current}. Byt till ${next}`
+        }
     }
 };

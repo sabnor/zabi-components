@@ -1,11 +1,18 @@
 <script lang="ts">
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import { cn } from "../util/cn.js";
+    import {
+        DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS,
+        type SidebarBrandHeaderStrings,
+    } from "../util/sidebar.js";
 
     interface Props {
         collapsed?: boolean;
         brandName?: string;
         logoSrc?: string;
         logoAlt?: string;
+        /** `brandAlt`: the logo's alt text when neither `logoAlt` nor `brandName` is given. */
+        strings?: Partial<SidebarBrandHeaderStrings>;
         class?: string;
         /** @deprecated use `class`. */
         className?: string;
@@ -16,9 +23,12 @@
         brandName = "",
         logoSrc = "",
         logoAlt = "",
+        strings,
         class: classAttr = "",
         className: legacyClass = "",
     }: Props = $props();
+
+    const provided = zabiStringsFor("sidebarBrandHeader");
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
@@ -52,7 +62,7 @@
             >
                 <img
                     src={logoSrc}
-                    alt={logoAlt || trimmedName || "Brand"}
+                    alt={logoAlt || trimmedName || (strings?.brandAlt ?? provided()?.brandAlt ?? DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS.brandAlt)}
                     class="size-full object-cover"
                     width="36"
                     height="36"

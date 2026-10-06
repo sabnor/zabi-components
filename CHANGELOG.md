@@ -10,6 +10,1026 @@ Whenever token or CSS import API surface changes, include:
 - mapping rule updates (for example dark semantic mapping)
 - migration guidance when compatibility aliases remain temporarily
 
+## [Unreleased]
+
+## [8.1.0] - 2026-10-06
+
+8.1.0 adds a theme generator (`zabi-theme`, `createTheme`) and an accent colour,
+a mobile set (AppShell, AppBar, BottomTabBar, BottomSheet, Drawer, Select as a
+sheet, safe areas, 44px touch targets) and more than 25 new components. Form fields,
+focus rings and light-mode surfaces are easier to see, and `strings` and
+`ZabiStringsProvider` replace every built-in English text. Nothing from 8.0.0
+was removed or renamed: every `exports` path, prop and token is still there.
+8.0.1 was never published, so everything in the 8.0.1 section below (valid theme
+files, the three-line Tailwind setup working, ColorPicker on the server,
+Progress named) is part of 8.1.0.
+
+### Upgrade notes
+
+Coming from 8.0.0, these are visible without a code change. Each bullet says
+what to do.
+
+**Appearance**
+
+- **Form field edges are darker.** `--color-input-border` is `base-500` in
+  light and dark (was `base-350` light, `base-300` dark) and
+  `--color-input-border-hover` is `base-550` in light. The edge is guarded at
+  3:1 against the field fill, the page and the card, in both themes. A theme
+  of yours that overrides the edge can now report a pair below 3:1 in the
+  generator check. The dark field edge on the overlay surface (sheets, modals)
+  is about 2:1 against the panel and is not guarded. Nothing to do unless you
+  override the edge.
+- **`Progress` uses new tokens.** The fill is `--color-progress-fill` (default
+  `--color-action-primary`) and the track `--color-progress-track` (default
+  `--color-input`); utilities `bg-progress-fill` and `bg-progress-track`. The
+  fill used to be the hard-coded brand step 600, so a bar changes colour in an
+  app that pins a primary action, and in dark. Fill on track is guarded at
+  3:1. Set the two tokens to keep the old colour.
+- **Light mode has a visible surface ladder, stronger tints and shadows.** See
+  Changed: the page, cards, tinted fills, hover fills, overlay edge and shadow
+  all move. A card is 1.18:1 on the page (was 1.10). Check screenshots; no
+  token was renamed.
+- **Focus rings are one step darker in light and lighter in dark.**
+  `--color-focus` is `brand-600` in both themes (light was `brand-500` at
+  2.99:1 on the page; dark was `brand-500`, 2.91:1 on the overlay; dark is
+  #92a9ff by default). The muted ring in dark is one step lighter
+  (`--color-focus-ring-muted`, `base-600`).
+- **The computed `box-shadow` of a focused element lists five shadows**, not
+  two, because the ring now composes with shadow utilities. A test that reads
+  the ring colour from it should pick the 4px spread.
+- **Dark surfaces are `color-mix()` expressions** over `--zabi-base-*`
+  (`--color-surface-raised`, `-elevated`, `-overlay`). The pixels are the same;
+  `getComputedStyle` reports `color(srgb …)`, not `rgb(…)`, so a test that
+  compares the string needs updating.
+- **Placeholder text is one step stronger** in both themes
+  (`--color-input-placeholder`: #61616a light, #a1a1aa dark; 4.5:1 or more on
+  the resting, hovered, focused and pressed field).
+- **Checked checkboxes and radios use the primary action fill**, with the
+  primary button's text colour on the tick and dot.
+- **Dropdown menus, Select lists, the ColorPicker popover and NavigationMenu
+  panels have 16px corners** (were 8px), and other nested corners are
+  concentric: the Card in a Modal, MediaGrid's check mark, Alert's close
+  button, rows in a `.list-group`, the avatar in SidebarFooter's profile
+  button.
+- **`font-sans` and `font-mono` follow the theme's font tokens**
+  (`--font-family-sans`, `--font-family-mono`), not Tailwind's system stacks.
+  If you used `font-sans` to get the system font, write the stack yourself.
+- **`color-scheme` comes from the theme**: `light` by default and for
+  `data-theme="light"`, `dark` under `.dark` and `data-theme="dark"` (also when
+  both `class="dark"` and `data-theme="light"` are set). Native controls,
+  scrollbars, date pickers and autofill follow the theme. A
+  `<meta name="color-scheme">` tag is not needed, and a `color-scheme` rule of
+  your own must come after the theme import to win.
+
+**Markup, roles and accessible names**
+
+- **A `Select` is found by role `combobox`, not `button`.** Its trigger has
+  `role="combobox"` and reports `aria-invalid`, `aria-required` and
+  `aria-busy`. Its form control is a native `<select name>` (not a hidden
+  input), so code that looked for `input[type=hidden]` must look for the
+  select, and `required` now blocks the form. A form reset returns the Select
+  to the value it was rendered with. Update tests and selectors.
+- **A loading `Button` or `IconButton` is `aria-disabled="true"` and
+  `aria-busy="true"`, not `disabled`.** It keeps keyboard focus and swallows
+  the press. CSS or tests that matched it with `:disabled`, `[disabled]` or a
+  strict `toBeDisabled()` must use `[aria-busy="true"]`.
+- **`ThemeToggle` (two modes) has the constant name "Dark mode"** with
+  `aria-pressed`, not "Switch to dark mode" / "Switch to light mode"; update
+  tests and scripts that find the button by those names. It applies the stored
+  choice when it mounts (`storageKey={null}` turns that off) and no longer
+  writes an inline `color-scheme`.
+- **`NavigationMenu` is a list of links and disclosure buttons**, not a
+  `menubar`: the list has `role="list"` and items carry no menu roles. Screen
+  readers announce it differently; keyboard use is unchanged.
+- **A `List` row with no `href` in a List with no `onclick` is plain content**,
+  not a focusable button with an arrow.
+- **Checkbox and Radio inputs are stretched invisibly over their box** instead
+  of being visually hidden, so `getByRole("checkbox").check()` works.
+- **An unnamed `RadioGroup` submits nothing.** Give it a `name`. (The
+  generated name still groups the radios.)
+- **A disabled `Dropdown` or `Select` option is `aria-disabled`, not
+  `disabled`**: reachable with the arrow keys, announced as disabled, not
+  selectable.
+- A Select list and a Dropdown menu are one Tab stop (roving `tabindex`, 0 or
+  -1). `getFocusableElements` skips `tabindex="-1"`.
+
+**Defaults and behaviour**
+
+- **A binding that starts `undefined` on a bindable prop is now written back
+  as the default** (`""`, `false`, `null`). `let value = $state()` works with
+  `bind:value` everywhere; no bindable prop has a fallback expression any
+  more.
+- **Controls are at least 44px on touch screens** (`pointer: coarse`), so
+  layouts there get taller (a checkbox list at an 8px gap is 52px a row).
+  Nothing changes with a mouse.
+- **Every pressable control shows a `:active` pressed state** that does not
+  depend on hover. Hand-written `:hover` rules apply only under
+  `@media (hover: hover)`, so a tapped button no longer sticks in its hover
+  colour.
+- **`Page` pads for the safe areas by default** (`safeArea`). An app that sets
+  `viewport-fit=cover` and already pads for the insets itself should pass
+  `safeArea={false}`. Without `viewport-fit=cover` the insets are zero and
+  nothing changes.
+- **`Select` opens as a bottom sheet on a phone** (a touch screen narrower than
+  640px; `presentation="auto"`). Pass `presentation="popover"` to keep the
+  pop-over. It fills its container like Input (a Select in a flex row takes the
+  free width; give it a width such as `class="w-48"`, which is honoured now),
+  and a label too long for the trigger wraps instead of being cut.
+  `maxMenuHeight` defaults to `60dvh` (was `60vh`).
+- **`Button` labels wrap.** A label that does not fit goes onto a second line
+  and the button grows (`min-height` instead of a fixed height); in a tight
+  flex row a button may shrink and wrap where it held its width.
+- **Toasts show your message.** A toast with a `message` and no `title` shows
+  the message, not a default heading; only a toast with `detail` can be
+  expanded; the countdown sentence and "Click to stop" are off unless
+  `showCountdown`. A toast with no `duration` closes after 7 s (14 s when its
+  text is 121 to 240 characters, stays when longer); an error toast and a
+  toast with an action stay until dismissed. On touch, `onpausechange` reports
+  `paused` then `running` for a tap. Toasts also sit above the tab bar, the
+  home indicator and the on-screen keyboard, and move while an overlay with a
+  header and footer is open. Mount the Toaster inside `ZabiStringsProvider`
+  when you use it.
+- **`Tooltip` opens on a tap and can be hovered.** A touch or pen press toggles
+  it, and it stays open until a second tap, a tap elsewhere, Escape, a scroll
+  or focus leaving (`touchDuration` defaults to `0`). The pointer can move from
+  the trigger onto the open bubble, so an open tooltip takes presses: keep
+  tooltips clear of other controls. A tooltip that would leave the viewport
+  flips or slides to stay 8px inside, and `data-placement` reports the side
+  used.
+- **`Tabs` with long labels scroll** instead of wrapping onto several lines.
+- **`AppBar` and `BottomTabBar` stay one row** (titles and labels get an
+  ellipsis; the bars are 57px and 65px at any text size). AppBar can be two
+  rows tall when the title would have under 72px beside the controls.
+- **Overlays follow the on-screen keyboard** where it covers the page (Modal,
+  BottomSheet, SlideUp, Drawer), and Modal and SlideUp are at most `90dvh`.
+- **Light-mode `Input`, `Textarea` and `Select` darken their border on hover**
+  and render text at 16px below 640px, so iOS Safari no longer zooms on focus.
+- **`Table` and `PropsTable` sit on the card surface** with an elevated header
+  band; Skeleton and Header's variant chips use `bg-neutral-subtle`.
+- **Inside `on-brand` and `on-accent` blocks** labels, links, borders and quiet
+  buttons change to the block's on-colour; a card inside a block gets the
+  page's colours back. Custom properties named `--zabi-theme-*` appear on a
+  block's parent.
+- **`ImageUpload` no longer forces a 16rem minimum width**, and its `id` names
+  the control (the dropzone button), not the host. Set a width with `class` if
+  you relied on it.
+- **`SidebarAccountPanel`'s `systemMode` default text is "Follows the
+  system".**
+- `UnsavedChangesBar` and `ConfirmDialog` leave focus on the pressed button
+  while busy, where they moved it to their container.
+- `Modal`'s `onclick` as a close signal is deprecated (see Deprecated).
+
+**Theme files and the generator**
+
+- **Dark theme files no longer restate the `--zabi-*` ramps.** `theme-dark`,
+  `theme-dark-only` and the dark part of `colors` only remap roles; the raw
+  palettes are declared once, in the light theme. Import the light theme
+  first: `@import "zabi-components/theme-only"; @import
+  "zabi-components/theme-dark-only";`. 8.0.0's `.dark`-only file carried a
+  copy; a dark file imported on its own now has no ramps. An override of
+  `--zabi-brand-*`, `--zabi-accent-*` or `--zabi-base-*` on `:root` applies in
+  both modes. The dark files are about 13 KB larger, because the block is
+  published for the class and attribute and for the system setting. See
+  `docs/theme-imports.md`.
+- **The generator checks more role pairs than 8.0.0**, so a theme check that
+  passed on 8.0.0 can turn red. `createTheme` and `zabi-theme` resolve every
+  role pair the library's own guard checks (the field edge on fill, page and
+  card; the progress fill on its track; the muted and danger focus rings and
+  the control boundary on all five surface levels; the accent star outline on
+  an inset surface; the focus ring or its offset gap on an accent button; the
+  label on a selected and on a held selected pill tab). A pair below AA (4.5:1
+  text, 3:1 UI parts) is a warning, and fails under `--strict`. The generated
+  values are unchanged; the findings are real for that theme. Fix them with an
+  override (`--set`), for example `--color-focus` and `--color-link-hover` one
+  brand step darker, or use `--pin`.
+- Theme files work with `[data-theme="dark"]`, and with `[data-theme="auto"]`
+  under `prefers-color-scheme: dark`. A page with no class and no attribute is
+  light, as before.
+
+**Package**
+
+- `package.json`: new `./create-theme` export and `zabi-theme` bin; `culori`
+  moved to `dependencies` (the generator uses it at run time);
+  `sideEffects: ["**/*.css"]`; `CHANGELOG.md` shipped in `files`; the `prepare`
+  script renamed `fix:lucide-types` (dev-only, so installing prints no
+  install-scripts notice; run it if your editor needs it). Every component
+  imports icons from `@lucide/svelte/icons/<name>`; import yours that way too.
+  No export, prop, token or file from 8.0.0 was removed or renamed.
+
+### Added
+
+#### Theming and the `zabi-theme` generator
+
+- **`npx zabi-theme --brand "#0026EA"`** writes a CSS file with the full
+  `--zabi-brand-*` ramp; with `--accent` and `--neutral` also the
+  `--zabi-accent-*` ramp and all 21 `--zabi-base-*` steps; `--out` names the
+  file. Import it after `theme-only` and `theme-dark-only` and it covers light
+  and dark. The same is available in code as `createTheme({ brand, accent,
+  neutral })` from `zabi-components/create-theme`, which returns `{ css, tokens,
+  warnings, closest }`. The ramps sit on the library's lightness curve: your
+  colour gives the hue and chroma and is not pinned to a step, so the exact hex
+  may not appear, and the file header names the closest step. The generator
+  picks the text colour for the brand and accent fills.
+- **The generator reports contrast** on stderr, in the file header and in
+  `warnings`; `--strict` exits 1 on a failed pair. `--set <token>=<value>` (or
+  `overrides`) moves a role and is checked too. `overrides` takes a flat map
+  (both modes) or `{ light, dark, both }`; the CLI has `--set-light` and
+  `--set-dark`. A light-only override is restated with the library's own dark
+  value in the dark rules, and the check reads each mode's own value.
+- **`zabi-theme --pin`** (`createTheme({ pin: true })`): the primary action is
+  the exact brand colour in light, with derived hover and pressed states and a
+  label checked at 4.5:1. The focus ring and links take the colour where every
+  guarded pair still passes. Dark keeps the mirrored ramp step unless the colour
+  passes there; the header says which. A failing pair is a warning and the
+  colour is never moved. `--pin-accent` / `pin: { accent: true }` does the same
+  for the solid accent fill.
+- **`neutralChroma`** (CLI `--neutral-chroma`, 0 to 0.1, needs `neutral`): the
+  OKLCH chroma at the neutral ramp's peak, for a clearly tinted neutral. With it
+  the translucent ink roles (`--color-action-secondary` and its hover and
+  pressed steps, `--color-surface-hover`, `-active`, `--color-border-overlay`
+  in light, `--shadow-color`) follow the neutral ramp, and the file restates the
+  dark values under the dark selectors.
+- **A theming guide.** `THEMING.md` is the documented token API: quick start
+  with `zabi-theme`, import order, tables of the tokens an app may set (brand,
+  accent and neutral ramps, the "on" colours, fonts and weights, radius,
+  shadow, z-index) and the roles to read, light, dark and auto, what the
+  generator does and does not do, and what does not follow an override.
+  Renaming or removing a documented token is a breaking change; the token-name
+  snapshot in `npm run test:themes` enforces it. The docs site has a `/theming`
+  page with a brand switcher (`?brand=amber` opens any page in Amber, generated
+  from `#C17B00` and a warm neutral).
+- **One brand override restyles light and dark.** The raw `--zabi-*` ramps are
+  declared once and the dark block only remaps roles; dark surfaces are mixed
+  from the neutral ramp, so warm or tinted greys carry through.
+- **An accent colour.** `--zabi-accent-50` … `950`, `--color-accent-50` …
+  `950`, the roles `--color-accent`, `-hover`, `-active`, `-subtle`, `-border`,
+  `-text`, `--color-on-accent`, and the classes `bg-accent`, `text-accent`,
+  `border-accent` (with working `hover:` and `active:` forms, also
+  `active:bg-info-active` and `hover:bg-nav-menu-active-hover`). The
+  `energetic` tokens are unchanged. `Button` and `IconButton` take
+  `variant="accent"` (solid, own hover and pressed fills, `--color-on-accent`
+  label); `Badge variant="accent"` (subtle and solid); `Rating tone="accent"`.
+- **The text on a fill can be set.** `--zabi-on-brand` (light, white) and
+  `--zabi-on-brand-dark` (dark, `brand-950`) feed `--color-on-brand`, which
+  `--color-action-primary-text` follows; `--zabi-on-accent` and
+  `--zabi-on-accent-dark` do the same for the accent. `Heading` and `Text` take
+  `tone="inherit" | "on-brand" | "on-accent"`; the classes `on-brand` and
+  `on-accent` set a block's text colour and make the focus ring visible on it;
+  `on-surface` marks a surface of your own inside a block.
+  THEMING.md ("Text and controls on a brand or accent block") says which button
+  variants stay legible there. Directly on a block an empty or ticked checkbox,
+  radio or toggle, a filled Rating star and status message text are not legible
+  (put them on a card); a card inside a block needs `:has()`.
+- **Font tokens.** `--font-family-heading` (follows `--font-family-sans` until
+  set; applied to `h1`–`h6` and Heading), `--font-family-mono` (CodeBlock reads
+  it), `--font-weight-regular`, `-normal`, `-medium`, `-semibold`, `-bold`,
+  `--font-sans`, `--font-mono`, `--font-heading`, and a `font-heading` utility.
+- **Dark mode by attribute and by the system setting.** The dark files apply to
+  `.dark`, `[data-theme="dark"]`, and `[data-theme="auto"]` when
+  `prefers-color-scheme` is dark; `[data-theme="light"]` stays light. Following
+  the system is opt-in. Put the class or attribute on `<html>`.
+- **ThemeToggle `modes="three"`** steps through system, light and dark, writes
+  `data-theme` on `<html>`, shows a monitor, sun or moon and names itself
+  "Theme: system. Switch to light"; `labels` (including `labels.darkMode`)
+  replaces the words. `mode` (bindable), `onmodechange` and `storageKey` read or
+  drive the mode, or store it under your own key. It reads `dark`, `light` and
+  `auto`, follows changes made elsewhere, and shows the right icon before it
+  mounts.
+- **Theme helpers** from the package root: `getThemeMode`, `setThemeMode`,
+  `isThemeDark`, `getStoredThemeMode`, `storeThemeMode`, `themeInitScript` and
+  the `ThemeMode` type. `themeInitScript()` returns a script for `<head>` that
+  applies the stored mode before first paint. TopNavbar takes `themeModes`,
+  `themeStorageKey` and `themeLabels`; SidebarAccountPanel takes
+  `themeModes="three"` with `onThemeModeChange`.
+- New tokens: `--color-surface-inset` (`bg-surface-inset`; a recessed well on a
+  card, `base-100` light and `base-150` dark, AA text; dark `--color-input`
+  points at it and keeps its value; do not use `--color-input` for a well, it is
+  white in light), `--color-input-border-hover`, `--color-control-border`
+  (`border-control-border`, `text-control-border`; 3:1 on every surface level;
+  `--color-border-strong` is unchanged and decorative), `--color-focus-ring-muted`
+  (`.focus-ring--muted`), `--color-focus-ring-danger` (the error colour; the
+  on-colour inside a block), `--color-input-active` (`active:bg-input-active`;
+  Select's trigger uses it), `--color-action-primary-subtle-active` and
+  `--color-action-danger-subtle-active` (`active:bg-…`), `--zabi-list-row-radius`
+  (`.list-group` sets it for rows), `--color-progress-fill`,
+  `--color-progress-track`, `--zabi-avatar-ring`, and the documented star
+  colours `--zabi-rating-on`, `--zabi-rating-off`, `--zabi-rating-on-hover`,
+  `--zabi-rating-on-active`, `--zabi-rating-on-edge` (they apply when set on an
+  ancestor or by a class). The contrast guard holds the muted and danger focus
+  rings and the control boundary to 3:1 on all five surface levels, and fails
+  when a focus-ring rule reads a colour that is not in its pair list.
+
+#### New components
+
+- **SortableList** reorders items and leaves their content to you. Each row
+  has a drag handle (mouse and touch), arrow keys, Home and End on the handle,
+  optional move up and down buttons and a polite announcement of the new
+  position. `bind:items`, `onreorder` (item, old and new index),
+  `controls="manual"`, `strings`. Escape cancels a drag; a key that cannot move
+  further says so ("Hero section, already first"); a parent replacing `items`
+  mid-drag cancels it. Clicks on the handle or a move button do not bubble: put
+  them beside a header toggle, never inside another button. Handle and buttons
+  sit 8px apart on touch.
+- **Collapsible**: a trigger wired to the panel it shows and hides, owning ids,
+  `aria-expanded`, `aria-controls` and the panel's name. `title` gives a
+  full-width header button with a chevron (`headingLevel` wraps it in a real
+  heading); a `trigger` snippet hands the wiring to your own `<button>`.
+  `bind:open`, `onopenchange`, `disabled`. Closed content stays in the DOM under
+  `hidden` (`unmountOnClose` removes it). If the panel closes while focus is
+  inside it, focus moves to the trigger. **CollapsibleGroup** makes an
+  accordion: opening one closes the others, or `multiple`; Arrow Up and Down,
+  Home and End move between headers. In a single-open group only the first
+  panel marked open renders open (also on the server, without
+  `onopenchange`); a disabled panel keeps its state.
+- **ConfirmDialog** (on Modal): `title`, `message`, `variant` (`danger`,
+  `warning`, `info`, each with an icon; `danger` uses the danger button),
+  `confirmLabel`, `cancelLabel`. If `onconfirm` returns a promise the dialog
+  shows its loading state and cannot be dismissed until it settles: it closes on
+  success, stays open on failure and passes the error to `onerror`; returning
+  `false` keeps it open. `loading` does the same for your own request tracking;
+  `oncancel` reports how the user backed out; `loadingLabel` (default
+  "Working…") is announced once. Focus starts on Cancel, Enter only activates
+  the focused button, and it renders in `document.body` unless `portal={false}`.
+  It uses `role="alertdialog"`, draws no outline around the whole dialog while
+  loading and sets no `aria-busy` on the panel.
+- **Drawer**: a modal panel from the side. `side` is `left`, `right`, `start` or
+  `end`; `size` is `sm`, `md` or `lg`, never wider than the screen; `title`,
+  `description`, a `footer` snippet; `dismissible`, `onclose({ reason })`,
+  `closeLabel`, `initialFocus`, `portal` (default true). Focus is trapped and
+  returns to the opener, the page does not scroll, the slide is skipped under
+  `prefers-reduced-motion`, it shares the scroll lock with Modal and SlideUp and
+  stacks with them. Its `onkeydown` runs after Escape handling; content with
+  nothing to focus is a Tab stop named by the title; the panel pads for the
+  bottom safe area; the close button takes taps in a 44px area.
+- **MediaGrid**: image and video thumbnails to pick from (the grid only).
+  `getKey`, `getLabel`, `getUrl`; `bind:selected` or, with `multiple`,
+  `bind:selectedKeys`. A single selection moves and is never cleared by a repeat
+  press. `ondelete` shows a delete button named after each item (focus moves to
+  the item that took its place); `getType`, `getPoster`, `loading`, `empty`
+  snippet, `emptyHeadingLevel` (default 3), `minTileSize` (96px), `strings`. One
+  Tab stop; arrow keys move by the columns on screen, Home and End within the
+  row, Delete asks to delete; "Use the arrow keys to move between items." is read
+  when focus enters the grid and shown below it while it has keyboard focus. The delete button sits on the end corner, mirrors
+  in RTL, takes taps in a 44px area and shows a pressed state on touch.
+- **Spinner**: the loading ring on its own. Sizes `xs` to `lg` (12, 14, 16,
+  20px); with a `label` it is a `status`, without one it is decorative; fades
+  instead of spinning under `prefers-reduced-motion`.
+- **Slider**: a native range input in the library's colours. `bind:value`,
+  `min`, `max`, `step`, label, helper or error text, three sizes, `showValue`,
+  `formatValue` (also `aria-valuetext`).
+- **UnsavedChangesBar**: Save and Discard while a form is `dirty`; sticky
+  (`position` `bottom` or `top`); `onsave` may return a promise (saving state;
+  a rejection keeps the bar and calls `onerror`); appearance announced politely;
+  never takes focus; focus returns to the edited field when it goes; `actions`
+  snippet. Warning before the page is left is your app's job.
+- **AppShell**: the phone layout. `header` snippet (AppBar), `<main>` content,
+  `footer` snippet (BottomTabBar), a `dvh` column inside the safe areas. Sets
+  `--app-shell-top-inset` and `--app-shell-bottom-inset` (fallbacks 57px and
+  65px) on itself and on `<html>` while mounted, for overlays in
+  `document.body`. `contentElement="div"` inside a page that already has a
+  `<main>`.
+- **AppBar**: a phone top bar with `title` (`headingLevel`, default 1;
+  `titleLines={2}` allows two lines), back control (`backHref` or `onback`,
+  `backLabel`), `leading` and `actions` snippets (up to two actions),
+  `collapseOnScroll` (stays while focus is inside; no animation under reduced
+  motion). The title always has at least 72px; a `leading` wider than the row is
+  held to the row. Parts carry `data-appbar-part` (`back`, `title`, `actions`);
+  the bar measures itself in the browser, so before hydration the title wraps to
+  the second row. At 180px wide no title shows beside a back control and two
+  actions.
+- **BottomTabBar**: three to five links with an icon above a short label.
+  `items` take `href`, `label`, `icon`, `badge` (read with the label: "Inbox, 3
+  new"; `badgeLabel`, `badgeMax`). `active` is an href or path (`aria-current=
+  "page"`); left out, the bar follows the browser address, so pass
+  `active={page.url.pathname}` on the server. Fixed on its own and in the flow
+  in an AppShell (`position`), clear of the home indicator. Tabs are at least
+  44px with 8px gaps; under 52px wide the labels hide (icon only, label stays
+  the accessible name); tabs go under 44px only when five do not fit. The
+  active tab has a 2px outline in the action colour. With five tabs labels stay
+  11 to 12px at 200% text.
+- **Rating**: one to `max` (default 5) stars, can be empty. `bind:value` is a
+  number or `null`; a radio group named by `label`, each star reads "4 of 5
+  stars"; arrow keys, Home and End; `name` submits it. A repeat press on the
+  selected star never clears it; `clearable` adds a clear button (Delete and
+  Backspace clear too). `readonly` shows a score as one image ("Quiz, 3.5 of 5
+  stars"), with fractions, `showValue`, `formatValue`; it submits nothing. 44px
+  targets at every `size`; `strings`; the empty star uses
+  `--color-control-border`.
+- **SegmentedControl**: two to four choices in one row. `options` (`value`,
+  `label`, `icon`, `disabled`), `bind:value`, `onchange`. A radio group, not
+  tabs: one Tab stop, arrows move and select, `name` submits, a repeat press
+  does nothing. `fullWidth` (default true), labels wrap, 44px tall on touch.
+- **BottomSheet**: a modal panel sliding up from the bottom. Snap points
+  (`snapPoints`, `"half"` and `"full"` by default; `bind:snap`); the grip drags
+  between them or down to close and is a button ("Expand" / "Collapse"). Content
+  scroll wins over dragging unless at its top. `title`, `description`, `footer`,
+  `isOpen`, `dismissible`, `portal`, `initialFocus`, `closeLabel`,
+  `onclose({ reason })` with the extra reason `"swipe"`. Safe areas, no animation
+  under reduced motion, a centred 40rem sheet from `md`. Half and full heights
+  are shares of what the on-screen keyboard leaves. The grip's focus ring is
+  drawn inside its 44px box; a click reaches the grip button, and flicks are
+  timed from the events' own times.
+- **StickyActionBar**: keeps a form's main action in view at the bottom of the
+  screen or scrolling box, rises above the on-screen keyboard, reserves
+  `scroll-padding-bottom`, never takes focus. One per scrolling box; a short
+  form needs `class="flex min-h-full flex-col"`.
+- **FloatingActionButton**: a round 56px primary button. `label` (required, the
+  accessible name), `extended`, `icon`, `href` (a link; a button otherwise),
+  `position` (`bottom-end` default, `bottom-start`, `bottom-center`). Above the
+  tab bar in an AppShell, above the safe area elsewhere; `--fab-bottom-offset`
+  lifts it; it reserves `scroll-padding-bottom` on what scrolls under it.
+- **DateField** and **TimeField**: the browser's date and time inputs in the
+  library's Input. `bind:value` is `YYYY-MM-DD` or 24-hour `HH:mm`, `""` when
+  empty; `label`, `hint`, `error`, `min`, `max`, `step`, `required`, `disabled`,
+  `readonly`, `size`, `name`; work in FormField; ids start with `input-`.
+  **`formatDate` and `formatTime`** (package root) format those strings for a
+  locale (`formatDate("2026-10-06", "sv")` is "6 okt. 2026"), never shift by the
+  time zone, and return `""` for empty or invalid.
+- **Calendar**: one month as an ARIA grid with event dots. `bind:month`
+  (`YYYY-MM`), `bind:selected` (`YYYY-MM-DD` or `null`), `events` (`date`,
+  `label`, `tone`; up to three dots a day), `weekStartsOn` (default Monday),
+  `locale`, `min`, `max`, `isDateDisabled`, `onselect`, `onmonthchange`,
+  `strings`. One Tab stop: arrows by day and week, Home and End within the
+  week, Page Up and Down by month (Shift: year). Days are named in full with
+  state and events and are 44px tall; unavailable days have a line through the
+  number. `locale` translates dates only, so pass `strings` for "today",
+  "selected", "unavailable". Pressing the selected day does nothing.
+- **DropdownItem**: the menu item as a component for a Dropdown's custom
+  `children`; takes its role from the Dropdown and joins the arrow-key order. A
+  DropdownItem with custom children and a description is named by its content
+  alone.
+- **Stepper**: progress through a multi-step form. `steps` (labels or `{ label,
+  description }`), `bind:current` (zero-based), `layout` (auto goes compact below
+  30rem of its own width: it suits about five short labels; compact segments are
+  narrower than 44px from seven steps with `interactive` on 320px), `size`
+  (`sm`, `md`, `lg`), `strings`. Completed steps show a check, the current one
+  its number, upcoming an outline; a navigation landmark with
+  `aria-current="step"`; a step change is announced once. `interactive` makes
+  completed steps buttons. It does not move focus: focus the new heading
+  yourself. In Safari 16 and older it needs a width from its parent in a flex
+  row.
+- **PhotoGrid**: square thumbnails that open a viewer. `photos` (`src`,
+  `thumbSrc`, `alt`, `width`, `height`, `caption`, `id`), `columns` (3, then 4
+  and 5), `max` ("+N" tile), `onopen(index)`, `onadd` ("Add photo" tile),
+  `selectable` (`"single"` or `"multiple"`, `bind:selected`,
+  `bind:selectedKeys`; a single selection is never cleared by a repeat press and
+  each tile gets an Open button). One Tab stop, lazy loading, placeholder and
+  failure fallback. **PhotoViewer**: a full-screen dialog for them, `bind:index`,
+  `bind:isOpen`, caption, counter, up to three `actions` (more in a menu).
+  Swipe or arrows change photo; pinch, double tap, Ctrl+wheel or `+`/`-` zoom;
+  drag pans; swipe down, Escape or the close button close it
+  (`onclose({ reason })`). Focus returns to the tile; the thumbnail shows
+  blurred until the full image loads; neighbours are preloaded; dark in both
+  themes; safe areas. Double tap is timed from the touch events. Previous and
+  Next at the ends keep their plate and dim only the arrow.
+- **Avatar** and **AvatarGroup**: `Avatar` is a round picture falling back to
+  initials (`name`, `src`, `size` `sm` 24, `md` 32, `lg` 48px, `alt`, `alt=""`
+  for decorative, `locale`); initials come from the first and last word, are in
+  the server markup and remain if the picture fails. They are `brand-200` on
+  `brand-700` in the default light theme (the subtle primary pair, 4.5:1).
+  `AvatarGroup` shows `people` overlapped as a list, up to `max` (default 4) and
+  "+3" (`strings.more`), `locale`. Not interactive.
+- **SwipeableListItem**: a row with one or two `actions` revealed by a swipe
+  towards the inline start (touch and stylus; mirrored in RTL); a swipe only
+  reveals, an action runs on press. The same actions are behind a "more"
+  button (`showMoreButton`, on by default; with `false` offer another route).
+  Bindable `open`, `onopenchange`, `strings.actions`; one row open per list.
+- **PullToRefresh**: wraps a list; pulling down at the top calls `onrefresh`
+  (touch only). Bindable `refreshing`, `disabled`, `threshold` (64px),
+  `strings`. A Refresh button shown on keyboard focus does the same; a status
+  region says "Refreshing" then "Updated". A rejected `onrefresh` ends the busy
+  state silently: report the failure in the app. In controlled mode it says
+  "Updated" whenever `refreshing` goes back to false.
+- **`focusToasts()`** moves focus to the newest toast; focus returns when it is
+  dismissed, also from inside an open overlay.
+
+#### Existing components
+
+- **ImageUpload**: `onbrowse` replaces the native chooser and
+  `event.preventDefault()` in `onclick` keeps it closed. A video value (file
+  type, extension, or `previewType`) renders a `<video>` with controls, never
+  autoplaying; a `preview` snippet replaces the preview. `label` and `id` (the
+  dropzone is a native `<button>`); Change and Remove are named from the label
+  ("Change logo") or `changeLabel` and `removeLabel`; the preview takes `alt`.
+  A dropped file is checked against `accept` and rejected through
+  `onfilereject`. Copy props: `browseText`, `changeText`, `removeText`,
+  `errorTitle`, `errorRecovery` (`false` leaves the line out), `selectedText`,
+  `removedText` ("Image selected" / "Image removed" are announced);
+  `actionsPlacement` (`"overlay"` or `"strip"`, strip by default for video).
+- **IconButton**: `xs` size (24px, the minimum target; use `sm` or larger where
+  touch is primary); `pressed` (bindable, `aria-pressed` and a pressed style in
+  every variant; `event.preventDefault()` in `onclick` keeps the state; left
+  undefined it renders no `aria-pressed`); `tone="danger"` on `ghost` or
+  `outline` for a quiet destructive style. `href` on Button and IconButton
+  renders a real link (`target`, `rel`, `download`); a disabled or loading link
+  has no `href` and is `aria-disabled`.
+- **Modal**: `portal` (renders in `document.body`; a theme class set below
+  `<body>` does not reach it); `onclose({ reason: "escape" | "backdrop" |
+  "close-button" })`; `dismissible={false}` (the close button stays focusable,
+  `aria-disabled`; setting `isOpen` still closes); `role="alertdialog"`;
+  `closeLabel` (default "Close"); `fullScreen` (or `"mobile"` below `md`);
+  `initialFocus` (also on SlideUp); typed `aria-describedby`, `aria-busy`,
+  `data-*`, `id`. SlideUp: `closeLabel`, `swipeToClose` (grip, downward swipe,
+  calls `onclick`), a `footer` snippet kept above the keyboard.
+- **Toast and Toaster**: `pushToast` takes `action: { label, onclick,
+  dismissOnClick? }` (a button in the toast, announced with the message, closes
+  after the handler unless `dismissOnClick` is `false`; the countdown pauses
+  while pointer or focus is on it; give it a long `duration` or `0`; the
+  `ToastAction` type is exported); `duration` takes `"short"` (3 s), `"medium"`
+  (7 s), `"long"` (14 s), `"persistent"` or milliseconds, with `defaultDuration`
+  on Toaster (`TOAST_DURATIONS`, `ToastDuration` exported); `strings` for every
+  built-in word (`ToasterStrings`, `DEFAULT_TOASTER_STRINGS`), `aria-label`,
+  `showCountdown`, `onpausechange({ id, paused })`, `data-paused`; `closeLabel`
+  on Toast and Alert; `--toaster-bottom-offset` (72px clears a
+  FloatingActionButton); other attributes pass to the region. A held finger
+  pauses a toast, lifting resumes with at least 3 s left. Toasts do not fly
+  under reduced motion; one with an action stays until dismissed.
+- **Dropdown**: options take `icon`, `tone: "danger"` and `description` (the
+  `DropdownOption` type is exported). `presentation` (`"auto"`, `"popover"`,
+  `"sheet"`; default `"popover"`): in a sheet the same menu opens in a
+  BottomSheet titled by the control's label; `<Dropdown presentation="sheet">`
+  is the library's action sheet (`sheetTitle`, `sheetSnap`, `sheetCloseLabel`,
+  `sheetExpandLabel`, `sheetCollapseLabel`, `fullWidth`, optional
+  `ariaLabelledby`). Menu boxes report `data-resolved-placement`.
+- **Select**: renders a real `<select>` on the server, the working control
+  before hydration and with scripts off; on mount the custom list takes over,
+  and a choice made before is kept and reported once; `presentation="native"`
+  renders only the native select. `presentation` (`"auto"`, `"popover"`,
+  `"sheet"`, `"native"`), `strings` (including `listLabel`;
+  `DEFAULT_SELECT_STRINGS`, `SelectStrings`, `SelectPresentation` exported,
+  also from atoms; the six text props still win). The chosen option has a check
+  mark at the inline end and a fill, and every option carries `aria-selected`.
+  A disabled Select submits its value once hydrated and not before; the inline
+  message of a `required` Select is the browser's, in the browser's language; a
+  label longer than one line is cut in the native select and wraps in the custom
+  one, so the field can grow by a line.
+- **Input, Textarea, Select**: `hint` and `error` (a hint is tied with
+  `aria-describedby`, an error sets the error state and is announced;
+  `variant` + `message` still work and your own `aria-describedby` is merged).
+  Input takes `leading` and `trailing` snippets and, for `type="password"`,
+  `revealable` (`revealLabel`, default "Show password", `aria-pressed`). Input,
+  Textarea, Select, Checkbox, Radio, Toggle and ThemeToggle accept their
+  element's native attributes (`autocomplete`, `inputmode`, `maxlength`,
+  `enterkeyhint`, `data-*`); Table and Text pass other attributes on. Toggle
+  takes `aria-label` and `aria-labelledby` ("Toggle" is only the last fallback).
+  `Checkbox` is exported from the atoms entry.
+- **Table**: `stacked` (or `"sm"`, `"md"`, `"lg"`) lays rows out as label and
+  value pairs and drops the 20rem minimum; put `data-label` on each cell and
+  keep the `<thead>`; `captionHidden` keeps the caption as the accessible name
+  but hides it. A stacked cell keeps several children together on the value
+  side; a cell without `data-label` puts its content there too; an empty cell
+  leaves no blank line.
+- **EmptyState**: `headingLevel` (1–6, default 2); `size="compact"` (tighter,
+  smaller title, a plain `<div>` not a named region; the default is still a
+  `<section>` named by its title).
+- **TopNavbar**: nav items take `external` (default true for absolute URLs);
+  `collapseAt` (`"sm"`, `"md"` default, `"lg"`, `"xl"`; `TopNavbarCollapseAt`
+  exported).
+- **Tabs**: `fullWidth` (for two or three tabs; scrolls when a share is too
+  small for the longest word). The rule under Tabs is `border-border`; a
+  selected pill uses `action-primary-subtle`.
+- **SidebarShell**: `mobile="drawer"` hides the sidebar below `lg` and opens it
+  in a Drawer from the start side: `bind:isOpen`, `trigger` snippet
+  (`aria-expanded` wiring), `drawerTitle`, `closeLabel`, `onclose({ reason })`;
+  it closes when a link is followed and when the screen widens past 1024px;
+  `label` names the scrolling region (default "Navigation links").
+  SidebarNavigation declares and passes these on. Default `mobile="none"`
+  changes nothing.
+- **Page**: `safeArea` (default true) pads left, right and bottom by
+  `env(safe-area-inset-*)`; nothing inside an AppShell or where the insets are
+  zero; your own `px-*` class replaces that side. Needs `viewport-fit=cover`.
+- **Tooltip**: `touchDuration` (default `0`); one open at a time; a tooltip on a
+  disabled button is tied to it with `aria-describedby`. Do not put essential
+  information in a tooltip.
+- **ColorPicker**: the colour map is two native sliders (saturation, lightness)
+  in one Tab stop, working by keyboard (Shift moves ten steps), touch and pen;
+  new strings `area`, `saturation`, `lightness`, `invalidHex`; the hue slider
+  shows its focus ring and is 44px on a coarse pointer.
+- **CodeBlock**: `copyLabel`, `copiedLabel`; "copied" is announced through a
+  status region. **FormField**: `requiredLabel`.
+#### Mobile and touch
+
+- New props for phones: `Page` `safeArea`, `Modal` `fullScreen`, `SlideUp`
+  `swipeToClose` and `footer`, `TopNavbar` `collapseAt`, `Tabs` `fullWidth`,
+  `Tooltip` tap, `Select` and `Dropdown` `presentation`, `SidebarShell`
+  `mobile="drawer"`, `Toaster` `--toaster-bottom-offset`. Components for them:
+  AppShell, AppBar, BottomTabBar, BottomSheet, Drawer, StickyActionBar,
+  FloatingActionButton, SwipeableListItem, PullToRefresh, PhotoViewer. Safe areas
+  need `viewport-fit=cover`.
+
+#### Accessibility
+
+- A focus ring in forced colours: `.focus-ring`, the legacy `.focus-brand` and
+  `.focus-nav`, and the checkbox and radio row draw an outline there. The
+  current page has an outline in forced colours in SidebarNavigation,
+  SidebarPanel and TopNavbar. In forced colours every option of a Select list
+  has the same border and the chosen one is told apart by its check mark only.
+- `docs/ACCESSIBILITY.md` has a "Library conventions" section (where focus goes
+  when a focused control is removed, the shared overlay stack and scroll lock,
+  disabled options, hover-revealed actions, focus in forced colours) and no
+  longer lists fixed issues as open; `docs/KEYBOARD_NAVIGATION.md` describes
+  what the components do.
+
+#### Strings and hydration
+
+- **`ZabiStringsProvider`**: wrap the app in `<ZabiStringsProvider
+  strings={…}>` and every component under it uses those words unless an
+  instance says otherwise. One entry per component with a `strings` object
+  (including `avatarGroup`, `swipeableListItem`, `pullToRefresh`), keyed by prop
+  name for components with single-text props (`toast`, `alert`, `codeBlock`,
+  `imageUpload`, `unsavedChangesBar`), and a `common` group (close, back, expand,
+  collapse, required, showPassword, search, confirm, cancel). Order, later wins:
+  built-in English, provider, the instance's `strings`, its own text props. It
+  is Svelte context (per request on the server, nestable, reaches portalled
+  overlays); Modal, Drawer, SlideUp, BottomSheet, Toaster, Rating and the
+  components above read it; landmark `ariaLabel`s are not covered.
+  `getZabiStrings()`, `DEFAULT_ZABI_COMMON_STRINGS` and the types are exported.
+  No translations ship; the README has a complete Swedish example. Nothing
+  changes outside a provider.
+- **Every built-in text can be replaced**: `strings` on TopNavbar,
+  SidebarFooter, SidebarAccountPanel, SidebarNavigation, SidebarBrandHeader,
+  ColorPicker, ContactForm, PropsTable, ComponentDemo, Select, Toaster, Stepper,
+  Calendar, MediaGrid, SortableList, Rating, PullToRefresh. The README's "Texts
+  and other languages" lists the prop for each component.
+- **A choice made before the page hydrates is kept.** A Checkbox, Radio,
+  RadioGroup, Rating, SegmentedControl or Select changed in the server's markup
+  was set back at hydration; the bound value now follows the native input and
+  the change callback fires once (a form reset still returns to the rendered
+  value). A bound Select value with no matching option is kept and submitted as
+  itself.
+- **No component drops keyboard focus on hydration** (Heading, Text,
+  CardHeader, AppBar's title, EmptyState's heading, Container, AppShell,
+  Collapsible); a guard fails the build if a dynamic element comes back.
+
+#### Package and build
+
+- Exports and package fields are listed under Upgrade notes. `zabi-components/types`
+  matches the components again (see Fixed). `npm run build:css` works in a fresh
+  checkout with no `dist/`.
+- The docs site honours `data-theme`, and Storybook's toolbar Theme control
+  drives its sidebar, toolbar and docs pages. `docs/theme-imports.md` says what
+  to expect when Tailwind and `zabi-components/css` are combined (the compiled
+  stylesheet carries its own copy of each utility, so import order decides: with
+  Tailwind in the app import `theme-only` and `theme-dark-only` instead).
+  `THEME.md` no longer tells apps to import the compiled stylesheet after
+  `theme-only` or to use `theme()` for a colour. `THEME_QUICK_REFERENCE.md`
+  shows the current primary colour and dark mirror; `docs/VARIANTS.md`, the
+  README, the Storybook introduction and the showcase guide cover the new
+  components. The component docs site examples are written in English. The
+  site's catalog sidebar is a drawer below 1024px and its "On this page" list
+  marks the section being read; the site sets `viewport-fit=cover`.
+
+### Changed
+
+- **Light mode has a visible surface ladder.** `--color-surface-base`,
+  `--color-page` and `--color-background-tertiary` move from `base-100` to
+  `base-150`; `--color-surface-elevated` from `base-50` to `base-100`; a card is
+  1.18:1 on the page (was 1.10) and a nested card 1.10:1 (was 1.04).
+  `--color-card-active` and `--color-surface-overlay-hover` are `base-150`.
+- **Light tinted fills read on a white card.** `--color-<family>-subtle` moves
+  from step 100 to 200 and `--color-<family>-border` from 200 to 300 for
+  success, warning, error, energetic and info (1.36:1 on a card, was 1.16);
+  `--color-neutral-subtle` is `base-250`, `--color-neutral-border` `base-300`;
+  `--color-action-primary-subtle` and `-subtle-hover` are `brand-200` and
+  `brand-300`.
+- **Light hover and secondary fills are stronger.** `--color-surface-hover` and
+  `--color-surface-active` are 9% and 15% ink (were 6% and 11%);
+  `--color-action-secondary`, `-hover`, `-active` are 10%, 15%, 20% (were 7%,
+  12%, 17%).
+- **Overlays have an edge in light** (`--color-border-overlay` is a 10% ink tint,
+  was transparent); **light shadows are stronger** (`--shadow-color` `24 24 27`,
+  `--shadow-opacity` 0.14; were `0 0 0` and 0.1).
+- **Light fields and disabled controls follow the new page**:
+  `--color-input-hover` `base-100`, `--color-input-disabled` the page colour,
+  `--color-action-disabled` `base-250`, `--color-action-disabled-border`
+  `base-300`.
+- **Focus tokens**: `--color-focus` is `brand-600` in both themes;
+  `--color-focus-weak`, `-medium`, `-strong` each move one step;
+  `--color-nav-menu-focus` follows `--color-focus`; `.focus-ring--muted` (ghost
+  and link buttons, the AppBar back control, the SortableList handle) reads
+  `--color-focus-ring-muted`, 3.7:1 or more on every surface level (dark was
+  `base-500`, 2.49:1 on elevated, 1.98:1 on overlay). Dark mode otherwise keeps
+  its values: `.dark` restates the values it used to inherit.
+- **Dark mapping**: `--color-action-primary-text` follows `--color-on-brand`;
+  dark `--color-base-*` steps alias the mirrored `--zabi-base-*` step; the dark
+  block holds no raw palette and no hex value.
+- **Menus share one edge and surface**: Dropdown, NavigationMenuContent and the
+  ColorPicker popover use `border-border-overlay` on `bg-surface-overlay` (the
+  ColorPicker popover no longer sits on the inset field colour in dark). Dropdown
+  menus and Select lists use the 16px overlay radius, and Select's search field
+  and options sit 4px closer to the list's edge. ColorPicker's popover and
+  NavigationMenu's panels use the overlay radius.
+- **Nested corners are concentric** where a rounded element sits closer to its
+  container's corner than that corner's radius: the Card in a Modal, the avatar
+  in SidebarFooter's profile button, MediaGrid's check mark (a rounded square)
+  and video badge, Alert's close button, ListItem rows in a `.list-group`.
+- Input, Textarea and Select text is 16px below 640px (also ColorPicker's hex
+  field and the search fields in Select and the sidebars); sizes unchanged from
+  `sm` up and control heights unchanged.
+- **Checked checkboxes and radios use the primary action fill**, tick and dot in
+  the primary button's text colour (was a paler step at 2.8:1 on the light page).
+- Input, Select and Textarea darken their border on hover in light
+  (`--color-input-border-hover`); error, success, warning and disabled fields
+  are unchanged. Select's trigger placeholder uses the placeholder colour.
+- Table and PropsTable sit on the card surface with an elevated header band;
+  Skeleton and Header's variant chips use `bg-neutral-subtle`.
+- Sidebar search fields, the selected panel item, the elevated panel and the
+  profile button use full-strength rings instead of 40–80% alpha ones; dashed
+  empty states keep only their dashed border. SidebarNavigation's search
+  placeholder keeps 4.5:1 on hover.
+- **Controls are 44px on touch** (`@media (pointer: coarse)`): Button, IconButton,
+  Input and the Select trigger at `sm` and `md` (`lg` is 48px already; use it
+  for the main action on a phone), and Slider rows, Checkbox, Radio and Toggle
+  rows, Tabs, Collapsible triggers, Dropdown items, Select options (48px),
+  NavigationMenu, TopNavbar and Sidebar items, SortableList controls and toast
+  buttons. The close buttons of Alert, Toast, Modal, SlideUp and Drawer and the
+  Toggle switch keep their size and take taps in a 44px area. IconButton `xs`
+  stays 24px.
+- **Every pressable control shows a `:active` state**; a disabled Toggle or Tab
+  no longer shows one. A toggled-on ghost, outline, link or danger-tone
+  IconButton shows a pressed fill distinct from hover and 1.25:1 or more from
+  rest. The selected pill Tab's pressed fill is 1.42:1 from rest (was 1.24:1)
+  and its label keeps 4.89:1.
+- SlideUp pads its content for the bottom safe area and is at most `90dvh`
+  (was `90vh`); Modal is at most `90dvh`.
+- **Tabs scroll sideways when they do not fit**, with a fade on the edge that has
+  more, and bring the selected and keyboard-focused tab into view; labels no
+  longer wrap or squeeze.
+- **Toasts**: sit above the tab bar and home indicator (the stack clears
+  `--app-shell-bottom-inset` and the bottom safe area; below `sm` it spans the
+  width with 16px gutters; a `viewport` Toast at the top clears the top safe
+  area and an AppShell header); keep clear of an overlay's footer (16px above
+  it, or at the top when there is no room; a centred desktop Modal changes
+  nothing); take the larger free stretch above the panel or between header and
+  footer, scrolling there, without covering an overlay's title and close button;
+  sit above the on-screen keyboard; `--toaster-bottom-offset` is not added on top
+  of an overlay's footer. Tab moves from an overlay's last control to the toast
+  controls and back, and Escape in a toast returns focus without closing the
+  overlay. Padding, gaps and button targets are in px and the status icon stays
+  20px at enlarged text (a two-sentence toast at 375px and 200% text is at most
+  420px tall, was 594px); buttons wrap under the title when it would get less
+  than 8rem; the stack is capped to the screen and scrolls. The countdown says
+  "1 second", not "1 seconds".
+- **Tooltip**: flips or slides to stay 8px inside the viewport, also with a
+  mouse; below 640px a `left` or `right` tooltip opens above or below; a tap
+  opens it when the finger comes up where it went down, so a scroll that starts
+  on the trigger no longer flashes it; `data-placement` reports the side used.
+- **Overlays stay above the on-screen keyboard** where it covers the page; the
+  focused field is scrolled into view.
+- **Overlay headers stay compact at large text sizes.** In BottomSheet, Modal,
+  Drawer and SlideUp the header's padding, gaps, grip and close button are in px
+  and the title grows to 1.3 times and stops; at 200% text a half-height sheet
+  gives the content 378 of 576px (was 182). Titles break at a hyphen in the
+  page's language and a too-long word no longer sticks out of Drawer or SlideUp.
+- **Select fills its container** and no longer changes width with the chosen
+  option; its trigger is a `combobox` reporting `aria-invalid` (with `error`, the
+  error variant or a failed `required` check), `aria-required` and `aria-busy`;
+  `required` blocks an empty form, shows the browser's message as the error and
+  focuses the trigger; a long label wraps; the form control is a `<select
+  name>`; a reset returns it to its rendered value; it opens as a sheet on a
+  phone; the chevron and the Dropdown panel do not animate under reduced
+  motion; keyboard focus in the native select moves to the trigger at handover;
+  `aria-label` and `aria-labelledby` name the native select too; with several
+  empty required Selects only the form's first invalid control takes focus.
+- **A loading Button or IconButton** is `aria-disabled` and `aria-busy` (see
+  Upgrade notes); a loading link keeps its place in the Tab order. Button labels
+  wrap (`min-height`: 32, 40, 48px; 44px minimum on touch).
+- **A disabled Dropdown option stays focusable** (`aria-disabled`).
+- **A toast with an action stays until dismissed** unless given a `duration`;
+  with no duration a toast closes after 7 s (see Upgrade notes); a message with
+  no title is the toast's text.
+- **ThemeToggle** (two modes) has the name "Dark mode" and applies the stored
+  choice on mount in both modes; it no longer writes an inline `color-scheme`
+  and removes a stale one, so adding or removing `class="dark"` from your own
+  script moves native controls with the tokens.
+- **EmptyState at `size="compact"`** is a plain `<div>`.
+- **ImageUpload** fills its container; `id` names the control; Change and Remove
+  appear on `:focus-visible` (not any focus), wrap and truncate in a narrow
+  container, stay visible on coarse pointers and where hover is unavailable, and
+  sit on an opaque plate so "Change" is readable over any image (it was 2.59:1 in
+  dark over a light image).
+- **`font-sans` and `font-mono` follow the theme.**
+- **A List row with nothing to do is plain content**; a disabled plain ListItem
+  row no longer carries `aria-disabled`.
+- Checkbox and Radio inputs are stretched invisibly over their box.
+- Textarea and Select status messages use the same text colour step as Input's.
+- **Icons are imported one file at a time** from `@lucide/svelte/icons/<name>`,
+  not the `@lucide/svelte` barrel: an app importing one Button from the root
+  compiles 366 modules where it compiled 3,800 (233 from
+  `zabi-components/atoms`). The re-exported icons keep their names.
+- The `viewport` prop on NavigationMenu only sets `isMobile` on the context for
+  your own children; it has no effect of its own, and the docs now say so.
+- **`Toast`/`Alert`/`CodeBlock`/`ImageUpload`/`UnsavedChangesBar`** follow
+  `ZabiStringsProvider`.
+
+### Deprecated
+
+- **Modal's `onclick` is deprecated as a close signal.** It is still called with
+  the event on Escape, a backdrop click and the close button; use `onclose`.
+- In `zabi-components/types`, members that were exported but never existed
+  (`open`, `className`, `position`, Button's `ariaLabel` and icon props) stay as
+  optional and deprecated so existing code keeps compiling.
+
+### Fixed
+
+- **`strings` props and `ZabiStringsProvider`:** a key set to `undefined` keeps
+  the English default instead of blanking the text (`null` and an empty string
+  are still honoured).
+- **`Progress`:** a passed `id` is on the wrapper only (it appeared on the
+  wrapper and the bar); `aria-valuenow` is clamped to 0..`max`; a non-positive
+  or non-finite `max` falls back to 100; new `aria-label` and `aria-labelledby`
+  props name the progressbar.
+- **`ColorPicker`:** Escape closes the popover and returns focus to the swatch
+  (and does not close a Modal around it); opening by keyboard moves focus in;
+  typing a hex redraws the colour map; with a `label`, the hex input and swatch
+  are named by it. Its popover could be placed below the viewport at 320px; a
+  press on a toast no longer closes it.
+- **`Select`:** the popover listbox is named by the field's label (still "Select
+  options" with no label); **`Dropdown`** gets an optional `ariaLabelledby`
+  prop. Arrow keys get past a disabled option. The Select trigger's pressed
+  state shows in light (was the resting fill) and is 1.27:1 against rest in
+  light and 1.31:1 in dark (was 1.10:1). A Select no longer changes its value
+  when the page hydrates. A disabled Select dims its value. Dropdown and Select
+  return focus to the trigger when the menu closes from inside it; focus your
+  own handler moved elsewhere is left alone. A Select list and a Dropdown menu
+  are one Tab stop: Shift+Tab goes to the search field in one step, and a
+  character typed on an option goes to the search field or the matching item.
+  A press on a toast no longer closes an open Select or Dropdown.
+- **`SwipeableListItem`:** a long action label wraps (it was clipped at the start
+  at 200% text), the action area is capped at two thirds of the row, and the
+  "more" button stays 44px at any text size. With `showMoreButton={false}` focus
+  has nowhere to return to after an action.
+- A long Modal title no longer squeezes the close button or runs out of the
+  panel (the title wraps, also inside a single long word; the close button keeps
+  32px).
+- A Tooltip with `strategy="fixed"` no longer covers its trigger when it opens
+  above or to the left; a closed tooltip no longer widens the page; it has an
+  edge in forced colours, is centred correctly in RTL and its arrow points at its
+  trigger in RTL; only one tooltip is open at a time and the pointer can cross a
+  diagonal to its far corner. Escape with a tooltip showing dismisses the
+  tooltip only, not the modal or sheet it sits in.
+- A Dropdown stays on screen: measured before paint, it flips when the preferred
+  side does not fit, slides back when neither does and is capped to the viewport
+  with its own scroll only when it must be (8px margin). `placement` is still
+  the preferred side; a menu that fits is positioned as before. A Dropdown, Select
+  list or NavigationMenu panel is no longer cut off by a scrolling or clipping
+  ancestor such as a Modal's content (the nearest clipping ancestor decides the
+  side; when it fits on neither it is positioned against the viewport; an
+  ancestor with a transform or filter cannot be escaped), and a menu leaves a
+  clipping container only when that puts it on screen. A height-capped Dropdown
+  scrolls inside its rounded panel. Dropdown follows the writing direction
+  (`bottom-start` and `top-start` sit on the start edge, item text aligns to it).
+- NavigationMenu fits a narrow screen: the list wraps onto further rows and a
+  content panel slides back inside the viewport. A press on a toast no longer
+  closes a NavigationMenu panel or the TopNavbar menu.
+- TopNavbar's phone menu closes after a link in it is followed, when
+  `currentPath` changes, on Escape (focus returns to the menu button), on a click
+  or focus move outside the bar and when the screen widens past the breakpoint;
+  a press on a control behind the open menu still reaches it. It is at most as
+  tall as the screen below the bar and scrolls, allows for the top safe area,
+  its links fill the row, and `aria-controls` on the menu button is set only
+  while the menu exists. The menu button stays on screen with a long brand or
+  enlarged text (the brand truncates below the breakpoint).
+- Toasts fit a 320px screen (the 18rem minimum width no longer overflows); the
+  close button takes taps in its full 44px area; `aria-controls` on the expand
+  button is set only while the detail is open; focus no longer falls to the page
+  after "Okay" or "Click to stop" is pressed; dismissing the focused toast moves
+  focus to the next toast or back to where it was; a tap neither sticks nor
+  dismisses; toasts do not fly in or out under `prefers-reduced-motion`.
+- A disabled Checkbox, Radio or RadioGroup row no longer dips, changes fill or
+  shows the pressed fill when pressed or hovered; stacked checkbox and radio
+  rows no longer overlap on touch; the row shows its hover
+  (`--color-surface-hover`, `--color-surface-active`, was a fixed `base-100`).
+  Checkbox shows its loading ring (replacing the tick, fading under reduced
+  motion).
+- Alert's close button shows the library's focus ring and mirrors in RTL.
+- State variants beside a semantic colour class work: the hand-written colour
+  classes sit outside every cascade layer, so `text-description
+  hover:text-headline` never changed on hover. Thirteen such variants the
+  components use are restated by hand (the hover colour of close buttons, the
+  hover border of outline buttons, the disabled text colour of fields and ghost
+  buttons).
+- Accent hover and pressed states work: `hover:bg-accent-hover` and
+  `active:bg-accent-active` did nothing next to `bg-accent`.
+- An overlay opened later is always on top: Modal and SlideUp take a z-index
+  that grows with the number of open overlays, so a modal opened from a portalled
+  one no longer opens behind it; a modal opened while a portalled drawer is open
+  (and the reverse) is drawn on top.
+- Modal and SlideUp keep Tab inside, and still close on Escape, when focus has
+  fallen out of the dialog because the focused control was disabled or removed.
+  A modal or sheet with nothing focusable takes focus itself. Modal, Drawer,
+  SlideUp and BottomSheet no longer take focus from content that focused itself
+  inside the panel as it opened. Focus returns to a replaced element (the one
+  that now has the opener's id) instead of `<body>`. Modal and SlideUp do not
+  slide in under `prefers-reduced-motion`.
+- The focus ring survives a shadow: `.focus-ring` on an element with a `shadow-*`
+  or `ring-*` utility (also `shadow-none`) drew no ring (the SidebarNavigation
+  search field, the selected SidebarPanel row, an interactive Card, any
+  IconButton given a shadow); it now composes. A List no longer clips the focus
+  ring of its rows.
+- Placeholder contrast: placeholder text and the format hint of an empty
+  DateField or TimeField was 3.40:1 on a dark field and 4.40:1 on a hovered light
+  one; see Upgrade notes. A disabled field's placeholder is no stronger than a
+  disabled value.
+- Native controls follow the dark theme under `.dark` as well as `data-theme`
+  (scrollbars, date and time pickers, other native form controls, autofill); a
+  page that sets `color-scheme` on `<html>` keeps its value.
+- Hover colours no longer stick after a tap: the hand-written `:hover` rules in
+  the theme files (`.bg-action-primary:hover` and 41 more) now sit in `@media
+  (hover: hover)`.
+- ImageUpload keeps keyboard focus (to Change after a selection, to the dropzone
+  after Remove, untouched when focus is elsewhere), cancels a file dropped while
+  `disabled`, its actions layer no longer takes clicks meant for the preview, its
+  error message is tied to the Change button when a preview is showing, and a
+  disabled dropzone no longer takes the primary border on hover.
+- ActionPanel shows its hover and pressed states (the fill is drawn over the
+  card). A selected Tabs pill shows its pressed state and a selected List row its
+  selected border. ListItem rows show a hover and a pressed fill.
+  SidebarFooter's avatar ring used a colour token that does not exist and now uses
+  the border colour. A `dark:` variant in Section's accent background, which
+  followed the OS setting and never applied, was removed.
+- ThemeToggle shows the right icon before it mounts (both icons are in the
+  markup and the `dark` class picks one); it works with `data-theme`.
+- ConfirmDialog no longer draws a focus outline around the whole dialog while
+  loading and sets no `aria-busy` on the panel.
+- A Badge with a long label wraps: it is at least 20, 24 or 28px tall, grows when
+  the label wraps and is never wider than its container; a one-line badge is
+  unchanged to the pixel and a wrapped one reads as a rounded rectangle.
+- An AppBar's title is never squeezed out (see AppBar).
+- Keyboard focus is visible in forced colours (see Accessibility).
+- **`zabi-components/types` matches the components again.** Every exported
+  `*Props` interface declares the props its component accepts today: `ModalProps`
+  has `isOpen`, the interfaces have `class`, and the new props are there.
+  `SelectProps.options`, `AlertProps.message` and `TooltipProps.content` are
+  optional, as on the components.
+- A bindable prop bound to `undefined` no longer stops the page from hydrating
+  (RadioGroup threw, and 36 other bindable props could); see Upgrade notes.
+- Button and IconButton (including `variant="accent"`) do not scale when pressed
+  under `prefers-reduced-motion`; built-in loading rings (Button, IconButton,
+  Input, Textarea, ActionPanel, Toggle) fade instead of spinning, Checkbox's
+  ring stops; Toggle's loading ring has its gap back.
+- Input, Textarea and Select no longer point `aria-describedby` at a message that
+  is not rendered.
+- `fullWidth` Tabs scroll instead of breaking a word; BottomSheet's grip answers
+  a mouse click; a flick on a sheet is measured from the events' own times.
+- Drawer content clears the home indicator; MediaGrid's remove button shows a
+  pressed state on touch; SidebarAccountPanel's three-mode theme row follows a
+  theme changed elsewhere; CodeBlock announces "copied".
+- The brand menu in the docs site header stays on screen (it opened past the
+  right edge at 768px and 1024px); the Pine and Citron accents follow the Iris
+  recipe in light (fill at step 600 with a white label, focus ring at step 600;
+  Pine's light ring was 1.93:1 on the page, now 4.19:1); `theme-color` follows
+  the theme toggle; the site's cards carry `shadow-sm` and the showcase uses
+  surface tokens in place of raw ramp steps.
+- README links to RELEASING.md point at the repository, and the README says to
+  install `@lucide/svelte` and import icons per file.
+
+## [8.0.1] - 2026-09-29
+
+Fixes the documented setup. In 8.0.0 (and 7.0.2) the three-line Tailwind setup
+from the README left components unstyled; `@import "zabi-components/css"` was
+the only import that worked. No tokens or `exports` paths were added, removed
+or renamed.
+
+### Fixed
+
+- **Theme files are valid CSS again.** `theme`, `theme-only`, `theme-dark` and
+  `theme-dark-only` were written without semicolons between declarations, so a
+  CSS parser read all 355 tokens as one declaration. `scripts/build-css.js` now
+  terminates each declaration.
+- **`theme` and `theme-only` carry an `@source` directive** for the package's
+  own components. Tailwind CSS v4 does not scan `node_modules`, so the classes
+  the components use were never generated. No `@source` line is needed in your
+  own CSS.
+- **`theme` and `theme-only` ship the hand-written component rules**:
+  `.focus-ring` and its variants, `.text-action-primary`, the action hover,
+  active and disabled states, the semantic colour classes and the `z-*` scale.
+  These existed only in the compiled `css` bundle. Without them a primary
+  button's label took the colour of its fill, and nothing had a focus ring.
+- **ColorPicker renders on the server.** Its teardown ran in `onDestroy`, which
+  also runs during SSR, and threw `window is not defined`. It is now returned
+  from `onMount`.
+- **Progress has an accessible name.** Its label was a `<label for>`, which
+  only names form controls, so screen readers announced a progressbar with no
+  name. The label is now referenced through `aria-labelledby`.
+
+### Changed
+
+- The universal-selector scrollbar rules (`* { scrollbar-width: thin }` and the
+  `*::-webkit-scrollbar` family) are in the compiled `css` bundle only, not in
+  the theme files, so importing a theme does not restyle every scrollbar in
+  your app. `.scrollbar-semantic` is in both and is the opt-in.
+- `theme` and `theme-only` grew from about 22 kB to about 35 kB.
+- `scripts/validate-theme.js` parses the theme files instead of pattern-matching
+  them, and fails the build if the token block does not parse or the component
+  rules are missing. The old check passed on the broken files.
+
+### Migration
+
+Nothing to change if you import `zabi-components/css`. If you worked around the
+broken theme files with your own `@source` line or your own copies of
+`.focus-ring` or `.text-action-primary`, you can remove them.
+
 ## [8.0.0] - 2026-09-22
 
 Consolidates two development cycles. 7.1.0 and 7.2.0 were both prepared but

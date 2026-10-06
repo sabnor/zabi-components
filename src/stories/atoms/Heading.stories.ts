@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Atoms/Heading',
     component: Heading,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Renders h1-h6, with an optional visual size that differs from the semantic level.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],

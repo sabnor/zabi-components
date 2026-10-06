@@ -97,7 +97,7 @@
                 },
             ]}
         />
-        <div class="rounded-lg border border-base-200 bg-base-50 p-3">
+        <div class="rounded-lg border border-border bg-surface-inset p-3">
             <p class="text-sm font-medium text-label">Summary</p>
             <p class="text-sm text-description mt-1">
                 Selected plan: <span class="text-body">{selectedPlan}</span>

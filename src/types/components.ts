@@ -80,6 +80,10 @@ export interface SelectProps {
     searchPlaceholder?: string;
     maxMenuHeight?: string;
     menuWidth?: string;
+    /** `auto` (the default): a BottomSheet on a phone, under the field elsewhere. */
+    presentation?: "auto" | "popover" | "sheet" | "native";
+    /** The component's own texts; see `SelectStrings`. The single-text props win over it. */
+    strings?: Partial<import("../components/util/select.js").SelectStrings>;
     noResultsText?: string;
     disabled?: boolean;
     className?: string;

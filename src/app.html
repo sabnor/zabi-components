@@ -3,28 +3,111 @@
 
 <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%sveltekit.assets%/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.png" />
+    <!-- viewport-fit=cover gives env(safe-area-inset-*) a size on a phone with a
+    notch or a home indicator. The phone components (AppShell, BottomTabBar,
+    Page and the rest) read those insets; without this they are all zero. The
+    site keeps its own header, content and footer clear in
+    src/routes/+layout.svelte. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <script>
         (function () {
             try {
                 var stored = localStorage.getItem("theme");
                 var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
                 var isDark = stored === "dark" || (!stored && prefersDark);
-                if (isDark) {
-                    document.documentElement.classList.add("dark");
-                    document.documentElement.style.colorScheme = "dark";
-                } else {
-                    document.documentElement.style.colorScheme = "light";
-                }
+                // The class is all it takes: the theme sets `color-scheme` for it
+                // (dark under `.dark`, light otherwise), and the stylesheet is in
+                // <head>, so the first paint already has both.
+                if (isDark) document.documentElement.classList.add("dark");
             } catch (_) {}
         })();
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&display=swap"
-        rel="stylesheet">
+    <!-- Fonts are served from static/fonts (SIL Open Font License, texts alongside)
+    rather than Google Fonts: no third-party connection and no render-blocking
+    stylesheet request. The body face is deliberately not preloaded: on a slow
+    connection the preload held back first paint by about 170 ms, and its
+    stand-in below is close enough that the swap moves nothing. Pages that set
+    headings in Familjen Grotesk preload that face themselves. -->
+    <style>
+        @font-face {
+            font-family: "Nunito Sans";
+            font-style: normal;
+            font-weight: 200 1000;
+            font-display: swap;
+            src: url("%sveltekit.assets%/fonts/nunito-sans-latin.woff2") format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        @font-face {
+            font-family: "Nunito Sans";
+            font-style: normal;
+            font-weight: 200 1000;
+            font-display: swap;
+            src: url("%sveltekit.assets%/fonts/nunito-sans-latin-ext.woff2") format("woff2");
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+
+        @font-face {
+            font-family: "Familjen Grotesk";
+            font-style: normal;
+            font-weight: 400 700;
+            font-display: swap;
+            src: url("%sveltekit.assets%/fonts/familjen-grotesk-latin.woff2") format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        @font-face {
+            font-family: "Familjen Grotesk";
+            font-style: normal;
+            font-weight: 400 700;
+            font-display: swap;
+            src: url("%sveltekit.assets%/fonts/familjen-grotesk-latin-ext.woff2") format("woff2");
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+
+        /* Stand-ins shown until the real files arrive. Arial is scaled to the
+        measured advance width of each face, so the swap does not re-wrap text
+        or move what sits below it. Where Arial is missing (Android) the
+        family is skipped and the system font is used as before. */
+        @font-face {
+            font-family: "Nunito Sans Fallback";
+            font-weight: 200 500;
+            src: local("Arial");
+            size-adjust: 101%;
+            ascent-override: 100%;
+            descent-override: 35%;
+            line-gap-override: 0%;
+        }
+
+        @font-face {
+            font-family: "Nunito Sans Fallback";
+            font-weight: 600 1000;
+            src: local("Arial Bold"), local("Arial-BoldMT");
+            size-adjust: 96%;
+            ascent-override: 105%;
+            descent-override: 37%;
+            line-gap-override: 0%;
+        }
+
+        @font-face {
+            font-family: "Familjen Grotesk Fallback";
+            font-weight: 400 700;
+            src: local("Arial Bold"), local("Arial-BoldMT");
+            size-adjust: 92%;
+            ascent-override: 111%;
+            descent-override: 24%;
+            line-gap-override: 0%;
+        }
+
+        /* The theme sets this token in a cascade layer, so an unlayered rule
+        overrides it. Only the stand-in family is added. */
+        :root {
+            --font-family-sans: "Nunito Sans", "Nunito Sans Fallback", ui-sans-serif, system-ui, sans-serif;
+        }
+    </style>
     %sveltekit.head%
 </head>
 

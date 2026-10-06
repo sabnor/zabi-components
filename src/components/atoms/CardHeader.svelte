@@ -34,7 +34,6 @@
      * Both are merged here so existing call sites keep working. */
     const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
-    const headingTag = $derived(`h${level}`);
     const headingClasses = $derived(() => {
         return "text-2xl font-semibold leading-none tracking-tight text-headline";
     });
@@ -42,9 +41,22 @@
 
 <header class={cn(`flex flex-col space-y-2 pb-4 ${className}`)} {...restProps}>
     {#if title}
-        <svelte:element this={headingTag} class={headingClasses()}>
-            {title}
-        </svelte:element>
+        <!-- One branch per level, not a dynamic element: hydration takes a dynamic
+        element out and puts it back, which blurs a control inside it that the user
+        had already tabbed to. -->
+        {#if level === 1}
+            <h1 class={headingClasses()}>{title}</h1>
+        {:else if level === 2}
+            <h2 class={headingClasses()}>{title}</h2>
+        {:else if level === 3}
+            <h3 class={headingClasses()}>{title}</h3>
+        {:else if level === 4}
+            <h4 class={headingClasses()}>{title}</h4>
+        {:else if level === 5}
+            <h5 class={headingClasses()}>{title}</h5>
+        {:else}
+            <h6 class={headingClasses()}>{title}</h6>
+        {/if}
     {/if}
     {#if children}
         {@render children()}

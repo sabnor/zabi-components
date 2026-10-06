@@ -46,8 +46,10 @@
 </script>
 
 <div class="specimen" data-names={showNames}>
-    <div class="specimen-card rounded-3xl border border-border bg-card p-6 sm:p-8">
-        <div class="flex items-start justify-between gap-4">
+    <div class="specimen-card rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
+        <!-- Side by side, the toggle left the heading about 140px on a phone and
+        broke it over two lines, so below sm it sits under the intro instead. -->
+        <div class="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
             <div>
                 <h2 class="display text-2xl font-semibold text-headline">
                     Invite a teammate
@@ -58,7 +60,7 @@
             </div>
             <button
                 type="button"
-                class="focus-ring inline-flex h-7 shrink-0 cursor-pointer items-center rounded-full border border-border px-3 text-xs font-semibold text-label transition-colors hover:bg-surface-hover aria-pressed:bg-action-primary-subtle aria-pressed:text-headline"
+                class="focus-ring relative inline-flex h-7 shrink-0 cursor-pointer items-center rounded-full border border-border px-3 text-xs font-semibold text-label transition-colors before:absolute before:inset-x-0 before:-inset-y-[9px] hover:bg-surface-hover aria-pressed:bg-action-primary-subtle aria-pressed:text-headline"
                 aria-pressed={showNames}
                 onclick={() => (showNames = !showNames)}
             >

@@ -42,7 +42,7 @@
                 Variants / states:
             </span>
             {#each variantsStates as v (v)}
-                <span class="rounded-control bg-base-100 px-2 py-1 text-xs text-headline">
+                <span class="rounded-control bg-neutral-subtle px-2 py-1 text-xs text-headline">
                     {v}
                 </span>
             {/each}

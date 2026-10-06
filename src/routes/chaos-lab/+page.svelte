@@ -1,11 +1,13 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Tooltip from "../../components/atoms/Tooltip.svelte";
+    import Drawer from "../../components/molecules/Drawer.svelte";
     import Modal from "../../components/molecules/Modal.svelte";
     import NavigationMenu, {
         type NavigationMenuItemData,
     } from "../../components/molecules/NavigationMenu.svelte";
     import RadioGroup from "../../components/molecules/RadioGroup.svelte";
+    import SortableList from "../../components/molecules/SortableList.svelte";
 
     let modalOpen = $state(false);
     let outerOpen = $state(false);
@@ -53,10 +55,30 @@
     });
 
     const chaosTooltipDelayMs = 320;
+
+    /** Rows of unequal height: a drag has to cope with real layout, not a fixed step. */
+    let sortableItems = $state([
+        { id: "hero", title: "Hero", lines: 1 },
+        { id: "gallery", title: "Gallery", lines: 3 },
+        { id: "pricing", title: "Pricing", lines: 1 },
+        { id: "faq", title: "FAQ", lines: 2 },
+    ]);
+    let sortableLastMove = $state("");
+
+    let portalOpen = $state(false);
+    let trappedOpen = $state(false);
+    let portalLastClose = $state("");
+    let pageModalOpen = $state(false);
+    let textOnlyOpen = $state(false);
+    let drawerOpen = $state(false);
+    let pageDrawerOpen = $state(false);
 </script>
 
 <svelte:head>
     <title>Chaos lab — Playwright</title>
+    <!-- A test fixture, not a page for visitors. robots.txt must not block it:
+    a crawler that cannot fetch the page never sees this tag. -->
+    <meta name="robots" content="noindex" />
 </svelte:head>
 
 <main class="mx-auto max-w-3xl space-y-16 p-8">
@@ -183,5 +205,166 @@
             Swap options
         </button>
         <RadioGroup legend="Chaos radios" bind:value={radioValue} options={radioOptions} />
+    </section>
+
+    <section class="space-y-3" aria-labelledby="chaos-sortable-heading">
+        <h2 id="chaos-sortable-heading" class="text-lg font-medium">
+            Sortable list
+        </h2>
+        <SortableList
+            bind:items={sortableItems}
+            getKey={(entry) => entry.id}
+            getLabel={(entry) => entry.title}
+            onreorder={({ item, from, to }) =>
+                (sortableLastMove = `${item.id}:${from}>${to}`)}
+            aria-labelledby="chaos-sortable-heading"
+            data-testid="chaos-sortable"
+        >
+            {#snippet item(entry)}
+                <div
+                    class="rounded-container border border-border bg-surface-raised p-3 text-sm"
+                    data-testid="chaos-sortable-card-{entry.id}"
+                >
+                    <p class="font-medium">{entry.title}</p>
+                    {#each { length: entry.lines - 1 } as _, line (line)}
+                        <p class="text-description">Extra line {line + 1}</p>
+                    {/each}
+                </div>
+            {/snippet}
+        </SortableList>
+        <!-- Plays a parent that replaces the list (a poll, a refetch) while a drag is in progress. -->
+        <button
+            type="button"
+            data-testid="chaos-sortable-reverse"
+            onclick={() => (sortableItems = [...sortableItems].reverse())}
+        >
+            Reverse order
+        </button>
+        <p class="text-sm text-description">
+            Order: <span data-testid="chaos-sortable-order"
+                >{sortableItems.map((entry) => entry.id).join(",")}</span
+            >
+            · Last move:
+            <span data-testid="chaos-sortable-last-move">{sortableLastMove}</span>
+        </p>
+    </section>
+
+    <section class="space-y-3" aria-labelledby="chaos-portal-heading">
+        <h2 id="chaos-portal-heading" class="text-lg font-medium">
+            Portalled modal
+        </h2>
+        <!-- The transform makes this box the containing block of a fixed
+        descendant and the overflow clips it: the in-place modal is trapped
+        here, the portalled one must not be. -->
+        <div
+            class="h-24 overflow-hidden rounded-container border border-border p-3"
+            style="transform: translateZ(0)"
+            data-testid="chaos-portal-trap"
+        >
+            <div class="flex flex-wrap gap-2">
+                <button
+                    type="button"
+                    data-testid="chaos-open-portal"
+                    onclick={() => (portalOpen = true)}
+                >
+                    Open portalled modal
+                </button>
+                <button
+                    type="button"
+                    data-testid="chaos-open-trapped"
+                    onclick={() => (trappedOpen = true)}
+                >
+                    Open in-place modal
+                </button>
+            </div>
+            <Modal
+                bind:isOpen={portalOpen}
+                portal
+                title="Chaos portalled"
+                data-testid="chaos-modal-portal"
+                onclose={({ reason }) => (portalLastClose = reason)}
+            >
+                <Tooltip content="Chaos modal tooltip" placement="bottom">
+                    <button type="button" data-testid="chaos-portal-action">
+                        In-portal action
+                    </button>
+                </Tooltip>
+                <button
+                    type="button"
+                    data-testid="chaos-open-page-modal"
+                    onclick={() => (pageModalOpen = true)}
+                >
+                    Open page modal
+                </button>
+                <button
+                    type="button"
+                    data-testid="chaos-open-page-drawer"
+                    onclick={() => (pageDrawerOpen = true)}
+                >
+                    Open page drawer
+                </button>
+            </Modal>
+            <Modal
+                bind:isOpen={trappedOpen}
+                title="Chaos trapped"
+                data-testid="chaos-modal-trapped"
+            >
+                <p class="text-sm text-description">Rendered in place.</p>
+            </Modal>
+        </div>
+        <p class="text-sm text-description">
+            Last close:
+            <span data-testid="chaos-portal-last-close">{portalLastClose}</span>
+        </p>
+        <!-- Declared in the page and rendered in place, so it sits before the
+        portalled modal in the document and is opened after it. -->
+        <Modal
+            bind:isOpen={pageModalOpen}
+            title="Chaos page modal"
+            data-testid="chaos-modal-page"
+        >
+            <p class="text-sm text-description">Opened from the portalled modal.</p>
+        </Modal>
+        <button
+            type="button"
+            data-testid="chaos-open-text-only"
+            onclick={() => (textOnlyOpen = true)}
+        >
+            Open text-only modal
+        </button>
+        <Modal
+            bind:isOpen={textOnlyOpen}
+            showClose={false}
+            data-testid="chaos-modal-text-only"
+            aria-label="Chaos text only"
+        >
+            <p class="text-sm text-description">Nothing to focus in here.</p>
+        </Modal>
+        <!-- Rendered in place: earlier in the document than the portalled
+        modal it is opened from. -->
+        <Drawer
+            bind:isOpen={pageDrawerOpen}
+            portal={false}
+            title="Chaos page drawer"
+            data-testid="chaos-drawer-page"
+        >
+            <p class="text-sm text-description">Opened from the portalled modal.</p>
+        </Drawer>
+        <button
+            type="button"
+            data-testid="chaos-open-drawer"
+            onclick={() => (drawerOpen = true)}
+        >
+            Open portalled drawer
+        </button>
+        <Drawer bind:isOpen={drawerOpen} title="Chaos drawer" data-testid="chaos-drawer">
+            <button
+                type="button"
+                data-testid="chaos-drawer-open-page-modal"
+                onclick={() => (pageModalOpen = true)}
+            >
+                Open page modal from drawer
+            </button>
+        </Drawer>
     </section>
 </main>

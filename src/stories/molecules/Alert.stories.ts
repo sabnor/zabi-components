@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Molecules/Alert',
     component: Alert,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Info, success, warning and error messages, with an optional close button.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],

@@ -54,3 +54,18 @@ export const WithIconAvatarAndPlain = {
         Component: ListItemCompositionDemo
     })
 } as StoryObj<Meta>;
+
+/** With `onclick` and no `href` the row is a button: arrow, hover fill, pressed fill. */
+export const ButtonRow: Story = {
+    args: {
+        item: { id: 'notifications', label: 'Notifications', description: 'Sounds and badges' },
+        onclick: () => {}
+    }
+};
+
+/** With neither `href` nor `onclick` the row has nothing to do: plain content, no arrow, not focusable. */
+export const PlainRow: Story = {
+    args: {
+        item: { id: 'team', label: 'Team plan', description: 'Shared workspace for 8 people' }
+    }
+};

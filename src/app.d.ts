@@ -2,6 +2,17 @@
 
 /** Injected by Vite's `define` from package.json's version field. */
 declare const __PKG_VERSION__: string;
+/** The site's generated brands; see vite-plugin-brand-themes.js. */
+declare module 'virtual:zabi-brand-themes' {
+    import type { CreateThemeOptions, CreateThemeResult } from '../create-theme/index';
+    import type { GeneratedBrand } from '$lib/marketing/brand-inputs';
+
+    const themes: Record<GeneratedBrand, CreateThemeResult & { options: CreateThemeOptions }>;
+    export default themes;
+    /** The stylesheet's own `--zabi-brand-50 … 950`. */
+    export const defaultBrandRamp: Record<string, string>;
+}
+
 declare module '$app/navigation' {
     export function goto(url: string | URL, options?: { replaceState?: boolean; noScroll?: boolean; keepFocus?: boolean; }): Promise<void>;
     export function invalidate(url: string | URL): Promise<void>;

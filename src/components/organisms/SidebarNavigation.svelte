@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
+    import { zabiStringsFor, zabiCommonStrings } from "../util/zabi-strings.js";
     import Badge from "../atoms/Badge.svelte";
     import Button from "../atoms/Button.svelte";
     import IconButton from "../atoms/IconButton.svelte";
@@ -8,10 +10,19 @@
     import SidebarNavSection from "../molecules/SidebarNavSection.svelte";
     import Tooltip from "../atoms/Tooltip.svelte";
     import SidebarShell from "./SidebarShell.svelte";
-    import { Command, Search } from "@lucide/svelte";
+    import type {
+        SidebarDrawerCloseReason,
+        SidebarTriggerContext,
+    } from "./SidebarShell.svelte";
+    import Command from "@lucide/svelte/icons/command";
+    import Search from "@lucide/svelte/icons/search";
     import type { Snippet } from "svelte";
     import type { Component } from "svelte";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
+    import {
+        DEFAULT_SIDEBAR_NAVIGATION_STRINGS,
+        type SidebarNavigationStrings,
+    } from "../util/sidebar.js";
 
     export interface SidebarNavigationItem {
         id: string;
@@ -36,6 +47,12 @@
         items?: SidebarNavigationItem[];
         currentPath?: string;
         ariaLabel?: string;
+        /**
+         * The words the sidebar says by itself, for another language: the
+         * names of its lists, the two lines shown when a search finds
+         * nothing, and those of the footer and the brand header in it.
+         */
+        strings?: Partial<SidebarNavigationStrings>;
         class?: string;
         /** @deprecated use `class`. */
         className?: string;
@@ -73,6 +90,24 @@
         profilePanel?: Snippet;
         /** Parent nav href to highlight when `currentPath` is a deeper leaf (e.g. category row). */
         activePrimaryHref?: string;
+        /**
+         * What the sidebar is below the `lg` breakpoint. `drawer`: the rail is
+         * hidden there and the sidebar opens in a Drawer from the start edge.
+         * This and the six props after it are SidebarShell's; see there.
+         */
+        mobile?: "none" | "drawer";
+        /** Whether the drawer is open. Bindable. */
+        isOpen?: boolean;
+        /** The button that opens the drawer, rendered in the rail's place below `lg`. */
+        trigger?: Snippet<[SidebarTriggerContext]>;
+        /** Heading of the drawer. Without it, `ariaLabel` is. */
+        drawerTitle?: string;
+        /** Accessible name of the drawer's close button. */
+        closeLabel?: string;
+        /** Fired when the drawer closes itself, with why. */
+        onclose?: (detail: { reason: SidebarDrawerCloseReason }) => void;
+        /** Accessible name of the scrolling region between header and footer. */
+        label?: string;
     }
 
     let {
@@ -82,6 +117,7 @@
         currentPath = "",
         activePrimaryHref = "",
         ariaLabel = "Sidebar navigation",
+        strings,
         class: classAttr = "",
         className: legacyClass = "",
         logoSrc = "",
@@ -93,8 +129,8 @@
         profileInitials = "ZA",
         showSearch = true,
         searchMode = "input",
-        searchPlaceholder = "Search...",
-        searchValue = $bindable(""),
+        searchPlaceholder: searchPlaceholderGiven,
+        searchValue = $bindable<Exclude<Props["searchValue"], undefined>>(),
         searchTriggerIcon = Command,
         searchTriggerVariant = "outline",
         searchTriggerSize = "sm",
@@ -102,7 +138,7 @@
         logoutLabel = "Logout",
         showThemeToggle = true,
         lightModeLabel = "Light mode",
-        isLightMode = $bindable(false),
+        isLightMode = $bindable<Exclude<Props["isLightMode"], undefined>>(),
         emptyStateTitle = "Create your first navigation item",
         emptyStateDescription = "Add your first sidebar item so users can start navigating your product.",
         emptyStateActionLabel = "Add navigation item",
@@ -115,11 +151,41 @@
         profilePanelOpen = false,
         profilePanelControlsId = "",
         profilePanel,
+        mobile = "none",
+        isOpen = $bindable<Exclude<Props["isOpen"], undefined>>(),
+        trigger,
+        drawerTitle,
+        closeLabel,
+        onclose,
+        label,
         ...restProps
     }: Props = $props();
 
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (searchValue === undefined) searchValue = "";
+        if (isLightMode === undefined) isLightMode = false;
+        if (isOpen === undefined) isOpen = false;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const searchPlaceholder = $derived(searchPlaceholderGiven ?? common().search);
+
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
+
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("sidebarNavigation");
+    const text = $derived(mergeStrings(DEFAULT_SIDEBAR_NAVIGATION_STRINGS, provided(), strings));
+    /** For the brand header and the footer: the provider's words for this sidebar, then the instance's. */
+    const handedOn = $derived(mergeStrings<Partial<SidebarNavigationStrings>>({}, provided(), strings));
 
     const isCollapsed = $derived(mode === "collapsed");
     const showBrandRow = $derived(
@@ -222,16 +288,22 @@
     function getNavItemClasses(item: SidebarNavigationItem): string {
         const isActive = isItemActive(item);
         const layoutClasses = isCollapsed
-            ? "flex min-h-10 items-center justify-center px-0 py-2"
-            : "flex min-h-10 items-center gap-3 px-2 py-2";
+            ? "flex min-h-10 pointer-coarse:min-h-11 items-center justify-center px-0 py-2"
+            : "flex min-h-10 pointer-coarse:min-h-11 items-center gap-3 px-2 py-2";
         const structural =
             "focus-ring focus-ring--nav relative w-full cursor-pointer rounded-control no-underline transition-colors duration-150 outline-none";
 
         if (isActive) {
+            // In forced colours all three cues are gone: fills (the tint and
+            // the bar) become the canvas and every link takes the system's
+            // link colour. An outline is a shape and is drawn there, so the
+            // current row keeps one. Inset, so a focused row's ring (2px
+            // outside) reads as a different thing.
             return (
                 `${structural} ${layoutClasses} bg-nav-menu-active ` +
                 "text-nav-menu-item-active hover:bg-nav-menu-active " +
-                "active:bg-nav-menu-active-hover"
+                "active:bg-nav-menu-active-hover " +
+                "forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2"
             );
         }
 
@@ -285,11 +357,19 @@
     {ariaLabel}
     class={classAttr}
     className={legacyClass}
+    {mobile}
+    bind:isOpen
+    {trigger}
+    {drawerTitle}
+    {closeLabel}
+    {onclose}
+    {label}
     {...restProps}
 >
     {#snippet header()}
             {#if showBrandRow}
                 <SidebarBrandHeader
+                    strings={handedOn}
                     collapsed={isCollapsed}
                     {brandName}
                     logoSrc={logoSrc.trim()}
@@ -349,7 +429,7 @@
                             bind:value={searchValue}
                             placeholder={searchPlaceholder}
                             aria-label={searchPlaceholder}
-                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent"
+                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-input-hover focus:!bg-transparent"
                         />
                     </div>
                 {/if}
@@ -366,8 +446,8 @@
                             title={group.sectionLabel ?? ""}
                             sectionKey={`p-${gi}`}
                             listAriaLabel={group.sectionLabel
-                                ? `${group.sectionLabel} navigation`
-                                : "Primary navigation"}
+                                ? text.sectionNavigation(group.sectionLabel)
+                                : text.primaryNavigation}
                             collapsed={isCollapsed}
                         >
                             {#each group.items as item (item.id)}
@@ -452,7 +532,7 @@
                 >
                     <SidebarNavSection
                         sectionKey="secondary"
-                        listAriaLabel="Secondary navigation"
+                        listAriaLabel={text.secondaryNavigation}
                         collapsed={isCollapsed}
                     >
                         {#each filteredSecondaryItems as item (item.id)}
@@ -490,22 +570,22 @@
             {/if}
         {:else}
             <div
-                class="rounded-container border border-border border-dashed bg-transparent px-4 py-4 ring-1 ring-border/60"
+                class="rounded-container border border-border border-dashed bg-transparent px-4 py-4"
             >
                 <h3 class="text-sm font-semibold {getTextToneClass()}">
                     {normalizedSearchTerm && searchMode === "input"
-                        ? "No matching navigation items"
+                        ? text.noMatchesTitle
                         : emptyStateTitle}
                 </h3>
                 <p class="mt-1 text-sm {getTextToneClass(true)}">
                     {normalizedSearchTerm && searchMode === "input"
-                        ? `No results found for "${searchValue}". Try another keyword.`
+                        ? text.noMatchesDescription(searchValue)
                         : emptyStateDescription}
                 </p>
                 {#if !(normalizedSearchTerm && searchMode === "input")}
                     <button
                         type="button"
-                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
+                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 pointer-coarse:min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
                         onclick={handleEmptyStateAction}
                     >
                         {emptyStateActionLabel}
@@ -516,6 +596,7 @@
     {#snippet footer({ insetX })}
         <SidebarFooter
             collapsed={isCollapsed}
+            strings={handedOn}
         {showProfile}
         {profileName}
         {profileEmail}

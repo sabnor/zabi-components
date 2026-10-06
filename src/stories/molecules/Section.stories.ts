@@ -6,6 +6,12 @@ const meta = {
     title: 'Design System/Molecules/Section',
     component: Section,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Section with optional title, background, padding, and max-width for marketing layouts.'
+            }
+        },
         layout: 'fullscreen'
     },
     tags: ['autodocs'],

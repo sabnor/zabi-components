@@ -8,12 +8,18 @@
         isOpen?: boolean;
         title?: string;
         size?: 'sm' | 'md' | 'lg';
+        portal?: boolean;
+        dismissible?: boolean;
+        fullScreen?: boolean | 'mobile';
     }
 
     let {
         isOpen: initialOpen = true,
         title = 'Dialog title',
         size = 'md',
+        portal = false,
+        dismissible = true,
+        fullScreen = false,
     }: Props = $props();
 
     // Initial value only; the effect below syncs later prop changes.
@@ -27,12 +33,32 @@
     let item2Checked = $state(true);
     let item3Checked = $state(true);
 
+    /** What last closed the modal, shown under the reopen button. */
+    let lastClose = $state('');
+
     function handleClose() {
         isOpen = false;
     }
 </script>
 
-<Modal bind:isOpen {title} {size} onclick={handleClose}>
+{#if !isOpen}
+    <div class="space-y-2 p-6">
+        <Button size="sm" text="Open modal" onclick={() => (isOpen = true)} />
+        {#if lastClose}
+            <p class="text-sm text-description">Closed by: {lastClose}</p>
+        {/if}
+    </div>
+{/if}
+
+<Modal
+    bind:isOpen
+    {title}
+    {size}
+    {portal}
+    {dismissible}
+    {fullScreen}
+    onclose={({ reason }) => (lastClose = reason)}
+>
     <p class="mb-4 text-sm leading-5 text-body">
         A dialog is a type of modal window that appears in front of app content
         to provide critical information, or prompt for a decision to be made.

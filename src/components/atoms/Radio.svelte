@@ -1,9 +1,14 @@
 <script lang="ts">
+    import type { HTMLInputAttributes } from "svelte/elements";
     import SelectionControl from "./SelectionControl.svelte";
     import type { SelectionControlMarkProps } from "./SelectionControl.svelte";
     import { RADIO_CHECKED_DOT_CLASSES } from "./selection-control.styles";
 
-    interface Props {
+    /** Other attributes (`required`, `data-*`, `aria-*`, ...) land on the `<input>`. */
+    type Props = Omit<
+        HTMLInputAttributes,
+        "class" | "id" | "name" | "value" | "disabled" | "checked" | "type" | "onchange"
+    > & {
         /** Extra classes for the host element. */
         class?: string;
         id?: string;
@@ -15,7 +20,7 @@
         checked?: boolean;
         onChange?: (event: Event) => void;
         onchange?: (event: Event) => void;
-    }
+    };
 
     let {
         class: className = "",
@@ -25,11 +30,22 @@
         label = "",
         disabled = false,
         defaultChecked = false,
-        checked = $bindable(defaultChecked),
+        checked = $bindable<Exclude<Props["checked"], undefined>>(),
         onChange,
         onchange,
         ...restProps
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (checked === undefined) checked = defaultChecked;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 </script>
 
 {#snippet mark(_props: SelectionControlMarkProps)}

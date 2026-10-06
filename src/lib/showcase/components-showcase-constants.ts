@@ -1,15 +1,13 @@
-import {
-    BarChart3,
-    Bell,
-    Calendar,
-    FileText,
-    House,
-    LayoutDashboard,
-    Package,
-    PieChart,
-    Settings,
-    Users,
-} from "@lucide/svelte";
+import BarChart3 from "@lucide/svelte/icons/chart-column";
+import Bell from "@lucide/svelte/icons/bell";
+import Calendar from "@lucide/svelte/icons/calendar";
+import FileText from "@lucide/svelte/icons/file-text";
+import House from "@lucide/svelte/icons/house";
+import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard";
+import Package from "@lucide/svelte/icons/package";
+import PieChart from "@lucide/svelte/icons/chart-pie";
+import Settings from "@lucide/svelte/icons/settings";
+import Users from "@lucide/svelte/icons/users";
 
 /** The sidebar renders the label and a count; nothing displays a description. */
 export const categories = [

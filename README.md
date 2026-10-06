@@ -1,8 +1,13 @@
 # Zabi Components
 
-Svelte **5** UI primitives (runes, `onclick` / `oninput`, …), Tailwind **v4** design tokens, SSR-safe. Requires **Svelte ≥ 5.43.8**.
+[![npm version](https://img.shields.io/npm/v/zabi-components.svg)](https://www.npmjs.com/package/zabi-components)
+[![license](https://img.shields.io/npm/l/zabi-components.svg)](./LICENSE)
 
-Docs: **[zabi-components.vercel.app](https://zabi-components.vercel.app/)**
+A Svelte 5 UI component library with TypeScript types, Tailwind CSS v4 design tokens, light and dark themes, and server-side rendering support.
+
+Live examples and docs: **[zabi-components.vercel.app](https://zabi-components.vercel.app/)**
+
+Requires **Svelte ≥ 5.43.8**. Components are written with runes and take DOM-style props (`onclick` / `oninput`, …).
 
 ---
 
@@ -16,6 +21,14 @@ npm install zabi-components
 
 Ensure `svelte@^5.43.8` is installed — SvelteKit apps usually already match; add `@sveltejs/kit@^2` only for Kit. The package is Svelte-only (the unmaintained `zabi-components/react` export was removed in 8.0.0).
 
+**Icons.** The library uses [`@lucide/svelte`](https://lucide.dev) for its own icons and re-exports only the dozen it needs. For your own tab, navigation and action icons, install it in your app at the range the library depends on, so both use one copy:
+
+```bash
+npm install @lucide/svelte@"^0.544.0"
+```
+
+Import each icon from its own file, `import House from "@lucide/svelte/icons/house"`, not from the package's barrel, which makes a bundler compile every icon. See [docs/lucide-icons.md](./docs/lucide-icons.md).
+
 **2. Global CSS** (e.g. SvelteKit `src/app.css` — adjust for your bundler entry)
 
 ```css
@@ -24,7 +37,9 @@ Ensure `svelte@^5.43.8` is installed — SvelteKit apps usually already match; a
 @import "zabi-components/theme-dark-only";
 ```
 
-No Tailwind? See [docs/theme-imports.md](./docs/theme-imports.md) (`colors` or full `css`).
+No Tailwind? Import the compiled stylesheet instead: `@import "zabi-components/css";`. See [docs/theme-imports.md](./docs/theme-imports.md).
+
+> **On 8.0.0 or earlier?** The theme files in those versions leave components unstyled. Upgrade to the latest release, or import `zabi-components/css`.
 
 **3. Use a component** (`+page.svelte` or any Svelte 5 component)
 
@@ -41,7 +56,24 @@ No Tailwind? See [docs/theme-imports.md](./docs/theme-imports.md) (`colors` or f
 </div>
 ```
 
-Without the theme CSS, token classes (`bg-input`, `text-body`, …) look unstyled — always import the theme.
+Without the theme CSS, components render unstyled — always import it.
+
+---
+
+## What is included
+
+- **Components in three layers.** Atoms (buttons, inputs, date and time fields, checkboxes, sliders, ratings, badges, tooltips), molecules (form fields, segmented controls, calendars, dropdowns, tabs, modals, drawers, bottom sheets, confirm dialogs, collapsible sections, sortable lists, alerts, toasts) and organisms (a top navigation bar, a sidebar and an app shell).
+- **Made for phones too.** `AppShell`, `AppBar` and `BottomTabBar` lay out an app screen; `BottomSheet`, `StickyActionBar` and `FloatingActionButton` put actions within reach of a thumb; `SegmentedControl`, `Rating`, `DateField`, `TimeField` and `Calendar` are sized for touch. On a touch screen controls grow to 44px targets, and the phone components keep clear of the notch and the home indicator. Each one has a page with a live example and its props at [zabi-components.vercel.app/components](https://zabi-components.vercel.app/components).
+- **Svelte 5 only.** Runes, snippets and DOM-style event props. There is no Svelte 4 or React build.
+- **TypeScript.** Props are typed, and the shared unions are exported from `zabi-components/types`.
+- **Theming by tokens.** Colours, surfaces, radius and shadows are Tailwind CSS v4 design tokens, so a rebrand is one generated file of token overrides rather than a change to each component: `npx zabi-theme --brand "#C17B00" --out src/lib/brand.generated.css`. The [theming guide](./THEMING.md) lists the tokens an app may set; the same guide is on the docs site at [/theming](https://zabi-components.vercel.app/theming), with a brand switcher.
+- **Light and dark themes.** Every colour token has a dark value; put `data-theme="dark"` or the `dark` class on the `html` element to switch, or `data-theme="auto"` to follow the system.
+- **Server-side rendering.** Components render on the server in SvelteKit, and browser-only APIs are guarded.
+- **Accessibility work already done.** Labels, hints and errors are connected to their control. RadioGroup and Dropdown handle the arrow keys. Modal, Drawer and SlideUp keep focus inside while open and return it to the trigger. Focus rings are visible by default, in forced-colours mode too.
+- **Your classes win.** `class` is merged last through tailwind-merge, so a utility you pass replaces the component's own.
+- **MIT licensed.**
+
+The rest of this file is reference: import paths, the two component styles, tokens, constraints and common pitfalls.
 
 ---
 
@@ -53,6 +85,7 @@ Without the theme CSS, token classes (`bg-input`, `text-body`, …) look unstyle
 | **Category** `zabi-components/atoms`, `/molecules`, `/organisms` | Larger bundles where you want imports to mirror structure, or you only pull one layer in a given file. |
 | **Types** `zabi-components/types` | Shared prop unions / enums in your app code. |
 | **Helpers** `zabi-components`, `zabi-components/lib/ssr-safe`, `lib/variant-utils` | Utilities the package publishes — not app internals. |
+| **Dates** `import { formatDate, formatTime } from "zabi-components"` | The value of a DateField or TimeField (`2026-10-06`, `19:00`) as text in a named language: `formatDate("2026-10-06", "sv")` is "6 okt. 2026". Never shifted by a time zone. |
 
 Stick to **documented package subpaths** from `package.json` `exports`. Do not reach into `node_modules/zabi-components/dist/...` by hand.
 
@@ -133,10 +166,11 @@ Components use **DOM-style props** (`onclick`, `oninput`), not legacy `on:click`
 ```svelte
 <script lang="ts">
     import { List } from "zabi-components"; // or …/atoms
-    import { Home } from "@lucide/svelte";
+    // One file per icon: the `@lucide/svelte` barrel makes a bundler compile every icon.
+    import House from "@lucide/svelte/icons/house";
 
     const items = [
-        { id: "1", label: "Home", icon: Home },
+        { id: "1", label: "Home", icon: House },
         { id: "2", label: "Settings", href: "/settings" },
     ];
 </script>
@@ -183,6 +217,7 @@ Components use **DOM-style props** (`onclick`, `oninput`), not legacy `on:click`
 | Token / class | Role |
 |---------------|------|
 | `bg-surface-base` · `raised` · `elevated` · `overlay` | The four surface levels. Anything floating above content uses `overlay`. In dark mode each level is the one below it with more light on it — shadows don't read on a dark page. |
+| `bg-surface-inset` | A recessed area on a card: a well, a stat strip, a code sample. Darker than the card in both themes. |
 | `surface-1` / `surface-2` | Compatibility aliases for `raised` / `elevated`. Prefer the named levels in new code. |
 | `shadow-sm` / `shadow-lg` | Elevation is **two steps**: raised, and floating. `shadow-none` is the explicit absence of one. `shadow-md`, `shadow-xl` and a bare `shadow` fail the build. |
 | `rounded-control` · `container` · `overlay` · `pill` | Radius is chosen by **role**, never by size. A large button is a bigger box with the same corner as a small one. |
@@ -215,7 +250,7 @@ import Button from "some-path/node_modules/zabi-components/dist/atoms/Button.sve
 
 **Consumers — styling**
 
-Load theme CSS (Quick start). Unstyled components usually mean missing `@import "zabi-components/theme-only"` (and dark overrides if you use `.dark`).
+Load theme CSS (Quick start). Unstyled components usually mean a missing `@import "zabi-components/theme-only"` (and dark overrides if you use `.dark`), or version 8.0.0 or earlier.
 
 `class` is the public prop on every component and is merged **last**, through
 [tailwind-merge](https://github.com/dcastil/tailwind-merge), so your utility
@@ -236,7 +271,7 @@ import { analytics } from "../../routes/lib/analytics";
 // ✅ Shared helpers live next to components
 import { generateId } from "../util/ssr-safe.js";
 
-// ❌ Packaging: escaping `dist/` layout (CI fails `npm run check`)
+// ❌ Packaging: escaping `dist/` layout (`npm run check` fails)
 import type { Foo } from "../../types/variants";
 
 // ✅ Depth matches publish layout
@@ -244,6 +279,200 @@ import type { Foo } from "../types/variants.js";
 ```
 
 ---
+
+## Phones: safe areas
+
+Components that touch the edge of a phone screen keep clear of the notch and
+the home indicator by reading `env(safe-area-inset-*)`: `AppShell`, `AppBar`,
+`BottomTabBar`, `BottomSheet`, `StickyActionBar`, `FloatingActionButton`,
+`Toaster`, a `Modal` with `fullScreen`, and `Page`. A browser reports those
+insets as zero until the page asks to be drawn under them, so add
+`viewport-fit=cover` to the viewport meta tag of the app:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+```
+
+`Page` pads its left, right and bottom by the insets; inside an `AppShell` it
+adds nothing, because the shell has already done it, and `safeArea={false}`
+turns it off where your own layout does. `Toaster` sits above an `AppShell`'s
+tab bar by itself; for a bar of your own that is fixed to the bottom, give it
+that bar's height through its bottom-offset custom property (see the Toaster
+page of the docs). Full heights use `dvh`, so the browser's own bars do not
+cut content off.
+
+A `Tooltip` opens on a tap as well as on hover and focus, and stays until it is
+dismissed. Do not put information the user needs in one.
+
+## Texts and other languages
+
+Every word a component says by itself, shown or only read out, can be
+replaced. The defaults are English.
+
+### Once, for the whole app
+
+Put a `ZabiStringsProvider` around the app with its words, and every component
+inside says those instead of English, without a prop on any of them:
+
+```svelte
+<!-- src/routes/+layout.svelte -->
+<script lang="ts">
+    import { ZabiStringsProvider, type ZabiStrings } from "zabi-components";
+
+    let { children } = $props();
+
+    const sv: ZabiStrings = {
+        // Words that many components' single-text props default to.
+        common: {
+            close: "Stäng",
+            back: "Tillbaka",
+            expand: "Visa mer",
+            collapse: "Visa mindre",
+            required: "(obligatoriskt)",
+            showPassword: "Visa lösenordet",
+            search: "Sök…",
+            confirm: "Bekräfta",
+            cancel: "Avbryt",
+        },
+        // One entry per component that has a `strings` object: the same keys.
+        select: {
+            placeholder: "Välj ett alternativ",
+            searchPlaceholder: "Sök",
+            noResults: "Inga träffar",
+            loading: "Hämtar alternativ…",
+            emptyTitle: "Inga alternativ",
+            emptyDescription: "Lägg till ett alternativ för att kunna välja.",
+            listLabel: "Alternativ",
+        },
+        stepper: {
+            position: (step, total) => `Steg ${step} av ${total}`,
+            stepLabel: (step, total, label, state) =>
+                `Steg ${step} av ${total}: ${label}, ${{ completed: "klart", current: "pågår", upcoming: "kommer" }[state]}`,
+            announcement: (step, total, label) => `Steg ${step} av ${total}: ${label}`,
+        },
+        calendar: {
+            previousMonth: "Föregående månad",
+            nextMonth: "Nästa månad",
+            today: "i dag",
+            selected: "vald",
+            unavailable: "inte valbar",
+        },
+    };
+</script>
+
+<ZabiStringsProvider strings={sv}>
+    {@render children()}
+    <!-- Inside the provider: the toaster reads the words of the provider it is mounted under. -->
+    <Toaster />
+</ZabiStringsProvider>
+```
+
+Mount the `Toaster` inside the provider. It is mounted once, at the root, and
+a toaster placed beside the provider instead of in it says its own words in
+English.
+
+What a component says is decided in this order, the later winning:
+
+1. its built-in English;
+2. the provider's entry for it (`select`, `stepper`, …), or `common` for a
+   single-text prop such as `closeLabel`;
+3. the `strings` object passed to that one component;
+4. a single-text prop passed to it.
+
+So a provider changes nothing for a component that already has its texts set,
+and outside a provider everything is as it was. The entries are `alert`,
+`avatarGroup`, `calendar`, `codeBlock`, `colorPicker`, `componentDemo`,
+`contactForm`, `imageUpload`, `mediaGrid`, `photoGrid`, `photoViewer`,
+`propsTable`, `pullToRefresh`, `rating`, `select`, `sidebarAccountPanel`,
+`sidebarBrandHeader`, `sidebarFooter`, `sidebarNavigation`, `sortableList`,
+`stepper`, `swipeableListItem`, `themeToggle`, `toast`, `toaster`, `topNavbar`
+and `unsavedChangesBar`; the type is `ZabiStrings`, and `ZabiCommonStrings`
+lists the common words. For Alert, CodeBlock, ImageUpload, Toast and
+UnsavedChangesBar the entry's keys are the names of their text props
+(`alert: { closeLabel }`, `codeBlock: { copyLabel, copiedLabel }`). Leave out what the app does not
+use: there is nothing to translate for a component it never renders.
+
+The provider is Svelte context. On a server it belongs to the request being
+rendered, so two languages can be served at once; a provider inside another
+replaces only the words it gives, for its part of the page; and a dialog or
+sheet drawn in `<body>` still reads the provider it was written under. It adds
+no element to the page. `getZabiStrings()` gives app code the same words: call
+it while a component initialises and read `.current` where they are used.
+
+The library ships no translations. The object is the app's.
+
+What is not behind the provider is the names of landmarks and regions, which
+say what a part of the app is and so are the app's to give: `ariaLabel` and
+`label` props such as SidebarNavigation's "Sidebar navigation", a
+PhotoViewer's, a Stepper's or a BottomTabBar's. Set those on the component.
+
+### On one component
+
+A component with one or two such texts has a prop for each; one with several
+takes a `strings` object, and whatever you leave out of it keeps its default.
+A `strings` key and an older prop for the same text: the prop wins.
+
+| Component | Prop that carries its texts |
+|-----------|-----------------------------|
+| Alert | `closeLabel` |
+| AppBar | `backLabel` |
+| BottomSheet | `closeLabel`, `expandLabel`, `collapseLabel` |
+| BottomTabBar | `label`, `badgeLabel` |
+| Calendar | `strings` |
+| CodeBlock | `copyLabel`, `copiedLabel` |
+| ColorPicker | `strings` |
+| ComponentDemo | `strings` |
+| ConfirmDialog | `confirmLabel`, `cancelLabel`, `loadingLabel` |
+| ContactForm | `strings` (the whole form is ready-made English: pass them all, or build your own from Form and FormField) |
+| Drawer, Modal, SlideUp | `closeLabel` |
+| Dropdown | `ariaLabel`; in a sheet also `sheetTitle`, `sheetCloseLabel`, `sheetExpandLabel`, `sheetCollapseLabel` |
+| FormField | `requiredLabel` |
+| ImageUpload | `placeholder`, `browseText`, `changeText`, `removeText`, `selectedText`, `removedText`, `errorTitle` |
+| List | `ariaLabel` |
+| AvatarGroup, PullToRefresh, SwipeableListItem | `strings` (and `label` on AvatarGroup) |
+| MediaGrid, PhotoGrid, PhotoViewer, SortableList, Stepper, Rating | `strings` (and `label` on PhotoViewer and Stepper) |
+| NavigationMenu | `ariaLabel` |
+| PropsTable | `caption`, `strings` |
+| Select | `strings` (every text, the name of the option list included); the older `placeholder`, `searchPlaceholder`, `noResultsText`, `loadingText`, `emptyStateTitle`, `emptyStateDescription` still work and win over it |
+| SidebarAccountPanel | `strings`, `logoutLabel` |
+| SidebarBrandHeader | `logoAlt`, `strings` |
+| SidebarFooter | `strings` |
+| SidebarNavigation | `strings` (its own, the footer's and the brand header's), `ariaLabel`, `searchPlaceholder`, `logoutLabel`, `emptyStateTitle`, `emptyStateDescription`, `emptyStateActionLabel` |
+| SidebarPanel | `ariaLabel`, `title`, `subtitle`, `searchPlaceholder`, `emptyStateTitle`, `emptyStateDescription`, `selectLabel`, `closeLabel` |
+| SidebarShell | `ariaLabel` |
+| Skeleton | `aria-label` |
+| ThemeToggle | `labels` |
+| Toast | `closeLabel` |
+| Toaster | `strings`, `aria-label` |
+| Toggle | `label`, or `aria-label` / `aria-labelledby` (without any of them it is called "Toggle") |
+| TopNavbar | `strings`, `ariaLabel`, `themeLabels` |
+| UnsavedChangesBar | `message`, `label`, `saveLabel`, `discardLabel` |
+
+The name of the list in a SidebarShell is its `label` prop. One text is the
+browser's, not the library's: when a `required` Select is sent empty, the
+message under it is the browser's own validation message, in the browser's
+language; pass `error` to say it yourself.
+
+A toast shows what it was pushed with, so its text is yours already. The
+toaster's own words are the names of its buttons and of its region, and the
+sentence about the time a toast has left:
+
+```svelte
+<Toaster
+    strings={{
+        regionLabel: "Aviseringar",
+        dismiss: "Stäng aviseringen",
+        expand: "Visa mer",
+        collapse: "Visa mindre",
+        okay: "Okej",
+        closesIn: (seconds) => `Stängs om ${seconds} sekunder.`,
+        pausedClosesIn: (seconds) => `Pausad. Stängs om ${seconds} sekunder.`,
+        actionAvailable: (label) => `${label} finns.`,
+    }}
+/>
+
+pushToast({ message: "Utkastet är sparat.", type: "success" });
+```
 
 ## Common pitfalls
 
@@ -274,17 +503,17 @@ import type { Foo } from "../types/variants.js";
 | Unit / component | `npm run test` | Vitest + Testing Library — logic and regressions |
 | Interaction | `npm run test:e2e` | Playwright — overlays, focus, keyboard flows |
 | Types & structure | `npm run check` | `svelte-check`, import-path and layout-width rules, plus `check:design` |
-| Design system | `npm run check:design` | Ramp lightness, WCAG AA on every rendered pair, interaction fills that differ from their surface, control geometry, and token violations (raw palette classes, off-scale shadows, half-step spacing) |
+| Design system | `npm run check:design` | Ramp lightness, WCAG AA on every rendered pair, the focus ring at 3:1, interaction fills and hover tints that read on their surface, control geometry, token violations (raw palette classes, off-scale shadows, half-step spacing), and state variants that cannot win |
 | Theme output | `npm run test:themes` | Built CSS is reproducible and matches the frozen hashes |
 
 There is no CI: every gate runs locally, and releases are published by hand. See
-[RELEASING.md](./RELEASING.md) for the order to run them in.
+[RELEASING.md](https://github.com/sabnor/zabi-components/blob/main/RELEASING.md) in the repository for the order to run them in.
 
 ---
 
 ## More documentation
 
-[THEME.md](./THEME.md) · [THEMING.md](./THEMING.md) · [docs/theme-imports.md](./docs/theme-imports.md) · [RELEASING.md](./RELEASING.md) · [CHANGELOG.md](./CHANGELOG.md)
+[THEME.md](./THEME.md) · [THEMING.md](./THEMING.md) · [docs/theme-imports.md](./docs/theme-imports.md) · [docs/lucide-icons.md](./docs/lucide-icons.md) · [CHANGELOG.md](./CHANGELOG.md) · [RELEASING.md](https://github.com/sabnor/zabi-components/blob/main/RELEASING.md) (in the repository; it is not part of the package)
 
 ## License
 

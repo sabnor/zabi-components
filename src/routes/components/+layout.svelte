@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import { page } from "$app/stores";
-    import { goto } from "$app/navigation";
     import SidebarNavigation from "../../components/organisms/SidebarNavigation.svelte";
     import type { SidebarNavigationItem } from "../../components/organisms/SidebarNavigation.svelte";
     import type { ComponentMetadata } from "../../types/page.types";
@@ -56,12 +55,30 @@
         `${$page.url.pathname}${$page.url.search}`,
     );
 
+    /**
+     * Where a category row leads: the first component of the category, with
+     * `?catalog=all` for the row that lists every one. A real address, so
+     * the row works as a link does: in a new tab, copied, and before the
+     * page has hydrated. (It was `category:molecules`, a scheme that does
+     * not exist, caught by a click handler.)
+     *
+     * The fragment names the category. It keeps the row's address apart from
+     * that of the component it leads to, which is a row of its own further
+     * down: the page is marked `aria-current="page"` and the category
+     * `aria-current="location"`, one of each.
+     */
+    function categoryHref(categoryId: string): string {
+        const first = firstInCategory(categoryId);
+        const suffix = categoryId === "all" ? "?catalog=all" : "";
+        return `/components/${first?.name ?? ""}${suffix}#catalog-${categoryId}`;
+    }
+
     const docsSidebarItems = $derived.by((): SidebarNavigationItem[] => {
         const categoryItems: SidebarNavigationItem[] = categories.map(
             (category) => ({
                 id: `category-${category.id}`,
                 label: category.label,
-                href: `category:${category.id}`,
+                href: categoryHref(category.id),
                 icon: getDocsCategoryIcon(category.id),
                 badgeText:
                     category.id === "all"
@@ -97,55 +114,27 @@
         return components[categoryId]?.[0];
     }
 
-    function handleDocsSidebarNavigate(
-        item: SidebarNavigationItem,
-        event: MouseEvent,
-    ): void {
-        if (item.href.startsWith("category:")) {
-            event.preventDefault();
-            const targetValue = item.href.split(":")[1];
-            if (!targetValue) {
-                return;
-            }
-            const first = firstInCategory(targetValue);
-            if (first) {
-                const suffix =
-                    targetValue === "all" ? "?catalog=all" : "";
-                goto(`/components/${first.name}${suffix}`);
-            }
-            sidebarOpen = false;
-            return;
-        }
-
+    /** Every row is a link with an address of its own; all that is left to do is close the drawer. */
+    function handleDocsSidebarNavigate(): void {
         sidebarOpen = false;
     }
 </script>
 
 <div class="bg-background">
     <main
-        class="flex h-[calc(100dvh-4rem)] min-h-0 w-full max-w-screen"
+        class="flex h-[calc(100dvh-var(--site-header-height))] min-h-0 w-full max-w-screen"
     >
-        {#if sidebarOpen}
-            <button
-                type="button"
-                class="fixed inset-x-0 bottom-0 top-16 z-20 bg-black/30 md:hidden"
-                onclick={() => (sidebarOpen = false)}
-                aria-label="Close the component sidebar"
-            ></button>
-        {/if}
-
-        <div
-            class="fixed left-0 top-16 z-30 flex h-[calc(100dvh-4rem)] min-h-0 w-[min(100vw-1rem,266px)] max-w-[266px] flex-col transform bg-background transition-transform duration-200 md:static md:z-10 md:h-full md:w-auto md:max-w-none md:min-h-0 md:shrink-0 md:translate-x-0 {sidebarOpen
-                ? 'translate-x-0'
-                : '-translate-x-full'}"
-        >
+        <!-- From `lg` up the catalog is a rail beside the page. Below that
+        SidebarShell's drawer mode shows the same sidebar in a Drawer, opened
+        by the button above the page content. -->
+        <div class="flex h-full min-h-0 shrink-0 flex-col">
             <SidebarNavigation
                 className="min-h-0 flex-1"
                 mode="expanded"
                 ariaLabel="Component catalog"
                 items={docsSidebarItems}
                 currentPath={docsSidebarCurrentPath}
-                activePrimaryHref={`category:${selectedCategory}`}
+                activePrimaryHref={categoryHref(selectedCategory)}
                 bind:searchValue={componentsNavSearch}
                 searchMode="input"
                 showProfile={false}
@@ -154,20 +143,29 @@
                 emptyStateTitle="Nothing matches"
                 emptyStateDescription="Try another term to find categories or components."
                 onNavigate={handleDocsSidebarNavigate}
+                mobile="drawer"
+                bind:isOpen={sidebarOpen}
+                drawerTitle="Components"
             />
         </div>
 
         <div class="flex min-h-0 min-w-0 flex-1 flex-col">
+            <!-- `relative` makes this the containing block for absolutely
+            positioned descendants. Without it an `sr-only` span far down the
+            content is not clipped by this scroller, and it stretches the
+            document itself: blank space to scroll through under the page. -->
             <div
-                class="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8"
+                class="relative min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8 pb-[calc(2rem+env(safe-area-inset-bottom,0px))]"
             >
-                <div class="mb-6 flex items-center gap-3 md:hidden">
+                <div class="mb-6 flex items-center gap-3 lg:hidden">
                     <button
                         type="button"
                         onclick={() => (sidebarOpen = !sidebarOpen)}
-                        class="text-description hover:text-headline cursor-pointer text-2xl transition-colors"
-                        aria-label="Toggle the component sidebar"
+                        class="focus-ring text-description hover:text-headline flex size-11 cursor-pointer items-center justify-center rounded-control text-2xl transition-colors"
+                        aria-label="Browse components"
+                        aria-haspopup="dialog"
                         aria-expanded={sidebarOpen}
+                        data-testid="catalog-menu-button"
                     >
                         <span aria-hidden="true">☰</span>
                     </button>

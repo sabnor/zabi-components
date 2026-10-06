@@ -49,14 +49,24 @@
     );
 
     const baseClasses =
-        "group focus-ring focus-ring--muted block rounded-container border border-border bg-card p-6 text-left transition-colors duration-150 hover:border-border-medium hover:bg-surface-hover active:scale-[0.99] active:bg-surface-active";
+        "group focus-ring focus-ring--muted block rounded-container border border-border bg-card p-6 text-left transition-colors duration-150";
 
-    const disabledClasses =
-        "opacity-50 cursor-not-allowed pointer-events-none hover:border-border hover:bg-card active:scale-100";
+    /**
+     * The hover and pressed tints are translucent, so they are drawn as a
+     * background image over the card fill rather than in place of it: swapping
+     * `bg-card` for a tint would let the page show through the panel. (A
+     * `hover:bg-*` beside `bg-card` also never applies; see THEMING.md, state
+     * variants.)
+     */
+    const interactiveClasses =
+        "bg-linear-to-b from-transparent to-transparent hover:border-border-medium hover:from-surface-hover hover:to-surface-hover active:scale-[0.99] active:from-surface-active active:to-surface-active";
+
+    const disabledClasses = "opacity-50 cursor-not-allowed pointer-events-none";
 
     const panelClasses = $derived(
-        cn(baseClasses, isDisabled ? disabledClasses : "", className),
+        cn(baseClasses, isDisabled ? disabledClasses : interactiveClasses, className),
     );
+
 
     function handleKeydown(event: KeyboardEvent) {
         if (isDisabled) return;
@@ -83,7 +93,7 @@
             {/if}
             {#if loading}
                 <span
-                    class="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-description border-t-transparent opacity-70"
+                    class="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-description border-t-transparent opacity-70 motion-reduce:animate-pulse"
                     aria-hidden="true"
                 ></span>
             {/if}

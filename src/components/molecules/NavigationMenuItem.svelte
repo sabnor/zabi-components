@@ -36,7 +36,6 @@
 
 <li
     class={cn("relative", className)}
-    role="none"
     data-navigation-menu-item
     data-active={isActive}
     {...restProps}

@@ -14,7 +14,7 @@
    ⚠️ IMPORTANT: This is the ONLY file you need to edit for theming!
    
    📍 QUICK REFERENCE - Where to change bg-action-primary:
-      → Physical brand ramp: --zabi-brand-* in @theme (duplicated in .dark for standalone imports)
+      → Physical brand ramp: --zabi-brand-* in @theme (declared once; .dark only remaps roles)
       → Semantic tokens: --color-action-primary uses --color-brand-* (see @theme / .dark)
       → Utility class: .bg-action-primary (utility section below)
    
@@ -34,7 +34,8 @@
 @theme {
   /*
    * Custom base (gray) ramp — single physical scale for --color-base-*.
-   * 21 stops: 50 … 950 (lightest → darkest). Edit hex here; mirror the same block in .dark for standalone imports.
+   * 21 stops: 50 … 950 (lightest → darkest). Declared ONCE, here: .dark holds no raw palette,
+   * so an app that overrides --zabi-base-* on :root restyles both themes.
    * Dark: semantic step S maps to physical (1000 − S), e.g. 50↔950, 75↔925; 500 stays fixed.
    * Midpoints are frozen hex values (default mode: fixed).
    */
@@ -62,6 +63,31 @@
 
   /* Typography - Nunito Sans font family */
   --font-family-sans: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
+  /* Headings follow the body face until an app sets this to a display font
+   * on :root. Applied to h1–h6 in the base layer below and by the Heading
+   * component. */
+  --font-family-heading: var(--font-family-sans);
+  /* Code. The stack CodeBlock has always used, now a token. */
+  --font-family-mono: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  /* Tailwind's own names for the same three faces. Its `font-sans` and
+   * `font-mono` utilities read --font-sans and --font-mono, which were its
+   * system stacks: `class="font-sans"` on a heading left the brand face, and
+   * nothing said so. They follow the tokens above now, and `font-heading` is
+   * the utility for the heading face. An app sets --font-family-*; these
+   * follow. */
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+  --font-heading: var(--font-family-heading);
+
+  /* Font weights. These are the variables Tailwind's `font-normal`,
+   * `font-medium`, `font-semibold` and `font-bold` read, so every component
+   * weight follows an override here. `regular` is the name a brand uses for
+   * 400; `font-normal` resolves through it. */
+  --font-weight-regular: 400;
+  --font-weight-normal: var(--font-weight-regular);
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
   /* Brand Color Scale — physical ramp + semantic aliases (same mirror pattern as pine / base) */
   --zabi-brand-50: #f4f6ff;
@@ -112,6 +138,33 @@
   --color-citron-800: var(--zabi-citron-800);
   --color-citron-900: var(--zabi-citron-900);
   --color-citron-950: var(--zabi-citron-950);
+
+  /* Accent Color Scale — the second brand colour (highlights, badges,
+   * celebrations). Defaults to the citron ramp; an app overrides
+   * --zabi-accent-50 … 950 on :root, once, and both themes follow. */
+  --zabi-accent-50: var(--zabi-citron-50);
+  --zabi-accent-100: var(--zabi-citron-100);
+  --zabi-accent-200: var(--zabi-citron-200);
+  --zabi-accent-300: var(--zabi-citron-300);
+  --zabi-accent-400: var(--zabi-citron-400);
+  --zabi-accent-500: var(--zabi-citron-500);
+  --zabi-accent-600: var(--zabi-citron-600);
+  --zabi-accent-700: var(--zabi-citron-700);
+  --zabi-accent-800: var(--zabi-citron-800);
+  --zabi-accent-900: var(--zabi-citron-900);
+  --zabi-accent-950: var(--zabi-citron-950);
+
+  --color-accent-50: var(--zabi-accent-50);
+  --color-accent-100: var(--zabi-accent-100);
+  --color-accent-200: var(--zabi-accent-200);
+  --color-accent-300: var(--zabi-accent-300);
+  --color-accent-400: var(--zabi-accent-400);
+  --color-accent-500: var(--zabi-accent-500);
+  --color-accent-600: var(--zabi-accent-600);
+  --color-accent-700: var(--zabi-accent-700);
+  --color-accent-800: var(--zabi-accent-800);
+  --color-accent-900: var(--zabi-accent-900);
+  --color-accent-950: var(--zabi-accent-950);
 
   /* Pine Color Scale — physical ramp + semantic aliases (mirror pattern matches --zabi-base-* / --color-base-*) */
   --zabi-pine-50: #f0f8f5;
@@ -242,29 +295,45 @@
    * base: page/app shell · raised: cards, panels, sidebars · elevated: nested cards, hover/active fills
    * overlay: modals, sheets, menus, popovers, toasts. Light mode keeps white surfaces + shadows;
    * dark mode (see .dark) steps each level up in OKLCH lightness because shadows don't read on dark.
+   *
+   * Light cannot go lighter than white, so its ladder runs the other way below
+   * the card: page (base-150) → elevated (base-100) → raised and overlay (white).
+   * Each grey sits a visible step from its neighbour; the page used to be
+   * base-100 with elevated at base-50, which left 1.04:1 between a card and the
+   * card nested in it. Enforced by scripts/check-surface-elevation.js.
    * Keep this block BELOW the "Background Colors" marker: scripts/sync-theme-tokens.js regenerates
    * everything between the base-scale aliases and that marker. */
-  --color-surface-base: var(--color-base-100);
+  --color-surface-base: var(--color-base-150);
   --color-surface-raised: #ffffff;
-  --color-surface-elevated: var(--color-base-50);
+  --color-surface-elevated: var(--color-base-100);
   --color-surface-overlay: #ffffff;
+  /* Inset — a recessed area ON a raised surface (a well, a code sample, a stat
+   * strip inside a card). It is the ramp step between the page and the raised
+   * surface in both themes, so it always reads as cut into the card, never as
+   * floating above it. In dark this is the step the input field already used;
+   * --color-input points here. In light it shares base-100 with `elevated`,
+   * because below a white card the only direction left is down. */
+  --color-surface-inset: var(--color-base-100);
   /* Hover/active fill for rows and icon buttons inside an overlay (must read above the overlay) */
-  --color-surface-overlay-hover: var(--color-base-100);
-  /* 1px edge for overlays: invisible in light (shadow carries elevation), visible in dark */
-  --color-border-overlay: transparent;
+  --color-surface-overlay-hover: var(--color-base-150);
+  /* 1px edge for overlays. An ink tint in light, so a white menu on a white
+   * card still has an outline where its shadow is thinnest; a solid step in dark. */
+  --color-border-overlay: rgba(9, 9, 11, 0.1);
 
   --color-background: var(--color-surface-base);
   --color-background-secondary: var(--color-base-50);
-  --color-background-tertiary: var(--color-base-100);
+  --color-background-tertiary: var(--color-base-150);
 
   /* Page Colors */
-  --color-page: var(--color-base-100);
+  --color-page: var(--color-base-150);
   --color-page-secondary: var(--color-base-200);
 
   /* Card Colors — aliases of the surface levels (kept for compatibility) */
   --color-card: var(--color-surface-raised);
+  /* Hover stays one step off the white card and is no longer the page colour
+   * (a hovered card used to turn exactly into the page). Active goes one further. */
   --color-card-hover: var(--color-base-100);
-  --color-card-active: var(--color-base-100);
+  --color-card-active: var(--color-base-150);
   --color-card-elevated: var(--color-surface-overlay);
 
   /* Surfaces — numbered aliases (kept for compatibility; prefer surface-base/raised/elevated/overlay) */
@@ -280,13 +349,18 @@
   --color-control-track-hover: var(--color-base-450);
   --color-control-track-active: var(--color-base-500);
 
+  /* Progress — the bar of Progress. The fill is the primary action, so it
+   * follows a pinned primary; the track is the field fill it always was. */
+  --color-progress-fill: var(--color-action-primary);
+  --color-progress-track: var(--color-input);
+
   /* Interaction fills — surface-relative on purpose.
    * A hard-coded ramp step (e.g. base-100) can coincide exactly with the
    * surface it sits on, which is how ghost hover became invisible: in dark
    * mode --color-base-100 IS --color-surface-base. An alpha tint is always
    * one step away from whatever is underneath it. */
-  --color-surface-hover: rgba(9, 9, 11, 0.06);
-  --color-surface-active: rgba(9, 9, 11, 0.11);
+  --color-surface-hover: rgba(9, 9, 11, 0.09);
+  --color-surface-active: rgba(9, 9, 11, 0.15);
 
   /* Overlay Colors */
   --color-overlay: rgba(0, 0, 0, 0.5);
@@ -295,17 +369,40 @@
    * The field is a RAISED surface, not a grey well — a grey fill on a grey
    * page reads as disabled. The disabled state is the only grey field. */
   --color-input: var(--color-surface-raised);
-  --color-input-border: var(--color-base-350);
-  --color-input-hover: var(--color-base-150);
+  /* The edge of a form field (WCAG 1.4.11): 3:1 on the field fill, the page and
+   * the card, held by the contrast guard. base-500 is 4.83:1 on white and
+   * 4.10:1 on the page; base-450 was 2.94:1 on the page, base-350 1.93:1. */
+  --color-input-border: var(--color-base-500);
+  /* Hover edge for a field. Light-mode hover is meant to be carried by the
+   * border, not by greying the fill; dark keeps its fill step and leaves this
+   * equal to the resting border. One step past the resting edge. */
+  --color-input-border-hover: var(--color-base-550);
+  /* One step off white. It was base-150, which is now the page itself, and was
+   * already greyer than the disabled fill. */
+  --color-input-hover: var(--color-base-100);
+  /* Pressed, for a field that is pressed rather than typed in: the Select
+   * trigger. It borrowed the hover step, 1.10:1 against the resting field,
+   * when every other pressed fill is 1.26:1 or more. base-200 is 1.27:1 on the
+   * white field and a visible step past hover (1.15:1); body text is 11.7:1
+   * on it. */
+  --color-input-active: var(--color-base-200);
   --color-input-focus: var(--color-surface-raised);
-  --color-input-disabled: var(--color-base-100);
+  /* The page colour: a disabled field stops being a raised surface. Dark does
+   * the same (base-100 is the dark page). */
+  --color-input-disabled: var(--color-surface-base);
 
   /* Text Colors */
   --color-headline: var(--color-base-900);
   --color-body: var(--color-base-800);
   --color-description: var(--color-base-600);
   --color-caption: var(--color-base-550); /* ≥ 4.5:1 on every surface level (base-500 was 4.40 on surface-base) */
-  --color-input-placeholder: var(--color-base-500);
+  /* Placeholder text, and the format hint of an empty DateField or TimeField.
+   * It is text someone has to read, so it is held to 4.5:1 on every fill a
+   * field can show: resting, hover, focus and pressed. base-500 was 4.83:1 on
+   * the white field but 4.40:1 on the hover fill and 3.81:1 on the pressed
+   * one; base-550 is 6.13, 5.58 and 4.83. The value text (--color-body) stays
+   * 2.4:1 stronger, so an empty field still reads as empty. */
+  --color-input-placeholder: var(--color-base-550);
   --color-label: var(--color-base-700);
   /* brand-600 clears 4.5:1 on a card but only 4.42:1 on the page surface, so
    * links sit one step darker. */
@@ -321,7 +418,7 @@
   --color-nav-menu-hover: var(--color-surface-hover);
   --color-nav-menu-active: var(--color-action-primary-subtle);
   --color-nav-menu-active-hover: var(--color-action-primary-subtle-hover);
-  --color-nav-menu-focus: var(--color-brand-500);
+  --color-nav-menu-focus: var(--color-focus);
   --color-success-text: var(--color-pine-700);
   --color-warning-text: var(--color-warning-700);
   --color-neutral-text: var(--color-base-700);
@@ -335,15 +432,40 @@
   --color-border-weak: var(--color-base-300);
   --color-border-medium: var(--color-base-400);
   --color-border-strong: var(--color-base-500);
+  /* Control boundary — the edge of a control that has nothing else to be seen
+   * by, such as the outline of an empty Rating star (its first user).
+   * WCAG 1.4.11 asks 3:1 for it against whatever it sits on, so it is held to
+   * 3:1 on every surface level in both themes (scripts/check-contrast.js).
+   * The decorative edges above are not: --color-border-strong is the mirror's
+   * fixed point, the same grey in both themes, and is 2.49:1 on the dark
+   * elevated surface and 1.98:1 on the dark overlay. .dark pins this one step
+   * lighter for that reason. */
+  --color-control-border: var(--color-base-500);
 
-  /* Focus Colors */
-  --color-focus: var(--color-brand-500);
-  --color-focus-weak: var(--color-brand-600);
-  --color-focus-medium: var(--color-brand-700);
-  --color-focus-strong: var(--color-brand-800);
+  /* Focus Colors
+   * brand-600, not brand-500: a focus indicator needs 3:1 against what is
+   * around it, and brand-500 was 2.99:1 on the page. brand-600 is also the
+   * primary button fill, so on a primary button the ring is separated by its
+   * 2px offset gap (--color-focus-ring-offset), which .focus-ring always draws.
+   * .dark restates the same steps; the mirror makes them --zabi-brand-400 and up. */
+  --color-focus: var(--color-brand-600);
+  --color-focus-weak: var(--color-brand-700);
+  --color-focus-medium: var(--color-brand-800);
+  --color-focus-strong: var(--color-brand-900);
   /* Aliases for `ring-focus-ring`, `.focus-ring`, and form utils */
   --color-focus-ring: var(--color-focus);
   --color-focus-ring-offset: var(--color-card);
+  /* `.focus-ring--muted`: the neutral ring of a ghost or link control, quiet
+   * by having no hue, not by having less contrast. The rule used to read
+   * --color-base-500 directly, which does not move between themes: 4.1:1 or
+   * more in light, 2.49:1 on the dark elevated surface. .dark pins it one step
+   * lighter; it is held to 3:1 on every surface level in both themes. */
+  --color-focus-ring-muted: var(--color-base-500);
+  /* `.focus-ring--danger`: the ring of a destructive control. It is the error
+   * colour; a role of its own so that a brand or accent block can re-point
+   * it with the other rings (the error colour is about 1:1 on a brand fill,
+   * and a focused danger Button there showed no ring). */
+  --color-focus-ring-danger: var(--color-error);
 
   /* Primary Colors */
   --color-primary: var(--color-brand-600);
@@ -367,8 +489,8 @@
    *   <family>-weak     step 700  pressed / emphasis
    *   <family>-medium   step 800  strongest fill
    *   <family>-strong   step 900  darkest
-   *   <family>-subtle   step 100  tinted fill (badges, alerts)
-   *   <family>-border   step 200  tinted edge
+   *   <family>-subtle   step 200  tinted fill (badges, alerts); .dark pins step 100
+   *   <family>-border   step 300  tinted edge; .dark pins step 200
    *   <family>-text     step 700  text on a subtle fill or a page surface
    *
    * Warning, error and energetic previously sat at step 500 — the mirror's
@@ -382,32 +504,48 @@
   --color-success-weak: var(--color-pine-700);
   --color-success-medium: var(--color-pine-800);
   --color-success-strong: var(--color-pine-900);
-  --color-success-subtle: var(--color-pine-100);
-  --color-success-border: var(--color-pine-200);
+  --color-success-subtle: var(--color-pine-200);
+  --color-success-border: var(--color-pine-300);
 
   /* Warning Colors */
   --color-warning: var(--color-warning-600);
   --color-warning-weak: var(--color-warning-700);
   --color-warning-medium: var(--color-warning-800);
   --color-warning-strong: var(--color-warning-900);
-  --color-warning-subtle: var(--color-warning-100);
-  --color-warning-border: var(--color-warning-200);
+  --color-warning-subtle: var(--color-warning-200);
+  --color-warning-border: var(--color-warning-300);
 
   /* Error Colors */
   --color-error: var(--color-error-600);
   --color-error-weak: var(--color-error-700);
   --color-error-medium: var(--color-error-800);
   --color-error-strong: var(--color-error-900);
-  --color-error-subtle: var(--color-error-100);
-  --color-error-border: var(--color-error-200);
+  --color-error-subtle: var(--color-error-200);
+  --color-error-border: var(--color-error-300);
 
   /* Energetic Colors (Citron) */
   --color-energetic: var(--color-citron-600);
   --color-energetic-weak: var(--color-citron-700);
   --color-energetic-medium: var(--color-citron-800);
   --color-energetic-strong: var(--color-citron-900);
-  --color-energetic-subtle: var(--color-citron-100);
-  --color-energetic-border: var(--color-citron-200);
+  --color-energetic-subtle: var(--color-citron-200);
+  --color-energetic-border: var(--color-citron-300);
+
+  /* Accent Colors — the second brand colour, on --zabi-accent-* (citron by
+   * default). The same recipe as the primary action: fill at 600, hover 700,
+   * active 800, so "more pressed" is "more contrast" in both themes; tint,
+   * edge and text as in the families above. `energetic` keeps pointing at
+   * citron itself and does not move when an app re-colours the accent. */
+  --color-accent: var(--color-accent-600);
+  --color-accent-hover: var(--color-accent-700);
+  --color-accent-active: var(--color-accent-800);
+  --color-accent-subtle: var(--color-accent-200);
+  --color-accent-border: var(--color-accent-300);
+  --color-accent-text: var(--color-accent-700);
+  /* Label on a solid accent fill — see "on brand" below for the two knobs. */
+  --zabi-on-accent: #ffffff;
+  --zabi-on-accent-dark: var(--zabi-accent-950);
+  --color-on-accent: var(--zabi-on-accent);
 
   /* Neutral Colors
    * The base ramp is wider than the chromatic ones on purpose (it also drives
@@ -419,10 +557,12 @@
   --color-neutral-weak: var(--color-base-600);
   --color-neutral-medium: var(--color-base-700);
   --color-neutral-strong: var(--color-base-900);
-  /* base-200, not base-100: base-100 IS surface-base, which made a neutral
-   * badge measure 1.00:1 against the page and read as bare text. */
-  --color-neutral-subtle: var(--color-base-200);
-  --color-neutral-border: var(--color-base-200);
+  /* One visible step past the page (base-150) and two past a card. It was
+   * base-100 once, which IS the dark page and made a neutral badge measure
+   * 1.00:1 and read as bare text. The border is a step darker than the fill,
+   * like every other family. */
+  --color-neutral-subtle: var(--color-base-250);
+  --color-neutral-border: var(--color-base-300);
 
   /* Info Colors */
   --color-info: var(--color-iris-600);
@@ -430,8 +570,8 @@
   --color-info-medium: var(--color-iris-800);
   --color-info-strong: var(--color-iris-900);
   --color-info-active: var(--color-iris-400);
-  --color-info-subtle: var(--color-iris-100);
-  --color-info-border: var(--color-iris-200);
+  --color-info-subtle: var(--color-iris-200);
+  --color-info-border: var(--color-iris-300);
   /* Text alias */
   --color-info-text: var(--color-iris-700);
 
@@ -451,20 +591,37 @@
   --color-action-primary: var(--color-brand-600);
   --color-action-primary-hover: var(--color-brand-700);
   --color-action-primary-active: var(--color-brand-800);
-  --color-action-primary-subtle: var(--color-brand-100);
-  --color-action-primary-subtle-hover: var(--color-brand-200);
-  /* Pinned rather than aliased to brand-50: the ramp's lightest tint lands at
-   * exactly 4.50:1 on brand-600 — passing, but with no margin. Pure white
-   * gives 4.86:1. The .dark block pins the inverse. */
-  --color-action-primary-text: #ffffff;
+  --color-action-primary-subtle: var(--color-brand-200);
+  --color-action-primary-subtle-hover: var(--color-brand-300);
+  /* Held down, on a control whose resting fill is the subtle one: a toggled-on
+   * ghost IconButton. It used the hover step, which is 1.24:1 against the
+   * resting fill and, with a mouse, is what the button already shows. Half a
+   * step past hover is 1.42:1 against resting, and the icon (--color-link)
+   * keeps 3.50:1 on it; a whole step would leave the icon at 3.01:1. */
+  --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-400) 50%, var(--color-brand-300));
+  /* "On brand" — the label on a primary fill.
+   * White rather than brand-50: the ramp's lightest tint lands at exactly
+   * 4.50:1 on brand-600 — passing, but with no margin. Pure white gives 4.86:1.
+   * Dark uses the dark end of the ramp on the light fill (7.21:1).
+   *
+   * A light brand (amber, yellow) cannot carry white text, so both values are
+   * knobs an app sets once on :root, like the ramps:
+   *   --zabi-on-brand        label in light mode
+   *   --zabi-on-brand-dark   label in dark mode
+   * --color-on-brand is the role, remapped by .dark; components keep using
+   * --color-action-primary-text, which follows it. */
+  --zabi-on-brand: #ffffff;
+  --zabi-on-brand-dark: var(--zabi-brand-950);
+  --color-on-brand: var(--zabi-on-brand);
+  --color-action-primary-text: var(--color-on-brand);
 
   /* Secondary Actions - Used by bg-action-secondary utility class
    * A neutral alpha tint: reads as a real button on any surface level, and
    * cannot collide with the background the way a fixed ramp step can. The old
    * 10%-brand wash was so pale it barely registered as a control. */
-  --color-action-secondary: rgba(9, 9, 11, 0.07);
-  --color-action-secondary-hover: rgba(9, 9, 11, 0.12);
-  --color-action-secondary-active: rgba(9, 9, 11, 0.17);
+  --color-action-secondary: rgba(9, 9, 11, 0.1);
+  --color-action-secondary-hover: rgba(9, 9, 11, 0.15);
+  --color-action-secondary-active: rgba(9, 9, 11, 0.2);
   --color-action-secondary-subtle: var(--color-base-100);
   --color-action-secondary-subtle-hover: var(--color-base-200);
   --color-action-secondary-text: var(--color-headline);
@@ -473,9 +630,9 @@
    * Disabled must be the QUIETEST state, never a brighter colour than the
    * enabled secondary. It used to be brand-500 plus opacity-50, which made a
    * disabled primary lighter and more colourful than an enabled secondary. */
-  --color-action-disabled: var(--color-base-200);
+  --color-action-disabled: var(--color-base-250);
   --color-action-disabled-text: var(--color-base-500);
-  --color-action-disabled-border: var(--color-base-250);
+  --color-action-disabled-border: var(--color-base-300);
 
   /* Danger Actions - Used by bg-action-danger utility class.
    * Same ramp step as every other family, so the destructive action no longer
@@ -486,11 +643,18 @@
   --color-action-danger-active: var(--color-error-800);
   --color-action-danger-subtle: var(--color-error-100);
   --color-action-danger-subtle-hover: var(--color-error-200);
+  /* The same for a toggled-on danger-tone IconButton: hover was 1.18:1 against
+   * the resting fill. Half a step past it is 1.32:1, and the icon
+   * (--color-error) keeps 3.36:1; on the whole step it is exactly 3.00. Dark needs no override:
+   * the same expression resolves through the mirrored steps. */
+  --color-action-danger-subtle-active: color-mix(in srgb, var(--color-error-300) 50%, var(--color-error-200));
   --color-action-danger-text: var(--color-error-50);
 
-  /* Shadow Colors */
-  --shadow-color: 0 0 0;
-  --shadow-opacity: 0.1;
+  /* Shadow Colors
+   * Light elevation is carried by the shadow, so it is the ramp's own ink
+   * (base-900) at a strength that still reads on the top and side edges. */
+  --shadow-color: 24 24 27;
+  --shadow-opacity: 0.14;
   --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
@@ -587,46 +751,53 @@ body {
   font-family: var(--font-family-sans);
 }
 
+/* Headings take the heading face. In the base layer, so a utility on the
+ * element (`font-family-mono`, an app's own `font-*`) still wins. */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-family-heading);
+  }
+}
+
 /* ========================================
    DARK MODE THEME
-   ======================================== */
+   ========================================
+   This block only REMAPS ROLES. It declares no raw palette: every --zabi-*
+   ramp lives once, in @theme, so an app that overrides --zabi-brand-*,
+   --zabi-accent-* or --zabi-base-* on :root restyles light and dark with one
+   declaration. validate-theme.js fails the build if a --zabi-* token or a hex
+   literal comes back in here.
+
+   Put the class on <html>: the role tokens in @theme are resolved on the root
+   element, so a `.dark` further down does not re-resolve them.
+
+   The published dark files carry this block under three selectors, generated
+   by scripts/build-css.js (scripts/dark-selectors.js) — keep ONE `.dark` rule
+   here and do not write the others by hand:
+     .dark, [data-theme="dark"]                                   always dark
+     @media (prefers-color-scheme: dark) { [data-theme="auto"] }   follows the OS
+   [data-theme="light"], or no attribute and no class, stays light. */
+
+/* The light theme says it is light. Without this a page with no class and no
+   attribute left `color-scheme` to the browser: with
+   <meta name="color-scheme" content="light dark"> and a dark system, the
+   date picker and the scrollbars went dark on light surfaces. A declaration on
+   the root element overrides the meta tag.
+   It has to stay ABOVE the dark rule: both have the specificity of one class,
+   so the later one wins, and the dark selectors come later in every published
+   file (the light theme file is imported first). `[data-theme="auto"]` sets
+   `light dark` after this, so auto still follows the system. */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+}
+
 .dark {
-  /* Mirror @theme --zabi-base-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-base-50: #fafafa;
-  --zabi-base-75: #f7f7f7;
-  --zabi-base-100: #f4f4f5;
-  --zabi-base-150: #ececee;
-  --zabi-base-200: #e4e4e7;
-  --zabi-base-250: #dcdcdf;
-  --zabi-base-300: #d4d4d8;
-  --zabi-base-350: #babac1;
-  --zabi-base-400: #a1a1aa;
-  --zabi-base-450: #898992;
-  --zabi-base-500: #71717a;
-  --zabi-base-550: #61616a;
-  --zabi-base-600: #52525b;
-  --zabi-base-650: #484850;
-  --zabi-base-700: #3f3f46;
-  --zabi-base-750: #333338;
-  --zabi-base-800: #27272a;
-  --zabi-base-850: #1f1f22;
-  --zabi-base-900: #18181b;
-  --zabi-base-925: #101013;
-  --zabi-base-950: #09090b;
-
-  /* Mirror @theme --zabi-brand-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-brand-50: #f4f6ff;
-  --zabi-brand-100: #e9eeff;
-  --zabi-brand-200: #d3dcff;
-  --zabi-brand-300: #b5c6ff;
-  --zabi-brand-400: #92a9ff;
-  --zabi-brand-500: #6d87f1;
-  --zabi-brand-600: #4f68da;
-  --zabi-brand-700: #3c52ba;
-  --zabi-brand-800: #2b3e95;
-  --zabi-brand-900: #1c2c6d;
-  --zabi-brand-950: #111d49;
-
   /* Brand Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-brand-50: var(--zabi-brand-950);
   --color-brand-100: var(--zabi-brand-900);
@@ -639,19 +810,6 @@ body {
   --color-brand-800: var(--zabi-brand-200);
   --color-brand-900: var(--zabi-brand-100);
   --color-brand-950: var(--zabi-brand-50);
-
-  /* Mirror @theme --zabi-citron-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-citron-50: #f6f7ef;
-  --zabi-citron-100: #edefdf;
-  --zabi-citron-200: #dcdfbf;
-  --zabi-citron-300: #c5ca95;
-  --zabi-citron-400: #aab063;
-  --zabi-citron-500: #8c9027;
-  --zabi-citron-600: #707400;
-  --zabi-citron-700: #5a5d00;
-  --zabi-citron-800: #454700;
-  --zabi-citron-900: #313200;
-  --zabi-citron-950: #202100;
 
   /* Citron Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-citron-50: var(--zabi-citron-950);
@@ -666,18 +824,18 @@ body {
   --color-citron-900: var(--zabi-citron-100);
   --color-citron-950: var(--zabi-citron-50);
 
-  /* Mirror @theme --zabi-pine-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-pine-50: #f0f8f5;
-  --zabi-pine-100: #e2f1eb;
-  --zabi-pine-200: #c5e4d7;
-  --zabi-pine-300: #9fd1bd;
-  --zabi-pine-400: #70ba9e;
-  --zabi-pine-500: #399c7a;
-  --zabi-pine-600: #00805e;
-  --zabi-pine-700: #00674a;
-  --zabi-pine-800: #004f37;
-  --zabi-pine-900: #003826;
-  --zabi-pine-950: #002518;
+  /* Accent Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
+  --color-accent-50: var(--zabi-accent-950);
+  --color-accent-100: var(--zabi-accent-900);
+  --color-accent-200: var(--zabi-accent-800);
+  --color-accent-300: var(--zabi-accent-700);
+  --color-accent-400: var(--zabi-accent-600);
+  --color-accent-500: var(--zabi-accent-500);
+  --color-accent-600: var(--zabi-accent-400);
+  --color-accent-700: var(--zabi-accent-300);
+  --color-accent-800: var(--zabi-accent-200);
+  --color-accent-900: var(--zabi-accent-100);
+  --color-accent-950: var(--zabi-accent-50);
 
   /* Pine Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-pine-50: var(--zabi-pine-950);
@@ -692,19 +850,6 @@ body {
   --color-pine-900: var(--zabi-pine-100);
   --color-pine-950: var(--zabi-pine-50);
 
-  /* Mirror @theme --zabi-iris-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-iris-50: #f6f6fd;
-  --zabi-iris-100: #ecedfb;
-  --zabi-iris-200: #dadbf6;
-  --zabi-iris-300: #c1c4ef;
-  --zabi-iris-400: #a5a7e2;
-  --zabi-iris-500: #8486cd;
-  --zabi-iris-600: #6969b4;
-  --zabi-iris-700: #535397;
-  --zabi-iris-800: #3f3f78;
-  --zabi-iris-900: #2c2c58;
-  --zabi-iris-950: #1d1d3a;
-
   /* Iris Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-iris-50: var(--zabi-iris-950);
   --color-iris-100: var(--zabi-iris-900);
@@ -718,19 +863,6 @@ body {
   --color-iris-900: var(--zabi-iris-100);
   --color-iris-950: var(--zabi-iris-50);
 
-  /* Mirror @theme --zabi-warning-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-warning-50: #fbf6ed;
-  --zabi-warning-100: #f7ecda;
-  --zabi-warning-200: #f1d9b6;
-  --zabi-warning-300: #e8bf87;
-  --zabi-warning-400: #db9e4c;
-  --zabi-warning-500: #c17b00;
-  --zabi-warning-600: #9e6000;
-  --zabi-warning-700: #824c00;
-  --zabi-warning-800: #663800;
-  --zabi-warning-900: #4b2600;
-  --zabi-warning-950: #341800;
-
   /* Warning Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-warning-50: var(--zabi-warning-950);
   --color-warning-100: var(--zabi-warning-900);
@@ -743,19 +875,6 @@ body {
   --color-warning-800: var(--zabi-warning-200);
   --color-warning-900: var(--zabi-warning-100);
   --color-warning-950: var(--zabi-warning-50);
-
-  /* Mirror @theme --zabi-error-* ramp (same physical hex; required for standalone dark import) */
-  --zabi-error-50: #fff4f3;
-  --zabi-error-100: #ffe9e6;
-  --zabi-error-200: #ffd2cd;
-  --zabi-error-300: #ffb2ab;
-  --zabi-error-400: #ff877d;
-  --zabi-error-500: #ed564e;
-  --zabi-error-600: #d22828;
-  --zabi-error-700: #b20912;
-  --zabi-error-800: #8c0006;
-  --zabi-error-900: #660002;
-  --zabi-error-950: #460202;
 
   /* Error Color Scale — semantic → physical mirror (1000 − step); 500 fixed point */
   --color-error-50: var(--zabi-error-950);
@@ -771,27 +890,27 @@ body {
   --color-error-950: var(--zabi-error-50);
 
   /* Base Color Scale — semantic → physical mirror (1000 − step); 500 is fixed point */
-  --color-base-50: #09090b;
-  --color-base-75: #101013;
-  --color-base-100: #18181b;
-  --color-base-150: #1f1f22;
-  --color-base-200: #27272a;
-  --color-base-250: #333338;
-  --color-base-300: #3f3f46;
-  --color-base-350: #484850;
-  --color-base-400: #52525b;
-  --color-base-450: #61616a;
-  --color-base-500: #71717a;
-  --color-base-550: #898992;
-  --color-base-600: #a1a1aa;
-  --color-base-650: #babac1;
-  --color-base-700: #d4d4d8;
-  --color-base-750: #dcdcdf;
-  --color-base-800: #e4e4e7;
-  --color-base-850: #ececee;
-  --color-base-900: #f4f4f5;
-  --color-base-925: #f7f7f7;
-  --color-base-950: #fafafa;
+  --color-base-50: var(--zabi-base-950);
+  --color-base-75: var(--zabi-base-925);
+  --color-base-100: var(--zabi-base-900);
+  --color-base-150: var(--zabi-base-850);
+  --color-base-200: var(--zabi-base-800);
+  --color-base-250: var(--zabi-base-750);
+  --color-base-300: var(--zabi-base-700);
+  --color-base-350: var(--zabi-base-650);
+  --color-base-400: var(--zabi-base-600);
+  --color-base-450: var(--zabi-base-550);
+  --color-base-500: var(--zabi-base-500);
+  --color-base-550: var(--zabi-base-450);
+  --color-base-600: var(--zabi-base-400);
+  --color-base-650: var(--zabi-base-350);
+  --color-base-700: var(--zabi-base-300);
+  --color-base-750: var(--zabi-base-250);
+  --color-base-800: var(--zabi-base-200);
+  --color-base-850: var(--zabi-base-150);
+  --color-base-900: var(--zabi-base-100);
+  --color-base-925: var(--zabi-base-75);
+  --color-base-950: var(--zabi-base-50);
 
   /* Background Colors - No dark mode overrides needed, base colors are already inverted */
 
@@ -801,23 +920,34 @@ body {
    * from the page background (L 21 → 27 → 33 → 39).
    *
    * GENERATED by scripts/generate-surfaces.js from tokens/surface-ladder.js — do not hand-edit.
-   * Each level is #fafafa (the same light as the dark hover tint) washed over the page at
-   * 6.4% / 13.1% / 19.7%, so every level is the one below it with more light on it. Baked to
-   * opaque hex so the static checks can still resolve them and a modal stays opaque.
+   * The page is --zabi-base-900. Each level above it is --zabi-base-50 (the same light as the
+   * dark hover tint) washed over the page at 6.4% / 13.1% / 19.7%, so every level is the one
+   * below it with more light on it, and a --zabi-base-* override carries the whole ladder.
+   * Mixing two opaque colours stays opaque, so a modal never lets the page through. With the
+   * default greys these resolve to #18181b / #262629 / #363638 / #454547.
    * Enforced by scripts/check-surface-elevation.js (strictly increasing, 5–8 points). */
-  --color-surface-base: #18181b;
-  --color-surface-raised: #262629;
-  --color-surface-elevated: #363638;
-  --color-surface-overlay: #454547;
-  --color-surface-overlay-hover: #52525b;
+  --color-surface-base: var(--zabi-base-900);
+  --color-surface-raised: color-mix(in srgb, var(--zabi-base-50) 6.4%, var(--zabi-base-900));
+  --color-surface-elevated: color-mix(in srgb, var(--zabi-base-50) 13.1%, var(--zabi-base-900));
+  --color-surface-overlay: color-mix(in srgb, var(--zabi-base-50) 19.7%, var(--zabi-base-900));
+  /* base-400 mirrors to --zabi-base-600 (#52525b), one step lighter than the overlay. */
+  --color-surface-overlay-hover: var(--color-base-400);
+  /* Inset — the step between the page and the raised surface (L 24). The input
+   * field is the library's own inset; see --color-input below. */
+  --color-surface-inset: var(--color-base-150);
 
   /* Distinct from base, raised AND elevated — a neutral chip has no hue to
    * separate it, so it has to separate on lightness wherever it lands. */
   --color-neutral-subtle: var(--color-base-300);
+  --color-neutral-border: var(--color-base-200);
   --color-border-overlay: var(--color-base-450);
 
   /* Background Colors */
   --color-background: var(--color-surface-base);
+  --color-background-tertiary: var(--color-base-100);
+
+  /* Page Colors — pinned: light moved the page to base-150, dark stays on base-100 */
+  --color-page: var(--color-base-100);
 
   /* Card Colors — aliases of the surface levels */
   --color-card: var(--color-surface-raised);
@@ -851,53 +981,111 @@ body {
   /* Input Colors
    * Dark fields are INSET: one step below the raised surface they sit on,
    * which is the dark-mode equivalent of a white field on a grey page. */
-  --color-input: var(--color-base-150);
-  --color-input-border: var(--color-base-300);
+  --color-input: var(--color-surface-inset);
+  /* Restated here: the root value of a var() alias is resolved at :root. */
+  --color-progress-fill: var(--color-action-primary);
+  --color-progress-track: var(--color-input);
+  /* base-500 (the mirror's fixed point): 3.40:1 on the dark field, 3.67:1 on
+   * the page and 3.12:1 on the card. base-300 was 1.57, 1.70 and 1.44. */
+  --color-input-border: var(--color-base-500);
+  --color-input-border-hover: var(--color-input-border);
   --color-input-hover: var(--color-base-200);
+  /* One step past hover, and one short of the border (base-300), so the
+   * pressed field keeps its edge: 1.31:1 against the resting field. */
+  --color-input-active: var(--color-base-250);
   --color-input-focus: var(--color-base-150);
   --color-input-disabled: var(--color-base-100);
-  --color-input-placeholder: var(--color-base-500);
+  /* base-500 is the mirror's fixed point, the same grey as it was in light,
+   * and a dark field is a far lighter ground for it than a white one is dark:
+   * 3.40:1 at rest, 3.08:1 on hover, 2.60:1 pressed. base-600 mirrors to
+   * --zabi-base-400 (#a1a1aa): 6.41, 5.81 and 4.90. base-550 would be 4.74
+   * at rest but under 4.5 on hover. The value text is 2.0:1 stronger. */
+  --color-input-placeholder: var(--color-base-600);
 
   /* Text Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Border Colors - No dark mode overrides needed, base colors are already inverted */
+  /* Border Colors - the decorative edges need no override, base colors are
+   * already inverted. The control boundary does: base-500 is the mirror's
+   * fixed point (#71717a in both themes), and the dark surfaces above the card
+   * are too light for it (2.49:1 on elevated, 1.98:1 on the overlay). base-600
+   * mirrors to --zabi-base-400 (#a1a1aa): 3.73:1 on the overlay, the lightest
+   * surface, and more on every level below it. base-550 is 2.76:1 there. */
+  --color-control-border: var(--color-base-600);
 
-  /* Focus Colors - No dark mode overrides needed, brand colors are already inverted */
+  /* Focus Colors — the same steps as light, through the mirror: brand-600 is
+   * --zabi-brand-400 here, which is also the dark primary fill, so on a
+   * primary button the ring is separated by its offset gap exactly as in light.
+   * Dark used to stay one step back, on brand-500, the mirror's fixed point.
+   * That is 5.4:1 on the dark page but only 2.91:1 on the overlay, the
+   * lightest surface (2.78:1 for an amber brand), and a ring in a modal or a
+   * menu needs 3:1 too. Restated rather than left to inherit, so an app's
+   * light-only override of --color-focus does not reach dark. */
+  --color-focus: var(--color-brand-600);
+  --color-focus-weak: var(--color-brand-700);
+  --color-focus-medium: var(--color-brand-800);
+  --color-focus-strong: var(--color-brand-900);
+  /* The muted ring, for the same reason as the control boundary above: one
+   * step lighter than the fixed point, 3.73:1 on the overlay. */
+  --color-focus-ring-muted: var(--color-base-600);
 
   /* Primary Colors - No dark mode overrides needed, brand colors are already inverted */
 
   /* Secondary Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Success Colors — no overrides: @theme uses --color-pine-*; semantic pine resolves to mirrored physical ramp inside .dark */
-
-  /* Warning Colors — no overrides: @theme uses --color-warning-* scale; it mirrors in .dark via --zabi-warning-* */
-
-  /* Error Colors — no overrides: @theme uses --color-error-* scale; it mirrors in .dark via --zabi-error-* */
-
-  /* Energetic Colors — no overrides: @theme uses --color-citron-*; citron mirrors in .dark via --zabi-citron-* */
+  /* Tinted fills and edges — pinned at steps 100 and 200.
+   * The solid, weak, medium, strong and text steps need no override: they
+   * resolve through the mirrored ramps. The tints do, because light moved them
+   * to steps 200 and 300 to read on a white card, and the mirror of those is
+   * too heavy on a dark surface. */
+  --color-success-subtle: var(--color-pine-100);
+  --color-success-border: var(--color-pine-200);
+  --color-warning-subtle: var(--color-warning-100);
+  --color-warning-border: var(--color-warning-200);
+  --color-error-subtle: var(--color-error-100);
+  --color-error-border: var(--color-error-200);
+  --color-energetic-subtle: var(--color-citron-100);
+  --color-energetic-border: var(--color-citron-200);
+  --color-accent-subtle: var(--color-accent-100);
+  --color-accent-border: var(--color-accent-200);
+  /* Label on a solid accent fill: the dark end of the ramp on its light end. */
+  --color-on-accent: var(--zabi-on-accent-dark);
+  --color-info-subtle: var(--color-iris-100);
+  --color-info-border: var(--color-iris-200);
 
   /* Neutral Colors — base-550 mirrors to L* 57, which is only 4.35:1 on a
    * raised surface. One step lighter clears AA on every dark surface level. */
   --color-neutral: var(--color-base-600);
 
-  /* Info Colors — no overrides: @theme uses --color-iris-* (incl. --color-info-active); iris mirrors in .dark via --zabi-iris-* */
+  /* Info Colors — no further overrides: @theme uses --color-iris-* (incl. --color-info-active); iris mirrors in .dark via --zabi-iris-* */
 
   /* ========================================
      ACTION COLORS - Dark Mode Overrides
      ======================================== */
   
   /* Primary Actions - Background adapts automatically via brand color inversion */
-  /* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit --zabi-brand-* physical ramp above (semantic --color-brand-* follows mirror) */
-  /* Text color - the physical dark end of the brand ramp, on the physical
-   * light end used as the dark-mode primary fill. 7.21:1. */
-  --color-action-primary-text: var(--zabi-brand-950);
+  /* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit the --zabi-brand-* physical ramp in @theme (semantic --color-brand-* follows the mirror) */
+  /* "On brand" in dark: --zabi-on-brand-dark, by default the physical dark end
+   * of the brand ramp on the physical light end used as the dark-mode primary
+   * fill (7.21:1). --color-action-primary-text is restated, as it always
+   * was here, so that an app's light-only override of it does not carry a
+   * white label onto the light dark-mode fill. */
+  --color-on-brand: var(--zabi-on-brand-dark);
+  --color-action-primary-text: var(--color-on-brand);
+  /* Pinned like the other tints: light moved these a step darker. */
+  --color-action-primary-subtle: var(--color-brand-100);
+  --color-action-primary-subtle-hover: var(--color-brand-200);
+  /* Half a step past the dark hover fill, as in light. */
+  --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
 
   /* Secondary Actions - light alpha tint instead of the light-mode dark tint */
   --color-action-secondary: rgba(250, 250, 250, 0.09);
   --color-action-secondary-hover: rgba(250, 250, 250, 0.15);
   --color-action-secondary-active: rgba(250, 250, 250, 0.21);
 
-  /* Disabled Actions - base-200 in dark is #27272a, still the quietest fill */
+  /* Disabled Actions - base-200 in dark is #27272a, still the quietest fill.
+   * Pinned: light moved a step darker to stay visible on its darker page. */
+  --color-action-disabled: var(--color-base-200);
+  --color-action-disabled-border: var(--color-base-250);
 
   /* Danger Actions — restated as aliases, not re-pointed.
    * These resolve through the mirrored --color-error-* scale, so dark danger
@@ -913,12 +1101,22 @@ body {
   --color-action-danger-subtle-hover: var(--color-error-200);
   --color-action-danger-text: var(--color-error-50);
 
-  /* Shadow Colors */
+  /* Shadow Colors — black, not the light theme's ink tint */
+  --shadow-color: 0 0 0;
   --shadow-opacity: 0.3;
   --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
   --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
+
+  /* Not a token: tells the browser the page is dark, so what it draws itself
+   * (date and time pickers, scrollbars, autofill, the caret of a native
+   * select) is dark too. It is the last declaration on purpose:
+   * scripts/sync-theme-tokens.js rewrites the ramp aliases at the top of this
+   * rule. The build publishes this rule under [data-theme="dark"] and, inside
+   * the dark media query, [data-theme="auto"], and every one of them carries
+   * it. Until 8.1 only the attributes set it and the class did not. */
+  color-scheme: dark;
 }
 
 /* ========================================
@@ -1010,7 +1208,14 @@ body {
   background-color: var(--color-base-950);
 }
 
-/* Hover utilities for base colors */
+/* Hover utilities for base colors.
+ *
+ * Every hand-written `:hover` rule in this file sits in `@media (hover: hover)`,
+ * as Tailwind's own `hover:` variant does. On a touch screen `:hover` stays on
+ * the last element tapped until something else is tapped, so an ungated rule
+ * left a button in its hover colour after every press. The rules inside keep
+ * their indentation: only the two wrapper lines were added around each. */
+@media (hover: hover) {
 .hover\:bg-base-50:hover {
   background-color: var(--color-base-50);
 }
@@ -1094,14 +1299,17 @@ body {
 .hover\:bg-base-950:hover {
   background-color: var(--color-base-950);
 }
+}
 
 /* Card utilities */
 .bg-card {
   background-color: var(--color-card);
 }
 
+@media (hover: hover) {
 .hover\:bg-card-hover:hover {
   background-color: var(--color-card-hover);
+}
 }
 
 /* Surface utilities */
@@ -1131,8 +1339,39 @@ body {
   background-color: var(--color-input);
 }
 
+@media (hover: hover) {
 .hover\:bg-input-hover:hover {
   background-color: var(--color-input-hover);
+}
+}
+
+.focus-visible\:bg-input-focus:focus-visible {
+  background-color: var(--color-input-focus);
+}
+
+.active\:bg-input-focus:active {
+  background-color: var(--color-input-focus);
+}
+
+/* The pressed Select trigger. `--color-input-focus` is the resting fill in the
+   light theme, so pressing showed nothing; the hover step is one away from it
+   in both themes, and on a touch screen there is no hover to confuse it with. */
+.active\:bg-input-hover:active {
+  background-color: var(--color-input-hover);
+}
+
+/* That step was 1.10:1 against the resting field in both themes, too faint to
+   read as pressed. The Select trigger now uses a step of its own; the rule
+   above stays for apps that wrote the class. `.bg-input` is unlayered, so a
+   generated `active:bg-input-active` would lose to it. The fallback is for
+   an app whose own theme file predates the role. */
+.active\:bg-input-active:active {
+  background-color: var(--color-input-active, var(--color-input-hover));
+}
+
+/* `.bg-card` is unlayered, so the generated `active:bg-card-active` would lose to it. */
+.active\:bg-card-active:active {
+  background-color: var(--color-card-active);
 }
 
 .disabled\:bg-input-disabled:disabled {
@@ -1188,6 +1427,7 @@ body {
   background-color: var(--color-brand-950);
 }
 
+@media (hover: hover) {
 .hover\:bg-brand-50:hover {
   background-color: var(--color-brand-50);
 }
@@ -1198,6 +1438,7 @@ body {
 
 .hover\:bg-brand-200:hover {
   background-color: var(--color-brand-200);
+}
 }
 
 .text-brand-50 {
@@ -1281,6 +1522,15 @@ body {
   color: var(--color-input-placeholder);
 }
 
+/* In a disabled field the placeholder takes the disabled text colour, as it
+   did while both were base-500. Left at --color-input-placeholder it is
+   stronger than the value of the disabled field beside it (5.19:1 against
+   4.10:1 in light, 6.91:1 against 3.67:1 in dark): the empty field reads as
+   the filled one. */
+.placeholder\:text-input-placeholder:disabled::placeholder {
+  color: var(--color-action-disabled-text);
+}
+
 .text-label {
   color: var(--color-label);
 }
@@ -1289,7 +1539,14 @@ body {
   color: var(--color-link);
 }
 
+@media (hover: hover) {
 .text-link:hover {
+  color: var(--color-link-hover);
+}
+}
+
+/* Pressed, on every pointer: the link variants of Button and IconButton have no fill to darken. */
+.text-link:active {
   color: var(--color-link-hover);
 }
 
@@ -1297,8 +1554,10 @@ body {
   color: var(--color-nav-menu-item);
 }
 
+@media (hover: hover) {
 .hover\:text-nav-menu-item-hover:hover {
   color: var(--color-nav-menu-item-hover);
+}
 }
 
 .text-nav-menu-item-active {
@@ -1346,6 +1605,10 @@ body {
   color: var(--color-energetic-text);
 }
 
+.text-accent {
+  color: var(--color-accent-text);
+}
+
 .text-inverse {
   color: var(--color-inverse);
 }
@@ -1371,8 +1634,10 @@ body {
   border-color: var(--color-border-secondary);
 }
 
+@media (hover: hover) {
 .border-hover:hover {
   border-color: var(--color-border-hover);
+}
 }
 
 .border-disabled:disabled {
@@ -1404,6 +1669,10 @@ body {
   background-color: var(--color-energetic);
 }
 
+.bg-accent {
+  background-color: var(--color-accent);
+}
+
 .bg-secondary {
   background-color: var(--color-secondary);
 }
@@ -1433,6 +1702,10 @@ body {
   border-color: var(--color-energetic);
 }
 
+.border-accent {
+  border-color: var(--color-accent);
+}
+
 .border-secondary {
   border-color: var(--color-secondary);
 }
@@ -1449,6 +1722,18 @@ body {
    * Override ring/offset tokens by setting:
    * - `--zabi-focus-ring-color`
    * - `--zabi-focus-ring-offset-color`
+   *
+   * The ring is a box-shadow, and so is every Tailwind `shadow-*` and `ring-*`
+   * utility. Those live in `@layer utilities`, which beats this layer, so a
+   * card with `shadow-sm` (or `shadow-none`) and a row with `ring-1` replaced
+   * the ring outright and had no keyboard focus indicator. Tailwind builds
+   * its box-shadow from five custom properties; the gap and the ring are
+   * handed to one of them, `--tw-ring-offset-shadow`, which no utility in use
+   * sets (only `ring-offset-*` does). A utility's box-shadow then carries the
+   * focus ring with the elevation, and without one the declaration below
+   * paints the same list. The geometry is what it always was: a 2px gap, then
+   * a 2px ring. Do not put a `ring-offset-*` utility on a focus-ring element.
+   * Guarded by playwright/focus-ring.spec.ts.
    */
   .focus-ring {
     --zabi-focus-ring-color: var(--color-focus-ring);
@@ -1458,9 +1743,15 @@ body {
 
   .focus-ring:focus-visible {
     outline: none;
-    box-shadow:
+    --tw-ring-offset-shadow:
       0 0 0 2px var(--zabi-focus-ring-offset-color),
       0 0 0 4px var(--zabi-focus-ring-color);
+    box-shadow:
+      var(--tw-inset-shadow, 0 0 #0000),
+      var(--tw-inset-ring-shadow, 0 0 #0000),
+      var(--tw-ring-offset-shadow),
+      var(--tw-ring-shadow, 0 0 #0000),
+      var(--tw-shadow, 0 0 #0000);
   }
 
   /** Nav variant: same geometry, different token. */
@@ -1469,12 +1760,171 @@ body {
   }
 
   /** Semantic variants (optional): keep one geometry, swap token. */
+  /** The fallback is what this rule read before the role existed, for an
+   *  app whose own theme file does not declare it. */
   .focus-ring--danger {
-    --zabi-focus-ring-color: var(--color-error);
+    --zabi-focus-ring-color: var(--color-focus-ring-danger, var(--color-error));
   }
 
+  /** Neutral ring for ghost and link controls. A role, not a ramp step: see
+   *  --color-focus-ring-muted. The fallback is the step this rule read before
+   *  the role existed, for an app whose own theme file does not declare it:
+   *  without it the whole box-shadow would be invalid and the ring gone. */
   .focus-ring--muted {
-    --zabi-focus-ring-color: var(--color-base-500);
+    --zabi-focus-ring-color: var(--color-focus-ring-muted, var(--color-base-500));
+  }
+
+  /**
+   * A block filled with the brand or the accent colour: put `on-brand` beside
+   * `bg-action-primary`, or `on-accent` beside `bg-accent`.
+   *
+   * It does two things for everything inside the block. Text that takes the
+   * block's colour (`Heading tone="inherit"`, `Text tone="inherit"`, plain
+   * markup) gets the fill's label colour. And the focus ring is re-pointed:
+   * the default ring IS the primary fill, so on a brand block it disappears
+   * into the background and only its 2px gap is left. Here the ring is the
+   * label colour and the gap is the block's own colour, so a focused control
+   * is ringed in the one colour that is held to 4.5:1 against the block.
+   *
+   * The ring tokens are re-pointed as tokens, so they reach every ring in the
+   * block: `.focus-ring`, its muted and nav variants, and the rings components
+   * draw themselves, the danger ring among them: it is the error colour,
+   * which is about 1:1 against a brand fill.
+   *
+   * It does a third thing, for controls. The roles a control writes with when
+   * it has no fill of its own are re-pointed at the label colour too: the
+   * text roles (a Checkbox's label, a field's label and help text, the label
+   * of an outline, ghost, link or secondary Button) and the edges (an outline
+   * Button's border, the control boundary). They are the page's colours, 1.5:1
+   * to 3.7:1 on a brand fill; every one of them is the label colour here,
+   * which the theme holds to 4.5:1 against the fill
+   * (scripts/check-contrast.js, "on a block").
+   *
+   * Inside a block, anything that paints a background of its own is a
+   * surface again: a Card, a field, an Alert. Its text is on that background,
+   * not on the block, so there the roles go back to the theme's own values.
+   * "Paints its own background" is read from the class: the surface, card,
+   * field and tinted fills listed below (scripts/check-contrast.js fails when
+   * a component uses one that is not listed), and `list-group`. A fill of a
+   * role that brings its own label (`bg-action-primary`, `bg-accent`)
+   * needs nothing, and a translucent one (`bg-action-secondary`, a hover
+   * fill) is still the block showing through. For a background set any other
+   * way, say it with `on-surface`. The rings go back one step further in,
+   * on what is inside the surface: a control's own ring is drawn around it,
+   * on the block.
+   *
+   * To go back, a value has to be kept: a custom property re-pointed on an
+   * element is all its descendants can see. `--zabi-theme-*` are the roles
+   * as they are just outside the block: written on the block's parent, where
+   * they still have the theme's values (light or dark, whichever is in force
+   * there), inherited into the block and never re-pointed. An element that is
+   * itself inside a block does not write them again: there the roles are the
+   * block's, and what it inherited from outside is still right.
+   *
+   * These selectors add no specificity (`:where`), so a block inside a
+   * surface inside a block is a block again.
+   */
+  :where(:has(> .on-brand, > .on-accent):not(.on-brand, .on-accent, .on-brand *, .on-accent *)) {
+    --zabi-theme-headline: var(--color-headline);
+    --zabi-theme-body: var(--color-body);
+    --zabi-theme-label: var(--color-label);
+    --zabi-theme-description: var(--color-description);
+    --zabi-theme-caption: var(--color-caption);
+    --zabi-theme-link: var(--color-link);
+    --zabi-theme-link-hover: var(--color-link-hover);
+    --zabi-theme-border: var(--color-border);
+    --zabi-theme-border-medium: var(--color-border-medium);
+    --zabi-theme-border-strong: var(--color-border-strong);
+    --zabi-theme-control-border: var(--color-control-border);
+    --zabi-theme-focus-ring: var(--color-focus-ring);
+    --zabi-theme-focus-ring-muted: var(--color-focus-ring-muted);
+    --zabi-theme-nav-menu-focus: var(--color-nav-menu-focus);
+    --zabi-theme-focus-ring-offset: var(--color-focus-ring-offset);
+    --zabi-theme-focus-ring-danger: var(--color-focus-ring-danger, var(--color-error));
+  }
+
+  .on-brand {
+    color: var(--color-on-brand);
+    --color-focus-ring: var(--color-on-brand);
+    --color-focus-ring-muted: var(--color-on-brand);
+    --color-nav-menu-focus: var(--color-on-brand);
+    --color-focus-ring-offset: var(--color-action-primary);
+    --color-focus-ring-danger: var(--color-on-brand);
+    --color-headline: var(--color-on-brand);
+    --color-body: var(--color-on-brand);
+    --color-label: var(--color-on-brand);
+    --color-description: var(--color-on-brand);
+    --color-caption: var(--color-on-brand);
+    --color-link: var(--color-on-brand);
+    --color-link-hover: var(--color-on-brand);
+    --color-border: var(--color-on-brand);
+    --color-border-medium: var(--color-on-brand);
+    --color-border-strong: var(--color-on-brand);
+    --color-control-border: var(--color-on-brand);
+  }
+
+  .on-accent {
+    color: var(--color-on-accent);
+    --color-focus-ring: var(--color-on-accent);
+    --color-focus-ring-muted: var(--color-on-accent);
+    --color-nav-menu-focus: var(--color-on-accent);
+    --color-focus-ring-offset: var(--color-accent);
+    --color-focus-ring-danger: var(--color-on-accent);
+    --color-headline: var(--color-on-accent);
+    --color-body: var(--color-on-accent);
+    --color-label: var(--color-on-accent);
+    --color-description: var(--color-on-accent);
+    --color-caption: var(--color-on-accent);
+    --color-link: var(--color-on-accent);
+    --color-link-hover: var(--color-on-accent);
+    --color-border: var(--color-on-accent);
+    --color-border-medium: var(--color-on-accent);
+    --color-border-strong: var(--color-on-accent);
+    --color-control-border: var(--color-on-accent);
+  }
+
+  /* A surface inside a block: its text and edges are the theme's again. */
+  :where(.on-brand, .on-accent)
+    :where(
+      .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
+      .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
+      .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
+      .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
+      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-energetic-subtle, .bg-error-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
+      .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
+    ) {
+    color: var(--zabi-theme-body);
+    --color-headline: var(--zabi-theme-headline);
+    --color-body: var(--zabi-theme-body);
+    --color-label: var(--zabi-theme-label);
+    --color-description: var(--zabi-theme-description);
+    --color-caption: var(--zabi-theme-caption);
+    --color-link: var(--zabi-theme-link);
+    --color-link-hover: var(--zabi-theme-link-hover);
+    --color-border: var(--zabi-theme-border);
+    --color-border-medium: var(--zabi-theme-border-medium);
+    --color-border-strong: var(--zabi-theme-border-strong);
+    --color-control-border: var(--zabi-theme-control-border);
+  }
+
+  /* And what is inside that surface is ringed in the theme's ring again. */
+  :where(.on-brand, .on-accent)
+    :where(
+      .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
+      .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
+      .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
+      .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
+      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-energetic-subtle, .bg-error-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
+      .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
+    )
+    > :where(*) {
+    --color-focus-ring: var(--zabi-theme-focus-ring);
+    --color-focus-ring-muted: var(--zabi-theme-focus-ring-muted);
+    --color-nav-menu-focus: var(--zabi-theme-nav-menu-focus);
+    --color-focus-ring-offset: var(--zabi-theme-focus-ring-offset);
+    --color-focus-ring-danger: var(--zabi-theme-focus-ring-danger);
   }
 
   /**
@@ -1484,6 +1934,10 @@ body {
   .list-group {
     @apply space-y-1 overflow-hidden rounded-xl border border-border p-1;
     background-color: var(--color-surface-1);
+    /* Nested corners: a row sits 0.25rem and the 1px border inside this
+       shell, so its radius is the shell's less that gap. List and ListItem
+       read it; outside a list group they keep the container radius. */
+    --zabi-list-row-radius: calc(var(--radius-container) - 0.25rem - 1px);
   }
 
   /**
@@ -1498,9 +1952,15 @@ body {
 
   .focus-brand:focus-visible {
     outline: none;
-    box-shadow:
+    --tw-ring-offset-shadow:
       0 0 0 2px var(--zabi-focus-ring-offset-color),
       0 0 0 4px var(--zabi-focus-ring-color);
+    box-shadow:
+      var(--tw-inset-shadow, 0 0 #0000),
+      var(--tw-inset-ring-shadow, 0 0 #0000),
+      var(--tw-ring-offset-shadow),
+      var(--tw-ring-shadow, 0 0 #0000),
+      var(--tw-shadow, 0 0 #0000);
   }
 
   .focus-nav {
@@ -1511,9 +1971,15 @@ body {
 
   .focus-nav:focus-visible {
     outline: none;
-    box-shadow:
+    --tw-ring-offset-shadow:
       0 0 0 2px var(--zabi-focus-ring-offset-color),
       0 0 0 4px var(--zabi-focus-ring-color);
+    box-shadow:
+      var(--tw-inset-shadow, 0 0 #0000),
+      var(--tw-inset-ring-shadow, 0 0 #0000),
+      var(--tw-ring-offset-shadow),
+      var(--tw-ring-shadow, 0 0 #0000),
+      var(--tw-shadow, 0 0 #0000);
   }
 
   /**
@@ -1521,7 +1987,11 @@ body {
    * Compose with layout utilities in `selection-control.styles.ts` (`p-2`, `flex`, etc.).
    */
   .selection-control-label-row-interaction {
-    @apply rounded-md transition-colors outline-none cursor-pointer hover:bg-base-100 active:bg-base-200 has-disabled:opacity-50 has-disabled:cursor-not-allowed has-disabled:hover:bg-transparent;
+    @apply rounded-md transition-colors outline-none cursor-pointer hover:bg-surface-hover active:bg-surface-active has-disabled:opacity-50 has-disabled:cursor-not-allowed has-disabled:hover:bg-transparent has-disabled:active:bg-transparent;
+    /* The pressed fill is undone for a disabled row as the hover fill is:
+       `:active` matches a label around a disabled input, and on a touch screen
+       the hover rule above does not apply at all, so the row lit up under a
+       finger. */
     /* Mirror `.focus-ring` geometry on the label row when the control is keyboard-focused. */
     box-shadow: none;
   }
@@ -1545,6 +2015,31 @@ body {
 }
 
 /* ========================================
+   FOCUS IN FORCED COLOURS
+   ========================================
+   The focus ring above is a box-shadow, and forced-colours mode (Windows High
+   Contrast) drops every box-shadow, so keyboard focus had no indicator there
+   at all. This restates it as an outline, which forced colours keep.
+
+   It sits outside the layers on purpose: fields carry
+   `focus-visible:outline-none`, a utility, and a rule inside
+   `@layer components` would lose to it. Nothing here applies outside forced
+   colours, so the ring everyone else sees is unchanged.
+
+   A pressed IconButton already draws an inset outline as its pressed mark. An
+   element has one outline, so while such a button is focused the focus outline
+   replaces the mark; it returns when focus leaves. */
+@media (forced-colors: active) {
+  .focus-ring:focus-visible,
+  .focus-brand:focus-visible,
+  .focus-nav:focus-visible,
+  .selection-control-label-row-interaction:has(:focus-visible) {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+/* ========================================
    ACTION UTILITY CLASSES
    ======================================== */
 /* These classes use the CSS variables defined in the @theme block above */
@@ -1555,8 +2050,10 @@ body {
   background-color: var(--color-action-primary);
 }
 
+@media (hover: hover) {
 .bg-action-primary:hover {
   background-color: var(--color-action-primary-hover);
+}
 }
 
 .bg-action-primary:active {
@@ -1572,8 +2069,10 @@ body {
   background-color: var(--color-action-primary-subtle);
 }
 
+@media (hover: hover) {
 .bg-action-primary-subtle:hover {
   background-color: var(--color-action-primary-subtle-hover);
+}
 }
 
 .text-action-primary {
@@ -1585,8 +2084,10 @@ body {
   background-color: var(--color-action-secondary);
 }
 
+@media (hover: hover) {
 .bg-action-secondary:hover {
   background-color: var(--color-action-secondary-hover);
+}
 }
 
 .bg-action-secondary:active {
@@ -1602,8 +2103,10 @@ body {
   background-color: var(--color-action-secondary-subtle);
 }
 
+@media (hover: hover) {
 .bg-action-secondary-subtle:hover {
   background-color: var(--color-action-secondary-subtle-hover);
+}
 }
 
 /* Danger Actions */
@@ -1611,8 +2114,10 @@ body {
   background-color: var(--color-action-danger);
 }
 
+@media (hover: hover) {
 .bg-action-danger:hover {
   background-color: var(--color-action-danger-hover);
+}
 }
 
 .bg-action-danger:active {
@@ -1628,8 +2133,10 @@ body {
   background-color: var(--color-action-danger-subtle);
 }
 
+@media (hover: hover) {
 .bg-action-danger-subtle:hover {
   background-color: var(--color-action-danger-subtle-hover);
+}
 }
 
 /* `bg-action-disabled`, `text-action-disabled-text`, `bg-surface-hover` and
@@ -1638,6 +2145,165 @@ body {
  * `active:bg-surface-active`, `disabled:bg-action-disabled` — rather than
  * hand-writing pseudo-class rules here, which would collide with the
  * generated bare utility of the same name. */
+
+/* ========================================
+   STATE VARIANTS OF THE HAND-WRITTEN COLOUR CLASSES
+   ========================================
+   The colour classes above are outside every cascade layer, so they beat any
+   generated utility on the same element, including the state variant meant to
+   replace them: `text-description hover:text-headline` never changed on hover,
+   because the generated `hover:text-headline` sits in `@layer utilities` and
+   the hand-written `.text-description` does not.
+
+   Each rule here restates one such variant in the same idiom as
+   `.hover\:bg-input-hover:hover`, so it wins again. The list is exactly the
+   variants the components pair with a hand-written class of the same
+   property; tests/state-variants.test.ts fails when a component adds one that
+   is not here.
+
+   Order matters and follows Tailwind's: hover, then enabled:hover, then
+   active, then disabled, then disabled:hover. Keep this block after the action classes so a disabled
+   rule also beats `.bg-action-*:hover`. */
+
+/* Text */
+@media (hover: hover) {
+.hover\:text-body:hover {
+  color: var(--color-body);
+}
+
+.hover\:text-headline:hover {
+  color: var(--color-headline);
+}
+
+.hover\:text-link:hover {
+  color: var(--color-link);
+}
+
+.enabled\:hover\:text-error-text:enabled:hover {
+  color: var(--color-error-text);
+}
+
+.group:hover .group-hover\:text-headline\/90 {
+  color: color-mix(in oklab, var(--color-headline) 90%, transparent);
+}
+}
+
+.active\:text-headline:active {
+  color: var(--color-headline);
+}
+
+.active\:text-link:active {
+  color: var(--color-link);
+}
+
+.disabled\:text-action-disabled-text:disabled {
+  color: var(--color-action-disabled-text);
+}
+
+.disabled\:hover\:text-description:disabled:hover {
+  color: var(--color-description);
+}
+
+/* Border */
+@media (hover: hover) {
+.hover\:border-border-medium:hover {
+  border-color: var(--color-border-medium);
+}
+
+.enabled\:hover\:border-border-medium:enabled:hover {
+  border-color: var(--color-border-medium);
+}
+}
+
+.disabled\:border-transparent:disabled {
+  border-color: transparent;
+}
+
+.disabled\:hover\:border-transparent:disabled:hover {
+  border-color: transparent;
+}
+
+/* Roles that have states of their own.
+   A role with a `-hover` or `-active` token is one an app will write the
+   states of: `bg-accent hover:bg-accent-hover active:bg-accent-active`. The
+   base classes are hand-written and unlayered, so the generated variants lost
+   to them: an accent button stayed on its resting fill under the pointer and
+   under a finger. No component of the library used the pair, so the reading
+   of src/components had nothing to notice. check-state-variants.js now holds
+   every hand-written class to its role's states, whoever uses them.
+   Hover first and inside the hover query, then active, and all of it before
+   the disabled rules below, which have to win over both. */
+@media (hover: hover) {
+.hover\:bg-accent-hover:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.hover\:text-accent-hover:hover {
+  color: var(--color-accent-hover);
+}
+
+.hover\:border-accent-hover:hover {
+  border-color: var(--color-accent-hover);
+}
+
+.hover\:bg-nav-menu-active-hover:hover {
+  background-color: var(--color-nav-menu-active-hover);
+}
+}
+
+.active\:bg-accent-active:active {
+  background-color: var(--color-accent-active);
+}
+
+.active\:text-accent-active:active {
+  color: var(--color-accent-active);
+}
+
+.active\:border-accent-active:active {
+  border-color: var(--color-accent-active);
+}
+
+.active\:bg-info-active:active {
+  background-color: var(--color-info-active);
+}
+
+.active\:text-info-active:active {
+  color: var(--color-info-active);
+}
+
+.active\:border-info-active:active {
+  border-color: var(--color-info-active);
+}
+
+/* Background */
+.active\:bg-action-primary-subtle-hover:active {
+  background-color: var(--color-action-primary-subtle-hover);
+}
+
+/* A pressed (toggled-on) danger-tone IconButton holds `.bg-action-danger-subtle`,
+   in one string, and takes this from another, joined by `cn()`. The guard read
+   one string at a time and did not see the pair: held down, the button kept
+   its resting fill. */
+.active\:bg-action-danger-subtle-hover:active {
+  background-color: var(--color-action-danger-subtle-hover);
+}
+
+/* A toggled-on button, held: one step past its hover fill. These come after the
+   two `-subtle-hover` rules above on purpose. A toggled-on IconButton carries
+   both classes (the hover step from its variant, this from its pressed state),
+   all four rules are unlayered with the same specificity, and the later one
+   wins. The fallbacks are for an app whose own theme file predates the roles. */
+.active\:bg-action-primary-subtle-active:active {
+  background-color: var(--color-action-primary-subtle-active, var(--color-action-primary-subtle-hover));
+}
+
+.active\:bg-action-danger-subtle-active:active {
+  background-color: var(--color-action-danger-subtle-active, var(--color-action-danger-subtle-hover));
+}
+
+.disabled\:bg-action-disabled:disabled {
+  background-color: var(--color-action-disabled);
+}
 
 /* Z-index utilities */
 .z-sticky {

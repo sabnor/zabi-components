@@ -2,6 +2,7 @@
     import SidebarNavigation from "../../components/organisms/SidebarNavigation.svelte";
     import SidebarAccountPanel from "../../components/organisms/SidebarAccountPanel.svelte";
     import type { SidebarNavigationItem } from "../../components/organisms/SidebarNavigation.svelte";
+    import type { SidebarAccountPanelStrings, SidebarNavigationStrings } from "../../components/util/sidebar.js";
 
     interface Props {
         items?: SidebarNavigationItem[];
@@ -24,6 +25,10 @@
         emptyStateTitle?: string;
         emptyStateDescription?: string;
         emptyStateActionLabel?: string;
+        /** `three`: the theme row of the panel steps through system, light and dark. */
+        themeModes?: "two" | "three";
+        /** The sidebar and the panel in Swedish. */
+        swedish?: boolean;
     }
 
     let {
@@ -47,7 +52,36 @@
         emptyStateTitle,
         emptyStateDescription,
         emptyStateActionLabel,
+        themeModes,
+        swedish = false,
     }: Props = $props();
+
+    const swedishPanel: SidebarAccountPanelStrings = {
+        panelLabel: "Kontopanel",
+        title: "Konto",
+        closeLabel: "Stäng kontopanelen",
+        listLabel: "Välj",
+        account: "Konto",
+        theme: "Tema",
+        lightMode: "Ljust läge",
+        darkMode: "Mörkt läge",
+        systemMode: "Följer systemet",
+        light: "Ljust",
+        dark: "Mörkt",
+        system: "System",
+        signOut: "Logga ut från det här kontot",
+    };
+    const swedishSidebar: SidebarNavigationStrings = {
+        primaryNavigation: "Huvudmeny",
+        secondaryNavigation: "Övrigt",
+        sectionNavigation: (section) => `Meny: ${section}`,
+        noMatchesTitle: "Inga träffar",
+        noMatchesDescription: (term) => `Inget i menyn matchar "${term}". Prova ett annat ord.`,
+        accountAndSettings: "Konto och inställningar",
+        openAccountPanel: "Öppna kontopanelen",
+        openAccountPanelFor: (name) => `Öppna kontopanelen för ${name}`,
+        brandAlt: "Varumärke",
+    };
 
     const accountPanelId = "storybook-account-panel";
     let isAccountPanelOpen = $state(false);
@@ -72,6 +106,10 @@
         onLogout={() => closeAccountPanel()}
         onAccount={() => closeAccountPanel()}
         onClose={closeAccountPanel}
+        {themeModes}
+        themeStorageKey={themeModes === "three" ? null : undefined}
+        strings={swedish ? swedishPanel : undefined}
+        logoutLabel={swedish ? "Logga ut" : undefined}
         variant={layout === "card" ? "elevated" : "plain"}
     />
 {/snippet}
@@ -98,6 +136,10 @@
         {emptyStateTitle}
         {emptyStateDescription}
         {emptyStateActionLabel}
+        strings={swedish ? swedishSidebar : undefined}
+        ariaLabel={swedish ? "Sidomeny" : undefined}
+        logoutLabel={swedish ? "Logga ut" : undefined}
+        lightModeLabel={swedish ? "Ljust läge" : undefined}
         onProfileClick={toggleAccountPanel}
         profilePanelOpen={isAccountPanelOpen}
         profilePanelControlsId={accountPanelId}

@@ -103,7 +103,7 @@ Card variants change the visual appearance of cards:
 
 ## Size Variants
 
-Size variants are consistent across all components:
+Size variants are consistent across the components that take `SizeVariant`:
 
 - **`sm`** - Small size
   - Use for: Compact spaces, dense layouts
@@ -113,6 +113,29 @@ Size variants are consistent across all components:
 
 - **`lg`** - Large size
   - Use for: Prominent elements, spacious layouts
+
+Button, IconButton, Input, Select and Slider share one height per size (32, 40
+and 48px), so controls of the same size line up in a row.
+
+On a touch screen (`pointer: coarse`) `sm` and `md` are 44px tall in all of
+them, and an IconButton is 44px wide as well, so the row still lines up and
+each control is a full touch target. Nothing changes with a mouse. `sm` and
+`md` therefore look alike on a phone; use `lg` (48px) for the main action
+there.
+
+A few components have sizes of their own, because the shared three do not fit
+them:
+
+- **IconButton** and **Spinner** add **`xs`** (IconButton: a 24px box for dense, pointer-first layouts; it stays 24px on a touch screen, so use `sm` or larger there).
+- **EmptyState** takes `default` | `compact`.
+- **Drawer** takes `sm` | `md` | `lg` for the width of the panel, not a control height.
+- **SegmentedControl** is 32, 40 and 48px tall as the controls above, and never less than 44px a segment on a touch screen, where the three sizes therefore look alike.
+- **Rating** takes `sm` | `md` | `lg` for the star (20, 24 and 32px); the target around an interactive star stays at 44px or more.
+- **DateField** and **TimeField** take the three sizes of Input and are exactly as tall, on a touch screen too.
+- **Calendar** has no `size`: it is as wide as its container, in seven equal columns, with days at least 44px tall. Give it a width where the container is wide.
+- **Badge** is 20, 24 and 28px tall for a label on one line, and taller when the label wraps; its corner stays that of one line, so a one-line badge has round ends and a wrapped one is a rounded rectangle.
+- **Button** is 32, 40 and 48px tall for a label on one line, and taller when the label wraps: the size is a minimum height. **IconButton**, **Input** and **Select** are fixed at the same three heights.
+- **Stepper** takes `sm` | `md` | `lg` for its markers (1.5, 2 and 2.5rem: 24, 32 and 40px at the default text size) and its text (12, 14 and 16px). It is not a control height: nothing in it is pressed unless `interactive`, and then a completed step is a 44px target on a touch screen at every size. One limit: in the compact layout the segments share the width of the bar, so with more than six steps on a 320px screen (more than seven at 375px) a segment is narrower than 44px, though still 44px tall. A flow that long is better not `interactive` on a phone. As an item of a flex row, or anywhere else that gives it no width, the Stepper asks for 30rem and takes less when there is less.
 
 ## Usage Guidelines
 
@@ -153,12 +176,13 @@ Use style variants when:
 
 1. **Semantic variants should be consistent** - If a component supports `success`, it should use the same green color as other components
 2. **Style variants can be component-specific** - Button variants don't need to match Card variants
-3. **Size variants are always consistent** - `sm`, `md`, `lg` mean the same thing across all components
+3. **Size variants are always consistent** - `sm`, `md`, `lg` mean the same thing wherever a component takes `SizeVariant`
 4. **Default is always available** - All components should have a `default` variant or size
 
 ## Type Definitions
 
-All variants are defined in `src/types/variants.ts`:
+The shared variants are defined in `src/components/types/variants.ts` and
+exported from `zabi-components/types`:
 
 ```typescript
 // Semantic variants
@@ -179,6 +203,11 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 - Variants: `primary`, `secondary`, `danger`, `ghost`, `outline`, `link`
 - Sizes: `sm`, `md`, `lg`
 
+### IconButton
+- Variants: the Button variants
+- Sizes: `xs`, `sm`, `md`, `lg`
+- Tone: `default`, `danger` (colour intent for the `ghost` and `outline` variants)
+
 ### Card
 - Variants: `default`, `elevated`, `outlined`, `flat`
 - Sizes: `sm`, `md`, `lg`
@@ -194,6 +223,68 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 ### Alert
 - Variants: `info`, `success`, `warning`, `error`, `neutral`, `energetic`
 
+### Slider
+- Variants: `default`, `success`, `warning`, `error`, `info`
+- Sizes: `sm`, `md`, `lg`
+
+### DateField and TimeField
+- Sizes: `sm`, `md`, `lg`
+- States: `error` (with a message), `readonly`, `disabled`, `required`
+
+### Calendar
+- Event tones: `default`, `success`, `warning`, `danger`, `accent` (the colour of a day's dot)
+- States of a day: today, selected, unavailable (`min`, `max`, `isDateDisabled`)
+
+### Rating
+- Sizes: `sm`, `md`, `lg`
+- States: `readonly`, `clearable`, `disabled`
+
+### SegmentedControl
+- Sizes: `sm`, `md`, `lg`
+- Width: `fullWidth` (default) or as wide as its labels
+
+### Stepper
+- Sizes: `sm`, `md`, `lg`
+- Layouts: `auto` (default: compact while the Stepper itself is narrower than 30rem, full from there), `full`, `compact`
+- States of a step: completed, current, upcoming (set by `current`, not by a prop of the step)
+- Modes: `interactive` (completed steps are buttons that go back)
+
+### Spinner
+- Sizes: `xs`, `sm`, `md`, `lg`
+
+### ConfirmDialog
+- Variants: `danger`, `warning`, `info` (`ConfirmDialogVariant`)
+
+### DropdownItem
+- Tone: `default`, `danger` (`DropdownItemTone`)
+
+### Drawer
+- Side: `left`, `right`, `start`, `end` (`DrawerSide`)
+- Sizes: `sm`, `md`, `lg` (`DrawerSize`)
+
+### EmptyState
+- Sizes: `default`, `compact`
+
+### FloatingActionButton
+- Position: `bottom-end` (default), `bottom-start`, `bottom-center`
+- Shape: round with an icon, or `extended` with the label beside it
+- No sizes: 56px, the same on every screen
+
+### BottomTabBar
+- Position: `fixed` (default), `static`. AppShell places the bar itself
+
+### BottomSheet
+- Snap points: `half`, `full` (`BottomSheetSnap`); one or both, through `snapPoints`
+
+### Modal
+- Sizes: `sm`, `md`, `lg`
+- Full screen: `fullScreen` at every width, or `fullScreen="mobile"` below 768px
+
+### TopNavbar
+- Collapse point: `collapseAt` is `sm`, `md` (default), `lg` or `xl`, the width from which the links are a row
+
+AppBar, AppShell and StickyActionBar have no variants or sizes.
+
 ## Best Practices
 
 1. **Use semantic variants for states** - Don't use `error` variant just because you like red
@@ -207,7 +298,7 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 When adding variants to existing components:
 
 1. Check if semantic variants are appropriate
-2. Use centralized type definitions from `src/types/variants.ts`
+2. Use centralized type definitions from `src/components/types/variants.ts`
 3. Update component props to use the types
 4. Add stories for all variants in Storybook
 5. Document variants in component API docs
@@ -233,9 +324,7 @@ When adding variants to existing components:
 
 <!-- Card with elevated style -->
 <Card variant="elevated">
-    <CardHeader>
-        <CardTitle>Title</CardTitle>
-    </CardHeader>
+    <CardHeader title="Title" />
 </Card>
 ```
 

@@ -1,0 +1,407 @@
+import { devices, expect, test, type Locator, type Page } from "@playwright/test";
+
+import { waitForHydration } from "./helpers/hydration";
+
+/**
+ * Drawer in a real browser: the parts jsdom cannot show.
+ *
+ * jsdom has no layout and no Web Animations, so only here can the panel be
+ * seen to sit on its edge at full height, slide in (and not slide under
+ * reduced motion), fit a phone, and stack with Modal in both directions.
+ */
+
+const drawer = (page: Page) => page.getByRole("dialog", { name: "Choose a project" });
+
+/** The page is usable before it hydrates; a click that lands early is lost. */
+async function openWith(opener: Locator, target: Locator): Promise<void> {
+    await waitForHydration(opener);
+    if ((await target.count()) === 0) await opener.click();
+    await expect(target).toBeVisible();
+}
+
+/** The slide is 200ms; geometry is only meaningful once it has finished. */
+async function settled(panel: Locator): Promise<void> {
+    await expect
+        .poll(() => panel.evaluate((el) => el.getAnimations().length))
+        .toBe(0);
+}
+
+interface Entrance {
+    duration: number;
+    from: string;
+    to: string;
+}
+
+/**
+ * What is animating a dialog on the first frame it is drawn in.
+ *
+ * Asked for before the press that opens it, and read in the page: the slide
+ * lasts 200ms, and a test that looks for it from out here, after the dialog
+ * has been seen, finds it over whenever this process is slow to look. An
+ * animation started while the dialog mounts is there on that first frame
+ * however late the frame comes, since its clock starts with the frame.
+ */
+async function watchEntrance(page: Page): Promise<() => Promise<Entrance[]>> {
+    await page.evaluate(() => {
+        const store = window as unknown as { __entrance?: Entrance[] };
+        delete store.__entrance;
+        const look = () => {
+            const dialog = document.querySelector('[role="dialog"]');
+            if (!dialog) return;
+            observer.disconnect();
+            requestAnimationFrame(() => {
+                store.__entrance = dialog.getAnimations().map((animation) => {
+                    const effect = animation.effect as KeyframeEffect;
+                    const frames = effect.getKeyframes();
+                    return {
+                        duration: Number(effect.getTiming().duration),
+                        from: String(frames[0]?.transform),
+                        to: String(frames[frames.length - 1]?.transform),
+                    };
+                });
+            });
+        };
+        const observer = new MutationObserver(look);
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+    return async () => {
+        const handle = await page.waitForFunction(
+            () => (window as unknown as { __entrance?: Entrance[] }).__entrance,
+        );
+        return (await handle.jsonValue()) as Entrance[];
+    };
+}
+
+const lockCount = (page: Page) =>
+    page.evaluate(() => document.body.dataset.zabiScrollLock ?? null);
+
+test.describe("Drawer — edge, focus and closing", () => {
+    test.beforeEach(async ({ page }) => {
+        await page.goto("/components/Drawer", { waitUntil: "domcontentloaded" });
+    });
+
+    test("sits on the right edge at full height, with focus on the search field", async ({
+        page,
+    }) => {
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await openWith(opener, panel);
+        await settled(panel);
+
+        const viewport = page.viewportSize()!;
+        const box = (await panel.boundingBox())!;
+        expect(Math.round(box.x + box.width)).toBe(viewport.width);
+        expect(Math.round(box.y)).toBe(0);
+        expect(Math.round(box.height)).toBe(viewport.height);
+        expect(Math.round(box.width)).toBe(448);
+
+        await expect(panel).toHaveAccessibleDescription(
+            "The page moves to the project you pick.",
+        );
+        // Portalled: the overlay is a direct child of <body>.
+        expect(
+            await panel.evaluate((el) => el.parentElement?.parentElement === document.body),
+        ).toBe(true);
+        await expect(panel.getByLabel("Search projects")).toBeFocused();
+        expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
+
+        // Shift+Tab from the first control wraps to the last; focus never leaves.
+        await panel.getByRole("button", { name: "Close" }).focus();
+        await page.keyboard.press("Shift+Tab");
+        await expect(panel.getByRole("button", { name: "Cancel" })).toBeFocused();
+        await page.keyboard.press("Tab");
+        await expect(panel.getByRole("button", { name: "Close" })).toBeFocused();
+
+        await page.keyboard.press("Escape");
+        await expect(panel).toBeHidden();
+        await expect(opener).toBeFocused();
+        expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
+        await expect(page.getByTestId("drawer-demo-selected")).toContainText(
+            "Last close: escape",
+        );
+    });
+
+    test("a backdrop click closes it, a click in the panel does not", async ({ page }) => {
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await openWith(opener, panel);
+        await settled(panel);
+
+        await panel.getByRole("heading", { name: "Choose a project" }).click();
+        await expect(panel).toBeVisible();
+
+        await page.mouse.click(20, 300);
+        await expect(panel).toBeHidden();
+        await expect(page.getByTestId("drawer-demo-selected")).toContainText(
+            "Last close: backdrop",
+        );
+    });
+
+    test("slides in, and does not under prefers-reduced-motion", async ({ page }) => {
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await waitForHydration(page);
+        let entrance = await watchEntrance(page);
+        await openWith(opener, panel);
+        // From the right edge to its place, in 200ms.
+        expect(await entrance()).toEqual([
+            { duration: 200, from: "translateX(100%)", to: "translateX(0px)" },
+        ]);
+        await settled(panel);
+        await page.keyboard.press("Escape");
+        await expect(panel).toBeHidden();
+
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        entrance = await watchEntrance(page);
+        await opener.click();
+        await expect(panel).toBeVisible();
+        expect(await entrance(), "Nothing moves it").toEqual([]);
+        expect(await panel.evaluate((el) => el.getAnimations().length)).toBe(0);
+    });
+
+    test("side=start is the left edge, and the right edge in a right-to-left page", async ({
+        page,
+    }) => {
+        const opener = page.getByRole("button", { name: "Filters" });
+        const panel = page.getByRole("dialog", { name: "Filters" });
+        const viewport = page.viewportSize()!;
+
+        await openWith(opener, panel);
+        await settled(panel);
+        let box = (await panel.boundingBox())!;
+        expect(Math.round(box.x)).toBe(0);
+        expect(Math.round(box.width)).toBe(320);
+        await page.keyboard.press("Escape");
+        await expect(panel).toBeHidden();
+
+        await page.evaluate(() => document.documentElement.setAttribute("dir", "rtl"));
+        await opener.click();
+        await expect(panel).toBeVisible();
+        await settled(panel);
+        box = (await panel.boundingBox())!;
+        expect(Math.round(box.x + box.width)).toBe(viewport.width);
+    });
+});
+
+test.describe("Drawer — content that only scrolls", () => {
+    test.beforeEach(async ({ page }) => {
+        await page.goto("/components/Drawer", { waitUntil: "domcontentloaded" });
+    });
+
+    test("text-only content that overflows is a Tab stop the keyboard can scroll", async ({
+        page,
+    }) => {
+        const opener = page.getByRole("button", { name: "Release notes" });
+        const panel = page.getByRole("dialog", { name: "Release notes" });
+        await openWith(opener, panel);
+        await settled(panel);
+
+        const scroller = panel.getByRole("group", { name: "Release notes" });
+        await expect(scroller).toHaveAttribute("tabindex", "0");
+        expect(
+            await scroller.evaluate((el) => el.scrollHeight > el.clientHeight),
+        ).toBe(true);
+
+        // Close button first, then the scrolling area, then back: one extra stop.
+        await expect(panel.getByRole("button", { name: "Close" })).toBeFocused();
+        await page.keyboard.press("Tab");
+        await expect(scroller).toBeFocused();
+        await expect(scroller).not.toHaveCSS("outline-style", "none");
+
+        await page.keyboard.press("PageDown");
+        await expect.poll(() => scroller.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+
+        await page.keyboard.press("Tab");
+        await expect(panel.getByRole("button", { name: "Close" })).toBeFocused();
+    });
+
+    test("content with a control in it gets no extra Tab stop", async ({ page }) => {
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await openWith(opener, panel);
+        await settled(panel);
+
+        await expect(panel.getByRole("group")).toHaveCount(0);
+        expect(await panel.locator("[tabindex='0']").count()).toBe(0);
+    });
+
+    test("with a mouse the close button has no enlarged hit area", async ({ page }) => {
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await openWith(opener, panel);
+        const content = await panel
+            .getByRole("button", { name: "Close" })
+            .evaluate((el) => getComputedStyle(el, "::before").content);
+        expect(content).toBe("none");
+    });
+});
+
+test.describe("Drawer — with Modal", () => {
+    test("modal, drawer, modal: Escape closes the topmost and focus unwinds in order", async ({
+        page,
+    }) => {
+        await page.goto("/components/Drawer", { waitUntil: "domcontentloaded" });
+
+        const editOpener = page.getByRole("button", { name: "Edit page" });
+        const editModal = page.getByRole("dialog", { name: "Edit page" });
+        await openWith(editOpener, editModal);
+        expect(await lockCount(page)).toBe("1");
+
+        const moveButton = editModal.getByRole("button", { name: "Move to project" });
+        const panel = drawer(page);
+        await moveButton.click();
+        await expect(panel).toBeVisible();
+        await settled(panel);
+        expect(await lockCount(page)).toBe("2");
+        await expect(panel.getByLabel("Search projects")).toBeFocused();
+
+        // The drawer is on top: the modal's button is covered.
+        const covered = await moveButton.evaluate((el) => {
+            const rect = el.getBoundingClientRect();
+            const top = document.elementFromPoint(
+                rect.left + rect.width / 2,
+                rect.top + rect.height / 2,
+            );
+            return !el.contains(top);
+        });
+        expect(covered).toBe(true);
+
+        // Tab stays in the drawer although the modal underneath traps too.
+        for (let i = 0; i < 12; i += 1) {
+            await page.keyboard.press("Tab");
+            expect(
+                await panel.evaluate((el) => el.contains(document.activeElement)),
+            ).toBe(true);
+        }
+
+        const newProject = panel.getByRole("button", { name: "New project" });
+        const newModal = page.getByRole("dialog", { name: "New project" });
+        await newProject.click();
+        await expect(newModal).toBeVisible();
+        expect(await lockCount(page)).toBe("3");
+        // Modal moves focus on the next task; wait for it before pressing Tab.
+        await expect
+            .poll(() => newModal.evaluate((el) => el.contains(document.activeElement)))
+            .toBe(true);
+        for (let i = 0; i < 6; i += 1) {
+            await page.keyboard.press("Tab");
+            expect(
+                await newModal.evaluate((el) => el.contains(document.activeElement)),
+            ).toBe(true);
+        }
+
+        await page.keyboard.press("Escape");
+        await expect(newModal).toBeHidden();
+        await expect(panel).toBeVisible();
+        await expect(newProject).toBeFocused();
+        expect(await lockCount(page)).toBe("2");
+
+        await page.keyboard.press("Escape");
+        await expect(panel).toBeHidden();
+        await expect(editModal).toBeVisible();
+        await expect(moveButton).toBeFocused();
+        expect(await lockCount(page)).toBe("1");
+
+        await page.keyboard.press("Escape");
+        await expect(editModal).toBeHidden();
+        await expect(editOpener).toBeFocused();
+        expect(await lockCount(page)).toBeNull();
+        expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
+    });
+});
+
+test.describe("Drawer — phone", () => {
+    // Device emulation, not a narrow window: headless Chrome crops instead of
+    // reflowing below about 500px.
+    const { defaultBrowserType: _ignored, ...iPhone } = devices["iPhone 13"];
+    test.use(iPhone);
+
+    test("fills the height and never exceeds the screen width", async ({ page }) => {
+        await page.goto("/components/Drawer", { waitUntil: "domcontentloaded" });
+        const viewport = page.viewportSize()!;
+        expect(viewport.width).toBeLessThan(448);
+
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await waitForHydration(page);
+        if ((await panel.count()) === 0) await opener.tap();
+        await expect(panel).toBeVisible();
+        await settled(panel);
+
+        const box = (await panel.boundingBox())!;
+        expect(Math.round(box.width)).toBe(viewport.width);
+        expect(Math.round(box.x)).toBe(0);
+        expect(Math.round(box.height)).toBe(viewport.height);
+        // Nothing pushes the page sideways.
+        expect(
+            await page.evaluate(
+                () => document.documentElement.scrollWidth <= window.innerWidth,
+            ),
+        ).toBe(true);
+
+        // The close button and the footer are both on screen and respond to a tap.
+        await expect(panel.getByRole("button", { name: "Cancel" })).toBeInViewport();
+        await panel.getByRole("button", { name: "Close" }).tap();
+        await expect(panel).toBeHidden();
+    });
+
+    test("the close button takes a tap within 44px, and does not cover the title", async ({
+        page,
+    }) => {
+        await page.goto("/components/Drawer", { waitUntil: "domcontentloaded" });
+        const opener = page.getByRole("button", { name: "Choose project" });
+        const panel = drawer(page);
+        await waitForHydration(page);
+        if ((await panel.count()) === 0) await opener.tap();
+        await expect(panel).toBeVisible();
+        await settled(panel);
+
+        const close = panel.getByRole("button", { name: "Close" });
+        const box = (await close.boundingBox())!;
+        // The visible box is unchanged.
+        expect(Math.round(box.width)).toBe(32);
+        expect(Math.round(box.height)).toBe(32);
+
+        // The title's own box ends before the hit area starts.
+        const title = (await panel.getByRole("heading", { level: 2 }).boundingBox())!;
+        expect(title.x + title.width).toBeLessThanOrEqual(box.x - 6);
+        const underTitleEdge = await page.evaluate(
+            ([x, y]) => document.elementFromPoint(x, y)?.tagName,
+            [title.x + title.width - 2, title.y + title.height / 2],
+        );
+        expect(underTitleEdge).toBe("H2");
+
+        // 4px outside the visible box, on each side, still closes.
+        const points: [number, number][] = [
+            [box.x - 4, box.y + box.height / 2],
+            [box.x + box.width / 2, box.y - 4],
+            [box.x + box.width + 4, box.y + box.height / 2],
+            [box.x + box.width / 2, box.y + box.height + 4],
+        ];
+        for (const [x, y] of points) {
+            if ((await panel.count()) === 0) {
+                await opener.tap();
+                await expect(panel).toBeVisible();
+                await settled(panel);
+            }
+            await page.touchscreen.tap(x, y);
+            await expect(panel).toBeHidden();
+        }
+    });
+
+    test("the narrow drawer leaves part of the page visible to tap", async ({ page }) => {
+        await page.goto("/components/Drawer", { waitUntil: "domcontentloaded" });
+        const viewport = page.viewportSize()!;
+        const opener = page.getByRole("button", { name: "Filters" });
+        const panel = page.getByRole("dialog", { name: "Filters" });
+        await waitForHydration(page);
+        if ((await panel.count()) === 0) await opener.tap();
+        await expect(panel).toBeVisible();
+        await settled(panel);
+
+        const box = (await panel.boundingBox())!;
+        expect(Math.round(box.width)).toBe(320);
+        await page.touchscreen.tap(viewport.width - 10, 300);
+        await expect(panel).toBeHidden();
+    });
+});

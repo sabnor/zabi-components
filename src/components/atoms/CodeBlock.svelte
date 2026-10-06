@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { DEFAULT_CODE_BLOCK_TEXTS, zabiStringsFor } from "../util/zabi-strings.js";
     import Check from "@lucide/svelte/icons/check";
     import Copy from "@lucide/svelte/icons/copy";
     import IconButton from "./IconButton.svelte";
@@ -12,6 +13,10 @@
         /** @deprecated use `class`. */
         className?: string;
         showCopyButton?: boolean;
+        /** Accessible name of the copy button. */
+        copyLabel?: string;
+        /** Its name for the two seconds after the code was copied. */
+        copiedLabel?: string;
         /** If true, `{@html code}` — only trusted, sanitized input. */
         trustHtml?: boolean;
     }
@@ -22,9 +27,16 @@
         class: classAttr = "",
         className: legacyClass = "",
         showCopyButton = true,
+        copyLabel: copyLabelGiven,
+        copiedLabel: copiedLabelGiven,
         trustHtml = false,
         ...restProps
     }: Props & Record<string, unknown> = $props();
+
+    /** Each text: the prop, else the app-wide word from a `ZabiStringsProvider` above this one, else English. */
+    const provided = zabiStringsFor("codeBlock");
+    const copyLabel = $derived(copyLabelGiven ?? provided()?.copyLabel ?? DEFAULT_CODE_BLOCK_TEXTS.copyLabel);
+    const copiedLabel = $derived(copiedLabelGiven ?? provided()?.copiedLabel ?? DEFAULT_CODE_BLOCK_TEXTS.copiedLabel);
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
@@ -61,7 +73,7 @@
             <IconButton
                 variant="ghost"
                 size="sm"
-                label={copied ? "Code copied to clipboard" : "Copy code to clipboard"}
+                label={copied ? copiedLabel : copyLabel}
                 onclick={copyToClipboard}
             >
                 {#if copied}
@@ -70,6 +82,9 @@
                     <Copy size={16} class="shrink-0" aria-hidden="true" />
                 {/if}
             </IconButton>
+            <!-- A button's new name is not read out while it keeps focus.
+            This says it: always in the page, filled when the code is copied. -->
+            <span class="sr-only" role="status" data-code-block-status>{copied ? copiedLabel : ""}</span>
         {/if}
     </div>
 
@@ -80,8 +95,11 @@
 </div>
 
 <style>
+    /* The token's default is this same stack. It is repeated as the fallback
+       because Tailwind only emits theme variables it sees used, and it does
+       not read a component's scoped styles. */
     .code-block {
-        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-family: var(--font-family-mono, "Monaco", "Menlo", "Ubuntu Mono", monospace);
     }
 
     :global(.language-svelte .token.tag),

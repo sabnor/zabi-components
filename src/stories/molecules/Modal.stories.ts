@@ -9,7 +9,8 @@ const meta = {
         layout: 'fullscreen',
         docs: {
             description: {
-                component: 'Modal component with focus trap and keyboard navigation. Press Escape to close, Tab to navigate within modal. Focus is automatically returned to the trigger element when closed.'
+                component:
+                    'Modal component with focus trap and keyboard navigation. Press Escape to close, Tab to navigate within modal. Focus is automatically returned to the trigger element when closed. Set portal to render the overlay in document.body, use onclose to learn why it closed, and set dismissible to false to block closing while an action is pending. Set fullScreen for a long form on a phone: the title and close button stay at the top, the footer at the bottom, inside the safe areas, and the content scrolls between them.'
             }
         }
     },
@@ -19,6 +20,29 @@ const meta = {
             control: 'select',
             options: ['sm', 'md', 'lg'],
             description: 'Size of the modal'
+        },
+        role: {
+            control: 'select',
+            options: ['dialog', 'alertdialog'],
+            description: 'alertdialog for a dialog that interrupts to ask for a response'
+        },
+        closeLabel: {
+            control: 'text',
+            description: 'Accessible name of the close button'
+        },
+        portal: {
+            control: 'boolean',
+            description: 'Render the overlay in document.body'
+        },
+        dismissible: {
+            control: 'boolean',
+            description: 'Let Escape, the backdrop and the close button close the modal'
+        },
+        fullScreen: {
+            control: 'select',
+            options: [false, true, 'mobile'],
+            description:
+                "Fill the screen: true at every width, 'mobile' below 768px with the usual dialog from there up"
         }
     }
 } satisfies Meta<typeof Modal>;
@@ -110,5 +134,60 @@ export const Large: Story = {
         Component: Modal,
         props: args,
         children: ['Large modal (max width 42rem on desktop). Perfect for displaying more content.']
+    })
+};
+
+/** Rendered in `document.body`, out of reach of a transformed or clipped ancestor. */
+export const Portalled: Story = {
+    args: {
+        isOpen: true,
+        title: 'Portalled modal',
+        portal: true
+    },
+    render: (args) => ({
+        Component: ModalWithContent,
+        props: args
+    })
+};
+
+/** Escape, the backdrop and the close button do nothing; the footer actions close it. */
+export const NotDismissible: Story = {
+    args: {
+        isOpen: true,
+        title: 'Saving changes',
+        dismissible: false
+    },
+    render: (args) => ({
+        Component: ModalWithContent,
+        props: args
+    })
+};
+
+/**
+ * Fills the screen at every width: 100dvh, no rounding, no margin. The header
+ * and the footer stay in place and the content scrolls between them.
+ */
+export const FullScreen: Story = {
+    args: {
+        isOpen: true,
+        title: 'Full-screen modal',
+        fullScreen: true
+    },
+    render: (args) => ({
+        Component: ModalWithContent,
+        props: args
+    })
+};
+
+/** Full screen below 768px; the usual dialog from there up. Narrow the window to see it change. */
+export const FullScreenOnMobile: Story = {
+    args: {
+        isOpen: true,
+        title: 'Full screen on a phone',
+        fullScreen: 'mobile'
+    },
+    render: (args) => ({
+        Component: ModalWithContent,
+        props: args
     })
 };

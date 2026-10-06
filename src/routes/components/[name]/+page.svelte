@@ -6,11 +6,39 @@
     import Section from "../../../components/molecules/Section.svelte";
     import type { PageData } from "./$types";
 
-    import { ExternalLink } from "@lucide/svelte";
-    import { GITHUB_URL } from "$lib/marketing/content";
+    import ExternalLink from "@lucide/svelte/icons/external-link";
+    import { GITHUB_URL, layerPath, layers } from "$lib/marketing/content";
+    import Seo from "$lib/marketing/Seo.svelte";
     let { data }: { data: PageData } = $props();
 
     const component = $derived(data.component);
+
+    /**
+     * Catalog descriptions are written for the page header and some are under
+     * 50 characters. A search snippet has room for about 160, so the rest says
+     * what the page holds, in the longest form that still fits.
+     */
+    const metaDescription = $derived.by(() => {
+        const candidates = [
+            `${component.description} Live example, props and defaults for the ${component.name} component in Svelte 5.`,
+            `${component.description} Svelte 5 component with a live example and props.`,
+        ];
+        return (
+            candidates.find((candidate) => candidate.length <= 160) ??
+            component.description
+        );
+    });
+
+    const breadcrumbs = $derived([
+        { name: "Components", path: "/components" },
+        {
+            name:
+                layers.find((layer) => layer.id === component.category)
+                    ?.title ?? component.category,
+            path: layerPath(component.category),
+        },
+        { name: component.name },
+    ]);
 
     let modalOpen = $state(false);
     let slideUpOpen = $state(false);
@@ -23,13 +51,11 @@
     let selectedProjectId = $state("proj-zabi-web");
 </script>
 
-<svelte:head>
-    <title>{component.name} — Zabi Components</title>
-    <meta
-        name="description"
-        content={component.description}
-    />
-</svelte:head>
+<Seo
+    title={`${component.name}: Svelte 5 component | Zabi Components`}
+    description={metaDescription}
+    {breadcrumbs}
+/>
 
 <Page className="max-w-4xl">
     <Header
@@ -73,7 +99,7 @@
 </Page>
 
 <footer
-    class="mt-16 -mx-8 border-t border-border bg-base-100 px-8 py-8"
+    class="mt-16 -mx-8 border-t border-border bg-surface-raised px-8 py-8"
 >
     <div class="mx-auto max-w-4xl">
         <div

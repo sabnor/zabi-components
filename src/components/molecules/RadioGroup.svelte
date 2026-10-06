@@ -4,10 +4,13 @@
         RADIO_GROUP_CONTROL_SHELL,
         RADIO_GROUP_OPTION_LABEL_ROW,
         RADIO_GROUP_RING_OVERLAY,
+        SELECTION_CONTROL_INPUT,
     } from "../atoms/selection-control.styles";
+    import type { HTMLFieldsetAttributes } from "svelte/elements";
     import { generateId } from "../util/ssr-safe.js";
     import { SvelteMap } from "svelte/reactivity";
     import { cn } from "../util/cn.js";
+    import { resetValueOf, groupBinding } from "../util/hydration.js";
 
     export type RadioGroupOption = {
         value: string;
@@ -16,25 +19,35 @@
         description?: string;
     };
 
-    interface Props {
+    /** Other attributes (`id`, `data-*`, `aria-*`, ...) land on the `<fieldset>`. */
+    type Props = Omit<HTMLFieldsetAttributes, "class" | "name" | "disabled"> & {
         /** Extra classes for the host element. */
         class?: string;
         options: RadioGroupOption[];
         /** Selected value; `bind:value`. Use `undefined` for no selection. */
         value?: string | undefined;
-        /** Uncontrolled initial value. */
+        /**
+         * The selection to start with when `value` is `undefined` as the
+         * group is created. Applied once: it does not come back when the
+         * value is set to `undefined` later, and it never replaces a choice.
+         */
         defaultValue?: string | undefined;
+        /**
+         * Name the value is submitted under in a form. Without a name the
+         * group is not part of the form around it: it submits nothing and a
+         * form reset leaves it alone.
+         */
         name?: string;
         disabled?: boolean;
         legend?: string;
         label?: string;
-    }
+    };
 
     let {
         class: className = "",
         options,
         defaultValue,
-        value = $bindable(defaultValue),
+        value = $bindable(),
         name: nameProp,
         disabled = false,
         legend = "",
@@ -42,6 +55,21 @@
         ...restProps
     }: Props = $props();
 
+    // No fallback on the bindable prop: with one, `bind:value={undefined}`
+    // (which the prop's own documentation names as "no selection") throws
+    // `props_invalid_value` and the page never hydrates. The default is
+    // applied once, here, so the server renders it too. A choice made in the
+    // server markup before hydration is taken in after this and wins.
+    (() => {
+        if (value === undefined && defaultValue !== undefined) value = defaultValue;
+    })();
+
+    /**
+     * The radios always share a name, the caller's or one made here: without
+     * one they are not a group to the browser. With a name made here they are
+     * kept out of any form around them (`form` names a form that does not
+     * exist): it used to be submitted as `radiogroup-…`, a field nobody named.
+     */
     const fallbackName = generateId("radiogroup");
     const groupName = $derived(nameProp || fallbackName);
     const legendText = $derived(legend || label);
@@ -75,13 +103,24 @@
         return option.value === fallbackValue ? 0 : -1;
     }
 
-    function handleChange(event: Event) {
-        if (disabled) return;
-        const target = event.target as HTMLInputElement;
-        value = target.value;
-    }
-
     const elementsByValue = new SvelteMap<string, HTMLInputElement>();
+
+    /**
+     * The radios are bound, so an option picked before the page hydrated is
+     * kept: Svelte's binding hands it over here instead of overwriting it
+     * (see util/hydration.ts). A form reset empties the selection, as it empties
+     * a bound native input.
+     */
+    const chosen = groupBinding<string>(
+        () => value,
+        (next) => {
+            if (!disabled) value = next;
+        },
+        () => {
+            if (!disabled) value = resetValueOf<string>(elementsByValue.values());
+        },
+    );
+
     function registerRadio(valueKey: string) {
         return (node: HTMLInputElement) => {
             elementsByValue.set(valueKey, node);
@@ -168,18 +207,17 @@
     <div class="space-y-3">
         {#each options as option (option.value)}
             {@const optionDisabled = isOptionDisabled(option)}
-            {@const isChecked = value === option.value}
             <label class={optionLabelWrapperClasses}>
                 <span class={radioControlShellClasses}>
                     <input
                         type="radio"
                         name={groupName}
+                        form={nameProp ? undefined : groupName}
                         value={option.value}
-                        checked={isChecked}
+                        bind:group={chosen.value}
                         disabled={optionDisabled}
                         tabindex={tabIndexFor(option)}
-                        class="sr-only"
-                        onchange={handleChange}
+                        class={SELECTION_CONTROL_INPUT}
                         {@attach registerRadio(option.value)}
                     />
                     <span class={radioRingOverlayClasses}></span>

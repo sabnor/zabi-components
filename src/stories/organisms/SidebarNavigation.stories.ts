@@ -1,13 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import {
-    House,
-    BarChart3,
-    Bell,
-    PieChart,
-    Package,
-    Settings,
-    Calendar
-} from '@lucide/svelte';
+import House from '@lucide/svelte/icons/house';
+import BarChart3 from '@lucide/svelte/icons/chart-column';
+import Bell from '@lucide/svelte/icons/bell';
+import PieChart from '@lucide/svelte/icons/chart-pie';
+import Package from '@lucide/svelte/icons/package';
+import Settings from '@lucide/svelte/icons/settings';
+import Calendar from '@lucide/svelte/icons/calendar';
 import SidebarNavigation from '../../components/organisms/SidebarNavigation.svelte';
 
 const sidebarItems = [
@@ -114,6 +112,11 @@ const meta = {
             description:
                 'Lucide icon component for the trigger (default: Command). Not shown in Controls; set in code. Input mode always uses Search beside the field.'
         },
+        strings: {
+            control: false,
+            description:
+                'The words the sidebar says by itself, for another language. See the Swedish story.'
+        },
         onSearchClick: {
             description:
                 'Handler when the Command/outline trigger is pressed—open `SidebarPanel` or command UI. Ignored for UI when `searchMode` is `input` (inline field always shows).'
@@ -213,5 +216,50 @@ export const EmptyState: Story = {
         emptyStateDescription:
             'Add your first sidebar item to help users move through your workspace.',
         emptyStateActionLabel: 'Create item'
+    }
+};
+
+export const Swedish: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'The sidebar in Swedish. `strings` holds what it says by itself: the names of its lists, the two lines shown when a search finds nothing (shown here: the search is for "xyz"), and the words of the footer and the brand header. The labels of the links, `ariaLabel`, `searchPlaceholder`, `logoutLabel` and `lightModeLabel` are props of their own.'
+            }
+        }
+    },
+    args: {
+        mode: 'expanded',
+        ariaLabel: 'Sidomeny',
+        items: [
+            { id: 'dashboard', label: 'Översikt', href: '/dashboard', icon: House, section: 'Arbetsyta' },
+            { id: 'revenue', label: 'Intäkter', href: '/revenue', icon: BarChart3, section: 'Arbetsyta' },
+            { id: 'calendar', label: 'Kalender', href: '/calendar', icon: Calendar, section: 'Vyer' },
+            {
+                id: 'settings',
+                label: 'Inställningar',
+                href: '/settings',
+                icon: Settings,
+                group: 'secondary' as const
+            }
+        ],
+        profileName: 'Anna Lind',
+        profileEmail: 'anna@example.com',
+        searchMode: 'input',
+        searchPlaceholder: 'Sök i menyn…',
+        searchValue: 'xyz',
+        logoutLabel: 'Logga ut',
+        lightModeLabel: 'Ljust läge',
+        strings: {
+            primaryNavigation: 'Huvudmeny',
+            secondaryNavigation: 'Övrigt',
+            sectionNavigation: (section: string) => `Meny: ${section}`,
+            noMatchesTitle: 'Inga träffar',
+            noMatchesDescription: (term: string) => `Inget i menyn matchar "${term}". Prova ett annat ord.`,
+            accountAndSettings: 'Konto och inställningar',
+            openAccountPanel: 'Öppna kontopanelen',
+            openAccountPanelFor: (name: string) => `Öppna kontopanelen för ${name}`,
+            brandAlt: 'Varumärke'
+        }
     }
 };

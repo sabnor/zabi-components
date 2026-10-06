@@ -35,4 +35,16 @@ dist-ssr
 /dist/
 /.svelte-kit/
 /storybook-static/
+# Storybook as served by the site at /storybook (copied in by `npm run build:site`)
+/static/storybook/
 /.lib-tmp/
+
+# Agent definitions, skills and worktrees (also keeps Tailwind from scanning them)
+/.claude/
+
+# Team working docs: decisions, design reviews and audits
+/docs/decisions/
+/docs/design-review/
+/docs/DESIGN_REVIEW*.md
+/docs/DESIGN_SYSTEM_*.md
+/docs/AUDIT_*.md

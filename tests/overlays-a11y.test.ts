@@ -1,11 +1,14 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
+import { createRawSnippet } from "svelte";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import Alert from "../src/components/molecules/Alert.svelte";
 import SlideUp from "../src/components/molecules/SlideUp.svelte";
 import Toaster from "../src/components/molecules/Toaster.svelte";
 import { pushToast, toastStore } from "../src/components/molecules/toast-store.js";
+import { returnFocus, saveFocus } from "../src/components/util/focus-utils.js";
+import ModalCloseHarness from "./fixtures/ModalCloseHarness.svelte";
 import ModalHarness from "./fixtures/ModalHarness.svelte";
 import ModalDynamicHarness from "./fixtures/ModalDynamicHarness.svelte";
 import NestedModalHarness from "./fixtures/NestedModalHarness.svelte";
@@ -131,6 +134,418 @@ describe("Modal semantics", () => {
     });
 });
 
+describe("Modal closing", () => {
+    it.each([
+        ["escape", (dialog: HTMLElement) => fireEvent.keyDown(dialog, { key: "Escape" })],
+        ["backdrop", (dialog: HTMLElement) => fireEvent.click(dialog.parentElement!)],
+        [
+            "close-button",
+            () => fireEvent.click(screen.getByRole("button", { name: "Close" })),
+        ],
+    ] as const)("reports %s through onclose and still calls onclick", async (reason, close) => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        const onclick = vi.fn();
+        render(ModalCloseHarness, { onclose, onclick });
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+
+        await close(dialog);
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).toHaveBeenCalledTimes(1);
+        expect(onclose).toHaveBeenCalledWith({ reason });
+        // Backwards compatible: the event still reaches `onclick`.
+        expect(onclick).toHaveBeenCalledTimes(1);
+        expect(onclick.mock.calls[0][0]).toBeInstanceOf(Event);
+    });
+
+    it("does not fire onclose for a click inside the panel or a close by the parent", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        render(ModalCloseHarness, { onclose });
+        await user.click(screen.getByTestId("open-modal"));
+        await screen.findByRole("dialog");
+
+        await user.click(screen.getByTestId("modal-action"));
+        expect(screen.getByRole("dialog")).toBeTruthy();
+        await user.click(screen.getByTestId("close-from-parent"));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("ignores Escape, the backdrop and the close button when not dismissible", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        const onclick = vi.fn();
+        render(ModalCloseHarness, { dismissible: false, onclose, onclick });
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+
+        await fireEvent.keyDown(dialog, { key: "Escape" });
+        await fireEvent.click(dialog.parentElement!);
+        const close = screen.getByRole("button", { name: "Close" });
+        await user.click(close);
+
+        expect(screen.getByRole("dialog")).toBeTruthy();
+        expect(onclose).not.toHaveBeenCalled();
+        expect(onclick).not.toHaveBeenCalled();
+        expect(document.body.style.overflow).toBe("hidden");
+
+        // The parent still owns `isOpen`.
+        await user.click(screen.getByTestId("close-from-parent"));
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    });
+
+    it("keeps the close button focusable and the Tab trap closed when not dismissible", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        await screen.findByRole("dialog");
+        const close = screen.getByRole("button", { name: "Close" });
+        expect(close.hasAttribute("aria-disabled")).toBe(false);
+
+        // Turns non-dismissible while open, as a confirm does when it starts loading.
+        close.focus();
+        await fireEvent.click(screen.getByTestId("lock"));
+        expect(close.getAttribute("aria-disabled")).toBe("true");
+        expect((close as HTMLButtonElement).disabled).toBe(false);
+        expect(document.activeElement).toBe(close);
+
+        await user.tab({ shift: true });
+        expect(document.activeElement).toBe(screen.getByTestId("close-from-parent"));
+        await user.tab();
+        expect(document.activeElement).toBe(close);
+    });
+
+    it("takes Tab and Escape back when focus has fallen out of the dialog", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        render(ModalCloseHarness, { onclose });
+        const opener = screen.getByTestId("open-modal");
+        await user.click(opener);
+        const dialog = await screen.findByRole("dialog");
+        await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+
+        // What a browser does when the focused button is disabled or removed.
+        (document.activeElement as HTMLElement).blur();
+        expect(document.activeElement).toBe(document.body);
+        await user.tab();
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Close" }));
+
+        (document.activeElement as HTMLElement).blur();
+        await user.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).toHaveBeenCalledTimes(1);
+        expect(onclose).toHaveBeenCalledWith({ reason: "escape" });
+        expect(document.activeElement).toBe(opener);
+    });
+
+    it("pulls stray focus into the innermost modal only", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { nested: true });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("dialog", { name: "Inner dialog" });
+        await waitFor(() => expect(inner.contains(document.activeElement)).toBe(true));
+
+        (document.activeElement as HTMLElement).blur();
+        await user.tab();
+        expect(inner.contains(document.activeElement)).toBe(true);
+
+        (document.activeElement as HTMLElement).blur();
+        await user.keyboard("{Escape}");
+        await waitFor(() =>
+            expect(screen.queryByRole("dialog", { name: "Inner dialog" })).toBeNull(),
+        );
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+    });
+
+    it("Escape in a non-dismissible inner modal leaves the outer one open", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { nested: true, innerDismissible: false });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("dialog", { name: "Inner dialog" });
+
+        await fireEvent.keyDown(inner, { key: "Escape" });
+        expect(screen.getByRole("dialog", { name: "Inner dialog" })).toBeTruthy();
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+    });
+});
+
+describe("Modal role, close label and panel attributes", () => {
+    it("is a dialog by default and an alertdialog on request", async () => {
+        const user = userEvent.setup();
+        const first = render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        expect((await screen.findByRole("dialog")).getAttribute("aria-modal")).toBe("true");
+        first.unmount();
+
+        render(ModalCloseHarness, { role: "alertdialog" });
+        await user.click(screen.getByTestId("open-modal"));
+        const alert = await screen.findByRole("alertdialog", { name: "Closing dialog" });
+        expect(alert.getAttribute("aria-modal")).toBe("true");
+        expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it.each([false, true])(
+        "keeps Tab inside an alertdialog opened over a modal (portal: %s)",
+        async (portal) => {
+            const user = userEvent.setup();
+            render(ModalCloseHarness, { nested: true, role: "alertdialog", portal });
+            await user.click(screen.getByTestId("open-modal"));
+            await fireEvent.click(await screen.findByTestId("open-inner"));
+            const inner = await screen.findByRole("alertdialog", { name: "Inner dialog" });
+            await waitFor(() => expect(inner.contains(document.activeElement)).toBe(true));
+
+            // Close button and one action: Tab must cycle between those two, and
+            // never reach the outer modal's controls.
+            for (let i = 0; i < 4; i++) {
+                await user.tab();
+                expect(inner.contains(document.activeElement)).toBe(true);
+            }
+            await user.tab({ shift: true });
+            expect(inner.contains(document.activeElement)).toBe(true);
+        },
+    );
+
+    it("an alertdialog on top takes stray Tab and Escape, not the modal under it", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { nested: true, role: "alertdialog" });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("alertdialog", { name: "Inner dialog" });
+        await waitFor(() => expect(inner.contains(document.activeElement)).toBe(true));
+
+        (document.activeElement as HTMLElement).blur();
+        await user.tab();
+        expect(inner.contains(document.activeElement)).toBe(true);
+
+        (document.activeElement as HTMLElement).blur();
+        await user.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+    });
+
+    it("Escape inside an alertdialog closes it and leaves the modal under it open", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { nested: true, role: "alertdialog" });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("alertdialog");
+
+        await fireEvent.keyDown(inner, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+    });
+
+    it("names the close button Close, or what closeLabel says", async () => {
+        const user = userEvent.setup();
+        const first = render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        await screen.findByRole("dialog");
+        expect(screen.getByRole("button", { name: "Close" })).toBeTruthy();
+        first.unmount();
+
+        render(ModalCloseHarness, { closeLabel: "Stäng" });
+        await user.click(screen.getByTestId("open-modal"));
+        await screen.findByRole("dialog");
+        expect(screen.getByRole("button", { name: "Stäng" })).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
+    });
+
+    it("starts on the control initialFocus selects, or the first one without a match", async () => {
+        const first = render(ModalCloseHarness, {
+            initialOpen: true,
+            initialFocus: '[data-testid="lock"]',
+        });
+        await waitFor(() => expect(document.activeElement).toBe(screen.getByTestId("lock")));
+        first.unmount();
+
+        render(ModalCloseHarness, { initialOpen: true, initialFocus: "#not-there" });
+        await waitFor(() =>
+            expect(document.activeElement).toBe(screen.getByRole("button", { name: "Close" })),
+        );
+    });
+
+    it("puts extra attributes on the dialog panel", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+
+        expect(dialog.getAttribute("data-variant")).toBe("harness");
+        expect(dialog.hasAttribute("aria-busy")).toBe(false);
+        await fireEvent.click(screen.getByTestId("lock"));
+        expect(dialog.getAttribute("aria-busy")).toBe("true");
+        expect(dialog.parentElement!.hasAttribute("data-variant")).toBe(false);
+    });
+});
+
+describe("returnFocus", () => {
+    function button(id = "") {
+        const el = document.createElement("button");
+        if (id) el.id = id;
+        document.body.appendChild(el);
+        return el;
+    }
+
+    afterEach(() => {
+        document.body.querySelectorAll("button[data-return-focus]").forEach((el) => el.remove());
+    });
+
+    it("falls back to the element that now has the saved id", () => {
+        const dropzone = button("logo-upload");
+        dropzone.dataset.returnFocus = "";
+        dropzone.focus();
+        saveFocus();
+
+        // A picker set the value: the dropzone is replaced by a Change button
+        // with the same id.
+        dropzone.remove();
+        const change = button("logo-upload");
+        change.dataset.returnFocus = "";
+        expect(document.activeElement).toBe(document.body);
+
+        returnFocus();
+        expect(document.activeElement).toBe(change);
+    });
+
+    it("gives up silently when the element is gone and nothing has its id", () => {
+        const withId = button("gone");
+        withId.focus();
+        saveFocus();
+        withId.remove();
+        expect(() => returnFocus()).not.toThrow();
+        expect(document.activeElement).toBe(document.body);
+
+        const noId = button();
+        noId.focus();
+        saveFocus();
+        noId.remove();
+        expect(() => returnFocus()).not.toThrow();
+        expect(document.activeElement).toBe(document.body);
+    });
+
+    it("stays LIFO, and a lost entry does not shift the ones under it", () => {
+        const outer = button("outer-opener");
+        outer.dataset.returnFocus = "";
+        const inner = button("inner-opener");
+        inner.dataset.returnFocus = "";
+
+        outer.focus();
+        saveFocus();
+        inner.focus();
+        saveFocus();
+        inner.remove();
+
+        returnFocus();
+        expect(document.activeElement).not.toBe(outer);
+        returnFocus();
+        expect(document.activeElement).toBe(outer);
+    });
+});
+
+describe("Modal portal", () => {
+    it("renders in place by default", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness);
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+
+        expect(screen.getByTestId("host").contains(dialog)).toBe(true);
+    });
+
+    it("moves the overlay to document.body and removes it on close", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        render(ModalCloseHarness, { portal: true, onclose });
+        const opener = screen.getByTestId("open-modal");
+        await user.click(opener);
+        const dialog = await screen.findByRole("dialog", { name: "Closing dialog" });
+        const overlay = dialog.parentElement!;
+
+        expect(overlay.parentElement).toBe(document.body);
+        expect(screen.getByTestId("host").contains(dialog)).toBe(false);
+        expect(overlay.className).toContain("z-modal");
+        expect(document.body.style.overflow).toBe("hidden");
+        await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+
+        await fireEvent.keyDown(document.activeElement!, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(overlay.isConnected).toBe(false);
+        expect(onclose).toHaveBeenCalledWith({ reason: "escape" });
+        expect(document.activeElement).toBe(opener);
+        expect(document.body.style.overflow).toBe("");
+    });
+
+    it("keeps the Tab trap, the close button and the backdrop working outside the app root", async () => {
+        const user = userEvent.setup();
+        const onclose = vi.fn();
+        render(ModalCloseHarness, { portal: true, onclose });
+        await user.click(screen.getByTestId("open-modal"));
+        const dialog = await screen.findByRole("dialog");
+        const close = screen.getByRole("button", { name: "Close" });
+
+        close.focus();
+        await user.tab({ shift: true });
+        expect(document.activeElement).toBe(screen.getByTestId("close-from-parent"));
+        await user.tab();
+        expect(document.activeElement).toBe(close);
+
+        await user.click(close);
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).toHaveBeenLastCalledWith({ reason: "close-button" });
+
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click((await screen.findByRole("dialog")).parentElement!);
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(onclose).toHaveBeenLastCalledWith({ reason: "backdrop" });
+        expect(dialog.isConnected).toBe(false);
+    });
+
+    it("Escape in a portalled inner modal closes only the inner one", async () => {
+        const user = userEvent.setup();
+        render(ModalCloseHarness, { portal: true, nested: true });
+        await user.click(screen.getByTestId("open-modal"));
+        await fireEvent.click(await screen.findByTestId("open-inner"));
+        const inner = await screen.findByRole("dialog", { name: "Inner dialog" });
+        const outer = screen.getByRole("dialog", { name: "Closing dialog" });
+
+        // Siblings under body, the inner one later and so on top at the same z-index.
+        expect(outer.contains(inner)).toBe(false);
+        expect(
+            outer.parentElement!.compareDocumentPosition(inner.parentElement!) &
+                Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+
+        await fireEvent.keyDown(inner, { key: "Escape" });
+        await waitFor(() =>
+            expect(screen.queryByRole("dialog", { name: "Inner dialog" })).toBeNull(),
+        );
+        expect(screen.getByRole("dialog", { name: "Closing dialog" })).toBeTruthy();
+        expect(document.body.style.overflow).toBe("hidden");
+
+        await fireEvent.keyDown(outer, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(document.body.style.overflow).toBe("");
+    });
+
+    it("leaves nothing in document.body when unmounted while open", async () => {
+        const { unmount } = render(ModalCloseHarness, {
+            portal: true,
+            initialOpen: true,
+        });
+        const dialog = await screen.findByRole("dialog");
+        expect(dialog.parentElement!.parentElement).toBe(document.body);
+
+        unmount();
+        expect(dialog.isConnected).toBe(false);
+        expect(document.querySelector('[role="dialog"]')).toBeNull();
+        expect(document.body.style.overflow).toBe("");
+    });
+});
+
 describe("SlideUp semantics", () => {
     it("puts role=dialog on the sheet and locks scroll until unmount", async () => {
         const { unmount } = render(SlideUp, { isOpen: true, title: "Sheet" });
@@ -139,6 +554,59 @@ describe("SlideUp semantics", () => {
         expect(document.body.style.overflow).toBe("hidden");
 
         unmount();
+        expect(document.body.style.overflow).toBe("");
+    });
+
+    it("names the close button Close, or what closeLabel says", async () => {
+        const first = render(SlideUp, { isOpen: true, title: "Sheet" });
+        expect(await screen.findByRole("button", { name: "Close" })).toBeTruthy();
+        first.unmount();
+
+        render(SlideUp, { isOpen: true, title: "Sheet", closeLabel: "Stäng" });
+        expect(await screen.findByRole("button", { name: "Stäng" })).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
+    });
+
+    it("starts on the control initialFocus selects", async () => {
+        const field = createRawSnippet(() => ({
+            render: () => `<div><button type="button">First</button><input id="sheet-search" aria-label="Search" /></div>`,
+        }));
+        render(SlideUp, {
+            isOpen: true,
+            title: "Sheet",
+            initialFocus: "#sheet-search",
+            children: field,
+        });
+        await waitFor(() =>
+            expect(document.activeElement).toBe(screen.getByRole("textbox", { name: "Search" })),
+        );
+    });
+
+    it("takes Tab back when focus has fallen out of the sheet", async () => {
+        const user = userEvent.setup();
+        render(SlideUp, { isOpen: true, title: "Sheet" });
+        const dialog = await screen.findByRole("dialog", { name: "Sheet" });
+        const close = screen.getByRole("button", { name: "Close" });
+        await waitFor(() => expect(document.activeElement).toBe(close));
+
+        // What a browser does when the focused control is disabled or removed.
+        close.blur();
+        expect(document.activeElement).toBe(document.body);
+        await user.tab();
+        expect(document.activeElement).toBe(close);
+        expect(dialog.contains(document.activeElement)).toBe(true);
+    });
+
+    it("still closes on Escape when focus has fallen out of the sheet", async () => {
+        const user = userEvent.setup();
+        render(SlideUp, { isOpen: true, title: "Sheet" });
+        await screen.findByRole("dialog", { name: "Sheet" });
+        const close = screen.getByRole("button", { name: "Close" });
+        await waitFor(() => expect(document.activeElement).toBe(close));
+
+        close.blur();
+        await user.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
         expect(document.body.style.overflow).toBe("");
     });
 });
@@ -202,9 +670,10 @@ describe("Toaster live regions", () => {
         const region = screen.getByRole("region", { name: "Notifications" });
         expect(region.hasAttribute("aria-live")).toBe(false);
 
+        // The toast says what it was pushed with: the message, and no default heading over it.
         const status = screen.getByRole("status");
-        expect(status.textContent).toContain("Changes saved");
         expect(status.textContent).toContain("Profile updated");
+        expect(status.textContent).not.toContain("Changes saved");
     });
 
     it("pauses auto-dismiss while hovered", async () => {
@@ -212,15 +681,142 @@ describe("Toaster live regions", () => {
         render(Toaster);
         pushToast({ message: "Hold on", type: "info", duration: 3000 });
 
-        const toast = await screen.findByRole("group", { name: "Notice" });
+        const toast = await screen.findByRole("group", { name: "Hold on" });
         await fireEvent.mouseEnter(toast);
         vi.advanceTimersByTime(5000);
         await waitFor(() => expect(toast.textContent).toContain("3 seconds"));
-        expect(screen.queryByRole("group", { name: "Notice" })).toBeTruthy();
+        expect(screen.queryByRole("group", { name: "Hold on" })).toBeTruthy();
 
         await fireEvent.mouseLeave(toast);
         vi.advanceTimersByTime(1000);
         await waitFor(() => expect(toast.textContent).toContain("2 seconds"));
+    });
+});
+
+describe("Toaster action", () => {
+    it("renders the action as a named button, apart from the dismiss control", async () => {
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            type: "success",
+            duration: 0,
+            action: { label: "Undo", onclick: () => {} },
+        });
+
+        const action = await screen.findByRole("button", { name: "Undo" });
+        const dismiss = screen.getByRole("button", { name: "Dismiss notification" });
+        expect(action).not.toBe(dismiss);
+        expect(action.tagName).toBe("BUTTON");
+        expect(action.className).toContain("focus-ring");
+        // Visible text, not an icon: that is what tells it from the dismiss control.
+        expect(action.textContent?.trim()).toBe("Undo");
+        expect(action.closest(LIVE_REGION)).toBeNull();
+    });
+
+    it("renders no action button for a toast without one", async () => {
+        render(Toaster);
+        pushToast({ message: "Saved", type: "success", duration: 0 });
+
+        const toast = await screen.findByRole("group", { name: "Saved" });
+        expect(toast.querySelector("[data-toast-action]")).toBeNull();
+        expect(screen.getByRole("status").textContent).not.toContain("available");
+    });
+
+    it("announces that an action is available with the message", async () => {
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            type: "success",
+            duration: 0,
+            action: { label: "Undo", onclick: () => {} },
+        });
+
+        const status = await screen.findByRole("status");
+        expect(status.textContent).toContain("Project archived");
+        expect(status.textContent).toContain("Undo available.");
+    });
+
+    it("runs the handler and then closes the toast", async () => {
+        const user = userEvent.setup();
+        const onclick = vi.fn();
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            duration: 0,
+            action: { label: "Undo", onclick },
+        });
+
+        await user.click(await screen.findByRole("button", { name: "Undo" }));
+        expect(onclick).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(screen.queryByRole("group")).toBeNull());
+    });
+
+    it("stays open after the action when dismissOnClick is false", async () => {
+        const user = userEvent.setup();
+        const onclick = vi.fn();
+        render(Toaster);
+        pushToast({
+            message: "Upload failed",
+            type: "error",
+            duration: 0,
+            action: { label: "Retry", onclick, dismissOnClick: false },
+        });
+
+        const retry = await screen.findByRole("button", { name: "Retry" });
+        await user.click(retry);
+        await user.click(retry);
+        expect(onclick).toHaveBeenCalledTimes(2);
+        expect(screen.getByRole("button", { name: "Retry" })).toBeTruthy();
+    });
+
+    it("is reachable with Tab and activates with the keyboard", async () => {
+        const user = userEvent.setup();
+        const onclick = vi.fn();
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            duration: 0,
+            action: { label: "Undo", onclick },
+        });
+        const action = await screen.findByRole("button", { name: "Undo" });
+
+        for (let i = 0; i < 4 && document.activeElement !== action; i++) {
+            await user.tab();
+        }
+        expect(document.activeElement).toBe(action);
+        await user.keyboard("{Enter}");
+        expect(onclick).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not time out while focus is on the action", async () => {
+        vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
+        render(Toaster);
+        pushToast({
+            message: "Project archived",
+            duration: 3000,
+            action: { label: "Undo", onclick: () => {} },
+        });
+        const action = await screen.findByRole("button", { name: "Undo" });
+        const toast = screen.getByRole("group");
+
+        action.focus();
+        await waitFor(() => expect(toast.getAttribute("data-paused")).toBe("true"));
+        vi.advanceTimersByTime(10_000);
+        await waitFor(() => expect(toast.textContent).toContain("3 seconds"));
+        expect(screen.getByRole("button", { name: "Undo" })).toBeTruthy();
+
+        action.blur();
+        await waitFor(() => expect(toast.getAttribute("data-paused")).toBe("false"));
+        vi.advanceTimersByTime(3000);
+        await waitFor(() => expect(screen.queryByRole("group")).toBeNull());
+    });
+
+    it("keeps the action on the stored item", () => {
+        const action = { label: "Undo", onclick: () => {} };
+        const id = toastStore.push({ message: "Archived", action });
+        let items: { id: string; action?: unknown }[] = [];
+        toastStore.subscribe((list) => (items = list))();
+        expect(items.find((item) => item.id === id)?.action).toBe(action);
     });
 });
 

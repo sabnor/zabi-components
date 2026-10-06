@@ -1,6 +1,15 @@
 import fs from 'fs';
+import { findLucideBarrelImports } from './lucide-barrel.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { spawnSync } from 'child_process';
+import { findDeadPackageLinks } from './check-package-links.js';
+import {
+  GENERATOR_FILES,
+  THEME_DATA_FILE,
+  buildThemeData,
+  renderThemeData,
+} from './build-create-theme.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,10 +36,12 @@ const requiredComponentFiles = [
 const maxFileSizes = {
   'zabi-components-theme.css': 50000, // ~50KB
   'zabi-components-theme-only.css': 50000,
-  'zabi-components-theme-dark.css': 30000, // ~30KB
-  'zabi-components-theme-dark-only.css': 30000,
+  // The dark block is published twice: once for .dark / [data-theme="dark"]
+  // and once for [data-theme="auto"] inside a media query.
+  'zabi-components-theme-dark.css': 45000, // ~45KB
+  'zabi-components-theme-dark-only.css': 45000,
   'zabi-components.css': 500000, // ~500KB
-  'zabi-components-colors.css': 30000, // ~30KB (grew with the per-family subtle/border/text tokens)
+  'zabi-components-colors.css': 45000, // ~45KB (the dark tokens appear twice, as above)
   'index.js': 10000, // ~10KB
   'index.d.ts': 8000 // ~8KB (grew with the new Sidebar/Tabs/Select/Toggle props)
 };
@@ -113,6 +124,55 @@ function verifyFile(fileName, isRequired = true) {
 
   console.log(`✓ ${fileName} verified (${(fileSize / 1024).toFixed(2)} KB)`);
   return true;
+}
+
+/**
+ * The theme generator: `zabi-components/create-theme` and the `zabi-theme` bin.
+ *
+ * It has to run from dist/ under plain Node, so it is run here, not only
+ * looked for. Its default-theme data is rebuilt from src/app.css and the
+ * contrast pair list and compared with what is in dist: a generator checking
+ * an app's brand against an older theme would report the wrong contrast.
+ */
+function verifyThemeGenerator() {
+  const dir = path.join(distDir, 'create-theme');
+  let ok = true;
+  const fail = (message) => {
+    console.error(`❌ ${message}`);
+    ok = false;
+  };
+
+  for (const file of [...GENERATOR_FILES, THEME_DATA_FILE]) {
+    if (!fs.existsSync(path.join(dir, file))) fail(`Theme generator file missing: create-theme/${file}`);
+  }
+  if (!ok) return false;
+
+  const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
+  const bin = packageJson.bin?.['zabi-theme'];
+  const cli = path.join(dir, 'cli.js');
+  if (!bin || path.resolve(__dirname, '..', bin) !== cli) {
+    fail(`package.json bin "zabi-theme" must point at ./dist/create-theme/cli.js (found ${bin})`);
+  }
+  if (!fs.readFileSync(cli, 'utf8').startsWith('#!/usr/bin/env node')) fail('create-theme/cli.js has no node shebang');
+  if (!packageJson.exports?.['./create-theme']) fail('Missing export in package.json: ./create-theme');
+  if (!packageJson.dependencies?.culori) {
+    fail('culori must be a dependency, not a devDependency: the published theme generator imports it at runtime');
+  }
+
+  const expected = renderThemeData(buildThemeData());
+  if (fs.readFileSync(path.join(dir, THEME_DATA_FILE), 'utf8') !== expected) {
+    fail('create-theme/theme-data.js is stale: it differs from src/app.css + scripts/contrast-pairs.js. Run npm run build:create-theme.');
+  }
+
+  const run = spawnSync(process.execPath, [cli, '--brand', '#0026EA', '--strict'], { encoding: 'utf8' });
+  if (run.status !== 0) {
+    fail(`zabi-theme --brand "#0026EA" --strict exited ${run.status}:\n${run.stderr}`);
+  } else if (!/--zabi-brand-600:\s*#[0-9a-f]{6};/.test(run.stdout)) {
+    fail('zabi-theme ran but printed no --zabi-brand-600 declaration');
+  }
+
+  if (ok) console.log('✓ Theme generator verified (files, bin, fresh theme data, runs from dist)');
+  return ok;
 }
 
 function verifyPackageExports() {
@@ -412,6 +472,11 @@ async function verifyBuild() {
     }
   }
 
+  console.log('\n🎨 Verifying theme generator...');
+  if (!verifyThemeGenerator()) {
+    allValid = false;
+  }
+
   // Verify package exports
   console.log('\n📦 Verifying package exports...');
   const exportsValid = verifyPackageExports();
@@ -428,6 +493,28 @@ async function verifyBuild() {
   const typesImportsValid = verifyPackagedTypesImports();
   if (!typesImportsValid) {
     allValid = false;
+  }
+
+  // What is published must not reach the `@lucide/svelte` barrel either: an
+  // app's bundler reads dist/, not src/.
+  const barrelImports = findLucideBarrelImports(distDir, ['.svelte', '.js', '.d.ts']);
+  if (barrelImports.length > 0) {
+    console.error('❌ dist imports icons from the @lucide/svelte barrel:');
+    barrelImports.forEach((where) => console.error(`   - ${where}`));
+    allValid = false;
+  } else {
+    console.log('✓ Packaged files import icons per file, not from the @lucide/svelte barrel');
+  }
+
+  console.log('\n📦 Verifying links in the published documents...');
+  const { dead, documents } = findDeadPackageLinks();
+  if (dead.length > 0) {
+    console.error('❌ A published document links to a file that is not in the package:');
+    dead.forEach((where) => console.error(`   - ${where}`));
+    console.error('   Add the file to "files" in package.json, or link to it in the repository.');
+    allValid = false;
+  } else {
+    console.log(`✓ Relative links in ${documents.join(', ')} all lead to packaged files`);
   }
 
   console.log('\n📦 Verifying dist/components/types runtime modules...');

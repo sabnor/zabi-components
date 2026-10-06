@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import type { Snippet } from 'svelte';
     import { generateId } from "../util/ssr-safe.js";
 
@@ -17,6 +18,8 @@
         description?: string;
         error?: string;
         required?: boolean;
+        /** Read after the label of a required field, where the asterisk is only seen. */
+        requiredLabel?: string;
         disabled?: boolean;
         class?: string;
         labelClass?: string;
@@ -30,12 +33,17 @@
         description,
         error,
         required = false,
+        requiredLabel: requiredLabelGiven,
         disabled = false,
         class: className = '',
         labelClass = '',
         control,
         meta,
     }: Props = $props();
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const requiredLabel = $derived(requiredLabelGiven ?? common().required);
 
     const fallbackId = generateId('field');
     const fieldId = $derived(idProp ?? fallbackId);
@@ -63,7 +71,7 @@
             {label}
             {#if required}
                 <span class="ml-1 text-error" aria-hidden="true">*</span>
-                <span class="sr-only">(required)</span>
+                <span class="sr-only">{requiredLabel}</span>
             {/if}
         </label>
 

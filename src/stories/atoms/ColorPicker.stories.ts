@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Atoms/ColorPicker',
     component: ColorPicker,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Saturation canvas with a hue slider and a hex field.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],

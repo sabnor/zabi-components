@@ -1,10 +1,28 @@
 <script lang="ts">
-    import { CheckCircle, AlertTriangle, AlertCircle } from '@lucide/svelte';
+    import type { HTMLTextareaAttributes } from 'svelte/elements';
     import type { SemanticVariant, SizeVariant } from '../types/variants.js';
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
+    import { fieldDescribedBy, fieldMessageState } from "../util/field.js";
+    import FieldMessages from "./FieldMessages.svelte";
 
-    interface Props {
+    /**
+     * Other attributes (`autocomplete`, `inputmode`, `maxlength`,
+     * `enterkeyhint`, `data-*`, `onchange`, ...) land on the `<textarea>`.
+     */
+    type Props = Omit<
+        HTMLTextareaAttributes,
+        | 'class'
+        | 'value'
+        | 'id'
+        | 'name'
+        | 'placeholder'
+        | 'required'
+        | 'disabled'
+        | 'rows'
+        | 'oninput'
+        | 'aria-describedby'
+    > & {
         id?: string;
         value?: string;
         name?: string;
@@ -18,13 +36,20 @@
         rows?: number;
         size?: SizeVariant;
         variant?: SemanticVariant;
+        /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
         message?: string;
+        /** Help text under the field, read out with it. */
+        hint?: string;
+        /** An error under the field. It marks the field invalid and is announced; it wins over `variant` and `message`. */
+        error?: string;
         oninput?: (event: Event) => void;
-    }
+        /** Ids of other elements that describe the field. The hint and the message are added after them. */
+        "aria-describedby"?: string | null;
+    };
 
     let {
         id: idProp,
-        value = $bindable(''),
+        value = $bindable<Exclude<Props["value"], undefined>>(),
         name = '',
         class: className = '',
         label = '',
@@ -37,27 +62,44 @@
         size = 'md',
         variant = 'default',
         message = '',
+        hint = '',
+        error = '',
         oninput,
+        'aria-describedby': describedBy,
         ...restProps
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (value === undefined) value = '';
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     const fallbackId = generateId('textarea');
     const textareaId = $derived(idProp ?? fallbackId);
     const isDisabled = $derived(disabled || loading);
 
+    const status = $derived(fieldMessageState({ variant, message, hint, error }));
+
     const variantClass = $derived(() => {
-        return variant === 'success'
+        return status.variant === 'success'
             ? 'border-success focus-visible:border-success'
-            : variant === 'warning'
+            : status.variant === 'warning'
               ? 'border-warning focus-visible:border-warning'
-              : variant === 'error'
+              : status.variant === 'error'
                 ? 'border-error focus-visible:border-error'
-                : 'border-input-border';
+                : 'border-input-border enabled:hover:border-input-border-hover';
     });
 
+    // 16px below `sm`: iOS Safari zooms the page when a focused field is smaller.
     const textareaClasses = $derived(() => {
         const baseClasses =
-            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed resize-y px-3 py-2 text-sm leading-6';
+            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed resize-y px-3 py-2 text-sm max-sm:text-base leading-6';
 
         return cn(`${baseClasses} ${variantClass()} ${className}`);
     });
@@ -65,24 +107,6 @@
     const labelClasses = $derived(
         () => 'mb-1 block text-sm font-medium text-label',
     );
-
-    const messageClasses = $derived(() => {
-        if (variant === 'error') {
-            return 'mt-1 flex items-center gap-2 text-sm text-error';
-        } else if (variant === 'success') {
-            return 'mt-1 flex items-center gap-2 text-sm text-success';
-        } else if (variant === 'warning') {
-            return 'mt-1 flex items-center gap-2 text-sm text-warning';
-        }
-        return 'mt-1 flex items-center gap-2 text-sm text-description';
-    });
-
-    const getIcon = $derived(() => {
-        if (variant === 'error') return AlertCircle;
-        if (variant === 'success') return CheckCircle;
-        if (variant === 'warning') return AlertTriangle;
-        return null;
-    });
 
     function handleInput(event: Event) {
         const target = event.target as HTMLTextAreaElement;
@@ -106,10 +130,10 @@
             {rows}
             class={textareaClasses()}
             oninput={handleInput}
-            aria-invalid={variant === 'error' ? 'true' : undefined}
+            aria-invalid={status.variant === 'error' ? 'true' : undefined}
             aria-required={required ? 'true' : undefined}
             aria-busy={loading ? 'true' : undefined}
-            aria-describedby={message ? `${textareaId}-message` : undefined}
+            aria-describedby={fieldDescribedBy(textareaId, status, describedBy)}
             {...restProps}
         ></textarea>
         {#if loading}
@@ -118,23 +142,10 @@
                 aria-hidden="true"
             >
                 <span
-                    class="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70"
+                    class="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70 motion-reduce:animate-pulse"
                 ></span>
             </span>
         {/if}
     </div>
-    {#if message && variant !== 'default'}
-        <p
-            id={`${textareaId}-message`}
-            class={messageClasses()}
-            role={variant === 'error' ? 'alert' : 'status'}
-            aria-live={variant === 'error' ? 'assertive' : 'polite'}
-        >
-            {#if getIcon()}
-                {@const Icon = getIcon()}
-                <Icon size={14} class="shrink-0" />
-            {/if}
-            <span>{message}</span>
-        </p>
-    {/if}
+    <FieldMessages fieldId={textareaId} {status} {hint} gap="mt-1" />
 </div>

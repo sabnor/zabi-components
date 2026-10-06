@@ -62,6 +62,13 @@
     import CircleQuestionMark from "@lucide/svelte/icons/circle-question-mark";
     import Circle from "@lucide/svelte/icons/circle";
     import Heart from "@lucide/svelte/icons/heart";
+    import Bold from "@lucide/svelte/icons/bold";
+    import Italic from "@lucide/svelte/icons/italic";
+    import Trash2 from "@lucide/svelte/icons/trash-2";
+    import Pencil from "@lucide/svelte/icons/pencil";
+    import Copy from "@lucide/svelte/icons/copy";
+    import Archive from "@lucide/svelte/icons/archive";
+    import type { DropdownOption } from "../../components/util/dropdown.js";
     import Zap from "@lucide/svelte/icons/zap";
     import ShieldCheck from "@lucide/svelte/icons/shield-check";
     import Sparkles from "@lucide/svelte/icons/sparkles";
@@ -114,8 +121,30 @@
     let appShellAccountPanelOpen = $state(false);
     let appShellAccountLightMode = $state(false);
 
+    /** IconButton toolbar-toggle demo. */
+    let iconButtonBold = $state(true);
+    let iconButtonItalic = $state(false);
+
     let dropdownDemoAOpen = $state(false);
     let dropdownDemoBOpen = $state(false);
+    let dropdownDemoCOpen = $state(false);
+    const dropdownDemoOptions: DropdownOption[] = [
+        { value: "edit", label: "Edit", icon: Pencil },
+        {
+            value: "duplicate",
+            label: "Duplicate",
+            icon: Copy,
+            description: "Copies the settings too.",
+        },
+        {
+            value: "archive",
+            label: "Archive",
+            icon: Archive,
+            disabled: true,
+            description: "Only an owner can archive a project.",
+        },
+        { value: "delete", label: "Delete", icon: Trash2, tone: "danger" },
+    ];
 
     let formFieldDemoEmail = $state("");
     let radioGroupDemoValue = $state("basic");
@@ -151,6 +180,24 @@
     }
 
     const appShellMainTitle = $derived(appShellLeafTitle(appShellPath));
+
+    /** The Toaster example with the app's own words switches the page's one Toaster to these. */
+    let toasterCustom = $state(false);
+    const toasterWords = {
+        regionLabel: "Notices",
+        successTitle: "All done",
+        errorTitle: "That did not work",
+        warningTitle: "Heads up",
+        infoTitle: "For your information",
+        closesIn: (seconds: number) => `Goes away in ${seconds} seconds.`,
+        pausedClosesIn: (seconds: number) => `Paused. Goes away in ${seconds} seconds.`,
+        stop: "Pause",
+        okay: "Got it",
+        expand: "Show more",
+        collapse: "Show less",
+        dismiss: "Dismiss this message",
+        actionAvailable: (label: string) => `${label} is available.`,
+    };
 </script>
 
 <div class="space-y-8">
@@ -183,7 +230,7 @@
                         </span>
                         {#each component.variants as variant}
                             <span
-                                class="rounded-md bg-base-100 px-2 py-1 text-xs text-headline"
+                                class="rounded-md bg-surface-raised px-2 py-1 text-xs text-headline"
                             >
                                 {variant}
                             </span>
@@ -198,6 +245,7 @@
                         <Button variant="ghost" text="Ghost" />
                         <Button variant="link" text="Link" />
                         <Button variant="danger" text="Danger" />
+                        <Button variant="accent" text="Accent" />
                     </div>
                     <div class="flex flex-wrap gap-4 items-center">
                         <Button
@@ -274,6 +322,94 @@
                         </IconButton>
                         <IconButton variant="danger" disabled label="Remove">
                             <Heart />
+                        </IconButton>
+                    </div>
+                    <div class="flex flex-wrap gap-4 items-end">
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-xs font-medium text-headline">
+                                xs
+                            </span>
+                            <IconButton
+                                variant="outline"
+                                size="xs"
+                                label="Favorite"
+                            >
+                                <Heart size={14} />
+                            </IconButton>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-xs font-medium text-headline">
+                                sm
+                            </span>
+                            <IconButton
+                                variant="outline"
+                                size="sm"
+                                label="Favorite"
+                            >
+                                <Heart size={16} />
+                            </IconButton>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-xs font-medium text-headline">
+                                md
+                            </span>
+                            <IconButton variant="outline" label="Favorite">
+                                <Heart size={20} />
+                            </IconButton>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-xs font-medium text-headline">
+                                lg
+                            </span>
+                            <IconButton
+                                variant="outline"
+                                size="lg"
+                                label="Favorite"
+                            >
+                                <Heart />
+                            </IconButton>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <div
+                            class="flex items-center gap-1"
+                            role="toolbar"
+                            aria-label="Text formatting"
+                        >
+                            <IconButton
+                                variant="ghost"
+                                size="sm"
+                                label="Bold"
+                                bind:pressed={iconButtonBold}
+                            >
+                                <Bold size={16} />
+                            </IconButton>
+                            <IconButton
+                                variant="ghost"
+                                size="sm"
+                                label="Italic"
+                                bind:pressed={iconButtonItalic}
+                            >
+                                <Italic size={16} />
+                            </IconButton>
+                        </div>
+                        <IconButton variant="ghost" tone="danger" label="Delete">
+                            <Trash2 size={20} />
+                        </IconButton>
+                        <IconButton
+                            variant="outline"
+                            tone="danger"
+                            label="Delete"
+                        >
+                            <Trash2 size={20} />
+                        </IconButton>
+                        <IconButton
+                            variant="ghost"
+                            tone="danger"
+                            size="xs"
+                            label="Delete"
+                        >
+                            <Trash2 size={14} />
                         </IconButton>
                     </div>
                 </div>
@@ -372,6 +508,12 @@
                         title="Error"
                         message="Something went wrong. Please try again."
                     />
+                    <Alert
+                        variant="info"
+                        title="Closable"
+                        message="The close button in the corner dismisses this alert."
+                        closable
+                    />
                 </div>
             {:else if component.name === "ContactForm"}
                 <div class="w-full">
@@ -381,26 +523,30 @@
                 <div class="w-full space-y-4">
                     <Dropdown bind:isOpen={dropdownDemoAOpen}>
                         {#snippet trigger(aria)}
-                            <Button text="Select an option" {...aria} />
+                            <Button
+                                text="Select an option"
+                                onclick={() => (dropdownDemoAOpen = !dropdownDemoAOpen)}
+                                {...aria}
+                            />
                         {/snippet}
                         {#snippet children()}
                             <div class="space-y-1 p-2">
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Option 1</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Option 2</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Option 3</button
                                 >
                             </div>
@@ -408,29 +554,49 @@
                     </Dropdown>
                     <Dropdown bind:isOpen={dropdownDemoBOpen}>
                         {#snippet trigger(aria)}
-                            <Button text="Choose a color" {...aria} />
+                            <Button
+                                text="Choose a color"
+                                onclick={() => (dropdownDemoBOpen = !dropdownDemoBOpen)}
+                                {...aria}
+                            />
                         {/snippet}
                         {#snippet children()}
                             <div class="space-y-1 p-2">
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Red</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Blue</button
                                 >
                                 <button
                                     type="button"
                                     role="menuitem"
-                                    class="w-full rounded px-3 py-2 text-left hover:bg-base-100"
+                                    class="focus-ring w-full rounded-control px-3 py-2 pointer-coarse:py-3 text-left hover:bg-surface-overlay-hover active:bg-surface-active"
                                     >Green</button
                                 >
                             </div>
+                        {/snippet}
+                    </Dropdown>
+                    <Dropdown
+                        bind:isOpen={dropdownDemoCOpen}
+                        ariaLabel="Project actions"
+                        options={dropdownDemoOptions}
+                        onOptionClick={() => (dropdownDemoCOpen = false)}
+                    >
+                        {#snippet trigger(aria)}
+                            <Button
+                                text="Project actions"
+                                variant="secondary"
+                                onclick={() =>
+                                    (dropdownDemoCOpen = !dropdownDemoCOpen)}
+                                {...aria}
+                            />
                         {/snippet}
                     </Dropdown>
                 </div>
@@ -455,6 +621,7 @@
             {:else if component.name === "ImageUpload"}
                 <div class="w-full">
                     <ImageUpload
+                        label="Cover image"
                         accept="image/jpeg,image/png,image/gif"
                         placeholder="Choose an image"
                     />
@@ -825,7 +992,7 @@
                             Embedded link list
                         </h4>
                         <div
-                            class="rounded-lg border border-border bg-base-50 p-4"
+                            class="rounded-lg border border-border bg-surface-inset p-4"
                         >
                             <TopNavbar
                                 embedded
@@ -853,7 +1020,7 @@
             {:else if component.name === "SidebarNavigation"}
                 <div class="space-y-10">
                     <section
-                        class="rounded-xl border border-border bg-base-50/70 p-5 ring-1 ring-border/40"
+                        class="rounded-xl border border-border bg-surface-inset p-5 ring-1 ring-border/40"
                         aria-labelledby="sn-built-from"
                     >
                         <h4
@@ -862,7 +1029,7 @@
                         >
                             What
                             <code
-                                class="rounded bg-base-100 px-1 font-mono text-xs"
+                                class="rounded bg-neutral-subtle px-1 font-mono text-xs"
                                 >SidebarNavigation</code
                             >
                             is built from
@@ -947,7 +1114,7 @@
                             page content would render.
                         </p>
                         <div
-                            class="flex flex-col overflow-visible rounded-2xl border border-border bg-base-100 shadow-sm md:min-h-[min(520px,65vh)] md:flex-row md:items-stretch"
+                            class="flex flex-col overflow-visible rounded-2xl border border-border bg-surface-base shadow-sm md:min-h-[min(520px,65vh)] md:flex-row md:items-stretch"
                         >
                             {#snippet appShellProfilePanel()}
                                 <SidebarAccountPanel
@@ -1176,6 +1343,8 @@
                     <Badge variant="warning" text="Warning" />
                     <Badge variant="error" text="Error" />
                     <Badge variant="info" text="Info" />
+                    <Badge variant="accent" text="Accent" />
+                    <Badge variant="accent" emphasis="solid" text="Accent solid" />
                 </div>
             {:else if component.name === "Checkbox"}
                 <div class="w-full space-y-4">
@@ -1329,7 +1498,7 @@
                         <p class="text-sm text-description">
                             Triggers below call
                             <code
-                                class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs"
+                                class="rounded bg-neutral-subtle px-1 py-0.5 font-mono text-xs"
                                 >pushToast()</code
                             >. The live region is fixed bottom-right (same as a
                             real app).
@@ -1384,7 +1553,7 @@
                         <p class="text-sm text-description">
                             Same surface as viewport toasts, but
                             <code
-                                class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs"
+                                class="rounded bg-neutral-subtle px-1 py-0.5 font-mono text-xs"
                                 >layout="inline"</code
                             >
                             keeps it in the document flow for docs and previews.
@@ -1417,7 +1586,7 @@
                         <p class="text-sm text-description">
                             The
                             <code
-                                class="rounded bg-base-100 px-1 py-0.5 font-mono text-xs"
+                                class="rounded bg-neutral-subtle px-1 py-0.5 font-mono text-xs"
                                 >type</code
                             >
                             prop maps to semantic border and text colors.
@@ -1445,8 +1614,9 @@
                     </div>
                 {/if}
             {:else if component.name === "Table"}
-                <Table caption="Q1 results">
-                    <thead class="border-b border-border bg-base-50">
+                <!-- Stacks below 640px; `data-label` is the label shown beside each value there. -->
+                <Table caption="Q1 results" stacked="sm">
+                    <thead class="border-b border-border bg-surface-elevated">
                         <tr>
                             <th class="px-4 py-3 font-medium text-headline"
                                 >Region</th
@@ -1458,12 +1628,12 @@
                     </thead>
                     <tbody class="divide-y divide-border">
                         <tr>
-                            <td class="px-4 py-3 text-body">North</td>
-                            <td class="px-4 py-3 text-body">$12,400</td>
+                            <td class="px-4 py-3 text-body" data-label="Region">North</td>
+                            <td class="px-4 py-3 text-body" data-label="Revenue">$12,400</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 text-body">South</td>
-                            <td class="px-4 py-3 text-body">$9,200</td>
+                            <td class="px-4 py-3 text-body" data-label="Region">South</td>
+                            <td class="px-4 py-3 text-body" data-label="Revenue">$9,200</td>
                         </tr>
                     </tbody>
                 </Table>
@@ -1500,11 +1670,21 @@
                     </Card>
                 </div>
             {:else if component.name === "ThemeToggle"}
-                <div class="flex items-center gap-3">
-                    <ThemeToggle />
-                    <Text tone="description" size="sm"
-                        >Syncs with the site theme.</Text
-                    >
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <ThemeToggle />
+                        <Text tone="description" size="sm"
+                            >Syncs with the site theme.</Text
+                        >
+                    </div>
+                    <!-- A key of its own: this demo must not overwrite the
+                    choice the site's own toggle stores under "theme". -->
+                    <div class="flex items-center gap-3" data-testid="theme-toggle-three">
+                        <ThemeToggle modes="three" storageKey="zabi-docs-theme-demo" />
+                        <Text tone="description" size="sm"
+                            >System, light, dark: writes data-theme.</Text
+                        >
+                    </div>
                 </div>
             {:else if component.name === "Divider"}
                 <div class="space-y-4">
@@ -1515,7 +1695,7 @@
             {:else if component.name === "Container"}
                 <Container
                     maxWidth="md"
-                    class="rounded-lg border border-border bg-base-50 py-4 text-center"
+                    class="rounded-lg border border-border bg-surface-inset py-4 text-center"
                 >
                     <Text tone="caption">Centered max-width container</Text>
                 </Container>
@@ -1532,7 +1712,37 @@
                     badgeText="New"
                 />
             {:else if component.name === "Toaster"}
-                <Toaster />
+                <!-- One for the page. This branch runs once per example, and a
+                second Toaster drew every toast twice and announced it twice. -->
+                {#if exampleIndex === 0}
+                    <Toaster strings={toasterCustom ? toasterWords : undefined} />
+                {/if}
+                {#if exampleIndex === 2}
+                    <!-- An app with its own words: its own text in the toast, and the
+                    toaster's words through `strings`. This is where an app passes its translations. -->
+                    <div class="flex flex-wrap gap-2">
+                        <Button
+                            text="Save draft"
+                            onclick={() => {
+                                toasterCustom = true;
+                                pushToast({ message: "Draft saved.", type: "success" });
+                            }}
+                        />
+                        <Button
+                            variant="outline"
+                            text="Error"
+                            onclick={() => {
+                                toasterCustom = true;
+                                pushToast({
+                                    message: "Could not save. Check your connection and try again.",
+                                    detail: "The server did not answer within ten seconds.",
+                                    type: "error",
+                                    duration: 0,
+                                });
+                            }}
+                        />
+                    </div>
+                {:else}
                 <Button
                     text="Push sample toast"
                     onclick={() =>
@@ -1542,6 +1752,26 @@
                             title: "Saved",
                         })}
                 />
+                <Button
+                    variant="outline"
+                    text="Push toast with Undo"
+                    onclick={() =>
+                        pushToast({
+                            title: "Project archived",
+                            message:
+                                "It is still in the archive, where you can restore it.",
+                            type: "success",
+                            action: {
+                                label: "Undo",
+                                onclick: () =>
+                                    pushToast({
+                                        message: "Project restored.",
+                                        type: "info",
+                                    }),
+                            },
+                        })}
+                />
+                {/if}
             {:else if component.name === "RadioGroup"}
                 <RadioGroup
                     legend="Billing plan"
@@ -1593,6 +1823,14 @@
                         <Button variant="primary" text="Create report" />
                     {/snippet}
                 </EmptyState>
+                <div class="mt-6 rounded-container border border-border">
+                    <EmptyState
+                        size="compact"
+                        headingLevel={3}
+                        title="No comments"
+                        description="Comments on this report will show up here."
+                    />
+                </div>
             {:else if component.name === "Page"}
                 <Page className="max-w-lg">
                     <p class="text-sm text-description">
@@ -1662,7 +1900,7 @@
                 </div>
             {:else if component.name === "ComponentDemo"}
                 <div
-                    class="rounded-lg border border-dashed border-border bg-base-50 p-4"
+                    class="rounded-lg border border-dashed border-border bg-surface-inset p-4"
                 >
                     <p class="mb-3 text-sm text-description">
                         This site wraps each example in ComponentDemo: title,

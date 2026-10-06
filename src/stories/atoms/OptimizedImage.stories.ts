@@ -5,6 +5,12 @@ const meta = {
     title: 'Design System/Atoms/OptimizedImage',
     component: OptimizedImage,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Image with explicit width and height that always loads lazily.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],

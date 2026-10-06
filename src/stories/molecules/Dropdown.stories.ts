@@ -1,11 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import DropdownWithContent from './DropdownWithContent.svelte';
 import DropdownEmptyState from './DropdownEmptyState.svelte';
+import DropdownWithItems from './DropdownWithItems.svelte';
 
 const meta = {
     title: 'Design System/Molecules/Dropdown',
     component: DropdownWithContent,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Menu anchored to your own trigger snippet, with arrow-key focus and four placements. Items passed as options can carry an icon, a danger tone and a description; a disabled item stays focusable so its description can be read. DropdownItem renders the same item inside custom children. With presentation="sheet" the same menu opens in a BottomSheet: the action sheet.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],
@@ -99,5 +106,45 @@ export const EmptyState: Story = {
     render: (args) => ({
         Component: DropdownEmptyState,
         props: args
+    })
+};
+
+/** `options` with an icon, a description, a disabled item that explains itself, and a danger item. */
+export const ItemsWithIconsAndDanger: Story = {
+    args: {
+        isOpen: true,
+        placement: 'bottom-start'
+    },
+    render: (args) => ({
+        Component: DropdownWithItems,
+        props: args
+    })
+};
+
+/** The same menu built from `DropdownItem` children, which take part in the arrow-key order. */
+export const DropdownItemChildren: Story = {
+    args: {
+        isOpen: true,
+        placement: 'bottom-start'
+    },
+    render: (args) => ({
+        Component: DropdownWithItems,
+        props: { ...args, custom: true }
+    })
+};
+
+/**
+ * The action sheet: the same menu from the bottom of the screen, with 48px
+ * rows. Roles, names and the arrow keys are the pop-over's; the focus trap,
+ * Escape, the backdrop and the swipe are BottomSheet's.
+ */
+export const ActionSheet: Story = {
+    args: {
+        isOpen: false,
+        placement: 'bottom-start'
+    },
+    render: (args) => ({
+        Component: DropdownWithItems,
+        props: { ...args, presentation: 'sheet' }
     })
 };

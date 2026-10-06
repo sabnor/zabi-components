@@ -50,13 +50,13 @@
         const shared = "cursor-pointer focus-ring";
         switch (variant) {
             case "elevated":
-                return `${shared} hover:bg-card-hover`;
+                return `${shared} hover:bg-card-hover active:bg-card-active`;
             case "outlined":
-                return `${shared} hover:border-border-medium hover:bg-card-hover`;
+                return `${shared} hover:border-border-medium hover:bg-card-hover active:bg-card-active`;
             case "flat":
-                return `${shared} hover:bg-card-hover`;
+                return `${shared} hover:bg-card-hover active:bg-card-active`;
             default:
-                return `${shared} hover:shadow-lg hover:bg-card-hover`;
+                return `${shared} hover:shadow-lg hover:bg-card-hover active:bg-card-active`;
         }
     });
 

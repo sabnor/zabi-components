@@ -2,8 +2,21 @@ export { default as Alert } from './Alert.svelte';
 export { default as ComponentDemo } from './ComponentDemo.svelte';
 export { default as ContactForm } from './ContactForm.svelte';
 export { default as Dropdown } from './Dropdown.svelte';
+export { default as DropdownItem } from './DropdownItem.svelte';
+export type {
+    DropdownItemIcon,
+    DropdownItemTone,
+    DropdownOption,
+} from '../util/dropdown.js';
 export { default as Form } from './Form.svelte';
 export { default as ImageUpload } from './ImageUpload.svelte';
+export { default as MediaGrid } from './MediaGrid.svelte';
+export type {
+    MediaGridItemType,
+    MediaGridKey,
+    MediaGridSelectDetail,
+    MediaGridStrings,
+} from '../util/media-grid.js';
 export { default as Modal } from './Modal.svelte';
 export { default as NavigationMenu } from './NavigationMenu.svelte';
 export { default as NavigationMenuList } from './NavigationMenuList.svelte';
@@ -23,4 +36,101 @@ export { default as Header } from './Header.svelte';
 export { default as EmptyState } from './EmptyState.svelte';
 export { default as Toaster } from './Toaster.svelte';
 export { default as RadioGroup } from './RadioGroup.svelte';
+export { default as SegmentedControl } from './SegmentedControl.svelte';
+export type {
+    SegmentedControlIcon,
+    SegmentedControlOption,
+} from '../util/segmented-control.js';
+export { default as SortableList } from './SortableList.svelte';
+export type {
+    SortableListAnnouncement,
+    SortableListReorderDetail,
+    SortableListRow,
+    SortableListStrings,
+} from '../util/sortable-list.js';
+export { default as Collapsible } from './Collapsible.svelte';
+export { default as SwipeableListItem } from './SwipeableListItem.svelte';
+export { DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS } from '../util/swipeable-list-item.js';
+export type { SwipeableListItemAction, SwipeableListItemStrings } from '../util/swipeable-list-item.js';
+export { default as PullToRefresh } from './PullToRefresh.svelte';
+export { DEFAULT_PULL_TO_REFRESH_STRINGS } from '../util/pull-to-refresh.js';
+export type { PullToRefreshStrings } from '../util/pull-to-refresh.js';
+export { default as CollapsibleGroup } from './CollapsibleGroup.svelte';
+export type {
+    CollapsibleHeadingLevel,
+    CollapsibleTriggerProps,
+    CollapsibleTriggerState,
+} from '../util/collapsible.js';
+export { default as ConfirmDialog } from './ConfirmDialog.svelte';
+export type {
+    ConfirmDialogCancelReason,
+    ConfirmDialogResult,
+    ConfirmDialogVariant,
+} from '../util/confirm-dialog.js';
+export { default as Drawer } from './Drawer.svelte';
+export type {
+    DrawerCloseReason,
+    DrawerSide,
+    DrawerSize,
+} from '../util/drawer.js';
+export { default as UnsavedChangesBar } from './UnsavedChangesBar.svelte';
+export { default as AppBar } from './AppBar.svelte';
+export { default as BottomTabBar } from './BottomTabBar.svelte';
+export type {
+    BottomTabBarIcon,
+    BottomTabBarItem,
+} from '../util/bottom-tab-bar.js';
+export { default as BottomSheet } from './BottomSheet.svelte';
+export type {
+    BottomSheetCloseReason,
+    BottomSheetSnap,
+} from '../util/bottom-sheet.js';
+export { default as StickyActionBar } from './StickyActionBar.svelte';
+export { default as Calendar } from './Calendar.svelte';
+export type {
+    CalendarEvent,
+    CalendarStrings,
+    CalendarTone,
+} from '../util/calendar.js';
+export { default as PhotoGrid } from './PhotoGrid.svelte';
+export { default as PhotoViewer } from './PhotoViewer.svelte';
+export type {
+    Photo,
+    PhotoGridSelectDetail,
+    PhotoGridStrings,
+    PhotoKey,
+    PhotoViewerAction,
+    PhotoViewerCloseReason,
+    PhotoViewerStrings,
+} from '../util/photo.js';
+export { default as AvatarGroup } from './AvatarGroup.svelte';
+export { DEFAULT_AVATAR_GROUP_STRINGS } from '../util/avatar.js';
+export type { AvatarGroupStrings, AvatarPerson } from '../util/avatar.js';
+export { default as Stepper } from './Stepper.svelte';
+export type {
+    StepperItem,
+    StepperLayout,
+    StepperStep,
+    StepperStepState,
+    StepperStrings,
+} from '../util/stepper.js';
 export * from './toast-store.js';
+export { DEFAULT_TOASTER_STRINGS, TOAST_DURATIONS } from '../util/toaster.js';
+export type { ToasterStrings, ToastPauseChange, ToastDuration } from '../util/toaster.js';
+export { DEFAULT_SELECT_STRINGS } from '../util/select.js';
+export type { SelectStrings, SelectPresentation } from '../util/select.js';
+export {
+    DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS,
+    DEFAULT_SIDEBAR_FOOTER_STRINGS,
+} from '../util/sidebar.js';
+export type { SidebarBrandHeaderStrings, SidebarFooterStrings } from '../util/sidebar.js';
+export {
+    DEFAULT_COMPONENT_DEMO_STRINGS,
+    DEFAULT_CONTACT_FORM_STRINGS,
+    DEFAULT_PROPS_TABLE_STRINGS,
+} from '../util/ready-made-strings.js';
+export type {
+    ComponentDemoStrings,
+    ContactFormStrings,
+    PropsTableStrings,
+} from '../util/ready-made-strings.js';

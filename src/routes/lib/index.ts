@@ -210,17 +210,15 @@ export * from '../../components/atoms/index';
 // ICONS - Re-export commonly used Lucide icons
 // ============================================================================
 
-export {
-    Sun,
-    Moon,
-    Monitor,
-    Grip,
-    GripVertical,
-    ChevronUp,
-    ChevronDown,
-    ChevronRight,
-    Zap,
-    Briefcase,
-    Clipboard,
-    Settings
-} from '@lucide/svelte';
+export { default as Sun } from '@lucide/svelte/icons/sun';
+export { default as Moon } from '@lucide/svelte/icons/moon';
+export { default as Monitor } from '@lucide/svelte/icons/monitor';
+export { default as Grip } from '@lucide/svelte/icons/grip';
+export { default as GripVertical } from '@lucide/svelte/icons/grip-vertical';
+export { default as ChevronUp } from '@lucide/svelte/icons/chevron-up';
+export { default as ChevronDown } from '@lucide/svelte/icons/chevron-down';
+export { default as ChevronRight } from '@lucide/svelte/icons/chevron-right';
+export { default as Zap } from '@lucide/svelte/icons/zap';
+export { default as Briefcase } from '@lucide/svelte/icons/briefcase';
+export { default as Clipboard } from '@lucide/svelte/icons/clipboard';
+export { default as Settings } from '@lucide/svelte/icons/settings';

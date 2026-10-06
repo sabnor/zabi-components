@@ -1,7 +1,9 @@
 <script lang="ts">
+    import { zabiCommonStrings } from "../util/zabi-strings.js";
     import Input from "../atoms/Input.svelte";
     import Badge from "../atoms/Badge.svelte";
-    import { Search, X } from "@lucide/svelte";
+    import Search from "@lucide/svelte/icons/search";
+    import X from "@lucide/svelte/icons/x";
     import type { Component } from "svelte";
     import { cn } from "../util/cn.js";
 
@@ -46,10 +48,10 @@
         title = "Items",
         subtitle = "Choose an item to continue",
         showSearch = true,
-        searchPlaceholder = "Search...",
-        searchValue = $bindable(""),
+        searchPlaceholder: searchPlaceholderGiven,
+        searchValue = $bindable<Exclude<Props["searchValue"], undefined>>(),
         items = [],
-        selectedItemId = $bindable(""),
+        selectedItemId = $bindable<Exclude<Props["selectedItemId"], undefined>>(),
         emptyStateTitle = "No matches",
         emptyStateDescription = "Try a different keyword.",
         emptyStateActionLabel = "",
@@ -60,6 +62,22 @@
         onEmptyStateAction,
         ...restProps
     }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (searchValue === undefined) searchValue = "";
+        if (selectedItemId === undefined) selectedItemId = "";
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
+
+    /** Words many components share: a `ZabiStringsProvider` above this one may give them; else English. */
+    const common = zabiCommonStrings();
+    const searchPlaceholder = $derived(searchPlaceholderGiven ?? common().search);
 
     /** `class` is the public prop; `className` is a deprecated alias.
      * Both are merged here so existing call sites keep working. */
@@ -79,7 +97,7 @@
     const containerClasses = $derived.by(() => {
         const resolvedWidthClass = widthClass.trim() || "w-80";
         const shell = isElevated
-            ? "rounded-container border border-border bg-card text-headline shadow-sm ring-1 ring-border/50"
+            ? "rounded-container border border-border bg-card text-headline shadow-sm ring-1 ring-border"
             : "rounded-container border border-border bg-card text-headline shadow-sm";
         return cn(`${resolvedWidthClass} shrink-0 p-5 ${shell} ${className}`);
     });
@@ -89,7 +107,10 @@
         const baseClasses =
             "focus-ring focus-ring--nav w-full cursor-pointer rounded-control px-3 py-2 text-left transition-colors duration-150";
         if (isActive) {
-            return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border/80`;
+            // The fill, the shadow and the ring are all dropped in forced
+            // colours; an outline is drawn there, so the selected item keeps
+            // a shape of its own.
+            return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2`;
         }
         return `${baseClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
     }
@@ -124,7 +145,7 @@
         </div>
         <button
             type="button"
-            class="-mr-0.5 -mt-0.5 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-control text-nav-menu-item transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover focus-ring focus-ring--nav"
+            class="-mr-0.5 -mt-0.5 inline-flex size-9 pointer-coarse:min-h-11 pointer-coarse:min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-control text-nav-menu-item transition-colors hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-nav-menu-active focus-ring focus-ring--nav"
             aria-label={closeLabel}
             onclick={handleClose}
         >
@@ -145,7 +166,7 @@
                 bind:value={searchValue}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                class="w-full min-w-0 min-h-10 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-border/60 hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
+                class="w-full min-w-0 min-h-10 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
             />
         </div>
     {/if}
@@ -197,14 +218,14 @@
         </ul>
     {:else}
         <div
-            class="rounded-container border border-dashed border-border bg-transparent px-4 py-4 ring-1 ring-border/40"
+            class="rounded-container border border-dashed border-border bg-transparent px-4 py-4"
         >
             <h4 class="text-sm font-semibold text-headline">{emptyStateTitle}</h4>
             <p class="mt-1 text-sm leading-relaxed text-description">{emptyStateDescription}</p>
             {#if emptyStateActionLabel.trim() && onEmptyStateAction}
                 <button
                     type="button"
-                    class="mt-3 inline-flex min-h-10 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary transition-colors hover:bg-action-primary-hover focus-ring focus-ring--nav"
+                    class="mt-3 inline-flex min-h-10 pointer-coarse:min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary transition-colors hover:bg-action-primary-hover focus-ring focus-ring--nav"
                     onclick={handleEmptyStateAction}
                 >
                     {emptyStateActionLabel.trim()}

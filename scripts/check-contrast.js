@@ -18,12 +18,15 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { resolveTokenColor, resolveTokenValue } from './resolve-tokens.js';
+import { BLOCKS, BLOCK_ROLES, SURFACE_CLASS, buildPairs } from './contrast-pairs.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const appCssPath = path.join(__dirname, '../src/app.css');
+// Optional path, so the guard can be run against another revision of the stylesheet.
+const appCssPath = process.argv[2]
+    ? path.resolve(process.argv[2])
+    : path.join(__dirname, '../src/app.css');
 
-const AA_NORMAL = 4.5;
-const AA_LARGE = 3.0;
 
 /* ---------- colour maths ---------- */
 
@@ -99,15 +102,58 @@ function parseTheme(css) {
     return { light, dark };
 }
 
-function resolve(map, token, depth = 0) {
-    if (depth > 20) return null;
-    let value = map[token];
-    if (!value) return null;
-    value = value.replace(/\/\*[\s\S]*?\*\//g, '').trim();
-    if (value.startsWith('#')) return value;
-    const varMatch = value.match(/^var\((--[\w-]+)\)$/);
-    if (varMatch) return resolve(map, varMatch[1], depth + 1);
-    return null; // rgba()/color-mix() — not a flat colour, skipped by design
+/**
+ * A token as one flat colour, or null. `var()` chains are followed and an
+ * opaque `color-mix()` is evaluated — the dark surface levels are mixes of two
+ * neutral steps, and returning null for them would skip every pair measured
+ * against a dark card instead of checking it.
+ */
+function resolve(map, token) {
+    return resolveTokenColor(map, token); // null: rgba() or a mix with transparent; see resolveOver()
+}
+
+function toHex(channels) {
+    return '#' + channels.map((c) => Math.round(c).toString(16).padStart(2, '0')).join('');
+}
+
+function parseHex(hex) {
+    const h = hex.replace('#', '');
+    const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+    return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
+}
+
+/** Follow `var()` chains to the literal value, whatever form it takes. */
+function resolveRaw(map, token) {
+    return resolveTokenValue(map, token);
+}
+
+/**
+ * The colour a token paints when laid over `surfaceToken`: a flat token is
+ * returned as it is, an `rgba()` tint is composited source-over onto the
+ * surface, and `transparent` is the surface itself.
+ *
+ * The alpha tokens are the hover, pressed and secondary-button fills. They
+ * used to be skipped as "always visible by construction", which is true of
+ * their direction and says nothing about their strength: light hover was 6%
+ * ink, 1.14:1 on a card, and nothing here noticed.
+ */
+function resolveOver(map, token, surfaceToken) {
+    const surface = resolve(map, surfaceToken);
+    const raw = resolveRaw(map, token);
+    if (!surface || !raw) return null;
+    if (raw.startsWith('#')) return raw;
+    if (raw === 'transparent') return surface;
+    const m = raw.match(/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:[\s,/]+([\d.]+))?\s*\)$/);
+    if (!m) return null;
+    const alpha = m[4] === undefined ? 1 : Number(m[4]);
+    const tint = [m[1], m[2], m[3]].map(Number);
+    return toHex(parseHex(surface).map((c, i) => c * (1 - alpha) + tint[i] * alpha));
+}
+
+function contrastExact(a, b) {
+    const la = luminance(a);
+    const lb = luminance(b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
 
 /* ---------- interaction fills must differ from what they sit on ---------- */
@@ -140,13 +186,23 @@ const INTERACTION_FILLS = [
     { name: 'sidebar row :hover', fill: '--color-nav-menu-hover', on: '--color-background' },
     { name: 'sidebar row active', fill: '--color-nav-menu-active', on: '--color-background' },
     { name: 'card :hover', fill: '--color-card-hover', on: '--color-card' },
+    // The card sits on the page, so its hover fill must not BE the page either.
+    // Light card-hover and the light page were both base-100: a hovered card
+    // kept its shadow and lost its fill. The floor is lower than for the fill
+    // it replaces because the shadow still draws the card's outline.
+    { name: 'card :hover vs the page', fill: '--color-card-hover', on: '--color-surface-base', min: 2.5 },
     { name: 'card :active', fill: '--color-card-active', on: '--color-card' },
     { name: 'overlay row :hover', fill: '--color-surface-overlay-hover', on: '--color-surface-overlay' },
     { name: 'input :hover', fill: '--color-input-hover', on: '--color-input' },
+    // Pressed has to be a step past hover too, or holding a hovered field shows nothing.
+    { name: 'input :active', fill: '--color-input-active', on: '--color-input' },
+    { name: 'input :active vs :hover', fill: '--color-input-active', on: '--color-input-hover' },
+    // And short of the border, or the pressed field loses its edge.
+    { name: 'input :active vs its border', fill: '--color-input-active', on: '--color-input-border' },
     { name: 'secondary action', fill: '--color-action-secondary-subtle', on: '--color-card' },
 ];
 
-for (const family of ['success', 'warning', 'error', 'info', 'energetic', 'neutral']) {
+for (const family of ['success', 'warning', 'error', 'info', 'energetic', 'neutral', 'accent']) {
     // A subtle badge/alert fill sits on a card or on the page itself.
     INTERACTION_FILLS.push(
         { name: `${family} subtle fill · on card`, fill: `--color-${family}-subtle`, on: '--color-card' },
@@ -168,10 +224,11 @@ function checkInteractionFills(themes) {
             if (!fill || !on) continue;
             checked += 1;
             const distance = deltaE(fill, on);
-            if (distance < MIN_FILL_DELTA_E) {
+            const floor = entry.min ?? MIN_FILL_DELTA_E;
+            if (distance < floor) {
                 failures.push(
                     `${themeName} · ${entry.name}: ${entry.fill} ${fill} is ΔE ${distance} from ` +
-                        `${entry.on} ${on} (needs ${MIN_FILL_DELTA_E})`,
+                        `${entry.on} ${on} (needs ${floor})`,
                 );
             }
         }
@@ -180,69 +237,257 @@ function checkInteractionFills(themes) {
     return { failures, checked };
 }
 
-/* ---------- the pairs components actually render ---------- */
+/* ---------- alpha tints, composited over the surface they land on ---------- */
 
-const FAMILIES = ['success', 'warning', 'error', 'info', 'energetic', 'neutral'];
+/**
+ * A hover or secondary fill has to be strong enough to see, not merely
+ * different. 1.2:1 is where dark mode already sat (1.24–1.32) and where a
+ * tint starts to read as a control rather than as noise.
+ */
+const MIN_TINT_CONTRAST = 1.2;
+/** Each state must also be a visible step past the one before it. */
+const MIN_STATE_STEP = 1.08;
 
-function buildPairs() {
-    const pairs = [];
+const TINT_SURFACES = ['--color-surface-base', '--color-surface-raised', '--color-surface-elevated', '--color-surface-overlay'];
 
-    for (const family of FAMILIES) {
-        // Badge / solid emphasis: family fill + the card surface as label.
-        pairs.push({
-            name: `badge solid · ${family}`,
-            bg: `--color-${family}`,
-            fg: '--color-card',
-            min: AA_NORMAL,
-        });
-        // Badge / subtle emphasis and Alert: tinted fill + the -text step.
-        pairs.push({
-            name: `badge subtle · ${family}`,
-            bg: `--color-${family}-subtle`,
-            fg: `--color-${family}-text`,
-            min: AA_NORMAL,
-        });
-        // Alert body copy sits on the same tinted fill.
-        pairs.push({
-            name: `alert body · ${family}`,
-            bg: `--color-${family}-subtle`,
-            fg: '--color-body',
-            min: AA_NORMAL,
-        });
-        // Validation message text on the page surface.
-        pairs.push({
-            name: `message text · ${family}`,
-            bg: '--color-surface-base',
-            fg: `--color-${family}-text`,
-            min: AA_NORMAL,
-        });
+/** [name, resting tint, then each stronger state in order] */
+const TINT_LADDERS = [
+    ['quiet control', '--color-surface-hover', '--color-surface-active'],
+    ['secondary button', '--color-action-secondary', '--color-action-secondary-hover', '--color-action-secondary-active'],
+];
+
+function checkAlphaTints(themes) {
+    const failures = [];
+    let checked = 0;
+
+    for (const themeName of ['light', 'dark']) {
+        const map = themes[themeName];
+        for (const surface of TINT_SURFACES) {
+            const under = resolve(map, surface);
+            for (const [name, ...states] of TINT_LADDERS) {
+                let previous = under;
+                states.forEach((token, i) => {
+                    const painted = resolveOver(map, token, surface);
+                    if (!painted || !under) {
+                        failures.push(`${themeName} · ${name}: ${token} over ${surface} cannot be resolved`);
+                        return;
+                    }
+                    checked += 1;
+                    const ratio = contrastExact(painted, under);
+                    if (i === 0 && ratio < MIN_TINT_CONTRAST) {
+                        failures.push(
+                            `${themeName} · ${name}: ${token} over ${surface} paints ${painted} on ${under} = ` +
+                                `${ratio.toFixed(2)}:1 (needs ${MIN_TINT_CONTRAST}:1)`,
+                        );
+                    }
+                    const step = contrastExact(painted, previous);
+                    if (i > 0 && step < MIN_STATE_STEP) {
+                        failures.push(
+                            `${themeName} · ${name}: ${token} over ${surface} paints ${painted}, only ` +
+                                `${step.toFixed(2)}:1 past the state before it (needs ${MIN_STATE_STEP}:1)`,
+                        );
+                    }
+                    previous = painted;
+                });
+            }
+        }
+
+        // The overlay edge is drawn on the overlay's own fill and has to show
+        // against it: a white menu over a white card has no other outline.
+        const edge = resolveOver(map, '--color-border-overlay', '--color-surface-overlay');
+        const overlay = resolve(map, '--color-surface-overlay');
+        if (!edge || !overlay) {
+            failures.push(`${themeName} · overlay edge: --color-border-overlay cannot be resolved`);
+        } else {
+            checked += 1;
+            const ratio = contrastExact(edge, overlay);
+            if (ratio < MIN_TINT_CONTRAST) {
+                failures.push(
+                    `${themeName} · overlay edge: --color-border-overlay paints ${edge} on ${overlay} = ` +
+                        `${ratio.toFixed(2)}:1 (needs ${MIN_TINT_CONTRAST}:1)`,
+                );
+            }
+        }
     }
 
-    pairs.push(
-        { name: 'button primary', bg: '--color-action-primary', fg: '--color-action-primary-text', min: AA_NORMAL },
-        { name: 'button primary :hover', bg: '--color-action-primary-hover', fg: '--color-action-primary-text', min: AA_NORMAL },
-        { name: 'button primary :active', bg: '--color-action-primary-active', fg: '--color-action-primary-text', min: AA_NORMAL },
-        { name: 'button danger', bg: '--color-action-danger', fg: '--color-action-danger-text', min: AA_NORMAL },
-        { name: 'button danger :hover', bg: '--color-action-danger-hover', fg: '--color-action-danger-text', min: AA_NORMAL },
-        { name: 'button danger :active', bg: '--color-action-danger-active', fg: '--color-action-danger-text', min: AA_NORMAL },
-        { name: 'body text on page', bg: '--color-surface-base', fg: '--color-body', min: AA_NORMAL },
-        { name: 'body text on card', bg: '--color-surface-raised', fg: '--color-body', min: AA_NORMAL },
-        { name: 'description on page', bg: '--color-surface-base', fg: '--color-description', min: AA_NORMAL },
-        { name: 'description on overlay', bg: '--color-surface-overlay', fg: '--color-description', min: AA_NORMAL },
-        { name: 'caption on card', bg: '--color-surface-raised', fg: '--color-caption', min: AA_NORMAL },
-        { name: 'label on page', bg: '--color-surface-base', fg: '--color-label', min: AA_NORMAL },
-        { name: 'link on page', bg: '--color-surface-base', fg: '--color-link', min: AA_NORMAL },
-        { name: 'link on card', bg: '--color-surface-raised', fg: '--color-link', min: AA_NORMAL },
-        { name: 'input value', bg: '--color-input', fg: '--color-body', min: AA_NORMAL },
-        // Placeholders are decorative-ish, but must stay readable — large-text bar.
-        { name: 'input placeholder', bg: '--color-input', fg: '--color-input-placeholder', min: AA_LARGE },
-        { name: 'tooltip', bg: '--color-tooltip-bg', fg: '--color-tooltip-fg', min: AA_NORMAL },
-        // Disabled controls are exempt from WCAG, but should still be legible.
-        { name: 'disabled control', bg: '--color-action-disabled', fg: '--color-action-disabled-text', min: 3.0 },
-    );
-
-    return pairs;
+    return { failures, checked };
 }
+
+/* ---------- every focus-ring variant reads a colour the pairs hold ---------- */
+
+/**
+ * `.focus-ring--muted` set `--zabi-focus-ring-color: var(--color-base-500)`: a
+ * raw ramp step, in no pair, so the ring was 2.49:1 on the dark elevated
+ * surface and every check passed. The pair list can only hold tokens it knows
+ * about, so this reads the stylesheet the other way round: whatever a rule
+ * hands to `--zabi-focus-ring-color` has to be a flat colour in both themes
+ * and has to be measured against the surfaces in contrast-pairs.js. A new
+ * variant, or one re-pointed at a ramp step, fails here until it is listed.
+ */
+function checkFocusRingSources(css, themes, pairs) {
+    const failures = [];
+    const sources = new Set();
+    const re = /--zabi-focus-ring-color\s*:\s*([^;]+);/g;
+    let m;
+    while ((m = re.exec(css))) {
+        const value = m[1].trim();
+        // `var(--role)` or `var(--role, <fallback>)`. The role is what the
+        // library's own theme paints; a fallback only serves an app whose
+        // theme file lacks the role, which the flat-colour check below rules
+        // out here.
+        const token = value.match(/^var\(\s*(--[\w-]+)\s*(?:,[\s\S]*)?\)$/);
+        if (!token) {
+            failures.push(`--zabi-focus-ring-color: ${value} is not a token, so no pair can measure it`);
+            continue;
+        }
+        sources.add(token[1]);
+    }
+    if (sources.size === 0) failures.push('no --zabi-focus-ring-color declaration found: the focus-ring rules have moved');
+
+    const SURFACES = ['base', 'raised', 'inset', 'elevated', 'overlay'].map((s) => `--color-surface-${s}`);
+    for (const token of sources) {
+        const missing = SURFACES.filter((bg) => !pairs.some((p) => p.fg === token && p.bg === bg && p.min >= 3));
+        if (missing.length) {
+            failures.push(
+                `focus ring colour ${token} is not held to 3:1 on ${missing.join(', ')}: ` +
+                    'add it to UI_PARTS in scripts/contrast-pairs.js',
+            );
+        }
+        for (const themeName of ['light', 'dark']) {
+            if (!resolve(themes[themeName], token)) {
+                failures.push(`${themeName} · focus ring colour ${token} is not a flat colour, so its pairs would be skipped`);
+            }
+        }
+    }
+    return { failures, checked: sources.size };
+}
+
+/**
+ * Controls inside a brand or accent block.
+ *
+ * `.on-brand` and `.on-accent` re-point the roles a control writes with when
+ * it has no fill of its own (scripts/contrast-pairs.js, BLOCK_ROLES). The
+ * pair list measures a role where the theme declares it, on the root; what a
+ * block does to it is in a rule of the stylesheet, so that rule is read here:
+ *
+ *  1. Every such role is re-pointed in each block, at a flat colour that
+ *     reads against the block's fill, in both themes.
+ *  2. Whatever a block re-points can be given back: the role as it is
+ *     outside the block is kept as `--zabi-theme-<role>`, on the block's
+ *     parent, and a rule for surfaces inside a block restores it. A role re-pointed and not restored would put the block's
+ *     label colour on every card inside it (white on white, in light).
+ *  3. Every surface fill a component uses is in the selector of that rule.
+ */
+function checkBlocks(css, themes, componentsDir) {
+    const failures = [];
+    let checked = 0;
+    const declarations = (body) => {
+        const map = {};
+        const re = /(--[\w-]+|color)\s*:\s*([^;]+);/g;
+        let m;
+        while ((m = re.exec(body))) map[m[1]] = m[2].trim();
+        return map;
+    };
+    const ruleBody = (selector) => {
+        const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const match = css.match(new RegExp(`\\n\\s*${escaped}\\s*\\{([^}]*)\\}`));
+        return match ? declarations(match[1]) : null;
+    };
+
+    // The roles as they are outside the block, kept under another name on the block's parent.
+    const kept = css.match(/\n\s*([^{}\n]*:has\([^{}]*)\{([^{}]*--zabi-theme-[\w-]+\s*:[^{}]*)\}/);
+    if (!kept) {
+        return { failures: ['the rule that keeps the theme values (--zabi-theme-*) on the parent of a block was not found'], checked };
+    }
+    const copies = declarations(kept[2]);
+    for (const block of BLOCKS) {
+        // Written on a block, or inside one, a kept value would be the block's own colour.
+        for (const selector of [`> ${block.selector}`, `${block.selector} *`, `${block.selector},`]) {
+            if (!kept[1].includes(selector)) {
+                failures.push(`the rule that keeps the theme values must hold "${selector.replace(/,$/, '')}" in its selector: ${kept[1].trim()}`);
+            }
+        }
+    }
+
+    // The two rules that give them back: on a surface inside a block, and on what is inside that surface.
+    const resets = [...css.matchAll(/:where\(\.on-brand, \.on-accent\)\s*:where\(([^)]*)\)(\s*>\s*:where\(\*\))?\s*\{([^}]*)\}/g)];
+    const restored = {};
+    const surfaces = new Set();
+    for (const reset of resets) {
+        Object.assign(restored, declarations(reset[3]));
+        for (const name of reset[1].split(',')) surfaces.add(name.trim());
+    }
+    if (resets.length < 2) failures.push('the rules that restore the theme values on a surface inside a block were not found');
+
+    for (const block of BLOCKS) {
+        const own = ruleBody(block.selector);
+        if (!own) {
+            failures.push(`${block.selector} was not found in the stylesheet`);
+            continue;
+        }
+        for (const [role, min] of BLOCK_ROLES) {
+            const value = own[role];
+            const token = value?.match(/^var\(\s*(--[\w-]+)\s*\)$/)?.[1];
+            if (!token) {
+                failures.push(`${block.selector} does not re-point ${role} at a token: on the block it is the page's colour`);
+                continue;
+            }
+            for (const themeName of ['light', 'dark']) {
+                const map = themes[themeName];
+                const fill = resolve(map, block.fill);
+                const colour = resolve(map, token);
+                if (!fill || !colour) {
+                    failures.push(`${themeName} · ${role} in the ${block.name} block: ${!fill ? block.fill : token} is not a flat colour`);
+                    continue;
+                }
+                const ratio = contrast(fill, colour);
+                checked += 1;
+                if (ratio < min) {
+                    failures.push(`${themeName} · ${role} in the ${block.name} block: ${colour} on ${fill} = ${ratio}:1 (needs ${min}:1)`);
+                }
+            }
+        }
+        for (const role of Object.keys(own)) {
+            if (role === 'color') continue;
+            const copy = `--zabi-theme-${role.replace(/^--color-/, '')}`;
+            if (!copies[copy]?.startsWith(`var(${role}`)) {
+                failures.push(`${block.selector} re-points ${role}, but its theme value is not kept as ${copy}`);
+            } else if (restored[role] !== `var(${copy})`) {
+                failures.push(`${block.selector} re-points ${role}, but no rule gives it back on a surface inside the block`);
+            }
+        }
+    }
+
+    // Every surface fill a component paints at rest (no variant in front of the class).
+    const used = new Set();
+    const walk = (dir) => {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const full = path.join(dir, entry.name);
+            if (entry.isDirectory()) walk(full);
+            else if (/\.(svelte|ts)$/.test(entry.name)) {
+                for (const m of fs.readFileSync(full, 'utf8').matchAll(/(?:^|["'`\s])bg-([a-z0-9-]+)(?=["'`\s]|$)/gm)) used.add(m[1]);
+            }
+        }
+    };
+    if (fs.existsSync(componentsDir)) walk(componentsDir);
+    let surfaceFills = 0;
+    for (const name of used) {
+        if (!SURFACE_CLASS.test(name) || !(`--color-${name}` in themes.light)) continue;
+        // A translucent fill is the block showing through, not a surface.
+        if (!resolve(themes.light, `--color-${name}`)) continue;
+        surfaceFills += 1;
+        if (!surfaces.has(`.bg-${name}`)) {
+            failures.push(
+                `bg-${name} is a surface a component paints, but it is not in the rule that restores the theme's text ` +
+                    'on a surface inside a brand or accent block (src/app.css, below .on-accent)',
+            );
+        }
+    }
+    return { failures, checked, surfaceFills };
+}
+
+/* ---------- the pairs components actually render ---------- */
+
 
 function main() {
     const css = fs.readFileSync(appCssPath, 'utf8');
@@ -258,16 +503,41 @@ function main() {
         for (const pair of pairs) {
             const bg = resolve(map, pair.bg);
             const fg = resolve(map, pair.fg);
+            // A token that is not declared at all is a renamed or deleted role,
+            // not an alpha value: skipping it would drop its pairs silently.
+            const undeclared = [pair.bg, pair.fg, ...(pair.orFg ? [pair.orFg] : [])].find((token) => !(token in map));
+            if (undeclared) {
+                failures.push(`${themeName} · ${pair.name}: ${undeclared} is not declared, so the pair cannot be checked`);
+                continue;
+            }
             if (!bg || !fg) {
                 skipped.push(`${themeName} · ${pair.name} (${!bg ? pair.bg : pair.fg} is not a flat colour)`);
                 continue;
             }
             const ratio = contrast(bg, fg);
-            if (ratio < pair.min) {
+            // `orFg`: a second foreground that may carry the pair instead.
+            const other = pair.orFg ? resolve(map, pair.orFg) : null;
+            const otherRatio = other ? contrast(bg, other) : 0;
+            if (Math.max(ratio, otherRatio) < pair.min) {
                 failures.push(
-                    `${themeName} · ${pair.name}: ${fg} on ${bg} = ${ratio}:1 (needs ${pair.min}:1)`,
+                    `${themeName} · ${pair.name}: ${fg} on ${bg} = ${ratio}:1` +
+                        (other ? ` and ${other} on ${bg} = ${otherRatio}:1` : '') +
+                        ` (needs ${pair.min}:1)`,
                 );
             }
+        }
+    }
+
+    // Components paint the label with --color-action-primary-text; apps set it
+    // through --color-on-brand (--zabi-on-brand / --zabi-on-brand-dark). If the
+    // two ever come apart, the documented knob stops reaching the button.
+    for (const themeName of ['light', 'dark']) {
+        const label = resolve(themes[themeName], '--color-action-primary-text');
+        const onBrand = resolve(themes[themeName], '--color-on-brand');
+        if (!label || label !== onBrand) {
+            failures.push(
+                `${themeName} · --color-action-primary-text (${label}) must follow --color-on-brand (${onBrand})`,
+            );
         }
     }
 
@@ -278,6 +548,15 @@ function main() {
     const fills = checkInteractionFills(themes);
     failures.push(...fills.failures);
 
+    const tints = checkAlphaTints(themes);
+    failures.push(...tints.failures);
+
+    const rings = checkFocusRingSources(css, themes, pairs);
+    failures.push(...rings.failures);
+
+    const blocks = checkBlocks(css, themes, path.join(path.dirname(appCssPath), 'components'));
+    failures.push(...blocks.failures);
+
     if (failures.length) {
         console.error('\n❌ Contrast check failed:\n');
         failures.forEach((f) => console.error('  • ' + f));
@@ -286,7 +565,12 @@ function main() {
     }
 
     console.log(`✓ ${pairs.length * 2 - skipped.length} colour pairs pass WCAG AA in both themes`);
-    console.log(`✓ ${fills.checked} interaction fills are distinguishable from the surface they sit on\n`);
+    console.log(`✓ ${fills.checked} interaction fills are distinguishable from the surface they sit on`);
+    console.log(`✓ ${tints.checked} alpha tints read at ${MIN_TINT_CONTRAST}:1 or more over the surface they land on`);
+    console.log(`✓ ${rings.checked} focus-ring colours are each measured against the surfaces a control lands on`);
+    console.log(
+        `✓ ${blocks.checked} role colours inside a brand or accent block read against its fill, and ${blocks.surfaceFills} surface fills get the theme's back\n`,
+    );
 }
 
 main();

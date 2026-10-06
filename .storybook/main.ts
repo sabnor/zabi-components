@@ -15,42 +15,14 @@ const config: StorybookConfig = {
   staticDirs: ['../static'],
 
   features: {
-    buildStoriesJson: true
+    buildStoriesJson: true,
+    // Setup prompts for whoever maintains a Storybook, not for someone reading
+    // this one on the site.
+    sidebarOnboardingChecklist: false
   },
 
-  options: {
-    storySort: {
-      order: [
-        'Design System',
-        'Design System/Atoms',
-        'Design System/Atoms/Heading',
-        'Design System/Atoms/Button',
-        'Design System/Atoms/Badge',
-        'Design System/Atoms/Card',
-        'Design System/Atoms/Input',
-        'Design System/Atoms/Textarea',
-        'Design System/Atoms/Select',
-        'Design System/Atoms/Checkbox',
-        'Design System/Atoms/Toggle',
-        'Design System/Atoms/ColorPicker',
-        'Design System/Atoms/ThemeToggle',
-        'Design System/Atoms/Skeleton',
-        'Design System/Atoms/OptimizedImage',
-        'Design System/Atoms/Tooltip',
-        'Design System/Molecules',
-        'Design System/Molecules/Alert',
-        'Design System/Molecules/Dropdown',
-        'Design System/Molecules/Tabs',
-        'Design System/Molecules/Modal',
-        'Design System/Molecules/SlideUp',
-        'Design System/Molecules/ImageUpload',
-        'Design System/Organisms',
-        'Design System/Organisms/TopNavbar',
-        'Design System/Organisms/Navigation',
-        '*'
-      ],
-      method: 'configure'
-    }
+  core: {
+    disableWhatsNewNotifications: true
   }
 };
 

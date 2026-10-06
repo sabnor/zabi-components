@@ -4,6 +4,14 @@ import FormFieldStory from './FormFieldStory.svelte';
 const meta = {
     title: 'Design System/Molecules/FormField',
     component: FormFieldStory,
+    parameters: {
+        docs: {
+            description: {
+                component:
+                    'Accessible field wrapper: label, description, error, and a control snippet for the input.'
+            }
+        }
+    },
     tags: ['autodocs'],
 } satisfies Meta<typeof FormFieldStory>;
 

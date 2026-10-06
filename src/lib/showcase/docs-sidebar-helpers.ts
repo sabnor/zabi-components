@@ -1,11 +1,9 @@
-import {
-    Bell,
-    Circle,
-    CircleCheck,
-    House,
-    Package,
-    PieChart,
-} from "@lucide/svelte";
+import Bell from "@lucide/svelte/icons/bell";
+import Circle from "@lucide/svelte/icons/circle";
+import CircleCheck from "@lucide/svelte/icons/circle-check";
+import House from "@lucide/svelte/icons/house";
+import Package from "@lucide/svelte/icons/package";
+import PieChart from "@lucide/svelte/icons/chart-pie";
 import type { Component } from "svelte";
 
 type SidebarNavIcon = Component<{ size?: number; class?: string }>;

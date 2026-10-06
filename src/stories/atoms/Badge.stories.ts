@@ -7,13 +7,19 @@ const meta = {
     title: 'Design System/Atoms/Badge',
     component: Badge,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Small status label in the semantic tones, plus neutral, energetic and the app\'s accent.'
+            }
+        },
         layout: 'centered'
     },
     tags: ['autodocs'],
     argTypes: {
         variant: {
             control: 'select',
-            options: ['default', 'success', 'warning', 'error', 'info', 'neutral', 'energetic']
+            options: ['default', 'success', 'warning', 'error', 'info', 'neutral', 'energetic', 'accent']
         },
         text: {
             control: 'text'

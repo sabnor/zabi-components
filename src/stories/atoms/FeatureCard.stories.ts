@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
-import { ShieldCheck, Sparkles, Zap } from '@lucide/svelte';
+import ShieldCheck from '@lucide/svelte/icons/shield-check';
+import Sparkles from '@lucide/svelte/icons/sparkles';
+import Zap from '@lucide/svelte/icons/zap';
 import FeatureCard from '../../components/atoms/FeatureCard.svelte';
 
 const meta = {

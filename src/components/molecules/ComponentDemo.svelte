@@ -1,15 +1,23 @@
 <script lang="ts">
+    import { mergeStrings } from "../util/ready-made-strings.js";
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import CodeBlock from "../atoms/CodeBlock.svelte";
     import Card from "../atoms/Card.svelte";
     import CardHeader from "../atoms/CardHeader.svelte";
     import CardContent from "../atoms/CardContent.svelte";
     import { cn } from "../util/cn.js";
+    import {
+        DEFAULT_COMPONENT_DEMO_STRINGS,
+        type ComponentDemoStrings,
+    } from "../util/ready-made-strings.js";
 
     interface Props {
         title: string;
         description?: string;
         code: string;
         language?: string;
+        /** The words of the switch between the preview and the code. */
+        strings?: Partial<ComponentDemoStrings>;
         class?: string;
         /** @deprecated use `class`. */
         className?: string;
@@ -20,6 +28,7 @@
         description = "",
         code,
         language = "svelte",
+        strings,
         class: classAttr = "",
         className: legacyClass = "",
         children,
@@ -31,6 +40,9 @@
     const className = $derived(cn(`${classAttr} ${legacyClass}`));
 
     let showCode = $state(false);
+
+    const provided = zabiStringsFor("componentDemo");
+    const text = $derived(mergeStrings(DEFAULT_COMPONENT_DEMO_STRINGS, provided(), (strings as Partial<ComponentDemoStrings> | undefined)));
 </script>
 
 <div class="relative">
@@ -44,8 +56,8 @@
         <CardContent>
             <button
                 onclick={() => (showCode = !showCode)}
-                class="absolute top-8 right-8 z-10 flex cursor-pointer items-center gap-2 rounded-control px-3 py-2 text-sm text-description transition-colors duration-200 hover:bg-surface-hover hover:text-body"
-                aria-label={showCode ? "Show preview" : "Show code"}
+                class="absolute top-8 right-8 z-10 flex cursor-pointer items-center gap-2 rounded-control px-3 py-2 pointer-coarse:min-h-11 text-sm text-description transition-colors duration-200 hover:bg-surface-hover hover:text-body active:bg-surface-active"
+                aria-label={showCode ? text.showPreview : text.showCode}
             >
                 {#if showCode}
                     <svg
@@ -67,7 +79,7 @@
                             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                         />
                     </svg>
-                    Preview
+                    {text.preview}
                 {:else}
                     <svg
                         class="w-4 h-4"
@@ -82,7 +94,7 @@
                             d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
                         />
                     </svg>
-                    Code
+                    {text.code}
                 {/if}
             </button>
 

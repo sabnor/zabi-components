@@ -1,83 +1,50 @@
-# Storybook Stories
+# Storybook stories
 
-This directory contains Storybook stories for all components in the zabi-components library. The stories are organized by component type and provide comprehensive examples and interactive controls.
+Stories for the components in this library, one file per component, grouped by
+layer. Storybook is also published with the site at `/storybook/`.
 
-## Structure
-
-### Atoms
-Basic building blocks of the UI system:
-
-- **Badge** - Status indicators with various styles and states
-- **Button** - Interactive buttons with multiple variants and sizes
-- **Card** - Container components with different densities and variants
-- **Checkbox** - Form input with various states and configurations
-- **ColorPicker** - Color selection component with predefined palettes
-- **Heading** - Typography component with different levels and styles
-- **Input** - Text input with validation states and various types
-- **OptimizedImage** - Image component with lazy loading and error handling
-- **PerformanceMonitor** - Development tool for monitoring performance metrics
-- **Select** - Dropdown selection component with search and clear options
-- **Skeleton** - Loading placeholders with customizable dimensions
-- **TextAlignment** - Text alignment selector with visual controls
-- **Textarea** - Multi-line text input with resize options
-- **Toggle** - Switch component for boolean values
-
-### Molecules
-Combinations of atoms that form more complex UI elements:
-
-- **Alert** - Notification messages with different types and dismissibility
-- **Dropdown** - Contextual menus with positioning options
-- **ImageUpload** - File upload component with preview and existing image selection
-- **KeyValueForm** - Dynamic form generator with various field types
-- **Modal** - Overlay dialogs with backdrop and keyboard navigation
-- **SlideUp** - Mobile-friendly bottom sheet component
-- **Tabs** - Tabbed interface for organizing content
-
-### Organisms
-Complex components that manage state and combine multiple molecules:
-
-- **TopNavbar** - Sticky top navigation bar with brand, menu items, and actions
-- **Navigation** - Navigation component with header and sidebar variants
-
-## Usage
-
-Each story provides:
-
-1. **Interactive Controls** - Storybook controls to modify component props
-2. **Multiple Variants** - Different states, sizes, and configurations
-3. **Real Examples** - Practical usage scenarios
-4. **Accessibility** - ARIA attributes and keyboard navigation
-5. **Responsive Design** - Mobile-first approach with breakpoints
-
-## Development
-
-To run Storybook locally:
+## Run it
 
 ```bash
-npm run storybook
+npm run storybook          # dev server on port 6006
+npm run build-storybook    # static build into storybook-static/
+npm run build:site         # site build, with Storybook copied into static/storybook
 ```
 
-To build Storybook for production:
+## What is here
 
-```bash
-npm run build-storybook
-```
+| Path | Contents |
+|---|---|
+| `Introduction.mdx` | First page: install, theme import, how to use the toolbar |
+| `Colors.mdx` | Ramps and semantic tokens, read from `src/app.css` through `tokens.ts` |
+| `atoms/` | ActionPanel, Badge, Button, Card, Checkbox, CodeBlock, ColorPicker, Container, DateField, Divider, FeatureCard, FloatingActionButton, Heading, IconButton, Input, List, ListItem, OptimizedImage, Progress, Rating, Select, Skeleton, Slider, Spinner, Table, Text, Textarea, ThemeToggle, TimeField, Toast, Toggle, Tooltip |
+| `molecules/` | Alert, AppBar, BottomSheet, BottomTabBar, Calendar, Collapsible, ConfirmDialog, ContactForm, Drawer, Dropdown, EmptyState, Form, FormField, ImageUpload, MediaGrid, Modal, NavigationMenu, Page, PhotoGrid, PhotoViewer, Section, SegmentedControl, SlideUp, SortableList, Stepper, StickyActionBar, Tabs, Toaster, UnsavedChangesBar |
+| `organisms/` | AppShell, SidebarNavigation, SidebarNavigation/Account panel, SidebarPanel, TopNavbar, TopNavbar/Inline nav |
 
-## Story Conventions
+A `.svelte` file beside a story is a wrapper for it, used when a story needs
+children, snippets or local state that story args cannot express.
 
-- Use descriptive story names that explain the purpose
-- Include both basic and advanced examples
-- Show different states (loading, error, success, disabled)
-- Demonstrate responsive behavior
-- Include accessibility features
-- Use consistent naming for similar patterns across components
+Two components have no file of their own: CollapsibleGroup is shown in the
+Collapsible stories (the accordion ones), and DropdownItem in the Dropdown
+stories.
 
-## Component Integration
+## Writing a story
 
-All components are properly typed with TypeScript and follow the established patterns:
+- Title it `Design System/<Layer>/<Component>` so it sorts into the sidebar.
+- Add `tags: ['autodocs']` so the component gets a Docs page.
+- Give the component a description in `parameters.docs.description.component`.
+  Say what it does and when to use it.
+- Describe a story in `parameters.docs.description.story` when its name alone
+  does not say why it exists.
+- Do not hardcode colors in a story. Use token classes (`bg-surface-raised`,
+  `text-description`) so the story follows the Theme control.
 
-- Consistent prop naming and structure
-- Event dispatching for user interactions
-- Accessibility attributes and keyboard navigation
-- Responsive design with Tailwind CSS
-- Error handling and validation states
+## Configuration
+
+| File | Purpose |
+|---|---|
+| `.storybook/zabi-theme.ts` | Storybook's own interface in Zabi's colors, light and dark |
+| `.storybook/manager.ts` | Applies that theme to the sidebar and toolbar, and follows the Theme control |
+| `.storybook/preview.ts` | Theme control, background surfaces, sidebar order, and the Docs pages' theme, which follows the same control |
+| `.storybook/preview-head.html` | Font faces for the stories |
+| `.storybook/preview-body.html` | Frame background, from the surface tokens |

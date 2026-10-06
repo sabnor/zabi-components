@@ -8,70 +8,121 @@
  *
  * Iris is the default theme, so it has no overrides — switching to it means
  * removing the custom properties rather than writing different ones.
+ *
+ * There are two kinds. Pine and Citron re-point roles at another built-in
+ * ramp, per theme, and can be scoped to one element. Amber is a whole brand
+ * from `createTheme`: it replaces the physical ramps (`--zabi-brand-*`,
+ * `--zabi-base-*`) and the heading face, the way an app's generated file
+ * does, with one set of values for light and dark. The roles are resolved on
+ * the root element, so a brand of that kind only works on the document.
  */
 
-export type Accent = "iris" | "pine" | "citron";
+import generatedThemes, { defaultBrandRamp } from "virtual:zabi-brand-themes";
+
+export type Accent = "iris" | "pine" | "citron" | "amber";
 export type TokenMap = Record<string, string>;
 
-export const ACCENTS: { id: Accent; label: string; swatch: string }[] = [
-    { id: "iris", label: "Iris", swatch: "var(--zabi-brand-500)" },
-    { id: "pine", label: "Pine", swatch: "var(--zabi-pine-500)" },
-    { id: "citron", label: "Citron", swatch: "var(--zabi-citron-500)" },
+export interface AccentOption {
+    id: Accent;
+    label: string;
+    swatch: string;
+    /**
+     * `roles`: re-points roles, can be scoped to an element.
+     * `generated`: a `createTheme` result, applied to the document only.
+     */
+    kind: "default" | "roles" | "generated";
+}
+
+export const ACCENTS: AccentOption[] = [
+    // A fixed value, not var(--zabi-brand-500): with a generated brand on the
+    // document that variable is the other brand's colour.
+    { id: "iris", label: "Iris", swatch: defaultBrandRamp["--zabi-brand-500"], kind: "default" },
+    { id: "pine", label: "Pine", swatch: "var(--zabi-pine-500)", kind: "roles" },
+    { id: "citron", label: "Citron", swatch: "var(--zabi-citron-500)", kind: "roles" },
+    {
+        id: "amber",
+        label: "Amber",
+        swatch: generatedThemes.amber.tokens["--zabi-brand-500"],
+        kind: "generated",
+    },
 ];
+
+/** The accents that can be scoped to one element (RebrandDemo). */
+export const SCOPABLE_ACCENTS = ACCENTS.filter((item) => item.kind !== "generated");
+
+/** What `createTheme` returned for a generated brand: css, tokens, warnings, closest. */
+export function generatedTheme(id: string) {
+    return id in generatedThemes
+        ? generatedThemes[id as keyof typeof generatedThemes]
+        : undefined;
+}
 
 /** The stylesheet's own values, for scoping a card back to the default theme. */
 export const IRIS: { light: TokenMap; dark: TokenMap } = {
     light: {
+        // The ramp itself, so a card scoped to Iris stays Iris while a
+        // generated brand has replaced --zabi-brand-* on the document.
+        ...defaultBrandRamp,
         "--color-action-primary": "var(--color-brand-600)",
         "--color-action-primary-hover": "var(--color-brand-700)",
         "--color-action-primary-active": "var(--color-brand-800)",
-        "--color-action-primary-text": "#ffffff",
-        "--color-action-primary-subtle": "var(--color-brand-100)",
-        "--color-action-secondary": "rgba(9, 9, 11, 0.07)",
-        "--color-action-secondary-hover": "rgba(9, 9, 11, 0.12)",
+        "--color-action-primary-text": "var(--color-on-brand)",
+        "--color-action-primary-subtle": "var(--color-brand-200)",
+        "--color-action-secondary": "rgba(9, 9, 11, 0.1)",
+        "--color-action-secondary-hover": "rgba(9, 9, 11, 0.15)",
         "--color-brand-100": "var(--zabi-brand-100)",
         "--color-brand-500": "var(--zabi-brand-500)",
         "--color-brand-600": "var(--zabi-brand-600)",
         "--color-brand-700": "var(--zabi-brand-700)",
-        "--color-focus": "var(--color-brand-500)",
+        "--color-focus": "var(--color-brand-600)",
         "--color-focus-ring": "var(--color-focus)",
         "--color-link": "var(--color-brand-700)",
     },
     // Only what `.dark` actually restates; the rest resolves through
     // `--color-brand-*`, which is why the light entries above hold in dark too.
     dark: {
-        "--color-action-primary-text": "var(--zabi-brand-950)",
+        "--color-action-primary-text": "var(--color-on-brand)",
+        "--color-action-primary-subtle": "var(--color-brand-100)",
         "--color-action-secondary": "rgba(250, 250, 250, 0.09)",
         "--color-action-secondary-hover": "rgba(250, 250, 250, 0.15)",
         "--color-brand-100": "var(--zabi-brand-900)",
         "--color-brand-600": "var(--zabi-brand-400)",
         "--color-brand-700": "var(--zabi-brand-300)",
+        "--color-focus": "var(--color-brand-600)",
     },
 };
 
-/** Dark entries layer on top of light ones, exactly like a `.dark .brand` rule. */
+/**
+ * Dark entries layer on top of light ones, exactly like a `.dark .brand` rule.
+ *
+ * The light entries are the Iris recipe on another ramp: fill at step 600 with
+ * a white label, hover 700, active 800, focus ring 600, link 700, tint 200.
+ * Every ramp sits on one lightness curve, so the same steps give the same
+ * contrast (tests/brand-accents.test.ts checks it). They were tuned by eye in
+ * dark mode before, which left light Pine with a focus ring at 1.93:1.
+ */
 export const ACCENT_OVERRIDES: Record<
     Exclude<Accent, "iris">,
     { light: TokenMap; dark: TokenMap }
 > = {
     pine: {
         light: {
-            "--color-action-primary": "var(--zabi-pine-700)",
-            "--color-action-primary-hover": "var(--zabi-pine-600)",
-            "--color-action-primary-active": "var(--zabi-pine-500)",
-            "--color-action-primary-text": "var(--zabi-pine-50)",
-            "--color-action-primary-subtle": "var(--zabi-pine-100)",
+            "--color-action-primary": "var(--zabi-pine-600)",
+            "--color-action-primary-hover": "var(--zabi-pine-700)",
+            "--color-action-primary-active": "var(--zabi-pine-800)",
+            "--color-action-primary-text": "#ffffff",
+            "--color-action-primary-subtle": "var(--zabi-pine-200)",
             "--color-action-secondary":
-                "color-mix(in srgb, var(--zabi-pine-600) 12%, transparent)",
+                "color-mix(in srgb, var(--zabi-pine-600) 14%, transparent)",
             "--color-action-secondary-hover":
-                "color-mix(in srgb, var(--zabi-pine-600) 22%, transparent)",
+                "color-mix(in srgb, var(--zabi-pine-600) 24%, transparent)",
             "--color-brand-100": "var(--zabi-pine-100)",
-            "--color-brand-500": "var(--zabi-pine-400)",
-            "--color-brand-600": "var(--zabi-pine-500)",
-            "--color-brand-700": "var(--zabi-pine-600)",
-            "--color-focus": "var(--zabi-pine-400)",
-            "--color-focus-ring": "var(--zabi-pine-400)",
-            "--color-link": "var(--zabi-pine-600)",
+            "--color-brand-500": "var(--zabi-pine-500)",
+            "--color-brand-600": "var(--zabi-pine-600)",
+            "--color-brand-700": "var(--zabi-pine-700)",
+            "--color-focus": "var(--zabi-pine-600)",
+            "--color-focus-ring": "var(--zabi-pine-600)",
+            "--color-link": "var(--zabi-pine-700)",
         },
         dark: {
             "--color-action-primary": "var(--zabi-pine-200)",
@@ -93,11 +144,11 @@ export const ACCENT_OVERRIDES: Record<
     },
     citron: {
         light: {
-            "--color-action-primary": "var(--zabi-citron-800)",
-            "--color-action-primary-hover": "var(--zabi-citron-900)",
-            "--color-action-primary-active": "var(--zabi-citron-700)",
-            "--color-action-primary-text": "var(--zabi-citron-50)",
-            "--color-action-primary-subtle": "var(--zabi-citron-100)",
+            "--color-action-primary": "var(--zabi-citron-600)",
+            "--color-action-primary-hover": "var(--zabi-citron-700)",
+            "--color-action-primary-active": "var(--zabi-citron-800)",
+            "--color-action-primary-text": "#ffffff",
+            "--color-action-primary-subtle": "var(--zabi-citron-200)",
             "--color-action-secondary":
                 "color-mix(in srgb, var(--zabi-citron-700) 14%, transparent)",
             "--color-action-secondary-hover":
@@ -106,9 +157,9 @@ export const ACCENT_OVERRIDES: Record<
             "--color-brand-500": "var(--zabi-citron-500)",
             "--color-brand-600": "var(--zabi-citron-600)",
             "--color-brand-700": "var(--zabi-citron-700)",
-            "--color-focus": "var(--zabi-citron-500)",
-            "--color-focus-ring": "var(--zabi-citron-500)",
-            "--color-link": "var(--zabi-citron-800)",
+            "--color-focus": "var(--zabi-citron-600)",
+            "--color-focus-ring": "var(--zabi-citron-600)",
+            "--color-link": "var(--zabi-citron-700)",
         },
         dark: {
             "--color-action-primary": "var(--zabi-citron-300)",
@@ -127,6 +178,11 @@ export const ACCENT_OVERRIDES: Record<
             "--color-focus": "var(--zabi-citron-400)",
             "--color-focus-ring": "var(--zabi-citron-400)",
         },
+    },
+    // One map for both themes: `.dark` only remaps roles onto these ramps.
+    amber: {
+        light: generatedThemes.amber.tokens,
+        dark: {},
     },
 };
 
@@ -155,8 +211,8 @@ export function tokensFor(id: Accent, dark: boolean): TokenMap {
 }
 
 /**
- * Call `onChange` with the current theme, then on every change to the dark
- * class. Returns the teardown, so it drops straight into an `$effect`.
+ * Call `onChange` with the current theme, then on every change to it.
+ * Returns the teardown, so it drops straight into an `$effect`.
  *
  * The accent maps differ per theme, so anything scoping an accent has to
  * re-apply when the theme flips.
@@ -165,11 +221,26 @@ export function watchDarkMode(
     onChange: (dark: boolean) => void,
 ): () => void {
     const root = document.documentElement;
-    const sync = () => onChange(root.classList.contains("dark"));
+    const system = window.matchMedia?.("(prefers-color-scheme: dark)");
+    // The same three ways the stylesheet goes dark: the class,
+    // data-theme="dark", and data-theme="auto" on a dark system.
+    const sync = () =>
+        onChange(
+            root.classList.contains("dark") ||
+                root.dataset.theme === "dark" ||
+                (root.dataset.theme === "auto" && !!system?.matches),
+        );
     sync();
     const observer = new MutationObserver(sync);
-    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
+    observer.observe(root, {
+        attributes: true,
+        attributeFilter: ["class", "data-theme"],
+    });
+    system?.addEventListener?.("change", sync);
+    return () => {
+        observer.disconnect();
+        system?.removeEventListener?.("change", sync);
+    };
 }
 
 /** Inline `style` string, for scoping an accent to one element. */

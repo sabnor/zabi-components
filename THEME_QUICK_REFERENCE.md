@@ -2,37 +2,40 @@
 
 ## 🎯 Where to Change `bg-action-primary`
 
-The `bg-action-primary` utility class is defined in **one place** (`src/app.css`), but the color value comes from CSS variables. Here's exactly where to make changes:
+The `bg-action-primary` utility class is defined in **one place** (`src/app.css`), but the color value comes from CSS variables. Here's exactly where to make changes. Line numbers move, so each location is given as something to search for.
 
 ### 1. **Light Mode Color** (Default)
 **File:** `src/app.css`  
-**Location:** Line ~197 in the `@theme` block
+**Location:** the `@theme` block; search for `--color-action-primary:`
 
 ```css
---color-action-primary: var(--color-brand-800);
+--color-action-primary: var(--color-brand-600);
 ```
 
 **To change:** Edit this line to use a different color:
-- Use another brand shade: `var(--color-brand-600)` (lighter) or `var(--color-brand-900)` (darker)
+- Use another brand shade: `var(--color-brand-700)` (darker)
 - Use a direct color: `#3f4fc0` (hex) or `rgb(63, 79, 192)` (rgb)
 - Use another semantic color: `var(--color-base-800)` (neutral)
 
+The label on the fill is `--color-action-primary-text`. `npm run check:contrast` fails if the pair drops below 4.5:1.
+
 ### 2. **Dark Mode Color** (Automatic)
 **File:** `src/app.css`  
-**Location:** Line ~275 in the `.dark` block
+**Location:** the `.dark` block; search for `Brand Color Scale — semantic → physical mirror`
 
-The dark mode color is **automatically inverted** from the brand scale. Since `action-primary` uses `var(--color-brand-800)`, it becomes `brand-200` in dark mode (automatically inverted).
+The dark mode color is **automatically mirrored** from the brand scale. `action-primary` uses `var(--color-brand-600)`, and inside `.dark` that step points at the physical step on the other side of the ramp:
 
-**To change:** Edit the brand color scale inversion in the `.dark` block:
 ```css
 .dark {
-  --color-brand-800: theme(colors.brand.200); /* This affects action-primary */
+  --color-brand-600: var(--zabi-brand-400); /* This affects action-primary */
 }
 ```
 
+**To change the brand colour in both themes,** edit the seed in `tokens/chromatic-scales.js` and run `npm run sync:tokens`. Do not hand-edit `--zabi-brand-*` in `src/app.css`; the generator overwrites them.
+
 ### 3. **Utility Class Definition**
 **File:** `src/app.css`  
-**Location:** Line ~812
+**Location:** the section headed `ACTION UTILITY CLASSES`
 
 ```css
 .bg-action-primary {
@@ -40,24 +43,28 @@ The dark mode color is **automatically inverted** from the brand scale. Since `a
 }
 ```
 
-**Note:** You typically don't need to change this - it just references the CSS variable above.
+**Note:** You typically don't need to change this - it just references the CSS variable above. Its hover, active and disabled states are rules on the same class, directly below it.
 
 ---
 
 ## 📍 All Action Color Locations
 
+All in `src/app.css`; search for the name.
+
 ### Primary Actions
-- **CSS Variable (Light):** `src/app.css` line ~197 (`--color-action-primary`)
-- **CSS Variable (Dark):** `src/app.css` line ~398 (`--color-action-primary-text` - only text color override)
-- **Utility Class:** `src/app.css` line ~812 (`.bg-action-primary`)
+- **CSS Variable (Light):** `--color-action-primary` in `@theme`
+- **CSS Variable (Dark):** `.dark` restates `--color-action-primary-text` and the `-subtle` pair; the fill itself follows the mirrored brand ramp
+- **Utility Class:** `.bg-action-primary`
 
 ### Secondary Actions
-- **CSS Variable (Light):** `src/app.css` line ~206 (`--color-action-secondary`)
-- **Utility Class:** `src/app.css` line ~841 (`.bg-action-secondary`)
+- **CSS Variable (Light):** `--color-action-secondary` in `@theme` (a dark alpha tint)
+- **CSS Variable (Dark):** `--color-action-secondary` in `.dark` (a light alpha tint)
+- **Utility Class:** `.bg-action-secondary`
 
 ### Danger Actions
-- **CSS Variable (Light):** `src/app.css` line ~214 (`--color-action-danger`)
-- **Utility Class:** `src/app.css` line ~870 (`.bg-action-danger`)
+- **CSS Variable (Light):** `--color-action-danger` in `@theme`
+- **CSS Variable (Dark):** restated in `.dark` with the same aliases; the error ramp mirrors
+- **Utility Class:** `.bg-action-danger`
 
 ---
 
@@ -70,11 +77,11 @@ The dark mode color is **automatically inverted** from the brand scale. Since `a
 ### Example Flow:
 ```
 @theme {
-  --color-action-primary: var(--color-brand-800);  ← Define variable
+  --color-action-primary: var(--color-brand-600);  ← Define variable
 }
 
 .dark {
-  --color-brand-800: theme(colors.brand.200);     ← Override for dark mode
+  --color-brand-600: var(--zabi-brand-400);       ← Mirrored step for dark mode
 }
 
 .bg-action-primary {
@@ -92,6 +99,8 @@ The dark mode color is **automatically inverted** from the brand scale. Since `a
 3. **Find where the variable is defined** (in `@theme` block)
 4. **Find dark mode override** (in `.dark` block, if any)
 
+Most `bg-*`, `text-*` and `border-*` classes have no hand-written rule: Tailwind generates them from the `--color-*` token of the same name.
+
 ### Quick Search Commands:
 ```bash
 # Find where bg-action-primary is defined
@@ -107,17 +116,22 @@ grep -n "color-action-primary" src/app.css
 
 ```
 src/app.css
-├── @theme block (lines 21-236)
-│   ├── Brand colors (lines 26-36)
-│   ├── Action colors (lines 194-219) ← Primary actions here
-│   └── Other semantic colors...
+├── @theme block
+│   ├── Physical ramps (--zabi-*) and their semantic aliases (--color-brand-*, …)
+│   ├── Surfaces, text, borders, focus
+│   ├── Semantic families (success, warning, error, info, energetic, neutral)
+│   └── Action colors ← Primary actions here
 │
-├── .dark block (lines 264-410)
-│   ├── Brand color inversions (lines 275-285)
-│   └── Action color overrides (lines 395-398) ← Text color override
+├── .dark block
+│   ├── Mirrored ramps
+│   ├── Surface levels and the values dark pins
+│   └── Action color overrides
 │
-└── Utility classes (lines 412-923)
-    └── Action utilities (lines 810-870) ← bg-action-primary here
+└── Hand-written classes
+    ├── Semantic colour classes
+    ├── @layer components (focus ring, selection rows)
+    ├── Action utilities ← bg-action-primary here
+    └── State variants of the hand-written colour classes
 ```
 
 ---
@@ -125,9 +139,9 @@ src/app.css
 ## ⚠️ Important Notes
 
 1. **Single Source of Truth:** All theming is in `src/app.css` - don't edit `dist/` files!
-2. **Dark Mode is Automatic:** Brand colors are automatically inverted in dark mode
+2. **Dark Mode is Automatic:** Brand colors are automatically mirrored in dark mode
 3. **Use CSS Variables:** Always use `var(--color-*)` instead of direct colors for theme consistency
-4. **Rebuild After Changes:** Run `npm run build:css` after editing `src/app.css` to update `dist/` files
+4. **Rebuild After Changes:** Run `npm run build:css` after editing `src/app.css` to update `dist/` files. It also runs the design checks.
 
 ---
 
@@ -135,19 +149,18 @@ src/app.css
 
 ### Change Primary Action to a Different Brand Shade
 ```css
-/* In src/app.css, line ~197 */
---color-action-primary: var(--color-brand-600); /* Changed from brand-800 */
+/* In src/app.css, in @theme */
+--color-action-primary: var(--color-brand-700); /* Changed from brand-600 */
 ```
 
 ### Change Primary Action to a Custom Color
 ```css
-/* In src/app.css, line ~197 */
+/* In src/app.css, in @theme */
 --color-action-primary: #ff6b6b; /* Custom red */
 ```
 
 ### Change Primary Action Hover State
 ```css
-/* In src/app.css, line ~198 */
---color-action-primary-hover: var(--color-brand-700); /* Lighter hover */
+/* In src/app.css, in @theme */
+--color-action-primary-hover: var(--color-brand-800); /* Darker hover */
 ```
-

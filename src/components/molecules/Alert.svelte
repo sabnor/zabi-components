@@ -1,7 +1,13 @@
 <script lang="ts">
-    import { Check, TriangleAlert, X, Info, Zap } from "@lucide/svelte";
+    import { DEFAULT_ALERT_TEXTS, zabiStringsFor } from "../util/zabi-strings.js";
+    import Check from "@lucide/svelte/icons/check";
+    import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+    import X from "@lucide/svelte/icons/x";
+    import Info from "@lucide/svelte/icons/info";
+    import Zap from "@lucide/svelte/icons/zap";
     import type { ExtendedSemanticVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
+    import { TOUCH_HIT_AREA } from "../util/touch-target.js";
     type AlertVisualVariant = Exclude<ExtendedSemanticVariant, "default">;
 
     interface Props {
@@ -9,6 +15,8 @@
         title?: string;
         message?: string;
         closable?: boolean;
+        /** Accessible name of the dismiss button a `closable` alert has. */
+        closeLabel?: string;
         /** Visible state; `closable` dismiss sets it to `false`. Supports `bind:open`. */
         open?: boolean;
         /** Shrink to content instead of filling the container. */
@@ -24,7 +32,8 @@
         title = "",
         message = "",
         closable = false,
-        open = $bindable(true),
+        closeLabel: closeLabelGiven,
+        open = $bindable<Exclude<Props["open"], undefined>>(),
         inline = false,
         class: classProp = "",
         className = "",
@@ -32,6 +41,21 @@
         children,
         ...restProps
     }: Props & { children?: any } = $props();
+
+    /** Each text: the prop, else the app-wide word from a `ZabiStringsProvider` above this one, else English. */
+    const provided = zabiStringsFor("alert");
+    const closeLabel = $derived(closeLabelGiven ?? provided()?.closeLabel ?? DEFAULT_ALERT_TEXTS.closeLabel);
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (open === undefined) open = true;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     function handleDismiss(event: MouseEvent) {
         open = false;
@@ -96,17 +120,21 @@
     {...restProps}
 >
     {#if closable}
+        <!-- At the end edge (`end-2`), so it is on the left in a right-to-left
+        layout, and the text keeps clear of it on that side (`pe-8`).
+        Nested corners: 0.5rem (`end-2 top-2`) and the 1px border inside
+        the alert's corner, so the radius is the alert's less that gap. -->
         <button
             onclick={handleDismiss}
-            class="absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-control text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body motion-reduce:transition-none focus-ring--muted"
-            aria-label="Dismiss alert"
+            class="absolute end-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[calc(var(--radius-container)-0.5rem-1px)] text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring focus-ring--muted {TOUCH_HIT_AREA}"
+            aria-label={closeLabel}
             type="button"
         >
             <X size={16} aria-hidden="true" />
         </button>
     {/if}
 
-    <div class="flex items-start gap-3 {closable ? 'pr-8' : ''}">
+    <div class="flex items-start gap-3 {closable ? 'pe-8' : ''}">
         <div class="shrink-0 mt-0.5">
             {@render icon()}
         </div>

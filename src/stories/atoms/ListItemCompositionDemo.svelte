@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CreditCard } from "@lucide/svelte";
+    import CreditCard from "@lucide/svelte/icons/credit-card";
     import ListItem from "../../components/atoms/ListItem.svelte";
     import type { ListItemData } from "../../components/atoms/ListItem.svelte";
 

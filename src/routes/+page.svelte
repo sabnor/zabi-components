@@ -1,12 +1,16 @@
 <script lang="ts">
+    import CopyButton from "$lib/marketing/CopyButton.svelte";
     import CopyCommand from "$lib/marketing/CopyCommand.svelte";
     import InviteSpecimen from "$lib/marketing/InviteSpecimen.svelte";
     import RebrandDemo from "$lib/marketing/RebrandDemo.svelte";
-    import { ExternalLink } from "@lucide/svelte";
+    import Seo from "$lib/marketing/Seo.svelte";
+    import SiteFooter from "$lib/marketing/SiteFooter.svelte";
+    import ExternalLink from "@lucide/svelte/icons/external-link";
+    import { asset } from "$app/paths";
     import {
         GITHUB_URL,
         INSTALL_COMMAND,
-        NPM_URL,
+        STORYBOOK_URL,
         VERSION,
         componentCount,
         guarantees,
@@ -20,17 +24,21 @@
         "focus-ring inline-flex h-12 items-center justify-center rounded-xl border border-border-medium px-6 text-base font-semibold text-headline transition-colors hover:bg-card";
 </script>
 
+<Seo
+    library
+    title="Zabi Components: accessible Svelte 5 components"
+    description={`${componentCount} accessible Svelte 5 components with TypeScript, SSR support and Tailwind CSS v4 tokens for light and dark themes.`}
+/>
+
 <svelte:head>
-    <title>Zabi Components: accessible Svelte 5 components</title>
-    <meta
-        name="description"
-        content={`${componentCount} accessible Svelte 5 components with TypeScript, SSR support and Tailwind CSS v4 tokens for light and dark themes.`}
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <!-- The headline is the largest paint on this page, so its font is fetched
+    with the document instead of after the first layout. -->
     <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&display=swap"
+        rel="preload"
+        href={asset("/fonts/familjen-grotesk-latin.woff2")}
+        as="font"
+        type="font/woff2"
+        crossorigin="anonymous"
     />
 </svelte:head>
 
@@ -56,20 +64,20 @@
 
                     <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                         <a href="/components" class={primaryLink}>Browse components</a>
-                        <a href="/docs" class={secondaryLink}>Read the docs</a>
+                        <a href="/docs" class={secondaryLink}>Get started</a>
                     </div>
 
                     <div class="mt-10">
                         <CopyCommand command={INSTALL_COMMAND} />
-                        <ul class="proof mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-description">
+                        <ul class="proof mt-3 flex flex-wrap items-center gap-y-1 text-sm text-description">
                             <li>{componentCount} components</li>
                             <li>v{VERSION}</li>
                             <li>MIT licensed</li>
                             <li>SSR-safe</li>
-                            <li>Tokens contrast-checked in CI</li>
+                            <li>Contrast checked on every release</li>
                         </ul>
                         <p class="mt-3 text-sm text-description">
-                            Needs Svelte 5.43.8 or newer and Tailwind CSS v4.
+                            Needs Svelte 5.43.8 or newer. Tailwind CSS v4 is optional.
                         </p>
                     </div>
                 </div>
@@ -101,10 +109,24 @@
                         </p>
                         <a
                             href="/components"
-                            class="focus-ring mt-8 inline-flex rounded-sm text-base font-semibold text-link underline underline-offset-4 hover:text-link-hover"
+                            class="focus-ring relative mt-8 inline-flex rounded-sm text-base font-semibold text-link underline underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-3 hover:text-link-hover"
                         >
                             See every component with props and examples
                         </a>
+                        <p class="mt-4 max-w-lg text-base leading-7 text-description">
+                            Or try every variant and state in
+                            <a
+                                href={STORYBOOK_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="focus-ring relative rounded-sm font-semibold text-link underline underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-3 hover:text-link-hover"
+                                >Storybook<ExternalLink
+                                    size={14}
+                                    class="ml-1 inline-block shrink-0 align-[-0.1em] opacity-70"
+                                    aria-hidden="true"
+                                /><span class="sr-only">(opens in a new tab)</span></a
+                            >.
+                        </p>
                     </div>
                 </div>
 
@@ -125,9 +147,12 @@
                             <ul class="mt-6 flex flex-wrap gap-2">
                                 {#each layer.names as name (name)}
                                     <li>
+                                        <!-- The pseudo-element widens the tap area into the
+                                        gap around each chip (4px past the 1px border on
+                                        every side); the chip itself stays 28px. -->
                                         <a
                                             href={`/components/${name}`}
-                                            class="focus-ring inline-flex h-7 items-center rounded-lg border border-border bg-card px-3 text-sm font-medium text-body transition-colors hover:border-border-strong hover:text-headline"
+                                            class="focus-ring relative inline-flex h-7 items-center rounded-lg border border-border bg-card px-3 text-sm font-medium text-body transition-colors before:absolute before:-inset-[5px] hover:border-border-strong hover:text-headline"
                                         >
                                             {name}
                                         </a>
@@ -152,8 +177,8 @@
                     </h2>
                     <p class="mt-6 max-w-lg text-lg leading-8 text-description">
                         Components never hardcode a color. They read semantic tokens like
-                        <code class="rounded bg-card px-2 py-0.5 text-[0.9em] text-headline">action-primary</code>
-                        and <code class="rounded bg-card px-2 py-0.5 text-[0.9em] text-headline">focus-ring</code>,
+                        <code class="whitespace-nowrap rounded bg-card px-2 py-0.5 text-[0.9em] text-headline">action-primary</code>
+                        and <code class="whitespace-nowrap rounded bg-card px-2 py-0.5 text-[0.9em] text-headline">focus-ring</code>,
                         so your brand goes in one place: globally, or scoped to a single section.
                     </p>
                     <p class="mt-4 max-w-lg text-lg leading-8 text-description">
@@ -201,6 +226,12 @@
                         Import the theme CSS once in your global stylesheet. That is what gives
                         the token classes their values.
                     </p>
+                    <a
+                        href="/docs"
+                        class="focus-ring relative mt-8 inline-flex rounded-sm text-base font-semibold text-link underline underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-3 hover:text-link-hover"
+                    >
+                        Full setup guide, with theming and dark mode
+                    </a>
                 </div>
                 <ol class="space-y-8 lg:col-span-8">
                     {#each quickStart as step, index (step.title)}
@@ -212,13 +243,16 @@
                                 {index + 1}
                             </span>
                             <div class="min-w-0">
-                                <h3 class="display pt-2 text-xl font-bold text-headline">{step.title}</h3>
+                                <div class="flex items-end justify-between gap-4">
+                                    <h3 class="display pt-2 text-xl font-bold text-headline">{step.title}</h3>
+                                    <CopyButton text={step.code} subject={`${step.language} code`} />
+                                </div>
                                 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
                                 <!-- A scrollable region has to be focusable so it can be
                                 scrolled by keyboard (WCAG 2.1.1); the rule cannot tell
                                 that this box scrolls. -->
                                 <pre
-                                    class="focus-ring mt-3 overflow-x-auto rounded-2xl border border-border bg-card p-5 text-sm leading-6 text-headline"
+                                    class="focus-ring mt-3 overflow-x-auto rounded-2xl border border-border bg-card p-5 text-sm leading-6 text-headline shadow-sm"
                                     tabindex="0"
                                     role="region"
                                     aria-label={`${step.language} code`}><code>{step.code}</code></pre>
@@ -268,38 +302,14 @@
         </section>
     </main>
 
-    <footer class="border-t border-border">
-        <div
-            class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 text-sm text-description sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8"
-        >
-            <p>Zabi Components is open source under the MIT license.</p>
-            <nav aria-label="Footer">
-                <ul class="flex flex-wrap gap-x-8 gap-y-3">
-                    <li><a class="focus-ring rounded-sm hover:text-headline" href="/docs">Docs</a></li>
-                    <li><a class="focus-ring rounded-sm hover:text-headline" href="/components">Components</a></li>
-                    <li>
-                        <a
-                            class="focus-ring inline-flex items-center rounded-sm hover:text-headline"
-                            href={GITHUB_URL}
-                            target="_blank"
-                            rel="noopener noreferrer">GitHub<ExternalLink size={12} class="ml-1 inline-block shrink-0 align-[-0.1em] opacity-70" aria-hidden="true" /><span class="sr-only">(opens in a new tab)</span></a>
-                    </li>
-                    <li>
-                        <a
-                            class="focus-ring inline-flex items-center rounded-sm hover:text-headline"
-                            href={NPM_URL}
-                            target="_blank"
-                            rel="noopener noreferrer">npm<ExternalLink size={12} class="ml-1 inline-block shrink-0 align-[-0.1em] opacity-70" aria-hidden="true" /><span class="sr-only">(opens in a new tab)</span></a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </footer>
+    <SiteFooter />
 </div>
 
 <style>
     .landing :global(.display) {
-        font-family: "Familjen Grotesk", "Nunito Sans", ui-sans-serif, system-ui, sans-serif;
+        /* The site sets this token to its display face in +layout.svelte; a
+           brand that sets it (Amber does) changes these headings too. */
+        font-family: var(--font-family-heading);
         letter-spacing: -0.02em;
         text-wrap: balance;
     }
@@ -313,10 +323,19 @@
         min-width: 0;
     }
 
-    /* Dot separators as generated content, with empty alt text so they are not announced. */
-    .proof li:not(:first-child)::before {
+    /* Dot separators as generated content, with empty alt text so they are not announced.
+       Every item carries one and the list is pulled left by its width, so the dot that
+       would open a wrapped line falls outside the clip instead of dangling there. */
+    .proof {
+        margin-left: -1.75rem;
+        clip-path: inset(0 0 0 1.75rem);
+    }
+
+    .proof li::before {
         content: "·" / "";
-        margin-right: 0.75rem;
+        display: inline-block;
+        width: 1.75rem;
+        text-align: center;
         color: var(--color-border-strong);
     }
 
@@ -324,17 +343,27 @@
         font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
 
-    /* Hero stage: a dotted drafting surface behind the live specimen. */
+    /* Hero stage: a dotted drafting surface behind the live specimen.
+    Light takes the primary tint as it is. Mixed with the page, as dark does,
+    it came out at 1.01:1 against the page and the stage disappeared. */
     .stage-grid {
         position: absolute;
         inset: 0;
         border-radius: 2rem;
+        background-color: var(--color-action-primary-subtle);
+        background-image: radial-gradient(
+            color-mix(in srgb, var(--color-brand-700) 55%, transparent) 1px,
+            transparent 1px
+        );
+        background-size: 1.25rem 1.25rem;
+    }
+
+    :global(.dark) .stage-grid {
         background-color: color-mix(in srgb, var(--color-brand-100) 70%, var(--color-background));
         background-image: radial-gradient(
             color-mix(in srgb, var(--color-brand-700) 35%, transparent) 1px,
             transparent 1px
         );
-        background-size: 1.25rem 1.25rem;
     }
 
     @media (min-width: 1280px) {

@@ -1,10 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import SlideUp from '../../components/molecules/SlideUp.svelte';
+import SlideUpWithFooter from './SlideUpWithFooter.svelte';
 
 const meta = {
     title: 'Design System/Molecules/SlideUp',
     component: SlideUp,
     parameters: {
+        docs: {
+            description: {
+                component:
+                    'Panel that slides up from the bottom edge, with a title and close control. It keeps its content clear of the home indicator on a phone. With swipeToClose it gets a grip at the top and closes on a swipe down as well; the close button, the backdrop and Escape stay. For a sheet that rests at half or full height, use BottomSheet.'
+            }
+        },
         layout: 'fullscreen'
     },
     tags: ['autodocs'],
@@ -54,5 +61,40 @@ export const Closed: Story = {
         Component: SlideUp,
         props: args,
         children: ['This panel is closed.']
+    })
+};
+
+export const SwipeToClose: Story = {
+    args: {
+        isOpen: true,
+        title: 'Release notes',
+        swipeToClose: true
+    },
+    render: (args) => ({
+        Component: SlideUp,
+        props: args,
+        children: ['Drag the grip down, or swipe down on this text, to close the panel. A short pull springs back.']
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'swipeToClose adds a grip and the gesture. The grip is decorative: the close button is still the control for a keyboard and a screen reader.'
+            }
+        }
+    }
+};
+
+/**
+ * With a `footer` the content scrolls and the buttons stay at the bottom of
+ * the panel: above the on-screen keyboard, and clear of a toast.
+ */
+export const WithFooter: Story = {
+    args: {
+        isOpen: true,
+        title: 'Edit note'
+    },
+    render: (args) => ({
+        Component: SlideUpWithFooter,
+        props: args
     })
 };

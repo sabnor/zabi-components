@@ -5,7 +5,7 @@
     import Progress from "../../components/atoms/Progress.svelte";
 
     import {
-        ACCENTS as accents,
+        SCOPABLE_ACCENTS as accents,
         SNIPPET_TOKENS as snippetTokens,
         styleFor,
         tokensFor,
@@ -41,7 +41,7 @@
     }
 </script>
 
-<div class="rounded-3xl border border-border bg-card p-6 sm:p-8">
+<div class="rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <p id="accent-label" class="text-sm font-semibold text-label">Accent</p>
         <div
@@ -57,7 +57,7 @@
                     role="radio"
                     aria-checked={accent === item.id}
                     tabindex={accent === item.id ? 0 : -1}
-                    class="focus-ring swatch-button flex h-8 cursor-pointer items-center gap-2 rounded-full px-3 text-sm font-semibold text-body transition-colors aria-checked:bg-card aria-checked:text-headline aria-checked:shadow-sm"
+                    class="focus-ring swatch-button relative flex h-8 cursor-pointer items-center gap-2 rounded-full px-3 text-sm font-semibold text-body transition-colors before:absolute before:inset-x-0 before:-inset-y-2 aria-checked:bg-card aria-checked:text-headline aria-checked:shadow-sm"
                     style={styleFor(item.id, isDark)}
                     onclick={() => (accent = item.id)}
                 >
@@ -72,7 +72,7 @@
         <Input label="Project name" placeholder="Northwind" class="min-w-0" />
         <div class="flex flex-wrap items-center gap-6">
             <Checkbox label="Notify the team" bind:checked />
-            <a class="rounded-sm text-sm font-semibold text-link underline underline-offset-4 focus-ring" href="/docs">
+            <a class="relative rounded-sm text-sm font-semibold text-link underline underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-3 focus-ring" href="/theming">
                 Theming guide
             </a>
         </div>
@@ -93,6 +93,14 @@
 </div>
 
 <style>
+    /* Tailwind's shadow utilities sit in a later cascade layer than .focus-ring, so
+       shadow-sm on the selected swatch replaced its focus ring. Unlayered, this wins. */
+    .swatch-button:focus-visible {
+        box-shadow:
+            0 0 0 2px var(--zabi-focus-ring-offset-color),
+            0 0 0 4px var(--zabi-focus-ring-color);
+    }
+
     .swatch {
         width: 0.75rem;
         height: 0.75rem;
