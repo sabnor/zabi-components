@@ -12,6 +12,37 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.5] - 2026-10-07
+
+A fifth local preview build of the 9.0 direction, not published to npm; 8.1.0
+stays the stable version. It is the components the consuming app asked for.
+New: `Chip` and `ChipGroup` (a link, a toggle button or a real radio or
+checkbox input under one tonal selected style, in a wrap or a one-row layout
+that scrolls sideways), `Block` (the full-width colour section), `Stat`,
+`PickerField` (a field-shaped trigger for an app's own sheet). Extended: `Card`
+is linkable (`href`) and takes a `tone` or a custom `fill`; `Collapsible` is a
+native `<details>` and opens without scripts; `Progress` gets a 16px size, a
+segmented form and a track edge token; `Rating` a compact score, 40px stars
+and a soft empty state; `Heading` a display variant on a display typeface
+token; `Checkbox`, `Radio` and `Toggle` a `leading` snippet; `Alert` an edge
+that can be turned off and a brand variant; `DateField` and `TimeField` a
+`locale` with the library's own display and picker over the native input.
+No token, prop, variant or export is removed or renamed. Four things change
+what a consumer sees or gets without a code change, each listed under Changed
+or Fixed with what restores it where something does: the default
+`Collapsible` trigger is a `<summary>` instead of a `<button>`; a solid
+control in a colour block's own colour is inverted inside that block; a
+`Stepper` bar's upcoming segments are filled with the progress track; and the
+floating `BottomTabBar` is 72px tall with equal insets. Built quickly and
+tested lightly on purpose: the type and design checks, the unit run, the theme
+tests, the package build and a scratch install were run on it, and the new
+components' stories were looked at once in Storybook with headless Chromium in
+light and dark at phone and desktop widths (two things were fixed from that
+look). No browser suite was run, there was no accessibility or QA review, and
+nothing was tried on a real phone, in Safari or Firefox, without scripts in a
+real browser, at 200% text, right-to-left, in forced colours, or with a
+keyboard or a screen reader.
+
 ### Added
 
 - **Chip tokens** (Z-051): `--color-chip`, `-hover`, `-active`, `-text` (a quiet neutral fill without an edge: `base-200` / `300` / `350` in light, `--zabi-base-750` / `700` / `650` in dark, the label is the headline colour) and `--color-chip-selected`, `-hover`, `-active`, `-text`, which default to the tonal role (`--color-action-tonal*`), so an app that themes tonal gets matching chips. Classes `bg-chip`, `hover:bg-chip-hover`, `active:bg-chip-active`, `text-chip-text`, `bg-chip-selected`, `hover:bg-chip-selected-hover`, `active:bg-chip-selected-active`, `text-chip-selected-text`. Label pairs guarded at 4.5:1 on all fills in both modes, in the library and in `createTheme`.
