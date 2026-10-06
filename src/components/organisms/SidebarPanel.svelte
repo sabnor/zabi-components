@@ -20,6 +20,7 @@
         /** @deprecated use `class`. */
         className?: string;
         widthClass?: string;
+        /** Both values draw the same flat card now (D127); the prop stays so existing usage compiles. */
         variant?: "plain" | "elevated";
         ariaLabel?: string;
         title?: string;
@@ -92,25 +93,20 @@
             : items,
     );
 
-    const isElevated = $derived(variant === "elevated");
-
     const containerClasses = $derived.by(() => {
         const resolvedWidthClass = widthClass.trim() || "w-80";
-        const shell = isElevated
-            ? "rounded-container border border-border bg-card text-headline shadow-sm ring-1 ring-border"
-            : "rounded-container border border-border bg-card text-headline shadow-sm";
+        const shell = "rounded-container border border-border bg-card text-headline";
         return cn(`${resolvedWidthClass} shrink-0 p-5 ${shell} ${className}`);
     });
 
     function getItemClasses(itemId: string): string {
         const isActive = selectedItemId === itemId;
         const baseClasses =
-            "focus-ring focus-ring--nav w-full cursor-pointer rounded-control px-3 py-2 text-left transition-colors duration-150";
+            "focus-ring focus-ring--nav w-full cursor-pointer min-h-9 pointer-coarse:min-h-11 rounded-control px-3 py-2 text-left transition-colors duration-(--duration-base) ease-standard";
         if (isActive) {
-            // The fill, the shadow and the ring are all dropped in forced
-            // colours; an outline is drawn there, so the selected item keeps
-            // a shape of its own.
-            return `${baseClasses} bg-nav-menu-active text-inherit shadow-sm ring-1 ring-border forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2`;
+            // The fill is dropped in forced colours; an outline is drawn
+            // there, so the selected item keeps a shape of its own.
+            return `${baseClasses} bg-nav-menu-active text-nav-menu-item-active forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2`;
         }
         return `${baseClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
     }
@@ -166,7 +162,7 @@
                 bind:value={searchValue}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                class="w-full min-w-0 min-h-10 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
+                class="w-full min-w-0 min-h-9 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-nav-menu-hover focus:!bg-transparent focus-ring focus-ring--nav"
             />
         </div>
     {/if}
@@ -190,12 +186,12 @@
                                         class="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center text-current"
                                         aria-hidden="true"
                                     >
-                                        <Icon size={18} />
+                                        <Icon size={20} />
                                     </span>
                                 {/if}
                                 <span class="min-w-0">
                                     <span
-                                        class="block truncate text-sm font-medium text-current"
+                                        class={cn("block truncate text-sm text-current", selectedItemId === item.id ? "font-semibold" : "font-medium")}
                                     >
                                         {item.label}
                                     </span>
@@ -225,7 +221,7 @@
             {#if emptyStateActionLabel.trim() && onEmptyStateAction}
                 <button
                     type="button"
-                    class="mt-3 inline-flex min-h-10 pointer-coarse:min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary transition-colors hover:bg-action-primary-hover focus-ring focus-ring--nav"
+                    class="mt-3 inline-flex min-h-9 pointer-coarse:min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary transition-colors hover:bg-action-primary-hover focus-ring focus-ring--nav"
                     onclick={handleEmptyStateAction}
                 >
                     {emptyStateActionLabel.trim()}

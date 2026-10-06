@@ -252,7 +252,7 @@
     );
 
     const iconContainerClasses = $derived(
-        "flex size-6 shrink-0 items-center justify-center leading-none text-current",
+        "flex size-5 shrink-0 items-center justify-center leading-none text-current",
     );
     /** With `searchMode: "input"`, the field stays visible even if `onSearchClick` is set (e.g. Storybook). */
     const shouldRenderSearchButton = $derived(
@@ -266,17 +266,10 @@
     }
 
     /**
-     * The selected row used to be carried by its fill alone, and the fill was
-     * 1.05:1 against the sidebar in light mode — not a fill, a rumour. Active
-     * and idle labels were #18181b and #27272a at the same weight, a 15-unit
-     * difference in one channel that nobody can see. So in light mode there
-     * was effectively no indication of where you were.
-     *
-     * Three cues now, only one of which is colour-discrimination dependent:
-     * the label takes --color-nav-menu-item-active (defined all along and
-     * never referenced — the row said `text-inherit`), a 3px bar marks the
-     * leading edge, and the tint stays as reinforcement rather than as the
-     * whole message.
+     * One indicator marks the current row: the tinted fill, with the active
+     * label colour (--color-nav-menu-item-active) and a heavier weight, so the
+     * cue does not depend on telling two similar fills apart. (A 3px bar on
+     * the leading edge used to mark it a second time; D127.)
      */
     function isItemActive(item: SidebarNavigationItem): boolean {
         return (
@@ -288,26 +281,25 @@
     function getNavItemClasses(item: SidebarNavigationItem): string {
         const isActive = isItemActive(item);
         const layoutClasses = isCollapsed
-            ? "flex min-h-10 pointer-coarse:min-h-11 items-center justify-center px-0 py-2"
-            : "flex min-h-10 pointer-coarse:min-h-11 items-center gap-3 px-2 py-2";
+            ? "flex min-h-9 pointer-coarse:min-h-11 items-center justify-center px-0 py-2"
+            : "flex min-h-9 pointer-coarse:min-h-11 items-center gap-3 px-2 py-2";
         const structural =
-            "focus-ring focus-ring--nav relative w-full cursor-pointer rounded-control no-underline transition-colors duration-150 outline-none";
+            "focus-ring focus-ring--nav relative w-full cursor-pointer rounded-control no-underline transition-colors duration-(--duration-base) ease-standard outline-none";
 
         if (isActive) {
-            // In forced colours all three cues are gone: fills (the tint and
-            // the bar) become the canvas and every link takes the system's
-            // link colour. An outline is a shape and is drawn there, so the
-            // current row keeps one. Inset, so a focused row's ring (2px
+            // In forced colours the fill is gone and every link takes the
+            // system's link colour. An outline is a shape and is drawn there,
+            // so the current row keeps one. Inset, so a focused row's ring (2px
             // outside) reads as a different thing.
             return (
                 `${structural} ${layoutClasses} bg-nav-menu-active ` +
-                "text-nav-menu-item-active hover:bg-nav-menu-active " +
+                "font-semibold text-nav-menu-item-active hover:bg-nav-menu-active " +
                 "active:bg-nav-menu-active-hover " +
                 "forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2"
             );
         }
 
-        return `${structural} ${layoutClasses} text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
+        return `${structural} ${layoutClasses} font-medium text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-surface-active`;
     }
 
     function handleNavigate(item: SidebarNavigationItem, event: MouseEvent) {
@@ -402,6 +394,7 @@
                             <Button
                                 variant={searchTriggerVariant}
                                 size={searchTriggerSize}
+                                class="min-h-9 pointer-coarse:min-h-11"
                                 fullWidth
                                 onclick={handleSearchClick}
                             >
@@ -429,7 +422,7 @@
                             bind:value={searchValue}
                             placeholder={searchPlaceholder}
                             aria-label={searchPlaceholder}
-                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-10 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-input-hover focus:!bg-transparent"
+                            class="focus-ring focus-ring--nav w-full min-w-0 min-h-9 pointer-coarse:min-h-11 rounded-container border-transparent !bg-transparent py-2 pl-10 text-sm ring-1 ring-input-border hover:!bg-input-hover focus:!bg-transparent"
                         />
                     </div>
                 {/if}
@@ -438,10 +431,10 @@
 
         {#if hasFilteredItems}
             <div
-                class="flex w-full min-w-0 flex-col divide-y divide-border"
+                class="flex w-full min-w-0 flex-col gap-5"
             >
                 {#each primarySectionGroups as group, gi (`${gi}-${group.sectionLabel ?? "x"}`)}
-                    <div class="py-4 first:pt-1 last:pb-1">
+                    <div>
                         <SidebarNavSection
                             title={group.sectionLabel ?? ""}
                             sectionKey={`p-${gi}`}
@@ -473,23 +466,17 @@
                                         aria-current={getAriaCurrent(item)}
                                         aria-label={isCollapsed ? item.label : undefined}
                                     >
-                                        {#if isItemActive(item)}
-                                            <span
-                                                class="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-pill bg-nav-menu-item-active"
-                                                aria-hidden="true"
-                                            ></span>
-                                        {/if}
                                         {#if Icon}
                                             <span
                                                 class={iconContainerClasses}
                                                 aria-hidden="true"
                                             >
-                                                <Icon size={18} />
+                                                <Icon size={20} />
                                             </span>
                                         {/if}
                                         {#if !isCollapsed}
                                             <span
-                                                class="text-sm font-medium leading-snug text-inherit"
+                                                class="text-sm leading-snug text-inherit"
                                                 >{item.label}</span
                                             >
                                         {/if}
@@ -527,7 +514,7 @@
 
             {#if filteredSecondaryItems.length > 0}
                 <div
-                    class="mt-3 border-t border-border pt-4"
+                    class="mt-5"
                     role="presentation"
                 >
                     <SidebarNavSection
@@ -553,12 +540,12 @@
                                             class={iconContainerClasses}
                                             aria-hidden="true"
                                         >
-                                            <Icon size={18} />
+                                            <Icon size={20} />
                                         </span>
                                     {/if}
                                     {#if !isCollapsed}
                                         <span
-                                            class="text-sm font-medium leading-snug text-inherit"
+                                            class="text-sm leading-snug text-inherit"
                                             >{item.label}</span
                                         >
                                     {/if}
@@ -585,7 +572,7 @@
                 {#if !(normalizedSearchTerm && searchMode === "input")}
                     <button
                         type="button"
-                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-10 pointer-coarse:min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
+                        class="focus-ring focus-ring--nav mt-3 inline-flex min-h-9 pointer-coarse:min-h-11 cursor-pointer items-center rounded-control bg-action-primary px-3 py-2 text-sm font-medium text-action-primary outline-none transition-colors hover:bg-action-primary-hover"
                         onclick={handleEmptyStateAction}
                     >
                         {emptyStateActionLabel}

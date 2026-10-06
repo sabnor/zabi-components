@@ -315,17 +315,17 @@
      */
     function getIconContainerClasses(isActive: boolean): string {
         const base =
-            "focus-ring focus-ring--nav group/nav-item flex flex-col items-center justify-center overflow-clip relative rounded-pill shrink-0 transition-colors duration-200 outline-none";
+            "focus-ring focus-ring--nav group/nav-item flex flex-col items-center justify-center overflow-clip relative rounded-pill shrink-0 transition-colors duration-(--duration-moderate) ease-standard outline-none";
         return isActive
             ? // Forced colours drop the fill and recolour the label: the
               // current item keeps an inset outline there, which is drawn.
               cn(
                   base,
-                  "bg-nav-menu-active text-nav-menu-item-active forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2",
+                  "bg-nav-menu-active font-semibold text-nav-menu-item-active forced-colors:outline-solid forced-colors:outline-2 forced-colors:-outline-offset-2",
               )
             : cn(
                   base,
-                  "text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-nav-menu-active",
+                  "font-medium text-nav-menu-item hover:bg-nav-menu-hover hover:text-nav-menu-item-hover active:bg-nav-menu-active",
               );
     }
 
@@ -336,7 +336,7 @@
     function getLabelClasses(): string {
         // `whitespace-pre` used to sit beside `text-nowrap` — same property,
         // and it preserved literal whitespace as a side effect.
-        return "font-medium leading-4 relative shrink-0 text-center text-nowrap tracking-wide text-xs text-inherit";
+        return "leading-5 relative shrink-0 text-center text-nowrap text-sm text-inherit";
     }
 
     function getIconWrapperClasses(): string {
@@ -487,7 +487,7 @@
                     onclick={handlePanelClick}
                 >
                     <div
-                        class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-border"
+                        class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-border-weak"
                     >
                         {#if nav}
                             {@render nav()}

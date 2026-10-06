@@ -150,9 +150,8 @@
 
     const containerClasses = $derived.by(() => {
         const widthClass = isCollapsed ? "w-[72px]" : "w-[266px]";
-        const railSurface = "border-r border-border bg-background text-headline";
-        const cardSurface =
-            "border-r border-border bg-background text-headline shadow-sm";
+        const railSurface = "border-r border-border-weak bg-surface-chrome text-headline";
+        const cardSurface = "border-r border-border-weak bg-surface-chrome text-headline";
         const surfaceClasses = isCard ? cardSurface : railSurface;
         const verticalPad = isCard ? "py-4" : "py-5";
         // `flex` and `max-lg:hidden` must not both apply below `lg`: with
