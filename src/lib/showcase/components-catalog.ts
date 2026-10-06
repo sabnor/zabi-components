@@ -5885,11 +5885,11 @@ pushToast({
                     },
                     {
                         name: "tone",
-                        type: "'default' | 'transparent' | 'brand'",
+                        type: "'default' | 'transparent' | 'brand' | 'inherit'",
                         required: false,
                         defaultValue: "default",
                         description:
-                            "The bar's fill. default is the page colour at rest. transparent has no fill at rest, for a canvas, an image or a colour block behind the bar, and takes the glass once content is under it. brand is the brand colour with on-brand text and controls, opaque at rest and scrolled, with no glass and no hairline, so a brand block directly under it joins it; with largeTitle the large row is part of the block. Written as data-tone.",
+                            "The bar's fill. default is the page colour at rest. transparent has no fill at rest, for a canvas, an image or a colour block behind the bar, and takes the glass once content is under it. brand is the brand colour with on-brand text and controls, opaque at rest and scrolled, with no glass and no hairline, so a brand block directly under it joins it; with largeTitle the large row is part of the block. inherit is for a bar inside a block of another colour: no fill of its own, no glass and no hairline at any scroll position, and the title, back control, actions, links, borders and focus rings take the block's text colour. A sticky bar over scrolling content takes its fill from the app: class=\"[--color-bar:var(--my-block-colour)]\". Written as data-tone.",
                     },
                     {
                         name: "position",
@@ -7889,6 +7889,14 @@ pushToast({
                         defaultValue: "auto",
                         description:
                             "Where the navigation goes. auto follows the viewport in CSS: tabs below 48rem (768px), a rail from 48rem, a sidebar from 64rem (1024px, the breakpoint SidebarShell uses). The others apply at every width. The host carries it as data-navigation-placement.",
+                    },
+                    {
+                        name: "flushTop",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Without a header, leaves out the content's padding for the status bar and the notch, so it starts at the top of the screen and a block of colour can run under the status bar. The content then handles the safe area itself: pad by --app-shell-top-inset, or put an AppBar position=\"static\" in the block. --app-shell-top-inset keeps its value. With a header it does nothing.",
                     },
                     {
                         name: "class",

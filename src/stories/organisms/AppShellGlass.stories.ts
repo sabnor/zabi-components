@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import AppShellGlassStory from './AppShellGlassStory.svelte';
+import AppShellFlushStory from './AppShellFlushStory.svelte';
 
 const meta = {
     title: 'Design System/Organisms/AppShell (9.0)',
@@ -92,6 +93,18 @@ export const BrandBar: Story = {
         docs: {
             description: {
                 story: 'AppBar tone brand over a brand-coloured block, so the bar and the block join without a seam.'
+            }
+        }
+    }
+};
+
+export const ColourBlockUnderStatusBar: Story = {
+    args: { placement: 'tabs' },
+    render: () => ({ Component: AppShellFlushStory }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'A tab screen with no header: AppShell flushTop starts the content at the top of the screen, so the accent block runs under the status bar. The AppBar inside it is position static and tone inherit, so it pads the safe area itself and its title, back control and actions take the block\'s text colour. A sticky bar over scrolling content takes its fill from the app: class="[--color-bar:var(--your-block-colour)]".'
             }
         }
     }

@@ -35,6 +35,16 @@ describe("AppShell on the server", () => {
         expect(body).toContain("Ten questions, one point each.");
     });
 
+    it("leaves the top padding off the content with flushTop and no header, and keeps it otherwise", () => {
+        const content = (props: Record<string, unknown>) =>
+            /<[a-z]+[^>]*data-app-shell-content[^>]*>/.exec(
+                renderOnServer(AppShellHarness, { props }).body,
+            )?.[0] ?? "";
+        expect(content({ withHeader: false })).toContain("safe-area-inset-top");
+        expect(content({ withHeader: false, flushTop: true })).not.toContain("safe-area-inset-top");
+        expect(content({ withHeader: false, flushTop: true })).toContain("safe-area-inset-left");
+    });
+
     it("marks the content element when it is a main", () => {
         const { body } = renderOnServer(AppShellHarness, { props: {} });
         expect(body).toMatch(/<main[^>]*data-app-shell-content/);

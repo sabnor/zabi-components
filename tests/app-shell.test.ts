@@ -97,6 +97,27 @@ describe("AppShell safe areas", () => {
     });
 });
 
+describe("AppShell flushTop", () => {
+    it("takes the top padding off a content without a header", () => {
+        render(AppShellHarness, { props: { withHeader: false, withFooter: false, flushTop: true } });
+        expect(main().className).not.toContain("safe-area-inset-top");
+        expect(main().className).toContain("env(safe-area-inset-bottom)");
+        expect(main().className).toContain("env(safe-area-inset-left)");
+        // The value is still there for the content to pad by.
+        const host = screen.getByTestId("shell");
+        expect(host.getAttribute("style")).toContain("--app-shell-top-inset: env(safe-area-inset-top, 0px)");
+    });
+
+    it("changes nothing by default, or with a header", () => {
+        render(AppShellHarness, { props: { withHeader: false, flushTop: false } });
+        expect(main().className).toContain("env(safe-area-inset-top)");
+        cleanup();
+        render(AppShellHarness, { props: { flushTop: true } });
+        expect(main().className).not.toContain("safe-area-inset-top");
+        expect(screen.getByTestId("bar").className).toContain("env(safe-area-inset-top)");
+    });
+});
+
 describe("AppShell custom properties", () => {
     it("starts from the default bar heights where nothing can be measured", () => {
         render(AppShellHarness);

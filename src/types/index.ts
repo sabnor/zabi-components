@@ -542,8 +542,8 @@ export interface AppBarProps extends Omit<HTMLAttributes<HTMLElement>, 'class' |
     scrollEdge?: 'auto' | 'always' | 'never';
     /** Draws the title large on a second row that scrolls away; the bar then shows it small. */
     largeTitle?: boolean;
-    /** The bar's fill: the page colour, none at rest, or the brand colour with on-brand content. Default `default`. */
-    tone?: 'default' | 'transparent' | 'brand';
+    /** The bar's fill: the page colour, none at rest, the brand colour with on-brand content, or none with the colours of the block it sits in (`inherit`). Default `default`. */
+    tone?: 'default' | 'transparent' | 'brand' | 'inherit';
     /** `sticky` (default), or `static` for a bar in the flow of the page. */
     position?: 'sticky' | 'static';
     class?: string;
@@ -565,6 +565,8 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'cla
     navigation?: Snippet<[AppShellNavigationContext]>;
     /** Where the `navigation` goes. `auto` (default): tabs below 48rem, a rail from 48rem, a sidebar from 64rem. */
     navigationPlacement?: AppShellNavigationMode;
+    /** Without a `header`, no top safe-area padding on the content: it starts at the top of the screen and handles the safe area itself. */
+    flushTop?: boolean;
     class?: string;
     /** Added after the two custom properties the shell sets. */
     style?: string;

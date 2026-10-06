@@ -103,8 +103,14 @@
          * and scrolled, with no glass and no hairline, so a brand block
          * directly under the bar joins it. With `largeTitle` the large row is
          * part of the brand block.
+         * `inherit` is for a bar inside a block of another colour: no fill of
+         * its own, no glass and no hairline at any scroll position, and the
+         * title, back control, actions, links, borders and focus rings take
+         * the colour the block gives the text. A sticky bar that has to cover
+         * scrolling content takes its fill from the app:
+         * `class="[--color-bar:var(--my-block-colour)]"`.
          */
-        tone?: "default" | "transparent" | "brand";
+        tone?: "default" | "transparent" | "brand" | "inherit";
         /**
          * `sticky` (default) keeps the bar at the top of what scrolls.
          * `static` leaves it where it is in the page, for a bar that sits
@@ -203,9 +209,10 @@
         large && overscroll > 0 && (shell ? shell.scrolledTop : ownScrolled),
     );
     const scrolledUnder = $derived(
-        // An opaque brand bar has no glass and no hairline whatever the mode says.
+        // An opaque brand bar has no glass and no hairline whatever the mode says, nor has
+        // one that takes its block's colours (glass over any colour is not readable).
         // Nor has a bar in the flow of the page: nothing scrolls under it.
-        tone === "brand" || inFlow
+        tone === "brand" || tone === "inherit" || inFlow
             ? false
             : resolveScrolledUnder(
                   scrollEdge,
@@ -320,7 +327,7 @@
     const backClasses = $derived(
         "focus-ring focus-ring--muted inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-control bg-transparent text-headline transition-colors duration-(--duration-base) " +
             // The page's hover fills are a dark veil: on the brand fill the on-brand colour is what shows.
-            (tone === "brand"
+            (tone === "brand" || tone === "inherit"
                 ? "hover:bg-[color-mix(in_srgb,var(--color-on-brand)_16%,transparent)] active:bg-[color-mix(in_srgb,var(--color-on-brand)_26%,transparent)]"
                 : "hover:bg-surface-hover active:bg-surface-active"),
     );
@@ -364,7 +371,13 @@
             // `--color-bar` is scoped on the element that carries `material-bar`.
             !large && tone === "transparent" && "[--color-bar:transparent]",
             !large && tone === "brand" && "[--color-bar:var(--color-bar-brand)]",
+            // With a large title the inner bar takes whatever the header says (see below), so a caller's fill reaches it.
+            tone === "inherit" && "[--color-bar:transparent]",
             tone === "brand" && "on-brand",
+            // The on-brand scope with the on-colour left as the block's own text colour; the
+            // focus ring's gap is the block's, not the brand fill.
+            tone === "inherit" && "on-brand [--color-on-brand:currentColor] [--color-focus-ring-offset:transparent]",
+            // The caller's classes come last: their `[--color-bar:…]` replaces the tone's.
             ownClass,
         ),
     );
@@ -531,6 +544,7 @@
                 inFlow ? "relative" : "sticky top-0",
                 tone === "transparent" && "[--color-bar:transparent]",
                 tone === "brand" && "[--color-bar:var(--color-bar-brand)]",
+                tone === "inherit" && "[--color-bar:inherit]",
             )}
         >
             {@render barRow()}

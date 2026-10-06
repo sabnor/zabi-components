@@ -28,6 +28,19 @@ describe("AppBar position", () => {
         expect(bar.dataset.scrolledUnder).toBe("false");
     });
 
+    it("`tone=\"inherit\"` works static and sticky, never glass, and pads the status bar itself", () => {
+        for (const position of ["static", "sticky"] as const) {
+            const { container } = render(AppBar, {
+                props: { title: "Quiz", position, tone: "inherit", scrollEdge: "always" },
+            });
+            const bar = header(container);
+            expect(bar.className).toContain("on-brand");
+            expect(bar.className).toContain("pt-[env(safe-area-inset-top)]");
+            expect(bar.dataset.scrolledUnder).toBe("false");
+            cleanup();
+        }
+    });
+
     it("reads the 8.1 `class=\"static\"` as `position=\"static\"` and keeps the caller's other classes", () => {
         const { container } = render(AppBar, {
             props: { title: "Quiz", class: "static mt-2" },

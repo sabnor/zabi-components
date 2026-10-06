@@ -29,5 +29,9 @@ describe("AppBar largeTitle on the server", () => {
         expect(brand).toContain('data-tone="brand"');
         expect(brand).toContain("on-brand");
         expect(brand).toContain('data-scrolled-under="false"');
+        const inherit = renderOnServer(AppBarHarness, { props: { tone: "inherit", scrollEdge: "always" } }).body;
+        expect(inherit).toContain('data-tone="inherit"');
+        expect(inherit).toContain("[--color-on-brand:currentColor]");
+        expect(inherit).toContain('data-scrolled-under="false"');
     });
 });

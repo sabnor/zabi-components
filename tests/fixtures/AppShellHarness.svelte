@@ -11,6 +11,7 @@
         withFooter?: boolean;
         collapseOnScroll?: boolean;
         largeTitle?: boolean;
+        flushTop?: boolean;
         active?: string;
         contentElement?: "main" | "div";
         class?: string;
@@ -22,6 +23,7 @@
         withFooter = true,
         collapseOnScroll = false,
         largeTitle = false,
+        flushTop = undefined,
         active = "/quiz",
         contentElement,
         class: className,
@@ -47,6 +49,7 @@
     class={className}
     {style}
     {contentElement}
+    {flushTop}
     data-testid="shell"
     header={withHeader ? header : undefined}
     footer={withFooter ? footer : undefined}

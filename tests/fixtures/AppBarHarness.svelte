@@ -13,7 +13,7 @@
         withLeading?: boolean;
         titleLines?: 1 | 2;
         largeTitle?: boolean;
-        tone?: "default" | "transparent" | "brand";
+        tone?: "default" | "transparent" | "brand" | "inherit";
         scrollEdge?: "auto" | "always" | "never";
         /** Put the bar in a scrolling box of its own, as AppShell does. */
         inScroller?: boolean;

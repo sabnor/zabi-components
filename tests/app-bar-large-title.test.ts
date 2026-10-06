@@ -225,6 +225,38 @@ describe("AppBar tone", () => {
         expect(bar().querySelector("[data-appbar-large]")!.className).toContain("bg-bar-brand");
     });
 
+    it("inherit is the on-brand scope over the block's own text colour, with no fill", () => {
+        render(AppBarHarness, { props: { tone: "inherit", scrollEdge: "always", backHref: "/" } });
+        const classes = bar().className.split(/\s+/);
+        expect(bar().getAttribute("data-tone")).toBe("inherit");
+        expect(classes).toContain("on-brand");
+        expect(classes).toContain("[--color-on-brand:currentColor]");
+        expect(classes).toContain("[--color-bar:transparent]");
+        expect(classes).not.toContain("[--color-bar:var(--color-bar-brand)]");
+        // No glass and no hairline, whatever scrollEdge says.
+        expect(bar().getAttribute("data-scrolled-under")).toBe("false");
+        const back = within(bar()).getByRole("link", { name: "Back" });
+        expect(back.className).toContain("var(--color-on-brand)");
+    });
+
+    it("inherit with a caller's fill: the caller's `--color-bar` comes last and wins", () => {
+        render(AppBarHarness, { props: { tone: "inherit", class: "[--color-bar:var(--block)]" } });
+        const classes = bar().className.split(/\s+/);
+        expect(classes).toContain("[--color-bar:var(--block)]");
+        // `cn` keeps the last of two identical arbitrary properties: the tone's own is gone.
+        expect(classes).not.toContain("[--color-bar:transparent]");
+    });
+
+    it("inherit with a large title: the 56px row follows the bar's fill and the large row has none", () => {
+        render(AppBarHarness, { props: { tone: "inherit", largeTitle: true, class: "[--color-bar:var(--block)]" } });
+        expect(bar().className.split(/\s+/)).toContain("on-brand");
+        expect(bar().className).toContain("[--color-bar:var(--block)]");
+        const surface = bar().querySelector<HTMLElement>("[data-appbar-bar]")!;
+        expect(surface.className).toContain("[--color-bar:inherit]");
+        expect(surface.getAttribute("data-scrolled-under")).toBe("false");
+        expect(bar().querySelector("[data-appbar-large]")!.className).not.toContain("bg-bar-brand");
+    });
+
     it("transparent with a large title scopes the fill on the 56px row", () => {
         render(AppBarHarness, { props: { tone: "transparent", largeTitle: true } });
         expect(bar().querySelector("[data-appbar-bar]")!.className).toContain("[--color-bar:transparent]");

@@ -197,6 +197,17 @@ describe("bars on their own", () => {
         expect(under("t")).toBe("true");
     });
 
+    it("AppBar tone=\"inherit\" stays flush with content under it, sticky and static", async () => {
+        Object.defineProperty(window, "scrollY", { value: 120, configurable: true });
+        vi.spyOn(document.documentElement, "scrollHeight", "get").mockReturnValue(5000);
+        render(AppBar, { props: { title: "A", tone: "inherit", "data-testid": "a" } });
+        render(AppBar, { props: { title: "B", tone: "inherit", position: "static", scrollEdge: "always", "data-testid": "b" } });
+        render(AppBar, { props: { title: "C", "data-testid": "c" } });
+        await waitFor(() => expect(under("c")).toBe("true"));
+        expect(under("a")).toBe("false");
+        expect(under("b")).toBe("false");
+    });
+
     it("are flush at the top of the window, and scrollEdge overrides", async () => {
         render(AppBar, { props: { title: "A", "data-testid": "a" } });
         render(AppBar, { props: { title: "B", scrollEdge: "always", "data-testid": "b" } });

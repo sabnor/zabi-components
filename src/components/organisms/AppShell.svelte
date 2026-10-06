@@ -96,6 +96,12 @@
      *
      * One more custom property: `--app-shell-start-inset`, the width of the
      * rail or sidebar (`0px` as tabs), also mirrored onto `<html>`.
+     *
+     * With `flushTop` and no `header` the content starts at the top edge of
+     * the screen, under the status bar, so a block of colour at the top of it
+     * can run there. The content then handles the safe area itself: pad by
+     * `--app-shell-top-inset`, or let an `AppBar position="static"` in the
+     * block do it.
      */
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class" | "style"> & {
         /** The top bar, an `AppBar`. It handles the safe area above it. */
@@ -135,6 +141,14 @@
          * (1024px). The others apply at every width.
          */
         navigationPlacement?: AppShellNavigationMode;
+        /**
+         * Without a `header`, leaves out the padding the content has for the
+         * status bar and the notch, so it starts at the top of the screen and
+         * handles the safe area itself. `--app-shell-top-inset` keeps its
+         * value. With a `header` it does nothing: the header covers the safe
+         * area.
+         */
+        flushTop?: boolean;
         class?: string;
         /** Added after the two custom properties the shell sets. */
         style?: string;
@@ -148,6 +162,7 @@
         canvas = false,
         navigation,
         navigationPlacement = "auto",
+        flushTop = false,
         class: className = "",
         style = "",
         ...restProps
@@ -342,13 +357,13 @@
             ? cn(
                   // A rail or sidebar clears the inline-start safe area itself: not twice.
                   "min-w-0 flex-1 pl-(--shell-content-pl) pr-[env(safe-area-inset-right)]",
-                  !header && "pt-[env(safe-area-inset-top)]",
+                  !header && !flushTop && "pt-[env(safe-area-inset-top)]",
                   // Whatever lies over the bottom (footer, tabs), or the safe area alone.
                   "pb-(--app-shell-bottom-inset)",
               )
             : cn(
                   "min-w-0 flex-1 pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-                  !header && "pt-[env(safe-area-inset-top)]",
+                  !header && !flushTop && "pt-[env(safe-area-inset-top)]",
                   // With a footer over the scroller the content ends above it.
                   footer ? "pb-(--app-shell-bottom-inset)" : "pb-[env(safe-area-inset-bottom)]",
               ),
