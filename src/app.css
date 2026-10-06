@@ -607,6 +607,8 @@
   --color-action-primary-active: var(--color-brand-800);
   --color-action-primary-subtle: var(--color-brand-100);
   --color-action-primary-subtle-hover: var(--color-brand-200);
+  /* Edge of a subtle brand badge when `bordered`; the tint's own darker step. */
+  --color-action-primary-border: var(--color-brand-200);
   /* Held down, on a control whose resting fill is the subtle one: a toggled-on
    * ghost IconButton. It used the hover step, which is 1.24:1 against the
    * resting fill and, with a mouse, is what the button already shows. Half a
@@ -1184,6 +1186,7 @@ body {
   /* Pinned like the other tints: light moved these a step darker. */
   --color-action-primary-subtle: var(--color-brand-100);
   --color-action-primary-subtle-hover: var(--color-brand-200);
+  --color-action-primary-border: var(--color-brand-200);
   /* Half a step past the dark hover fill, as in light. */
   --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
 
@@ -2211,8 +2214,40 @@ body {
   }
 
   /**
-   * Bordered surface shell for a block of list rows (iOS-style “list group”).
+   * A hairline between list rows, none above the first or below the last.
+   * It is drawn in the 4px gap `space-y-1` leaves between the `li`s, not on
+   * the row, so a row's rounded hover, pressed or selected fill never covers
+   * it and the list is no taller than it was. The line is inset by a row's
+   * padding, and next to a selected row (which has its own edge) it is
+   * hidden. `<List />` has this class; a manual `<ul role="list">` gets it
+   * from `.list-group` or by adding `list-dividers` itself.
+   * `--zabi-list-divider-color` recolours it (`transparent` removes it).
+   */
+  .list-dividers > li + li,
+  .list-group > li + li {
+    position: relative;
+  }
+  .list-dividers > li + li::before,
+  .list-group > li + li::before {
+    content: "";
+    position: absolute;
+    inset-inline: 1rem;
+    top: calc(-0.125rem - 0.5px);
+    height: 1px;
+    background-color: var(--zabi-list-divider-color, var(--color-border));
+    pointer-events: none;
+  }
+  :is(.list-dividers, .list-group) > li:has(> [data-selected="true"])::before,
+  :is(.list-dividers, .list-group) > li:has(> [data-selected="true"]) + li::before {
+    display: none;
+  }
+
+  /**
+   * Surface shell for a block of list rows (iOS-style “list group”): one
+   * outer border, rows told apart by dividers, not by a border each.
    * Use on a wrapper around `<List />` or on a manual `<ul role="list">`.
+   * `--zabi-list-row-border-color: var(--color-border)` with
+   * `--zabi-list-divider-color: transparent` gives the 8.1 boxed rows.
    */
   .list-group {
     @apply space-y-1 overflow-hidden rounded-xl border border-border p-1;

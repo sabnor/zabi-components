@@ -221,9 +221,10 @@ describe("state variants that used to lose to a hand-written colour class", () =
         expect(selected).not.toContain("border-border");
         expect(selected).not.toContain("focus-visible:bg-surface-hover");
         expect(selected).toContain("focus-ring");
-        expect(idle).toEqual(
-            expect.arrayContaining(["border-border", "focus-visible:bg-surface-hover"]),
-        );
+        expect(idle).toContain("focus-visible:bg-surface-hover");
+        // 9.0: no resting border of its own; the edge is a custom property that defaults to transparent.
+        expect(idle).not.toContain("border-border");
+        expect(idle).toContain("border-[color:var(--zabi-list-row-border-color,transparent)]");
     });
 });
 

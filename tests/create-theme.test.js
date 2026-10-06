@@ -177,21 +177,22 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   const result = createTheme({ brand: '#0026EA', overrides: { '--color-link': 'var(--zabi-brand-400)' } });
   const warnings = contrastWarnings(result);
   // The link colour is also the icon of a toggled-on ghost IconButton, held
-  // down, and the label of a selected pill Tab.
+  // down, the label of a selected pill Tab, and the text of a subtle brand Badge.
   assert.deepEqual(warnings.map((w) => `${w.mode} ${w.pair}`), [
+    'light badge subtle · brand',
     'light link on page',
     'light link on card',
     'light icon on a held toggled-on fill',
     'light label on a selected pill tab',
   ]);
-  const [onPage] = warnings;
+  const onPage = warnings.find((w) => w.pair === 'link on page');
   assert.equal(onPage.required, 4.5);
   assert.ok(onPage.ratio < 4.5 && onPage.ratio > 1);
   assert.deepEqual(onPage.foreground, { token: '--color-link', value: result.tokens['--zabi-brand-400'] });
   assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#fafafa' });
   assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #fafafa is [\d.]+:1, needs 4\.5:1/);
   // The failure is in the file too, so it is not lost when stderr is.
-  assert.match(result.css, /Contrast: 4 of \d+ role pairs are below WCAG AA:/);
+  assert.match(result.css, /Contrast: 5 of \d+ role pairs are below WCAG AA:/);
 
   // 3:1 pairs are checked as well: a focus ring too pale for the page.
   const ring = createTheme({ brand: '#0026EA', overrides: { '--color-focus': 'var(--zabi-brand-300)' } });
@@ -324,7 +325,7 @@ test('the bin warns on stderr, and --strict turns a failed pair into exit 1', ()
   const lenient = run(...args);
   assert.equal(lenient.status, 0);
   assert.match(lenient.stderr, /warning: light · link on page: .* needs 4\.5:1/);
-  assert.match(lenient.stderr, /4 role pairs below WCAG AA\./);
+  assert.match(lenient.stderr, /5 role pairs below WCAG AA\./);
   assert.match(lenient.stdout, /--color-link: var\(--zabi-brand-400\);/);
 
   const strict = run(...args, '--strict');
@@ -748,21 +749,21 @@ const declarationOf = (block, name) => new RegExp(`${name}: ([^;]+);`).exec(bloc
 
 test('without light or dark overrides the bytes are what they were before the option existed', () => {
   // Hashes of the css from the generator before per-mode overrides. The header
-  // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193; the flat hash moved when the pressed field became a mix of the field:
+  // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193 to 195; the flat hash moved when the pressed field became a mix of the field:
   // the field edge on the field fill, the page and the card, then the progress fill on its track, each in both modes).
   const before = {
-    plain: [{ brand: '#0026EA' }, 'e6f5363cea616208faf1d96cb8356ef30343b8e1ab69f9078b3594c8db187a81'],
+    plain: [{ brand: '#0026EA' }, '53931871346ce404794a04b57fd27bed340d0746e297a40e60d4c55157967c59'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      '29b1f5aa5409215e56af83c135da513fff662d6568e53cb57b7fda3b18724391',
+      '059371a5506e1667d2964cd0b58bd0e90cdd56989e45f3a39b4795f5a5008a17',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      '6ebb9bb171a516b973710b40252cf37477f0c4995781672df73c3289bda14f19',
+      'a61ab737612d77dd48b5e1dcdb24e86d6f452fcafd8bfde5d39f0d9a046686ee',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '53c9d24b5323a68052bfee711725a4cf9da2ba373d6da10d91a38dbba905dba8',
+      '7529a9a41e8e0f931a3cd7b354f4b48620cd8aeb62ecd39e46ea2e0e619edd87',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {

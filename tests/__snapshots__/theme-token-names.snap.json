@@ -28,6 +28,7 @@
   "--color-action-disabled-text",
   "--color-action-primary",
   "--color-action-primary-active",
+  "--color-action-primary-border",
   "--color-action-primary-hover",
   "--color-action-primary-subtle",
   "--color-action-primary-subtle-active",

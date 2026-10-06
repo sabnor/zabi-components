@@ -501,7 +501,7 @@ describe("ListItem: a row is a link, a button, or plain content", () => {
         expect(own).not.toContain("focus-ring");
         expect(own.some((name) => name.startsWith("hover:") || name.startsWith("active:"))).toBe(false);
         // The same box as a row that can be pressed.
-        expect(own).toEqual(expect.arrayContaining(["flex", "border", "border-border", "px-4", "py-3"]));
+        expect(own).toEqual(expect.arrayContaining(["flex", "border", "border-[color:var(--zabi-list-row-border-color,transparent)]", "px-4", "py-3"]));
     });
 
     it("a List without onclick renders such rows, and the links among them stay links", () => {

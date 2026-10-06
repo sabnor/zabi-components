@@ -56,4 +56,33 @@ describe("Badge", () => {
         render(Badge, { props: { text: "Ny", "data-testid": "new", id: "new" } });
         expect(screen.getByTestId("new").id).toBe("new");
     });
+
+    it("a subtle badge has no visible edge by default, but keeps its border box", () => {
+        render(Badge, { props: { text: "Bokat", variant: "info" } });
+        const own = classes("Bokat");
+        expect(own).toContain("border");
+        expect(own).toContain("border-transparent");
+        expect(own).not.toContain("border-info-border");
+    });
+
+    it.each(["success", "warning", "error", "info", "energetic", "accent", "brand", "default"] as const)(
+        "bordered puts the %s family edge back, and a solid badge never has one",
+        (variant) => {
+            const edge = variant === "brand" ? "border-action-primary-border" : `border-${variant === "default" ? "neutral" : variant}-border`;
+            render(Badge, { props: { text: "S", variant, bordered: true } });
+            render(Badge, { props: { text: "F", variant, emphasis: "solid", bordered: true } });
+            expect(classes("S")).toContain(edge);
+            expect(classes("S")).not.toContain("border-transparent");
+            expect(classes("F")).toContain("border-transparent");
+            expect(classes("F")).not.toContain(edge);
+        },
+    );
+
+    it('variant="brand": the brand tint with the link text, or the primary fill with its label', () => {
+        render(Badge, { props: { text: "Medlem", variant: "brand", showIcon: true } });
+        render(Badge, { props: { text: "Solid", variant: "brand", emphasis: "solid" } });
+        expect(classes("Medlem")).toEqual(expect.arrayContaining(["bg-action-primary-subtle", "text-(color:--color-link)"]));
+        expect(classes("Solid")).toEqual(expect.arrayContaining(["bg-action-primary", "text-action-primary"]));
+        expect(screen.getByText("Medlem").querySelector("svg")).not.toBeNull();
+    });
 });

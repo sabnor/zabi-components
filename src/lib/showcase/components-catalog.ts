@@ -554,7 +554,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Badge",
                 category: "atoms",
                 description:
-                    "Small status label in the semantic tones, plus neutral, energetic and the app's accent.",
+                    "Small status label in the semantic tones, plus neutral, energetic, the app's accent and the brand colour. No outline unless bordered.",
                 props: [
                     {
                         name: "text",
@@ -578,8 +578,16 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "20, 24 or 28px tall for a label on one line. A label that does not fit wraps and the badge grows, keeping the corner of one line.",
                     },
+                    {
+                        name: "bordered",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the family's edge on a subtle badge (the 8.1 look). Solid badges never have one.",
+                    },
                 ],
-                variants: ["default", "success", "warning", "error", "info", "neutral", "energetic", "accent"],
+                variants: ["default", "success", "warning", "error", "info", "neutral", "energetic", "accent", "brand"],
                 examples: [
                     {
                         title: "Basic Badge",

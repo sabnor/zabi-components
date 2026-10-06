@@ -403,6 +403,8 @@ export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'class
     variant?: BadgeVariant;
     size?: SizeVariant;
     emphasis?: 'subtle' | 'solid';
+    /** Draws the family's edge on a subtle badge. Default `false`. */
+    bordered?: boolean;
     /** Label text. Ignored when `children` is provided. */
     text?: string;
     showIcon?: boolean;

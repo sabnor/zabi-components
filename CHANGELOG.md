@@ -12,7 +12,16 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- **`Badge variant="brand"`** (Z-056 part 3): the primary brand colour as a badge, subtle (brand tint, link-coloured text) and solid (the primary fill with its label). New token `--color-action-primary-border` (the brand tint's edge), and the guarded pairs `badge subtle · brand` and `badge solid · brand`.
+- **`Badge bordered`** (Z-056 part 2): puts a subtle badge's family edge back. Default `false`.
+- **`--zabi-list-row-border-color`** (default `transparent`) and **`--zabi-list-divider-color`** (default `var(--color-border)`): set on a list or any ancestor.
+
 ### Changed (visible in 9.0)
+
+- **List rows have no border of their own; a hairline divides them.** A row inside the bordered `.list-group` shell (or a bare `<List>`) drew a second outline; now rows keep a transparent 1px border (so height and text do not move) and a 1px `--color-border` divider sits in the gap between rows, none above the first or below the last, hidden next to a selected row (which keeps its fill and `border-action-primary` edge). The `.list-group` shell keeps its one border. Row transitions use the motion tokens. Restore 8.1: `--zabi-list-row-border-color: var(--color-border); --zabi-list-divider-color: transparent;` on the list or any ancestor.
+- **A subtle Badge has no visible border.** The 1px border box stays (same height), drawn transparent. Restore 8.1: `bordered` on the Badge. Solid badges are unchanged.
 
 - **BottomSheet arrives on a spring.** The slide in, the move between snap points and the settle after a drag use `--ease-spring` over `--duration-slow` (300ms); they were a literal 200ms ease-out. The slide in reads both tokens from the sheet, so a theme that sets them is followed, and falls back to `ease-out` where the tokens cannot be read or the engine rejects a `linear()` easing. A 2rem filler under the panel's bottom edge keeps the overshoot from showing the page. Reduced motion is unchanged (no slide, no transition), and so are drag, snap logic, focus and scroll lock. Restore 8.1: on the sheet or an ancestor, `--ease-spring: var(--ease-out); --duration-slow: 200ms` (both tokens are shared with other components), or `class="duration-200 ease-out"` on the `BottomSheet`.
 

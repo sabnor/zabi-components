@@ -69,7 +69,8 @@ describe('Badge variant="accent"', () => {
         render(Badge, { variant: "accent", emphasis: "solid", text: "Solid" });
         const subtle = classesOf(screen.getByText("Nytt"));
         const solid = classesOf(screen.getByText("Solid"));
-        expect(subtle).toEqual(expect.arrayContaining(["bg-accent-subtle", "text-accent-text", "border-accent-border"]));
+        expect(subtle).toEqual(expect.arrayContaining(["bg-accent-subtle", "text-accent-text", "border-transparent"]));
+        expect(subtle).not.toContain("border-accent-border");
         expect(solid).toEqual(expect.arrayContaining(["bg-accent", "text-on-accent", "border-transparent"]));
         // A status badge puts the card colour on its fill; an accent may be a yellow, where that is white on yellow.
         expect(solid).not.toContain("text-card");

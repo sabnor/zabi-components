@@ -25,10 +25,10 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outl
 
 /**
  * Badge variants: the semantic families, and `accent`, the app's second brand
- * colour (`--color-accent`). `energetic` is a family of its own and stays on
+ * colour (`--color-accent`), and `brand`, the primary one. `energetic` is a family of its own and stays on
  * the library's citron when an app changes its accent.
  */
-export type BadgeVariant = ExtendedSemanticVariant | 'accent';
+export type BadgeVariant = ExtendedSemanticVariant | 'accent' | 'brand';
 
 /**
  * Text colour of a Heading or Text that sits on a filled block.

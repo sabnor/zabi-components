@@ -183,6 +183,13 @@ export function buildPairs() {
         });
     }
 
+    // Badge / brand: the subtle text is the link role (as the label of a
+    // selected pill tab); the solid label is the primary fill's own.
+    pairs.push(
+        { name: 'badge subtle · brand', bg: '--color-action-primary-subtle', fg: '--color-link', min: AA_NORMAL },
+        { name: 'badge solid · brand', bg: '--color-action-primary', fg: '--color-action-primary-text', min: AA_NORMAL },
+    );
+
     // Accent — the second brand colour. Solid fills carry --color-on-accent
     // (not the card surface, as a status badge does): an app that re-colours
     // --zabi-accent-* sets the label with --zabi-on-accent / -dark.
