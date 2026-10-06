@@ -316,9 +316,9 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         name: "revealable",
                         type: "boolean",
                         required: false,
-                        defaultValue: "false",
+                        defaultValue: "true",
                         description:
-                            "With type password: adds a button at the end of the field that shows the password as text and hides it again. It keeps the caret, leaves autocomplete alone, and is a 44px target on a touch screen.",
+                            "With type password: a button at the end of the field that shows the password as text and hides it again. On by default; false leaves it out. It keeps the caret, leaves autocomplete alone, and is a 44px target on a touch screen.",
                     },
                     {
                         name: "revealLabel",

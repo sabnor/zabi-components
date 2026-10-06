@@ -305,11 +305,16 @@ describe("Input: revealable", () => {
         expect(screen.getByRole("button", { name: "Visa lösenord" })).toBeTruthy();
     });
 
-    it("is not there on another type, or without the prop", () => {
+    it("is there on a password field without being asked for", () => {
+        render(Input, { props: { label: "Lösenord", type: "password" } });
+        expect(screen.getByRole("button", { name: "Show password" })).toBeTruthy();
+    });
+
+    it("is not there on another type, or when turned off", () => {
         render(Input, { props: { label: "E-post", type: "email", revealable: true } });
         expect(screen.queryByRole("button")).toBeNull();
         cleanup();
-        render(Input, { props: { label: "Lösenord", type: "password" } });
+        render(Input, { props: { label: "Lösenord", type: "password", revealable: false } });
         expect(screen.queryByRole("button")).toBeNull();
     });
 

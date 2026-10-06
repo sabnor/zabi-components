@@ -223,7 +223,7 @@ export interface InputProps
     leading?: Snippet;
     /** Drawn inside the field, after the text. */
     trailing?: Snippet;
-    /** With `type="password"`: adds a button that shows the password as text, and hides it again. */
+    /** With `type="password"`: a button that shows the password as text, and hides it again. On by default; `false` leaves it out. */
     revealable?: boolean;
     /** Accessible name of that button, the same in both states. */
     revealLabel?: string;

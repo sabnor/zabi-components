@@ -14,7 +14,13 @@ Whenever token or CSS import API surface changes, include:
 
 ### Changed
 
+- `Input type="password"` has the show/hide button by default (`revealable` now defaults to `true`). Pass `revealable={false}` for a password field without it. Other types are unaffected.
+
 - In dark, `Card variant="flat"` is a translucent, slightly lighter layer (the neutral ramp's base-50 at 7%, hover 11%, pressed 15%) instead of the opaque card fill, so flat cards nested in each other, in a default card, an elevated card or a sheet each read a step lighter and stay visible. Light is unchanged: a light flat card computes to the same fill as before. New tokens `--color-card-flat`, `--color-card-flat-hover`, `--color-card-flat-active` (utilities `bg-card-flat`, `hover:bg-card-flat-hover`, `active:bg-card-flat-active`), settable through `createTheme` `overrides`. To keep the opaque dark fill: `overrides: { dark: { '--color-card-flat': 'var(--color-card)' } }`, and the same for `-hover` and `-active` (`var(--color-card-hover)`, `var(--color-card-active)`).
+
+### Fixed
+
+- `Input type="search"` with a clear button of its own in `trailing` no longer also shows the browser's clear cross in Chrome and Safari. A search field without `trailing` keeps the browser's.
 
 ## [9.0.0-alpha.5] - 2026-10-07
 
