@@ -157,13 +157,18 @@
     });
 
     const disabledClass =
-        "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
+        "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:bg-none disabled:inset-shadow-none disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
 
     const isDangerTone = $derived(
         tone === "danger" && (variant === "ghost" || variant === "outline"),
     );
 
     const variantClass = $derived.by(() => {
+        // The veil of the solid fills, as on Button. Not when disabled, and
+        // not on a toggled-on button (`pressedClass`): that holds the pressed
+        // fill flat, with its outline as the shape.
+        const veil = disabled || (isToggle && pressed) ? "" : "bg-control-gradient ";
+        const veilAccent = disabled || (isToggle && pressed) ? "" : "bg-control-gradient-accent ";
         if (isDangerTone) {
             const fill =
                 "text-error hover:bg-action-danger-subtle active:bg-action-danger-subtle-hover active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger";
@@ -174,19 +179,22 @@
         switch (variant) {
             case "secondary":
                 return "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active active:scale-[0.98] motion-reduce:active:scale-100";
+            case "tonal":
+                return "bg-action-tonal text-action-tonal active:scale-[0.98] motion-reduce:active:scale-100";
             case "danger":
-                return "bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger";
+                return `${veil}bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger`;
             case "ghost":
                 return "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--muted";
             case "outline":
-                return "bg-transparent border border-border text-headline hover:bg-surface-hover hover:border-border-medium active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100";
+                return "bg-transparent border border-action-outline text-headline hover:bg-surface-hover hover:border-action-outline-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100";
             case "link":
+            case "text":
                 return "bg-transparent text-link hover:text-link-hover focus-ring--muted";
             case "accent":
-                return "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98] motion-reduce:active:scale-100";
+                return `${veilAccent}bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98] motion-reduce:active:scale-100`;
             case "primary":
             default:
-                return "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] motion-reduce:active:scale-100";
+                return `${veil}bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] motion-reduce:active:scale-100`;
         }
     });
 
@@ -215,7 +223,12 @@
             case "ghost":
             case "outline":
             case "link":
+            case "text":
                 return `bg-action-primary-subtle text-link hover:bg-action-primary-subtle-hover active:bg-action-primary-subtle-active ${outline}`;
+            case "tonal":
+                // The tonal fill keeps its own hover and pressed steps; the
+                // outline is what shows it is on.
+                return outline;
             case "accent":
                 return `bg-accent-active hover:bg-accent-active ${outline}`;
             case "primary":
@@ -226,7 +239,7 @@
 
     const buttonClasses = $derived.by(() => {
         const base =
-            "inline-flex focus-ring items-center justify-center rounded-control shrink-0 transition-colors duration-150 cursor-pointer select-none";
+            "inline-flex focus-ring items-center justify-center rounded-control shrink-0 transition-colors duration-(--duration-base) cursor-pointer select-none";
         // `disabled:` does not match an `<a>`: a disabled link wears the
         // disabled pair itself, in place of its variant. So does a loading
         // button, which is not `:disabled` (it keeps focus): with the

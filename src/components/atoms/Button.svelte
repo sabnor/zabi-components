@@ -1,7 +1,7 @@
 <script lang="ts">
     import { tick, untrack, type Snippet } from "svelte";
     import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
-    import type { ButtonVariant, SizeVariant } from "../types/variants.js";
+    import type { ButtonSize, ButtonVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
 
     /**
@@ -28,7 +28,8 @@
         referrerpolicy?: HTMLAnchorAttributes["referrerpolicy"];
         ping?: HTMLAnchorAttributes["ping"];
         variant?: ButtonVariant;
-        size?: SizeVariant;
+        /** `xl` is 56px, for a primary action on a phone. It is a Button size only. */
+        size?: ButtonSize;
         /**
          * Shows a spinner and makes the button unavailable without taking
          * focus from it: `aria-disabled` and `aria-busy`, still a Tab stop,
@@ -117,7 +118,8 @@
 
     /**
      * One height scale, shared with Input, Select and IconButton, so controls
-     * of the same size line up in a row: 32 / 40 / 48px. It is a minimum
+     * of the same size line up in a row: 32 / 40 / 48px (and 56px, `xl`, which
+     * only Button has). It is a minimum
      * height, not a fixed one, so a label that does not fit on one line wraps
      * and the button grows; it used to paint outside the button (a long label
      * at 200% text on a phone). One line of text and the vertical padding are
@@ -135,6 +137,10 @@
         // would stop the actions of an ImageUpload shrinking in a narrow space.
         if (size === "sm") {
             return { box: "min-h-8 px-3 py-1 pointer-coarse:min-h-11", text: "text-sm", gap: "gap-2", spinner: "size-3.5" };
+        }
+        // xl is 56px, like the FloatingActionButton; only Button has it.
+        if (size === "xl") {
+            return { box: "min-h-14 px-6 py-3", text: "text-base", gap: "gap-2", spinner: "size-5" };
         }
         if (size === "lg") {
             return { box: "min-h-12 px-5 py-2", text: "text-base", gap: "gap-2", spinner: "size-4" };
@@ -161,27 +167,41 @@
     const BUSY_BUTTON = "bg-(--color-action-disabled) text-action-disabled-text cursor-not-allowed";
 
     const disabledClass =
-        "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:no-underline disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
+        "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:no-underline disabled:bg-none disabled:inset-shadow-none disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
 
     const variantClass = $derived.by(() => {
+        // The veil of the solid fills (a top highlight and a darker bottom). A
+        // disabled button is the flat neutral pair, so it is left off rather
+        // than cleared; `disabledClass` also clears it for a button that is
+        // disabled from outside (a `fieldset`).
+        const veil = disabled ? "" : "bg-control-gradient ";
+        const veilAccent = disabled ? "" : "bg-control-gradient-accent ";
         switch (variant) {
             case "secondary":
                 return "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active active:scale-[0.98] motion-reduce:active:scale-100";
+            case "tonal":
+                return "bg-action-tonal text-action-tonal active:scale-[0.98] motion-reduce:active:scale-100";
             case "danger":
-                return "bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger";
+                return `${veil}bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger`;
             case "ghost":
                 return "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--muted";
             case "outline":
-                return "bg-transparent border border-border text-headline hover:bg-surface-hover hover:border-border-medium active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100";
+                return "bg-transparent border border-action-outline text-headline hover:bg-surface-hover hover:border-action-outline-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100";
             case "link":
                 // A link variant has to look like a link at rest, not only on
                 // hover — otherwise it is indistinguishable from `ghost`.
                 return "bg-transparent text-link hover:text-link-hover underline underline-offset-4 decoration-1 hover:decoration-2 px-0 focus-ring--muted";
+            case "text":
+                // A standalone action, not a link in a sentence: no underline,
+                // a stronger label, and the box of the other variants. The
+                // link role gives the primary colour, and the block's own
+                // on-colour inside `.on-brand` / `.on-accent`.
+                return "bg-transparent text-link px-2 hover:bg-surface-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--muted";
             case "accent":
-                return "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98] motion-reduce:active:scale-100";
+                return `${veilAccent}bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98] motion-reduce:active:scale-100`;
             case "primary":
             default:
-                return "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] motion-reduce:active:scale-100";
+                return `${veil}bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] motion-reduce:active:scale-100`;
         }
     });
 
@@ -195,15 +215,15 @@
                 ? "text-action-disabled-text no-underline cursor-not-allowed"
                 : "text-link hover:text-link-hover underline underline-offset-4 decoration-1 hover:decoration-2 cursor-pointer";
             return cn(
-                `focus-ring focus-ring--muted inline rounded-control font-medium transition-colors duration-150 ${s.text} ${state} ${fullWidth || isFullWidth ? "block w-full" : ""} ${className}`,
+                `focus-ring focus-ring--muted inline rounded-button font-button transition-colors duration-(--duration-base) ${s.text} ${state} ${fullWidth || isFullWidth ? "block w-full" : ""} ${className}`,
             );
         }
         // The label wraps when it has to, balanced over its lines; the icon
         // and the spinner stay centred beside it.
-        const base = `${layout} focus-ring items-center justify-center rounded-control text-center font-medium text-balance transition-colors duration-150 cursor-pointer select-none`;
+        const base = `${layout} focus-ring items-center justify-center rounded-button text-center ${variant === "text" ? "font-button-strong" : "font-button"} text-balance transition-colors duration-(--duration-base) cursor-pointer select-none`;
         // `disabled:` does not match an `<a>`: a disabled link wears the
         // disabled pair itself, in place of its variant.
-        const busyBox = variant === "outline" ? "border border-transparent" : variant === "link" ? "px-0" : "";
+        const busyBox = variant === "outline" ? "border border-transparent" : variant === "link" ? "px-0" : variant === "text" ? "px-2" : "";
         const state =
             isLink && isDisabled
                 ? DISABLED_LINK

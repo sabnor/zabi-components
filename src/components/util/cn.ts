@@ -21,7 +21,9 @@ import { extendTailwindMerge } from "tailwind-merge";
  * role names, not scale values, so they have to be declared or tailwind-merge
  * keeps both and we are back to stylesheet order deciding.
  */
-const RADIUS_ROLES = ["control", "container", "overlay", "pill"];
+// `button` is the control corner an app can set apart from its fields
+// (`rounded-button`, src/app.css), so a call-site `rounded-full` still beats it.
+const RADIUS_ROLES = ["control", "button", "container", "overlay", "pill"];
 
 /**
  * Every corner group tailwind-merge knows about, so `rounded-t-overlay` on a
@@ -37,9 +39,15 @@ const RADIUS_GROUPS = [
 
 const twMerge = extendTailwindMerge({
     extend: {
-        classGroups: Object.fromEntries(
-            RADIUS_GROUPS.map((group) => [group, [{ [group]: RADIUS_ROLES }]]),
-        ),
+        classGroups: {
+            ...Object.fromEntries(RADIUS_GROUPS.map((group) => [group, [{ [group]: RADIUS_ROLES }]])),
+            // The control veils are background images, not colours: without
+            // this they would delete the fill beside them (`bg-action-primary`)
+            // as a conflicting `bg-*`, and the fill would be gone.
+            "bg-image": [{ bg: ["control-gradient", "control-gradient-accent"] }],
+            // Button's label weights, so a call-site `font-bold` still wins.
+            "font-weight": [{ font: ["button", "button-strong"] }],
+        },
     },
 });
 

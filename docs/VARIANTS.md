@@ -190,7 +190,8 @@ export type SemanticVariant = 'default' | 'success' | 'warning' | 'error' | 'inf
 export type ExtendedSemanticVariant = SemanticVariant | 'neutral' | 'energetic';
 
 // Style variants
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link' | 'accent' | 'tonal' | 'text';
+export type ButtonSize = SizeVariant | 'xl'; // Button only
 export type CardVariant = 'default' | 'elevated' | 'outlined' | 'flat';
 
 // Size variants

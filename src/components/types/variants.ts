@@ -21,7 +21,10 @@ export type ExtendedSemanticVariant = SemanticVariant | 'neutral' | 'energetic';
  * Button style variants - used for different button styles
  * These are style-based variants, not semantic color variants
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link' | 'accent';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link' | 'accent' | 'tonal' | 'text';
+
+/** Button's sizes: the shared scale plus `xl` (56px), which only Button has. */
+export type ButtonSize = SizeVariant | 'xl';
 
 /**
  * Badge variants: the semantic families, and `accent`, the app's second brand

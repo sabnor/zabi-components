@@ -32,6 +32,7 @@ import type {
 } from '../components/util/bottom-sheet.js';
 import type {
     BadgeVariant,
+    ButtonSize,
     ButtonVariant,
     CardVariant,
     OnFillTone,
@@ -67,7 +68,7 @@ export interface ButtonProps extends Omit<HTMLButtonAttributes, 'class'> {
      * styled them, and they render as `primary`.
      */
     variant?: ButtonVariant | 'success' | 'warning' | 'info' | 'neutral';
-    size?: SizeVariant;
+    size?: ButtonSize;
     disabled?: boolean;
     loading?: boolean;
     type?: 'button' | 'submit' | 'reset';

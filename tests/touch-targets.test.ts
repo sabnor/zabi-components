@@ -154,10 +154,11 @@ describe("pressed states of disabled controls", () => {
         // `:active` still matches a disabled button.
         render(Toggle, { props: { label: "Notifications", disabled: true } });
         const toggle = screen.getByRole("switch");
-        expect(toggle.className).not.toMatch(/(?:^|\s)(?:hover|active):bg-control-track/);
+        expect(toggle.className.split(/\s+/)).not.toContain("bg-toggle-track");
+        expect(toggle.className).not.toMatch(/(?:^|\s)(?:hover|active):bg-toggle-track/);
         cleanup();
         render(Toggle, { props: { label: "Notifications" } });
-        expect(classes(screen.getByRole("switch"))).toContain("active:bg-control-track-active");
+        expect(classes(screen.getByRole("switch"))).toContain("bg-toggle-track");
     });
 
     it("a disabled tab puts the pressed fill back", () => {

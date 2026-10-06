@@ -6,7 +6,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Button",
                 category: "atoms",
                 description:
-                    "Seven variants from primary to link, with accent for the app's second colour; three sizes, loading and disabled states.",
+                    "Nine variants, from primary to link, including tonal and text for quieter actions; four sizes up to 56px, with loading and disabled states.",
                 props: [
                     {
                         name: "variant",
@@ -14,7 +14,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "primary",
                         description:
-                            "primary | secondary | danger | ghost | outline | link | accent. accent is the fill --color-accent with the label --color-on-accent.",
+                            "primary | secondary | danger | ghost | outline | link | accent | tonal | text. accent is the fill --color-accent with the label --color-on-accent. primary, accent and danger carry a soft gradient and top highlight. tonal is a brand-tinted fill with a brand label, for secondary actions and chosen answers. outline has a 3:1 edge. text is a standalone text action in the link colour with no underline; link is the underlined one for sentences. Corner and label weight follow --zabi-button-radius and --zabi-button-font-weight.",
                     },
                     {
                         name: "size",
@@ -22,7 +22,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "md",
                         description:
-                            "sm, md or lg: 32, 40 or 48px tall. On a touch screen sm and md are 44px tall, so a row of controls still lines up. Use lg for the main action on a phone.",
+                            "sm, md, lg or xl: 32, 40, 48 or 56px tall (xl is Button only). On a touch screen sm and md are 44px tall, so a row of controls still lines up. Use lg or xl for the main action on a phone.",
                     },
                     {
                         name: "disabled",
@@ -1811,7 +1811,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Toggle",
                 category: "atoms",
                 description:
-                    "Accessible switch-style toggle with optional label and loading state.",
+                    "Accessible switch-style toggle with optional label and loading state. The off track is a light tint with a 1px edge; the on track is the primary fill.",
                 props: [
                     {
                         name: "aria-label",

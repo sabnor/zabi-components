@@ -72,13 +72,17 @@
 
     const toggleButtonClasses = $derived(() => {
         const base =
-            `focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:outline-none ${TOUCH_HIT_AREA}`;
+            `focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-(--duration-moderate) ease-standard focus:outline-none focus-visible:outline-none ${TOUCH_HIT_AREA}`;
         // A disabled switch has no hover or pressed fill: `:active` still matches a disabled button.
+        // The off track is a light tint whose 1px edge carries the 3:1; the
+        // edge is left off when on, where the primary fill is the boundary.
+        // The on fill wears the control veil, as a primary Button does, but
+        // not when disabled (a flat, dimmed switch).
         const colorClass = checked
-            ? "bg-action-primary hover:bg-action-primary-hover active:bg-action-primary-active"
+            ? `${isDisabled ? "" : "bg-control-gradient "}bg-action-primary hover:bg-action-primary-hover active:bg-action-primary-active`
             : isDisabled
-              ? "bg-control-track"
-              : "bg-control-track hover:bg-control-track-hover active:bg-control-track-active";
+              ? "bg-(--color-toggle-track) ring-toggle-track"
+              : "bg-toggle-track ring-toggle-track";
         const stateClass = isDisabled
             ? "opacity-50 cursor-not-allowed"
             : "cursor-pointer";
@@ -87,7 +91,7 @@
 
     const toggleThumbClasses = $derived(() => {
         const base =
-            "pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow-sm transition-transform duration-200 ease-in-out flex items-center justify-center";
+            "pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow-sm transition-transform duration-(--duration-moderate) ease-spring flex items-center justify-center";
         const positionClasses = checked ? "translate-x-4" : "translate-x-0";
         return `${base} ${positionClasses}`;
     });

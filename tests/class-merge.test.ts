@@ -29,6 +29,17 @@ describe("cn", () => {
         expect(cn("rounded-bl-pill", "rounded-bl-control")).toBe("rounded-bl-control");
     });
 
+    it("knows the button corner, the label weights and the control veils", () => {
+        expect(cn("rounded-button", "rounded-full")).toBe("rounded-full");
+        expect(cn("rounded-button", "rounded-container")).toBe("rounded-container");
+        expect(cn("font-button", "font-bold")).toBe("font-bold");
+        expect(cn("font-medium", "font-button-strong")).toBe("font-button-strong");
+        // A veil is an image: it neither removes the fill beside it nor is removed by it.
+        expect(cn("bg-control-gradient", "bg-action-primary")).toBe("bg-control-gradient bg-action-primary");
+        expect(cn("bg-action-primary", "bg-control-gradient")).toBe("bg-action-primary bg-control-gradient");
+        expect(cn("bg-control-gradient", "bg-none")).toBe("bg-none");
+    });
+
     it("keeps utilities that do not conflict", () => {
         expect(cn("flex items-center", "gap-2")).toBe("flex items-center gap-2");
     });

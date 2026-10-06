@@ -55,7 +55,7 @@ const EXPECTED_HEIGHT = { sm: 'h-8', md: 'h-10', lg: 'h-12' };
  * dense pointer-first layouts; no text control is that small, so it is not on
  * the shared scale, but it is pinned here so it cannot drift either.
  */
-const EXTRA_HEIGHT = { 'atoms/IconButton.svelte': { xs: 'h-6' } };
+const EXTRA_HEIGHT = { 'atoms/IconButton.svelte': { xs: 'h-6' }, 'atoms/Button.svelte': { xl: 'h-14' } };
 
 const CONTROLS = [
     'atoms/Button.svelte',
@@ -117,9 +117,9 @@ const LINE_HEIGHT_PX = { 'text-xs': 16, 'text-sm': 20, 'text-base': 24, 'text-lg
 const BORDER_PX = 2;
 
 /** The `text:` value of each arm of the size map, as `boxesBySize` reads `box:`. */
-function textsBySize(source) {
+function textsBySize(source, extraSizes = []) {
     const found = { sm: null, md: null, lg: null };
-    for (const size of ['sm', 'lg']) {
+    for (const size of ['sm', 'lg', ...extraSizes]) {
         const arm = new RegExp(`size === "${size}"[\\s\\S]{0,240}?text:\\s*"([^"]+)"`);
         const m = source.match(arm);
         if (m) found[size] = m[1];
@@ -209,6 +209,13 @@ function main() {
             }
         }
         const texts = textsBySize(source);
+        // Button's `xl` (56px) is held to the same rule as the shared sizes.
+        const extraBoxes = boxesBySize(source, Object.keys(extra));
+        const extraTexts = textsBySize(source, Object.keys(extra));
+        for (const size of Object.keys(extra)) {
+            const problem = minHeightProblem(extraBoxes[size], extraTexts[size]);
+            if (problem) failures.push(`${rel}: size "${size}" ${problem}`);
+        }
         for (const size of ['sm', 'md', 'lg']) {
             const problem = minHeightProblem(boxes[size], texts[size]);
             if (problem) failures.push(`${rel}: size "${size}" ${problem}`);
@@ -232,11 +239,11 @@ function main() {
         }
     }
 
-    console.log('  component                 sm     md     lg     xs');
+    console.log('  component                 sm     md     lg     xs/xl');
     for (const [rel, h] of Object.entries(table)) {
         console.log(
             '  ' + rel.replace(/^.*\//, '').padEnd(24) +
-            String(h.sm).padEnd(7) + String(h.md).padEnd(7) + String(h.lg).padEnd(7) + (h.xs ?? ''),
+            String(h.sm).padEnd(7) + String(h.md).padEnd(7) + String(h.lg).padEnd(7) + (h.xs ?? h.xl ?? ''),
         );
     }
 

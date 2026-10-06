@@ -2569,6 +2569,12 @@ body {
   background-color: var(--color-action-tonal-active);
 }
 
+/* After the states above: `:active` still matches a disabled button. */
+.bg-action-tonal:disabled {
+  background-color: var(--color-action-disabled);
+  color: var(--color-action-disabled-text);
+}
+
 .text-action-tonal {
   color: var(--color-action-tonal-text);
 }
