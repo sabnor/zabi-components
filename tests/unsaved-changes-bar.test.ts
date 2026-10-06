@@ -224,7 +224,15 @@ describe("UnsavedChangesBar focus", () => {
         expect(document.activeElement).not.toBe(document.body);
     });
 
-    it("holds focus on the bar while saving and returns it to the field afterwards", async () => {
+    it("holds focus on the bar when the focused button is disabled by saving", async () => {
+        const { rerender } = render(UnsavedChangesBarHarness, { props: { initialDirty: true } });
+        discard().focus();
+        await rerender({ initialDirty: true, saving: true });
+        // Discard is disabled now; focus must not have fallen to <body>.
+        await waitFor(() => expect(document.activeElement).toBe(bar()));
+    });
+
+    it("leaves focus on Save while saving and returns it to the field afterwards", async () => {
         const user = userEvent.setup();
         const { until, finish } = pendingSave();
         render(UnsavedChangesBarHarness, { props: { mode: "async", until } });
@@ -232,8 +240,9 @@ describe("UnsavedChangesBar focus", () => {
         await user.type(field(), "x");
         await user.click(save());
 
-        // Save is unavailable now; focus must not have fallen to <body>.
-        await waitFor(() => expect(document.activeElement).toBe(bar()));
+        // Save is loading, not disabled: it keeps the focus it had.
+        await waitFor(() => expect(save().getAttribute("aria-busy")).toBe("true"));
+        expect(document.activeElement).toBe(save());
         finish();
         await waitFor(() => expect(screen.queryByRole("region")).toBeNull());
         await waitFor(() => expect(document.activeElement).toBe(field()));
@@ -248,7 +257,8 @@ describe("UnsavedChangesBar focus", () => {
         await user.type(field(), "x");
         await user.click(save());
 
-        await waitFor(() => expect(document.activeElement).toBe(bar()));
+        await waitFor(() => expect(save().getAttribute("aria-busy")).toBe("true"));
+        expect(document.activeElement).toBe(save());
         finish();
         await waitFor(() => expect(onerror).toHaveBeenCalled());
         await waitFor(() => expect(document.activeElement).toBe(save()));

@@ -151,10 +151,11 @@
     }
 
     /**
-     * Both buttons are disabled while busy, and a disabled button drops focus
-     * on `<body>`. Hold it on the dialog panel instead, and hand it back to
-     * the confirm button if the dialog is still open afterwards (a rejected
-     * confirm), so a keyboard user is where they were.
+     * While busy, the confirm button is loading and stays focusable, so focus
+     * that is on it is left there. Cancel is disabled, and a disabled button
+     * drops focus on `<body>`: focus that was on it is held on the dialog
+     * panel instead, and handed to the confirm button if the dialog is still
+     * open afterwards (a rejected confirm).
      */
     let wasBusy = false;
     $effect(() => {
@@ -167,9 +168,9 @@
             }
             const active = document.activeElement;
             if (now && !wasBusy) {
-                if (!active || active === document.body || panel.contains(active)) {
-                    panel.focus();
-                }
+                const dropped = !active || active === document.body;
+                const disabled = panel.contains(active) && (active as HTMLButtonElement).disabled;
+                if (dropped || disabled) panel.focus();
             } else if (!now && wasBusy) {
                 if (active === panel || active === document.body) {
                     panel

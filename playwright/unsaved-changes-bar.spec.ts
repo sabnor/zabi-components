@@ -125,10 +125,7 @@ test.describe("UnsavedChangesBar — sticky layout and focus", () => {
         await expect(save).toBeDisabled();
         await expect(save).toHaveAttribute("aria-busy", "true");
         await expect(bar(page).getByRole("button", { name: "Discard" })).toBeDisabled();
-        await expect(
-            bar(page),
-            "The bar holds focus while it saves, instead of <body>",
-        ).toBeFocused();
+        await expect(save, "Save is loading, not disabled: focus stays on it").toBeFocused();
         await page.clock.runFor(800);
 
         await expect(page.getByTestId("unsaved-demo-outcome")).toHaveText(

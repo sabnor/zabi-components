@@ -306,8 +306,8 @@ describe("ConfirmDialog loading", () => {
         expect(confirmButton().getAttribute("aria-disabled")).toBe("true");
         expect(confirmButton().getAttribute("aria-busy")).toBe("true");
         expect(cancelButton().disabled).toBe(true);
-        // Focus is held inside the dialog instead of falling to <body>.
-        expect(document.activeElement).toBe(dialog());
+        // The confirm button is loading, not disabled: it keeps the focus it had.
+        expect(document.activeElement).toBe(confirmButton());
 
         await user.keyboard("{Escape}");
         expect(state()).toBe("open");
@@ -317,6 +317,16 @@ describe("ConfirmDialog loading", () => {
         work.resolve();
         await waitFor(() => expect(state()).toBe("closed"));
         expect(document.activeElement).toBe(opener());
+    });
+
+    it("holds focus on the dialog when the focused button is disabled by loading", async () => {
+        const user = userEvent.setup();
+        const { rerender } = render(ConfirmDialogHarness, { props: {} });
+        await openDialog(user);
+        cancelButton().focus();
+        await rerender({ loading: true });
+        // Cancel is disabled now; focus must not have fallen to <body>.
+        await waitFor(() => expect(document.activeElement).toBe(dialog()));
     });
 
     it("stays open when the promise resolves to false", async () => {

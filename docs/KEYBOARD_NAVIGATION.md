@@ -368,10 +368,11 @@ to the element that opened it.
 
 While a confirm is loading neither button can be used (Cancel is disabled, the
 confirm button is `aria-disabled` and busy) and Escape and the backdrop do
-nothing. Focus is held on the dialog itself instead of falling to
-the page (without a focus outline around the whole dialog, since the dialog is
-not a control), and returns to the confirm button if the request fails and the
-dialog stays open. `loadingLabel` ("Working…" by default) is announced once,
+nothing. Focus stays on the confirm button, which is still a Tab stop while it
+loads. If focus was on Cancel when loading started, it is held on the dialog
+itself instead of falling to the page (without a focus outline around the
+whole dialog, since the dialog is not a control), and goes to the confirm
+button if the request fails and the dialog stays open. `loadingLabel` ("Working…" by default) is announced once,
 politely, when loading starts.
 
 **Usage:**
@@ -1225,8 +1226,8 @@ See [NAVIGATION_MENU.md](./NAVIGATION_MENU.md).
 
 The bar never takes focus when it appears; its message is announced politely
 instead. While a save is in progress neither button can be used (Discard is
-disabled, Save is `aria-disabled` and busy) and focus is held on the bar, not
-dropped on the page. When the bar goes (after Save or
+disabled, Save is `aria-disabled` and busy). Focus stays on Save; if it was on
+Discard when saving started, it is held on the bar, not dropped on the page. When the bar goes (after Save or
 Discard), focus returns to the element it came from, usually the field that was
 being edited; if that is gone, it stays on the bar's empty host, at the same
 place in the page.

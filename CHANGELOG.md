@@ -53,6 +53,10 @@ Whenever token or CSS import API surface changes, include:
   must use `combobox`. `presentation="native"` is unchanged.
 - Modal, Drawer, SlideUp, BottomSheet, Toaster and Rating read
   `ZabiStringsProvider`. Mount the Toaster inside the provider.
+- **UnsavedChangesBar and ConfirmDialog leave focus on the pressed button
+  while it is busy.** They used to move focus to the bar or the dialog panel,
+  because the button became `disabled`. Focus is still held on the container
+  when it was on a control that is now disabled (Discard, Cancel).
 
 ### Fixed
 

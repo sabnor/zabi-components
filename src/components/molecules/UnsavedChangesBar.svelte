@@ -107,9 +107,11 @@
     }
 
     /**
-     * Both buttons are disabled while busy, and a disabled button drops focus
-     * on `<body>`. Hold it on the bar instead, and hand it back to Save if the
-     * bar is still there afterwards (a rejected save).
+     * While busy, Save is loading and stays focusable, so focus that is on
+     * it is left there. Discard is disabled, and a disabled button drops
+     * focus on `<body>`: focus that was on it (or on an action that is gone)
+     * is held on the bar instead, and handed to Save if the bar is still
+     * there afterwards (a rejected save).
      */
     let wasBusy = false;
     $effect.pre(() => {
@@ -121,7 +123,13 @@
             if (!changed || !host?.contains(document.activeElement)) return;
             void tick().then(() => {
                 if (now) {
-                    host?.focus();
+                    const active = document.activeElement;
+                    const usable =
+                        !!active &&
+                        active !== host &&
+                        !!host?.contains(active) &&
+                        !(active as HTMLButtonElement).disabled;
+                    if (!usable) host?.focus();
                 } else if (dirty && document.activeElement === host) {
                     host?.querySelector<HTMLElement>("[data-unsaved-changes-save]")?.focus();
                 }
