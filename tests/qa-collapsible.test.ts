@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import CollapsibleGroupHarness from "./fixtures/CollapsibleGroupHarness.svelte";
 import CollapsibleHarness from "./fixtures/CollapsibleHarness.svelte";
+import { triggerByText } from "./fixtures/collapsible-trigger";
 
 /**
  * QA review of 6fed7ec. Gaps the package's own tests left open. The three
@@ -19,7 +20,8 @@ afterEach(() => {
 });
 
 const state = () => screen.getByTestId("state").textContent?.trim();
-const trigger = (name: string | RegExp) => screen.getByRole("button", { name });
+/** A summary for the default trigger, a button for a custom one. */
+const trigger = (name: string) => triggerByText(name);
 
 describe("CollapsibleGroup (QA): keys it must leave alone", () => {
     it("does not take arrow keys from anything but its own header buttons", async () => {

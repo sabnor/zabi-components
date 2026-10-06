@@ -20,6 +20,10 @@ Whenever token or CSS import API surface changes, include:
 - **`--color-progress-track-border`** (`border-progress-track-border`; Z-049): the edge of the Progress track, by default the field edge as before. `createTheme` writes `transparent` for a mode in which an overridden `--color-progress-track` itself reaches 3:1 against the page and the card and the app did not set the edge; an edge the app sets itself is never moved.
 - **`--font-family-display`** (`font-display`; Z-058): a second typeface as a token; follows `--font-family-heading` until set. `cn` knows `font-heading` and `font-display` as font families.
 
+### Changed
+
+- **`Collapsible` opens without scripts** (Z-041; D143). With the default trigger (`title`) it is now a native `<details>` / `<summary>`: it opens before hydration and for a visitor without scripts, a toggle made before hydration is kept, find-in-page opens it, and a single-open `CollapsibleGroup` gives its panels a shared `name` so the browser keeps them exclusive too. Markup change: the default trigger is a `<summary>` (it keeps `id`, `data-collapsible-trigger` and `triggerClass`), not a `<button>` with `aria-expanded`, the heading of `headingLevel` is inside it, and the panel is no longer `hidden` while closed (a form inside a closed panel keeps its values and still submits them, as before). A test that looked for `role="button"` needs the summary instead. A `disabled` panel has `aria-disabled` and leaves the tab order. With a custom `trigger` snippet nothing changes, and that path still needs scripts. No prop is added or removed.
+
 ## [9.0.0-alpha.4] - 2026-10-06
 
 A fourth local preview build of the 9.0 visual direction, not published to npm;

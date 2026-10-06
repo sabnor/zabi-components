@@ -2,6 +2,7 @@
     import { setContext, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import { cn } from "../util/cn.js";
+    import { generateId } from "../util/ssr-safe.js";
     import {
         COLLAPSIBLE_GROUP,
         nextTriggerIndex,
@@ -29,6 +30,9 @@
 
     let hostElement: HTMLDivElement | undefined = $state();
 
+    /** Names the native exclusive accordion of a single-open group. */
+    const exclusiveName = generateId("collapsible-group");
+
     /** In the order the Collapsibles were created. */
     const members = new Set<CollapsibleGroupMember>();
 
@@ -46,6 +50,9 @@
     setContext<CollapsibleGroupContext>(COLLAPSIBLE_GROUP, {
         get multiple() {
             return multiple;
+        },
+        get exclusiveName() {
+            return multiple ? undefined : exclusiveName;
         },
         register(member) {
             // Settled here, while the members initialise, so the first render
@@ -91,16 +98,19 @@
         if (!ids.has(target.id)) return;
 
         // Read from the DOM so the order is the visual one. A disabled button
-        // cannot take focus, so it is skipped.
+        // (or a summary marked `aria-disabled`) cannot take focus, so it is skipped.
         const triggers = Array.from(
-            hostElement.querySelectorAll<HTMLButtonElement>(
-                "[data-collapsible-trigger]",
-            ),
-        ).filter((element) => ids.has(element.id) && !element.disabled);
+            hostElement.querySelectorAll<HTMLElement>("[data-collapsible-trigger]"),
+        ).filter(
+            (element) =>
+                ids.has(element.id) &&
+                !(element as HTMLButtonElement).disabled &&
+                element.getAttribute("aria-disabled") !== "true",
+        );
 
         const next = nextTriggerIndex(
             event.key,
-            triggers.indexOf(target as HTMLButtonElement),
+            triggers.indexOf(target),
             triggers.length,
         );
         if (next === null) return;

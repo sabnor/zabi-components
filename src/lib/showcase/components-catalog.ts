@@ -5215,7 +5215,7 @@ pushToast({
                 name: "Collapsible",
                 category: "molecules",
                 description:
-                    "A trigger wired to a panel it shows and hides, with a built-in header button or your own, alone or as an accordion.",
+                    "A panel with a trigger, alone or as an accordion. The built-in header is a native details and summary, so it opens without scripts.",
                 props: [
                     {
                         name: "open",
@@ -5236,21 +5236,21 @@ pushToast({
                         type: "string",
                         required: false,
                         description:
-                            "Text of the default trigger, a full-width header button with a chevron.",
+                            "Text of the default trigger, a full-width header with a chevron. It is a native details and summary, so it opens and closes without scripts.",
                     },
                     {
                         name: "trigger",
                         type: "Snippet<[CollapsibleTriggerProps, CollapsibleTriggerState]>",
                         required: false,
                         description:
-                            "Your own header in place of the default trigger. Spread the first argument on a button; the second carries open and disabled.",
+                            "Your own header in place of the default trigger. Spread the first argument on a button; the second carries open and disabled. Needs scripts: use title for content that must open without them.",
                     },
                     {
                         name: "headingLevel",
                         type: "1 | 2 | 3 | 4 | 5 | 6",
                         required: false,
                         description:
-                            "Wraps the default trigger in a heading of that level. No heading when omitted.",
+                            "Puts a heading of that level inside the default trigger. No heading when omitted.",
                     },
                     {
                         name: "disabled",
@@ -5266,7 +5266,7 @@ pushToast({
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Removes the content while closed. By default it stays in the DOM, hidden, so a form inside keeps its values.",
+                            "Removes the content while closed. By default it stays in the DOM, inside the closed details, so a form inside keeps its values and still submits them.",
                     },
                     {
                         name: "region",
@@ -5280,7 +5280,7 @@ pushToast({
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Extra classes for the default trigger button.",
+                        description: "Extra classes for the default trigger (a summary).",
                     },
                     {
                         name: "panelClass",
