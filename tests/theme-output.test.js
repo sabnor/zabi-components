@@ -269,7 +269,7 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         // The pressed Select trigger: a step past hover (#f4f4f5).
         '--color-input-active': '#e4e4e7',
         '--color-link': '#3c52ba',
-        '--color-surface-base': '#ececee',
+        '--color-surface-base': '#fafafa',
         '--color-surface-raised': '#ffffff',
         '--color-headline': '#18181b',
         '--color-accent': '#707400',
@@ -434,7 +434,7 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
 
     const expected = {
       light: {
-        '--color-surface-base': stone[150],
+        '--color-surface-base': stone[50],
         '--color-surface-elevated': stone[100],
         '--color-surface-inset': stone[100],
         '--color-headline': stone[900],

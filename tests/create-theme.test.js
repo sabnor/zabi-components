@@ -188,8 +188,8 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   assert.equal(onPage.required, 4.5);
   assert.ok(onPage.ratio < 4.5 && onPage.ratio > 1);
   assert.deepEqual(onPage.foreground, { token: '--color-link', value: result.tokens['--zabi-brand-400'] });
-  assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#ececee' });
-  assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #ececee is [\d.]+:1, needs 4\.5:1/);
+  assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#fafafa' });
+  assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #fafafa is [\d.]+:1, needs 4\.5:1/);
   // The failure is in the file too, so it is not lost when stderr is.
   assert.match(result.css, /Contrast: 4 of \d+ role pairs are below WCAG AA:/);
 
@@ -468,18 +468,18 @@ test('a colour that needs a dark label is pinned with one, and its states go lig
   for (const colour of [fill, hover, pressed]) assert.ok(ratio(label, colour) >= 4.5, `${label} on ${colour}`);
   assert.ok(measureLightness(hover) > measureLightness(fill) && measureLightness(pressed) > measureLightness(hover));
   assert.equal(pinned.pinned.brand.light.states, 'lighter');
-  // As text on a white card the amber is 3.4:1: links and the ring stay on the ramp, which passes.
-  assert.deepEqual(pinned.pinned.brand.light.onRamp, ['focus ring', 'link']);
+  // As text on a white card the amber is 3.4:1, so links stay on the ramp. The ring needs 3:1,
+  // which the amber reaches on the near-white page (it did not on the old grey one), so it is pinned.
+  assert.deepEqual(pinned.pinned.brand.light.onRamp, ['link']);
   assert.equal(resolveTokenColor(light, '--color-link'), pinned.tokens['--zabi-brand-700']);
-  assert.equal(resolveTokenColor(light, '--color-focus-ring'), pinned.tokens['--zabi-brand-600']);
+  assert.equal(resolveTokenColor(light, '--color-focus-ring'), '#c17b00');
   // It passes on a dark page, so dark takes the colour too.
   assert.equal(pinned.pinned.brand.dark.pinned, true);
   assert.equal(resolveTokenColor(dark, '--color-action-primary'), '#c17b00');
   assert.ok(ratio(resolveTokenColor(dark, '--color-action-primary-text'), '#c17b00') >= 4.5);
-  // The one thing it cannot do is reported, and the colour is not moved to hide it.
-  assert.deepEqual(contrastWarnings(pinned).map((w) => `${w.mode} ${w.pair} ${w.ratio}`), [
-    'light pinned primary fill against the page 2.92',
-  ]);
+  // On the near-white page the amber reaches 3:1, so nothing is left to report (on the old
+  // grey page it was 2.92:1 and was reported; the next test keeps a colour that still fails).
+  assert.deepEqual(contrastWarnings(pinned), []);
 });
 
 test('a colour that cannot be a light button is pinned anyway, and every failing pair is a warning', () => {
@@ -538,11 +538,12 @@ test('the bin takes --pin and --pin-accent, says what it pinned, and --strict st
   // Without the flag the bin's output is the unpinned file.
   assert.equal(run('--brand', '#0026EA').stdout, createTheme({ brand: '#0026EA' }).css);
 
-  const amber = run('--brand', '#C17B00', '--pin');
+  // A lighter amber than #C17B00: that one reaches 3:1 on the near-white page.
+  const amber = run('--brand', '#D08A00', '--pin');
   assert.equal(amber.status, 0);
-  assert.match(amber.stderr, /warning: light · pinned primary fill against the page: #c17b00 on #ececee is 2\.92:1, needs 3:1/);
-  assert.match(amber.stderr, /brand #c17b00 is pinned in light and in dark\./);
-  assert.equal(run('--brand', '#C17B00', '--pin', '--strict').status, 1);
+  assert.match(amber.stderr, /warning: light · pinned primary fill against the page: #d08a00 on #fafafa is 2\.75:1, needs 3:1/);
+  assert.match(amber.stderr, /brand #d08a00 is pinned in light and in dark\./);
+  assert.equal(run('--brand', '#D08A00', '--pin', '--strict').status, 1);
   assert.equal(run('--brand', '#0026EA', '--pin', '--strict').status, 0);
 
   const both = run('--brand', '#0026EA', '--accent', '#B4005A', '--pin', '--pin-accent');
@@ -757,7 +758,7 @@ test('without light or dark overrides the bytes are what they were before the op
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      'f2a95b9f00ea0aeab36130047eb9eb2127abe1a79f7488ddf2a95dfc11f2c8d5',
+      '6ebb9bb171a516b973710b40252cf37477f0c4995781672df73c3289bda14f19',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
@@ -800,6 +801,26 @@ test('a dark override is written only under the dark selectors', () => {
   assert.doesNotMatch(root, /--color-surface-raised/);
   assert.equal(declarationOf(darkRule(result.css), '--color-surface-raised'), '#101820');
   assert.equal(declarationOf(mediaRule(result.css), '--color-surface-raised'), '#101820');
+});
+
+test('the page and the chrome surface are settable per mode, with dark restated', () => {
+  assert.equal(defaults.light['--color-surface-base'], 'var(--color-base-50)');
+  assert.equal(defaults.light['--color-surface-chrome'], 'var(--color-surface-raised)');
+  assert.equal(defaults.darkOnly['--color-surface-chrome'], 'var(--color-surface-raised)');
+  const lightPage = { '--color-surface-base': 'var(--zabi-base-150)' };
+  const result = createTheme({ brand: '#0026EA', overrides: { light: lightPage } });
+  const root = result.css.slice(0, result.css.indexOf('.dark,'));
+  assert.equal(declarationOf(root, '--color-surface-base'), 'var(--zabi-base-150)');
+  for (const block of [darkRule(result.css), mediaRule(result.css)]) {
+    assert.equal(declarationOf(block, '--color-surface-base'), defaults.darkOnly['--color-surface-base']);
+  }
+  const chrome = createTheme({
+    brand: '#0026EA',
+    overrides: { light: { '--color-surface-chrome': '#f8faff' }, dark: { '--color-surface-chrome': '#101820' } },
+  });
+  assert.equal(declarationOf(chrome.css.slice(0, chrome.css.indexOf('.dark,')), '--color-surface-chrome'), '#f8faff');
+  assert.equal(declarationOf(darkRule(chrome.css), '--color-surface-chrome'), '#101820');
+  assert.equal(declarationOf(mediaRule(chrome.css), '--color-surface-chrome'), '#101820');
 });
 
 test('both, flat keys and a mode: the specific mode wins in its mode', () => {

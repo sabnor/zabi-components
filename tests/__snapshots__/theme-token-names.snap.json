@@ -220,6 +220,7 @@
   "--color-surface-4",
   "--color-surface-active",
   "--color-surface-base",
+  "--color-surface-chrome",
   "--color-surface-elevated",
   "--color-surface-hover",
   "--color-surface-inset",

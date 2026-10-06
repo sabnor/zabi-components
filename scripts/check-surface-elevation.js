@@ -14,12 +14,14 @@
  * 5. Both themes: text tokens (`TEXT_TOKENS`) must reach WCAG AA (MIN_TEXT_CONTRAST) on every
  *    surface level and on the inset surface, so secondary text stays readable wherever a
  *    component is placed.
- * 6. Light mode: the ladder cannot climb past white, so it is ordered downwards instead:
- *    base < elevated < raised, overlay no darker than raised, every grey step at least
- *    LIGHT_MIN_STEP points apart. Light used to pass this file untested with 1.5 points
- *    (1.04:1) between a card and the card nested in it.
+ * 6. Light mode (decision D102): the page is a near-white and the card is told apart from it by
+ *    an edge, not by lightness, so the light ladder is ordered like this: raised and overlay no
+ *    darker than the page; elevated sits at least LIGHT_MIN_STEP points below raised; and the
+ *    card edge (`--color-border`, what Card's default variant draws) reaches
+ *    CARD_EDGE_MIN_CONTRAST:1 against both the page and the raised surface. (Until 8.1 the page
+ *    was a grey and a lightness ladder separated page, nested card and card.)
  * 7. Both themes: `--color-surface-inset` must sit at least INSET_MIN_STEP points below the
- *    raised surface it is cut into, and must not be darker than the page.
+ *    raised surface it is cut into. In dark it must also not be darker than the page.
  *
  * Run standalone (`node scripts/check-surface-elevation.js`) or via `scripts/validate-theme.js`.
  */
@@ -43,6 +45,9 @@ export const LIGHT_MIN_STEP = 2;
 /** The recessed surface inside a card, checked in both themes. */
 export const INSET_SURFACE = 'surface-inset';
 export const INSET_MIN_STEP = 2;
+/** The card's 1px edge against the page and against the card, light (D102). */
+export const CARD_EDGE_TOKEN = '--color-border';
+export const CARD_EDGE_MIN_CONTRAST = 1.2;
 
 /** Text tokens that must stay readable on every surface level, in both themes. */
 export const TEXT_TOKENS = ['--color-headline', '--color-body', '--color-label', '--color-description', '--color-caption'];
@@ -136,7 +141,7 @@ export function checkSurfaceElevation({ log = console.log, cssPath = appCssPath 
           `--color-surface-raised (L ${raised.L.toFixed(1)}); it steps ${(raised.L - L).toFixed(1)}`,
       );
     }
-    if (base && L < base.L) {
+    if (theme === 'dark' && base && L < base.L) {
       errors.push(`${theme}: ${prop} (L ${L.toFixed(1)}) is darker than --color-surface-base (L ${base.L.toFixed(1)})`);
     }
   }
@@ -144,16 +149,31 @@ export function checkSurfaceElevation({ log = console.log, cssPath = appCssPath 
   const lightLevels = report.light;
   if (lightLevels.length === SURFACE_LEVELS.length) {
     const [base, raised, elevated, overlay] = lightLevels;
-    for (const [lower, upper] of [[base, elevated], [elevated, raised]]) {
-      const step = upper.L - lower.L;
-      if (step <= 0) {
-        errors.push(`light: ${upper.level} (L ${upper.L.toFixed(1)}) is not lighter than ${lower.level} (L ${lower.L.toFixed(1)})`);
-      } else if (step < LIGHT_MIN_STEP) {
-        errors.push(`light: ${lower.level} → ${upper.level} steps ${step.toFixed(1)} OKLCH L points (needs ≥ ${LIGHT_MIN_STEP})`);
+    for (const upper of [raised, overlay]) {
+      if (upper.L < base.L) {
+        errors.push(`light: ${upper.level} (L ${upper.L.toFixed(1)}) is darker than the page ${base.level} (L ${base.L.toFixed(1)}); cards and overlays must not be darker than the page`);
       }
     }
-    if (overlay.L < raised.L) {
-      errors.push(`light: ${overlay.level} (L ${overlay.L.toFixed(1)}) is darker than ${raised.level} (L ${raised.L.toFixed(1)}); overlays must not sink below cards`);
+    // The light surfaces below the card step down from it, not up from the page.
+    const below = [elevated, ...(inset.light ? [inset.light] : [])];
+    for (const surface of below) {
+      const step = raised.L - surface.L;
+      if (step < LIGHT_MIN_STEP) {
+        errors.push(`light: ${surface.level} steps ${step.toFixed(1)} OKLCH L points below ${raised.level} (needs ≥ ${LIGHT_MIN_STEP})`);
+      }
+    }
+    const edge = resolveVar(CARD_EDGE_TOKEN, themes.light);
+    if (!edge || lightness(edge) === undefined) {
+      errors.push(`light: ${CARD_EDGE_TOKEN} is missing or not a resolvable color (got ${edge})`);
+    } else {
+      for (const against of [base, raised]) {
+        const ratio = wcagContrast(edge, against.color);
+        report.light.edge = report.light.edge ?? [];
+        report.light.edge.push(`${against.level} ${ratio.toFixed(2)}:1`);
+        if (ratio < CARD_EDGE_MIN_CONTRAST) {
+          errors.push(`light: ${CARD_EDGE_TOKEN} (${edge}) on --color-${against.level} is ${ratio.toFixed(2)}:1 (needs ≥ ${CARD_EDGE_MIN_CONTRAST}:1)`);
+        }
+      }
     }
   }
 
@@ -218,8 +238,9 @@ export function checkSurfaceElevation({ log = console.log, cssPath = appCssPath 
     const row = report[theme]
       .map((r) => `${r.level.replace('surface-', '')} ${r.color} L${r.L.toFixed(1)}`)
       .join(' → ');
+    const edgeNote = report[theme].edge ? ` · card edge ${report[theme].edge.join(', ')}` : '';
     const insetNote = inset[theme] ? ` · inset ${inset[theme].color} L${inset[theme].L.toFixed(1)}` : '';
-    log(`  ${theme}: ${row}${insetNote}`);
+    log(`  ${theme}: ${row}${insetNote}${edgeNote}`);
   }
 
   return errors;

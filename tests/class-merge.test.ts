@@ -39,6 +39,18 @@ describe("cn", () => {
 });
 
 describe("call-site class overrides", () => {
+    it("Card: the default variant is a bordered card without a shadow, like outlined", () => {
+        const classes = (variant?: "outlined" | "elevated") => {
+            const { container } = render(Card, { props: { ariaLabel: "card", variant } });
+            return (container.firstElementChild as HTMLElement).className;
+        };
+        expect(classes()).toContain("border-border");
+        expect(classes()).toContain("shadow-none");
+        expect(classes()).not.toContain("shadow-sm");
+        expect(classes("outlined")).toContain("border-border");
+        expect(classes("elevated")).toContain("shadow-lg");
+    });
+
     it("Card: a call-site radius replaces the component's own", () => {
         const { container } = render(Card, {
             props: { ariaLabel: "card", class: "rounded-pill" },

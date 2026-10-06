@@ -38,11 +38,9 @@
     const variantClasses = $derived(
         variant === "elevated"
             ? "bg-card-elevated shadow-lg"
-            : variant === "outlined"
-              ? "bg-card border border-border shadow-none"
-              : variant === "flat"
-                ? "bg-card shadow-none border-none"
-                : "bg-card shadow-sm",
+            : variant === "flat"
+              ? "bg-card shadow-none border-none"
+              : "bg-card border border-border shadow-none",
     );
 
     const interactiveClasses = $derived.by(() => {
@@ -51,12 +49,10 @@
         switch (variant) {
             case "elevated":
                 return `${shared} hover:bg-card-hover active:bg-card-active`;
-            case "outlined":
-                return `${shared} hover:border-border-medium hover:bg-card-hover active:bg-card-active`;
             case "flat":
                 return `${shared} hover:bg-card-hover active:bg-card-active`;
             default:
-                return `${shared} hover:shadow-lg hover:bg-card-hover active:bg-card-active`;
+                return `${shared} hover:border-border-medium hover:bg-card-hover active:bg-card-active`;
         }
     });
 

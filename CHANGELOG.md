@@ -12,6 +12,13 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Changed (visible in 9.0)
+
+- **Light page and cards.** The light page is now near-white (`--color-surface-base` is `--zabi-base-50`, `#fafafa`; it was `--zabi-base-150`, `#ececee`), and `--color-page` and `--color-background` follow it. A default `Card` now has a 1px `--color-border` edge and no shadow (it used `shadow-sm`, and `hover:shadow-lg` when clickable); it is the same as `variant="outlined"`, which stays. `elevated` and `flat` are unchanged. A clickable card's hover fill is now `--color-card-hover` = base-150 (was base-100) and its pressed fill base-200, and `--color-input-disabled` is base-150 and `--color-background-secondary` base-100, so they still read against the lighter page. Dark does not change.
+- **New token `--color-surface-chrome`** (and the `bg-surface-chrome` utility) for bars and sidebars: `var(--color-surface-raised)` in both modes. The components do not read it yet. In `createTheme`, set it per mode with `overrides: { light: { '--color-surface-chrome': … }, dark: { … } }`.
+- **Restore 8.1.** Page: `createTheme({ …, overrides: { light: { '--color-surface-base': 'var(--zabi-base-150)' } } })`, or `--color-surface-base: var(--zabi-base-150)` in light CSS. Card: there is no `variant` that gives the old shadowed default; pass `class="border-transparent shadow-sm"` to approximate it.
+- The surface guard (`scripts/check-surface-elevation.js`) now checks the light surfaces by the card edge (`--color-border` at 1.2:1 or more on the page and the card) instead of a lightness ladder; the dark rules are unchanged.
+
 ## [8.1.0] - 2026-10-06
 
 8.1.0 adds a theme generator (`zabi-theme`, `createTheme`) and an accent colour,
