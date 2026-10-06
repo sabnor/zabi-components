@@ -481,6 +481,8 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'clas
     fixed?: boolean;
     /** Milliseconds a tooltip opened by a tap stays; `0` keeps it until it is dismissed. */
     touchDuration?: number;
+    /** `material` (default): thick glass with body text and no arrow. `inverted`: the 8.1 dark bubble with an arrow. */
+    tone?: 'material' | 'inverted';
     class?: string;
     children?: Snippet;
     /** @deprecated never accepted by the component; use `placement`. */

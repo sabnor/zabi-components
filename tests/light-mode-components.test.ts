@@ -89,9 +89,11 @@ describe("menus share one edge and one surface", () => {
 
     it("Dropdown", () => {
         render(LightModeHarness);
-        const popup = screen.getByTestId("dropdown").querySelector(".shadow-lg");
+        const popup = screen.getByTestId("dropdown").querySelector(".material-layer-thick");
 
-        expect(classesOf(popup)).toEqual(expect.arrayContaining(recipe));
+        // The thick material brings the overlay fill, the rim and the shadow.
+        expect(classesOf(popup)).toContain("material-layer-thick");
+        expect(classesOf(popup)).not.toContain("shadow-lg");
         expect(classesOf(popup)).not.toContain("border-border");
     });
 

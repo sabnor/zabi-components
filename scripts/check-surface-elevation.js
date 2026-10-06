@@ -225,8 +225,11 @@ export function checkSurfaceElevation({ log = console.log, cssPath = appCssPath 
       continue;
     }
     const source = fs.readFileSync(file, 'utf8');
-    if (!/(?<![\w:-])bg-surface-overlay(?![\w-])/.test(source)) {
-      errors.push(`${relative}: floating panel must use bg-surface-overlay`);
+    // The thick material (and its layer form) IS the overlay surface at partial
+    // alpha: --color-material-thick is a mix of --color-surface-overlay, and its
+    // fallbacks are that surface itself.
+    if (!/(?<![\w:-])(bg-surface-overlay|material-thick|material-layer-thick)(?![\w-])/.test(source)) {
+      errors.push(`${relative}: floating panel must use bg-surface-overlay or the thick material`);
     }
     const lower = [...new Set(source.match(LOWER_SURFACE_CLASS) ?? [])];
     if (lower.length > 0) {

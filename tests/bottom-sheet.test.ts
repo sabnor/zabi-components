@@ -168,6 +168,15 @@ describe("BottomSheet motion", () => {
         delete (window as { matchMedia?: unknown }).matchMedia;
     });
 
+    it("carries the thick material as a layer, not a filter on the panel", async () => {
+        await openSheet();
+        const classes = sheet().getAttribute("class")!.split(/\s+/);
+        expect(classes).toContain("material-layer-thick");
+        expect(classes).not.toContain("material-thick");
+        expect(classes).not.toContain("shadow-lg");
+        expect(classes).not.toContain("bg-surface-overlay");
+    });
+
     it("uses the motion tokens for snapping, with a filler under the bottom edge", async () => {
         await openSheet();
         const cls = sheet().getAttribute("class")!;
@@ -176,6 +185,9 @@ describe("BottomSheet motion", () => {
         expect(cls).not.toMatch(/duration-(150|200|300)\b/);
         expect(cls).toContain("after:top-full");
         expect(cls).toContain("after:pointer-events-none");
+        // The panel is transparent (its fill is on a layer), so the filler paints the material token.
+        expect(cls).toContain("after:bg-(--color-material-thick)");
+        expect(cls).not.toContain("after:[background:inherit]");
     });
 
     it("slides in over the slow duration with the spring easing when the tokens are readable", async () => {

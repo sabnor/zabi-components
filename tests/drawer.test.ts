@@ -110,18 +110,16 @@ describe("Drawer side, size and surface", () => {
         const panel = drawer();
         expect(panel.getAttribute("data-side")).toBe("right");
         expect(panel.className).toContain("right-0");
-        expect(panel.className).toContain("border-l");
         expect(panel.className).toContain("w-[min(100%,28rem)]");
     });
 
     it.each([
-        ["left", "left-0", "border-r"],
-        ["start", "start-0", "border-e"],
-        ["end", "end-0", "border-s"],
-    ] as const)("anchors %s with %s", (side, edge, border) => {
+        ["left", "left-0"],
+        ["start", "start-0"],
+        ["end", "end-0"],
+    ] as const)("anchors %s with %s", (side, edge) => {
         render(DrawerHarness, { props: { initialOpen: true, side } });
         expect(drawer().className).toContain(edge);
-        expect(drawer().className).toContain(border);
     });
 
     it.each([
@@ -132,10 +130,16 @@ describe("Drawer side, size and surface", () => {
         expect(drawer().className).toContain(width);
     });
 
-    it("paints the overlay surface on the modal layer", () => {
+    it("paints the thick material as a layer behind the content, not a filter on the panel", () => {
         render(DrawerHarness, { props: { initialOpen: true } });
-        expect(drawer().className).toContain("bg-surface-overlay");
-        expect(drawer().className).toContain("border-border-overlay");
+        const classes = drawer().className.split(/\s+/);
+        // A backdrop-filter on the panel would make it the containing block of
+        // every fixed-position popover inside it.
+        expect(classes).toContain("material-layer-thick");
+        expect(classes).not.toContain("material-thick");
+        expect(classes).not.toContain("shadow-lg");
+        expect(classes).not.toContain("bg-surface-overlay");
+        expect((drawer().parentElement as HTMLElement).className).toContain("z-modal");
         expect((drawer().parentElement as HTMLElement).className).toContain("z-modal");
     });
 });

@@ -358,6 +358,23 @@ export function buildPairs() {
         }
     }
 
+    // What the overlays put on the thick material beyond the five roles: a Toast's
+    // status-coloured text and a Dropdown danger item, both in the family's -text
+    // step (the plain family colour is 3.7:1 to 3.9:1 on glass: it stays the
+    // icon and border colour, held at 3:1), and the link in a Toaster toast.
+    // Held the same way:
+    // over the worst backdrop and over the page.
+    for (const [where, behind] of [['the worst backdrop', WORST_BACKDROP], ['the page', '--color-surface-base']]) {
+        const thick = '--color-material-thick';
+        for (const family of ['success', 'error', 'warning']) {
+            pairs.push({ name: `material thick · ${family} text over ${where}`, bg: thick, fg: `--color-${family}-text`, min: AA_NORMAL, behind });
+        }
+        pairs.push({ name: `material thick · link over ${where}`, bg: thick, fg: '--color-link', min: AA_NORMAL, behind });
+        for (const family of ['success', 'error', 'warning', 'info']) {
+            pairs.push({ name: `material thick · ${family} icon over ${where}`, bg: thick, fg: `--color-${family}`, min: AA_LARGE, behind });
+        }
+    }
+
     // Gradients (D99): never judged as a gradient, only at their worst stops.
     // The canvas wash is strongest at its centre, where it is the stop colour
     // over the page; every text role that can sit on the canvas is held there.

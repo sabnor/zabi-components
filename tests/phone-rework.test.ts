@@ -253,8 +253,10 @@ describe("Modal fullScreen", () => {
         expect(classes).toContain("max-h-[90dvh]");
         expect(classes.join(" ")).not.toContain("90vh]");
         expect(classes).toEqual(
-            expect.arrayContaining(["rounded-t-overlay", "md:rounded-overlay", "overflow-y-auto", "border"]),
+            expect.arrayContaining(["rounded-t-overlay", "md:rounded-overlay", "material-layer-thick"]),
         );
+        // The panel does not scroll (the Card does), so the glass layer stays put.
+        expect(classes).not.toContain("overflow-y-auto");
         expect(classes).not.toContain("h-dvh");
         expect(classes.some((name) => name.startsWith("max-md:"))).toBe(false);
         expect(panel().querySelector("[data-modal-content]")).toBeNull();

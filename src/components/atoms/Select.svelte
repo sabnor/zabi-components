@@ -210,7 +210,7 @@
 
     /** What the trigger and the visible native select share: the field's surface, edge and states. */
     const fieldSurface =
-        "focus-ring w-full min-w-0 cursor-pointer rounded-control border bg-input text-body transition-colors duration-150 hover:bg-input-hover active:bg-input-active focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text";
+        "focus-ring w-full min-w-0 cursor-pointer rounded-control border bg-input text-body transition-colors duration-(--duration-base) hover:bg-input-hover active:bg-input-active focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text";
 
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
@@ -586,7 +586,7 @@
                 </span>
                 <ChevronDown
                     size={20}
-                    class="shrink-0 text-description transition-transform duration-200 motion-reduce:transition-none {isOpen
+                    class="shrink-0 text-description transition-transform duration-(--duration-moderate) motion-reduce:transition-none {isOpen
                         ? 'rotate-180'
                         : ''}"
                 />
@@ -614,7 +614,7 @@
         {#snippet children()}
             <!-- `px-1` twice: the inner one is room for an option's focus
             ring inside the scrolling box, and together with the panel's
-            border they put the options 9px from its corner. -->
+            1px rim they put the options 9px from its corner. -->
             <div class="px-1 pb-2 pt-1" style:width={menuWidth} data-menu-width>
                 <div
                     class="overflow-y-auto px-1"

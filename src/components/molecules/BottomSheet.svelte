@@ -447,7 +447,10 @@ a background is dropped there, and the grip would be gone. -->
         <div
             bind:this={panel}
             class={cn(
-                "absolute inset-x-0 bottom-0 mx-auto flex w-full cursor-default flex-col rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg",
+                // The glass is a layer behind the content (`::before`), not a filter on
+                // the panel: a backdrop-filter would make the panel the containing
+                // block of every fixed-position popover inside it.
+                "material-layer-thick absolute inset-x-0 bottom-0 mx-auto flex w-full cursor-default flex-col rounded-t-overlay",
                 "max-h-[calc(100dvh-env(safe-area-inset-top,0px))] pb-[env(safe-area-inset-bottom)]",
                 // Over the keyboard: no taller than what is left, and the home
                 // indicator it would clear is under the keyboard.
@@ -456,10 +459,12 @@ a background is dropped there, and the grip would be gone. -->
                 "pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
                 // Snapping and settling spring; the overshoot may lift the panel a
                 // few px, so the filler continues its fill under the screen edge.
-                // `inherit` follows whatever the panel paints.
+                // The panel's own background is transparent now (the fill is on its
+                // layer), so the filler paints the material token itself: it follows
+                // the same fallbacks.
                 "transition-[height,transform] duration-(--duration-slow) ease-spring motion-reduce:transition-none",
-                "after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-8 after:content-[''] after:[background:inherit]",
-                "md:w-[min(100%,40rem)] md:border-x",
+                "after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-8 after:content-[''] after:bg-(--color-material-thick)",
+                "md:w-[min(100%,40rem)]",
                 className,
             )}
             style:height={dragHeight !== null ? `${dragHeight}px` : snapHeight}

@@ -75,23 +75,24 @@ describe("nested corner radii", () => {
         expect(classes(screen.getAllByRole("menuitem")[0])).toContain("rounded-control");
     });
 
-    it("Modal: the Card inside the panel is 1px inside its corner, and square where the panel is", async () => {
+    it("Modal: the Card fills the panel and takes its corner, and is square where the panel is", async () => {
         const user = userEvent.setup();
         render(ModalHarness);
         await user.click(screen.getByTestId("open-modal"));
         const panel = await screen.findByRole("dialog");
-        expect(classes(panel)).toEqual(expect.arrayContaining(["rounded-t-overlay", "md:rounded-overlay", "border"]));
+        expect(classes(panel)).toEqual(expect.arrayContaining(["rounded-t-overlay", "md:rounded-overlay", "material-layer-thick"]));
         const card = panel.firstElementChild!;
         expect(classes(card)).toEqual(
             expect.arrayContaining([
-                "rounded-t-[calc(var(--radius-overlay)-1px)]",
+                "rounded-t-overlay",
                 "rounded-b-none",
-                "md:rounded-[calc(var(--radius-overlay)-1px)]",
+                "md:rounded-overlay",
             ]),
         );
         // Card's own `rounded-container` is still in the list: the per-side
-        // classes above come later in the stylesheet and win, which the
-        // Playwright spec measures (15px in the 16px panel).
+        // classes above come later in the stylesheet and win. The panel has no
+        // border any more (the material's rim is drawn inside it), so the Card
+        // takes the full 16px.
     });
 
     it("ListItem: a row takes the radius a list group hands down, and the container radius otherwise", () => {

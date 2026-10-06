@@ -121,6 +121,7 @@
     applyDefaults();
     $effect.pre(applyDefaults);
 
+    // Used only where --duration-moderate cannot be read.
     const SLIDE_MS = 200;
 
     const titleId = generateId("drawer-title");
@@ -159,14 +160,14 @@
         }[size] ?? "w-[min(100%,28rem)]",
     );
 
-    /** The border is on the edge that faces the page. */
+    /** The edge the panel is attached to. The rim comes from the material. */
     const sideClasses = $derived(
         {
-            "left": "left-0 border-r",
-            "right": "right-0 border-l",
-            "start": "start-0 border-e",
-            "end": "end-0 border-s",
-        }[side] ?? "right-0 border-l",
+            "left": "left-0",
+            "right": "right-0",
+            "start": "start-0",
+            "end": "end-0",
+        }[side] ?? "right-0",
     );
 
     function close(reason: DrawerCloseReason) {
@@ -177,6 +178,14 @@
             returnFocus();
         }
         onclose?.({ reason });
+    }
+
+    /** `200ms`, `0.2s` or `0s` to milliseconds; the fallback when it is not a time. */
+    function parseDuration(value: string): number {
+        const match = /^\s*(-?\d*\.?\d+)(ms|s)\s*$/.exec(value);
+        if (!match) return SLIDE_MS;
+        const ms = parseFloat(match[1]) * (match[2] === "s" ? 1000 : 1);
+        return ms >= 0 ? ms : SLIDE_MS;
     }
 
     /** Slides the panel in from its edge. Skipped where motion is unwanted or unsupported. */
@@ -190,10 +199,16 @@
         }
         const rtl = getComputedStyle(container).direction === "rtl";
         const from = resolveDrawerEdge(side, rtl) === "left" ? "-100%" : "100%";
-        container.animate(
-            [{ transform: `translateX(${from})` }, { transform: "translateX(0)" }],
-            { duration: SLIDE_MS, easing: "ease-out" },
-        );
+        // Read from the element so a theme that overrides the tokens is followed.
+        const style = getComputedStyle(container);
+        const duration = parseDuration(style.getPropertyValue("--duration-moderate"));
+        const easing = style.getPropertyValue("--ease-out").trim() || "ease-out";
+        const frames = [{ transform: `translateX(${from})` }, { transform: "translateX(0)" }];
+        try {
+            container.animate(frames, { duration, easing });
+        } catch {
+            container.animate(frames, { duration, easing: "ease-out" });
+        }
     }
 
     $effect(() => {
@@ -308,7 +323,10 @@
         <div
             bind:this={panel}
             class={cn(
-                "absolute inset-y-0 flex cursor-default flex-col border-border-overlay bg-surface-overlay shadow-lg",
+                // The glass is a layer behind the content (`::before`), not a filter on
+                // the panel: a backdrop-filter would make the panel the containing
+                // block of every fixed-position popover inside it.
+                "material-layer-thick absolute inset-y-0 flex cursor-default flex-col",
                 // Above the home indicator: the last row, or the footer, ends
                 // where a finger can reach it. Over a keyboard that is under
                 // the keyboard.

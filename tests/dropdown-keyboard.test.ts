@@ -105,7 +105,8 @@ describe.each([
         const { items } = await open();
 
         const danger = items[3].className.split(/\s+/);
-        expect(danger).toContain("text-error");
+        // The -text step: the plain error colour is 3.8:1 on the thick material.
+        expect(danger).toContain("text-error-text");
         expect(danger).toContain("hover:bg-action-danger-subtle");
         expect(danger).toContain("focus-ring--danger");
         expect(danger).not.toContain("text-body");

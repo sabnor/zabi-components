@@ -268,7 +268,7 @@
 </script>
 
 <div
-    class={cn("pointer-events-auto relative w-full min-w-[min(18rem,100%)] shrink-0 overflow-hidden rounded-overlay border border-border-overlay bg-surface-overlay shadow-lg", className)}
+    class={cn("pointer-events-auto relative w-full min-w-[min(18rem,100%)] shrink-0 overflow-hidden rounded-overlay material-thick", className)}
     in:fly={toastEnter}
     out:fly={toastLeave}
     onpointerenter={handlePointerEnter}

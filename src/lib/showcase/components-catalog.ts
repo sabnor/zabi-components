@@ -1726,8 +1726,16 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "On a touch screen a tap on the trigger opens the tooltip and the trigger still acts. By default (0) it stays until a second tap, a tap elsewhere, Escape, scrolling or focus leaving, because the tap also leaves focus on the trigger. Give milliseconds to have it close by itself after that long too. A mouse and a keyboard are not affected.",
                     },
+                    {
+                        name: "tone",
+                        type: '"material" | "inverted"',
+                        required: false,
+                        defaultValue: '"material"',
+                        description:
+                            "material: the bubble is thick glass with body text and no arrow. inverted: the 8.1 bubble, dark with light text and an arrow.",
+                    },
                 ],
-                variants: [],
+                variants: ["material", "inverted"],
                 examples: [
                     {
                         title: "Basic Tooltip",

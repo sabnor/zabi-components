@@ -33,15 +33,16 @@
     let isVisible = $state(true);
 
     const typeClasses: Record<NonNullable<Props['type']>, string> = {
-        success: 'border-success bg-surface-overlay text-success',
-        error: 'border-error bg-surface-overlay text-error',
-        warning: 'border-warning bg-surface-overlay text-warning',
-        info: 'border-border bg-surface-overlay text-body',
+        success: 'border-success text-success-text',
+        error: 'border-error text-error-text',
+        warning: 'border-warning text-warning-text',
+        // The material has its own rim: no second edge on the neutral toast.
+        info: 'border-transparent text-body',
     };
 
     // `min(18rem, 100%)`: 18rem is wider than a 320px screen once the text is enlarged.
     const cardClasses =
-        'box-border w-full min-w-[min(18rem,100%)] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-control border p-4 shadow-lg';
+        'box-border w-full min-w-[min(18rem,100%)] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-control border p-4 material-thick';
 
     function closeToast(event: Event) {
         isVisible = false;

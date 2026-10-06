@@ -1455,6 +1455,55 @@ body {
   }
 }
 
+/* The layer form of the thick material, for a container that holds fixed
+ * position content: a Modal, a Drawer, a BottomSheet. `backdrop-filter` makes
+ * an element the containing block of its `position: fixed` descendants, so a
+ * popover inside the panel would be placed against the panel and clipped by it,
+ * but only while the material is on (the fallbacks turn the filter off): a bug
+ * that comes and goes. Here the filter sits on a `::before` behind the content,
+ * which is not their ancestor. The element itself carries only the outer
+ * shadow (a box-shadow makes no containing block) and an isolated stacking
+ * context so the layer's z-index -1 stays inside it. The fill, filter,
+ * highlight and rim are on the layer, read from the SAME tokens as
+ * .material-thick, so every fallback above applies unchanged. The element has
+ * to be positioned (`relative`, `absolute` or `fixed`, set by the component:
+ * a class here would beat Tailwind's utilities) and must not scroll its own
+ * content: an absolute layer would scroll away with it. A panel that scrolls puts the
+ * layer on a wrapper around it. */
+.material-layer-thick {
+  isolation: isolate;
+  background-color: transparent;
+  --tw-shadow: var(--shadow-material);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+}
+
+.material-layer-thick::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background-color: var(--color-material-thick);
+  -webkit-backdrop-filter: var(--material-filter-thick);
+  backdrop-filter: var(--material-filter-thick);
+  box-shadow:
+    inset 0 1px 0 var(--color-material-highlight),
+    inset 0 0 0 1px var(--color-material-rim);
+}
+
+@media (forced-colors: active) {
+  .material-layer-thick {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+}
+
 /* Gradients (D99). Utilities only; nothing in the library applies them yet.
  *
  * .bg-canvas: the page colour with the wash over it. The wash is in the
