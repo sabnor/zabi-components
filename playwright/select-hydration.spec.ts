@@ -224,7 +224,8 @@ test.describe("Select once mounted", () => {
         await trigger(host(page, "pre")).focus();
         await page.keyboard.press("Tab");
         await expect(trigger(host(page, "req"))).toBeFocused();
-        await expect(host(page, "req").getByRole("combobox")).toHaveCount(0);
+        // One combobox: the trigger. The hidden native select is not a second one.
+        await expect(host(page, "req").getByRole("combobox")).toHaveCount(1);
     });
 
     test("back navigation restores the choice into the custom control", async ({ page }) => {
