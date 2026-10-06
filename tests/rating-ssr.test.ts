@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { readFileSync } from "node:fs";
 import { render as renderOnServer } from "svelte/server";
 import { describe, expect, it, vi } from "vitest";
 
@@ -85,5 +86,42 @@ describe("Rating on the server", () => {
         const { body } = renderOnServer(Rating, { props: { label: "Quiz", readonly: true } });
         expect(body).toContain('aria-label="Quiz, No rating"');
         expect(body).toMatch(/data-rating-value[^>]*>\s*No rating\s*</);
+    });
+});
+
+describe("Rating server output without the new props", () => {
+    // Captured from the code before compact, empty and the larger sizes.
+    // The scoped-style hash changes with the stylesheet, so it is removed.
+    // The server counter in ids and the index of the top-level branch marker
+    // (a new `compact` branch was added before the old ones) are removed too.
+    const strip = (html: string) =>
+        html
+            .replace(/svelte-[a-z0-9]+/g, "svelte-x")
+            .replace(/rating-ssr-\d+/g, "rating-ssr-n")
+            .replace(/^<!--\[--><!--\[-?\d+--/, "<!--[--><!--[n--");
+    const baseline = JSON.parse(
+        readFileSync(new URL("./fixtures/rating-baseline.json", import.meta.url), "utf8"),
+    ) as { a: string; b: string };
+
+    it("renders the default input as before", () => {
+        const { body } = renderOnServer(Rating, {
+            props: { label: "Quiz", value: 3, name: "q", clearable: true, id: "r" },
+        });
+        expect(strip(body)).toBe(strip(baseline.a));
+    });
+
+    it("renders the default read-only rating as before", () => {
+        const { body } = renderOnServer(Rating, {
+            props: { label: "Pub", value: 3.5, readonly: true, id: "r" },
+        });
+        expect(strip(body)).toBe(strip(baseline.b));
+    });
+
+    it("renders a compact score on the server", () => {
+        const { body } = renderOnServer(Rating, { props: { compact: true, value: 4, max: 5 } });
+        expect(body).toContain('role="img"');
+        expect(body).toContain('aria-label="4 of 5 stars"');
+        expect(body.match(/class="rating-glyph svelte/g)).toHaveLength(1);
+        expect(body).toContain("data-rating-value");
     });
 });

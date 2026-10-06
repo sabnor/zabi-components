@@ -1379,7 +1379,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "md",
                         description:
-                            "Size of a star. An interactive star is a 44px target at every size. The empty star's outline is drawn in --color-control-border, 3:1 or better on every surface level in light and dark.",
+                            "Size of a star: xl is 40px stars; display is a display-size compact score (a row of stars treats it as xl). An interactive star is a 44px target at every size. The empty star's outline is drawn in --color-control-border, 3:1 or better on every surface level in light and dark.",
                     },
                     {
                         name: "readonly",
@@ -1447,6 +1447,22 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         description:
                             "Id of the element that names the rating, when there is no label.",
+                    },
+                    {
+                        name: "compact",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "A score for a list: one filled star and the number (\"4,0\") from the real value and max, with one accessible name (\"4 of 5 stars\"). Implies readonly; clearable, name, onchange and showValue are ignored. Sizes sm to display: 14, 16, 20, 28 and 40px stars.",
+                    },
+                    {
+                        name: "empty",
+                        type: "'outline' | 'soft'",
+                        required: false,
+                        defaultValue: "outline",
+                        description:
+                            "What an empty star looks like: a hollow outline, or a soft fill with no outline (--zabi-rating-off-fill, default --color-control-track). The soft fill is below 3:1 against the page, so use it with a visible label and value. An outline in forced colours.",
                     },
                     {
                         name: "onchange",

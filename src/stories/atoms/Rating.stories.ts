@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Rating from '../../components/atoms/Rating.svelte';
+import RatingCompactSizesStory from './RatingCompactSizesStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Rating',
@@ -16,7 +17,7 @@ const meta = {
     argTypes: {
         size: {
             control: 'inline-radio',
-            options: ['sm', 'md', 'lg']
+            options: ['sm', 'md', 'lg', 'xl', 'display']
         },
         value: {
             control: { type: 'number', min: 0, max: 5, step: 0.5 }
@@ -175,5 +176,59 @@ export const WithoutVisibleLabel: Story = {
                 story: 'hideLabel keeps the label as the accessible name only, for a row that shows its own heading. aria-label and aria-labelledby work too.'
             }
         }
+    }
+};
+
+const comma = (value: number) => value.toFixed(1).replace('.', ',');
+
+export const Compact: Story = {
+    args: { compact: true, value: 3.5, max: 5, formatValue: comma },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A score for a list: one filled star and the number, from the real value and max. It is one image named "3.5 of 5 stars" (the number is not read twice). Sizes sm, md, lg, xl and display (a 40px star and a 48px number in the display face). label names it, and shows beside it unless hideLabel.'
+            }
+        }
+    }
+};
+
+export const CompactSizes: Story = {
+    args: { compact: true, value: 3.5 },
+    render: () => ({ Component: RatingCompactSizesStory }) as any,
+    parameters: {
+        docs: { description: { story: 'All five sizes with 3.5 and a comma: sm, md, lg, xl and display.' } }
+    }
+};
+
+export const CompactWithLabel: Story = {
+    args: { compact: true, value: 4, label: 'Pub score', size: 'lg', formatValue: comma }
+};
+
+export const ExtraLargeInput: Story = {
+    args: { label: 'Quiz', value: null, size: 'xl' },
+    parameters: {
+        docs: { description: { story: 'An input with 40px stars. Each star is still a 48px target.' } }
+    }
+};
+
+export const SoftEmptyState: Story = {
+    args: { label: 'Quiz', value: 2, size: 'xl', empty: 'soft' },
+    parameters: {
+        docs: {
+            description: {
+                story: 'An empty star is a soft fill instead of an outline (--zabi-rating-off-fill). The soft fill is below 3:1 against the page, so keep the label and value visible. Read-only: set readonly and value 3.5 to see the half star on the soft one.'
+            }
+        }
+    }
+};
+
+export const SoftEmptyReadOnly: Story = {
+    args: { label: 'Pub score', value: 3.5, readonly: true, empty: 'soft' }
+};
+
+export const CompactNoRating: Story = {
+    args: { compact: true, value: null },
+    parameters: {
+        docs: { description: { story: 'No rating: an empty star and "No rating", named the same way.' } }
     }
 };

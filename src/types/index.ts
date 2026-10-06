@@ -706,7 +706,8 @@ export interface RatingProps
     hideLabel?: boolean;
     'aria-label'?: string;
     'aria-labelledby'?: string;
-    size?: SizeVariant;
+    /** `xl` is 40px stars; `display` is a display-size compact score (`xl` as a row of stars). */
+    size?: 'sm' | 'md' | 'lg' | 'xl' | 'display';
     /** Colour of a filled star: the primary action colour, or the app's accent. */
     tone?: 'primary' | 'accent';
     /** Shows a score: one image with one name, and stars can be partly filled. */
@@ -715,6 +716,10 @@ export interface RatingProps
     clearable?: boolean;
     disabled?: boolean;
     name?: string;
+    /** A read-only score: one star and the number; implies `readonly`. */
+    compact?: boolean;
+    /** An empty star: a hollow `outline` (default) or a `soft` fill. */
+    empty?: 'outline' | 'soft';
     /** On by default when `readonly`. */
     showValue?: boolean;
     formatValue?: (value: number) => string;

@@ -4,7 +4,7 @@
     import Star from "@lucide/svelte/icons/star";
     import X from "@lucide/svelte/icons/x";
     import type { HTMLAttributes } from "svelte/elements";
-    import type { SizeVariant } from "../types/variants.js";
+    import { isDevBuild } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
     import { resetValueOf, groupBinding } from "../util/hydration.js";
     import { isRtl, radioKeyIndex } from "../util/radio-keys.js";
@@ -17,6 +17,9 @@
         type RatingStrings,
     } from "../util/rating.js";
     import { generateId } from "../util/ssr-safe.js";
+
+    /** Sizes of a rating. `xl` and `display` are for a large input or a compact score. */
+    type RatingSize = "sm" | "md" | "lg" | "xl" | "display";
 
     /** Other attributes (`data-*`, `id`, ...) land on the host element. */
     type Props = Omit<
@@ -37,8 +40,12 @@
         "aria-label"?: string;
         /** Id of the element that names the rating, when there is no `label`. */
         "aria-labelledby"?: string;
-        /** Size of a star. An interactive star is a 44px target at every size. */
-        size?: SizeVariant;
+        /**
+         * Size of a star. An interactive star is a 44px target at every size.
+         * `xl` is 40px stars. `display` is a display-size score with `compact`
+         * (a 40px star and a 48px number); as a row of stars it is `xl`.
+         */
+        size?: RatingSize;
         /**
          * Colour of a filled star: the primary action colour, or the app's
          * accent (`--color-accent`). An app can also set the colours itself:
@@ -62,6 +69,22 @@
          * around it: it submits nothing and a form reset leaves it alone.
          */
         name?: string;
+        /**
+         * A score for a list, not a control: one filled star and the number
+         * ("4,0"), from the real `value` and `max`, with one accessible name
+         * ("4 of 5 stars"). Implies `readonly`: `clearable`, `name` and
+         * `onchange` are ignored, and `showValue` too (the number is the point).
+         */
+        compact?: boolean;
+        /**
+         * What an empty star looks like: a hollow `outline` (default), or a
+         * `soft` fill (no outline) in `--zabi-rating-off-fill`, falling back to
+         * `--color-control-track`. The soft fill is below 3:1 against the page
+         * by default, so it suits a rating that also has a visible label and
+         * value. `--zabi-rating-off-fill` sets the colour; it is declared
+         * nowhere, like `--zabi-rating-on`. In forced colours it is an outline.
+         */
+        empty?: "outline" | "soft";
         /** Shows the number beside the stars. On by default when `readonly`. */
         showValue?: boolean;
         /** Turns the value into text for a locale ("3,5"). At most one decimal by default. */
@@ -86,6 +109,8 @@
         clearable = false,
         disabled = false,
         name = "",
+        compact = false,
+        empty = "outline",
         showValue,
         formatValue,
         strings,
@@ -103,6 +128,13 @@
     };
     applyDefaults();
     $effect.pre(applyDefaults);
+
+    $effect(() => {
+        if (!isDevBuild() || !compact || !(clearable || name)) return;
+        console.warn(
+            "[zabi-components] Rating: `compact` is a read-only score; `clearable` and `name` are ignored.",
+        );
+    });
 
     const baseId = generateId("rating");
     const labelId = `${baseId}-label`;
@@ -127,6 +159,9 @@
     const shown = $derived(clampRating(value, count));
     const valueShown = $derived(showValue ?? readonly);
     const labelVisible = $derived(!!label && !hideLabel);
+    /** A row of stars has no `display` size: it is `xl`. */
+    const starSize = $derived(size === "display" ? "xl" : size);
+    const softEmpty = $derived(empty === "soft" ? "soft" : undefined);
 
     function format(current: number): string {
         return formatValue ? formatValue(current) : defaultRatingFormat(current);
@@ -214,13 +249,48 @@
     </span>
 {/snippet}
 
-{#if readonly}
+{#if compact}
+    <!-- A score: one star and the number, one image with one name as `readonly`. -->
+    <div
+        class={cn("rating inline-flex items-center", className)}
+        data-size={size}
+        data-tone={tone}
+        data-empty={softEmpty}
+        data-compact
+        data-readonly
+        role="img"
+        aria-label={ariaLabelledby
+            ? undefined
+            : [label || ariaLabel, valueLabel].filter(Boolean).join(", ")}
+        aria-labelledby={ariaLabelledby ? `${ariaLabelledby} ${valueId}` : undefined}
+        {...restProps}
+    >
+        {#if labelVisible}
+            <span class="me-2 text-sm font-medium text-label">{label}</span>
+        {/if}
+        {@render glyph(shown === null ? 0 : 1)}
+        <span
+            class={cn(
+                "rating-compact-value font-semibold tabular-nums",
+                size === "display" && "font-display font-bold",
+                shown === null ? "text-description" : "text-headline",
+            )}
+            data-rating-value
+        >
+            {shown === null ? text.noRating : valueText}
+        </span>
+        {#if ariaLabelledby}
+            <span id={valueId} class="sr-only">{valueLabel}</span>
+        {/if}
+    </div>
+{:else if readonly}
     <!-- One image with one name. Its children, the visible label and number
     included, are presentational, so nothing is read twice. -->
     <div
         class={cn("rating", className)}
-        data-size={size}
+        data-size={starSize}
         data-tone={tone}
+        data-empty={softEmpty}
         data-readonly
         role="img"
         aria-label={ariaLabelledby
@@ -249,8 +319,9 @@
 {:else}
     <div
         class={cn("rating", disabled && "opacity-50", className)}
-        data-size={size}
+        data-size={starSize}
         data-tone={tone}
+        data-empty={softEmpty}
         {...restProps}
     >
         {#if labelVisible}
@@ -371,6 +442,49 @@
         --zabi-rating-target: max(48px, var(--zabi-rating-star) + 8px);
     }
 
+    .rating[data-size="xl"] {
+        --zabi-rating-star: 2.5rem;
+        --zabi-rating-target: max(48px, var(--zabi-rating-star) + 8px);
+    }
+
+    /* A compact score: the star and the number share one size per step. */
+    .rating[data-compact] {
+        --zabi-rating-text: 1.5rem;
+        gap: 4px;
+    }
+
+    .rating[data-compact][data-size="sm"] {
+        --zabi-rating-star: 14px;
+        --zabi-rating-text: 14px;
+    }
+
+    .rating[data-compact][data-size="md"] {
+        --zabi-rating-star: 16px;
+        --zabi-rating-text: 16px;
+    }
+
+    .rating[data-compact][data-size="lg"] {
+        --zabi-rating-star: 20px;
+        --zabi-rating-text: 20px;
+    }
+
+    .rating[data-compact][data-size="xl"] {
+        --zabi-rating-star: 28px;
+        --zabi-rating-text: 30px;
+        gap: 6px;
+    }
+
+    .rating[data-compact][data-size="display"] {
+        --zabi-rating-star: 40px;
+        --zabi-rating-text: 48px;
+        gap: 6px;
+    }
+
+    .rating-compact-value {
+        font-size: var(--zabi-rating-text);
+        line-height: 1;
+    }
+
     .rating-stars {
         display: inline-flex;
         flex-wrap: wrap;
@@ -422,6 +536,12 @@
 
     .rating-glyph :global(.rating-glyph-empty) {
         color: var(--zabi-rating-off, var(--_rating-off));
+    }
+
+    /* A soft empty star is a filled shape with no outline. */
+    .rating[data-empty="soft"] .rating-glyph :global(.rating-glyph-empty) {
+        fill: var(--zabi-rating-off-fill, var(--color-control-track));
+        stroke: none;
     }
 
     /* Anchored at the start, so the filled part is on the right in a right-to-left layout. */
@@ -483,6 +603,12 @@
         /* An svg keeps its author colour in forced colours; the outline takes the text colour as the fill does. */
         .rating-glyph :global(.rating-glyph-empty) {
             color: CanvasText;
+        }
+
+        /* A soft star is hollow here, so it still differs from a filled one. */
+        .rating[data-empty="soft"] .rating-glyph :global(.rating-glyph-empty) {
+            fill: none;
+            stroke: CanvasText;
         }
     }
 

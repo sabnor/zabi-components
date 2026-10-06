@@ -629,6 +629,7 @@ anything around it; they inherit.
 | `Rating` | `--zabi-rating-on-hover`, `--zabi-rating-on-active` | the same under the pointer and while pressed | `--zabi-rating-on` if you set it, else the tone's hover and pressed roles |
 | `Rating` | `--zabi-rating-on-edge` | the outline of a filled star | the fill; `--color-accent-text` with `tone="accent"` |
 | `Rating` | `--zabi-rating-off` | the outline of an empty star | `--color-control-border` |
+| `Rating` | `--zabi-rating-off-fill` | an empty star with `empty="soft"` (below 3:1 on the page; pair it with a visible label and value) | `--color-control-track` |
 
 ```svelte
 <Rating label="Betyg" tone="accent" bind:value />
