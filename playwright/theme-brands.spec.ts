@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { gotoHydrated, waitForHydration } from "./helpers/hydration";
+
 /**
  * The two-brand proof: real component pages under the default brand and under
  * Amber, in light and dark, at desktop width and at 375px.
@@ -84,20 +86,43 @@ async function open(page: Page, path: string, brand: Brand, mode: Mode): Promise
     await page.goto(brand === "amber" ? `${path}?brand=amber` : path, {
         waitUntil: "domcontentloaded",
     });
-    // The brand goes on after hydration, as ramp overrides on the root element.
-    // On a loaded machine hydration has taken more than the default 15s.
-    await expect
-        .poll(
-            () =>
-                page.evaluate(
-                    () => document.documentElement.style.getPropertyValue("--zabi-brand-600") !== "",
-                ),
-            { timeout: 60_000 },
-        )
-        .toBe(brand === "amber");
+    // Three things have to be over before a colour is read, and each says so:
+    // the page has hydrated; the switcher in the top bar has put the brand on
+    // the root element, which it does after hydrating and reports in
+    // `data-brand` (the default brand is "iris"); and the colours have
+    // arrived, see `settled`.
+    await waitForHydration(page);
+    await expect(page.locator("html")).toHaveAttribute("data-brand", brand === "amber" ? "amber" : "iris");
+    expect(
+        await page.evaluate(() => document.documentElement.style.getPropertyValue("--zabi-brand-600") !== ""),
+        "The ramps are on the root element for a generated brand, and only then",
+    ).toBe(brand === "amber");
     await expect
         .poll(() => page.evaluate(() => document.documentElement.classList.contains("dark")))
         .toBe(mode === "dark");
+    await settled(page);
+}
+
+/**
+ * Resolves once every colour that is on its way to another has arrived.
+ *
+ * Buttons, fields and links change colour over 150 to 200ms. When the brand
+ * goes on, or focus arrives, a computed colour read straight away is the old
+ * one, or one in between: a primary fill read as the brand went on was the
+ * default brand's, and "the two brands differ" failed with a difference of 0.
+ *
+ * It takes the transitions that are running when it is called and looks at
+ * them once a frame until none of those is running. Not their `finished`
+ * promises: with the brand going on, one transition on the theming page ends
+ * (`playState` "finished") with that promise never settled.
+ */
+async function settled(page: Page): Promise<void> {
+    await page.evaluate(async () => {
+        const easing = document.getAnimations().filter((animation) => animation instanceof CSSTransition);
+        while (easing.some((animation) => animation.playState === "running" || animation.pending)) {
+            await new Promise(requestAnimationFrame);
+        }
+    });
 }
 
 async function read(page: Page): Promise<Reading> {
@@ -106,23 +131,15 @@ async function read(page: Page): Promise<Reading> {
     // A key press first, so the focus that follows counts as keyboard focus
     // and the ring is drawn.
     //
-    // The page can be read before it hydrates: for the default brand nothing
-    // in `open` waits for the client. Hydration then puts new elements in
-    // place of some that the server sent (EmptyState's root is a
-    // `<svelte:element>`, and its preview is built again), and a button
-    // focused before that is gone, with focus back on `<body>`. So the focus
-    // and the reading are taken together and repeated until they hold; what
-    // is read, and what it has to be, are the same as before.
-    let reading: Reading | undefined;
-    await expect(async () => {
-        await page.keyboard.press("Shift");
-        await primary.focus();
-        await expect(primary).toBeFocused({ timeout: 1_000 });
-        reading = await readFocused(page);
-    }, "The primary button must hold focus, with its ring, once the page has settled").toPass({
-        timeout: 15_000,
-    });
-    return reading!;
+    // `open` has waited for hydration, which puts new elements in place of
+    // some that the server sent (EmptyState's root is a `<svelte:element>`,
+    // and its preview is built again): a button focused before that was gone,
+    // with focus back on `<body>`. Focused after it, the button keeps it.
+    await page.keyboard.press("Shift");
+    await primary.focus();
+    await expect(primary, "The primary button must hold focus").toBeFocused();
+    await settled(page);
+    return readFocused(page);
 }
 
 function readFocused(page: Page): Promise<Reading> {
@@ -187,8 +204,6 @@ for (const viewport of WIDTHS) {
 
         for (const path of PAGES) {
             test(`${path} follows the brand in light and dark`, async ({ page }) => {
-                // Four page loads; see the note on hydration in `open`.
-                test.setTimeout(240_000);
                 const readings = {} as Record<Mode, Record<Brand, Reading>>;
                 for (const mode of ["light", "dark"] as const) {
                     readings[mode] = {} as Record<Brand, Reading>;
@@ -266,7 +281,9 @@ test.describe("data-theme on the dev site", () => {
         page: Page,
         root: { darkClass?: boolean; dataTheme?: string },
     ): Promise<string[]> {
-        await page.goto("/components/Button", { waitUntil: "domcontentloaded" });
+        // Hydrated, so the stylesheets are in: read as soon as the document
+        // was parsed, every token was the empty string now and then.
+        await gotoHydrated(page, "/components/Button");
         await page.evaluate(({ darkClass, dataTheme }) => {
             const html = document.documentElement;
             html.classList.toggle("dark", !!darkClass);
@@ -477,7 +494,7 @@ test.describe("the docs site: native controls match the theme, and the first pai
 
     test("the app adding or removing the dark class itself moves the scheme with the tokens, also after the toggle was pressed", async ({ page }) => {
         await page.emulateMedia({ colorScheme: "light" });
-        await page.goto("/components/ThemeToggle", { waitUntil: "domcontentloaded" });
+        await gotoHydrated(page, "/components/ThemeToggle");
         const toggle = page.locator("main .min-h-\\[100px\\]").getByRole("button", { name: "Dark mode", exact: true }).first();
         await toggle.click();
         await toggle.click();

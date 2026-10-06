@@ -64,6 +64,11 @@
 
     $effect(() => {
         applyAccent(document.documentElement, accent, isDark);
+        // Which brand the document wears, written once its values are on the
+        // root element. A page opened with `?brand=` is the default brand
+        // until this component has hydrated, and nothing else says when that
+        // is over (the browser tests wait for it: playwright/theme-brands.spec.ts).
+        document.documentElement.dataset.brand = accent;
     });
 
     function selectAccent(value: Accent) {

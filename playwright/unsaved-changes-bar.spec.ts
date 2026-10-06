@@ -17,6 +17,19 @@ const nameField = (page: Page) => scroller(page).getByLabel("Name");
 const bio = (page: Page) => scroller(page).getByLabel("Bio");
 
 /** The page is usable before it hydrates; typing that lands early changes nothing. */
+/**
+ * Holds the page's clock from here on; `page.clock.runFor` moves it.
+ *
+ * The demo's save takes 800ms. A test that looks at the bar while it is
+ * saving had those 800ms to get there, and on a busy machine did not: the
+ * save was over, and Save was enabled again or gone with the bar. With the
+ * clock held the save is over when the test has looked.
+ */
+async function holdClock(page: Page): Promise<void> {
+    await page.clock.install();
+    await page.clock.pauseAt(Date.now() + 60_000);
+}
+
 async function gotoHydrated(page: Page) {
     await page.goto("/components/UnsavedChangesBar", { waitUntil: "domcontentloaded" });
     await waitForHydration(page);
@@ -106,14 +119,17 @@ test.describe("UnsavedChangesBar — sticky layout and focus", () => {
         // Email, Company, City, Bio, then the bar's Discard and Save.
         const save = bar(page).getByRole("button", { name: "Save" });
         await save.focus();
+        await holdClock(page);
         await page.keyboard.press("Enter");
 
         await expect(save).toBeDisabled();
+        await expect(save).toHaveAttribute("aria-busy", "true");
         await expect(bar(page).getByRole("button", { name: "Discard" })).toBeDisabled();
         await expect(
             bar(page),
-            "A disabled button drops focus; the bar holds it instead of <body>",
+            "The bar holds focus while it saves, instead of <body>",
         ).toBeFocused();
+        await page.clock.runFor(800);
 
         await expect(page.getByTestId("unsaved-demo-outcome")).toHaveText(
             "Saved Ada Lovelace!.",
@@ -148,8 +164,11 @@ test.describe("UnsavedChangesBar — sticky layout and focus", () => {
 
         const publish = region.getByRole("button", { name: "Publish" });
         await publish.focus();
+        await holdClock(page);
         await page.keyboard.press("Enter");
         await expect(publish).toBeDisabled();
+        await expect(page.getByText("The page is locked by another editor.")).toHaveCount(0);
+        await page.clock.runFor(800);
         await expect(page.getByText("The page is locked by another editor.")).toBeVisible();
         await expect(region).toBeVisible();
         await expect(publish).toBeEnabled();
