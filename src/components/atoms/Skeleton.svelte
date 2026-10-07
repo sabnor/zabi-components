@@ -48,7 +48,7 @@
 </script>
 
 <div
-    class={cn("animate-pulse bg-neutral-subtle", defaultShape[variant], radius[variant], className)}
+    class={cn("animate-pulse motion-reduce:animate-none bg-neutral-subtle", defaultShape[variant], radius[variant], className)}
     style={inlineStyle || undefined}
     role="status"
     aria-busy="true"

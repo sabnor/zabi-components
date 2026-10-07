@@ -9,7 +9,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Lightweight loading placeholder primitive. Fills its parent width by default (except `circle`, which stays square). Override width with the `width` prop (CSS length or pixel number, e.g. `"50%"` or `200`) or a fixed Tailwind utility via `class` (e.g. `w-64`). Uses the `bg-surface-2` token so it sits subtly above `surface-1` cards and pages in both light and dark modes.'
+                    'Lightweight loading placeholder primitive. Fills its parent width by default (except `circle`, which stays square). Override width with the `width` prop (CSS length or pixel number, e.g. `"50%"` or `200`) or a fixed Tailwind utility via `class` (e.g. `w-64`). Uses the `bg-surface-2` token so it sits subtly above `surface-1` cards and pages in both light and dark modes. It pulses, and under prefers-reduced-motion it stays a still fill.'
             }
         }
     },
