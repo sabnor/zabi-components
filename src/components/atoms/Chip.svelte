@@ -46,6 +46,14 @@
         leading?: Snippet;
         /** A check icon before the label while selected. On for a checkbox and a toggle button, off for a link and a radio. */
         checkmark?: boolean;
+        /**
+         * A button chip (`type="submit"`, `"button"` or a toggle) while its
+         * action is on its way, as Button's: `aria-busy` and `aria-disabled`,
+         * a spinner over the label, the press swallowed. The chip keeps its
+         * width and stays a Tab stop, so focus is not lost. Ignored by a link
+         * and by `checkbox` / `radio`, which are not actions.
+         */
+        loading?: boolean;
         /** Called with the new `selected` when a person changes it. */
         onchange?: (selected: boolean) => void;
         class?: string;
@@ -69,6 +77,7 @@
         size = "md",
         leading,
         checkmark,
+        loading = false,
         onchange,
         onclick,
         class: className = "",
@@ -159,7 +168,16 @@
         onchange?.(checked);
     }
 
+    /** Loading without `disabled`: unavailable, and still where focus is (see Button). */
+    const isBusy = $derived(loading && !disabled);
+
     function handleButtonClick(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
+        if (isBusy) {
+            // The press ends here: it does not submit, toggle or reach `onclick`.
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
         onclick?.(event);
         if (event.defaultPrevented || isDisabled) return;
         if (isFixedButton) return;
@@ -200,6 +218,7 @@
             chosen
                 ? `bg-chip-selected hover:bg-chip-selected-hover active:bg-chip-selected-active text-chip-selected-text font-semibold ${FORCED}`
                 : "bg-chip hover:bg-chip-hover active:bg-chip-active text-chip-text font-medium",
+            isBusy && "cursor-progress",
             className,
         ),
     );
@@ -311,9 +330,22 @@
         class={elementClasses}
         {disabled}
         aria-pressed={chosen}
+        aria-busy={isBusy ? "true" : undefined}
+        aria-disabled={isBusy ? "true" : undefined}
         {...restProps}
         onclick={handleButtonClick}
     >
-        {@render inner(chosen ? "" : "hidden")}
+        {#if isBusy}
+            <!-- The label stays in the chip, only unseen, so the width and the name do not change. -->
+            <span class="inline-flex min-w-0 items-center justify-center gap-[6px] opacity-0">
+                {@render inner(chosen ? "" : "hidden")}
+            </span>
+            <span
+                class="pointer-events-none absolute inline-block size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent motion-reduce:animate-pulse"
+                aria-hidden="true"
+            ></span>
+        {:else}
+            {@render inner(chosen ? "" : "hidden")}
+        {/if}
     </button>
 {/if}

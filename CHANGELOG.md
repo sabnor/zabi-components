@@ -14,6 +14,9 @@ Whenever token or CSS import API surface changes, include:
 
 ### Added
 
+- `Chip` takes `loading` on its button forms (`type="submit"`, `"button"` and the toggle):
+  `aria-busy` and `aria-disabled`, a spinner over the label, the press swallowed, the
+  width and the focus kept, as `Button`'s. A link and a `checkbox` / `radio` chip ignore it. (Z-091)
 - `Checkbox` and `Radio` take `error`, `variant`, `message` and `hint`, drawn under the
   label as on `Input`: an error is an alert, sets `aria-invalid` on a checkbox and is
   tied to the input with `aria-describedby` (after the hint). `Toggle` is unchanged. (Z-090)

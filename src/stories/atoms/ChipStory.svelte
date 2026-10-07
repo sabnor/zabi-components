@@ -5,7 +5,7 @@
 
     interface Props {
         /** Which arrangement to show. */
-        scenario?: 'forms' | 'states' | 'sizes' | 'leading' | 'disabled' | 'on-brand' | 'submit';
+        scenario?: 'forms' | 'states' | 'sizes' | 'leading' | 'disabled' | 'on-brand' | 'submit' | 'loading';
         size?: 'sm' | 'md' | 'lg';
     }
 
@@ -61,6 +61,12 @@
         <Chip type="submit" name="answer" value="going" selected {size}>Jag kommer</Chip>
         <Chip type="submit" name="answer" value="maybe" {size}>Kanske</Chip>
         <Chip type="submit" name="answer" value="no" {size}>Kan inte</Chip>
+    </form>
+{:else if scenario === 'loading'}
+    <form method="POST" onsubmit={(event) => event.preventDefault()} class="flex flex-wrap items-center gap-2">
+        <Chip type="submit" name="answer" value="going" selected loading {size}>Jag kommer</Chip>
+        <Chip type="submit" name="answer" value="maybe" {size}>Kanske</Chip>
+        <Chip type="button" loading {size}>Button</Chip>
     </form>
 {:else if scenario === 'disabled'}
     <div class="flex flex-wrap items-center gap-2">

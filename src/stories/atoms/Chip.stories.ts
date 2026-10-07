@@ -77,6 +77,17 @@ export const Submit: Story = {
     }
 };
 
+export const Loading: Story = {
+    args: { scenario: 'loading' },
+    parameters: {
+        docs: {
+            description: {
+                story: 'loading on a button chip: a spinner over the label, aria-busy and aria-disabled, the press swallowed. The chip keeps its width and stays a Tab stop, so focus is not lost while the answer is on its way.'
+            }
+        }
+    }
+};
+
 export const Disabled: Story = {
     args: { scenario: 'disabled' },
     parameters: {

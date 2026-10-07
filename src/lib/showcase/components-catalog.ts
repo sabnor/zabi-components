@@ -1030,6 +1030,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "A check icon before the label while selected. On for a checkbox and a toggle button, off for a link and a radio.",
                     },
                     {
+                        name: "loading",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "A button chip (submit, button or toggle) while its action is on its way: aria-busy and aria-disabled, a spinner over the label, the press swallowed, the width kept and focus kept. Ignored by a link and by checkbox and radio chips.",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,
