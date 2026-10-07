@@ -26,7 +26,7 @@
         variant?: ConfirmDialogVariant;
         confirmLabel?: string;
         cancelLabel?: string;
-        /** The cancel button's `Button` variant: `tonal` or `ghost` for an app that has no outline button. */
+        /** The `Button` variant of the cancel button: `tonal` or `ghost` for an app that has no outline button. */
         cancelVariant?: ButtonVariant;
         /**
          * The confirm button shows its loading state, cancel is disabled and
