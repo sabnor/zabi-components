@@ -2744,7 +2744,7 @@ body {
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
       .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
       .bg-energetic-subtle, .bg-error-subtle,
-      .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     ) {
     color: var(--zabi-theme-body);
@@ -2799,7 +2799,7 @@ body {
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
       .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
       .bg-energetic-subtle, .bg-error-subtle,
-      .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     )
     > :where(*) {
@@ -3047,6 +3047,22 @@ body {
 
 .text-action-tonal {
   color: var(--color-action-tonal-text);
+}
+
+/* Badge, neutral subtle: its fill and text, with a property of their own in front of the
+ * neutral tokens (`--zabi-badge-neutral-fill`, `--zabi-badge-neutral-text`), declared nowhere
+ * so any ancestor or the theme can set them. In `@layer utilities` like the generated
+ * `bg-neutral-subtle` and `text-neutral-text` they replace, so a colour block's restore of
+ * the text (unlayered) and a call-site utility behave as they did. The fill class is in the
+ * block lists above by name. `Alert`, `Skeleton`, `AvatarGroup` and `Header` keep reading the
+ * neutral tokens and do not move. */
+@layer utilities {
+  .bg-badge-neutral {
+    background-color: var(--zabi-badge-neutral-fill, var(--color-neutral-subtle));
+  }
+  .text-badge-neutral {
+    color: var(--zabi-badge-neutral-text, var(--color-neutral-text));
+  }
 }
 
 /* Chip: the quiet neutral fill and the tonal selected fill, each with its label.

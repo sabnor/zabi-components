@@ -80,6 +80,11 @@
      * A subtle badge has a transparent edge unless `bordered` is set, which
      * puts the family's `-border` step back (the 8.1 look). The class is
      * written out for each case so Tailwind can see it.
+     *
+     * The neutral subtle badge reads `--zabi-badge-neutral-fill` and
+     * `--zabi-badge-neutral-text` (src/app.css) in front of the neutral
+     * tokens: set on any ancestor or in the theme, they move this badge and
+     * no other reader of `--color-neutral-subtle` or `--color-neutral-text`.
      */
     const variantClass = $derived.by(() => {
         const solid = emphasis === "solid";
@@ -127,7 +132,7 @@
             default:
                 return solid
                     ? "bg-neutral text-card border-transparent"
-                    : `bg-neutral-subtle text-neutral-text ${edge("border-neutral-border")}`;
+                    : `bg-badge-neutral text-badge-neutral ${edge("border-neutral-border")}`;
         }
     });
 

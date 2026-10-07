@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { cleanup, render, screen } from "@testing-library/svelte";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -84,5 +85,47 @@ describe("Badge", () => {
         expect(classes("Medlem")).toEqual(expect.arrayContaining(["bg-action-primary-subtle", "text-(color:--color-link)"]));
         expect(classes("Solid")).toEqual(expect.arrayContaining(["bg-action-primary", "text-action-primary"]));
         expect(screen.getByText("Medlem").querySelector("svg")).not.toBeNull();
+    });
+});
+
+describe("Badge, neutral subtle: its own properties (Z-081)", () => {
+    const css = readFileSync("src/app.css", "utf8");
+
+    it.each(["neutral", "default"] as const)("%s subtle reads the badge classes, not the shared neutral ones", (variant) => {
+        render(Badge, { props: { text: "Bokat", variant } });
+        const own = classes("Bokat");
+        expect(own).toEqual(expect.arrayContaining(["bg-badge-neutral", "text-badge-neutral"]));
+        expect(own).not.toContain("bg-neutral-subtle");
+        expect(own).not.toContain("text-neutral-text");
+    });
+
+    it("the classes put the badge properties in front of the neutral tokens", () => {
+        expect(css).toMatch(/\.bg-badge-neutral \{\s*background-color: var\(--zabi-badge-neutral-fill, var\(--color-neutral-subtle\)\);/);
+        expect(css).toMatch(/\.text-badge-neutral \{\s*color: var\(--zabi-badge-neutral-text, var\(--color-neutral-text\)\);/);
+        // Declared nowhere, so any ancestor can set them.
+        expect(css).not.toMatch(/--zabi-badge-neutral-(fill|text)\s*:/);
+    });
+
+    it("both rules live in @layer utilities, so a colour block's restore and a call-site utility behave as before", () => {
+        const layer = css.match(/@layer utilities \{\s*\.bg-badge-neutral[\s\S]*?\n\}/)?.[0] ?? "";
+        expect(layer).toContain(".text-badge-neutral");
+    });
+
+    it("the fill class is in both colour-block lists beside bg-neutral-subtle", () => {
+        expect(css.match(/\.bg-neutral-subtle, \.bg-badge-neutral,/g)).toHaveLength(2);
+    });
+
+    it("every other variant and emphasis is as it was", () => {
+        render(Badge, { props: { text: "A", variant: "success" } });
+        render(Badge, { props: { text: "B", variant: "neutral", emphasis: "solid" } });
+        expect(classes("A")).toEqual(expect.arrayContaining(["bg-success-subtle", "text-success-text"]));
+        expect(classes("B")).toEqual(expect.arrayContaining(["bg-neutral", "text-card"]));
+        expect(classes("B")).not.toContain("bg-badge-neutral");
+    });
+
+    it("a call-site fill replaces the badge's", () => {
+        render(Badge, { props: { text: "C", class: "bg-card" } });
+        expect(classes("C")).toContain("bg-card");
+        expect(classes("C")).not.toContain("bg-badge-neutral");
     });
 });

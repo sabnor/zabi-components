@@ -10,7 +10,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Small status label in the semantic tones, plus neutral, energetic, the app\'s accent and the brand colour. A subtle badge has no outline unless `bordered`.'
+                    'Small status label in the semantic tones, plus neutral, energetic, the app\'s accent and the brand colour. A subtle badge has no outline unless `bordered`. The neutral subtle badge (`variant="neutral"` or `"default"`) reads `--zabi-badge-neutral-fill` and `--zabi-badge-neutral-text` in front of the neutral tokens: set them on any ancestor or in the theme to move that badge and nothing else.'
             }
         },
         layout: 'centered'
