@@ -12,6 +12,23 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.6] - 2026-10-07
+
+A sixth local preview build of the 9.0 direction, not published to npm; 8.1.0
+stays the stable version. New: the charts drawn in plain SVG (`LineChart`,
+`BarChart`, `PieChart`, `Sparkline`) and `SpeechBubble`. Extended: `Textarea`
+(`resize`, `autogrow`, `maxRows`), `ImageUpload` (`variant="button"`,
+`maxSize`), `ConfirmDialog` (`cancelVariant`). No token, prop, variant or
+export is removed or renamed. Four things change what an app shows without a
+change to its code, each with the line that restores the earlier look in its
+entry below: a dark form field is a well a step lighter than its surface; a
+dark flat `Card` is a translucent layer; a `Textarea` has no resize grip on a
+touch screen; `Input type="password"` has the show/hide button by default.
+Run on this build: the type and design checks, the unit suite, the theme
+tests, the package build and a scratch install. Not run: Playwright, an
+accessibility pass, any look in a browser at the changes since alpha.5 other
+than the charts.
+
 ### Added
 
 - `ImageUpload variant="button"` (Z-076; D183): only the trigger, for a photo that is one choice in a row of others. A `Button` that opens the file chooser (`buttonVariant`, default `secondary`; `buttonSize`, default `md`; its text is `label`, or `children`), with `accept`, `onclick`, `onbrowse`, `onchange`, `onfileselect`, `bind:value`, `disabled`, the error block and the polite announcement as in the dropzone; no drop area, no preview, no Change or Remove. The default `variant="dropzone"` is unchanged.
