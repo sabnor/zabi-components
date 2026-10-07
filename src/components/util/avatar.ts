@@ -3,11 +3,15 @@
 /** Diameter of the circle: 24, 32 and 48px. */
 export type AvatarSize = "sm" | "md" | "lg";
 
+import type { Snippet } from "svelte";
+
 /** One person in an `AvatarGroup`. */
 export interface AvatarPerson {
     name: string;
     /** Address of the picture. Without it, or when it fails to load, the initials show. */
     src?: string;
+    /** The picture drawn in the circle, instead of `src` and the initials: an inline SVG. See `Avatar` `children`. */
+    picture?: Snippet;
 }
 
 /** Every built-in string of `AvatarGroup`. Pass a partial object to `strings` to translate. */

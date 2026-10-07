@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
+import { createRawSnippet } from 'svelte';
 import AvatarGroup from '../../components/molecules/AvatarGroup.svelte';
 
 const people = [
@@ -54,4 +55,27 @@ export const SmallWithMax: Story = {
 
 export const Large: Story = {
     args: { people, size: 'lg', label: 'Members' }
+};
+
+export const WithDrawing: Story = {
+    args: {
+        people: [
+            {
+                name: 'Ada Lovelace',
+                picture: createRawSnippet(() => ({
+                    render: () =>
+                        '<svg viewBox="0 0 10 10" class="size-full" aria-hidden="true"><circle cx="5" cy="4" r="2" fill="var(--color-link)" /><path d="M1 10a4 4 0 0 1 8 0z" fill="var(--color-link)" /></svg>'
+                }))
+            },
+            { name: 'Grace Hopper' }
+        ],
+        label: "Who's going"
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A person with a picture snippet is drawn in place of the initials; the others keep theirs.'
+            }
+        }
+    }
 };

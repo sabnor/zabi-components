@@ -650,7 +650,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: true,
                         defaultValue: "[]",
                         description:
-                            "Array of ListItemData: id, label, optional description, href, icon, avatar, avatarAlt, disabled, link target / rel",
+                            "Array of ListItemData: id, label, optional description, href, icon, avatar, avatarAlt, avatarPicture (a snippet: an inline drawing in the round, wins over avatar), disabled, link target / rel",
                     },
                     {
                         name: "ariaLabel",
@@ -3761,6 +3761,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Accessible name, when it should differ from name. An empty alt makes the avatar decorative, for a name printed beside it.",
                     },
                     {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "The picture drawn inside the circle at the avatar's size, for an inline SVG that reads the page's tokens. Takes the place of src and the initials; presentational, the name is still name.",
+                    },
+                    {
                         name: "locale",
                         type: "string",
                         required: false,
@@ -3784,6 +3791,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         code: `<Avatar name="Ada Lovelace" size="sm" />
 <Avatar name="Ada Lovelace" size="md" />
 <Avatar name="Ada Lovelace" size="lg" />`,
+                    },
+                    {
+                        title: "An inline drawing",
+                        description:
+                            "An SVG as children fills the circle in place of the initials",
+                        code: `<Avatar name="Ada Lovelace">
+    <svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="var(--color-link)" /></svg>
+</Avatar>`,
                     },
                     {
                         title: "Fallbacks and a decorative avatar",
@@ -8019,10 +8034,10 @@ pushToast({
                 props: [
                     {
                         name: "people",
-                        type: "{ name: string; src?: string }[]",
+                        type: "{ name: string; src?: string; picture?: Snippet }[]",
                         required: true,
                         description:
-                            "The people, in the order they are shown.",
+                            "The people, in the order they are shown. A person's picture is an inline drawing in place of src and the initials.",
                     },
                     {
                         name: "max",

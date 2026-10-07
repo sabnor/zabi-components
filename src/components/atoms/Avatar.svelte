@@ -1,6 +1,6 @@
 <script lang="ts">
     import User from "@lucide/svelte/icons/user";
-    import { untrack } from "svelte";
+    import { untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import { initialsOf, type AvatarSize } from "../util/avatar.js";
     import { cn } from "../util/cn.js";
@@ -11,6 +11,10 @@
      * It is one image with one name, the person's: the picture, the initials
      * and the icon inside are presentational. Not interactive: put it in a
      * link or a button of your own.
+     *
+     * A picture that is not an address (an inline drawing that reads the
+     * page's tokens) goes in as children and fills the circle in place of the
+     * initials and `src`.
      *
      * Other attributes (`id`, `data-*`, ...) land on the root element.
      */
@@ -32,6 +36,13 @@
          * read: pass it where that matters.
          */
         locale?: string;
+        /**
+         * The picture, drawn inside the circle at the avatar's size: an inline
+         * SVG, say. It takes the place of `src` and the initials, is
+         * presentational (the name is still `name`), and is clipped to the
+         * circle.
+         */
+        children?: Snippet;
         /** Extra classes for the root element. */
         class?: string;
     };
@@ -42,6 +53,7 @@
         size = "md",
         alt,
         locale,
+        children,
         class: className = "",
         ...restProps
     }: Props = $props();
@@ -86,12 +98,16 @@ the fill is gone and a transparent border is drawn. -->
 >
     <!-- Under the picture from the start, in the server's markup too: nothing
     moves when the picture arrives, or when it does not. -->
-    {#if initials}
+    {#if children}
+        <span class="absolute inset-0 flex items-center justify-center" aria-hidden="true" data-avatar-picture>
+            {@render children()}
+        </span>
+    {:else if initials}
         <span aria-hidden="true" data-avatar-initials>{initials}</span>
     {:else}
         <User class="size-[60%]" aria-hidden="true" />
     {/if}
-    {#if src && !failed}
+    {#if !children && src && !failed}
         <img
             {src}
             alt=""

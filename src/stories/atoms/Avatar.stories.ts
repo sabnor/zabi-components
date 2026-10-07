@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
+import { createRawSnippet } from 'svelte';
 import Avatar from '../../components/atoms/Avatar.svelte';
 
 const meta = {
@@ -51,4 +52,21 @@ export const Small: Story = {
 
 export const Large: Story = {
     args: { name: 'Grace Hopper', size: 'lg' }
+};
+
+export const InlineDrawing: Story = {
+    args: {
+        name: 'Ada Lovelace',
+        children: createRawSnippet(() => ({
+            render: () =>
+                '<svg viewBox="0 0 10 10" class="size-full" aria-hidden="true"><circle cx="5" cy="4" r="2" fill="var(--color-link)" /><path d="M1 10a4 4 0 0 1 8 0z" fill="var(--color-link)" /></svg>'
+        }))
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'children fills the circle in place of the initials and src: an inline SVG, so its fills can read the page tokens, which an <img> cannot. The name is still the accessible name.'
+            }
+        }
+    }
 };

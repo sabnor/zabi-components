@@ -1,7 +1,9 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/svelte";
+import { createRawSnippet } from "svelte";
 import { afterEach, describe, expect, it } from "vitest";
 
 import Avatar from "../src/components/atoms/Avatar.svelte";
+import ListItem from "../src/components/atoms/ListItem.svelte";
 import AvatarGroup from "../src/components/molecules/AvatarGroup.svelte";
 import { initialsOf, splitGroup } from "../src/components/util/avatar";
 
@@ -184,5 +186,47 @@ describe("AvatarGroup", () => {
     it("has nothing to press", () => {
         render(AvatarGroup, { props: { people } });
         expect(document.querySelectorAll("button, a, [tabindex]")).toHaveLength(0);
+    });
+});
+
+describe("a picture that is not an address (Z-087)", () => {
+    const drawing = createRawSnippet(() => ({
+        render: () => '<svg data-drawing viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="var(--qr-ill-skin, #c96)" /></svg>',
+    }));
+
+    it("draws the children in the circle in place of the initials, named by the person", () => {
+        render(Avatar, { props: { name: "Ada Lovelace", children: drawing } });
+        const avatar = screen.getByRole("img", { name: "Ada Lovelace" });
+        expect(avatar.querySelector("[data-drawing]")).not.toBeNull();
+        expect(avatar.querySelector("[data-avatar-picture]")!.getAttribute("aria-hidden")).toBe("true");
+        expect(avatar.querySelector("[data-avatar-initials]")).toBeNull();
+        expect(avatar.textContent?.trim()).toBe("");
+    });
+
+    it("wins over src: no <img> is rendered", () => {
+        render(Avatar, { props: { name: "Ada Lovelace", src: "/a.jpg", children: drawing } });
+        expect(screen.getByRole("img", { name: "Ada Lovelace" }).querySelector("img")).toBeNull();
+    });
+
+    it("keeps the same size classes as a photo avatar", () => {
+        render(Avatar, { props: { name: "Ada Lovelace", size: "lg", children: drawing } });
+        expect(screen.getByRole("img", { name: "Ada Lovelace" }).className).toContain("size-[48px]");
+    });
+
+    it("an AvatarGroup person with a picture draws it; the others keep their initials", () => {
+        render(AvatarGroup, { props: { people: [{ name: "Ada Lovelace", picture: drawing }, { name: "Grace Hopper" }], label: "Going" } });
+        const ada = screen.getByRole("img", { name: "Ada Lovelace" });
+        const grace = screen.getByRole("img", { name: "Grace Hopper" });
+        expect(ada.querySelector("[data-drawing]")).not.toBeNull();
+        expect(grace.querySelector("[data-avatar-initials]")!.textContent).toBe("GH");
+    });
+
+    it("a list row's avatarPicture sits in the round, decorative unless avatarAlt names it", () => {
+        const { container } = render(ListItem, { props: { item: { id: "1", label: "Pub", avatarPicture: drawing } } });
+        expect(container.querySelector("[data-drawing]")).not.toBeNull();
+        expect(container.querySelector("[data-drawing]")!.parentElement!.getAttribute("aria-hidden")).toBe("true");
+        cleanup();
+        render(ListItem, { props: { item: { id: "2", label: "Pub", avatarPicture: drawing, avatarAlt: "Pub sign" } } });
+        expect(screen.getByRole("img", { name: "Pub sign" })).toBeTruthy();
     });
 });

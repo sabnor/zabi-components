@@ -13,6 +13,12 @@
         avatar?: string;
         /** `avatar` alt text; `""` if decorative. */
         avatarAlt?: string;
+        /**
+         * Leading picture drawn in the round, in place of an address: an
+         * inline SVG. Wins over `avatar` and `icon`. Decorative unless
+         * `avatarAlt` is set, which then names it.
+         */
+        avatarPicture?: Snippet;
         target?: "_self" | "_blank" | "_parent" | "_top";
         rel?: string;
         disabled?: boolean;
@@ -101,7 +107,18 @@
 </script>
 
 {#snippet rowContent()}
-    {#if item.avatar}
+    {#if item.avatarPicture}
+        <ListItemLeading class="rounded-full">
+            <span
+                class="flex size-full items-center justify-center"
+                role={item.avatarAlt ? "img" : undefined}
+                aria-label={item.avatarAlt || undefined}
+                aria-hidden={item.avatarAlt ? undefined : "true"}
+            >
+                {@render item.avatarPicture()}
+            </span>
+        </ListItemLeading>
+    {:else if item.avatar}
         <ListItemLeading class="rounded-full">
             <img
                 src={item.avatar}

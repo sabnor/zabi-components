@@ -1139,6 +1139,8 @@ export interface AvatarProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'clas
     alt?: string;
     /** Language the initials are upper-cased in. The page's own by default. */
     locale?: string;
+    /** The picture drawn inside the circle (an inline SVG), in place of `src` and the initials. */
+    children?: Snippet;
     class?: string;
 }
 
