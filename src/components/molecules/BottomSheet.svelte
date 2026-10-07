@@ -208,6 +208,14 @@
     let dragging = $state(false);
     let dragHeight = $state<number | null>(null);
     let dragOffset = $state(0);
+    /**
+     * False from opening until the slide-in has ended. The panel's height
+     * transition is for snapping and settling a drag; while the sheet arrives
+     * a late change of height (the overlay shrinking over a keyboard, a snap
+     * set as it opens) would ride the spring and move the content after the
+     * eye has landed on it. Until then the height is applied at once.
+     */
+    let arrived = $state(false);
 
     function close(reason: BottomSheetCloseReason) {
         if (!dismissible) return;
@@ -219,9 +227,12 @@
         onclose?.({ reason });
     }
 
-    /** Slides the panel up from the bottom edge. Skipped where motion is unwanted or unsupported. */
-    function slideIn(container: HTMLElement) {
-        if (typeof container.animate !== "function" || prefersReducedMotion()) return;
+    /**
+     * Slides the panel up from the bottom edge. Skipped where motion is unwanted or unsupported.
+     * Returns how long the slide takes in ms: 0 when there is none.
+     */
+    function slideIn(container: HTMLElement): number {
+        if (typeof container.animate !== "function" || prefersReducedMotion()) return 0;
         // Arriving gets the spring, read from the element so a theme that
         // overrides the tokens is followed. Where the tokens cannot be read
         // (no stylesheet) or the engine rejects the easing, plain ease-out.
@@ -234,6 +245,7 @@
         } catch {
             container.animate(frames, { duration, easing: "ease-out" });
         }
+        return duration;
     }
 
     /** `300ms`, `0.3s` or `0s` to milliseconds; the fallback when it is not a time. */
@@ -297,7 +309,8 @@
             const unlockScroll = lockBodyScroll();
             const overlay = joinOverlayStack(container);
             depth = overlay.depth;
-            slideIn(container);
+            arrived = false;
+            const arrival = setTimeout(() => (arrived = true), slideIn(container));
             const t = setTimeout(() => {
                 // Something inside has taken focus already (a field that
                 // focuses itself as it mounts): leave it there. `initialFocus`
@@ -314,6 +327,8 @@
             });
             return () => {
                 clearTimeout(t);
+                clearTimeout(arrival);
+                arrived = false;
                 stopRecovery();
                 overlay.leave();
                 unlockScroll();
@@ -469,7 +484,7 @@ a background is dropped there, and the grip would be gone. -->
             )}
             style:height={dragHeight !== null ? `${dragHeight}px` : snapHeight}
             style:transform={dragOffset > 0 ? `translateY(${dragOffset}px)` : undefined}
-            style:transition={dragging ? "none" : undefined}
+            style:transition={dragging || !arrived ? "none" : undefined}
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}

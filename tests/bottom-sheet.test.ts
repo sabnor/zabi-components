@@ -239,6 +239,15 @@ describe("BottomSheet motion", () => {
         await openSheet();
         expect(animate).not.toHaveBeenCalled();
     });
+
+    it("has no height transition until the slide-in has ended (Z-079)", async () => {
+        stubAnimate();
+        await openSheet();
+        // The slide is on: a change of height now is applied at once, not sprung.
+        expect(sheet().style.transition).toBe("none");
+        await new Promise((resolve) => setTimeout(resolve, 320));
+        expect(sheet().style.transition).toBe("");
+    });
 });
 
 describe("BottomSheet snap points", () => {

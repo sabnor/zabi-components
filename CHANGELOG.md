@@ -42,6 +42,8 @@ Whenever token or CSS import API surface changes, include:
 
 ### Fixed
 
+- `BottomSheet`: the panel's height no longer transitions while the sheet slides in (Z-079). The height transition is for snapping and for settling a drag; during the slide-in a late change of height rode the spring and moved the content after it had arrived. It is switched on when the slide has ended (at once under reduced motion). The slide itself and the snaps keep the spring.
+
 - `Input type="search"` with a clear button of its own in `trailing` no longer also shows the browser's clear cross in Chrome and Safari. A search field without `trailing` keeps the browser's.
 
 ## [9.0.0-alpha.5] - 2026-10-07
