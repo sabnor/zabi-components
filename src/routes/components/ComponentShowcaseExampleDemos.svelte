@@ -23,6 +23,7 @@
     import FeatureCard from "../../components/atoms/FeatureCard.svelte";
     import OptimizedImage from "../../components/atoms/OptimizedImage.svelte";
     import Skeleton from "../../components/atoms/Skeleton.svelte";
+    import SkeletonGroup from "../../components/atoms/SkeletonGroup.svelte";
     import Toast from "../../components/atoms/Toast.svelte";
     import Toaster from "../../components/molecules/Toaster.svelte";
     import { pushToast } from "../../components/molecules/toast-store.js";
@@ -1511,6 +1512,11 @@
                             <Skeleton variant="text" width="85%" />
                         </div>
                     </article>
+                {:else if exampleIndex === 6}
+                    <SkeletonGroup class="flex w-full items-center gap-3">
+                        <Skeleton variant="circle" />
+                        <Skeleton width="60%" class="flex-1" />
+                    </SkeletonGroup>
                 {/if}
             {:else if component.name === "Toast"}
                 {#if exampleIndex === 0}

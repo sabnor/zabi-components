@@ -49,6 +49,7 @@ import type {
 import type { AvatarGroupStrings, AvatarPerson, AvatarSize } from '../components/util/avatar.js';
 import type { ChartColor, ChartDatum, ChartFormat, ChartSeries } from '../components/util/chart.js';
 import type { ProgressStrings } from '../components/util/progress.js';
+import type { SkeletonStrings } from '../components/util/skeleton.js';
 import type { RatingStrings } from '../components/util/rating.js';
 import type {
     StepperItem,
@@ -662,6 +663,18 @@ export interface SkeletonProps {
     height?: string | number;
     class?: string;
     'aria-label'?: string;
+    /** Overrides for the built-in strings. */
+    strings?: Partial<SkeletonStrings>;
+    /** No role, no label, hidden from assistive tech. */
+    decorative?: boolean;
+}
+
+// SkeletonGroup component props: one status for the pieces inside it
+export interface SkeletonGroupProps {
+    'aria-label'?: string;
+    strings?: Partial<SkeletonStrings>;
+    class?: string;
+    children?: Snippet;
 }
 
 // Toggle component props and events
@@ -1288,6 +1301,7 @@ export type Chip = ZabiComponent<ChipProps>;
 export type ChipGroup = ZabiComponent<ChipGroupProps>;
 export type Progress = ZabiComponent<ProgressProps>;
 export type Skeleton = ZabiComponent<SkeletonProps>;
+export type SkeletonGroup = ZabiComponent<SkeletonGroupProps>;
 export type Toggle = ZabiComponent<ToggleProps, ToggleEvents>;
 export type Tooltip = ZabiComponent<TooltipProps>;
 export type BottomTabBar = ZabiComponent<BottomTabBarProps>;

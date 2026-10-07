@@ -12,6 +12,15 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- `SkeletonGroup`: one `role="status"` with the loading label for the `Skeleton` pieces
+  inside it, which are hidden from assistive tech, so a screen of eight pieces is announced
+  once. `Skeleton` takes `decorative` (no role, no label, `aria-hidden`) for a piece beside
+  a status of your own, and `strings` (`label`); the label reads the provider's
+  `skeleton.label` before the English "Loading…", and `aria-label` still wins. A lone
+  `Skeleton` is unchanged. (Z-094)
+
 ## [9.0.0-alpha.12] - 2026-10-07
 
 A twelfth local preview build of the 9.0 direction, not published to npm. Five

@@ -23,6 +23,7 @@
     import PickerField from "../components/atoms/PickerField.svelte";
     import Select from "../components/atoms/Select.svelte";
     import Skeleton from "../components/atoms/Skeleton.svelte";
+    import SkeletonGroup from "../components/atoms/SkeletonGroup.svelte";
     import Textarea from "../components/atoms/Textarea.svelte";
     import Toggle from "../components/atoms/Toggle.svelte";
     import Tooltip from "../components/atoms/Tooltip.svelte";
@@ -66,6 +67,7 @@
         SegmentedControlProps,
         PickerFieldProps,
         SelectProps,
+        SkeletonGroupProps,
         SkeletonProps,
         TextareaProps,
         ToggleProps,
@@ -111,6 +113,7 @@
         pickerField?: PickerFieldProps;
         select?: SelectProps;
         skeleton?: SkeletonProps;
+        skeletonGroup?: SkeletonGroupProps;
         textarea?: TextareaProps;
         toggle?: ToggleProps;
         tooltip?: TooltipProps;
@@ -154,6 +157,7 @@
         pickerField = {},
         select = {},
         skeleton = {},
+        skeletonGroup = {},
         textarea = {},
         toggle = {},
         tooltip = {},
@@ -197,6 +201,7 @@
 <PickerField {...pickerField} />
 <Select {...select} />
 <Skeleton {...skeleton} />
+<SkeletonGroup {...skeletonGroup} />
 <Textarea {...textarea} />
 <Toggle {...toggle} />
 <Tooltip {...tooltip} />

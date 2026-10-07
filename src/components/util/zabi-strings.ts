@@ -38,6 +38,7 @@ import type {
     PropsTableStrings,
 } from "./ready-made-strings.js";
 import type { SelectStrings } from "./select.js";
+import type { SkeletonStrings } from "./skeleton.js";
 import type {
     SidebarAccountPanelStrings,
     SidebarBrandHeaderStrings,
@@ -171,6 +172,7 @@ export interface ZabiStrings {
     pullToRefresh?: Partial<PullToRefreshStrings>;
     rating?: Partial<RatingStrings>;
     select?: Partial<SelectStrings>;
+    skeleton?: Partial<SkeletonStrings>;
     sidebarAccountPanel?: Partial<SidebarAccountPanelStrings>;
     sidebarBrandHeader?: Partial<SidebarBrandHeaderStrings>;
     sidebarFooter?: Partial<SidebarFooterStrings>;

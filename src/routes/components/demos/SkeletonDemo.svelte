@@ -1,5 +1,6 @@
 <script lang="ts">
     import Skeleton from "../../../components/atoms/Skeleton.svelte";
+    import SkeletonGroup from "../../../components/atoms/SkeletonGroup.svelte";
     import type { DemoRendererProps } from "./types";
 
     let { exampleIndex }: DemoRendererProps = $props();
@@ -40,6 +41,11 @@
             <Skeleton width="85%" />
         </div>
     </article>
+{:else if exampleIndex === 6}
+    <SkeletonGroup class="flex w-full items-center gap-3">
+        <Skeleton variant="circle" />
+        <Skeleton width="60%" class="flex-1" />
+    </SkeletonGroup>
 {:else}
     <div class="w-full">
         <Skeleton />

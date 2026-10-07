@@ -2310,7 +2310,22 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "'Loading…'",
                         description:
-                            "Label announced by assistive tech. Keep the default for generic loading, or set to something more specific (e.g. 'Loading profile') when the skeleton stands in for a named region.",
+                            "Label announced by assistive tech. Defaults to the strings provider's skeleton.label, then 'Loading…'. Set something more specific (e.g. 'Loading profile') when the skeleton stands in for a named region.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<SkeletonStrings>",
+                        required: false,
+                        defaultValue: "{}",
+                        description: "Overrides for the built-in strings: label.",
+                    },
+                    {
+                        name: "decorative",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the piece only: no role, no label, aria-hidden. For a piece beside a status of your own; a piece inside a SkeletonGroup is decorative already.",
                     },
                 ],
                 variants: ["text", "circle", "block"],
@@ -2350,6 +2365,49 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Media block above a title and description — a drop-in placeholder for feed cards, blog previews, and product tiles.",
                         code: '&lt;article class="space-y-3"&gt;\n  &lt;Skeleton variant="block" /&gt;\n  &lt;Skeleton variant="text" width="70%" height={16} /&gt;\n  &lt;div class="space-y-2"&gt;\n    &lt;Skeleton variant="text" /&gt;\n    &lt;Skeleton variant="text" width="85%" /&gt;\n  &lt;/div&gt;\n&lt;/article&gt;',
+                    },
+                    {
+                        title: "One status for a screen",
+                        description:
+                            "SkeletonGroup is the one loading status; the pieces inside it are hidden from assistive tech.",
+                        code: '&lt;SkeletonGroup&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;Skeleton /&gt;\n&lt;/SkeletonGroup&gt;',
+                    },
+                ],
+            },
+            {
+                name: "SkeletonGroup",
+                category: "atoms",
+                description:
+                    "One loading status for the Skeleton pieces inside it: a single role=status with the label, its pieces hidden from assistive tech.",
+                props: [
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "'Loading…'",
+                        description:
+                            "Label announced for the whole group. Defaults to the strings provider's skeleton.label, then 'Loading…'.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<SkeletonStrings>",
+                        required: false,
+                        defaultValue: "{}",
+                        description: "Overrides for the built-in strings: label.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: "''",
+                        description: "Extra classes on the group's element.",
+                    },
+                ],
+                examples: [
+                    {
+                        title: "A screen's placeholders",
+                        description: "Three pieces, announced once.",
+                        code: '&lt;SkeletonGroup aria-label="Loading profile"&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;Skeleton /&gt;\n&lt;/SkeletonGroup&gt;',
                     },
                 ],
             },

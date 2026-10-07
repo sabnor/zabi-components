@@ -1,7 +1,8 @@
 // Comprehensive component type definitions for zabi-components
 // This file provides proper TypeScript support for all components
 
-import type { SvelteComponent } from 'svelte';
+import type { Snippet, SvelteComponent } from 'svelte';
+import type { SkeletonStrings } from '../components/util/skeleton.js';
 
 // Enhanced component type with proper event handling
 export type ZabiComponent<T = any, E = Record<string, any>> = new (...args: any[]) => {
@@ -149,6 +150,18 @@ export interface SkeletonProps {
     height?: string | number;
     class?: string;
     'aria-label'?: string;
+    /** Overrides for the built-in strings. */
+    strings?: Partial<SkeletonStrings>;
+    /** No role, no label, hidden from assistive tech. */
+    decorative?: boolean;
+}
+
+// SkeletonGroup component props: one status for the pieces inside it
+export interface SkeletonGroupProps {
+    'aria-label'?: string;
+    strings?: Partial<SkeletonStrings>;
+    class?: string;
+    children?: Snippet;
 }
 
 // Toggle component props and events
@@ -200,5 +213,6 @@ export type Alert = ZabiComponent<AlertProps>;
 export type Badge = ZabiComponent<BadgeProps>;
 export type Progress = ZabiComponent<ProgressProps>;
 export type Skeleton = ZabiComponent<SkeletonProps>;
+export type SkeletonGroup = ZabiComponent<SkeletonGroupProps>;
 export type Toggle = ZabiComponent<ToggleProps, ToggleEvents>;
 export type Tooltip = ZabiComponent<TooltipProps>;
