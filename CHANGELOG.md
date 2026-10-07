@@ -12,6 +12,16 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.7] - 2026-10-07
+
+A seventh local preview build of the 9.0 direction, not published to npm. One
+addition on top of alpha.6; no token, prop, variant or export is removed or
+renamed, and with the new properties unset every `Badge` renders as before.
+
+### Added
+
+- `Badge` neutral subtle fill and text (Z-081; D184): `--zabi-badge-neutral-fill` and `--zabi-badge-neutral-text`, declared nowhere and read in front of `--color-neutral-subtle` and `--color-neutral-text`. Set on any ancestor or in the theme, in light and dark, they move the neutral subtle `Badge` (`variant="neutral"` or `"default"`) and nothing else: `Alert variant="neutral"`, `Skeleton`, `AvatarGroup`, `Header` and the other badge variants keep reading the neutral tokens. New classes `bg-badge-neutral` and `text-badge-neutral` (`@layer utilities`), the first listed beside `bg-neutral-subtle` in the colour-block rules, so a badge in `on-brand`, `on-accent`, `on-fill` and `Card tone` is restored as before. Theme output gains only those lines.
+
 ## [9.0.0-alpha.6] - 2026-10-07
 
 A sixth local preview build of the 9.0 direction, not published to npm; 8.1.0
