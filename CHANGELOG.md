@@ -12,6 +12,23 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.9] - 2026-10-07
+
+A ninth local preview build of the 9.0 direction, not published to npm. Two
+additions for the app team's request Z-086; no token, prop, variant or export
+of alpha.8 is removed or renamed, and nothing an app shows changes without a
+change to its code. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install. Not run: Playwright or any
+look in a browser.
+
+### Added
+
+- `RadioGroup` `chosenRing` (default `true`). `chosenRing={false}` leaves the
+  filled radio to show the chosen row: the row's own ring is gone, and keyboard
+  focus keeps its ring.
+- `Radio` `description`: a line under the label, tied to the radio with
+  `aria-describedby`; the label alone names the radio.
+
 ## [9.0.0-alpha.8] - 2026-10-07
 
 An eighth local preview build of the 9.0 direction, not published to npm. Four
