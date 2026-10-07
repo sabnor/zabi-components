@@ -12,6 +12,28 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.8] - 2026-10-07
+
+An eighth local preview build of the 9.0 direction, not published to npm. Four
+additions for the app team's requests Z-082 to Z-085; no token, prop, variant
+or export of alpha.7 is removed or renamed. One default changes what an app
+shows without a change to its code: a `Select` in a sheet with up to six
+options and no search field gets a sheet as tall as its list; `sheetFit={false}`
+restores the half-height sheet. Run on this build: the type and design checks,
+the unit suite, the package build and a scratch install. Not run: Playwright or
+any look in a browser.
+
+### Added
+
+- `Chip type="submit"` (Z-082; D185): a button chip that posts its form with `name` and `value`, and does not toggle; `selected` is the app's and is drawn as on a toggle and said with `aria-pressed`. `type="button"` is the same without the submit. Without a `type` a chip is the toggle button it was.
+- `Select` options take `lang` (Z-083; D186): set on the option's row, on the trigger's text while it is chosen and on the native `<option>`.
+- `Select sheetFit`, `Dropdown sheetFit` and `BottomSheet fit` (Z-084; D187): a sheet as tall as its content, up to half the screen, with one resting height.
+- `Card type="submit" | "button" | "reset"` with `name`, `value`, `form` and `disabled` (Z-085; D188): the whole card is one `<button>`, drawn and pressed as a link card is, with the 44px minimum. With `href` it is still a link.
+
+### Changed
+
+- A `Select` shown in a sheet, with up to six options and `searchable={false}`, now gets a sheet as tall as its list instead of half the screen (Z-084; D187). Restore the half sheet with `sheetFit={false}`.
+
 ## [9.0.0-alpha.7] - 2026-10-07
 
 A seventh local preview build of the 9.0 direction, not published to npm. One
