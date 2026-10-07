@@ -12,6 +12,26 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.10] - 2026-10-07
+
+A tenth local preview build of the 9.0 direction, not published to npm. One
+addition for the app team's request Z-087; no token, prop, variant or export of
+alpha.9 is removed or renamed, and nothing an app shows changes without a
+change to its code. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install. Not run: Playwright or any
+look in a browser.
+
+### Added
+
+- `Avatar` `children`: a snippet drawn inside the circle in place of `src` and
+  the initials, for an inline SVG that reads the page's tokens. It is
+  presentational; `name` stays the accessible name, and the circle keeps its
+  size.
+- `AvatarGroup` people take `picture?: Snippet`, the same for one person.
+- A list row's `avatarPicture?: Snippet` (`ListItemData`): the same in the
+  row's round; wins over `avatar` and `icon`; decorative unless `avatarAlt`
+  names it.
+
 ## [9.0.0-alpha.9] - 2026-10-07
 
 A ninth local preview build of the 9.0 direction, not published to npm. Two
