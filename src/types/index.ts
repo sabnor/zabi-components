@@ -291,7 +291,7 @@ export interface SelectProps
     > {
     /** Id of the trigger. Omit to auto-generate. */
     id?: string;
-    options?: Array<{ value: string | number; label: string; disabled?: boolean }>;
+    options?: Array<{ value: string | number; label: string; disabled?: boolean; lang?: string }>;
     value?: string | number | undefined;
     searchable?: boolean;
     searchPlaceholder?: string;

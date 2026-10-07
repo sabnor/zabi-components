@@ -1242,7 +1242,8 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "array",
                         required: true,
                         defaultValue: "[]",
-                        description: "Select options",
+                        description:
+                            "Select options: { value, label, disabled?, lang? }. lang is the label's language (BCP 47, \"en\") when it is not the page's, set on the option's row, on the trigger's text while it is chosen and on the native <option>.",
                     },
                     {
                         name: "value",

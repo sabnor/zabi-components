@@ -55,6 +55,12 @@
             value: string | number;
             label: string;
             disabled?: boolean;
+            /**
+             * The language of the label, as a BCP 47 tag (`"en"`), when it is
+             * not the page's (WCAG 3.1.2). Set on the option's row, on the
+             * trigger's text while it is chosen, and on the native `<option>`.
+             */
+            lang?: string;
         }>;
         searchable?: boolean;
         /**
@@ -482,6 +488,7 @@
             <option
                 value={String(option.value)}
                 disabled={option.disabled}
+                lang={option.lang}
                 selected={isSameValue(value, option.value)}
             >
                 {option.label}
@@ -549,6 +556,7 @@
                 control to read the rest. The chevron stays in the middle of
                 the box, however many lines there are. -->
                 <span
+                    lang={isLoading || isEmpty() ? undefined : selectedOption?.lang}
                     class="min-w-0 flex-1 text-start [overflow-wrap:anywhere] {disabled
                         ? ''
                         : isLoading
@@ -628,6 +636,7 @@
                                           ? 'border-transparent bg-transparent text-body'
                                           : 'border-transparent bg-transparent text-body hover:bg-surface-overlay-hover active:bg-surface-active'}"
                                     aria-disabled={option.disabled ? "true" : undefined}
+                                    lang={option.lang}
                                     {...buttonRestProps}
                                     onclick={() =>
                                         handleOptionClick(option.value)}
