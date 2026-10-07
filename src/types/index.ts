@@ -273,6 +273,13 @@ export interface CheckboxProps
      * leading image should have an empty alt: the label names the row.
      */
     leading?: Snippet;
+    variant?: SemanticVariant;
+    /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
+    message?: string;
+    /** Help text under the control, read out with it. */
+    hint?: string;
+    /** An error under the control: an alert, tied to the input; a checkbox also gets `aria-invalid`. It wins over `variant` and `message`. */
+    error?: string;
     onchange?: (event: Event) => void;
     /** Same as `onchange`; both are called. */
     onChange?: (event: Event) => void;
@@ -597,6 +604,8 @@ export interface ChipProps
     leading?: Snippet;
     /** A check icon before the label while selected. On for a checkbox and a toggle button, off for a link and a radio. */
     checkmark?: boolean;
+    /** A button chip (`submit`, `button` or the toggle) while its action is on its way: `aria-busy` and `aria-disabled`, a spinner, the press swallowed, width and focus kept. Ignored by a link and by `checkbox` / `radio`. */
+    loading?: boolean;
     /** Called with the new `selected` when a person changes it. */
     onchange?: (selected: boolean) => void;
     class?: string;
