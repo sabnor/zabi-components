@@ -39,3 +39,19 @@ export const WithLeading: StoryObj<typeof SelectionLeadingStory> = {
         }
     }
 };
+
+export const WithDescription: Story = {
+    args: {
+        name: 'appearance',
+        value: 'system',
+        label: 'Follow system',
+        description: 'Uses the setting of the device'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A line under the label. It is tied to the radio with aria-describedby and is not part of its name.'
+            }
+        }
+    }
+};

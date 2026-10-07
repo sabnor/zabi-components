@@ -27,6 +27,11 @@
          * should have an empty alt: the label names the row.
          */
         leading?: Snippet;
+        /**
+         * A line under the label, tied to the radio with `aria-describedby`.
+         * The label names the radio; the description does not join the name.
+         */
+        description?: string;
     };
 
     let {
@@ -41,6 +46,7 @@
         onChange,
         onchange,
         leading,
+        description,
         ...restProps
     }: Props = $props();
 
@@ -74,6 +80,7 @@
     {onchange}
     {mark}
     {leading}
+    {description}
     class={className}
     {...restProps}
 />

@@ -1213,6 +1213,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Drawn inside the one label, between the dot and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
                     },
                     {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "A line under the label, tied to the radio with aria-describedby. The label names the radio; the description does not join the name.",
+                    },
+                    {
                         name: "checked",
                         type: "boolean",
                         required: false,
@@ -5090,6 +5098,14 @@ pushToast({
                         required: false,
                         defaultValue: '""',
                         description: "Accessible group label",
+                    },
+                    {
+                        name: "chosenRing",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Draw a ring round the chosen row. false leaves the filled radio to show the choice; keyboard focus keeps its ring either way.",
                     },
                 ],
                 variants: [],

@@ -2927,6 +2927,11 @@ body {
       0 0 0 2px var(--color-focus-ring-offset),
       0 0 0 4px var(--color-focus-ring);
   }
+
+  /** `chosenRing={false}` on RadioGroup: the chosen row has no ring of its own; keyboard focus keeps its ring. */
+  .selection-control-option-row-quiet:has(:checked):not(:has(:focus-visible)) {
+    box-shadow: none;
+  }
 }
 
 /* ========================================

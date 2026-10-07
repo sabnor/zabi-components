@@ -41,6 +41,11 @@
         disabled?: boolean;
         legend?: string;
         label?: string;
+        /**
+         * Draw a ring round the chosen row. Off, the filled radio alone shows
+         * the choice; keyboard focus keeps its ring either way.
+         */
+        chosenRing?: boolean;
     };
 
     let {
@@ -52,6 +57,7 @@
         disabled = false,
         legend = "",
         label = "",
+        chosenRing = true,
         ...restProps
     }: Props = $props();
 
@@ -207,7 +213,7 @@
     <div class="space-y-3">
         {#each options as option (option.value)}
             {@const optionDisabled = isOptionDisabled(option)}
-            <label class={optionLabelWrapperClasses}>
+            <label class={cn(optionLabelWrapperClasses, !chosenRing && "selection-control-option-row-quiet")}>
                 <span class={radioControlShellClasses}>
                     <input
                         type="radio"

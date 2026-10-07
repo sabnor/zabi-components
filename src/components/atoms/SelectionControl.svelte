@@ -45,6 +45,11 @@
          * should have an empty alt: the label names the row.
          */
         leading?: Snippet;
+        /**
+         * A line under the label, tied to the input with `aria-describedby`.
+         * It is not part of the name: the label names the control.
+         */
+        description?: string;
     };
 
     let {
@@ -63,6 +68,7 @@
         onchange,
         mark,
         leading,
+        description,
         ...restProps
     }: Props = $props();
 
@@ -82,9 +88,21 @@
     const controlId = $derived(idProp ?? fallbackId);
     const isDisabled = $derived(disabled || loading);
 
-    const labelWrapperClasses = SELECTION_CONTROL_LABEL_ROW;
+    const descriptionId = $derived(`${controlId}-description`);
+    const describedBy = $derived(
+        [restProps["aria-describedby"], description ? descriptionId : undefined]
+            .filter(Boolean)
+            .join(" ") || undefined,
+    );
 
-    const controlContainerClasses = $derived(selectionControlShellClasses(shape));
+    // With a description the row is two lines: the box sits at the top, as in RadioGroup.
+    const labelWrapperClasses = $derived(
+        description ? cn(SELECTION_CONTROL_LABEL_ROW, "items-start") : SELECTION_CONTROL_LABEL_ROW,
+    );
+
+    const controlContainerClasses = $derived(
+        cn(selectionControlShellClasses(shape), description && "mt-0.5 shrink-0"),
+    );
 
     const controlRingClasses = $derived(selectionControlRingOverlayClasses(shape));
 
@@ -156,6 +174,7 @@
                     aria-busy={loading ? "true" : undefined}
                     onchange={handleChange}
                     {...restProps}
+                    aria-describedby={describedBy}
                 />
             {:else}
                 <input
@@ -170,6 +189,7 @@
                     aria-busy={loading ? "true" : undefined}
                     onchange={handleChange}
                     {...restProps}
+                    aria-describedby={describedBy}
                 />
             {/if}
             <span class={controlRingClasses}></span>
@@ -182,7 +202,17 @@
                 {@render leading()}
             </span>
         {/if}
-        {#if label}
+        {#if description}
+            <span class="flex flex-col gap-1">
+                <span class="text-sm font-medium text-label">
+                    {label}
+                </span>
+                <!-- aria-hidden keeps it out of the name; aria-describedby still reads it. -->
+                <span id={descriptionId} class="text-sm text-description" aria-hidden="true">
+                    {description}
+                </span>
+            </span>
+        {:else if label}
             <span class="text-sm font-medium text-label">
                 {label}
             </span>
