@@ -12,6 +12,24 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.11] - 2026-10-07
+
+An eleventh local preview build of the 9.0 direction, not published to npm. One
+fix for the app team's report Z-088; no token, prop, variant or export of
+alpha.10 is removed or renamed. Run on this build: the type and design checks,
+the unit suite, the package build and a scratch install, and one run in
+Playwright's WebKit (an iPhone 15 profile, not iOS Safari).
+
+### Fixed
+
+- `BottomSheet` no longer rises to the top of the screen as it opens on WebKit,
+  and no longer rests 32px above the bottom edge. The overlay root was
+  `overflow: hidden`, a scroll container, and WebKit scrolled it to the focused
+  grip while the panel was still below the screen; it is now `overflow: clip`.
+  The slide's own spring (a 15px overshoot at half) is unchanged. To restore the
+  old root: `overflow-hidden` for `overflow-clip` on the root in
+  `BottomSheet.svelte`.
+
 ## [9.0.0-alpha.10] - 2026-10-07
 
 A tenth local preview build of the 9.0 direction, not published to npm. One
