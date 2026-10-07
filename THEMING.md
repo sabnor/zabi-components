@@ -630,6 +630,10 @@ anything around it; they inherit.
 | `Rating` | `--zabi-rating-on-edge` | the outline of a filled star | the fill; `--color-accent-text` with `tone="accent"` |
 | `Rating` | `--zabi-rating-off` | the outline of an empty star | `--color-control-border` |
 | `Rating` | `--zabi-rating-off-fill` | an empty star with `empty="soft"` (below 3:1 on the page; pair it with a visible label and value) | `--color-control-track` |
+| `SpeechBubble` | `--zabi-bubble-fill` | the bubble and its tail; wins over `tone` | the headline colour; the page colour with `tone="paper"` |
+| `SpeechBubble` | `--zabi-bubble-text` | the quoted text; wins over `tone` (4.5:1 on your fill is yours to check) | the page colour; the headline colour with `tone="paper"` |
+| `SpeechBubble` | `--zabi-bubble-radius` | not a colour: the bubble's corners, any `border-radius` value, the eight-value form included | `1.5rem` |
+| `SpeechBubble` | `--zabi-bubble-tilt` | not a colour: turns the fill and the tail, never the text | `0deg` |
 
 ```svelte
 <Rating label="Betyg" tone="accent" bind:value />

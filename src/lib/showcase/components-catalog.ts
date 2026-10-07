@@ -809,6 +809,67 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "SpeechBubble",
+                category: "atoms",
+                description:
+                    "A quotation in a bubble with a drawn tail: a figure with a caption and a blockquote, themed by four custom properties.",
+                props: [
+                    {
+                        name: "label",
+                        type: "string | Snippet",
+                        required: false,
+                        description: "The caption that names the quotation, rendered as the figcaption and read before it.",
+                    },
+                    {
+                        name: "labelHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Keeps the caption for assistive technology and takes it off the screen.",
+                    },
+                    {
+                        name: "side",
+                        type: "'end' | 'start'",
+                        required: false,
+                        defaultValue: "end",
+                        description: "The side the tail is on. Follows the text direction.",
+                    },
+                    {
+                        name: "tone",
+                        type: "'ink' | 'paper'",
+                        required: false,
+                        defaultValue: "ink",
+                        description:
+                            "ink: the headline colour as fill and the page colour as text. paper: the two swapped, for a filled block. --zabi-bubble-fill and --zabi-bubble-text win over both.",
+                    },
+                    {
+                        name: "decoration",
+                        type: "Snippet",
+                        required: false,
+                        description: "A drawing on the top corner of the tail's side, hidden from assistive technology.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description: "The quoted text: real, selectable text in the blockquote.",
+                    },
+                ],
+                variants: ["end", "start", "ink", "paper"],
+                examples: [
+                    {
+                        title: "A line to say",
+                        description: "The label is read first, then the quotation",
+                        code: '&lt;SpeechBubble label="Säg så här i luren"&gt;\n  &lt;p&gt;Hej, vi vill boka bord för quiz på onsdag.&lt;/p&gt;\n&lt;/SpeechBubble&gt;',
+                    },
+                    {
+                        title: "A hand-cut shape",
+                        description: "Radius, tilt and colours are custom properties on any ancestor",
+                        code: '&lt;div style="--zabi-bubble-radius: 1.75rem 2.25rem 2rem 2.5rem / 2.25rem 1.75rem 2.5rem 1.9rem; --zabi-bubble-tilt: -1.2deg"&gt;\n  &lt;SpeechBubble label="Säg så här i luren" side="start"&gt;...&lt;/SpeechBubble&gt;\n&lt;/div&gt;',
+                    },
+                ],
+            },
+            {
                 name: "Chip",
                 category: "atoms",
                 description:

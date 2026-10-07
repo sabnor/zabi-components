@@ -519,6 +519,23 @@ export interface StatProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'>
     children?: Snippet;
 }
 
+// SpeechBubble component props
+export interface SpeechBubbleProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** The caption that names the quotation; a `figcaption`. A snippet for the app's own text style. */
+    label?: string | Snippet;
+    /** Keeps the caption for assistive technology and takes it off the screen. */
+    labelHidden?: boolean;
+    /** The side the tail is on; follows the text direction. */
+    side?: 'end' | 'start';
+    /** `ink` (default) or `paper`; `--zabi-bubble-fill` and `--zabi-bubble-text` win over both. */
+    tone?: 'ink' | 'paper';
+    /** A drawing on the top corner of the tail's side, hidden from assistive technology. */
+    decoration?: Snippet;
+    class?: string;
+    /** The quoted text. */
+    children?: Snippet;
+}
+
 // Badge component props
 export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'class'> {
     variant?: BadgeVariant;
@@ -1134,6 +1151,7 @@ export type Modal = ZabiComponent<ModalProps, ModalEvents>;
 export type Alert = ZabiComponent<AlertProps>;
 export type Badge = ZabiComponent<BadgeProps>;
 export type Stat = ZabiComponent<StatProps>;
+export type SpeechBubble = ZabiComponent<SpeechBubbleProps>;
 export type Chip = ZabiComponent<ChipProps>;
 export type ChipGroup = ZabiComponent<ChipGroupProps>;
 export type Progress = ZabiComponent<ProgressProps>;

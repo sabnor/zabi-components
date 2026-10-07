@@ -12,6 +12,10 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- **`SpeechBubble`** (Z-075; D155): a quotation in a bubble with a drawn tail. A `figure` whose `figcaption` is `label` (a string or a snippet; `labelHidden` keeps it for assistive technology only) and whose content is a `blockquote` with the children as real, selectable text. `side` (`end` default, `start`; follows the text direction) places the tail; `tone` is `ink` (default: the headline colour as fill and the page colour as text, so dark in light and light in dark) or `paper` (the two swapped, for a bubble on a filled block). `decoration` is a snippet drawn on the top corner of the tail's side. Four custom properties declared nowhere, set on the component or any ancestor: `--zabi-bubble-fill` and `--zabi-bubble-text` (win over `tone`), `--zabi-bubble-radius` (any `border-radius` value, the eight-value form included; default `1.5rem`) and `--zabi-bubble-tilt` (turns the fill and tail, not the text; default `0deg`). The tail is an inline SVG in the fill colour, sized in rem; tail, fill and decoration are hidden from assistive technology; in forced colours the bubble is a 2px outline and the tail is not drawn. The type is `text-lg font-medium` on the figure and can be replaced through `class`. Not included: a copy action and a speaker slot.
+
 ### Changed
 
 - `Input type="password"` has the show/hide button by default (`revealable` now defaults to `true`). Pass `revealable={false}` for a password field without it. Other types are unaffected.

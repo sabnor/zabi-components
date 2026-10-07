@@ -10,6 +10,7 @@
      */
     import Badge from "../components/atoms/Badge.svelte";
     import Stat from "../components/atoms/Stat.svelte";
+    import SpeechBubble from "../components/atoms/SpeechBubble.svelte";
     import Chip from "../components/atoms/Chip.svelte";
     import ChipGroup from "../components/molecules/ChipGroup.svelte";
     import Button from "../components/atoms/Button.svelte";
@@ -47,6 +48,7 @@
         AlertProps,
         BadgeProps,
         StatProps,
+        SpeechBubbleProps,
         ChipProps,
         ChipGroupProps,
         ButtonProps,
@@ -85,6 +87,7 @@
         alert?: AlertProps;
         badge?: BadgeProps;
         stat?: StatProps;
+        speechBubble?: SpeechBubbleProps;
         chip?: ChipProps;
         chipGroup?: ChipGroupProps;
         /** `variant` still lists four values Button never had; see the interface. */
@@ -124,6 +127,7 @@
         alert = {},
         badge = {},
         stat,
+        speechBubble = {},
         chip = {},
         chipGroup = {},
         button = {},
@@ -162,6 +166,7 @@
 <Alert {...alert} />
 <Badge {...badge} />
 {#if stat}<Stat {...stat} />{/if}
+<SpeechBubble {...speechBubble} />
 <Chip {...chip} />
 <ChipGroup {...chipGroup} />
 <Button {...button} />
