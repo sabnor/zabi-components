@@ -1275,7 +1275,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Select",
                 category: "atoms",
                 description:
-                    "Dropdown with type-ahead search, scrollable options and validation states.",
+                    "Dropdown with type-ahead search and validation states. Fills its container; a width class narrows it, and it never outgrows it.",
                 props: [
                     {
                         name: "options",

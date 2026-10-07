@@ -12,6 +12,12 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Fixed
+
+- `Select` no longer outgrows its container: a width class (`w-48`) in a narrower
+  column is capped at the column (`.select-container { max-width: 100% }`, in the
+  components layer, so a `max-w-*` class of your own still wins). (Z-089)
+
 ## [9.0.0-alpha.11] - 2026-10-07
 
 An eleventh local preview build of the 9.0 direction, not published to npm. One

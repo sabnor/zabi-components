@@ -2917,6 +2917,15 @@ body {
       0 0 0 4px var(--color-focus-ring);
   }
 
+  /**
+   * A Select never outgrows its container: a width class (`w-48`) is a wish
+   * and the column is the limit. In `@layer components`, so a caller's own
+   * `max-w-*` utility wins.
+   */
+  .select-container {
+    max-width: 100%;
+  }
+
   /** Stacked radio options: same ring when the row’s control is `:checked`. */
   .selection-control-option-row {
     box-shadow: none;

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Select from '../../components/atoms/Select.svelte';
+import SelectWidthStory from './SelectWidthStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Select',
@@ -250,6 +251,17 @@ export const Swedish: Story = {
             closeLabel: 'Stäng',
             expandLabel: 'Visa mer',
             collapseLabel: 'Visa mindre'
+        }
+    }
+};
+
+export const WideClassInNarrowColumn: StoryObj<typeof SelectWidthStory> = {
+    render: () => ({ Component: SelectWidthStory }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'class="w-48" (12rem) in a 8rem column: the select stops at the column instead of widening the page.'
+            }
         }
     }
 };
