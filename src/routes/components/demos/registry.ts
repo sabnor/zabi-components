@@ -35,6 +35,11 @@ import StepperDemo from "./StepperDemo.svelte";
 import ZabiStringsProviderDemo from "./ZabiStringsProviderDemo.svelte";
 import AvatarDemo from "./AvatarDemo.svelte";
 import AvatarGroupDemo from "./AvatarGroupDemo.svelte";
+import SpeechBubbleDemo from "./SpeechBubbleDemo.svelte";
+import SparklineDemo from "./SparklineDemo.svelte";
+import LineChartDemo from "./LineChartDemo.svelte";
+import BarChartDemo from "./BarChartDemo.svelte";
+import PieChartDemo from "./PieChartDemo.svelte";
 import type { DemoRendererProps } from "./types";
 
 const registry: Record<string, Component<DemoRendererProps>> = {
@@ -74,6 +79,11 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     ZabiStringsProvider: ZabiStringsProviderDemo,
     Avatar: AvatarDemo,
     AvatarGroup: AvatarGroupDemo,
+    SpeechBubble: SpeechBubbleDemo,
+    Sparkline: SparklineDemo,
+    LineChart: LineChartDemo,
+    BarChart: BarChartDemo,
+    PieChart: PieChartDemo,
 };
 
 export function getComponentDemo(
