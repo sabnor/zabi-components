@@ -39,3 +39,14 @@ export const WithoutChosenRing: Story = {
         }
     }
 };
+
+export const DescriptionAndCentredRows: Story = {
+    args: { legend: 'Appearance', options, defaultValue: 'light' },
+    parameters: {
+        docs: {
+            description: {
+                story: 'An option description is tied to its radio with aria-describedby and is not part of its name ("Follow system"). A one-line option is centred in its row; with a description the radio stays at the top, level with the label.'
+            }
+        }
+    }
+};

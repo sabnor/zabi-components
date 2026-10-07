@@ -23,6 +23,11 @@ Whenever token or CSS import API surface changes, include:
 
 ### Fixed
 
+- `RadioGroup`: an option's `description` is no longer part of the radio's name; it is
+  `aria-hidden` and tied to the radio with `aria-describedby`, as `Radio`'s. A one-line
+  option is centred in its row (44px on touch) and its circle loses `mt-0.5`; a row
+  with a description keeps the radio at the top. A radio found by its two-sentence
+  name is now found by its label. (Z-092)
 - `Select` no longer outgrows its container: a width class (`w-48`) in a narrower
   column is capped at the column (`.select-container { max-width: 100% }`, in the
   components layer, so a `max-w-*` class of your own still wins). (Z-089)

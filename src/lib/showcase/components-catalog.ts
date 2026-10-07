@@ -5160,7 +5160,8 @@ pushToast({
                         type: "RadioGroupOption[]",
                         required: true,
                         defaultValue: "[]",
-                        description: "value, label, optional description/disabled",
+                        description:
+                            "value, label, optional description/disabled. A description is tied to the radio with aria-describedby and is not part of its name.",
                     },
                     {
                         name: "value",
