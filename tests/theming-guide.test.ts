@@ -88,6 +88,7 @@ const COMPONENT_PROPERTIES: Record<string, string> = {
     "--zabi-chart-4": "src/components/util/chart.ts",
     "--zabi-chart-5": "src/components/util/chart.ts",
     "--zabi-chart-6": "src/components/util/chart.ts",
+    "--zabi-chart-surface": "src/components/molecules/LineChart.svelte",
     // The label colour of a block an app fills itself, read by the `on-fill` scope.
     "--zabi-on-fill": "src/app.css",
     // Button reads these through `rounded-button` and `font-button`, which are in the stylesheet.

@@ -27,7 +27,7 @@ describe("charts (server render)", () => {
             { label: "b", value: 1 },
         ];
         const bar = renderOnServer(BarChart, { props: { label: "Staplar", data } }).body;
-        expect(bar.match(/<rect/g)).toHaveLength(2);
+        expect(bar.match(/class="bar/g)).toHaveLength(2);
         const pie = renderOnServer(PieChart, { props: { label: "Delar", data, locale: "en" } }).body;
         expect(pie.match(/class="slice/g)).toHaveLength(2);
         expect(pie).toContain("75%");

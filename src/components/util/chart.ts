@@ -4,10 +4,20 @@
  * that writes SVG; there is no chart library under it.
  */
 
-/** A theme colour by name. */
-export type ChartColorName = "primary" | "accent" | "success" | "warning" | "error" | "info";
+/**
+ * `glass` on a chart: the library's thick material (the one a Tooltip and a
+ * sheet are made of, the level that carries description and caption text),
+ * the container corner and room inside it. `on-surface` gives the text its
+ * theme colours back when the chart stands in a brand or accent block. Every
+ * fallback of the material (reduced transparency, more contrast, forced
+ * colours, no backdrop-filter, data-materials="opaque") comes with the class.
+ */
+export const CHART_GLASS = "material-thick on-surface rounded-container p-4";
 
-/** A theme colour by name, or any CSS colour (`"#c2410c"`, `"var(--color-quiz-gold)"`). */
+/** A theme colour by name. */
+export type ChartColorName = "primary" | "accent" | "success" | "warning" | "error" | "info" | "neutral";
+
+/** A theme colour by name, or any CSS colour (`"#c2410c"`, `"var(--color-brand-800)"`). */
 export type ChartColor = ChartColorName | (string & {});
 
 /** A number as text: the two built in, or the app's own function. */
@@ -37,26 +47,79 @@ const NAMED: Record<ChartColorName, string> = {
     warning: "var(--color-warning)",
     error: "var(--color-error)",
     info: "var(--color-info)",
+    neutral: "var(--color-neutral)",
 };
 
 /**
  * The six series colours, in order. Each is a custom property an app may set
  * on the chart or on anything around it (read with a fallback, declared
- * nowhere), and falls back to a theme token that follows light and dark.
+ * nowhere), and falls back to a step of the theme's own ramps, so it follows
+ * light and dark and the app's brand.
+ *
+ * They are the colours the rest of the library is made of: the action blue
+ * a `Progress` fills with, the accent, a deep step of each, and the neutral
+ * grey. Two hues and a grey, told apart by lightness as much as by hue,
+ * which is what a reader who does not see red and green needs. None is a
+ * status colour. The sixth is the one colour from outside those ramps (the
+ * brand turned toward red), for the rare chart with six series.
  */
 export const CHART_SERIES_COLORS: readonly string[] = [
     "var(--zabi-chart-1, var(--color-action-primary))",
-    "var(--zabi-chart-2, var(--color-accent))",
-    "var(--zabi-chart-3, var(--color-success))",
-    "var(--zabi-chart-4, var(--color-warning))",
-    "var(--zabi-chart-5, var(--color-error))",
-    "var(--zabi-chart-6, var(--color-info))",
+    "var(--zabi-chart-2, var(--color-accent-500))",
+    "var(--zabi-chart-3, var(--color-brand-900))",
+    "var(--zabi-chart-4, var(--color-accent-700))",
+    "var(--zabi-chart-5, var(--color-base-500))",
+    "var(--zabi-chart-6, color-mix(in oklch, var(--color-brand-700), var(--color-error-700)))",
 ];
+
+const slot = (index: number) => ((index % 6) + 6) % 6;
 
 /** The CSS colour of a series: its own if it names one, else the one of its place (they repeat after six). */
 export function chartColor(color: ChartColor | undefined, index: number): string {
-    if (!color) return CHART_SERIES_COLORS[((index % 6) + 6) % 6];
-    return NAMED[color as ChartColorName] ?? color;
+    if (!color) return CHART_SERIES_COLORS[slot(index)];
+    return Object.prototype.hasOwnProperty.call(NAMED, color) ? NAMED[color as ChartColorName] : color;
+}
+
+/** The series colour a theme colour sits nearest to: one chart does not show both. */
+const NEAREST = new Map<string, number>([
+    ["primary", 0],
+    ["info", 0],
+    ["accent", 1],
+    ["success", 3],
+    ["neutral", 4],
+]);
+
+/**
+ * The colours of a whole chart, for when named colours and places mix.
+ * A series with a `color` gets it. One without keeps the series colour of
+ * its place, unless a named colour in the same chart sits next to that one
+ * (`success` beside the deep accent, `neutral` beside the grey): then it moves on
+ * to the next series colour that is free.
+ */
+export function chartColors(colors: Array<ChartColor | undefined>): string[] {
+    const taken = new Set<number>();
+    for (const color of colors) {
+        const near = color ? NEAREST.get(color) : undefined;
+        if (near !== undefined) taken.add(near);
+    }
+    colors.forEach((color, index) => {
+        if (!color && !taken.has(slot(index))) taken.add(slot(index));
+    });
+    const moved = new Set<number>();
+    return colors.map((color, index) => {
+        if (color) return chartColor(color, index);
+        const own = slot(index);
+        const clash = colors.some((other) => other && NEAREST.get(other) === own);
+        if (!clash) return CHART_SERIES_COLORS[own];
+        for (let step = 1; step < 6; step++) {
+            const next = slot(own + step);
+            if (!taken.has(next) && !moved.has(next)) {
+                moved.add(next);
+                return CHART_SERIES_COLORS[next];
+            }
+        }
+        return CHART_SERIES_COLORS[own];
+    });
 }
 
 /**
@@ -164,6 +227,17 @@ export function linePath(points: Array<{ x: number; y: number } | null>): string
     return path;
 }
 
+/** An upright bar from `from` to `to` (y), rounded at the `to` end and square where it stands on the zero line. */
+export function barPath(x: number, width: number, from: number, to: number, radius: number): string {
+    const height = Math.abs(to - from);
+    const r = round(Math.max(0, Math.min(radius, width / 2, height)));
+    const [left, base, w] = [round(x), round(from), round(width)];
+    const up = to < from ? -1 : 1;
+    const side = round(height - r);
+    if (!(height > 0)) return "";
+    return `M${left} ${base}v${up * side}a${r} ${r} 0 0 ${up < 0 ? 1 : 0} ${r} ${up * r}h${round(w - 2 * r)}a${r} ${r} 0 0 ${up < 0 ? 1 : 0} ${r} ${-up * r}v${-up * side}Z`;
+}
+
 export const CHART_MARKERS = ["circle", "square", "diamond", "triangle"] as const;
 export type ChartMarker = (typeof CHART_MARKERS)[number];
 
@@ -235,6 +309,38 @@ export function slicePath(cx: number, cy: number, outer: number, inner: number, 
     const arc = `M${onCircle(cx, cy, outer, start)}A${outer} ${outer} 0 ${large} 1 ${onCircle(cx, cy, outer, end)}`;
     if (!(inner > 0)) return `${arc}L${round(cx)} ${round(cy)}Z`;
     return `${arc}L${onCircle(cx, cy, inner, end)}A${inner} ${inner} 0 ${large} 0 ${onCircle(cx, cy, inner, start)}Z`;
+}
+
+/** How much larger than 16px the reader's text is: chart text is set in rem, and the room for it follows. */
+export function chartTextScale(): number {
+    if (typeof document === "undefined" || typeof getComputedStyle !== "function") return 1;
+    const size = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    return size > 0 ? size / 16 : 1;
+}
+
+/**
+ * Reports the width of the widest `text` inside the node, as drawn, now and
+ * whenever what it is given changes. The value axis takes its room from
+ * this, not from a count of characters. Where text cannot be measured
+ * nothing is reported and the estimate stands.
+ */
+export function widestText(node: SVGElement, options: { onwidth: (width: number) => void; key?: unknown }) {
+    let report = options.onwidth;
+    const measure = () => {
+        let widest = 0;
+        for (const text of node.querySelectorAll("text")) {
+            if (typeof text.getComputedTextLength !== "function") return;
+            widest = Math.max(widest, text.getComputedTextLength());
+        }
+        if (widest > 0) report(Math.ceil(widest));
+    };
+    measure();
+    return {
+        update(next: { onwidth: (width: number) => void; key?: unknown }) {
+            report = next.onwidth;
+            measure();
+        },
+    };
 }
 
 /**

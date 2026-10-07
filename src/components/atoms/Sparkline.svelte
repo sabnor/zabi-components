@@ -9,7 +9,8 @@
      * own, so say what the number is in the text next to it.
      *
      * It is 5rem by 1.5rem; size it with `class` (`w-full h-8`). The line
-     * stretches to the box and keeps its thickness.
+     * stretches to the box and keeps its thickness. A dot marks the last
+     * value: the one the figure beside it is.
      */
     type Props = Omit<SVGAttributes<SVGSVGElement>, "class" | "points" | "min" | "max" | "color"> & {
         /** The values, in order. `null` leaves a gap. */
@@ -29,27 +30,35 @@
 
     const isValue = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 
-    const path = $derived.by(() => {
+    const placed = $derived.by(() => {
         const values = points.filter(isValue);
-        if (!values.length) return "";
+        if (!values.length) return [];
         const low = isValue(min) ? min : Math.min(...values);
         const high = isValue(max) ? max : Math.max(...values);
         const span = high - low;
         const last = Math.max(points.length - 1, 1);
         // 100 by 100, with room above and below for the stroke; the box stretches it.
-        return linePath(
-            points.map((value, index) =>
-                isValue(value)
-                    ? {
-                          x: points.length === 1 ? 50 : (index / last) * 100,
-                          y: span > 0 ? 92 - (Math.min(Math.max(value, low), high) - low) / span * 84 : 50,
-                      }
-                    : null,
-            ),
+        return points.map((value, index) =>
+            isValue(value)
+                ? {
+                      x: points.length === 1 ? 50 : (index / last) * 100,
+                      y: span > 0 ? 92 - (Math.min(Math.max(value, low), high) - low) / span * 84 : 50,
+                  }
+                : null,
         );
     });
+    const path = $derived(linePath(placed));
+    const single = $derived(points.filter(isValue).length === 1);
     /** One value alone is a dash, not a dot that stretches. */
-    const d = $derived(points.filter(isValue).length === 1 && path ? "M0 50L100 50" : path);
+    const d = $derived(single && path ? "M0 50L100 50" : path);
+    /**
+     * The last value, as a line of no length with a round end: the box may
+     * stretch the drawing, and a circle would stretch with it.
+     */
+    const end = $derived.by(() => {
+        const at = single ? { x: 100, y: 50 } : [...placed].reverse().find((point) => point !== null);
+        return at ? `M${Math.round(at.x * 100) / 100} ${Math.round(at.y * 100) / 100}h0` : "";
+    });
 </script>
 
 <svg
@@ -64,6 +73,7 @@
     {...restProps}
 >
     <path class="line" {d} />
+    {#if end}<path class="end" d={end} />{/if}
 </svg>
 
 <style>
@@ -82,8 +92,17 @@
         vector-effect: non-scaling-stroke;
     }
 
+    .end {
+        fill: none;
+        stroke: var(--_c);
+        stroke-width: 6;
+        stroke-linecap: round;
+        vector-effect: non-scaling-stroke;
+    }
+
     @media (forced-colors: active) {
-        .line {
+        .line,
+        .end {
             stroke: CanvasText;
         }
     }

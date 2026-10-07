@@ -8,6 +8,9 @@ import {
     labelEvery,
     linePath,
     niceStep,
+    barPath,
+    chartColors,
+    CHART_SERIES_COLORS,
     pieSlices,
     slicePath,
 } from "../src/components/util/chart";
@@ -15,7 +18,7 @@ import {
 describe("chart colours", () => {
     it("gives a series the property of its place, falling back to a theme token, and starts again after six", () => {
         expect(chartColor(undefined, 0)).toBe("var(--zabi-chart-1, var(--color-action-primary))");
-        expect(chartColor(undefined, 5)).toBe("var(--zabi-chart-6, var(--color-info))");
+        expect(chartColor(undefined, 4)).toBe("var(--zabi-chart-5, var(--color-base-500))");
         expect(chartColor(undefined, 6)).toBe(chartColor(undefined, 0));
     });
 
@@ -23,7 +26,33 @@ describe("chart colours", () => {
         expect(chartColor("success", 0)).toBe("var(--color-success)");
         expect(chartColor("primary", 3)).toBe("var(--color-action-primary)");
         expect(chartColor("#c2410c", 0)).toBe("#c2410c");
-        expect(chartColor("var(--color-quiz-gold)", 2)).toBe("var(--color-quiz-gold)");
+        expect(chartColor("neutral", 2)).toBe("var(--color-neutral)");
+        expect(chartColor("var(--color-brand-800)", 2)).toBe("var(--color-brand-800)");
+    });
+
+    it("has no status colour among the six, so a series is not green or red by its place", () => {
+        for (const color of CHART_SERIES_COLORS) {
+            expect(color).not.toMatch(/var\(--color-(success|warning|error|info)\)/);
+        }
+        expect(new Set(CHART_SERIES_COLORS).size).toBe(6);
+    });
+
+    it("keeps a place's colour when nothing named sits next to it, and moves on when something does", () => {
+        const place = (index: number) => chartColor(undefined, index);
+        expect(chartColors([undefined, undefined, undefined])).toEqual([place(0), place(1), place(2)]);
+        // Naming one series does not repaint the others.
+        expect(chartColors(["#123456", undefined, undefined])).toEqual(["#123456", place(1), place(2)]);
+        // `success` sits next to the deep accent in fourth place: that series takes the next colour.
+        expect(chartColors(["success", "error", undefined, undefined])).toEqual(["var(--color-success)", "var(--color-error)", place(2), place(4)]);
+        // `neutral` sits next to the grey in fifth place.
+        expect(chartColors(["neutral", undefined, undefined, undefined, undefined])).toEqual(["var(--color-neutral)", place(1), place(2), place(3), place(5)]);
+        // `primary` is the first series colour itself.
+        expect(chartColors([undefined, "primary"])).toEqual([place(1), "var(--color-action-primary)"]);
+        // The colour moved to is not one another series already has.
+        expect(chartColors([undefined, undefined, "primary"])).toEqual([place(2), place(1), "var(--color-action-primary)"]);
+        // A name that is only a word, not a theme colour, moves nothing.
+        expect(chartColors(["toString", undefined])).toEqual(["toString", place(1)]);
+        expect(chartColors([])).toEqual([]);
     });
 
     it("gives the first four series four different markers", () => {
@@ -108,6 +137,19 @@ describe("linePath", () => {
             "M0 10L5 20M15 5L20 0",
         );
         expect(linePath([])).toBe("");
+    });
+});
+
+describe("barPath", () => {
+    it("rounds the far end and stands square on the line it grows from, upward and downward", () => {
+        expect(barPath(10, 20, 100, 40, 4)).toBe("M10 100v-56a4 4 0 0 1 4 -4h12a4 4 0 0 1 4 4v56Z");
+        expect(barPath(10, 20, 100, 130, 4)).toBe("M10 100v26a4 4 0 0 0 4 4h12a4 4 0 0 0 4 -4v-26Z");
+    });
+
+    it("has a smaller corner for a bar too short or too thin for it, and nothing for no height", () => {
+        expect(barPath(0, 20, 100, 98, 4)).toContain("a2 2 ");
+        expect(barPath(0, 4, 100, 50, 4)).toContain("a2 2 ");
+        expect(barPath(0, 20, 100, 100, 4)).toBe("");
     });
 });
 

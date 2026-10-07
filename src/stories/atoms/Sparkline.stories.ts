@@ -15,7 +15,7 @@ const meta = {
     },
     tags: ['autodocs'],
     argTypes: {
-        color: { control: 'select', options: [undefined, 'primary', 'accent', 'success', 'warning', 'error', 'info'] }
+        color: { control: 'select', options: [undefined, 'primary', 'accent', 'success', 'warning', 'error', 'info', 'neutral'] }
     }
 } satisfies Meta<typeof Sparkline>;
 

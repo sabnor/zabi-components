@@ -896,7 +896,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "\u2014",
                         description:
-                            "primary, accent, success, warning, error, info, or any CSS colour. Without it, the first series colour.",
+                            "primary, accent, success, warning, error, info, neutral, or any CSS colour. Without it, the first series colour.",
                     },
                     {
                         name: "min",
@@ -925,7 +925,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "Sized and coloured",
                         description: "The line stretches to the box and keeps its thickness",
-                        code: "<Sparkline points={values} color=\"success\" class=\"h-8 w-full\" />",
+                        code: "<Sparkline points={values} label=\"Poäng, åtta senaste: stigande\" color=\"success\" class=\"h-8 w-full\" />",
                     },
                 ],
             },
@@ -8058,6 +8058,14 @@ pushToast({
                             "The heading of the table's first column: what the x labels are.",
                     },
                     {
+                        name: "glass",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Stands the chart on a panel of the thick material (frosted glass), for a chart over a wash, a tint or a picture. It is the panel only: the slices and bars are glass with or without it. On a plain card it shows nothing; over a solid brand or accent fill some series colours fall under 3:1.",
+                    },
+                    {
                         name: "locale",
                         type: "string",
                         required: false,
@@ -8070,13 +8078,18 @@ pushToast({
                 examples: [
                     {
                         title: "Results over time",
-                        description: "Two series in percent on a fixed 0 to 100 axis; point at or tap the plot to read the values",
+                        description: "Two series in percent on a fixed 0 to 100 axis; point at or tap the plot and the values come up in a pane beside the guide",
                         code: "<LineChart\n    label=\"Rätt svar per vecka\"\n    xTitle=\"Vecka\"\n    xLabels={['v. 36', 'v. 37', 'v. 38', 'v. 39', 'v. 40']}\n    series={[\n        { name: 'Vårt lag', points: [62, 68, 71, 66, 78] },\n        { name: 'Snitt', points: [58, 60, 59, 63, 64] },\n    ]}\n    yMin={0}\n    yMax={100}\n    yFormat=\"percent\"\n/>",
                     },
                     {
                         title: "Colours of your own",
-                        description: "The six series colours are custom properties on any ancestor; a series may also name one",
-                        code: "<div style=\"--zabi-chart-1: var(--color-quiz-gold)\">\n    <LineChart label=\"Poäng\" {xLabels} series={[{ name: 'Poäng', points }, { name: 'Mål', points: goal, color: 'info' }]} showTable />\n</div>",
+                        description: "The six series colours are custom properties on any ancestor; a series may also name a theme colour, here neutral for the line it is measured against",
+                        code: "<div style=\"--zabi-chart-1: var(--color-accent)\">\n    <LineChart label=\"Poäng\" xTitle=\"Vecka\" {xLabels} series={[{ name: 'Poäng', points }, { name: 'Mål', points: goal, color: 'neutral' }]} showTable />\n</div>",
+                    },
+                    {
+                        title: "On glass",
+                        description: "The same chart on a tint card, without and with glass. Point at either: the values come up in a pane of the same material, which is there with or without glass",
+                        code: "<Card tone=\"tint\">\n    <div class=\"grid gap-6 md:grid-cols-2\">\n        <LineChart label=\"Utan glas\" {xLabels} {series} yMin={0} yMax={100} yFormat=\"percent\" height={200} />\n        <LineChart glass label=\"Med glas\" {xLabels} {series} yMin={0} yMax={100} yFormat=\"percent\" height={200} />\n    </div>\n</Card>",
                     },
                 ],
             },
@@ -8099,7 +8112,7 @@ pushToast({
                         required: false,
                         defaultValue: "\u2014",
                         description:
-                            "The colour of the bars: primary, accent, success, warning, error, info, or any CSS colour. Without it, the first series colour.",
+                            "The colour of the bars: primary, accent, success, warning, error, info, neutral, or any CSS colour. Without it, the first series colour.",
                     },
                     {
                         name: "yMax",
@@ -8107,7 +8120,7 @@ pushToast({
                         required: false,
                         defaultValue: "\u2014",
                         description:
-                            "The top of the value axis. Without it, the highest value rounded up to a tick. Zero is always on the axis.",
+                            "The top of the value axis, and the ceiling each bar is measured against: with it every bar stands in a track that reaches it, as a Progress does. Without it, the highest value rounded up to a tick and no tracks. Zero is always on the axis.",
                     },
                     {
                         name: "yFormat",
@@ -8173,6 +8186,14 @@ pushToast({
                             "The heading of the table's value column.",
                     },
                     {
+                        name: "glass",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Stands the chart on a panel of the thick material (frosted glass), for a chart over a wash, a tint or a picture. It is the panel only: the slices and bars are glass with or without it. On a plain card it shows nothing; over a solid brand or accent fill some series colours fall under 3:1.",
+                    },
+                    {
                         name: "locale",
                         type: "string",
                         required: false,
@@ -8185,8 +8206,23 @@ pushToast({
                 examples: [
                     {
                         title: "Points per round",
-                        description: "One colour; the labels tell the bars apart",
+                        description: "Out of ten: yMax is the ceiling, so each bar stands in a track up to it, the way a Progress does",
                         code: "<BarChart\n    label=\"Poäng per runda\"\n    categoryTitle=\"Runda\"\n    valueTitle=\"Poäng\"\n    data={[\n        { label: 'R1', value: 7 },\n        { label: 'R2', value: 9 },\n        { label: 'R3', value: 4 },\n        { label: 'R4', value: 8 },\n    ]}\n    yMax={10}\n/>",
+                    },
+                    {
+                        title: "Games per day",
+                        description: "No ceiling, so no tracks: the axis ends at the first round number above the highest bar",
+                        code: "<BarChart\n    label=\"Spelade per dag\"\n    categoryTitle=\"Dag\"\n    valueTitle=\"Spelade\"\n    data={[\n        { label: 'Mån', value: 12 },\n        { label: 'Tis', value: 18 },\n        { label: 'Ons', value: 9 },\n        { label: 'Tors', value: 22 },\n        { label: 'Fre', value: 15 },\n    ]}\n/>",
+                    },
+                    {
+                        title: "On glass",
+                        description: "The same chart on a tint card, without and with the glass panel under it; the bars are glass in both, and the tracks stay the Progress track",
+                        code: "<Card tone=\"tint\">\n    <div class=\"grid gap-6 md:grid-cols-2\">\n        <BarChart label=\"Utan glas\" data={rounds} yMax={10} height={200} />\n        <BarChart glass label=\"Med glas\" data={rounds} yMax={10} height={200} />\n    </div>\n</Card>",
+                    },
+                    {
+                        title: "Glass and flat",
+                        description: "The bars are glass by default, as the slices of a PieChart are. Inside data-materials=\"opaque\", as with reduced transparency, more contrast or forced colours, they are the flat fill of a Progress",
+                        code: "<div class=\"grid gap-6 md:grid-cols-2\">\n    <BarChart label=\"Glas\" data={rounds} yMax={10} height={200} />\n    <div data-materials=\"opaque\">\n        <BarChart label=\"Platt\" data={rounds} yMax={10} height={200} />\n    </div>\n</div>",
                     },
                 ],
             },
@@ -8210,6 +8246,13 @@ pushToast({
                         defaultValue: "false",
                         description:
                             "A ring, not a full disc.",
+                    },
+                    {
+                        name: "center",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "What stands in the middle of the ring: the total, or the one share that matters; a Stat fits. Only with donut. Assistive technology reads it.",
                     },
                     {
                         name: "format",
@@ -8283,6 +8326,14 @@ pushToast({
                             "The heading of the table's share column.",
                     },
                     {
+                        name: "glass",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Stands the chart on a panel of the thick material (frosted glass), for a chart over a wash, a tint or a picture. It is the panel only: the slices and bars are glass with or without it. On a plain card it shows nothing; over a solid brand or accent fill some series colours fall under 3:1.",
+                    },
+                    {
                         name: "locale",
                         type: "string",
                         required: false,
@@ -8295,13 +8346,23 @@ pushToast({
                 examples: [
                     {
                         title: "Answers",
-                        description: "Three slices and their key",
-                        code: "<PieChart\n    label=\"Svar\"\n    data={[\n        { label: 'Rätt', value: 14, color: 'success' },\n        { label: 'Fel', value: 4, color: 'error' },\n        { label: 'Överhoppade', value: 2 },\n    ]}\n/>",
+                        description: "Right and wrong are states, so they take the theme's status colours by name, and neutral for the rest",
+                        code: "<PieChart\n    label=\"Svar\"\n    data={[\n        { label: 'Rätt', value: 14, color: 'success' },\n        { label: 'Fel', value: 4, color: 'error' },\n        { label: 'Överhoppade', value: 2, color: 'neutral' },\n    ]}\n/>",
                     },
                     {
                         title: "Donut",
-                        description: "The same data as a ring",
-                        code: "<PieChart donut label=\"Svar\" {data} />",
+                        description: "Six categories in the six series colours, with a Stat for the total in the middle of the ring",
+                        code: "<PieChart donut label=\"Frågor per kategori\" categoryTitle=\"Kategori\" valueTitle=\"Frågor\" data={categories}>\n    {#snippet center()}\n        <Stat value={40} label=\"frågor\" size=\"sm\" align=\"center\" />\n    {/snippet}\n</PieChart>",
+                    },
+                    {
+                        title: "On glass",
+                        description: "The same ring on a tint card, without and with the glass panel under it; the slices are glass in both",
+                        code: "<Card tone=\"tint\">\n    <div class=\"grid gap-6 md:grid-cols-2\">\n        <PieChart donut label=\"Utan glas\" data={categories} size={144} />\n        <PieChart glass donut label=\"Med glas\" data={categories} size={144} />\n    </div>\n</Card>",
+                    },
+                    {
+                        title: "Glass and flat",
+                        description: "The slices are glass by default: their own colour under a soft veil, with a hairline of light on the rim. Inside data-materials=\"opaque\", as with reduced transparency, more contrast or forced colours, they are the flat fills",
+                        code: "<div class=\"grid gap-6 md:grid-cols-2\">\n    <PieChart donut label=\"Glas\" data={categories} size={144} />\n    <div data-materials=\"opaque\">\n        <PieChart donut label=\"Platt\" data={categories} size={144} />\n    </div>\n</div>",
                     },
                 ],
             },

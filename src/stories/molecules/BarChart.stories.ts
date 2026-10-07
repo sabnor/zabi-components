@@ -22,7 +22,7 @@ const meta = {
     },
     tags: ['autodocs'],
     argTypes: {
-        color: { control: 'select', options: [undefined, 'primary', 'accent', 'success', 'warning', 'error', 'info'] }
+        color: { control: 'select', options: [undefined, 'primary', 'accent', 'success', 'warning', 'error', 'info', 'neutral'] }
     }
 } satisfies Meta<typeof BarChart>;
 
@@ -31,6 +31,11 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: { label: 'Poäng per runda', categoryTitle: 'Runda', valueTitle: 'Poäng', data, yMax: 10 }
+};
+
+/** The chart on a panel of the thick material. It needs a wash, a tint or a picture behind it to read as glass. */
+export const Glass: Story = {
+    args: { glass: true, label: 'Poäng per runda', categoryTitle: 'Runda', valueTitle: 'Poäng', data, yMax: 10 }
 };
 
 export const Percent: Story = {

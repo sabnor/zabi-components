@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
+import { createRawSnippet } from 'svelte';
 import PieChart from '../../components/molecules/PieChart.svelte';
 
 const data = [
@@ -25,7 +26,21 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = { args: { label: 'Svar', data } };
+
+/** The chart on a panel of the thick material. It needs a wash, a tint or a picture behind it to read as glass. */
+export const Glass: Story = { args: { glass: true, label: 'Svar', data } };
 export const Donut: Story = { args: { label: 'Svar', data, donut: true } };
+
+export const DonutWithTotal: Story = {
+    args: {
+        label: 'Svar',
+        data,
+        donut: true,
+        center: createRawSnippet(() => ({
+            render: () => '<span><span class="font-display text-headline block text-2xl leading-none font-bold tabular-nums">20</span><span class="text-description mt-1 block text-xs">svar</span></span>'
+        }))
+    }
+};
 
 export const NamedColours: Story = {
     args: {
@@ -34,7 +49,7 @@ export const NamedColours: Story = {
         data: [
             { label: 'Rätt', value: 14, color: 'success' },
             { label: 'Fel', value: 4, color: 'error' },
-            { label: 'Överhoppade', value: 2, color: 'info' }
+            { label: 'Överhoppade', value: 2, color: 'neutral' }
         ]
     }
 };

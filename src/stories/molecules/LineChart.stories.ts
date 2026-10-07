@@ -31,6 +31,11 @@ export const Default: Story = {
     args: { label: 'Rätt svar per vecka', xTitle: 'Vecka', xLabels, series, yMin: 0, yMax: 100, yFormat: 'percent' }
 };
 
+/** The chart on a panel of the thick material. It needs a wash, a tint or a picture behind it to read as glass. */
+export const Glass: Story = {
+    args: { glass: true, label: 'Rätt svar per vecka', xTitle: 'Vecka', xLabels, series, yMin: 0, yMax: 100, yFormat: 'percent' }
+};
+
 export const OneSeries: Story = {
     args: { label: 'Poäng per vecka', xLabels, series: [{ name: 'Poäng', points: [12, 14, 13, 17, 16, 19, 18, 21] }] }
 };
