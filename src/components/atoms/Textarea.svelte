@@ -34,6 +34,16 @@
         disabled?: boolean;
         loading?: boolean;
         rows?: number;
+        /**
+         * The resize grip. `auto` (default): the browser's vertical grip with a mouse or
+         * trackpad, none on a touch screen, where dragging it scrolls the page. `vertical`
+         * shows it everywhere, `none` never. With `autogrow` there is no grip.
+         */
+        resize?: 'auto' | 'none' | 'vertical';
+        /** The field grows with its content, from `rows` up to `maxRows`, and scrolls after that. */
+        autogrow?: boolean;
+        /** The tallest an `autogrow` field gets, in rows. Without it the field has no limit. */
+        maxRows?: number;
         size?: SizeVariant;
         variant?: SemanticVariant;
         /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
@@ -59,6 +69,9 @@
         disabled = false,
         loading = false,
         rows = 4,
+        resize = 'auto',
+        autogrow = false,
+        maxRows,
         size = 'md',
         variant = 'default',
         message = '',
@@ -96,12 +109,44 @@
                 : 'border-input-border enabled:hover:border-input-border-hover';
     });
 
+    const resizeClass = $derived(
+        autogrow || resize === 'none'
+            ? 'resize-none'
+            : resize === 'vertical'
+              ? 'resize-y'
+              : 'resize-y pointer-coarse:resize-none',
+    );
+
+    // Autogrow: `field-sizing: content` where the browser has it, held between
+    // `rows` and `maxRows` lines (`leading-6`, plus `py-2` and the two borders,
+    // since the box is border-box). Elsewhere the height is measured from the
+    // content after each change; the same two limits clamp it.
+    const linesHeight = (lines: number) => `calc(${lines * 1.5 + 1}rem + 2px)`;
+    const minHeight = $derived(autogrow ? linesHeight(Math.max(1, rows)) : undefined);
+    const maxHeight = $derived(
+        autogrow && maxRows !== undefined ? linesHeight(Math.max(rows, maxRows)) : undefined,
+    );
+
+    let element: HTMLTextAreaElement | undefined = $state();
+
+    $effect(() => {
+        void value;
+        if (!autogrow || !element) return;
+        if (typeof CSS !== 'undefined' && CSS.supports?.('field-sizing', 'content')) return;
+        const field = element;
+        field.style.height = 'auto';
+        field.style.height = `${field.scrollHeight + field.offsetHeight - field.clientHeight}px`;
+        return () => {
+            field.style.height = '';
+        };
+    });
+
     // 16px below `sm`: iOS Safari zooms the page when a focused field is smaller.
     const textareaClasses = $derived(() => {
         const baseClasses =
-            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed resize-y px-3 py-2 text-sm max-sm:text-base leading-6';
+            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed px-3 py-2 text-sm max-sm:text-base leading-6';
 
-        return cn(`${baseClasses} ${variantClass()} ${className}`);
+        return cn(`${baseClasses} ${resizeClass} ${variantClass()} ${className}`);
     });
 
     const labelClasses = $derived(
@@ -121,6 +166,7 @@
     {/if}
     <div class="relative">
         <textarea
+            bind:this={element}
             id={textareaId}
             {name}
             bind:value
@@ -129,6 +175,10 @@
             disabled={isDisabled}
             {rows}
             class={textareaClasses()}
+            style:field-sizing={autogrow ? 'content' : undefined}
+            style:min-height={minHeight}
+            style:max-height={maxHeight}
+            style:overflow-y={maxHeight ? 'auto' : undefined}
             oninput={handleInput}
             aria-invalid={status.variant === 'error' ? 'true' : undefined}
             aria-required={required ? 'true' : undefined}

@@ -2552,6 +2552,29 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Field label",
                     },
                     {
+                        name: "resize",
+                        type: "'auto' | 'none' | 'vertical'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "The resize grip. auto: the browser's vertical grip with a mouse or trackpad, none on a touch screen. vertical shows it everywhere, none never. An autogrow field has no grip.",
+                    },
+                    {
+                        name: "autogrow",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "The field grows with its content, from rows up to maxRows, and scrolls after that.",
+                    },
+                    {
+                        name: "maxRows",
+                        type: "number",
+                        required: false,
+                        description:
+                            "The tallest an autogrow field gets, in rows. Without it the field has no limit.",
+                    },
+                    {
                         name: "variant",
                         type: "string",
                         required: false,
@@ -2595,6 +2618,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Basic textarea",
                         description: "Label and placeholder",
                         code: '<Textarea label="Notes" placeholder="…" />',
+                    },
+                    {
+                        title: "Grows with its content",
+                        description: "From two rows to six, then it scrolls; no resize grip",
+                        code: '<Textarea label="Note" rows={2} maxRows={6} autogrow bind:value={note} />',
                     },
                 ],
             },

@@ -420,6 +420,12 @@ export interface TextareaProps
     placeholder?: string;
     required?: boolean;
     rows?: number;
+    /** The resize grip: `auto` (default) is vertical with a mouse and none on a touch screen. */
+    resize?: 'auto' | 'none' | 'vertical';
+    /** The field grows with its content, from `rows` up to `maxRows`. */
+    autogrow?: boolean;
+    /** The tallest an `autogrow` field gets, in rows. */
+    maxRows?: number;
     disabled?: boolean;
     loading?: boolean;
     size?: SizeVariant;
