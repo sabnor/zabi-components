@@ -7,6 +7,7 @@
     import { cn } from "../util/cn.js";
     import { isVideoPath, isVideoUrl } from "../util/media.js";
     import { generateId } from "../util/ssr-safe.js";
+    import type { ButtonSize, ButtonVariant } from "../types/variants.js";
 
     export type ImageUploadFileDetail = {
         /** Selected file, or `null` when the image is removed. */
@@ -19,6 +20,11 @@
 
     export type ImageUploadActionsPlacement = "overlay" | "strip";
 
+    export type ImageUploadVariant = "dropzone" | "button";
+
+    /** Why a file was turned away: `accept` does not allow it, or it is over `maxSize`. */
+    export type ImageUploadRejectReason = "type" | "size";
+
     export type ImageUploadPreviewDetail = {
         /** The current `value`. */
         url: string;
@@ -30,9 +36,25 @@
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "onchange" | "onclick" | "id"> & {
         /** Extra classes for the host element. */
         class?: string;
+        /**
+         * `dropzone` (default): the drop area, and the preview with Change and
+         * Remove once there is a value. `button`: only a button that opens the
+         * file chooser, for a row of choices; no drop area, no preview and no
+         * Remove. The picked file comes through `onfileselect` and `bind:value`,
+         * and the app shows it where it wants.
+         */
+        variant?: ImageUploadVariant;
+        /** `variant="button"`: the trigger's `Button` variant. */
+        buttonVariant?: ButtonVariant;
+        /** `variant="button"`: the trigger's `Button` size. */
+        buttonSize?: ButtonSize;
+        /** The largest file taken, in bytes. A larger one goes to `onfilereject` with `"size"`. */
+        maxSize?: number;
+        /** `variant="button"`: the trigger's content, in place of `label`. */
+        children?: Snippet;
         /** Id of the control the label points at; generated when omitted. */
         id?: string;
-        /** Visible label, associated with the dropzone. */
+        /** Visible label, associated with the dropzone. With `variant="button"` it is the button's text. */
         label?: string;
         /** Preview URL; `bind:value` to read it. */
         value?: string | null;
@@ -75,12 +97,16 @@
         onbrowse?: (event: Event) => void;
         /** Selected file and preview URL; `{ file: null, url: null }` on remove. */
         onfileselect?: (detail: ImageUploadFileDetail) => void;
-        /** A dropped file that `accept` does not allow. */
-        onfilereject?: (file: File) => void;
+        /** A dropped file that `accept` does not allow, or a dropped or chosen file over `maxSize`. */
+        onfilereject?: (file: File, reason: ImageUploadRejectReason) => void;
     };
 
     let {
         class: className = "",
+        variant = "dropzone",
+        buttonVariant = "secondary",
+        buttonSize = "md",
+        maxSize,
         id: idProp,
         label = "",
         value = $bindable<Exclude<Props["value"], undefined>>(),
@@ -106,7 +132,7 @@
         onbrowse,
         onfileselect,
         onfilereject,
-        children: _children,
+        children,
         ...restProps
     }: Props = $props();
 
@@ -245,6 +271,12 @@
         if (!input.files || input.files.length === 0) return;
 
         const file = input.files[0];
+        if (tooLarge(file)) {
+            // Cleared so the same file can be chosen again after the app has said why.
+            input.value = "";
+            onfilereject?.(file, "size");
+            return;
+        }
         const url = selectFile(file);
 
         onchange?.(event);
@@ -271,6 +303,10 @@
             return;
         }
         fileInput?.click();
+    }
+
+    function tooLarge(file: File) {
+        return maxSize !== undefined && file.size > maxSize;
     }
 
     /** Same rules the browser applies to the `accept` attribute. */
@@ -322,7 +358,11 @@
         const file = event.dataTransfer?.files?.[0];
         if (!file) return;
         if (!matchesAccept(file)) {
-            onfilereject?.(file);
+            onfilereject?.(file, "type");
+            return;
+        }
+        if (tooLarge(file)) {
+            onfilereject?.(file, "size");
             return;
         }
 
@@ -337,132 +377,152 @@
     });
 </script>
 
-<div bind:this={host} class={cn("space-y-3", className)} {...restProps}>
-    {#if label}
-        <label
-            id={labelId}
-            for={controlId}
-            class={cn("block text-sm font-medium text-label", disabled && "opacity-60")}
+<div
+    bind:this={host}
+    class={cn(variant === "button" ? "inline-block space-y-2" : "space-y-3", className)}
+    data-variant={variant}
+    {...restProps}
+>
+    {#if variant === "button"}
+        <!-- Only the trigger: one choice in a row of others. The value is kept
+             and announced as in the dropzone, but nothing is drawn for it. -->
+        <Button
+            id={controlId}
+            variant={buttonVariant}
+            size={buttonSize}
+            onclick={triggerFileSelect}
+            aria-describedby={errorMessage ? errorId : undefined}
+            {disabled}
         >
-            {label}
-        </label>
-    {/if}
-
-    <!-- Wraps both states so a drop is handled the same over either. -->
-    <div
-        role="presentation"
-        class={disabled ? "cursor-not-allowed" : undefined}
-        ondragenter={handleDragEnter}
-        ondragover={handleDragOver}
-        ondragleave={handleDragLeave}
-        ondrop={handleDrop}
-        data-drag-over={isDragOver ? "" : undefined}
-    >
-        {#if value}
-            <div
-                class="relative group"
-                role={label ? "group" : undefined}
-                aria-labelledby={label ? labelId : undefined}
+            {#if children}{@render children()}{:else}{label || browseText}{/if}
+        </Button>
+    {:else}
+        {#if label}
+            <label
+                id={labelId}
+                for={controlId}
+                class={cn("block text-sm font-medium text-label", disabled && "opacity-60")}
             >
-                {#if preview}
-                    {@render preview({ url: value, type: resolvedPreviewType, alt })}
-                {:else if resolvedPreviewType === "video"}
-                    <!-- Never autoplays, so there is no motion to reduce; muted
-                         until the viewer unmutes it from the native controls. -->
-                    <video
-                        src={value}
-                        controls
-                        muted
-                        playsinline
-                        preload="metadata"
-                        aria-label={alt || undefined}
-                        class="w-full h-32 object-cover rounded-container border-0"
-                    ></video>
-                {:else}
-                    <img
-                        src={value}
-                        {alt}
-                        class="w-full h-32 object-cover rounded-container border-0"
-                    />
-                {/if}
-                <!-- Hover cannot reveal the actions on a touch screen, so there
-                     they stay visible as a strip that leaves the preview in
-                     view. The layer itself never takes the pointer: only the
-                     plate under the buttons does, so a video beneath stays
-                     operable. The plate is opaque so the labels keep their
-                     contrast whatever the image behind them. -->
+                {label}
+            </label>
+        {/if}
+
+        <!-- Wraps both states so a drop is handled the same over either. -->
+        <div
+            role="presentation"
+            class={disabled ? "cursor-not-allowed" : undefined}
+            ondragenter={handleDragEnter}
+            ondragover={handleDragOver}
+            ondragleave={handleDragLeave}
+            ondrop={handleDrop}
+            data-drag-over={isDragOver ? "" : undefined}
+        >
+            {#if value}
                 <div
-                    class={cn(
-                        "absolute inset-0 p-1 border border-border-overlay material-thin opacity-0 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100 transition-opacity motion-reduce:transition-none rounded-container flex items-center justify-center pointer-events-none",
-                        "pointer-coarse:opacity-100 [@media(hover:none)]:opacity-100",
-                        actionsInStrip
-                            ? "bottom-auto"
-                            : "pointer-coarse:bottom-auto [@media(hover:none)]:bottom-auto",
-                        isDragOver && "opacity-100 border-action-primary",
-                    )}
-                    data-testid="image-upload-actions"
+                    class="relative group"
+                    role={label ? "group" : undefined}
+                    aria-labelledby={label ? labelId : undefined}
                 >
+                    {#if preview}
+                        {@render preview({ url: value, type: resolvedPreviewType, alt })}
+                    {:else if resolvedPreviewType === "video"}
+                        <!-- Never autoplays, so there is no motion to reduce; muted
+                             until the viewer unmutes it from the native controls. -->
+                        <video
+                            src={value}
+                            controls
+                            muted
+                            playsinline
+                            preload="metadata"
+                            aria-label={alt || undefined}
+                            class="w-full h-32 object-cover rounded-container border-0"
+                        ></video>
+                    {:else}
+                        <img
+                            src={value}
+                            {alt}
+                            class="w-full h-32 object-cover rounded-container border-0"
+                        />
+                    {/if}
+                    <!-- Hover cannot reveal the actions on a touch screen, so there
+                         they stay visible as a strip that leaves the preview in
+                         view. The layer itself never takes the pointer: only the
+                         plate under the buttons does, so a video beneath stays
+                         operable. The plate is opaque so the labels keep their
+                         contrast whatever the image behind them. -->
                     <div
-                        class="pointer-events-auto flex min-w-0 flex-wrap justify-center gap-2 rounded-control bg-surface-overlay p-1"
+                        class={cn(
+                            "absolute inset-0 p-1 border border-border-overlay material-thin opacity-0 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100 transition-opacity motion-reduce:transition-none rounded-container flex items-center justify-center pointer-events-none",
+                            "pointer-coarse:opacity-100 [@media(hover:none)]:opacity-100",
+                            actionsInStrip
+                                ? "bottom-auto"
+                                : "pointer-coarse:bottom-auto [@media(hover:none)]:bottom-auto",
+                            isDragOver && "opacity-100 border-action-primary",
+                        )}
+                        data-testid="image-upload-actions"
                     >
-                        <Button
-                            id={controlId}
-                            variant="secondary"
-                            size="sm"
-                            class="min-w-0"
-                            onclick={triggerFileSelect}
-                            aria-label={changeName}
-                            aria-describedby={errorMessage ? errorId : undefined}
-                            {disabled}
+                        <div
+                            class="pointer-events-auto flex min-w-0 flex-wrap justify-center gap-2 rounded-control bg-surface-overlay p-1"
                         >
-                            <span class="truncate">{changeText}</span>
-                        </Button>
-                        <Button
-                            variant="danger"
-                            size="sm"
-                            class="min-w-0"
-                            onclick={removeImage}
-                            aria-label={removeName}
-                            {disabled}
-                        >
-                            <span class="truncate">{removeText}</span>
-                        </Button>
+                            <Button
+                                id={controlId}
+                                variant="secondary"
+                                size="sm"
+                                class="min-w-0"
+                                onclick={triggerFileSelect}
+                                aria-label={changeName}
+                                aria-describedby={errorMessage ? errorId : undefined}
+                                {disabled}
+                            >
+                                <span class="truncate">{changeText}</span>
+                            </Button>
+                            <Button
+                                variant="danger"
+                                size="sm"
+                                class="min-w-0"
+                                onclick={removeImage}
+                                aria-label={removeName}
+                                {disabled}
+                            >
+                                <span class="truncate">{removeText}</span>
+                            </Button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {:else}
-            <button
-                type="button"
-                id={controlId}
-                class={cn(
-                    "focus-ring block w-full border-2 border-dashed border-input-border rounded-container p-6 text-center enabled:hover:border-action-primary enabled:active:bg-surface-active transition-colors",
-                    // Disabled form controls can swallow pointer events; let a
-                    // drag land on the wrapper, which cancels it.
-                    disabled ? "pointer-events-none opacity-50" : "cursor-pointer",
-                    isDragOver && "border-action-primary bg-action-primary-subtle",
-                )}
-                onclick={triggerFileSelect}
-                {disabled}
-                aria-describedby={[label ? hintId : "", errorMessage ? errorId : ""]
-                    .filter(Boolean)
-                    .join(" ") || undefined}
-            >
-                <span class="block space-y-3">
-                    <span
-                        class="w-12 h-12 mx-auto bg-action-secondary rounded-control flex items-center justify-center"
-                    >
-                        <Image size={24} class="text-description" aria-hidden="true" />
-                    </span>
-                    <span id={hintId} class="block">
-                        <span class="block font-medium text-headline">{placeholder}</span>
-                        <span class="block text-sm text-description">
-                            {browseText}
+            {:else}
+                <button
+                    type="button"
+                    id={controlId}
+                    class={cn(
+                        "focus-ring block w-full border-2 border-dashed border-input-border rounded-container p-6 text-center enabled:hover:border-action-primary enabled:active:bg-surface-active transition-colors",
+                        // Disabled form controls can swallow pointer events; let a
+                        // drag land on the wrapper, which cancels it.
+                        disabled ? "pointer-events-none opacity-50" : "cursor-pointer",
+                        isDragOver && "border-action-primary bg-action-primary-subtle",
+                    )}
+                    onclick={triggerFileSelect}
+                    {disabled}
+                    aria-describedby={[label ? hintId : "", errorMessage ? errorId : ""]
+                        .filter(Boolean)
+                        .join(" ") || undefined}
+                >
+                    <span class="block space-y-3">
+                        <span
+                            class="w-12 h-12 mx-auto bg-action-secondary rounded-control flex items-center justify-center"
+                        >
+                            <Image size={24} class="text-description" aria-hidden="true" />
+                        </span>
+                        <span id={hintId} class="block">
+                            <span class="block font-medium text-headline">{placeholder}</span>
+                            <span class="block text-sm text-description">
+                                {browseText}
+                            </span>
                         </span>
                     </span>
-                </span>
-            </button>
-        {/if}
-    </div>
+                </button>
+            {/if}
+        </div>
+    {/if}
 
     <input
         bind:this={fileInput}

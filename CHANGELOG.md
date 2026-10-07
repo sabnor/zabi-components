@@ -14,6 +14,9 @@ Whenever token or CSS import API surface changes, include:
 
 ### Added
 
+- `ImageUpload variant="button"` (Z-076; D183): only the trigger, for a photo that is one choice in a row of others. A `Button` that opens the file chooser (`buttonVariant`, default `secondary`; `buttonSize`, default `md`; its text is `label`, or `children`), with `accept`, `onclick`, `onbrowse`, `onchange`, `onfileselect`, `bind:value`, `disabled`, the error block and the polite announcement as in the dropzone; no drop area, no preview, no Change or Remove. The default `variant="dropzone"` is unchanged.
+- `ImageUpload maxSize` (bytes), in both variants: a larger file, chosen or dropped, is not selected and goes to `onfilereject`, which now gets a second argument, `"type"` or `"size"`. Without `maxSize` nothing changes. The component had no size limit before.
+
 - `Textarea autogrow` and `maxRows` (Z-077; D181): the field grows with its content from `rows` up to `maxRows` rows and scrolls after that (no limit without `maxRows`). It uses `field-sizing: content` where the browser has it and measures the content elsewhere. An autogrow field has no resize grip.
 
 - `ConfirmDialog cancelVariant` (Z-080; D182): the cancel button's `Button` variant, any `ButtonVariant`. The default is `outline`, so nothing changes; `tonal`, `secondary`, `ghost` or `text` for an app that has no outline button. Cancel stays the first control and keeps the initial focus.

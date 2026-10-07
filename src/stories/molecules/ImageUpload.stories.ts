@@ -39,6 +39,23 @@ export const WithImage: Story = {
     }
 };
 
+export const ButtonOnly: Story = {
+    args: {
+        variant: 'button',
+        buttonVariant: 'tonal',
+        label: 'Choose a photo',
+        accept: 'image/*',
+        maxSize: 5_000_000
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'variant="button" is only the trigger: no drop area, no preview and no Remove. For a photo that is one choice among others (an avatar picker). The picked file comes through onfileselect; a file over maxSize goes to onfilereject with "size".'
+            }
+        }
+    }
+};
+
 export const Disabled: Story = {
     args: {
         value: null,

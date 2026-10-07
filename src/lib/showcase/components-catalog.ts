@@ -4129,12 +4129,41 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Id of the control the label points at. Generated when omitted.",
                     },
                     {
+                        name: "variant",
+                        type: "'dropzone' | 'button'",
+                        required: false,
+                        defaultValue: "dropzone",
+                        description:
+                            "dropzone: the drop area, and the preview with Change and Remove once there is a value. button: only a button that opens the file chooser, for a row of choices; no drop area, no preview and no Remove. The picked file comes through onfileselect and bind:value. The button's text is label, or children.",
+                    },
+                    {
+                        name: "buttonVariant",
+                        type: "ButtonVariant",
+                        required: false,
+                        defaultValue: "secondary",
+                        description: "With variant=\"button\": the trigger's Button variant.",
+                    },
+                    {
+                        name: "buttonSize",
+                        type: "ButtonSize",
+                        required: false,
+                        defaultValue: "md",
+                        description: "With variant=\"button\": the trigger's Button size.",
+                    },
+                    {
                         name: "accept",
                         type: "string",
                         required: false,
                         defaultValue: "image/*",
                         description:
                             "File types the chooser offers and a drop accepts.",
+                    },
+                    {
+                        name: "maxSize",
+                        type: "number",
+                        required: false,
+                        description:
+                            "The largest file taken, in bytes. A larger one, chosen or dropped, is not selected and goes to onfilereject with \"size\".",
                     },
                     {
                         name: "placeholder",
@@ -4288,10 +4317,10 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "onfilereject",
-                        type: "(file: File) => void",
+                        type: "(file: File, reason: 'type' | 'size') => void",
                         required: false,
                         description:
-                            "Runs with a dropped file that accept does not allow.",
+                            "Runs with a dropped file that accept does not allow (type), or a chosen or dropped file over maxSize (size).",
                     },
                 ],
 
@@ -4305,6 +4334,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Media Library",
                         description: "Open your own picker and accept video",
                         code: '&lt;ImageUpload label="Hero" accept="image/*,video/*" bind:value onbrowse={openLibrary} /&gt;',
+                    },
+                    {
+                        title: "Only the trigger",
+                        description: "A button in a row of choices; the app shows the picked image itself",
+                        code: '&lt;ImageUpload variant="button" buttonVariant="tonal" label="Choose a photo" maxSize={5_000_000} onfileselect={({ file }) =&gt; crop(file)} onfilereject={(file, reason) =&gt; explain(reason)} /&gt;',
                     },
                 ],
             },
@@ -6332,6 +6366,14 @@ pushToast({
                         description: "Text of the cancel button.",
                     },
                     {
+                        name: "cancelVariant",
+                        type: "ButtonVariant",
+                        required: false,
+                        defaultValue: "outline",
+                        description:
+                            "The cancel button's Button variant: tonal, secondary, ghost or text for an app that has no outline button. Cancel stays the first control and keeps the initial focus.",
+                    },
+                    {
                         name: "onconfirm",
                         type: "() => void | boolean | Promise<void | boolean>",
                         required: false,
@@ -6393,14 +6435,6 @@ pushToast({
 
 <ConfirmDialog
     bind:open
-                    {
-                        name: "cancelVariant",
-                        type: "ButtonVariant",
-                        required: false,
-                        defaultValue: "outline",
-                        description:
-                            "The cancel button's Button variant: tonal, secondary, ghost or text for an app that has no outline button. Cancel stays the first control and keeps the initial focus.",
-                    },
     variant="danger"
     title="Delete this project?"
     message="The project and its files are removed for everyone. This cannot be undone."
