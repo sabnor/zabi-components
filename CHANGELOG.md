@@ -12,6 +12,14 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.13] - 2026-10-07
+
+A thirteenth local preview build of the 9.0 direction, not published to npm. Two
+entries from the app team (Z-094, Z-095), both about `Skeleton`; no token, prop,
+variant or export of alpha.12 is removed or renamed, and no default changes: a
+lone `Skeleton` is the same status named "Loading…". Run on this build: the type
+and design checks, the unit suite, the package build and a scratch install; no
+browser.
 ### Added
 
 - `SkeletonGroup`: one `role="status"` with the loading label for the `Skeleton` pieces
