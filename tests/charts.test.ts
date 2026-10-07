@@ -322,10 +322,11 @@ describe("PieChart", () => {
         expect(slices[0].getAttribute("d")).toMatch(/^M50 0A50 50 0 1 1 /);
         const mask = container.querySelector("mask")!;
         expect(mask.querySelectorAll("path.cut")).toHaveLength(3);
-        // In a full pie each gap is a sliver from the exact centre, so every slice runs to the middle.
+        // Each gap is one even line from the exact centre with a round end, so the gaps meet in a point.
         for (const cut of mask.querySelectorAll("path.cut")) {
-            expect(cut.getAttribute("d")).toMatch(/^M50 50L[\d.-]+ [\d.-]+L[\d.-]+ [\d.-]+Z$/);
-            expect(cut.getAttribute("stroke")).toBe("none");
+            expect(cut.getAttribute("d")).toMatch(/^M50 50L[\d.-]+ [\d.-]+$/);
+            expect(cut.getAttribute("stroke")).toBe("black");
+            expect(cut.getAttribute("stroke-linecap")).toBe("round");
         }
         expect(slices[0].parentElement!.getAttribute("mask")).toBe(`url(#${mask.id})`);
     });

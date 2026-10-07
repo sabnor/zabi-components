@@ -109,28 +109,18 @@
     const drawn = $derived(slices.filter((slice) => slice.path));
     /** The whole disc or ring, as one shape: what the glass is laid over. */
     const whole = $derived(slicePath(50, 50, OUTER, inner, 0, Math.PI * 2));
-    /** The width of the gap between two slices at the rim, in the drawing's own units (of 100). */
-    const GAP = 1.25;
+    /** The width of the gap between two slices, in the drawing's own units (of 100). */
+    const GAP = 1;
     const spot = (radius: number, angle: number) =>
         `${Math.round((50 + radius * Math.sin(angle)) * 100) / 100} ${Math.round((50 - radius * Math.cos(angle)) * 100) / 100}`;
     /**
      * Where two slices meet, a thin gap is cut, so they part on any surface
-     * without a border colour. In a ring the gap has parallel sides. In a full
-     * pie it is a sliver that narrows to nothing at the centre: every slice
-     * then runs to the exact middle and the gaps meet there in a point. Gaps
-     * of one width all the way in cut each tip short by a different amount
-     * and left a ragged hole in the middle.
+     * without a border colour. Every gap is one line of even width from the
+     * exact centre to the rim, with a round end, so in a full pie the gaps
+     * meet in one small round point in the middle and each is as wide at the
+     * centre as at the rim.
      */
-    const cuts = $derived(
-        drawn.length > 1
-            ? drawn.map((slice) => {
-                  const half = GAP / 2 / OUTER;
-                  return inner > 0
-                      ? `M50 50L${spot(OUTER + 1, slice.start)}`
-                      : `M50 50L${spot(OUTER + 1, slice.start - half)}L${spot(OUTER + 1, slice.start + half)}Z`;
-              })
-            : [],
-    );
+    const cuts = $derived(drawn.length > 1 ? drawn.map((slice) => `M50 50L${spot(OUTER + 1, slice.start)}`) : []);
 </script>
 
 <figure class={cn("zabi-chart relative m-0 flex flex-col gap-3", glass && CHART_GLASS, className)} {...restProps}>
@@ -160,7 +150,7 @@
                 <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
                     <rect width="100" height="100" fill="white" />
                     {#each cuts as cut, index (index)}
-                        <path class="cut" d={cut} fill="black" stroke={inner > 0 ? "black" : "none"} stroke-width={GAP} />
+                        <path class="cut" d={cut} fill="none" stroke="black" stroke-width={GAP} stroke-linecap="round" />
                     {/each}
                 </mask>
                 {#if drawn.length === 0}
