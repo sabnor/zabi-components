@@ -20,6 +20,12 @@ Whenever token or CSS import API surface changes, include:
   a status of your own, and `strings` (`label`); the label reads the provider's
   `skeleton.label` before the English "Loading…", and `aria-label` still wins. A lone
   `Skeleton` is unchanged. (Z-094)
+- `Skeleton` takes `tone="on-color"`: the surface's label colour at 24% (`bg-skeleton-on-color`,
+  in `@layer utilities`), for the `on-brand`, `on-accent` and `on-fill` blocks and a `Card` with
+  `tone`, in light and dark; `--zabi-skeleton-fill` replaces it. The default `tone="neutral"` is
+  `bg-neutral-subtle` as before. And `lines` (1 to 20, text variant): one placeholder with that many
+  lines and a shorter last line (60%); `width` and `class` apply to the paragraph, `height` to each
+  line, and it is one status like a lone piece. (Z-095)
 
 ## [9.0.0-alpha.12] - 2026-10-07
 

@@ -154,6 +154,10 @@ export interface SkeletonProps {
     strings?: Partial<SkeletonStrings>;
     /** No role, no label, hidden from assistive tech. */
     decorative?: boolean;
+    /** "on-color" is for a brand, accent or fill block. */
+    tone?: 'neutral' | 'on-color';
+    /** Text variant only: this many lines (1 to 20), the last one shorter. */
+    lines?: number;
 }
 
 // SkeletonGroup component props: one status for the pieces inside it

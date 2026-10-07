@@ -17,7 +17,7 @@
     <SkeletonGroup aria-label="Laddar sidan">
         <Skeleton variant="circle" />
         <Skeleton />
-        <Skeleton width="60%" />
+        <Skeleton lines={2} />
     </SkeletonGroup>
 {:else if kind === "provider"}
     <ZabiStringsProvider strings={{ skeleton: { label: "Laddar…" } }}>

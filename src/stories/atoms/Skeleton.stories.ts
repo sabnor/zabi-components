@@ -9,7 +9,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Lightweight loading placeholder primitive. Fills its parent width by default (except `circle`, which stays square). Override width with the `width` prop (CSS length or pixel number, e.g. `"50%"` or `200`) or a fixed Tailwind utility via `class` (e.g. `w-64`). Uses the `bg-surface-2` token so it sits subtly above `surface-1` cards and pages in both light and dark modes. It pulses, and under prefers-reduced-motion it stays a still fill. A lone Skeleton is its own `role="status"` named "Loading…" (from the strings provider\'s `skeleton.label`, or `aria-label`). For a screen of pieces, wrap them in `SkeletonGroup` (one status, pieces hidden) or set `decorative` on each.'
+                    'Lightweight loading placeholder primitive. Fills its parent width by default (except `circle`, which stays square). Override width with the `width` prop (CSS length or pixel number, e.g. `"50%"` or `200`) or a fixed Tailwind utility via `class` (e.g. `w-64`). Uses the `bg-surface-2` token so it sits subtly above `surface-1` cards and pages in both light and dark modes. It pulses, and under prefers-reduced-motion it stays a still fill. A lone Skeleton is its own `role="status"` named "Loading…" (from the strings provider\'s `skeleton.label`, or `aria-label`). For a screen of pieces, wrap them in `SkeletonGroup` (one status, pieces hidden) or set `decorative` on each. `lines` draws a paragraph with a shorter last line; `tone="on-color"` is the fill for a brand, accent or fill block.'
             }
         }
     },
@@ -21,6 +21,8 @@ const meta = {
         width: { control: 'text' },
         height: { control: 'text' },
         class: { control: 'text' },
+        tone: { control: 'inline-radio', options: ['neutral', 'on-color'] },
+        lines: { control: 'number' },
         decorative: { control: 'boolean' }
     },
     tags: ['autodocs']
@@ -66,6 +68,12 @@ export const ExplicitSize: Story = {
         variant: 'block',
         width: 200,
         height: 120
+    }
+};
+
+export const Paragraph: Story = {
+    args: {
+        lines: 3
     }
 };
 

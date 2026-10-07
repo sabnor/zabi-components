@@ -2327,6 +2327,22 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Draws the piece only: no role, no label, aria-hidden. For a piece beside a status of your own; a piece inside a SkeletonGroup is decorative already.",
                     },
+                    {
+                        name: "tone",
+                        type: "'neutral' | 'on-color'",
+                        required: false,
+                        defaultValue: "'neutral'",
+                        description:
+                            "neutral is the quiet fill for a page or a card. on-color is the surface's label colour at 24%, for a brand, accent or fill block (on-brand, on-accent, on-fill, a Card with tone), in light and dark. Set --zabi-skeleton-fill on an ancestor to replace it.",
+                    },
+                    {
+                        name: "lines",
+                        type: "number",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Text variant only: draws this many lines (1 to 20) as one placeholder with a shorter last line. class and width then apply to the whole paragraph, height to each line.",
+                    },
                 ],
                 variants: ["text", "circle", "block"],
                 examples: [
@@ -2370,7 +2386,17 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "One status for a screen",
                         description:
                             "SkeletonGroup is the one loading status; the pieces inside it are hidden from assistive tech.",
-                        code: '&lt;SkeletonGroup&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;Skeleton /&gt;\n&lt;/SkeletonGroup&gt;',
+                        code: '&lt;SkeletonGroup&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;Skeleton lines={2} /&gt;\n&lt;/SkeletonGroup&gt;',
+                    },
+                    {
+                        title: "Paragraph",
+                        description: "lines draws a paragraph in one piece: the last line is shorter.",
+                        code: '&lt;Skeleton lines={3} /&gt;',
+                    },
+                    {
+                        title: "On a colour block",
+                        description: "tone=\"on-color\" reads on a brand, accent or fill block, in light and dark.",
+                        code: '&lt;div class="on-brand p-4"&gt;\n  &lt;Skeleton variant="block" tone="on-color" /&gt;\n&lt;/div&gt;',
                     },
                 ],
             },
@@ -2407,7 +2433,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "A screen's placeholders",
                         description: "Three pieces, announced once.",
-                        code: '&lt;SkeletonGroup aria-label="Loading profile"&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;Skeleton /&gt;\n&lt;/SkeletonGroup&gt;',
+                        code: '&lt;SkeletonGroup aria-label="Loading profile"&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;Skeleton lines={3} /&gt;\n&lt;/SkeletonGroup&gt;',
                     },
                 ],
             },

@@ -44,8 +44,16 @@
 {:else if exampleIndex === 6}
     <SkeletonGroup class="flex w-full items-center gap-3">
         <Skeleton variant="circle" />
-        <Skeleton width="60%" class="flex-1" />
+        <Skeleton lines={2} class="flex-1" />
     </SkeletonGroup>
+{:else if exampleIndex === 7}
+    <div class="w-full">
+        <Skeleton lines={3} />
+    </div>
+{:else if exampleIndex === 8}
+    <div class="on-brand w-full rounded-container bg-action-primary p-4">
+        <Skeleton variant="block" tone="on-color" />
+    </div>
 {:else}
     <div class="w-full">
         <Skeleton />

@@ -3079,6 +3079,18 @@ body {
   }
 }
 
+/* Skeleton, tone "on-color": the label colour of the surface it sits on at 24%, so it reads on
+ * a brand, accent or fill block (`.on-brand`, `.on-accent`, `.on-fill`, a `Card` with `tone`) in
+ * light and dark: `currentColor` there is the block's label colour. Deliberately not in the block
+ * lists above: those restore the theme's text on a surface, and a skeleton must keep the block's.
+ * `--zabi-skeleton-fill`, declared nowhere, replaces the fill (set it on any ancestor). Unset, a
+ * neutral Skeleton is `bg-neutral-subtle` as before. */
+@layer utilities {
+  .bg-skeleton-on-color {
+    background-color: var(--zabi-skeleton-fill, color-mix(in srgb, currentColor 24%, transparent));
+  }
+}
+
 /* Chip: the quiet neutral fill and the tonal selected fill, each with its label.
  * Hand-written with their states, like the tonal fill, so a `hover:` or
  * `active:` variant of one cannot lose to the base class. The plain

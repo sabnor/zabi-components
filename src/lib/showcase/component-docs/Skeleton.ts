@@ -74,8 +74,22 @@ export const doc: ComponentDoc = makeDoc({
             demoId: demoId("Skeleton", "group"),
             code: `<SkeletonGroup>
   <Skeleton variant="circle" />
-  <Skeleton />
+  <Skeleton lines={2} />
 </SkeletonGroup>`,
+        },
+        {
+            title: "Paragraph",
+            description: "lines draws a paragraph in one piece; the last line is shorter.",
+            demoId: demoId("Skeleton", "paragraph"),
+            code: `<Skeleton lines={3} />`,
+        },
+        {
+            title: "On a colour block",
+            description: `tone="on-color" reads on a brand, accent or fill block, in light and dark.`,
+            demoId: demoId("Skeleton", "onColor"),
+            code: `<div class="on-brand p-4">
+  <Skeleton variant="block" tone="on-color" />
+</div>`,
         },
     ],
     variantsStates: ["text", "circle", "block"],
