@@ -101,3 +101,18 @@ export const WithLeading: StoryObj<typeof SelectionLeadingStory> = {
         }
     }
 };
+
+export const WithError: Story = {
+    args: {
+        label: 'I accept the terms',
+        error: 'You must accept the terms to continue',
+        hint: 'Required to create an account'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'error, message (with a variant) and hint are drawn as on Input, under the label. The error is announced as an alert, sets aria-invalid on the box and is tied to it with aria-describedby, after the hint.'
+            }
+        }
+    }
+};

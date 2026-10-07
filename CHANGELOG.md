@@ -12,6 +12,12 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- `Checkbox` and `Radio` take `error`, `variant`, `message` and `hint`, drawn under the
+  label as on `Input`: an error is an alert, sets `aria-invalid` on a checkbox and is
+  tied to the input with `aria-describedby` (after the hint). `Toggle` is unchanged. (Z-090)
+
 ### Fixed
 
 - `Select` no longer outgrows its container: a width class (`w-48`) in a narrower

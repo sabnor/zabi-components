@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import type { HTMLInputAttributes } from "svelte/elements";
+    import type { SemanticVariant } from "../types/variants.js";
     import SelectionControl from "./SelectionControl.svelte";
     import type { SelectionControlMarkProps } from "./SelectionControl.svelte";
     import { RADIO_CHECKED_DOT_CLASSES } from "./selection-control.styles";
@@ -32,6 +33,13 @@
          * The label names the radio; the description does not join the name.
          */
         description?: string;
+        variant?: SemanticVariant;
+        /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
+        message?: string;
+        /** Help text under the control, read out with it. */
+        hint?: string;
+        /** An error under the control. It marks the input invalid and is announced; it wins over `variant` and `message`. */
+        error?: string;
     };
 
     let {

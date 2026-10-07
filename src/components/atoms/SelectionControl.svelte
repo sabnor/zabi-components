@@ -4,6 +4,9 @@
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
     import { groupBinding } from "../util/hydration.js";
+    import { fieldDescribedBy, fieldMessageState } from "../util/field.js";
+    import type { SemanticVariant } from "../types/variants.js";
+    import FieldMessages from "./FieldMessages.svelte";
     import {
         SELECTION_CONTROL_INPUT,
         SELECTION_CONTROL_LABEL_ROW,
@@ -50,6 +53,13 @@
          * It is not part of the name: the label names the control.
          */
         description?: string;
+        variant?: SemanticVariant;
+        /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
+        message?: string;
+        /** Help text under the control, read out with it. */
+        hint?: string;
+        /** An error under the control. It marks the input invalid and is announced; it wins over `variant` and `message`. */
+        error?: string;
     };
 
     let {
@@ -69,6 +79,10 @@
         mark,
         leading,
         description,
+        variant = "default",
+        message = "",
+        hint = "",
+        error = "",
         ...restProps
     }: Props = $props();
 
@@ -89,11 +103,20 @@
     const isDisabled = $derived(disabled || loading);
 
     const descriptionId = $derived(`${controlId}-description`);
+    const status = $derived(fieldMessageState({ variant, message, hint, error }));
+    const hasFieldText = $derived(status.showMessage || status.showHint);
+    // The caller's ids, then the description, the hint and the message.
     const describedBy = $derived(
-        [restProps["aria-describedby"], description ? descriptionId : undefined]
-            .filter(Boolean)
-            .join(" ") || undefined,
+        fieldDescribedBy(
+            controlId,
+            status,
+            [restProps["aria-describedby"], description ? descriptionId : undefined]
+                .filter(Boolean)
+                .join(" "),
+        ),
     );
+    // `aria-invalid` is not supported by the radio role: a radio's error is said by its description.
+    const invalid = $derived(status.variant === "error" ? "true" : undefined);
 
     // With a description the row is two lines: the box sits at the top, as in RadioGroup.
     const labelWrapperClasses = $derived(
@@ -157,7 +180,7 @@
     }
 </script>
 
-<div class={cn("flex items-center gap-2", className)}>
+{#snippet row()}
     <label for={controlId} class={labelWrapperClasses}>
         <span class={controlContainerClasses}>
             <!-- One branch per type: a binding needs a type it can read. -->
@@ -175,6 +198,7 @@
                     onchange={handleChange}
                     {...restProps}
                     aria-describedby={describedBy}
+                    aria-invalid={invalid ?? restProps["aria-invalid"]}
                 />
             {:else}
                 <input
@@ -218,4 +242,20 @@
             </span>
         {/if}
     </label>
-</div>
+{/snippet}
+
+{#if hasFieldText}
+    <div class={cn("flex flex-col", className)}>
+        <div class="flex items-center gap-2">
+            {@render row()}
+        </div>
+        <!-- Under the label text: the box is 20px and the gap 8px. -->
+        <div class="ps-7">
+            <FieldMessages fieldId={controlId} {status} {hint} gap="mt-1" />
+        </div>
+    </div>
+{:else}
+    <div class={cn("flex items-center gap-2", className)}>
+        {@render row()}
+    </div>
+{/if}

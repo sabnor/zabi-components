@@ -1113,6 +1113,37 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Drawn inside the one label, between the box and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
                     },
                     {
+                        name: "variant",
+                        type: "'default' | 'success' | 'warning' | 'error'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "Status of the box. With a message it shows the text under it; error also marks the input invalid.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Status text under the box, shown with a success, warning or error variant. For neutral help, use hint.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Help text under the box, read out with it (aria-describedby).",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "An error under the box: announced as an alert and tied to the input. On a checkbox it also sets aria-invalid. It wins over variant and message.",
+                    },
+                    {
                         name: "name",
                         type: "string",
                         required: false,
@@ -1219,6 +1250,37 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "undefined",
                         description:
                             "A line under the label, tied to the radio with aria-describedby. The label names the radio; the description does not join the name.",
+                    },
+                    {
+                        name: "variant",
+                        type: "'default' | 'success' | 'warning' | 'error'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "Status of the radio. With a message it shows the text under it; error also marks the input invalid.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Status text under the radio, shown with a success, warning or error variant. For neutral help, use hint.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Help text under the radio, read out with it (aria-describedby).",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "An error under the radio: announced as an alert and tied to the input. On a checkbox it also sets aria-invalid. It wins over variant and message.",
                     },
                     {
                         name: "checked",
