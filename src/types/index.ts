@@ -1172,6 +1172,8 @@ export interface LineChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class
     xTitle?: string;
     locale?: string;
     class?: string;
+    /** Stands the chart on a panel of the thick material (frosted glass). Off by default. */
+    glass?: boolean;
 }
 
 // BarChart component props
@@ -1197,6 +1199,8 @@ export interface BarChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class'
     valueTitle?: string;
     locale?: string;
     class?: string;
+    /** Stands the chart on a panel of the thick material (frosted glass). Off by default. */
+    glass?: boolean;
 }
 
 // PieChart component props
@@ -1221,6 +1225,10 @@ export interface PieChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class'
     shareTitle?: string;
     locale?: string;
     class?: string;
+    /** What stands in the middle of the ring (`donut`): the total, or the one share that matters. */
+    center?: Snippet;
+    /** Stands the chart on a panel of the thick material (frosted glass). Off by default. */
+    glass?: boolean;
 }
 
 // Sparkline component props
