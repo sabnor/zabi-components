@@ -9,7 +9,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'A pill for filtering and choosing, in one look and four forms. Give it an href and it is a link (aria-current while selected), which works without scripts. Give it nothing else and it is a toggle button (aria-pressed). type="checkbox" or type="radio" puts a real input under it, so it submits in a form without scripts and a choice made before the page hydrated is kept. The selected look is tonal, not solid, in light and dark, with a semibold label; the input forms take it from the native checked state. Use a ChipGroup to lay several out and to share a name and a value.'
+                    'A pill for filtering and choosing, in one look and four forms. Give it an href and it is a link (aria-current while selected), which works without scripts. Give it nothing else and it is a toggle button (aria-pressed). type="checkbox" or type="radio" puts a real input under it, so it submits in a form without scripts and a choice made before the page hydrated is kept. type="submit" is a button that posts its name and value and does not toggle: the app decides what is selected. The selected look is tonal, not solid, in light and dark, with a semibold label; the input forms take it from the native checked state. Use a ChipGroup to lay several out and to share a name and a value.'
             }
         }
     },
@@ -61,6 +61,17 @@ export const LeadingContentAndLongLabels: Story = {
         docs: {
             description: {
                 story: 'An icon or an avatar before the label through the leading snippet. A label never wraps; it is cut off only when class gives the chip a maximum width.'
+            }
+        }
+    }
+};
+
+export const Submit: Story = {
+    args: { scenario: 'submit' },
+    parameters: {
+        docs: {
+            description: {
+                story: 'type="submit" with name and value: three chips in one form, each posting its answer without scripts. It does not toggle; selected is the server\'s answer, drawn as on a toggle and said with aria-pressed.'
             }
         }
     }

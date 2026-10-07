@@ -951,10 +951,10 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "type",
-                        type: '"checkbox" | "radio"',
+                        type: '"checkbox" | "radio" | "submit" | "button"',
                         required: false,
                         description:
-                            "A real input under the chip, which submits in a form without scripts. Without it, and without href, the chip is a toggle button (aria-pressed). Inside a ChipGroup with a type, the group's.",
+                            "checkbox or radio: a real input under the chip, which submits in a form without scripts. submit or button: a button that does not toggle; a press posts the form (submit, with name and value) or only calls onclick, and selected, which the app decides, is drawn as on a toggle and said with aria-pressed. Without a type, and without href, the chip is a toggle button (aria-pressed). Inside a ChipGroup with a type, the group's.",
                     },
                     {
                         name: "name",

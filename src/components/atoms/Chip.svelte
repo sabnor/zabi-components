@@ -26,8 +26,12 @@
          * `checkbox` or `radio`: a real input under the chip, which submits in
          * a form without scripts. Without it (and without `href`) the chip is a
          * toggle button. Inside a ChipGroup with a `type`, the group's.
+         * `submit` or `button`: a button that does not toggle. A press posts
+         * the form (`submit`, with `name` and `value`) or only calls `onclick`;
+         * `selected` is drawn as on a toggle and said with `aria-pressed`, and
+         * the app decides it, as a server's answer does.
          */
-        type?: "checkbox" | "radio";
+        type?: "checkbox" | "radio" | "submit" | "button";
         /** Name the input is submitted under. Inside a ChipGroup with a `name`, the group's. */
         name?: string;
         /** What the input submits, and what a ChipGroup's `value` holds when it is chosen. */
@@ -90,6 +94,8 @@
     const name = $derived(nameProp ?? (grouped ? group?.name : undefined));
     const isLink = $derived(href !== undefined && href !== null);
     const isInput = $derived(!isLink && (type === "checkbox" || type === "radio"));
+    /** A button that does not toggle: the app says what is selected. */
+    const isFixedButton = $derived(!isLink && (typeProp === "submit" || typeProp === "button"));
     const isDisabled = $derived(!!disabled || (grouped && !!group?.disabled));
     const chosen = $derived(grouped ? !!group?.isSelected(value ?? "") : !!selected);
     const showCheckmark = $derived(checkmark ?? (!isLink && type !== "radio"));
@@ -156,6 +162,7 @@
     function handleButtonClick(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
         onclick?.(event);
         if (event.defaultPrevented || isDisabled) return;
+        if (isFixedButton) return;
         selected = !selected;
         onchange?.(selected);
     }
@@ -297,7 +304,7 @@
     </label>
 {:else}
     <button
-        type="button"
+        type={typeProp === "submit" ? "submit" : "button"}
         {name}
         {value}
         {form}

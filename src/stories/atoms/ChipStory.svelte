@@ -5,7 +5,7 @@
 
     interface Props {
         /** Which arrangement to show. */
-        scenario?: 'forms' | 'states' | 'sizes' | 'leading' | 'disabled' | 'on-brand';
+        scenario?: 'forms' | 'states' | 'sizes' | 'leading' | 'disabled' | 'on-brand' | 'submit';
         size?: 'sm' | 'md' | 'lg';
     }
 
@@ -56,6 +56,12 @@
         <Chip leading={face} {size}>Ada</Chip>
         <Chip href="#long" class="max-w-xs" {size}>A very long label that is cut off by a maximum width on the chip, so it ends in an ellipsis</Chip>
     </div>
+{:else if scenario === 'submit'}
+    <form method="POST" onsubmit={(event) => event.preventDefault()} class="flex flex-wrap items-center gap-2">
+        <Chip type="submit" name="answer" value="going" selected {size}>Jag kommer</Chip>
+        <Chip type="submit" name="answer" value="maybe" {size}>Kanske</Chip>
+        <Chip type="submit" name="answer" value="no" {size}>Kan inte</Chip>
+    </form>
 {:else if scenario === 'disabled'}
     <div class="flex flex-wrap items-center gap-2">
         <Chip disabled {size}>Button</Chip>

@@ -571,8 +571,8 @@ export interface ChipProps
     hreflang?: HTMLAnchorAttributes['hreflang'];
     /** With `href`: what `aria-current` says while `selected`. Default `"true"`. */
     current?: 'page' | 'true' | 'step' | 'location' | 'date' | 'time';
-    /** `checkbox` or `radio`: a real input under the chip. Without it (and without `href`) the chip is a toggle button. */
-    type?: 'checkbox' | 'radio';
+    /** `checkbox` or `radio`: a real input under the chip. `submit` or `button`: a button that does not toggle (`selected` is drawn and said with `aria-pressed`, the app decides it). Without it (and without `href`) the chip is a toggle button. */
+    type?: 'checkbox' | 'radio' | 'submit' | 'button';
     name?: string;
     value?: string;
     /** The chip is chosen. Bindable. */
