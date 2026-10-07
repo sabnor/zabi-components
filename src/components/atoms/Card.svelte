@@ -37,6 +37,22 @@
         target?: HTMLAnchorAttributes["target"];
         /** With `href`: the link's relationship, such as `noopener`. */
         rel?: string;
+        /**
+         * The card itself is a `<button>`: the whole card is the control, and
+         * `submit` posts the form around it without scripts. With `href`
+         * the card is a link and this is ignored. Like a link card it must not
+         * contain other interactive elements. `onclick`
+         * runs on a press, as on any button.
+         */
+        type?: "submit" | "button" | "reset";
+        /** With `type`: the name the button submits under. */
+        name?: string;
+        /** With `type`: what the button submits. */
+        value?: string;
+        /** With `type`: the id of the form it belongs to, when it is not inside one. */
+        form?: string;
+        /** With `type`: the card cannot be pressed, is dimmed, and is skipped by the keyboard. */
+        disabled?: boolean;
         fullWidth?: boolean;
         class?: string;
         /** @deprecated use `class` — kept so 7.x call sites keep working. */
@@ -56,6 +72,11 @@
         href,
         target,
         rel,
+        type: buttonType,
+        name,
+        value,
+        form,
+        disabled = false,
         fullWidth = true,
         class: classProp = "",
         className = "",
@@ -74,6 +95,7 @@
     const surface = $derived(toneSurface({ tone, fill, onFill }));
 
     const isLink = $derived(href !== undefined && href !== null);
+    const isButton = $derived(!isLink && buttonType !== undefined);
 
     const variantClasses = $derived(
         surface.filled
@@ -94,7 +116,7 @@
     const STATE_LAYER =
         "relative after:absolute after:inset-0 after:rounded-[inherit] after:bg-current after:opacity-0 after:pointer-events-none after:transition-opacity after:duration-(--duration-base) motion-reduce:after:transition-none hover:after:opacity-8 active:after:opacity-12";
 
-    const interactive = $derived(!!onclick || isLink);
+    const interactive = $derived(!!onclick || isLink || isButton);
 
     const interactiveClasses = $derived.by(() => {
         if (!interactive) return "";
@@ -112,7 +134,11 @@
 
     /** A link card keeps the body colour (its whole content is not link-coloured); a scoped fill sets its own. */
     const linkClasses = $derived(
-        isLink ? `block no-underline min-h-11 ${surface.scoped ? "" : "text-body"}` : "",
+        isLink
+            ? `block no-underline min-h-11 ${surface.scoped ? "" : "text-body"}`
+            : isButton
+              ? `block text-start min-h-11 ${surface.scoped ? "" : "text-body"} ${disabled ? "cursor-not-allowed opacity-50 pointer-events-none" : ""}`
+              : "",
     );
 
     const cardClasses = $derived(
@@ -155,6 +181,21 @@
     >
         {@render children?.()}
     </a>
+{:else if isButton}
+    <button
+        type={buttonType}
+        {name}
+        {value}
+        {form}
+        {disabled}
+        class={cardClasses}
+        style={cardStyle}
+        {onclick}
+        aria-label={ariaLabel}
+        {...restProps as HTMLAttributes<HTMLButtonElement>}
+    >
+        {@render children?.()}
+    </button>
 {:else}
     <div
         class={cardClasses}

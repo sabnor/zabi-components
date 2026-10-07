@@ -481,6 +481,38 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "With href: the link's relationship, such as noopener.",
                     },
                     {
+                        name: "type",
+                        type: '"submit" | "button" | "reset"',
+                        required: false,
+                        description:
+                            "The card itself is a <button>, drawn and pressed as a link card is, with the 44px minimum. submit posts the form around it without scripts. Ignored with href. Like a link card it must not contain other interactive elements.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        description: "With type: the name the button submits under.",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        description: "With type: what the button submits.",
+                    },
+                    {
+                        name: "form",
+                        type: "string",
+                        required: false,
+                        description: "With type: the id of the form the button belongs to, when it is not inside one.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "With type: the card cannot be pressed, is dimmed and is skipped by the keyboard.",
+                    },
+                    {
                         name: "fullWidth",
                         type: "boolean",
                         required: false,

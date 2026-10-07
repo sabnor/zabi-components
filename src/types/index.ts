@@ -170,6 +170,16 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'>
     href?: string;
     target?: HTMLAnchorAttributes['target'];
     rel?: string;
+    /** The card is a `<button>` (ignored with `href`): `submit` posts the form around it. Like a link card it must not contain other interactive elements. */
+    type?: 'submit' | 'button' | 'reset';
+    /** With `type`: the name the button submits under. */
+    name?: string;
+    /** With `type`: what the button submits. */
+    value?: string;
+    /** With `type`: the id of the form it belongs to. */
+    form?: string;
+    /** With `type`: the card cannot be pressed. */
+    disabled?: boolean;
     size?: SizeVariant;
     fullWidth?: boolean;
     class?: string;

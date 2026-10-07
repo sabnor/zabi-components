@@ -3,6 +3,7 @@ import CardWithContent from './CardWithContent.svelte';
 import CardCompound from './CardCompound.svelte';
 import CardTonesStory from './CardTonesStory.svelte';
 import CardLinkStory from './CardLinkStory.svelte';
+import CardButtonStory from './CardButtonStory.svelte';
 import CardFlatLayersStory from './CardFlatLayersStory.svelte';
 
 const meta = {
@@ -156,6 +157,18 @@ export const LinkCard: Story = {
         }
     },
     render: (args) => ({ Component: CardLinkStory, props: args })
+};
+
+export const ButtonCard: Story = {
+    name: 'Button card',
+    parameters: {
+        docs: {
+            description: {
+                story: 'With `type="submit"` the whole card is one `<button>`: it posts the form around it without scripts, with the same ring, hover and pressed states and 44px minimum as a link card. `name`, `value` and `form` go to the button; `disabled` dims it. Like a link card it must not contain another link or button. With `href` it is a link and `type` is ignored.'
+            }
+        }
+    },
+    render: (args) => ({ Component: CardButtonStory, props: args })
 };
 
 export const Tones: Story = {
