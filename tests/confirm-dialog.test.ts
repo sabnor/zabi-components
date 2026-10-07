@@ -506,4 +506,13 @@ describe("ConfirmDialog loading announcement", () => {
         render(ConfirmDialogHarness, { props: { initialOpen: true } });
         expect(dialog().className).toContain("outline-none");
     });
+
+    it("draws cancel as the outline button unless cancelVariant says otherwise", () => {
+        render(ConfirmDialogHarness, { props: { initialOpen: true } });
+        expect(cancelButton().className).toContain("border-action-outline");
+        cleanup();
+        render(ConfirmDialogHarness, { props: { initialOpen: true, cancelVariant: "tonal" } });
+        expect(cancelButton().className).toContain("bg-action-tonal");
+        expect(cancelButton().className).not.toContain("border-action-outline");
+    });
 });

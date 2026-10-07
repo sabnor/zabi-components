@@ -2,6 +2,7 @@
     import Button from '../../components/atoms/Button.svelte';
     import ConfirmDialog from '../../components/molecules/ConfirmDialog.svelte';
     import type { ConfirmDialogVariant } from '../../components/util/confirm-dialog.js';
+    import type { ButtonVariant } from '../../components/types/variants.js';
 
     interface Props {
         variant?: ConfirmDialogVariant;
@@ -9,6 +10,7 @@
         message?: string;
         confirmLabel?: string;
         cancelLabel?: string;
+        cancelVariant?: ButtonVariant;
         /** Announced to screen readers when loading starts. */
         loadingLabel?: string;
         /** Hold the dialog in its loading state. */
@@ -25,6 +27,7 @@
         message = 'It becomes visible to everyone with the link.',
         confirmLabel = 'Confirm',
         cancelLabel = 'Cancel',
+        cancelVariant = 'outline',
         loadingLabel = 'Working…',
         loading = false,
         outcome = 'sync',
@@ -70,6 +73,7 @@
         {message}
         {confirmLabel}
         {cancelLabel}
+        {cancelVariant}
         {loading}
         {loadingLabel}
     >

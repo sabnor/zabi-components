@@ -6365,6 +6365,14 @@ pushToast({
 
 <ConfirmDialog
     bind:open
+                    {
+                        name: "cancelVariant",
+                        type: "ButtonVariant",
+                        required: false,
+                        defaultValue: "outline",
+                        description:
+                            "The cancel button's Button variant: tonal, secondary, ghost or text for an app that has no outline button. Cancel stays the first control and keeps the initial focus.",
+                    },
     variant="danger"
     title="Delete this project?"
     message="The project and its files are removed for everyone. This cannot be undone."
