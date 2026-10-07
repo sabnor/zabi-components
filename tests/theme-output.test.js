@@ -9,6 +9,7 @@ import postcss from 'postcss';
 import {
   readThemeMaps,
   resolveTokenColor,
+  resolveTokenPaint,
   resolveTokenValue,
 } from '../scripts/resolve-tokens.js';
 import { generateSurfaceLadder } from '../tokens/surface-ladder.js';
@@ -297,7 +298,7 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-border-strong': '#71717a',
         '--color-control-border': '#a1a1aa',
         '--color-focus-ring-muted': '#a1a1aa',
-        '--color-input-active': '#2f2f31',
+        // The dark field fills are translucent steps of the ramp (below), so they have no flat colour here.
         '--color-link': '#b5c6ff',
         // The dark surfaces are plain steps of the neutral ramp (D133/D134): page 900,
         // card 850, elevated and overlay 800 (two tone steps), overlay hover 750, inset 900.
@@ -318,6 +319,16 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
     };
     for (const [token, hex] of Object.entries(expected.light)) assert.equal(resolveTokenColor(light, token), hex, `light ${token}`);
     for (const [token, hex] of Object.entries(expected.dark)) assert.equal(resolveTokenColor(dark, token), hex, `dark ${token}`);
+    // The dark field: base-50 at 7% (rest, focus), 10% (hover) and 15% (pressed), over whatever it sits on (Z-078).
+    for (const [token, alpha] of Object.entries({ '--color-input': 0.07, '--color-input-focus': 0.07, '--color-input-hover': 0.1, '--color-input-active': 0.15 })) {
+      const paint = resolveTokenPaint(dark, token);
+      assert.equal(paint.hex, '#fafafa', `dark ${token}`);
+      assert.ok(Math.abs(paint.alpha - alpha) < 1e-9, `dark ${token} alpha ${paint.alpha}`);
+    }
+    // Light's field is opaque and did not move.
+    assert.equal(resolveTokenColor(light, '--color-input'), '#ffffff');
+    assert.equal(resolveTokenColor(light, '--color-input-hover'), '#f4f4f5');
+    assert.equal(resolveTokenColor(light, '--color-input-focus'), '#ffffff');
   });
 
   test(`${sourceName}: one :root override of --zabi-brand-* restyles light and dark`, () => {

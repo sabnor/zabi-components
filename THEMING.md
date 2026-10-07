@@ -1117,14 +1117,39 @@ Every surface uses one of four semantic levels. Use these tokens instead of raw 
 **Inset is not a fifth rung.** The four levels say how far a surface is lifted;
 inset says it is cut into the card it sits on. In light it is the ramp step
 below the raised surface, about 3 lightness points under it, and every text token
-passes AA on it. In dark it is the page step (3 points below the card), and
-`--color-input` points at it: a field on the page is told apart by its 3:1
-edge, as a white field on the near-white light page is. In light it shares
-`base-100` with `elevated`: under a white card the only direction left is down,
-so a nested card and a well are the same colour there. In dark the well and the
-page are the same colour, so a well on the page needs the edge too.
+passes AA on it. In dark it is the page step (3 points below the card). In
+light it shares `base-100` with `elevated`: under a white card the only
+direction left is down, so a nested card and a well are the same colour there.
+In dark the inset and the page are the same colour, so an inset area on the page
+needs an edge. `--color-input` no longer points at it in dark (it did up to
+9.0.0-alpha.5): a dark field is a translucent step of the neutral ramp, below.
 Do not use `--color-input` for a well. It is white in light mode, because a
 light field is a raised surface.
+
+**The dark field fill.** `--color-input` is base-50 at 7% over transparent in dark,
+`-hover` 10%, `-focus` 7%, `-active` 15%: a well lighter than whatever it sits on,
+with no rule per surface, as the dark flat card is a lighter layer. Measured on the
+default theme: the resting well is 1.20:1 off the page (#28282b), 1.22:1 off a card
+(#2e2e31) and 1.23:1 off the overlay (#363639); the pressed fill is 1.30:1 past
+the resting one on all three, the value text 7.34:1 or more and the placeholder
+4.08:1 or more on every fill (4.5:1 except pressed over the overlay, held to 4:1).
+`--color-input-placeholder` is 40% of base-350 into base-400 in dark (#ababb3, was
+base-600, #a1a1aa), because a lifted fill took the old one to 4.04:1 pressed on a
+card. The well is held at 1.15:1 or more off the page, a card and the overlay in
+dark, the hover step 1.08:1 and the pressed step 1.25:1 past rest, as pairs
+laid over what is behind the field (`behind`, `only: 'dark'`, `fgPaint`), also in
+`createTheme`'s check. The edge stays 3:1 against the surface outside the field
+(`--color-input-border`, unchanged); against the lifted fill it is 3.05:1 on the
+page, 2.79:1 on a card and 2.50:1 on the overlay (guarded at 3, 2.7 and 2.4).
+Inside a colour block (`.on-brand`, `.on-accent`, `.on-fill`) a field takes the
+opaque `--color-input-solid`, `-hover`, `-focus`, `-active` (in light the field's
+own values, in dark the old opaque field), as the flat card takes the opaque card.
+The progress track is unchanged (`--color-base-75` in dark). Restore the 9.0.0-alpha.5
+field: `overrides: { dark: { '--color-input': 'var(--color-surface-inset)',
+'--color-input-hover': 'var(--color-base-200)', '--color-input-focus':
+'var(--color-base-150)', '--color-input-active': 'color-mix(in srgb,
+var(--zabi-base-50) 10%, var(--color-surface-inset))', '--color-input-placeholder':
+'var(--color-base-600)' } }`.
 
 Supporting tokens:
 - `--color-surface-overlay-hover` (`bg-surface-overlay-hover`): row and icon-button hover **inside** an overlay. It is lighter than the overlay in dark mode.
@@ -1247,7 +1272,7 @@ all five surfaces: page, card, inset, elevated and overlay. The colour a focus-r
 uses must be a token in that list (`scripts/contrast-pairs.js`), so a ring
 cannot read a raw ramp step.
 `--color-input-border`, the edge of a form field, is held to 3:1 on the field
-fill (`--color-input`), the page and the card (WCAG 1.4.11). The same pairs are
+fill (`--color-input`; over the page, a card and the overlay in dark, where the fill is translucent), the page and the card (WCAG 1.4.11). The same pairs are
 in the list `createTheme` checks, so a generated theme that lets a field's edge
 fall below 3:1 is reported. Run it after
 re-pointing any token:

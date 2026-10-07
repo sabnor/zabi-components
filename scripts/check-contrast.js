@@ -516,6 +516,8 @@ function main() {
     for (const themeName of ['light', 'dark']) {
         const map = themes[themeName];
         for (const pair of pairs) {
+            // `only`: a pair about one theme (the dark field is a translucent step; light's is opaque).
+            if (pair.only && pair.only !== themeName) continue;
             const behind = behindToken(pair, themeName);
             // A token that is not declared at all is a renamed or deleted role,
             // not an alpha value: skipping it would drop its pairs silently.
@@ -539,7 +541,14 @@ function main() {
                 // `layers`: the same paint stacked, each laid over the last (nested translucent cards).
                 for (let layer = 0; layer < (pair.layers ?? 1); layer += 1) bg = compositeOver(paint, bg);
             }
-            const fg = resolve(map, pair.fg);
+            let fg = resolve(map, pair.fg);
+            if (behind && pair.fgPaint) {
+                // `fgPaint`: the foreground is a fill too (a pressed field against the resting one), laid over the same backdrop.
+                const fgPaint = resolveTokenPaint(map, pair.fg);
+                let under = resolve(map, behind);
+                for (let layer = 0; layer < (pair.layers ?? 1) && under && fgPaint; layer += 1) under = compositeOver(fgPaint, under);
+                fg = fgPaint ? under : null;
+            }
             if (!bg || !fg) {
                 skipped.push(`${themeName} · ${pair.name} (${!bg ? pair.bg : pair.fg} is not a flat colour)`);
                 continue;

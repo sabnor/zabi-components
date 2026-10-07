@@ -799,20 +799,21 @@ test('without light or dark overrides the bytes are what they were before the op
   // Then for 16b (Z-057): the dark status tints are mixes over the card surface, so a flat override of the card surface (the `flat` case) restates them and its bytes moved.
   // Then for T0 (tranche 5): the chip, tint card and progress edge pairs, so the header counts 38 more pairs per run (the `flat` case, whose raised surface is light in dark too, also lists the tint card's dark pairs); nothing else in the output moved.
   // Then for the flat card: the flat card tokens and their stacked pairs, so the header counts more pairs and the bytes carry the tokens.
+  // Then for Z-078: the dark field is a translucent step (and its placeholder moved), with its dark-only pairs over the page, a card and the overlay; light's bytes did not move.
   // Then for 16c: the material alphas and the backdrop brightness reach the generator, so the default material pairs are checked (and can warn), and the dark filters are restated.
   const before = {
-    plain: [{ brand: '#0026EA' }, 'f87ad720c2c7be9174385bf28d884bf80a5f7d920bc56443394a29bf53794e4c'],
+    plain: [{ brand: '#0026EA' }, '7bf536b1eeebbb0e45b300f6c30c1da4e8210efcbe1b884455696963c9e56b56'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      'f3e5771b45c98c5e622478beea2f30f3f26797a598e9b7eb1e470317cd9297ad',
+      'da082634688e12d2e04a2a9e68fa10852aad148c489900585dabea60133cfcb6',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      'c810757e47e9ff9e91079e107050cd1a6db21e9af518ad6fe7446a27e26303ce',
+      '80aa162ea8ce24836d7f2978ec1285446d780142ea5997630d5715f6cca9d5bc',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '128c8137bdd1d60c1520f2370222296f0a9625e83d03cf0a9a706b523fb64935',
+      '1c5f0d3be13758abab3cacf5cc56e2c4455b8d235ec17a9a99476914c5857c8f',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -1298,6 +1299,40 @@ test('the flat card tokens: the card in light, a translucent ramp step in dark, 
   const restored = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-card-flat': 'var(--color-card)' } } });
   assert.deepEqual(contrastWarnings(restored), []);
   assert.equal(declarationOf(darkRule(restored.css), '--color-card-flat'), 'var(--color-card)');
+});
+
+test('the dark field tokens: a translucent ramp step lifted off its surface, guarded over the page, a card and the overlay, settable, opaque inside a colour block', () => {
+  assert.equal(defaults.darkOnly['--color-input'], 'color-mix(in srgb, var(--zabi-base-50) 7%, transparent)');
+  assert.equal(defaults.darkOnly['--color-input-hover'], 'color-mix(in srgb, var(--zabi-base-50) 10%, transparent)');
+  assert.equal(defaults.darkOnly['--color-input-focus'], 'color-mix(in srgb, var(--zabi-base-50) 7%, transparent)');
+  assert.equal(defaults.darkOnly['--color-input-active'], 'color-mix(in srgb, var(--zabi-base-50) 15%, transparent)');
+  // Light is the opaque field it was, and the disabled well is unchanged in both modes.
+  assert.equal(defaults.light['--color-input'], 'var(--color-surface-raised)');
+  assert.equal(defaults.light['--color-input-hover'], 'var(--color-base-100)');
+  assert.equal(defaults.light['--color-input-focus'], 'var(--color-surface-raised)');
+  assert.equal(defaults.darkOnly['--color-input-disabled'], 'var(--color-base-75)');
+  assert.equal(defaults.darkOnly['--color-surface-inset'], 'var(--zabi-base-900)');
+  // The opaque steps a field takes inside a colour block are the old dark field.
+  assert.equal(defaults.darkOnly['--color-input-solid'], 'var(--color-surface-inset)');
+  assert.equal(defaults.darkOnly['--color-input-solid-hover'], 'var(--color-base-200)');
+  assert.equal(defaults.light['--color-input-solid'], 'var(--color-input)');
+  // The well is guarded against each surface, in dark only, and the pairs lay the field over it.
+  const shipped = buildThemeData().pairs.filter((pair) => pair.name.startsWith('field well against its surface'));
+  assert.deepEqual(shipped.map((pair) => pair.behind), ['--color-surface-base', '--color-surface-raised', '--color-surface-overlay']);
+  assert.ok(shipped.every((pair) => pair.only === 'dark' && pair.bg === '--color-input' && pair.min === 1.15));
+  assert.ok(buildThemeData().pairs.some((pair) => pair.fgPaint && pair.fg === '--color-input-active' && pair.min === 1.25));
+  assert.deepEqual(contrastWarnings(createTheme({ brand: '#0026EA' })), []);
+  // A field too faint to see off its surface is a warning for dark only, on all three surfaces.
+  const faint = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-input': 'color-mix(in srgb, #fafafa 3%, transparent)' } } });
+  const names = contrastWarnings(faint).map((w) => `${w.mode} ${w.pair}`);
+  for (const where of ['the page', 'a card', 'the overlay']) assert.ok(names.includes(`dark field well against its surface (over ${where})`), names.join('\n'));
+  assert.ok(!names.some((name) => name.startsWith('light')), names.join('\n'));
+  // A pressed step too close to the resting one fails, though neither is a flat colour.
+  const flatPress = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-input-active': 'color-mix(in srgb, #fafafa 8%, transparent)' } } });
+  assert.ok(contrastWarnings(flatPress).some((w) => w.pair.startsWith('pressed field against the resting field')));
+  // The restore line of the changelog: the old opaque field, which passes the pairs it was held to.
+  const restored = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-input': 'var(--color-surface-inset)', '--color-input-hover': 'var(--color-base-200)', '--color-input-focus': 'var(--color-base-150)', '--color-input-active': 'color-mix(in srgb, var(--zabi-base-50) 10%, var(--color-surface-inset))', '--color-input-placeholder': 'var(--color-base-600)' } } });
+  assert.deepEqual(contrastWarnings(restored).map((w) => w.pair).filter((pair) => !/field well against/.test(pair)), []);
 });
 
 test('createTheme writes a transparent progress track edge where the app\'s own track reaches 3:1 on the page and the card', () => {

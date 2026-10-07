@@ -24,6 +24,10 @@ export const AA_LARGE = 3.0;
 export const MIN_PRESSED = 1.25;
 /** Value text against placeholder text: enough to tell a filled field from an empty one. */
 export const MIN_VALUE_OVER_PLACEHOLDER = 1.75;
+/** The dark field's well against the surface it sits on (page, card, overlay): where the field is lighter than its surface. */
+export const MIN_FIELD_WELL = 1.15;
+/** A hovered field against the resting one: a step that can be seen, as the other state steps are. */
+export const MIN_FIELD_HOVER_STEP = 1.08;
 /** A neutral fill that has no edge (a Chip at rest): what it takes to be seen on the page and on a card. */
 export const MIN_EDGELESS_FILL = 1.2;
 
@@ -421,6 +425,33 @@ export function buildPairs() {
             if (min === AA_LARGE && role !== 'focus ring' && behind !== '--color-surface-base') continue;
             pairs.push({ name: `flat card · ${role} (${where})`, bg: '--color-card-flat', fg, min, behind, layers });
         }
+    }
+
+    // The dark field is a translucent step of the neutral ramp, so what it sits on is part of every pair
+    // it is in: laid over the page, a card and the overlay (`only: 'dark'`; light's field is opaque and
+    // its pairs above are unchanged). `fgPaint` lays the foreground over the same backdrop too, for a pair
+    // of two fills. Held: the well is 1.15:1 or more off its surface (the default is 1.20 to 1.23; the
+    // app asked for 1.2, a tinted ramp that moves the neutral steps keeps 1.15), the value and every
+    // placeholder 4.5:1 on all four fills, the pressed step 1.25:1 past rest and the hover step 1.08:1.
+    // Two floors are lower than the rest, and measured, not chosen to pass: the placeholder on a pressed
+    // field over the overlay is 4.0:1 (4.10 measured; the pressed step needs 1.25:1 past a resting well
+    // that is already light, and the value text allows a placeholder only so pale: body over placeholder
+    // is held to 1.75:1), and the edge against the lifted fill is 2.7:1 on a card and 2.4:1 on the
+    // overlay (2.79 and 2.50 measured) while the edge against the surface outside it stays 3:1 in
+    // 'field edge on page / card / elevated / overlay'.
+    const FIELD_SURFACES = [['the page', '--color-surface-base', AA_LARGE, AA_NORMAL], ['a card', '--color-surface-raised', 2.7, AA_NORMAL], ['the overlay', '--color-surface-overlay', 2.4, 4.0]];
+    for (const [where, behind, edgeMin, pressedPlaceholderMin] of FIELD_SURFACES) {
+        const field = (name, bg, fg, min, extra = {}) => pairs.push({ name: `${name} (over ${where})`, bg, fg, min, behind, only: 'dark', ...extra });
+        field('field well against its surface', '--color-input', behind, MIN_FIELD_WELL);
+        field('input value', '--color-input', '--color-body', AA_NORMAL);
+        field('input value on a pressed field', '--color-input-active', '--color-body', AA_NORMAL);
+        field('input placeholder', '--color-input', '--color-input-placeholder', AA_NORMAL);
+        field('input placeholder on a hovered field', '--color-input-hover', '--color-input-placeholder', AA_NORMAL);
+        field('input placeholder on a focused field', '--color-input-focus', '--color-input-placeholder', AA_NORMAL);
+        field('input placeholder on a pressed field', '--color-input-active', '--color-input-placeholder', pressedPlaceholderMin);
+        field('pressed field against the resting field', '--color-input', '--color-input-active', MIN_PRESSED, { fgPaint: true });
+        field('hovered field against the resting field', '--color-input', '--color-input-hover', MIN_FIELD_HOVER_STEP, { fgPaint: true });
+        field('field edge on the field fill', '--color-input', '--color-input-border', edgeMin);
     }
 
     for (const material of MATERIALS) {

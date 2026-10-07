@@ -330,6 +330,8 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = [], { gradients = true
     let checked = 0;
     for (const mode of ['light', 'dark']) {
         for (const pair of [...data.pairs, ...extraPairs]) {
+            // `only`: a pair about one mode (the dark field is a translucent step; light's is opaque).
+            if (pair.only && pair.only !== mode) continue;
             // The control veils are settled last (settleControlGradients), so a
             // choice made before then must not be steered by them.
             if (!gradients && pair.gradient) continue;
@@ -345,7 +347,14 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = [], { gradients = true
                 // `layers`: the same paint stacked, each laid over the last (nested translucent cards).
                 for (let layer = 0; layer < (pair.layers ?? 1) && bg; layer += 1) bg = compositeOver(paint, bg);
             }
-            const fg = resolveTokenColor(maps[mode], pair.fg);
+            let fg = resolveTokenColor(maps[mode], pair.fg);
+            if (behind && pair.fgPaint) {
+                // `fgPaint`: the foreground is a fill too (a pressed field against the resting one), laid over the same backdrop.
+                const fgPaint = resolveTokenPaint(maps[mode], pair.fg);
+                let under = resolveTokenColor(maps[mode], behind);
+                for (let layer = 0; layer < (pair.layers ?? 1) && under && fgPaint; layer += 1) under = compositeOver(fgPaint, under);
+                fg = fgPaint ? under : null;
+            }
             if (!bg || !fg) continue; // an alpha tint: not one flat colour
             checked += 1;
             const ratio = contrast(bg, fg);
