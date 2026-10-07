@@ -12,6 +12,15 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.12] - 2026-10-07
+
+A twelfth local preview build of the 9.0 direction, not published to npm. Five
+entries from the app team (Z-089 to Z-093); no token, prop, variant or export of
+alpha.11 is removed or renamed. Two defaults change what a consumer gets: a
+`RadioGroup` option with a description is named by its label alone, and a
+one-line option is centred in its row. Run on this build: the type and design
+checks, the unit suite, the package build and a scratch install; no browser.
+
 ### Added
 
 - `Chip` takes `loading` on its button forms (`type="submit"`, `"button"` and the toggle):
@@ -23,6 +32,9 @@ Whenever token or CSS import API surface changes, include:
 
 ### Fixed
 
+- `Skeleton` no longer pulses under `prefers-reduced-motion`: it is a still fill
+  (`motion-reduce:animate-none`). A `motion-reduce:animate-pulse` class on the
+  skeleton brings the pulse back. (Z-093)
 - `RadioGroup`: an option's `description` is no longer part of the radio's name; it is
   `aria-hidden` and tied to the radio with `aria-describedby`, as `Radio`'s. A one-line
   option is centred in its row (44px on touch) and its circle loses `mt-0.5`; a row
