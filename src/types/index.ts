@@ -299,6 +299,8 @@ export interface SelectProps
     menuWidth?: string;
     /** `auto` (the default): a BottomSheet on a phone, under the field elsewhere. */
     presentation?: "auto" | "popover" | "sheet" | "native";
+    /** In a sheet, a short list (up to six options) without a search field gets a sheet as tall as the list. Default `true`; `false` keeps the half-height sheet. */
+    sheetFit?: boolean;
     /** The component's own texts; see `SelectStrings`. The single-text props win over it. */
     strings?: Partial<import("../components/util/select.js").SelectStrings>;
     noResultsText?: string;
@@ -898,6 +900,8 @@ export interface BottomSheetProps
     snapPoints?: BottomSheetSnap[];
     /** The snap point the sheet is at. Bindable. */
     snap?: BottomSheetSnap;
+    /** As tall as the content, up to half the screen; one resting height, the grip only drags. */
+    fit?: boolean;
     /** Render the overlay in `document.body`; `false` renders in place. */
     portal?: boolean;
     /** When false, Escape, the backdrop, the close button and a swipe down do not close it. */

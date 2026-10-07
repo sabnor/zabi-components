@@ -60,6 +60,8 @@
          * to six `options`, all of it for more. The grip moves it either way.
          */
         sheetSnap?: BottomSheetSnap;
+        /** The sheet is as tall as the list, up to half the screen (BottomSheet `fit`); the grip then only drags. Off by default. */
+        sheetFit?: boolean;
         /** Accessible name of the sheet's close button. */
         sheetCloseLabel?: string;
         /** Accessible name of the sheet's grip while its button takes the sheet up a step. */
@@ -93,6 +95,7 @@
         fullWidth = false,
         sheetTitle = undefined,
         sheetSnap = undefined,
+        sheetFit = false,
         sheetCloseLabel: sheetCloseLabelGiven,
         sheetExpandLabel: sheetExpandLabelGiven,
         sheetCollapseLabel: sheetCollapseLabelGiven,
@@ -594,6 +597,7 @@
         <BottomSheet
             bind:isOpen
             snap={sheetSnap ?? (options.length > 6 ? 'full' : 'half')}
+            fit={sheetFit}
             title={sheetTitle || ariaLabel}
             closeLabel={sheetCloseLabel}
             expandLabel={sheetExpandLabel}

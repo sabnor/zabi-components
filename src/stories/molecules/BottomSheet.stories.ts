@@ -69,6 +69,25 @@ export const OneSnapPoint: Story = {
     }
 };
 
+export const Fit: Story = {
+    args: {
+        fit: true,
+        form: true,
+        title: 'Rename team',
+    },
+    render: (args) => ({
+        Component: BottomSheetStory,
+        props: args,
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'With fit the sheet is as tall as its content, up to half the screen, instead of half whatever it holds. It has one resting height, so snapPoints and snap are ignored and the grip only drags (down to close). Select uses it for a short list without a search field.'
+            }
+        }
+    }
+};
+
 export const WithDescription: Story = {
     args: {
         description: 'The page moves to the team you pick.',

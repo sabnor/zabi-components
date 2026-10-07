@@ -1275,6 +1275,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Enable search input",
                     },
                     {
+                        name: "sheetFit",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "In a sheet, a short list (up to six options) without a search field gets a sheet as tall as the list, not half the screen. false keeps the half-height sheet.",
+                    },
+                    {
                         name: "searchPlaceholder",
                         type: "string",
                         required: false,
@@ -7102,6 +7110,14 @@ pushToast({
                         defaultValue: "the lowest snap point",
                         description:
                             "The snap point the sheet is at. Bindable: it follows a drag and the grip, and you can set it.",
+                    },
+                    {
+                        name: "fit",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "As tall as the content, up to half the screen, instead of half whatever it holds. One resting height: snapPoints and snap are ignored and the grip only drags.",
                     },
                     {
                         name: "dismissible",

@@ -88,6 +88,13 @@
          */
         snap?: BottomSheetSnap;
         /**
+         * The sheet is as tall as its content, up to half the screen, instead
+         * of half the screen whatever it holds. It has one resting height, so
+         * `snapPoints` and `snap` are ignored and the grip only drags. Off by
+         * default.
+         */
+        fit?: boolean;
+        /**
          * Render the overlay in `document.body`, so an ancestor with a
          * transform, filter or clipped overflow cannot trap it; pass `false`
          * to render in place. The theme class belongs on `<html>` or `<body>`;
@@ -133,6 +140,7 @@
         description = "",
         snapPoints,
         snap = $bindable(),
+        fit = false,
         portal = true,
         dismissible = true,
         onclose,
@@ -189,7 +197,7 @@
     /** Position among the open overlays; lifts a sheet opened later above the earlier ones. */
     let depth = $state(0);
 
-    const points = $derived(normaliseSnapPoints(snapPoints));
+    const points = $derived(fit ? normaliseSnapPoints(["half"]) : normaliseSnapPoints(snapPoints));
     /** The snap point in effect: the one asked for if it is in use, else the lowest. */
     const currentSnap = $derived(snap && points.includes(snap) ? snap : points[0]);
     const stepTo = $derived(nextSnap(points, currentSnap));
@@ -200,9 +208,8 @@
      * that a short screen leaves no room for content, and never above full.
      */
     const FULL = "calc(100% - env(safe-area-inset-top, 0px))";
-    const snapHeight = $derived(
-        currentSnap === "full" ? FULL : `min(max(50%, 18rem), ${FULL})`,
-    );
+    const HALF = `min(max(50%, 18rem), ${FULL})`;
+    const snapHeight = $derived(currentSnap === "full" ? FULL : HALF);
 
     /** While a drag is on: the height and offset it has moved the panel to, in px. */
     let dragging = $state(false);
@@ -259,6 +266,8 @@
     /** The snap points in px, lowest first, for the screen as it is now. */
     function measureSnapHeights(): number[] {
         if (!root) return [];
+        // A fitted sheet rests at the height its content gives it.
+        if (fit && panel) return [panel.getBoundingClientRect().height];
         const available = root.clientHeight - parseFloat(getComputedStyle(root).paddingTop || "0");
         const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
         const half = Math.min(Math.max(root.clientHeight * 0.5, 18 * rem), available);
@@ -482,7 +491,8 @@ a background is dropped there, and the grip would be gone. -->
                 "md:w-[min(100%,40rem)]",
                 className,
             )}
-            style:height={dragHeight !== null ? `${dragHeight}px` : snapHeight}
+            style:height={dragHeight !== null ? `${dragHeight}px` : fit ? "auto" : snapHeight}
+            style:max-height={fit ? HALF : undefined}
             style:transform={dragOffset > 0 ? `translateY(${dragOffset}px)` : undefined}
             style:transition={dragging || !arrived ? "none" : undefined}
             role="dialog"

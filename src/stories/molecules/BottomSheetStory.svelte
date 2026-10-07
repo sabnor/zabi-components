@@ -16,6 +16,8 @@
         /** A short form instead of the long list. */
         form?: boolean;
         withFooter?: boolean;
+        /** As tall as the content, up to half the screen. */
+        fit?: boolean;
     }
 
     let {
@@ -27,6 +29,7 @@
         dismissible = true,
         form = false,
         withFooter = true,
+        fit = false,
     }: Props = $props();
 
     // svelte-ignore state_referenced_locally
@@ -56,6 +59,7 @@ width (the viewport toolbar) to see it as on a phone. -->
     {title}
     {description}
     {snapPoints}
+    {fit}
     {dismissible}
     initialFocus={form ? '#bottom-sheet-story-name' : undefined}
     onclose={({ reason }) => (lastClose = reason)}

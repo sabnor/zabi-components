@@ -83,6 +83,12 @@
          * no search field, and none of the loading or empty states.
          */
         presentation?: SelectPresentation;
+        /**
+         * In a sheet, a short list (up to six options) without a search field
+         * gets a sheet as tall as the list, not half the screen. `false`
+         * keeps the half-height sheet.
+         */
+        sheetFit?: boolean;
         noResultsText?: string;
         isLoading?: boolean;
         loadingText?: string;
@@ -125,6 +131,7 @@
         maxMenuHeight = "60dvh",
         menuWidth = "100%",
         presentation = "auto",
+        sheetFit = true,
         noResultsText,
         isLoading = false,
         loadingText,
@@ -524,6 +531,7 @@
         sheetExpandLabel={text.expandLabel}
         sheetCollapseLabel={text.collapseLabel}
         sheetSnap={searchable && options.length > 6 ? "full" : "half"}
+        sheetFit={sheetFit && !searchable && options.length <= 6}
     >
         {#snippet trigger(aria)}
             <!-- A select-only combobox, as the ARIA practices describe it:

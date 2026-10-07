@@ -190,6 +190,26 @@ export const InASheet: Story = {
 };
 
 /**
+ * A short list without a search field: the sheet is as tall as the list, up
+ * to half the screen (`sheetFit`, on by default; `sheetFit={false}` keeps the
+ * half sheet). Each option names its own language with `lang`, set on the row,
+ * on the trigger's text while it is chosen and on the native `<option>`.
+ */
+export const ShortSheetWithLanguages: Story = {
+    name: 'Short sheet, options with lang',
+    args: {
+        label: 'Språk',
+        presentation: 'sheet',
+        searchable: false,
+        value: 'sv',
+        options: [
+            { value: 'sv', label: 'Svenska', lang: 'sv' },
+            { value: 'en', label: 'English', lang: 'en' }
+        ]
+    }
+};
+
+/**
  * Only the browser's own select, styled as the field: the platform's picker.
  * It shows the options' labels and nothing else. Every Select also renders
  * this element on the server, where it is the control until the page has
