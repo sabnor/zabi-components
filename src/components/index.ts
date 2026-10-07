@@ -2,6 +2,7 @@ export { default as Toggle } from './atoms/Toggle.svelte';
 export { default as Badge } from './atoms/Badge.svelte';
 export { default as Stat } from './atoms/Stat.svelte';
 export { default as SpeechBubble } from './atoms/SpeechBubble.svelte';
+export { default as Sparkline } from './atoms/Sparkline.svelte';
 export { default as Chip } from './atoms/Chip.svelte';
 export { default as Button } from './atoms/Button.svelte';
 export { default as IconButton } from './atoms/IconButton.svelte';
@@ -164,6 +165,16 @@ export { default as Avatar } from './atoms/Avatar.svelte';
 export { default as AvatarGroup } from './molecules/AvatarGroup.svelte';
 export { DEFAULT_AVATAR_GROUP_STRINGS } from './util/avatar.js';
 export type { AvatarGroupStrings, AvatarPerson, AvatarSize } from './util/avatar.js';
+export { default as LineChart } from './molecules/LineChart.svelte';
+export { default as BarChart } from './molecules/BarChart.svelte';
+export { default as PieChart } from './molecules/PieChart.svelte';
+export type {
+    ChartColor,
+    ChartColorName,
+    ChartDatum,
+    ChartFormat,
+    ChartSeries,
+} from './util/chart.js';
 export { default as Stepper } from './molecules/Stepper.svelte';
 export type {
     StepperItem,

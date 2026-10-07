@@ -44,6 +44,10 @@
     import Stepper from "../components/molecules/Stepper.svelte";
     import Avatar from "../components/atoms/Avatar.svelte";
     import AvatarGroup from "../components/molecules/AvatarGroup.svelte";
+    import LineChart from "../components/molecules/LineChart.svelte";
+    import BarChart from "../components/molecules/BarChart.svelte";
+    import PieChart from "../components/molecules/PieChart.svelte";
+    import Sparkline from "../components/atoms/Sparkline.svelte";
     import type {
         AlertProps,
         BadgeProps,
@@ -81,6 +85,10 @@
         StepperProps,
         AvatarProps,
         AvatarGroupProps,
+        LineChartProps,
+        BarChartProps,
+        PieChartProps,
+        SparklineProps,
     } from "./index";
 
     interface Props {
@@ -121,6 +129,10 @@
         stepper?: StepperProps;
         avatar?: AvatarProps;
         avatarGroup?: AvatarGroupProps;
+        lineChart?: LineChartProps;
+        barChart?: BarChartProps;
+        pieChart?: PieChartProps;
+        sparkline?: SparklineProps;
     }
 
     let {
@@ -160,6 +172,10 @@
         stepper = { steps: [] },
         avatar = { name: "" },
         avatarGroup = { people: [] },
+        lineChart,
+        barChart,
+        pieChart,
+        sparkline,
     }: Props = $props();
 </script>
 
@@ -199,3 +215,7 @@
 <Stepper {...stepper} />
 <Avatar {...avatar} />
 <AvatarGroup {...avatarGroup} />
+{#if lineChart}<LineChart {...lineChart} />{/if}
+{#if barChart}<BarChart {...barChart} />{/if}
+{#if pieChart}<PieChart {...pieChart} />{/if}
+{#if sparkline}<Sparkline {...sparkline} />{/if}

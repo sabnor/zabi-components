@@ -634,6 +634,12 @@ anything around it; they inherit.
 | `SpeechBubble` | `--zabi-bubble-text` | the quoted text; wins over `tone` (4.5:1 on your fill is yours to check) | the page colour; the headline colour with `tone="paper"` |
 | `SpeechBubble` | `--zabi-bubble-radius` | not a colour: the bubble's corners, any `border-radius` value, the eight-value form included | `1.5rem` |
 | `SpeechBubble` | `--zabi-bubble-tilt` | not a colour: turns the fill and the tail, never the text | `0deg` |
+| `LineChart`, `BarChart`, `PieChart`, `Sparkline` | `--zabi-chart-1` | the first series: a line, the bars, the first slice (3:1 on the surface under it is yours to check) | `--color-action-primary` |
+| `LineChart`, `PieChart` | `--zabi-chart-2` | the second series | `--color-accent` |
+| `LineChart`, `PieChart` | `--zabi-chart-3` | the third series | `--color-success` |
+| `LineChart`, `PieChart` | `--zabi-chart-4` | the fourth series | `--color-warning` |
+| `LineChart`, `PieChart` | `--zabi-chart-5` | the fifth series | `--color-error` |
+| `LineChart`, `PieChart` | `--zabi-chart-6` | the sixth series; a seventh starts again at the first | `--color-info` |
 
 ```svelte
 <Rating label="Betyg" tone="accent" bind:value />

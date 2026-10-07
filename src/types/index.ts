@@ -14,6 +14,7 @@ import type {
     HTMLButtonAttributes,
     HTMLInputAttributes,
     HTMLTextareaAttributes,
+    SVGAttributes,
 } from 'svelte/elements';
 import type { BottomTabBarItem } from '../components/util/bottom-tab-bar.js';
 import type {
@@ -46,6 +47,7 @@ import type {
     SizeVariant,
 } from './variants.js';
 import type { AvatarGroupStrings, AvatarPerson, AvatarSize } from '../components/util/avatar.js';
+import type { ChartColor, ChartDatum, ChartFormat, ChartSeries } from '../components/util/chart.js';
 import type { ProgressStrings } from '../components/util/progress.js';
 import type { RatingStrings } from '../components/util/rating.js';
 import type {
@@ -1137,6 +1139,97 @@ export interface AvatarGroupProps extends Omit<HTMLAttributes<HTMLUListElement>,
     class?: string;
 }
 
+// LineChart component props
+export interface LineChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** The lines: a `name` and one value per x label (`null` leaves a gap). */
+    series: ChartSeries[];
+    /** The labels along the x axis, one per point. */
+    xLabels?: string[];
+    /** The bottom of the y axis. Without it, the lowest value rounded down to a tick. */
+    yMin?: number;
+    /** The top of the y axis. Without it, the highest value rounded up to a tick. */
+    yMax?: number;
+    /** `number` (default), `percent` (72 is "72 %"), or a function. */
+    yFormat?: ChartFormat;
+    /** Height of the drawing in px. */
+    height?: number;
+    /** The caption, and what the chart is called. */
+    label: string;
+    labelHidden?: boolean;
+    /** The key under the plot. Without it, shown when there is more than one series. */
+    legend?: boolean;
+    /** A marker on every point, a different shape per series. */
+    markers?: boolean;
+    /** Shows the data table under the chart. */
+    showTable?: boolean;
+    /** The heading of the table's first column. */
+    xTitle?: string;
+    locale?: string;
+    class?: string;
+}
+
+// BarChart component props
+export interface BarChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** The bars, in order. */
+    data: ChartDatum[];
+    /** The colour of the bars. Without it, the first series colour. */
+    color?: ChartColor;
+    /** The top of the value axis. */
+    yMax?: number;
+    /** `number` (default), `percent` (72 is "72 %"), or a function. */
+    yFormat?: ChartFormat;
+    /** Height of the drawing in px. */
+    height?: number;
+    /** The caption, and what the chart is called. */
+    label: string;
+    labelHidden?: boolean;
+    /** Writes each value over its bar. */
+    showValues?: boolean;
+    /** Shows the data table under the chart. */
+    showTable?: boolean;
+    categoryTitle?: string;
+    valueTitle?: string;
+    locale?: string;
+    class?: string;
+}
+
+// PieChart component props
+export interface PieChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** The slices, in order, clockwise from twelve o'clock. */
+    data: ChartDatum[];
+    /** A ring, not a full disc. */
+    donut?: boolean;
+    /** `number` (default), `percent` (72 is "72 %"), or a function. */
+    format?: ChartFormat;
+    /** The widest the drawing gets, in px. */
+    size?: number;
+    /** The caption, and what the chart is called. */
+    label: string;
+    labelHidden?: boolean;
+    /** The key beside the drawing: each slice's label, value and share. */
+    legend?: boolean;
+    /** Shows the data table under the chart. */
+    showTable?: boolean;
+    categoryTitle?: string;
+    valueTitle?: string;
+    shareTitle?: string;
+    locale?: string;
+    class?: string;
+}
+
+// Sparkline component props
+export interface SparklineProps extends Omit<SVGAttributes<SVGSVGElement>, 'class' | 'points' | 'min' | 'max' | 'color'> {
+    /** The values, in order. `null` leaves a gap. */
+    points: Array<number | null>;
+    /** What the image is called. Without it the line is decoration. */
+    label?: string;
+    /** A theme colour by name or any CSS colour. */
+    color?: ChartColor;
+    min?: number;
+    max?: number;
+    class?: string;
+}
+
 // Component type definitions
 export type Button = ZabiComponent<ButtonProps, ButtonEvents>;
 export type Heading = ZabiComponent<HeadingProps>;
@@ -1174,4 +1267,8 @@ export type PhotoGrid = ZabiComponent<PhotoGridProps>;
 export type PhotoViewer = ZabiComponent<PhotoViewerProps>;
 export type Avatar = ZabiComponent<AvatarProps>;
 export type AvatarGroup = ZabiComponent<AvatarGroupProps>;
+export type LineChart = ZabiComponent<LineChartProps>;
+export type BarChart = ZabiComponent<BarChartProps>;
+export type PieChart = ZabiComponent<PieChartProps>;
+export type Sparkline = ZabiComponent<SparklineProps>;
 export type Stepper = ZabiComponent<StepperProps>;

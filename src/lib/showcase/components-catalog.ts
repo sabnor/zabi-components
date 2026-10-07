@@ -870,6 +870,66 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "Sparkline",
+                category: "atoms",
+                description:
+                    "A small line with no axes, for a trend beside a figure or in a table cell. Plain SVG, named by its label.",
+                props: [
+                    {
+                        name: "points",
+                        type: "(number | null)[]",
+                        required: true,
+                        description:
+                            "The values, in order. null leaves a gap.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "What the image is called. Without it the line is decoration, hidden from assistive technology.",
+                    },
+                    {
+                        name: "color",
+                        type: "ChartColor",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "primary, accent, success, warning, error, info, or any CSS colour. Without it, the first series colour.",
+                    },
+                    {
+                        name: "min",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The bottom of the scale. Without it, the lowest value.",
+                    },
+                    {
+                        name: "max",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The top of the scale. Without it, the highest value.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Beside a figure",
+                        description: "5rem by 1.5rem unless class says otherwise",
+                        code: "<Sparkline points={[3, 5, 4, 7, 6, 9]} label=\"Poäng, sex senaste: stigande\" />",
+                    },
+                    {
+                        title: "Sized and coloured",
+                        description: "The line stretches to the box and keeps its thickness",
+                        code: "<Sparkline points={values} color=\"success\" class=\"h-8 w-full\" />",
+                    },
+                ],
+            },
+            {
                 name: "Chip",
                 category: "atoms",
                 description:
@@ -7894,6 +7954,354 @@ pushToast({
     strings={{ more: (count) => \`plus \${count} others\` }}
     style="--zabi-avatar-ring: var(--color-surface-base)"
 />`,
+                    },
+                ],
+            },
+            {
+                name: "LineChart",
+                category: "molecules",
+                description:
+                    "A line chart for one or a few series over shared x labels, drawn as plain SVG with a data table behind it. No chart library.",
+                props: [
+                    {
+                        name: "series",
+                        type: "{ name: string; points: (number | null)[]; color?: ChartColor }[]",
+                        required: true,
+                        description:
+                            "The lines: a name and one value per x label; null leaves a gap. Up to six keep a colour of their own.",
+                    },
+                    {
+                        name: "xLabels",
+                        type: "string[]",
+                        required: false,
+                        defaultValue: "[]",
+                        description:
+                            "The labels along the x axis, one per point. Labels that do not fit are thinned out.",
+                    },
+                    {
+                        name: "yMin",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The bottom of the y axis. Without it, the lowest value rounded down to a tick.",
+                    },
+                    {
+                        name: "yMax",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The top of the y axis. Without it, the highest value rounded up to a tick.",
+                    },
+                    {
+                        name: "yFormat",
+                        type: "'number' | 'percent' | ((value: number) => string)",
+                        required: false,
+                        defaultValue: "number",
+                        description:
+                            "How a value is written: number, percent (72 is \"72 %\"), or a function of your own.",
+                    },
+                    {
+                        name: "height",
+                        type: "number",
+                        required: false,
+                        defaultValue: "240",
+                        description:
+                            "Height of the drawing in px. The width is the container's.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: true,
+                        description:
+                            "The caption, and what the chart is called.",
+                    },
+                    {
+                        name: "labelHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Keeps the caption for assistive technology and takes it off the screen.",
+                    },
+                    {
+                        name: "legend",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The key under the plot. Without it, shown when there is more than one series.",
+                    },
+                    {
+                        name: "markers",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "A marker on every point, a different shape per series, so two lines differ by more than colour.",
+                    },
+                    {
+                        name: "showTable",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the data table under the chart; otherwise it is there for assistive technology only.",
+                    },
+                    {
+                        name: "xTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description:
+                            "The heading of the table's first column: what the x labels are.",
+                    },
+                    {
+                        name: "locale",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The language of the built-in number formats. Without it, the runtime's; pass one on a server-rendered page.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Results over time",
+                        description: "Two series in percent on a fixed 0 to 100 axis; point at or tap the plot to read the values",
+                        code: "<LineChart\n    label=\"Rätt svar per vecka\"\n    xTitle=\"Vecka\"\n    xLabels={['v. 36', 'v. 37', 'v. 38', 'v. 39', 'v. 40']}\n    series={[\n        { name: 'Vårt lag', points: [62, 68, 71, 66, 78] },\n        { name: 'Snitt', points: [58, 60, 59, 63, 64] },\n    ]}\n    yMin={0}\n    yMax={100}\n    yFormat=\"percent\"\n/>",
+                    },
+                    {
+                        title: "Colours of your own",
+                        description: "The six series colours are custom properties on any ancestor; a series may also name one",
+                        code: "<div style=\"--zabi-chart-1: var(--color-quiz-gold)\">\n    <LineChart label=\"Poäng\" {xLabels} series={[{ name: 'Poäng', points }, { name: 'Mål', points: goal, color: 'info' }]} showTable />\n</div>",
+                    },
+                ],
+            },
+            {
+                name: "BarChart",
+                category: "molecules",
+                description:
+                    "A bar chart of one set of values, drawn as plain SVG: upright bars from a zero line, each with its label and value, and a data table behind it.",
+                props: [
+                    {
+                        name: "data",
+                        type: "{ label: string; value: number; color?: ChartColor }[]",
+                        required: true,
+                        description:
+                            "The bars, in order.",
+                    },
+                    {
+                        name: "color",
+                        type: "ChartColor",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The colour of the bars: primary, accent, success, warning, error, info, or any CSS colour. Without it, the first series colour.",
+                    },
+                    {
+                        name: "yMax",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The top of the value axis. Without it, the highest value rounded up to a tick. Zero is always on the axis.",
+                    },
+                    {
+                        name: "yFormat",
+                        type: "'number' | 'percent' | ((value: number) => string)",
+                        required: false,
+                        defaultValue: "number",
+                        description:
+                            "How a value is written: number, percent (72 is \"72 %\"), or a function of your own.",
+                    },
+                    {
+                        name: "height",
+                        type: "number",
+                        required: false,
+                        defaultValue: "240",
+                        description:
+                            "Height of the drawing in px. The width is the container's.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: true,
+                        description:
+                            "The caption, and what the chart is called.",
+                    },
+                    {
+                        name: "labelHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Keeps the caption for assistive technology and takes it off the screen.",
+                    },
+                    {
+                        name: "showValues",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Writes each value over its bar, while the bars are wide enough for it.",
+                    },
+                    {
+                        name: "showTable",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the data table under the chart; otherwise it is there for assistive technology only.",
+                    },
+                    {
+                        name: "categoryTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Category",
+                        description:
+                            "The heading of the table's first column.",
+                    },
+                    {
+                        name: "valueTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Value",
+                        description:
+                            "The heading of the table's value column.",
+                    },
+                    {
+                        name: "locale",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The language of the built-in number formats. Without it, the runtime's; pass one on a server-rendered page.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Points per round",
+                        description: "One colour; the labels tell the bars apart",
+                        code: "<BarChart\n    label=\"Poäng per runda\"\n    categoryTitle=\"Runda\"\n    valueTitle=\"Poäng\"\n    data={[\n        { label: 'R1', value: 7 },\n        { label: 'R2', value: 9 },\n        { label: 'R3', value: 4 },\n        { label: 'R4', value: 8 },\n    ]}\n    yMax={10}\n/>",
+                    },
+                ],
+            },
+            {
+                name: "PieChart",
+                category: "molecules",
+                description:
+                    "A pie chart, or a ring with donut, in plain SVG: parts of a whole, a key with each slice's label, value and share, and a data table behind it.",
+                props: [
+                    {
+                        name: "data",
+                        type: "{ label: string; value: number; color?: ChartColor }[]",
+                        required: true,
+                        description:
+                            "The slices, in order, clockwise from twelve o'clock. Keep it to six or fewer; after six the colours repeat.",
+                    },
+                    {
+                        name: "donut",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "A ring, not a full disc.",
+                    },
+                    {
+                        name: "format",
+                        type: "'number' | 'percent' | ((value: number) => string)",
+                        required: false,
+                        defaultValue: "number",
+                        description:
+                            "How a value is written: number, percent (72 is \"72 %\"), or a function of your own.",
+                    },
+                    {
+                        name: "size",
+                        type: "number",
+                        required: false,
+                        defaultValue: "192",
+                        description:
+                            "The widest the drawing gets, in px. It shrinks with its container.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: true,
+                        description:
+                            "The caption, and what the chart is called.",
+                    },
+                    {
+                        name: "labelHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Keeps the caption for assistive technology and takes it off the screen.",
+                    },
+                    {
+                        name: "legend",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "The key beside the drawing: each slice's label, value and share. Without it, show the table.",
+                    },
+                    {
+                        name: "showTable",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the data table under the chart; otherwise it is there for assistive technology only.",
+                    },
+                    {
+                        name: "categoryTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Category",
+                        description:
+                            "The heading of the table's first column.",
+                    },
+                    {
+                        name: "valueTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Value",
+                        description:
+                            "The heading of the table's value column.",
+                    },
+                    {
+                        name: "shareTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Share",
+                        description:
+                            "The heading of the table's share column.",
+                    },
+                    {
+                        name: "locale",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The language of the built-in number formats. Without it, the runtime's; pass one on a server-rendered page.",
+                    },
+                ],
+                variants: ["donut"],
+                examples: [
+                    {
+                        title: "Answers",
+                        description: "Three slices and their key",
+                        code: "<PieChart\n    label=\"Svar\"\n    data={[\n        { label: 'Rätt', value: 14, color: 'success' },\n        { label: 'Fel', value: 4, color: 'error' },\n        { label: 'Överhoppade', value: 2 },\n    ]}\n/>",
+                    },
+                    {
+                        title: "Donut",
+                        description: "The same data as a ring",
+                        code: "<PieChart donut label=\"Svar\" {data} />",
                     },
                 ],
             },

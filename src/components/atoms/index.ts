@@ -2,6 +2,7 @@ export { default as Toggle } from './Toggle.svelte';
 export { default as Badge } from './Badge.svelte';
 export { default as Stat } from './Stat.svelte';
 export { default as SpeechBubble } from './SpeechBubble.svelte';
+export { default as Sparkline } from './Sparkline.svelte';
 export { default as Chip } from './Chip.svelte';
 export { default as Button } from './Button.svelte';
 export { default as IconButton } from './IconButton.svelte';

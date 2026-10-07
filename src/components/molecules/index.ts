@@ -107,6 +107,16 @@ export type {
 export { default as AvatarGroup } from './AvatarGroup.svelte';
 export { DEFAULT_AVATAR_GROUP_STRINGS } from '../util/avatar.js';
 export type { AvatarGroupStrings, AvatarPerson } from '../util/avatar.js';
+export { default as LineChart } from './LineChart.svelte';
+export { default as BarChart } from './BarChart.svelte';
+export { default as PieChart } from './PieChart.svelte';
+export type {
+    ChartColor,
+    ChartColorName,
+    ChartDatum,
+    ChartFormat,
+    ChartSeries,
+} from '../util/chart.js';
 export { default as Stepper } from './Stepper.svelte';
 export type {
     StepperItem,
