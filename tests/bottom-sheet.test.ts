@@ -658,3 +658,15 @@ describe("snap point arithmetic", () => {
         expect(settleSnap({ ...base, startIndex: 0, velocity: 1, canClose: false })).toBe(0);
     });
 });
+
+describe("BottomSheet overlay root", () => {
+    it("clips instead of hiding, so WebKit cannot scroll it to the focused grip while the panel slides in", async () => {
+        await openSheet();
+        const root = sheet().parentElement!;
+        // `overflow: hidden` is still a scroll container; `clip` is not. With it the
+        // root scrolled by the panel's own height as focus moved to the grip, and
+        // the sheet rose to the top of the screen (Z-088).
+        expect(root.classList.contains("overflow-clip")).toBe(true);
+        expect(root.classList.contains("overflow-hidden")).toBe(false);
+    });
+});

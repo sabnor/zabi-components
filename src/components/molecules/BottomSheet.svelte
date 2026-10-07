@@ -456,9 +456,14 @@ a background is dropped there, and the grip would be gone. -->
 
 {#if isOpen}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- `overflow-clip`, not `hidden`: a clipped box is a scroll container
+    nobody can scroll. The panel waits below the screen while it slides in, so
+    the root has overflow to scroll, and WebKit scrolls it to bring the
+    focused grip into view: the sheet rose to the top of the screen, and sat
+    32px high (the filler under the panel) once the slide had ended. -->
     <div
         bind:this={root}
-        class="group/overlay fixed inset-0 z-modal overflow-hidden pt-[env(safe-area-inset-top)] {dismissible
+        class="group/overlay fixed inset-0 z-modal overflow-clip pt-[env(safe-area-inset-top)] {dismissible
             ? 'cursor-pointer'
             : 'cursor-default'} bg-overlay"
         style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
