@@ -8806,7 +8806,7 @@ pushToast({
                 name: "TopNavbar",
                 category: "organisms",
                 description:
-                    "Top bar with brand, optional link list, theme toggle and a responsive mobile menu. Use embedded for a link-only strip inside your own header.",
+                    "Top bar with brand, links, theme toggle and a phone menu that opens as a sheet. Use embedded for a link-only strip inside your own header.",
                 props: [
                     {
                         name: "scrollEdge",
@@ -8814,14 +8814,14 @@ pushToast({
                         required: false,
                         defaultValue: "auto",
                         description:
-                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the top, glass once content is under it, and while the phone menu is open); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
+                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the top, glass once content is under it, and while the inline phone menu is open); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
                     },
                     {
                         name: "strings",
                         type: "Partial<TopNavbarStrings>",
                         required: false,
                         description:
-                            "The words the bar says by itself: openMenu and closeMenu (the phone menu's button) and opensInNewTab (read after a link that opens a new tab).",
+                            "The words the bar says by itself: openMenu and closeMenu (the phone menu's button), menuTitle (the name of the menu sheet) and opensInNewTab (read after a link that opens a new tab).",
                     },
                     {
                         name: "themeModes",
@@ -8896,6 +8896,14 @@ pushToast({
                         description:
                             "Breakpoint at which the links move from the phone menu into the bar. Raise it when the row has more items than fit at 768px.",
                     },
+                    {
+                        name: "menu",
+                        type: "'sheet' | 'inline'",
+                        required: false,
+                        defaultValue: "sheet",
+                        description:
+                            "How the links open below collapseAt. sheet is a modal bottom sheet, as tall as its links up to half the screen; inline is the panel under the bar of 8.1, a disclosure that pushes the page down.",
+                    },
                 ],
                 variants: [
                     "header",
@@ -8907,6 +8915,11 @@ pushToast({
                         title: "TopNavbar with inline links",
                         description: "Full bar with items prop",
                         code: '&lt;TopNavbar brand="App" brandHref="/" items={navItems} navVariant="header" currentPath="/" /&gt;',
+                    },
+                    {
+                        title: "Phone menu under the bar",
+                        description: "Keep the 8.1 inline panel instead of the sheet",
+                        code: '&lt;TopNavbar brand="App" items={navItems} menu="inline" /&gt;',
                     },
                     {
                         title: "Embedded link list",

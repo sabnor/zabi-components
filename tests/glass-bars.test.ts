@@ -233,8 +233,8 @@ describe("bars on their own", () => {
         expect(under("sticky")).toBe("true");
     });
 
-    it("TopNavbar sits on the material while its phone menu is open", async () => {
-        render(TopNavbar, { props: { brand: "B", showThemeToggle: false, "data-testid": "t" } });
+    it("TopNavbar sits on the material while its inline phone menu is open", async () => {
+        render(TopNavbar, { props: { brand: "B", showThemeToggle: false, menu: "inline", "data-testid": "t" } });
         expect(under("t")).toBe("false");
         await fireEvent.click(screen.getByRole("button", { name: /open/i }));
         expect(under("t")).toBe("true");

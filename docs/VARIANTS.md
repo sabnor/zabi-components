@@ -283,6 +283,7 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 
 ### TopNavbar
 - Collapse point: `collapseAt` is `sm`, `md` (default), `lg` or `xl`, the width from which the links are a row
+- Phone menu: `menu` is `sheet` (default, a bottom sheet) or `inline` (a panel under the bar)
 
 AppBar, AppShell and StickyActionBar have no variants or sizes.
 

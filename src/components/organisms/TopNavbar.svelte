@@ -3,6 +3,7 @@
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import ThemeToggle from "../atoms/ThemeToggle.svelte";
     import IconButton from "../atoms/IconButton.svelte";
+    import BottomSheet from "../molecules/BottomSheet.svelte";
     import ExternalLink from "@lucide/svelte/icons/external-link";
     import Menu from "@lucide/svelte/icons/menu";
     import X from "@lucide/svelte/icons/x";
@@ -26,6 +27,13 @@
 
     export type TopNavbarCollapseAt = "sm" | "md" | "lg" | "xl";
 
+    /**
+     * How the links open below `collapseAt`: `sheet` slides a modal sheet up
+     * from the bottom of the screen; `inline` opens a panel under the bar,
+     * which pushes the page down (the menu of 8.1 and earlier).
+     */
+    export type TopNavbarMenu = "sheet" | "inline";
+
     interface Props {
         brand?: string;
         brandHref?: string;
@@ -45,7 +53,7 @@
         themeStorageKey?: string | null;
         /** The texts of the theme toggle's name, for another language. As `labels` of ThemeToggle. */
         themeLabels?: Partial<ThemeToggleLabels>;
-        /** The words the bar says by itself: the menu button's two names and the note on a link that opens a new tab. */
+        /** The words the bar says by itself: the menu button's two names, the name of the menu sheet and the note on a link that opens a new tab. */
         strings?: Partial<TopNavbarStrings>;
         class?: string;
         /** @deprecated use `class`. */
@@ -61,12 +69,19 @@
          * more items than fit at 768px.
          */
         collapseAt?: TopNavbarCollapseAt;
+        /**
+         * How the links open below `collapseAt`. `sheet` (the default) is a
+         * bottom sheet: a modal dialog that is as tall as its links, up to
+         * half the screen, and scrolls inside. `inline` is a panel under the
+         * bar, a disclosure that pushes the page down and traps nothing.
+         */
+        menu?: TopNavbarMenu;
         preventNavigation?: boolean;
         onclick?: (event: Event) => void;
         /**
          * When the bar shows the glass and the hairline. `auto` follows the
          * scroll position: flush at the top, glass once content is under it
-         * (and while the phone menu is open). `always` is glass all the time,
+         * (and while the inline phone menu is open). `always` is glass all the time,
          * `never` flush all the time.
          */
         scrollEdge?: ScrollEdgeMode;
@@ -88,6 +103,7 @@
         navVariant = "header",
         currentPath = "",
         collapseAt = "md",
+        menu = "sheet",
         preventNavigation = false,
         onclick,
         scrollEdge = "auto",
@@ -107,6 +123,9 @@
     const text = $derived(mergeStrings(DEFAULT_TOP_NAVBAR_STRINGS, provided(), strings));
 
     let isMenuOpen = $state(false);
+    const sheet = $derived(menu !== "inline");
+    /** The inline panel is open: only then do the window listeners below have anything to close. */
+    const inlineOpen = $derived(isMenuOpen && !sheet);
 
     /** Content is under the bar: from the shell if there is one, else from the window. */
     const shell = getAppShell();
@@ -115,11 +134,12 @@
         if (shell || scrollEdge !== "auto" || embedded) return;
         return watchScrollEdge(null, (edge) => (ownScrolled = edge.top));
     });
-    // An open menu sits on the material, whatever the scroll position.
+    // An open inline menu sits on the material, whatever the scroll position.
+    // The sheet covers the page and the bar under its backdrop: the bar stays as it was.
     const scrolledUnder = $derived(
         resolveScrolledUnder(
             scrollEdge,
-            isMenuOpen || (shell ? shell.scrolledTop : ownScrolled),
+            inlineOpen || (shell ? shell.scrolledTop : ownScrolled),
         ),
     );
     let navElement = $state<HTMLElement | null>(null);
@@ -152,12 +172,13 @@
     }
 
     /**
-     * The menu is a disclosure, not a dialog: nothing is trapped or locked, so
-     * it has to get out of the way by itself whenever the user has moved on.
+     * The inline menu is a disclosure, not a dialog: nothing is trapped or
+     * locked, so it has to get out of the way by itself whenever the user has
+     * moved on. The sheet is a dialog and does all of this itself.
      */
     function handleWindowKeydown(event: KeyboardEvent) {
         // A menu inside the panel (a Dropdown, say) closes on Escape first.
-        if (event.key !== "Escape" || !isMenuOpen || event.defaultPrevented) return;
+        if (event.key !== "Escape" || !inlineOpen || event.defaultPrevented) return;
         const focusInside = !!panelElement?.contains(document.activeElement);
         isMenuOpen = false;
         // The link that had focus is gone; without this, focus falls to <body>.
@@ -179,7 +200,7 @@
     let pressing = false;
 
     function handleOutsideClick(event: MouseEvent) {
-        if (isMenuOpen && isOutside(event)) isMenuOpen = false;
+        if (inlineOpen && isOutside(event)) isMenuOpen = false;
     }
 
     /**
@@ -188,10 +209,10 @@
      * finger has lifted, on a touch screen); that one is left to the click.
      */
     function handleOutsideFocus(event: FocusEvent) {
-        if (isMenuOpen && !pressing && isOutside(event)) isMenuOpen = false;
+        if (inlineOpen && !pressing && isOutside(event)) isMenuOpen = false;
     }
 
-    /** Following a link in the menu: the page under it is about to change. */
+    /** Following a link in the menu or the sheet: the page under it is about to change. */
     function handlePanelClick(event: MouseEvent) {
         if (event.target instanceof Element && event.target.closest("a[href]")) {
             isMenuOpen = false;
@@ -206,7 +227,8 @@
     });
 
     // Past the breakpoint the menu button is gone, so a menu left open could
-    // not be closed, and it would still be open on the way back down.
+    // not be closed, and it would still be open on the way back down. For the
+    // sheet, closing also lets go of the scroll lock and the inert page.
     $effect(() => {
         if (typeof window === "undefined" || !window.matchMedia) return;
         const wide = window.matchMedia(collapse.query);
@@ -279,7 +301,7 @@
     });
 
     /** Where a list of links is drawn: in the bar, in the phone menu, or alone (`embedded`). */
-    type NavListPlace = "row" | "menu" | "embedded";
+    type NavListPlace = "row" | "menu" | "sheet" | "embedded";
 
     function getListClasses(place: NavListPlace): string {
         if (place === "embedded" || navVariant === "sidebar") return ulClasses;
@@ -294,7 +316,7 @@
         const base =
             "flex flex-col gap-1 grow h-full items-center justify-center min-h-0 min-w-0 relative shrink-0 cursor-pointer";
         if (place === "row") return `${base} w-auto`;
-        if (place === "menu") return `${base} w-full`;
+        if (place === "menu" || place === "sheet") return `${base} w-full`;
         return `${base} w-full md:w-auto`;
     }
 
@@ -329,8 +351,10 @@
               );
     }
 
-    function getStateLayerClasses(): string {
-        return "box-border flex gap-1 h-10 pointer-coarse:h-11 items-center px-4 py-2 relative shrink-0";
+    function getStateLayerClasses(place: NavListPlace): string {
+        // A row of the sheet is a touch target on every pointer: 44px.
+        const height = place === "sheet" ? "h-11" : "h-10 pointer-coarse:h-11";
+        return `box-border flex gap-1 ${height} items-center px-4 py-2 relative shrink-0`;
     }
 
     function getLabelClasses(): string {
@@ -350,16 +374,16 @@
             {@const isActive = isNavItemActive(item.href)}
             {@const external = isExternal(item)}
             <li class={getNavItemClasses(place)}>
-                <!-- In the menu the link is the whole row, not a pill as wide as its label. -->
+                <!-- In the menu and the sheet the link is the whole row, not a pill as wide as its label. -->
                 <a
                     href={item.href}
-                    class={cn(getIconContainerClasses(isActive), place === "menu" && "w-full")}
+                    class={cn(getIconContainerClasses(isActive), (place === "menu" || place === "sheet") && "w-full")}
                     onclick={handleNavLinkClick}
                     aria-current={isActive ? "page" : undefined}
                     target={external ? "_blank" : undefined}
                     rel={external ? "noopener noreferrer" : undefined}
                 >
-                    <div class={getStateLayerClasses()}>
+                    <div class={getStateLayerClasses(place)}>
                         {#if item.iconFilled && isActive}
                             {@const Icon = item.iconFilled}
                             <div class={getIconWrapperClasses()}>
@@ -457,14 +481,17 @@
                       off the icon scale, and with no disclosure semantics, so
                       a screen reader could not tell the menu was open.
                     -->
+                    <!-- The sheet is a dialog the button opens; the page under its
+                    backdrop is inert, so this button is never the one that closes it. -->
                     <IconButton
                         variant="ghost"
-                        label={isMenuOpen ? text.closeMenu : text.openMenu}
+                        label={inlineOpen ? text.closeMenu : text.openMenu}
                         onclick={toggleMenu}
+                        aria-haspopup={sheet ? "dialog" : undefined}
                         aria-expanded={isMenuOpen}
                         aria-controls={isMenuOpen ? mobileMenuId : undefined}
                     >
-                        {#if isMenuOpen}
+                        {#if inlineOpen}
                             <X size={20} />
                         {:else}
                             <Menu size={20} />
@@ -477,7 +504,7 @@
             Keeping it in the DOM, hidden, would render `nav` and `actions` a
             second time on every page for every desktop visitor: duplicate ids
             from the caller's snippets, and a second ThemeToggle mounted. -->
-            {#if isMenuOpen}
+            {#if inlineOpen}
                 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
                 <div
                     bind:this={panelElement}
@@ -507,6 +534,43 @@
             {/if}
         </div>
     </nav>
+
+    <!-- Below `collapseAt` the links open in a sheet from the bottom. It is
+    portalled to the body: the bar is sticky and glass, and a fixed child of a
+    filtered box is placed against that box. It renders nothing until
+    it is open, so `nav` and `actions` are not drawn a second time. -->
+    {#if sheet}
+        <BottomSheet
+            bind:isOpen={isMenuOpen}
+            fit
+            title={text.menuTitle}
+            id={mobileMenuId}
+            data-topnavbar-sheet=""
+        >
+            <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+            <div onclick={handlePanelClick}>
+                {#if nav || items.length > 0}
+                    <nav aria-label={ariaLabel ?? text.menuTitle}>
+                        {#if nav}
+                            {@render nav()}
+                        {:else}
+                            {@render defaultNavList("sheet")}
+                        {/if}
+                    </nav>
+                {/if}
+                {#if actions || showThemeToggle}
+                    <div class="pt-4">
+                        {@render actions?.()}
+                        {#if showThemeToggle}
+                            <div class="mt-2">
+                                <ThemeToggle modes={themeModes} storageKey={themeStorageKey} labels={themeLabels} />
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
+            </div>
+        </BottomSheet>
+    {/if}
 {/if}
 
 <style>

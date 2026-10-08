@@ -221,6 +221,7 @@ describe("the defaults are today's English", () => {
         expect(DEFAULT_TOP_NAVBAR_STRINGS).toEqual({
             openMenu: "Open menu",
             closeMenu: "Close menu",
+            menuTitle: "Menu",
             opensInNewTab: "(opens in a new tab)",
         });
         expect(DEFAULT_COLOR_PICKER_STRINGS).toEqual({

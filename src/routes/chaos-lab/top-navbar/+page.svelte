@@ -15,7 +15,8 @@
      *
      * `?collapse=lg` sets `collapseAt`; `?items=4` shortens the list;
      * `?brand=long` gives a brand name that cannot fit beside the menu button;
-     * `?extra=1` adds a link that opens in a new tab and a Dropdown to the menu.
+     * `?extra=1` adds a link that opens in a new tab and a Dropdown to the menu;
+     * `?menu=inline` opens the phone menu as a panel under the bar instead of a sheet.
      */
     const all: TopNavbarNavItem[] = [
         { label: "Overview", href: "#overview" },
@@ -35,6 +36,7 @@
             ? value
             : undefined;
     });
+    const menu = $derived(params.get("menu") === "inline" ? "inline" : undefined);
     const extra = $derived(params.get("extra") === "1");
     const items = $derived([
         ...all.slice(0, Number(params.get("items") ?? all.length)),
@@ -72,6 +74,7 @@
     {items}
     {currentPath}
     collapseAt={collapse}
+    {menu}
 >
     {#snippet actions()}
         <Button size="sm" variant="outline" data-testid="lab-action">Sign in</Button>

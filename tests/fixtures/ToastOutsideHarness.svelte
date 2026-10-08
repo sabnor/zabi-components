@@ -24,7 +24,7 @@
 </script>
 
 {#if kind === "navbar"}
-    <TopNavbar brand="Zabi" brandHref="/" items={links} preventNavigation />
+    <TopNavbar brand="Zabi" brandHref="/" items={links} menu="inline" preventNavigation />
 {:else if kind === "color"}
     <ColorPicker bind:value={colour} label="Accent" />
 {:else}
