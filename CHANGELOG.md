@@ -12,6 +12,33 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.16] - 2026-10-08
+
+A sixteenth local preview build of the 9.0 direction, not published to npm. One
+behaviour change in `TopNavbar`, which you can turn off with one attribute; no
+token, prop, variant or export of alpha.15 is removed or renamed. Run on this
+build: the type and design checks, the unit suite, the package build and a
+scratch install; no browser.
+### Changed
+
+- `TopNavbar`: below `collapseAt` the menu button opens the links in a bottom sheet (`BottomSheet`,
+  `fit`) instead of the panel under the bar. The sheet is a modal dialog: focus moves in and back
+  to the button, Escape, the backdrop, the close button and a swipe down close it, the page behind
+  is locked, it is named by the new string `menuTitle` ("Menu"), and its links sit in a `nav` named
+  by `ariaLabel` (else `menuTitle`). Rows are full width and 44px; `actions`, the theme toggle, the
+  current-page mark and the new-tab note are as in the panel; a followed link, a `currentPath`
+  change and a wider screen close it. The menu button gets `aria-haspopup="dialog"`, and the bar no
+  longer takes the glass while the menu is open. **Opt out:** `menu="inline"` is the panel of
+  alpha.15 and earlier, unchanged. Without script the phone menu is as inert as before.
+- `BottomSheet`: the slide-in is on the standard curve, with no overshoot; the spring stays for
+  snapping and settling a drag.
+### Added
+
+- `TopNavbar` `menu?: "sheet" | "inline"` (default `"sheet"`), exported type `TopNavbarMenu`, string
+  `menuTitle` in `TopNavbarStrings` (code that writes out a complete `TopNavbarStrings` object needs
+  the new key; `strings` itself is partial). Stories for both modes, catalog entry, docs, `?menu=inline`
+  on the chaos-lab page.
+
 ## [9.0.0-alpha.15] - 2026-10-08
 
 A fifteenth local preview build of the 9.0 direction, not published to npm. One
