@@ -50,6 +50,7 @@ import type { AvatarGroupStrings, AvatarPerson, AvatarSize } from '../components
 import type { ChartColor, ChartDatum, ChartFormat, ChartSeries } from '../components/util/chart.js';
 import type { ProgressStrings } from '../components/util/progress.js';
 import type { SkeletonStrings } from '../components/util/skeleton.js';
+import type { CodeFieldMode, CodeFieldStrings } from '../components/util/code-field.js';
 import type { RatingStrings } from '../components/util/rating.js';
 import type {
     StepperItem,
@@ -836,6 +837,59 @@ export interface AppNavigationProps extends Omit<HTMLAttributes<HTMLDivElement>,
     class?: string;
 }
 
+// CodeField component props: one input under drawn boxes, for a verification code
+export interface CodeFieldProps
+    extends Omit<
+        HTMLInputAttributes,
+        | 'class'
+        | 'size'
+        | 'value'
+        | 'type'
+        | 'id'
+        | 'name'
+        | 'required'
+        | 'disabled'
+        | 'readonly'
+        | 'maxlength'
+        | 'oninput'
+        | 'onblur'
+        | 'aria-label'
+        | 'aria-describedby'
+    > {
+    id?: string;
+    /** The code typed so far. Bindable. */
+    value?: string;
+    /** The name the code is posted under, with or without scripts. */
+    name?: string;
+    class?: string;
+    /** Places in the code, a whole number from 1 to 12. Default 6. */
+    length?: number;
+    /** `numeric` (default): digits only. `alphanumeric` also takes letters. */
+    mode?: CodeFieldMode;
+    /** Names the field. Defaults to the provider's `codeField.label`, then "Verification code". */
+    label?: string;
+    /** Keeps the label for assistive technology and takes it off the screen. */
+    labelHidden?: boolean;
+    required?: boolean;
+    disabled?: boolean;
+    readonly?: boolean;
+    variant?: SemanticVariant;
+    /** Status text under the field; shown with a `success`, `warning` or `error` variant. */
+    message?: string;
+    /** Help text under the field, read out with it. */
+    hint?: string;
+    /** An error under the field: marks it invalid and is announced; wins over `variant` and `message`. */
+    error?: string;
+    /** Called with the code when the last place is filled. It does not submit anything. */
+    oncomplete?: (value: string) => void;
+    /** Overrides for the built-in strings: label, description. */
+    strings?: Partial<CodeFieldStrings>;
+    oninput?: (event: Event) => void;
+    onblur?: (event: Event) => void;
+    'aria-label'?: string;
+    'aria-describedby'?: string | null;
+}
+
 // Rating component props
 export interface RatingProps
     extends Omit<
@@ -1313,6 +1367,7 @@ export type AppBar = ZabiComponent<AppBarProps>;
 export type AppShell = ZabiComponent<AppShellProps>;
 export type AppNavigation = ZabiComponent<AppNavigationProps>;
 export type Rating = ZabiComponent<RatingProps>;
+export type CodeField = ZabiComponent<CodeFieldProps>;
 export type SegmentedControl = ZabiComponent<SegmentedControlProps>;
 export type FloatingActionButton = ZabiComponent<FloatingActionButtonProps>;
 export type StickyActionBar = ZabiComponent<StickyActionBarProps>;

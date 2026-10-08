@@ -1,6 +1,7 @@
 import { createRawSnippet, flushSync, mount, unmount, type Component } from "svelte";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import CodeField from "../src/components/atoms/CodeField.svelte";
 import Chip from "../src/components/atoms/Chip.svelte";
 import Checkbox from "../src/components/atoms/Checkbox.svelte";
 import ColorPicker from "../src/components/atoms/ColorPicker.svelte";
@@ -88,6 +89,7 @@ const cases: Case[] = [
     { name: "Chip", component: Chip, prop: "selected", becomes: false },
     { name: "ChipGroup", component: ChipGroup, prop: "value", becomes: [], props: { label: "Days", type: "checkbox" } },
     { name: "Input", component: Input, prop: "value", becomes: "", props: { label: "Name" } },
+    { name: "CodeField", component: CodeField, prop: "value", becomes: "", props: { name: "code" } },
     { name: "Textarea", component: Textarea, prop: "value", becomes: "", props: { label: "Notes" } },
     { name: "DateField", component: DateField, prop: "value", becomes: "", props: { label: "Date" } },
     { name: "TimeField", component: TimeField, prop: "value", becomes: "", props: { label: "Time" } },

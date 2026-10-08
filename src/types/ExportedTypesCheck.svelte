@@ -18,6 +18,7 @@
     import Checkbox from "../components/atoms/Checkbox.svelte";
     import Heading from "../components/atoms/Heading.svelte";
     import Input from "../components/atoms/Input.svelte";
+    import CodeField from "../components/atoms/CodeField.svelte";
     import Progress from "../components/atoms/Progress.svelte";
     import Rating from "../components/atoms/Rating.svelte";
     import PickerField from "../components/atoms/PickerField.svelte";
@@ -61,6 +62,7 @@
         CheckboxProps,
         HeadingProps,
         InputProps,
+        CodeFieldProps,
         ModalProps,
         ProgressProps,
         RatingProps,
@@ -106,6 +108,7 @@
         checkbox?: CheckboxProps;
         heading?: HeadingProps;
         input?: InputProps;
+        codeField?: CodeFieldProps;
         modal?: ModalProps;
         progress?: ProgressProps;
         rating?: RatingProps;
@@ -150,6 +153,7 @@
         checkbox = {},
         heading = {},
         input = {},
+        codeField = {},
         modal = {},
         progress = {},
         rating = {},
@@ -194,6 +198,7 @@
 <Checkbox {...checkbox} />
 <Heading {...heading} />
 <Input {...input} />
+<CodeField {...codeField} />
 <Modal {...modal} />
 <Progress {...progress} />
 <Rating {...rating} />

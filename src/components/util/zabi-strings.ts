@@ -27,6 +27,7 @@ import type { AvatarGroupStrings } from "./avatar.js";
 import type { CalendarStrings } from "./calendar.js";
 import type { DateFieldStrings, TimeFieldStrings } from "./temporal-field.js";
 import type { MediaGridStrings } from "./media-grid.js";
+import type { CodeFieldStrings } from "./code-field.js";
 import type { PhotoGridStrings, PhotoViewerStrings } from "./photo.js";
 import type { ProgressStrings } from "./progress.js";
 import type { PullToRefreshStrings } from "./pull-to-refresh.js";
@@ -159,6 +160,7 @@ export interface ZabiStrings {
     avatarGroup?: Partial<AvatarGroupStrings>;
     calendar?: Partial<CalendarStrings>;
     codeBlock?: Partial<CodeBlockTexts>;
+    codeField?: Partial<CodeFieldStrings>;
     colorPicker?: Partial<ColorPickerStrings>;
     dateField?: Partial<DateFieldStrings>;
     componentDemo?: Partial<ComponentDemoStrings>;

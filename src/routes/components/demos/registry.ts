@@ -1,6 +1,7 @@
 import type { Component } from "svelte";
 import ButtonDemo from "./ButtonDemo.svelte";
 import InputDemo from "./InputDemo.svelte";
+import CodeFieldDemo from "./CodeFieldDemo.svelte";
 import ModalDemo from "./ModalDemo.svelte";
 import RadioDemo from "./RadioDemo.svelte";
 import SliderDemo from "./SliderDemo.svelte";
@@ -45,6 +46,7 @@ import type { DemoRendererProps } from "./types";
 const registry: Record<string, Component<DemoRendererProps>> = {
     Button: ButtonDemo,
     Input: InputDemo,
+    CodeField: CodeFieldDemo,
     Radio: RadioDemo,
     Slider: SliderDemo,
     Rating: RatingDemo,

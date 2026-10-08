@@ -12,6 +12,19 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- `CodeField`: a field for a verification or one-time code (Z-096). One real `<input>`
+  (`autocomplete="one-time-code"`, `inputmode="numeric"`) under boxes drawn and hidden from
+  assistive technology, so the iPhone and Android code suggestion, paste of a whole code
+  ("123 456" and "123-456" too, with the caret anywhere) and one accessible name work, and the
+  form posts the code by `name` with scripts off, where the input is a plain bordered field.
+  `length` (1 to 12, default 6), `value` (bindable), `mode` (`numeric` default, `alphanumeric`),
+  `label` / `labelHidden`, `hint`, `error`, `variant` + `message`, `required`, `disabled`,
+  `readonly`, `oncomplete(value)` and `strings`; the words (`codeField.label`,
+  `codeField.description`) come from `ZabiStringsProvider`. Exports: `CodeField`,
+  `DEFAULT_CODE_FIELD_STRINGS`, types `CodeFieldProps`, `CodeFieldMode`, `CodeFieldStrings`.
+
 ## [9.0.0-alpha.13] - 2026-10-07
 
 A thirteenth local preview build of the 9.0 direction, not published to npm. Two
