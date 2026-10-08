@@ -15,13 +15,14 @@
         defaultDuration?: ToastDuration;
         /** The stack, the snackbar for a phone, or the snackbar below 640px. */
         mode?: ToasterMode;
+        timeLine?: boolean;
         /** How many toasts show at once. */
         max?: number;
         /** Story only: a bar docked at the bottom, as a BottomTabBar would be, for the snackbar to sit above. */
         bar?: boolean;
     }
 
-    let { swedish = false, showCountdown = false, length, defaultDuration, mode = "stack", max, bar = false }: Props = $props();
+    let { swedish = false, showCountdown = false, length, defaultDuration, mode = "stack", max, bar = false, timeLine }: Props = $props();
 
     /** A text that suits each length: what it is for. */
     const samples = {
@@ -150,6 +151,6 @@
             <span>Home</span><span>Rounds</span><span>Profile</span>
         </div>
     {/if}
-    <Toaster {showCountdown} {defaultDuration} {mode} {max} />
+    <Toaster {showCountdown} {defaultDuration} {mode} {max} {timeLine} />
 </div>
 {/if}

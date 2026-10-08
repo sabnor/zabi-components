@@ -147,6 +147,15 @@
          */
         avoid?: string;
         /**
+         * Draws the thin bar along the bottom of a toast that empties over its
+         * time. Unset: drawn, except under a confirmation in the snackbar that
+         * has nothing to press (pushed with `closable: false`), where it is
+         * left out. `false` leaves it out everywhere, `true` draws it
+         * everywhere; a toast's own `timeLine` wins. The sentence for a screen
+         * reader about the time left stays.
+         */
+        timeLine?: boolean;
+        /**
          * Touch and pen drag a toast away sideways (and down, in the
          * snackbar). Default `true`. A mouse does not drag; the close button
          * is the way for a keyboard and a screen reader.
@@ -170,6 +179,7 @@
         max,
         avoid,
         swipeToDismiss = true,
+        timeLine,
         onpausechange,
         class: className = '',
         ...restProps
@@ -211,9 +221,18 @@
     });
     const snackbar = $derived(mode === "snackbar" || (mode === "auto" && narrow));
 
-    /** Cuts at the edge the toast is docked on, so it comes out from behind it (sides and top stay open). */
-    const clip = "[clip-path:inset(-100vh_-100vw_0_-100vw)]";
-    const clipClass = $derived(mode === "snackbar" ? clip : mode === "auto" ? `max-sm:${clip}` : "");
+    /**
+     * Cuts at the edge the toast is docked on, so it comes out from behind it (sides and top stay open).
+     * Each class is written out whole: Tailwind only generates what it finds as text in the source, so a
+     * class put together from a prefix and a value at run time is in no stylesheet.
+     */
+    const clipClass = $derived(
+        mode === "snackbar"
+            ? "[clip-path:inset(-100vh_-100vw_0_-100vw)]"
+            : mode === "auto"
+              ? "max-sm:[clip-path:inset(-100vh_-100vw_0_-100vw)]"
+              : "",
+    );
 
     /** The oldest toast that is timed leaves for a newer one; one that has to stay is never dropped. */
     const limit = $derived(max ?? (snackbar ? 1 : Infinity));
@@ -497,6 +516,6 @@
 >
     <!-- Each toast owns its role="status"/"alert"; a region-level aria-live would announce twice. -->
     {#each $toastStore as toast (toast.id)}
-        <ToasterToast {toast} strings={words} {showCountdown} {defaultDuration} {onpausechange} {snackbar} {swipeToDismiss} />
+        <ToasterToast {toast} strings={words} {showCountdown} {defaultDuration} {onpausechange} {snackbar} {swipeToDismiss} {timeLine} />
     {/each}
 </div>

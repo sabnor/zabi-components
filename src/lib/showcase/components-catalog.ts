@@ -5340,6 +5340,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "A CSS selector for elements the stack must not lie on, such as the button a screen ends in. A BottomTabBar, a StickyActionBar, a FloatingActionButton and an UnsavedChangesBar that lie under the stack are found by themselves; when something named here does too, the stack sits above it.",
                     },
                     {
+                        name: "timeLine",
+                        type: "boolean",
+                        required: false,
+                        description:
+                            "The thin bar along the bottom of a timed toast that empties over its time. Unset: drawn, except under a confirmation in the snackbar that has nothing to press (timed, no action, closable: false). false leaves it out everywhere, true draws it everywhere; timeLine on a toast wins. The sentence for a screen reader about the time left stays.",
+                    },
+                    {
                         name: "swipeToDismiss",
                         type: "boolean",
                         required: false,
@@ -5374,7 +5381,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     {
                         title: "A toast for a phone",
                         description:
-                            "mode=\"auto\" makes the toast a snackbar below 640px: one row, one at a time, directly above a BottomTabBar, a StickyActionBar or a FloatingActionButton that lies under it, coming out from behind that edge and going back into it. avoid names the button a screen ends in. A touch swipe dismisses it; the dismiss button stays. closable: false leaves the button out of a short timed confirmation, which then takes no taps (an error, a toast with an action or details, and one that stays keep the button). Pushing with the id of a toast that is showing replaces it in place.",
+                            "mode=\"auto\" makes the toast a snackbar below 640px: one row, one at a time, directly above a BottomTabBar, a StickyActionBar or a FloatingActionButton that lies under it, coming out from behind that edge and going back into it. avoid names the button a screen ends in. A touch swipe dismisses it; the dismiss button stays. closable: false leaves the button out of a short timed confirmation, which then takes no taps and has no time bar (timeLine brings it back) (an error, a toast with an action or details, and one that stays keep the button). Pushing with the id of a toast that is showing replaces it in place.",
                         code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster mode=\"auto\" avoid=\"[data-primary-action]\" />\n\npushToast({ id: 'saved', message: 'Name saved', type: 'success', duration: 'short', closable: false });\npushToast({ message: 'Round archived', action: { label: 'Undo', onclick: restore } });",
                     },
                     {

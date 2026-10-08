@@ -31,6 +31,11 @@ const meta = {
             options: ['stack', 'snackbar', 'auto'],
             description: 'stack: the stack in the corner. snackbar: the compact form for a phone, one at a time, above what is docked at the bottom. auto: the snackbar below 640px'
         },
+        timeLine: {
+            control: 'inline-radio',
+            options: [undefined, true, false],
+            description: 'The thin time bar along the bottom of a toast. Unset: drawn, except under a confirmation in the snackbar that has nothing to press. false leaves it out everywhere, true draws it everywhere'
+        },
         max: { control: 'number', description: 'How many toasts show at once; the oldest timed one leaves' },
         defaultDuration: {
             control: 'inline-radio',
@@ -128,6 +133,19 @@ export const DefaultDuration: Story = {
  */
 export const Snackbar: Story = {
     args: { mode: 'snackbar', bar: true },
+    render: (args) => ({
+        Component: ToasterStory,
+        props: args,
+    }),
+};
+
+/**
+ * A confirmation pushed with `closable: false` has nothing to press, so the snackbar draws no time bar under it
+ * (the 4px bar under a 52px row would be the loudest thing in it). A toast with a button keeps the bar, and the
+ * stack keeps it for every toast. `timeLine` on the Toaster or on a toast says otherwise.
+ */
+export const SnackbarWithoutTimeLine: Story = {
+    args: { mode: 'snackbar', bar: true, length: 'short', timeLine: false },
     render: (args) => ({
         Component: ToasterStory,
         props: args,

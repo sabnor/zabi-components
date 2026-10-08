@@ -41,6 +41,8 @@
         snackbar?: boolean;
         /** A touch or a pen drags the toast away, sideways (and down, in the snackbar). */
         swipeToDismiss?: boolean;
+        /** Draws the time bar (`true`/`false`); unset, it is left out of a snackbar toast with nothing to press. */
+        timeLine?: boolean;
     }
 
     let {
@@ -52,6 +54,7 @@
         onpausechange,
         snackbar = false,
         swipeToDismiss = true,
+        timeLine,
     }: Props = $props();
 
     let count = $state(0);
@@ -114,6 +117,14 @@
             !showCountdown &&
             toast.type !== 'error',
     );
+
+    /**
+     * The bar says "you have this long to press". A confirmation with nothing
+     * to press, in the snackbar, has no use for it (and WCAG 2.2.1 is about
+     * time to act, of which there is none), so it is left out there unless
+     * asked for. The stack keeps it. The toast's own setting wins over the Toaster's.
+     */
+    const drawTimeLine = $derived(toast.timeLine ?? timeLine ?? !(snackbar && bare));
 
     /**
      * What a screen reader hears is a live region that is in the page
@@ -639,9 +650,10 @@
         <p class="sr-only" data-toast-countdown>{countdownText}</p>
     {/if}
 
-    {#if timerActive}
+    {#if timerActive && drawTimeLine}
         <div
             class="pointer-events-none absolute bottom-0 left-0 right-0 h-1 bg-border/70"
+            data-toast-timeline
             transition:fade={{ duration: motion(180) }}
             aria-hidden="true"
         >

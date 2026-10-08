@@ -12,6 +12,30 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.20] - 2026-10-08
+
+A twentieth local preview build of the 9.0 direction, not published to npm. Two
+entries from the app team, the first time the snackbar was drawn in a browser
+(Z-105, Z-106). No token, prop, variant, string key or export of alpha.19 is removed
+or renamed. Run on this build: the type and design checks, the unit suite, the package
+build and a scratch install; no browser.
+### Added
+
+- `Toaster` `timeLine?: boolean` and `pushToast` / `ToastItem` `timeLine?: boolean`: whether the thin
+  bar along the bottom of a timed toast is drawn. Unset, it is drawn as before, except under a
+  confirmation in the snackbar that has nothing to press (timed, no action, `closable: false`),
+  where it is now left out. `false` leaves it out, `true` draws it; a toast's own value wins over the
+  Toaster's. The bar has `data-toast-timeline`; the sentence for a screen reader about the time left stays.
+- A unit test that fails on a Tailwind class put together at run time (`max-sm:${x}`, `w-[${px}px]`).
+### Changed
+
+- `Toaster mode="auto"`: the clip that makes the toast come out from behind the docked edge was a
+  class assembled at run time (`max-sm:` + the rule), which is in no stylesheet, so below 640px the
+  toast slid in over the tab bar. It is written out whole now. Nothing to change in an app; an app
+  that carried the class itself as a stand-in can remove it.
+- A snackbar confirmation with nothing to press no longer has the time bar (see Added); pass
+  `timeLine` to bring it back.
+
 ## [9.0.0-alpha.19] - 2026-10-08
 
 A nineteenth local preview build of the 9.0 direction, not published to npm. One

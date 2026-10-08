@@ -60,6 +60,15 @@ export interface ToastItem {
      * `showCountdown`. Defaults to `true`.
      */
     closable?: boolean;
+    /**
+     * Whether the thin bar along the bottom, which empties over the toast's
+     * time, is drawn. Unset, the Toaster decides: it is drawn, except under
+     * a confirmation in the snackbar that has nothing to press (the case
+     * `closable: false` makes), where it is left out. `true` or `false`
+     * here wins over the Toaster's `timeLine`. The sentence a screen reader
+     * finds for the time left stays either way.
+     */
+    timeLine?: boolean;
 }
 
 function createToastStore() {
@@ -81,6 +90,7 @@ function createToastStore() {
             detail?: string;
             action?: ToastAction;
             closable?: boolean;
+            timeLine?: boolean;
         }): string {
             const id =
                 options.id ?? `toast-${Math.random().toString(36).slice(2, 11)}`;
@@ -93,6 +103,7 @@ function createToastStore() {
                 detail: options.detail,
                 action: options.action,
                 closable: options.closable,
+                timeLine: options.timeLine,
             };
             // A toast pushed with the id of one that is showing replaces it where it stands.
             update((list) =>
@@ -126,6 +137,8 @@ export function pushToast(options: {
     action?: ToastAction;
     /** `false` leaves the close button out of a short timed toast. See {@link ToastItem.closable}. */
     closable?: boolean;
+    /** `false` leaves the time bar out, `true` forces it. See {@link ToastItem.timeLine}. */
+    timeLine?: boolean;
 }): string {
     return toastStore.push(options);
 }
