@@ -710,6 +710,20 @@ Every word the toaster says by itself is in `strings`, and the region's name
 is `aria-label` or `strings.regionLabel`. `data-paused` on a toast and
 `onpausechange` on the Toaster say when its timer is held.
 
+The words of a toast reach a screen reader after the toast is mounted: the
+`role="status"` (or `alert`) element is in the page empty, and the words are put
+in a moment later (about 100 ms, while the toast is still coming in), because a
+live region that is inserted already filled is the pattern screen readers are
+least dependable on. A mouse holds the timer once it has moved over the toast,
+not when the toast comes up under a pointer that is at rest. A touch or a pen
+drags a toast away sideways (and down, in `mode="snackbar"`), which is a
+shortcut: the dismiss button is the way for a keyboard and a screen reader, and
+a toast with an action keeps it. A toast pushed with `closable: false` has no
+control at all, takes no taps and is only for a short timed confirmation; it is
+ignored (the button is shown) for an error, a toast with an action or details,
+one that stays, and under `showCountdown`. `max` limits how many show; the
+oldest timed toast leaves, never one that has to stay.
+
 **SwipeableListItem:** Tab reaches the button at the end of the row (named
 "Actions", `aria-expanded`). Enter or Space opens the row and moves focus to
 its first action; the actions are buttons, reached with Tab. Enter or Space on

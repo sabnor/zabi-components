@@ -126,3 +126,81 @@ export interface ToastPauseChange {
     /** True while a pointer is over the toast, a finger is on it, or focus is inside it. */
     paused: boolean;
 }
+
+/**
+ * How a `Toaster` presents its toasts. `"stack"` is the stack in the corner
+ * (and across the width on a phone); `"snackbar"` is the compact form for a
+ * phone, one at a time, docked above whatever is at the bottom; `"auto"` is
+ * the snackbar below 640px and the stack from there up.
+ */
+export type ToasterMode = "stack" | "snackbar" | "auto";
+
+/** The words of a toast on screen: its first line, and the line under it if there is one. */
+export function toastTexts(
+    toast: { title?: string; message: string; type: string },
+    strings: Pick<ToasterStrings, "successTitle" | "errorTitle" | "warningTitle" | "infoTitle">,
+): { title: string; message: string; headerTitle: string; secondLine: string } {
+    const title = toast.title?.trim() ?? "";
+    const message = toast.message.trim();
+    const fallback =
+        toast.type === "success"
+            ? strings.successTitle
+            : toast.type === "error"
+              ? strings.errorTitle
+              : toast.type === "warning"
+                ? strings.warningTitle
+                : strings.infoTitle;
+    return {
+        title,
+        message,
+        // The title, or the message when there is no title.
+        headerTitle: title || message || fallback,
+        // The message, under a title that says something else.
+        secondLine: title && message && message !== title ? message : "",
+    };
+}
+
+/**
+ * True when the toast has to stay until a person has dealt with it, which
+ * makes it the one a `max` never drops: an error, one with an action, one
+ * with no end (`"persistent"`, or text too long to read in `long`).
+ */
+export function toastStays(
+    toast: { title?: string; message: string; type: string; duration?: ToastDuration; action?: unknown },
+    defaultDuration?: ToastDuration,
+): boolean {
+    const title = toast.title?.trim() ?? "";
+    const message = toast.message.trim();
+    const textLength = (title || message).length + (title && message && message !== title ? message.length : 0);
+    return (
+        resolveToastDuration(
+            { duration: toast.duration, type: toast.type, hasAction: !!toast.action, textLength },
+            defaultDuration,
+        ) === 0
+    );
+}
+
+/**
+ * Ids of toasts that a `max` is dropping to make room for a newer one. Such a
+ * toast leaves at once, without the exit motion: a newer toast is coming in
+ * where it is, and the two would otherwise lie on each other for a moment.
+ */
+export const toastsReplaced = new Set<string>();
+
+/** The Material standard curve (`--ease-standard`), as an easing function for a script-driven slide. */
+export function easeStandard(t: number): number {
+    const [x1, y1, x2, y2] = [0.2, 0, 0, 1];
+    const at = (a: number, b: number, s: number) => 3 * a * (1 - s) ** 2 * s + 3 * b * (1 - s) * s ** 2 + s ** 3;
+    let lo = 0;
+    let hi = 1;
+    let s = t;
+    for (let i = 0; i < 20; i++) {
+        s = (lo + hi) / 2;
+        if (at(x1, x2, s) < t) lo = s;
+        else hi = s;
+    }
+    return at(y1, y2, s);
+}
+
+/** A toast dragged further than this share of its width is dismissed, flick or not. */
+export const TOAST_SWIPE_DISMISS_FRACTION = 0.4;

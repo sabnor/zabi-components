@@ -51,6 +51,15 @@ export interface ToastItem {
     duration?: ToastDuration;
     /** An action button in the toast, such as Undo. */
     action?: ToastAction;
+    /**
+     * `false` leaves the close button out, for a short timed confirmation
+     * that nobody has to act on: the toast then has no control, takes no
+     * taps (they reach the page under it) and cannot be held. Ignored, and
+     * the button shown, for a toast that stays (an error, one with an
+     * action, `"persistent"`), one with `detail`, and under a Toaster with
+     * `showCountdown`. Defaults to `true`.
+     */
+    closable?: boolean;
 }
 
 function createToastStore() {
@@ -71,6 +80,7 @@ function createToastStore() {
             title?: string;
             detail?: string;
             action?: ToastAction;
+            closable?: boolean;
         }): string {
             const id =
                 options.id ?? `toast-${Math.random().toString(36).slice(2, 11)}`;
@@ -82,8 +92,12 @@ function createToastStore() {
                 title: options.title,
                 detail: options.detail,
                 action: options.action,
+                closable: options.closable,
             };
-            update((list) => [...list, item]);
+            // A toast pushed with the id of one that is showing replaces it where it stands.
+            update((list) =>
+                list.some((t) => t.id === id) ? list.map((t) => (t.id === id ? item : t)) : [...list, item],
+            );
             return id;
         },
         dismiss,
@@ -97,6 +111,12 @@ export const toastStore = createToastStore();
 
 export function pushToast(options: {
     message: string;
+    /**
+     * Gives the toast a name of your own. Pushing with the id of a toast that
+     * is showing replaces it in place, with its time started again, so
+     * "Saved" pushed three times is one toast.
+     */
+    id?: string;
     type?: ToastLevel;
     /** Same semantics as {@link ToastItem.duration}. */
     duration?: ToastDuration;
@@ -104,6 +124,8 @@ export function pushToast(options: {
     detail?: string;
     /** An action button in the toast, such as Undo. See {@link ToastAction}. */
     action?: ToastAction;
+    /** `false` leaves the close button out of a short timed toast. See {@link ToastItem.closable}. */
+    closable?: boolean;
 }): string {
     return toastStore.push(options);
 }

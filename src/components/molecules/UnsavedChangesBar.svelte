@@ -189,6 +189,7 @@
     aria-label={dirty ? label : undefined}
     aria-busy={dirty && busy ? "true" : undefined}
     data-position={position}
+    data-toast-clear={dirty ? "" : undefined}
     class={cn(
         "focus-ring",
         dirty &&

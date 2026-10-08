@@ -127,7 +127,7 @@ export type {
 } from '../util/stepper.js';
 export * from './toast-store.js';
 export { DEFAULT_TOASTER_STRINGS, TOAST_DURATIONS } from '../util/toaster.js';
-export type { ToasterStrings, ToastPauseChange, ToastDuration } from '../util/toaster.js';
+export type { ToasterStrings, ToasterMode, ToastPauseChange, ToastDuration } from '../util/toaster.js';
 export { DEFAULT_SELECT_STRINGS } from '../util/select.js';
 export type { SelectStrings, SelectPresentation } from '../util/select.js';
 export {

@@ -156,6 +156,7 @@
         class={classes}
         aria-label={extended ? undefined : label}
         data-position={position}
+        data-toast-clear
         {...restProps}
     >
         {@render content()}
@@ -167,6 +168,7 @@
         class={classes}
         aria-label={extended ? undefined : label}
         data-position={position}
+        data-toast-clear
         {...restProps}
     >
         {@render content()}

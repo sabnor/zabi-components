@@ -5266,7 +5266,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Toaster",
                 category: "molecules",
                 description:
-                    "Fixed notification region for pushToast; mount once near the app root. On a phone it spans the width, clear of the home indicator and a tab bar.",
+                    "Fixed notification region for pushToast; mount once near the app root. On a phone it is a compact snackbar above any docked bar (mode auto).",
                 props: [
                     {
                         name: "strings",
@@ -5300,6 +5300,36 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "How long a toast stays when it was pushed without a duration: short is 3 seconds, medium 7, long 14, persistent until it is dismissed; a number is milliseconds. An error and a toast with an action still stay until dismissed, a toast with 121 to 240 characters of title and message still gets at least long, and a longer one still stays. A duration on the toast itself always wins. The three lengths are exported as TOAST_DURATIONS, the type as ToastDuration.",
                     },
                     {
+                        name: "mode",
+                        type: "'stack' | 'snackbar' | 'auto'",
+                        required: false,
+                        defaultValue: "'stack'",
+                        description:
+                            "stack: the stack in the corner, across the width on a phone. snackbar: the compact form for a phone at every width, one row of 52px, its action beside the text, one at a time, set directly above what is docked at the bottom and coming out from behind that edge. auto: the snackbar below 640px, the stack from there up. The type is ToasterMode.",
+                    },
+                    {
+                        name: "max",
+                        type: "number",
+                        required: false,
+                        description:
+                            "How many toasts show at once. The oldest timed toast leaves when a newer one arrives; an error, a toast with an action and one that is persistent are never dropped, so there can be more while they show. No limit by default, and 1 in the snackbar.",
+                    },
+                    {
+                        name: "avoid",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A CSS selector for elements the stack must not lie on, such as the button a screen ends in. A BottomTabBar, a StickyActionBar, a FloatingActionButton and an UnsavedChangesBar that lie under the stack are found by themselves; when something named here does too, the stack sits above it.",
+                    },
+                    {
+                        name: "swipeToDismiss",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "A touch or a pen drags a toast away sideways, and down in the snackbar; past 40% of its width or a flick it goes, otherwise it settles back. A mouse does not drag. The dismiss button stays for a keyboard and a screen reader.",
+                    },
+                    {
                         name: "onpausechange",
                         type: "(detail: { id: string; paused: boolean }) => void",
                         required: false,
@@ -5322,6 +5352,12 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset: 72px for a FloatingActionButton, which it would otherwise cover. That offset is for what is on the page: over a modal overlay the stack keeps off the overlay's header (and its close button) and off a pinned footer by itself, above the panel or between the two, and the offset is not added on top. Over the on-screen keyboard it sits above the keyboard. Tab goes from the overlay into the toasts and back. More toasts than fit scroll. The safe-area insets are zero until the page sets viewport-fit=cover",
                         code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: 64px\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
+                    },
+                    {
+                        title: "A toast for a phone",
+                        description:
+                            "mode=\"auto\" makes the toast a snackbar below 640px: one row, one at a time, directly above a BottomTabBar, a StickyActionBar or a FloatingActionButton that lies under it, coming out from behind that edge and going back into it. avoid names the button a screen ends in. A touch swipe dismisses it; the dismiss button stays. closable: false leaves the button out of a short timed confirmation, which then takes no taps (an error, a toast with an action or details, and one that stays keep the button). Pushing with the id of a toast that is showing replaces it in place.",
+                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster mode=\"auto\" avoid=\"[data-primary-action]\" />\n\npushToast({ id: 'saved', message: 'Name saved', type: 'success', duration: 'short', closable: false });\npushToast({ message: 'Round archived', action: { label: 'Undo', onclick: restore } });",
                     },
                     {
                         title: "How long a toast stays",

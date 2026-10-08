@@ -12,6 +12,42 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.18] - 2026-10-08
+
+An eighteenth local preview build of the 9.0 direction, not published to npm. It
+makes the toast work on a phone (the app team's Z-097 to Z-103). No token, prop,
+variant, string key or export of alpha.17 is removed or renamed, and a `Toaster`
+with no new prop looks and behaves as before, except for the four defect fixes
+under Changed. Run on this build: the type and design checks, the unit suite,
+the package build and a scratch install; no browser, no screen reader.
+### Added
+
+- `Toaster` `mode?: "stack" | "snackbar" | "auto"` (default `"stack"`, type `ToasterMode`): the
+  snackbar is one row of 52px (two lines at most), one at a time, its action beside its text, set
+  directly above what is docked at the bottom and sliding out from behind that edge on
+  `--ease-standard` (no overshoot, no movement under reduced motion). `"auto"` is the snackbar below
+  640px and the stack from there up.
+- `Toaster` `max` (how many show; the oldest timed toast leaves, never an error, one with an action or
+  a persistent one; 1 in the snackbar), `avoid` (a CSS selector for what the stack must not lie on)
+  and `swipeToDismiss` (default `true`).
+- The toaster finds a `BottomTabBar` or `StickyActionBar` (`data-bar-edge="bottom"`), a
+  `FloatingActionButton` and a dirty `UnsavedChangesBar` (new `data-toast-clear`) that lie under the
+  stack and sits above the highest, at any width.
+- `pushToast` and `ToastItem`: `closable?: boolean` (default `true`); `false` leaves the close button
+  out of a short timed toast, which then has no control and takes no taps. `pushToast` takes `id?`.
+### Changed
+
+- A mouse holds a toast's timer once it has moved over the toast, not when the toast arrives under a
+  pointer at rest (Z-098: it never closed). `mouseenter` and `pointerenter` alone no longer hold it.
+- A toast pushed with the id of one that is showing replaces it in place and restarts its time
+  (before, a second item with the same id was added, which a keyed list cannot have).
+- A touch or a pen swipe dismisses a toast (sideways; `swipeToDismiss={false}` turns it off). The close
+  button stays. The toast has `touch-action: pan-y`.
+- One line of text is centred on the buttons beside it; text that wraps stays at the top.
+- The words of a toast are put in its `role="status"` / `role="alert"` element about 100 ms after the
+  toast is mounted, so the live region is in the page empty first (Z-102). The server's markup has
+  them at once. Tests that read a toast's text right after `pushToast` need to wait for it.
+
 ## [9.0.0-alpha.17] - 2026-10-08
 
 A seventeenth local preview build of the 9.0 direction, not published to npm. It
