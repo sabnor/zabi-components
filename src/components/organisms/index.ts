@@ -4,6 +4,7 @@ export { default as SidebarShell } from './SidebarShell.svelte';
 export { default as SidebarAccountPanel } from './SidebarAccountPanel.svelte';
 export { default as SidebarPanel } from './SidebarPanel.svelte';
 export { default as AppShell } from './AppShell.svelte';
+export { default as AppShellHeaderPart } from './AppShellHeaderPart.svelte';
 export { default as AppNavigation } from './AppNavigation.svelte';
 export {
     APP_SHELL_RAIL_MIN_WIDTH,

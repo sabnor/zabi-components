@@ -12,6 +12,20 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- `AppShellHeaderPart`: the consumer chooses what stays at the top. Put several in `AppShell`'s
+  `header` snippet, each with `sticky` (default `true`) or `sticky={false}` to scroll away with
+  the content: the bar can leave while a filter row stays, or a large title can go while the bar
+  and the tabs stay. Plain `position: sticky` in the scroller's flow, no scroll listener; the
+  stuck parts stack under one another in document order (a part that scrolls away in between
+  does not leave a gap), and the shell reports only what is stuck as `--app-shell-top-inset` and
+  `scroll-padding-top`. One glass surface and one hairline under the lowest stuck part; the
+  status bar is covered by whatever is topmost, also after the first part has gone. Stuck parts
+  may cover 40% of the scroller at most, the lower ones then scroll (`data-released`). A header
+  without parts and `AppBar collapseOnScroll` / `largeTitle` behave as before. `AppBar` now
+  carries `data-appbar`. Types: `AppShellHeaderPartProps`. Story, catalog entry and demo toggle.
+
 ## [9.0.0-alpha.14] - 2026-10-08
 
 A fourteenth local preview build of the 9.0 direction, not published to npm. One

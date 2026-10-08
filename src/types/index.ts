@@ -816,6 +816,15 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'cla
     style?: string;
 }
 
+// AppShellHeaderPart component props
+export interface AppShellHeaderPartProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
+    /** The part's content: an `AppBar`, a search field, filter chips, tabs. */
+    children?: Snippet;
+    /** Stays at the top under the parts that stick above it (default), or scrolls away with the content. */
+    sticky?: boolean;
+    class?: string;
+}
+
 // AppNavigation component props
 export interface AppNavigationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
     /** The destinations, as for `BottomTabBar`. */

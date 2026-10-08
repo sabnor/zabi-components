@@ -34,6 +34,7 @@
     import AppBar from "../components/molecules/AppBar.svelte";
     import BottomTabBar from "../components/molecules/BottomTabBar.svelte";
     import AppShell from "../components/organisms/AppShell.svelte";
+    import AppShellHeaderPart from "../components/organisms/AppShellHeaderPart.svelte";
     import AppNavigation from "../components/organisms/AppNavigation.svelte";
     import FloatingActionButton from "../components/atoms/FloatingActionButton.svelte";
     import BottomSheet from "../components/molecules/BottomSheet.svelte";
@@ -77,6 +78,7 @@
         AppBarProps,
         BottomTabBarProps,
         AppShellProps,
+        AppShellHeaderPartProps,
         AppNavigationProps,
         FloatingActionButtonProps,
         BottomSheetProps,
@@ -123,6 +125,7 @@
         appBar?: AppBarProps;
         bottomTabBar?: BottomTabBarProps;
         appShell?: AppShellProps;
+        appShellHeaderPart?: AppShellHeaderPartProps;
         appNavigation?: AppNavigationProps;
         floatingActionButton?: FloatingActionButtonProps;
         bottomSheet?: BottomSheetProps;
@@ -168,6 +171,7 @@
         appBar = {},
         bottomTabBar = { items: [] },
         appShell = {},
+        appShellHeaderPart = {},
         appNavigation = { items: [] },
         floatingActionButton = { label: "" },
         bottomSheet = { title: "" },
@@ -213,6 +217,7 @@
 <AppBar {...appBar} />
 <BottomTabBar {...bottomTabBar} />
 <AppShell {...appShell} />
+<AppShellHeaderPart {...appShellHeaderPart} />
 <AppNavigation {...appNavigation} />
 <FloatingActionButton {...floatingActionButton} />
 <BottomSheet {...bottomSheet} />

@@ -61,6 +61,15 @@
      * passes under the footer (both `"false"` on the server and before the
      * first measurement). The bars read the same state.
      *
+     * To let the consumer choose what stays, compose the header from
+     * `AppShellHeaderPart`s: each says `sticky` (the default) or `sticky={false}`
+     * and scrolls away with the content, so a bar can leave while the filter
+     * row stays, or a large title can go while the bar and the tabs stay. The
+     * shell measures the parts to stack the ones that stick, reports only
+     * what is stuck as `--app-shell-top-inset` and `scroll-padding-top`, and
+     * puts the glass and the hairline under the lowest one. Without parts the
+     * header is one block that sticks, as before.
+     *
      * With `canvas` the shell is painted with the page colour and the brand
      * wash (`bg-canvas`), and the header bar rests transparent so the wash
      * shows through it.
@@ -104,7 +113,10 @@
      * block do it.
      */
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class" | "style"> & {
-        /** The top bar, an `AppBar`. It handles the safe area above it. */
+        /**
+         * The top bar, an `AppBar`. It handles the safe area above it. Or
+         * several `AppShellHeaderPart`s, each of which sticks or scrolls away.
+         */
         header?: Snippet;
         /** The scrolling content, rendered in the element `contentElement` names. */
         children?: Snippet;
@@ -252,6 +264,14 @@
     let scrolledBottom = $state(false);
     /** How far the header wrapper sticks above the top of the scroller: a large title's row (px). */
     let headerOverscroll = $state(0);
+    /**
+     * What the `AppShellHeaderPart`s measure to: the px that cover content while
+     * the stuck parts are stuck (status bar strip included) and how far the
+     * content scrolls before it passes under them. Null without parts, on the
+     * server and until measured.
+     */
+    let partsLayout = $state<{ inset: number; threshold: number } | null>(null);
+    let strip: HTMLDivElement | undefined = $state();
 
     markAppShell({
         get scrolledTop() {
@@ -283,8 +303,112 @@
                 scrolledTop = edge.top;
                 scrolledBottom = edge.bottom;
             },
-            headerOverscroll,
+            partsLayout ? partsLayout.threshold : headerOverscroll,
         );
+    });
+
+    /** Stuck parts may cover this much of the scroller; the lower ones then scroll (WCAG 2.4.11, 200% text). */
+    const PARTS_MAX_COVER = 0.4;
+
+    $effect(() => {
+        const region = headerRegion;
+        const area = scroller;
+        if (!region || !area) {
+            partsLayout = null;
+            return;
+        }
+        const partsOf = () =>
+            Array.from(region.querySelectorAll<HTMLElement>(":scope > [data-app-shell-part]"));
+        const heightOf = (part: HTMLElement) => part.getBoundingClientRect().height;
+
+        const layout = () => {
+            const parts = partsOf();
+            const env = strip ? strip.getBoundingClientRect().height : 0;
+            const heights = parts.map(heightOf);
+            // No parts, or no layout (a hidden shell, a test DOM): the header measure applies.
+            if (parts.length === 0 || heights.every((height) => height === 0)) {
+                for (const part of parts) part.removeAttribute("data-released");
+                partsLayout = null;
+                return;
+            }
+            const overscrolls = parts.map((part) => Number(part.dataset.overscroll) || 0);
+            let natural = 0;
+            const items = parts.map((part, index) => {
+                const top = natural;
+                natural += heights[index];
+                return {
+                    part,
+                    natural: top,
+                    height: heights[index],
+                    overscroll: overscrolls[index],
+                    sticky: part.dataset.sticky === "true",
+                    // Pads the status bar itself: an AppBar, or the part at the very top.
+                    atTop: index === 0 || part.querySelector("[data-appbar]") !== null,
+                };
+            });
+            const stuck = items.filter((item) => item.sticky);
+            // The stack, top down, for the first `count` stuck parts.
+            const stack = (count: number) => {
+                let cover = 0;
+                const placed = stuck.slice(0, count).map((item, index) => {
+                    if (index === 0) cover = item.atTop ? 0 : env;
+                    const top = cover - item.overscroll;
+                    cover = top + item.height;
+                    return { item, top };
+                });
+                return { placed, cover: placed.length ? cover : env };
+            };
+            let count = stuck.length;
+            const limit = area.clientHeight * PARTS_MAX_COVER;
+            // Keep at least the first: a stack of one is the author's choice.
+            while (count > 1 && area.clientHeight > 0 && stack(count).cover > limit) count -= 1;
+            const { placed, cover } = stack(count);
+            const released = new Set(stuck.slice(count).map((item) => item.part));
+            for (const item of items) {
+                if (released.has(item.part)) item.part.setAttribute("data-released", "");
+                else item.part.removeAttribute("data-released");
+            }
+            for (const { item, top } of placed) {
+                item.part.style.setProperty("--app-shell-part-top", `${top}px`);
+            }
+            const last = placed[placed.length - 1];
+            // Content is under the stuck parts once the lowest has reached its place.
+            const threshold = last ? Math.max(0, last.item.natural - last.top) : 0;
+            const current = untrack(() => partsLayout);
+            if (!current || current.inset !== cover || current.threshold !== threshold) {
+                partsLayout = { inset: cover, threshold };
+            }
+        };
+
+        const resize = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(layout);
+        const watch = () => {
+            if (!resize) return;
+            resize.disconnect();
+            resize.observe(area);
+            if (strip) resize.observe(strip);
+            for (const part of partsOf()) resize.observe(part);
+        };
+        // Parts come and go, and `sticky` and a large title's height change.
+        const changes =
+            typeof MutationObserver === "undefined"
+                ? undefined
+                : new MutationObserver(() => {
+                      watch();
+                      layout();
+                  });
+        changes?.observe(region, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ["data-sticky", "data-overscroll"],
+        });
+        watch();
+        untrack(layout);
+        return () => {
+            resize?.disconnect();
+            changes?.disconnect();
+            partsLayout = null;
+        };
     });
 
     $effect(() => track(headerRegion, (height) => (headerHeight = height)));
@@ -293,10 +417,12 @@
     const topInset = $derived(
         !header
             ? "env(safe-area-inset-top, 0px)"
-            : headerHeight === null
-              ? HEADER_ESTIMATE
-              : // What covers content while scrolled: the header less the large row that scrolls away.
-                `${Math.max(0, headerHeight - headerOverscroll)}px`,
+            : partsLayout
+              ? `${partsLayout.inset}px`
+              : headerHeight === null
+                ? HEADER_ESTIMATE
+                : // What covers content while scrolled: the header less the large row that scrolls away.
+                  `${Math.max(0, headerHeight - headerOverscroll)}px`,
     );
     /** The footer's height: measured, or the estimate. */
     const footerPart = $derived(
@@ -394,6 +520,16 @@
               : '0px'}"
     >
         {#if header}
+            <!-- With header parts: the status bar's strip. Clear at rest, the glass of the bars once
+            content is under the stuck parts, so content never shows through the status bar when
+            the first part has scrolled away. It takes no room. -->
+            <div
+                bind:this={strip}
+                data-app-shell-strip
+                aria-hidden="true"
+                data-scrolled-under={String(scrolledTop)}
+                class="material-bar app-shell-strip [--color-bar:transparent]"
+            ></div>
             <!-- An empty strip is left when the bar slides away; it must not take taps. -->
             <div
                 bind:this={headerRegion}
@@ -518,6 +654,34 @@
         :global(.app-shell--nav[data-navigation-placement="auto"]) {
             --is-wide: 1;
         }
+    }
+
+    /*
+     * Header parts. A header whose children are `AppShellHeaderPart`s is not
+     * one sticky block: the wrapper drops out of the layout so that each part
+     * is a flex item of the scroller and sticks (or not) by itself. The
+     * decision is made in CSS, so the server's markup is right.
+     */
+    :global([data-app-shell-header]:has(> [data-app-shell-part])) {
+        display: contents;
+    }
+    :global(.app-shell-strip) {
+        display: none;
+    }
+    /* The strip is only for parts: the height of the status bar, taking no room, over the stuck parts' place. */
+    :global(.app-shell-strip:has(+ [data-app-shell-header] > [data-app-shell-part])) {
+        display: block;
+        position: sticky;
+        top: 0;
+        z-index: var(--z-sticky);
+        flex-shrink: 0;
+        height: env(safe-area-inset-top, 0px);
+        margin-bottom: calc(-1 * env(safe-area-inset-top, 0px));
+        pointer-events: none;
+    }
+    /* The surface is the bars' (`material-bar`): glass without the hairline, which belongs to the lowest part. */
+    :global(.app-shell-strip::before) {
+        border-width: 0;
     }
 
     :global(.shell-nav) {

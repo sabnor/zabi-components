@@ -531,6 +531,7 @@
 
 <header
     bind:this={host}
+    data-appbar=""
     data-tone={tone}
     data-large-title={large ? "" : undefined}
     data-condensed={large ? String(condensed) : undefined}

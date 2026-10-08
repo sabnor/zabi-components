@@ -9549,7 +9549,7 @@ pushToast({
                         type: "Snippet",
                         required: false,
                         description:
-                            "The top bar, an AppBar. It stays at the top of the scrolling area and handles the safe area above it.",
+                            "The top bar, an AppBar. It stays at the top of the scrolling area and handles the safe area above it. Or several AppShellHeaderPart blocks, each of which sticks or scrolls away with the content.",
                     },
                     {
                         name: "children",
@@ -9661,6 +9661,65 @@ pushToast({
         <BottomTabBar {items} active={page.url.pathname} />
     {/snippet}
 </AppShell>`,
+                    },
+                ],
+            },
+            {
+                name: "AppShellHeaderPart",
+                category: "organisms",
+                description:
+                    "One part of an AppShell header: it sticks to the top of the scrolling area or scrolls away with the content, so a filter row can stay while the bar leaves.",
+                props: [
+                    {
+                        name: "sticky",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Stays at the top under the parts that stick above it (true), or scrolls away with the content (false). The parts that stick stack in document order with no gap and no overlap, however many parts that scroll away are between them. The shell reports only what is stuck as --app-shell-top-inset and scroll-padding-top. The glass and one hairline sit under the lowest stuck part once content is under it; the status bar is covered by whatever is topmost. When the stuck parts would cover more than 40% of the scroller (landscape, 200% text) the lower ones stop sticking and carry data-released. The part writes data-sticky; data-scrolled-under is on the sticky ones.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "The part's content: an AppBar, a search field, a row of filter chips, tabs. An AppBar with largeTitle condenses inside its part; collapseOnScroll is for a header without parts.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes on the part. Pad with padding, not margin: the shell measures the part's box.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "The bar scrolls away, the filter row stays",
+                        description:
+                            "Parts go side by side in the header snippet, in the order they are drawn. Nothing but the parts' heights is measured. A header without parts is one block that sticks, as before.",
+                        code: `<AppShell>
+    {#snippet header()}
+        <AppShellHeaderPart sticky={false}>
+            <AppBar title="Quizzes" />
+        </AppShellHeaderPart>
+        <AppShellHeaderPart class="px-4 py-2">
+            <FilterChips />
+        </AppShellHeaderPart>
+    {/snippet}
+    <div class="p-4">…</div>
+</AppShell>`,
+                    },
+                    {
+                        title: "A large title that leaves, a bar and tabs that stay",
+                        description:
+                            "The AppBar condenses to its 56px row as it does alone; the tabs stick directly under it.",
+                        code: `{#snippet header()}
+    <AppShellHeaderPart><AppBar title="Quizzes" largeTitle /></AppShellHeaderPart>
+    <AppShellHeaderPart><Tabs {tabs} bind:activeTab fullWidth /></AppShellHeaderPart>
+{/snippet}`,
                     },
                 ],
             },
