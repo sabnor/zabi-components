@@ -12,6 +12,13 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.14] - 2026-10-08
+
+A fourteenth local preview build of the 9.0 direction, not published to npm. One
+entry from the app team (Z-096), a new component `CodeField`; no token, prop,
+variant or export of alpha.13 is removed or renamed, and no default changes. Run
+on this build: the type and design checks, the unit suite, the package build and
+a scratch install; no browser.
 ### Added
 
 - `CodeField`: a field for a verification or one-time code (Z-096). One real `<input>`
