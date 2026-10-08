@@ -5114,7 +5114,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Adds a grip at the top and lets a swipe down close the sheet. A swipe on the content closes only when the content is at its top. The close button, the backdrop and Escape stay.",
+                            "Adds a grip at the top and lets a swipe down close the sheet. A swipe on the content closes only when the content is at its top. Never from a box inside it that scrolls by itself, or from something marked data-sheet-no-drag. The close button, the backdrop and Escape stay.",
                     },
                     {
                         name: "onclick",

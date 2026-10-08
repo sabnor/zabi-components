@@ -27,7 +27,7 @@ export const Default: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Half and full. Drag the grip up to full and back, or press it; drag or flick it down past half to close. The list scrolls under a finger, and a swipe down moves the sheet only from the top of the list.'
+                story: 'Half and full. Drag the grip up to full and back, or press it; drag or flick it down past half to close. The list scrolls under a finger, and a swipe down moves the sheet only from the top of the list. A box inside the content that scrolls by itself (a Select list, the time columns of TimeField) keeps its own swipes, and anything with data-sheet-no-drag (a map, a wheel) keeps its drag from the sheet.'
             }
         }
     }

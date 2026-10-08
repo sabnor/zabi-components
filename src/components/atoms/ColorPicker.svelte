@@ -488,6 +488,7 @@
                             use:setColorMapContainer
                             class="relative w-full h-48 rounded-container cursor-crosshair touch-none select-none {RING_WITHIN}"
                             role="group"
+                            data-sheet-no-drag
                             aria-label={text.area}
                             onpointerdown={handleMapPointerDown}
                             onpointermove={handleMapPointerMove}

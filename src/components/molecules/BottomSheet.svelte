@@ -59,7 +59,10 @@
      * the lowest, closed. It is also a button that moves the sheet a step, so
      * the same is there for a keyboard and a screen reader. A swipe on the
      * content scrolls the content; it moves the sheet only when the content
-     * is at its top and the swipe goes down.
+     * is at its top and the swipe goes down. A box inside the content that
+     * scrolls by itself (a long list, a text area) keeps every swipe that
+     * starts on it, at its top too, and so does anything carrying
+     * `data-sheet-no-drag` (a map, a wheel, a swipeable row) or a range input.
      *
      * From the `md` breakpoint up the sheet is still attached to the bottom
      * edge, centred and no wider than 40rem.

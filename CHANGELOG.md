@@ -12,6 +12,28 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.21] - 2026-10-08
+
+A twenty-first local preview build of the 9.0 direction, not published to npm. One entry
+from the app team (Z-107). No token, prop, variant, string key, export or data attribute of
+alpha.20 is removed or renamed. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install; no browser.
+
+### Fixed
+
+- `BottomSheet`, `SlideUp` (and so `Select`, `Dropdown` and `TopNavbar` sheets, `TimeField`, `DateField`): a
+  swipe down that starts on a box inside the content that scrolls by itself (the hours and minutes of
+  `TimeField`, the list of a `Select`, a long text area) no longer moves the sheet; the box keeps the
+  gesture, at its top too, and nothing is handed over mid-gesture (Z-107, D224). The sheet still follows
+  a swipe from the grip, the header, the content outside such a box when the content is at its top.
+  Default change: a swipe down on a scrolling box at its top used to close the sheet and now does not.
+
+### Added
+
+- `data-sheet-no-drag` is read for a touch in the content as well as in the header: anything carrying
+  it, or inside it, and every `<input type="range">`, keeps its drag from the sheet. `TimeField`'s
+  columns, `ColorPicker`'s colour map and the handle of `SortableList` carry it.
+
 ## [9.0.0-alpha.20] - 2026-10-08
 
 A twentieth local preview build of the 9.0 direction, not published to npm. Two

@@ -27,7 +27,9 @@ export interface SheetDragTargets {
     handleZone: HTMLElement;
     /**
      * The scrolling content. A touch that starts here scrolls it; only a
-     * downward swipe that begins with the content at its top moves the sheet.
+     * downward swipe that begins with the content at its top moves the sheet,
+     * and not one that begins on a box inside it that scrolls itself or on
+     * something marked `data-sheet-no-drag` (`contentTakesTouch`).
      */
     scroller?: HTMLElement | null;
 }
@@ -38,6 +40,35 @@ export const DRAG_SLOP = 6;
 /** Controls in the handle zone that keep their own press, except the grip itself. */
 const INTERACTIVE = "button, a[href], input, select, textarea, [data-sheet-no-drag]";
 const GRIP = "[data-sheet-grip]";
+
+/**
+ * Content that is dragged by a finger on its own and so is never the sheet's:
+ * anything carrying `data-sheet-no-drag`, and a range input. Read on a touch
+ * that starts in the content.
+ */
+const OWN_DRAG = "[data-sheet-no-drag], input[type='range']";
+
+/**
+ * Whether a touch that begins on `target` belongs to the content and not to the
+ * sheet: it started on something that is dragged itself (`OWN_DRAG`), or it
+ * has, between it and the sheet's `scroller`, a box that scrolls on the y axis.
+ * A box that can scroll keeps the gesture whether it is at its top or not: a
+ * drag that sometimes scrolls a list and sometimes closes the sheet cannot be
+ * predicted, and the list does not hand over what it cannot use
+ * (`overscroll-contain`). The scroller itself is not asked here; it is the
+ * sheet's own content, and hands a pull down at its top to the sheet.
+ */
+export function contentTakesTouch(target: EventTarget | null, scroller: HTMLElement): boolean {
+    if (!(target instanceof Element)) return false;
+    if (target.closest(OWN_DRAG)) return true;
+    for (let node: Element | null = target; node && node !== scroller; node = node.parentElement) {
+        const overflow = getComputedStyle(node).overflowY;
+        if ((overflow === "auto" || overflow === "scroll") && node.scrollHeight > node.clientHeight) {
+            return true;
+        }
+    }
+    return false;
+}
 
 /** The clock of this page, for when an event's own time cannot be used. */
 const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
@@ -192,6 +223,8 @@ export function attachSheetDrag(
     let touchStart = 0;
     let touchDragging = false;
     let startedAtTop = false;
+    /** The touch began on something inside the content that keeps it. */
+    let contentOwns = false;
 
     const touchOf = (event: TouchEvent, list: TouchList) =>
         Array.from(list).find((touch) => touch.identifier === touchId);
@@ -203,6 +236,7 @@ export function attachSheetDrag(
         touchStart = touch.clientY;
         touchDragging = false;
         startedAtTop = (scroller?.scrollTop ?? 0) <= 0;
+        contentOwns = !!scroller && contentTakesTouch(event.target, scroller);
     }
 
     function onTouchMove(event: TouchEvent) {
@@ -211,7 +245,7 @@ export function attachSheetDrag(
         const distance = touch.clientY - touchStart;
         if (!touchDragging) {
             // Content that has scrolled, or a swipe upwards: the content's.
-            if (!startedAtTop || (scroller?.scrollTop ?? 0) > 0) return;
+            if (contentOwns || !startedAtTop || (scroller?.scrollTop ?? 0) > 0) return;
             if (distance < DRAG_SLOP || !allowed()) return;
             touchDragging = true;
             touchStart = touch.clientY;

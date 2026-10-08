@@ -632,6 +632,115 @@ describe("BottomSheet touching the content", () => {
     });
 });
 
+/**
+ * jsdom has no layout: whether a box "scrolls" is stubbed with its scroll and
+ * client heights. Nothing here was run against a real touch screen.
+ */
+function scrolls(box: Element, { scrollTop = 0, content = 400, shown = 120 } = {}) {
+    Object.defineProperty(box, "scrollHeight", { configurable: true, value: content });
+    Object.defineProperty(box, "clientHeight", { configurable: true, value: shown });
+    (box as HTMLElement).scrollTop = scrollTop;
+}
+
+/** A swipe down of `distance` that starts on `target`, bubbling to the content. */
+async function swipeFrom(target: Element, distance: number) {
+    const tick = clock();
+    await fireEvent.touchStart(target, { touches: [touch(target, 300)] });
+    let prevented = false;
+    for (let step = 1; step <= 10; step += 1) {
+        tick(40);
+        const move = new TouchEvent("touchmove", {
+            bubbles: true,
+            cancelable: true,
+            touches: [touch(target, 300 + (distance * step) / 10) as unknown as Touch],
+        });
+        target.dispatchEvent(move);
+        prevented ||= move.defaultPrevented;
+    }
+    await fireEvent.touchEnd(target, { changedTouches: [touch(target, 300 + distance)] });
+    return prevented;
+}
+
+describe("BottomSheet drags that start on something inside the content", () => {
+    it("a drag on the grip moves the sheet", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        await dragGrip(300);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("a drag down on a list that scrolls and is scrolled leaves the sheet where it is", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        const list = screen.getByTestId("inner");
+        scrolls(list, { scrollTop: 80 });
+        expect(await swipeFrom(screen.getByTestId("inner-row"), 300)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("keeps a drag down on a list at its own top with the list, too: it never hands over", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { scrollTop: 0 });
+        expect(await swipeFrom(screen.getByTestId("inner-row"), 300)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(sheet().hasAttribute("data-dragging")).toBe(false);
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("a list with nothing to scroll does not hold the sheet back", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { content: 120, shown: 120 });
+        await swipeFrom(screen.getByTestId("inner-row"), 300);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("a drag on something marked data-sheet-no-drag leaves the sheet where it is", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "opt-out" });
+        layOut();
+        expect(await swipeFrom(screen.getByTestId("inner-row"), 300)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("a drag on a range input leaves the sheet where it is", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "range" });
+        layOut();
+        expect(await swipeFrom(screen.getByTestId("inner"), 300)).toBe(false);
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("the content outside the list still hands a pull down at its top to the sheet", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { scrollTop: 80 });
+        await swipeFrom(screen.getByText("Pick what to show."), 300);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("the time columns of TimeField, inside a sheet, keep a drag down", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "time-column" });
+        layOut();
+        const column = sheet().querySelector("[data-time-column]")!;
+        expect(column.hasAttribute("data-sheet-no-drag")).toBe(true);
+        scrolls(column, { scrollTop: 0, content: 176, shown: 176 });
+        const row = column.querySelector("[role=option]")!;
+        expect(await swipeFrom(row, 300)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(onclose).not.toHaveBeenCalled();
+    });
+});
+
 describe("snap point arithmetic", () => {
     it("keeps the snap points in use in order, and falls back to both", () => {
         expect(normaliseSnapPoints(["full", "half"])).toEqual(["half", "full"]);

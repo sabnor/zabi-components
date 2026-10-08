@@ -112,6 +112,7 @@
     aria-label={label}
     tabindex="-1"
     data-time-column
+    data-sheet-no-drag
     class="h-44 min-w-0 flex-1 overflow-y-auto overscroll-contain rounded-control border border-input-border bg-input p-1"
     onkeydown={handleKeydown}
 >

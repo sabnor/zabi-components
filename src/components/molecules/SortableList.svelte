@@ -549,6 +549,7 @@
                     aria-label={text.handleLabel(label)}
                     aria-describedby={descriptionId}
                     disabled={rowDisabled}
+                    data-sheet-no-drag
                     data-sortable-handle
                     onpointerdown={(event) => handlePointerDown(event, entry)}
                     onclick={handleHandleClick}
