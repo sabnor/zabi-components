@@ -12,6 +12,13 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.15] - 2026-10-08
+
+A fifteenth local preview build of the 9.0 direction, not published to npm. One
+addition to `AppShell`, `AppShellHeaderPart`; no token, prop, variant or export of
+alpha.14 is removed or renamed, and no default changes. Run on this build: the type
+and design checks, the unit suite, the package build and a scratch install; no
+browser.
 ### Added
 
 - `AppShellHeaderPart`: the consumer chooses what stays at the top. Put several in `AppShell`'s
