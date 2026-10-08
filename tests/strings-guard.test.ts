@@ -222,6 +222,7 @@ describe("the defaults are today's English", () => {
             openMenu: "Open menu",
             closeMenu: "Close menu",
             menuTitle: "Menu",
+            themeHeading: "Theme",
             opensInNewTab: "(opens in a new tab)",
         });
         expect(DEFAULT_COLOR_PICKER_STRINGS).toEqual({

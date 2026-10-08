@@ -204,7 +204,8 @@ export type { ToasterStrings, ToastPauseChange, ToastDuration } from './util/toa
 export { DEFAULT_SELECT_STRINGS } from './util/select.js';
 export type { SelectStrings, SelectPresentation } from './util/select.js';
 export { DEFAULT_TOP_NAVBAR_STRINGS } from './util/top-navbar.js';
-export type { TopNavbarStrings } from './util/top-navbar.js';
+export type { TopNavbarStrings, TopNavbarPlace } from './util/top-navbar.js';
+export { getTopNavbarPlace } from './util/top-navbar.js';
 export {
     DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS,
     DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS,

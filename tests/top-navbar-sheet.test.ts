@@ -85,19 +85,71 @@ describe("TopNavbar phone menu as a sheet", () => {
         }
     });
 
-    it("draws the actions and the theme toggle after the links, in the sheet", async () => {
+    it("draws the actions and the theme choice after the links, in a section of their own", async () => {
         await open({ withActions: true });
         const dialog = sheet()!;
         const signIn = within(dialog).getByTestId("signin");
-        const theme = within(dialog).getByRole("button", { name: "Dark mode" });
+        const theme = within(dialog).getByRole("radiogroup", { name: "Theme" });
         const last = within(sheetNav()).getAllByRole("link").at(-1)!;
         expect(last.compareDocumentPosition(signIn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
         expect(signIn.compareDocumentPosition(theme) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        // Apart from the links, outside their nav.
+        expect(sheetNav().contains(signIn)).toBe(false);
+        expect(signIn.closest("[data-topnavbar-sheet-section]")).toBe(theme.closest("[data-topnavbar-sheet-section]"));
     });
 
-    it("leaves the theme toggle out of the sheet when the bar has none", async () => {
+    it("tells the caller's actions where they are: the sheet says menu, the bar says bar", async () => {
+        await open({ withActions: true });
+        const places = screen.getAllByTestId("place");
+        expect(places.filter((place) => sheet()!.contains(place)).map((p) => p.dataset.place)).toEqual(["menu"]);
+        expect(places.filter((place) => !sheet()!.contains(place)).map((p) => p.dataset.place)).toEqual(["bar"]);
+    });
+
+    it("has a theme choice of light and dark that writes the page, and a press on the chosen one changes nothing", async () => {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.removeAttribute("data-theme");
+        const { user } = await open({ themeStorageKey: null });
+        const group = within(sheet()!).getByRole("radiogroup", { name: "Theme" });
+        const light = within(group).getByRole("radio", { name: "Light" }) as HTMLInputElement;
+        const dark = within(group).getByRole("radio", { name: "Dark" }) as HTMLInputElement;
+        expect(within(group).queryByRole("radio", { name: "System" })).toBeNull();
+        expect(light.checked).toBe(true);
+
+        await user.click(dark);
+        await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(true));
+        await waitFor(() => expect(dark.checked).toBe(true));
+        expect(sheet()).not.toBeNull();
+
+        await user.click(dark);
+        expect(dark.checked).toBe(true);
+        expect(document.documentElement.classList.contains("dark")).toBe(true);
+        await user.click(light);
+        await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(false));
+    });
+
+    it("has system, light and dark with three modes, and writes data-theme", async () => {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.removeAttribute("data-theme");
+        const { user } = await open({ themeModes: "three", themeStorageKey: null, themeLabels: { auto: "auto" } });
+        const group = within(sheet()!).getByRole("radiogroup", { name: "Theme" });
+        expect(within(group).getAllByRole("radio").map((radio) => radio.getAttribute("value"))).toEqual([
+            "auto",
+            "light",
+            "dark",
+        ]);
+        await user.click(within(group).getByRole("radio", { name: "Auto" }));
+        await waitFor(() => expect(document.documentElement.getAttribute("data-theme")).toBe("auto"));
+        document.documentElement.removeAttribute("data-theme");
+    });
+
+    it("names the theme heading from the strings", async () => {
+        await open({ strings: { themeHeading: "Tema" } });
+        expect(within(sheet()!).getByRole("radiogroup", { name: "Tema" })).toBeTruthy();
+    });
+
+    it("leaves the theme choice out of the sheet when the bar has no theme toggle", async () => {
         await open({ showThemeToggle: false });
-        expect(within(sheet()!).queryByRole("button", { name: "Dark mode" })).toBeNull();
+        expect(within(sheet()!).queryByRole("radiogroup")).toBeNull();
     });
 
     it("draws the bar's own nav snippet in place of the items", async () => {
@@ -149,12 +201,6 @@ describe("TopNavbar phone menu as a sheet", () => {
         await waitFor(() => expect(sheet()).not.toBeNull());
         await first.user.click(within(sheet()!).getByTestId("signin"));
         await waitFor(() => expect(sheet()).toBeNull());
-    });
-
-    it("keeps the theme toggle's press from closing it", async () => {
-        const { user } = await open();
-        await user.click(within(sheet()!).getByRole("button", { name: "Dark mode" }));
-        expect(sheet()).not.toBeNull();
     });
 
     it("closes when the current path changes", async () => {

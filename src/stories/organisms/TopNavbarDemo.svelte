@@ -35,6 +35,7 @@
         openMenu: "Öppna menyn",
         closeMenu: "Stäng menyn",
         menuTitle: "Meny",
+        themeHeading: "Tema",
         opensInNewTab: "(öppnas i ny flik)",
     };
     /** And what its theme toggle says. */

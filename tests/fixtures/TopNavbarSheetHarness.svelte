@@ -1,5 +1,6 @@
 <script lang="ts">
     import TopNavbar from "../../src/components/organisms/TopNavbar.svelte";
+    import TopNavbarPlaceProbe from "./TopNavbarPlaceProbe.svelte";
 
     interface Props {
         /** The bar's own `nav` snippet in place of `items`. */
@@ -23,6 +24,7 @@
         {#snippet actions()}
             <a href="/signin" data-testid="signin">Sign in</a>
             <button type="button" data-testid="help">Help</button>
+            <TopNavbarPlaceProbe />
         {/snippet}
     </TopNavbar>
 {/if}

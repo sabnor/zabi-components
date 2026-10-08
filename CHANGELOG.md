@@ -30,13 +30,23 @@ scratch install; no browser.
   change and a wider screen close it. The menu button gets `aria-haspopup="dialog"`, and the bar no
   longer takes the glass while the menu is open. **Opt out:** `menu="inline"` is the panel of
   alpha.15 and earlier, unchanged. Without script the phone menu is as inert as before.
-- `BottomSheet`: the slide-in is on the standard curve, with no overshoot; the spring stays for
-  snapping and settling a drag.
+- `TopNavbar` sheet, below the links: the `actions` and the theme choice have a section of their
+  own at the full width of the sheet. The built-in theme toggle is a segmented control there
+  (light / dark, or system / light / dark with `themeModes="three"`, 44px on a touch screen, words
+  from `themeLabels`, heading from the new string `themeHeading`, "Theme"); it writes the page
+  as `ThemeToggle` does, which stays as it was in the bar. Actions are laid out in a column at
+  full width. The docs site's `BrandSwitcher` is a labelled group of large rows in the sheet and
+  the small button in the bar.
+- `BottomSheet`: the slide-in is on the standard curve (`--ease-standard`) with no overshoot;
+  snapping between snap points and settling a drag keep `--ease-spring`.
 ### Added
 
-- `TopNavbar` `menu?: "sheet" | "inline"` (default `"sheet"`), exported type `TopNavbarMenu`, string
-  `menuTitle` in `TopNavbarStrings` (code that writes out a complete `TopNavbarStrings` object needs
-  the new key; `strings` itself is partial). Stories for both modes, catalog entry, docs, `?menu=inline`
+- `getTopNavbarPlace()` and type `TopNavbarPlace` (`"bar" | "menu"`): a control in `TopNavbar`'s
+  `actions` calls it while it initialises to know whether it is in the bar or the sheet; the
+  snippet gets no argument. `"bar"` outside a bar and in `menu="inline"`.
+- `TopNavbar` `menu?: "sheet" | "inline"` (default `"sheet"`), exported type `TopNavbarMenu`, strings
+  `menuTitle` and `themeHeading` in `TopNavbarStrings` (code that writes out a complete
+  `TopNavbarStrings` object needs the new keys; `strings` itself is partial). Stories for both modes, catalog entry, docs, `?menu=inline`
   on the chaos-lab page.
 
 ## [9.0.0-alpha.15] - 2026-10-08

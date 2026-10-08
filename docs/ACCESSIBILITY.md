@@ -254,7 +254,7 @@ Content must be robust enough that it can be interpreted by a wide variety of us
 - ✅ Active state indication
 
 - ✅ `aria-current="page"` on the current item (TopNavbar, SidebarNavigation)
-- ✅ TopNavbar's phone menu is a modal sheet (`BottomSheet`): the menu button has `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls` only while the sheet exists; the sheet is named (`strings.menuTitle`), its links sit in a named `nav`, and the page behind is `aria-modal`, out of the Tab cycle and scroll-locked, as for every overlay. `menu="inline"` is a disclosure: `aria-expanded`, `aria-controls` only while the panel exists
+- ✅ TopNavbar's phone menu is a modal sheet (`BottomSheet`): the menu button has `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls` only while the sheet exists; the sheet is named (`strings.menuTitle`), its links sit in a named `nav`, the theme choice is a named radio group of at least 44px segments, and the page behind is `aria-modal`, out of the Tab cycle and scroll-locked, as for every overlay. `menu="inline"` is a disclosure: `aria-expanded`, `aria-controls` only while the panel exists
 - ✅ The phone menu closes on a link, on Escape, on a press or a focus move outside the bar, and when the screen passes the breakpoint; it scrolls on its own on a short screen
 - ✅ In the phone menu each link is the full row; the brand is cut short so the menu button never leaves the screen
 

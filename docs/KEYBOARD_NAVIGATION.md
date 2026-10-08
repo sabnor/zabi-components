@@ -1198,6 +1198,15 @@ to the menu button when it closes.
 - ✅ **Enter** on a link: Follow it; the sheet closes
 - ✅ The backdrop, the close button and a swipe down on the grip close it too
 
+Below the links the sheet has a section of its own at the full width: the
+`actions` snippet, then the theme choice. The built-in theme toggle is a
+segmented control there (light and dark, or system, light and dark with
+`themeModes="three"`; the words are `themeLabels`, the heading is
+`strings.themeHeading`); the bar's own `ThemeToggle` is unchanged. A control
+in `actions` can call `getTopNavbarPlace()` (`"bar"` or `"menu"`) while it
+initialises to draw itself large in the sheet and compact in the bar; the
+snippet takes no argument, so existing `{#snippet actions()}` blocks work.
+
 It also closes when `currentPath` changes and when the screen becomes wide
 enough for the row (`collapseAt`, `md` by default).
 

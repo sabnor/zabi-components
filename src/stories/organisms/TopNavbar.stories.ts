@@ -63,7 +63,7 @@ export const PhoneMenuSheet: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'The default below collapseAt. The menu button opens a modal bottom sheet as tall as its links, up to half the screen, which scrolls inside. Focus moves into it and returns to the button; Escape, the backdrop, the close button or a swipe down close it, and so does following a link. The page behind is out of reach and does not scroll. Narrow the canvas to see the menu button.'
+                story: 'The default below collapseAt. The menu button opens a modal bottom sheet as tall as its links, up to half the screen, which scrolls inside. Focus moves into it and returns to the button; Escape, the backdrop, the close button or a swipe down close it, and so does following a link. Below the links the caller\'s actions and the theme choice have a section of their own at the full width of the sheet: the theme toggle becomes a segmented control (light and dark, or system, light and dark with themeModes="three"), and a control in the actions can ask getTopNavbarPlace() to draw itself large in the sheet and compact in the bar. The page behind is out of reach and does not scroll. Narrow the canvas to see the menu button.'
             }
         }
     }

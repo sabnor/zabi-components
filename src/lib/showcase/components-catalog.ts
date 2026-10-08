@@ -8902,7 +8902,7 @@ pushToast({
                         required: false,
                         defaultValue: "sheet",
                         description:
-                            "How the links open below collapseAt. sheet is a modal bottom sheet, as tall as its links up to half the screen; inline is the panel under the bar of 8.1, a disclosure that pushes the page down.",
+                            "How the links open below collapseAt. sheet is a modal bottom sheet, as tall as its links up to half the screen; inline is the panel under the bar of 8.1, a disclosure that pushes the page down. In the sheet the actions and a segmented theme choice have a section of their own; getTopNavbarPlace() tells an action whether it is in the bar or the menu.",
                     },
                 ],
                 variants: [

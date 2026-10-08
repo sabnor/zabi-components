@@ -445,7 +445,7 @@ A `strings` key and an older prop for the same text: the prop wins.
 | Toast | `closeLabel` |
 | Toaster | `strings`, `aria-label` |
 | Toggle | `label`, or `aria-label` / `aria-labelledby` (without any of them it is called "Toggle") |
-| TopNavbar | `strings` (`openMenu`, `closeMenu`, `menuTitle`, `opensInNewTab`), `ariaLabel`, `themeLabels` |
+| TopNavbar | `strings` (`openMenu`, `closeMenu`, `menuTitle`, `themeHeading`, `opensInNewTab`), `ariaLabel`, `themeLabels` |
 | UnsavedChangesBar | `message`, `label`, `saveLabel`, `discardLabel` |
 
 The name of the list in a SidebarShell is its `label` prop. One text is the

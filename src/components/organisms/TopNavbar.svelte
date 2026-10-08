@@ -4,6 +4,7 @@
     import ThemeToggle from "../atoms/ThemeToggle.svelte";
     import IconButton from "../atoms/IconButton.svelte";
     import BottomSheet from "../molecules/BottomSheet.svelte";
+    import TopNavbarSheetContent from "./TopNavbarSheetContent.svelte";
     import ExternalLink from "@lucide/svelte/icons/external-link";
     import Menu from "@lucide/svelte/icons/menu";
     import X from "@lucide/svelte/icons/x";
@@ -413,6 +414,14 @@
     </ul>
 {/snippet}
 
+{#snippet sheetLinks()}
+    {#if nav}
+        {@render nav()}
+    {:else}
+        {@render defaultNavList("sheet")}
+    {/if}
+{/snippet}
+
 <svelte:window
     onkeydown={handleWindowKeydown}
     onmousedowncapture={() => (pressing = true)}
@@ -547,28 +556,17 @@
             id={mobileMenuId}
             data-topnavbar-sheet=""
         >
-            <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-            <div onclick={handlePanelClick}>
-                {#if nav || items.length > 0}
-                    <nav aria-label={ariaLabel ?? text.menuTitle}>
-                        {#if nav}
-                            {@render nav()}
-                        {:else}
-                            {@render defaultNavList("sheet")}
-                        {/if}
-                    </nav>
-                {/if}
-                {#if actions || showThemeToggle}
-                    <div class="pt-4">
-                        {@render actions?.()}
-                        {#if showThemeToggle}
-                            <div class="mt-2">
-                                <ThemeToggle modes={themeModes} storageKey={themeStorageKey} labels={themeLabels} />
-                            </div>
-                        {/if}
-                    </div>
-                {/if}
-            </div>
+            <TopNavbarSheetContent
+                links={nav || items.length > 0 ? sheetLinks : undefined}
+                navLabel={ariaLabel ?? text.menuTitle}
+                {actions}
+                {showThemeToggle}
+                {themeModes}
+                {themeStorageKey}
+                {themeLabels}
+                themeHeading={text.themeHeading}
+                onclick={handlePanelClick}
+            />
         </BottomSheet>
     {/if}
 {/if}

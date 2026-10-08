@@ -16,7 +16,8 @@ export type {
     AppShellNavigationPlacement,
 } from '../util/app-shell.js';
 export { DEFAULT_TOP_NAVBAR_STRINGS } from '../util/top-navbar.js';
-export type { TopNavbarStrings } from '../util/top-navbar.js';
+export type { TopNavbarStrings, TopNavbarPlace } from '../util/top-navbar.js';
+export { getTopNavbarPlace } from '../util/top-navbar.js';
 export {
     DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS,
     DEFAULT_SIDEBAR_NAVIGATION_STRINGS,
