@@ -190,7 +190,7 @@ describe("BottomSheet motion", () => {
         expect(cls).not.toContain("after:[background:inherit]");
     });
 
-    it("slides in over the slow duration with the spring easing when the tokens are readable", async () => {
+    it("slides in over the slow duration with the standard easing, not the spring, when the tokens are readable", async () => {
         const animate = stubAnimate();
         const real = window.getComputedStyle;
         vi.spyOn(window, "getComputedStyle").mockImplementation((el, pseudo) => {
@@ -199,13 +199,19 @@ describe("BottomSheet motion", () => {
                 get: (t, key) =>
                     key === "getPropertyValue"
                         ? (name: string) =>
-                              name === "--duration-slow" ? "0.3s" : name === "--ease-spring" ? " linear(0, 1) " : t.getPropertyValue(name)
+                              name === "--duration-slow"
+                                  ? "0.3s"
+                                  : name === "--ease-standard"
+                                    ? " cubic-bezier(0.2, 0, 0, 1) "
+                                    : name === "--ease-spring"
+                                      ? "linear(0, 1.05, 1)"
+                                      : t.getPropertyValue(name)
                         : Reflect.get(t, key).bind?.(t) ?? Reflect.get(t, key),
             });
         });
         await openSheet();
         expect(animate).toHaveBeenCalledTimes(1);
-        expect(animate.mock.calls[0][1]).toEqual({ duration: 300, easing: "linear(0, 1)" });
+        expect(animate.mock.calls[0][1]).toEqual({ duration: 300, easing: "cubic-bezier(0.2, 0, 0, 1)" });
     });
 
     it("falls back to 300ms and ease-out without tokens, and when the easing is rejected", async () => {
@@ -224,7 +230,7 @@ describe("BottomSheet motion", () => {
             return new Proxy(style, {
                 get: (t, key) =>
                     key === "getPropertyValue"
-                        ? (name: string) => (name === "--ease-spring" ? "linear(0, 1)" : t.getPropertyValue(name))
+                        ? (name: string) => (name === "--ease-standard" ? "linear(0, 1)" : t.getPropertyValue(name))
                         : Reflect.get(t, key).bind?.(t) ?? Reflect.get(t, key),
             });
         });

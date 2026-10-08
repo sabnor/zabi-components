@@ -240,15 +240,17 @@
      */
     function slideIn(container: HTMLElement): number {
         if (typeof container.animate !== "function" || prefersReducedMotion()) return 0;
-        // Arriving gets the spring, read from the element so a theme that
-        // overrides the tokens is followed. Where the tokens cannot be read
-        // (no stylesheet) or the engine rejects the easing, plain ease-out.
+        // Arriving is a smooth slide to rest on the standard curve, with no
+        // overshoot (the spring is for snapping and settling a drag). Read
+        // from the element so a theme that overrides the tokens is followed.
+        // Where the tokens cannot be read (no stylesheet) or the engine
+        // rejects the easing, plain ease-out.
         const style = getComputedStyle(container);
         const duration = parseDuration(style.getPropertyValue("--duration-slow"));
-        const spring = style.getPropertyValue("--ease-spring").trim();
+        const standard = style.getPropertyValue("--ease-standard").trim();
         const frames = [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }];
         try {
-            container.animate(frames, { duration, easing: spring || "ease-out" });
+            container.animate(frames, { duration, easing: standard || "ease-out" });
         } catch {
             container.animate(frames, { duration, easing: "ease-out" });
         }
