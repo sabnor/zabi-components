@@ -72,8 +72,8 @@
         collapseAt?: TopNavbarCollapseAt;
         /**
          * How the links open below `collapseAt`. `sheet` (the default) is a
-         * bottom sheet: a modal dialog that is as tall as its links, up to
-         * half the screen, and scrolls inside. `inline` is a panel under the
+         * bottom sheet: a modal dialog that is as tall as its content, up to
+         * the full screen below the status bar, and scrolls inside. `inline` is a panel under the
          * bar, a disclosure that pushes the page down and traps nothing.
          */
         menu?: TopNavbarMenu;
@@ -121,7 +121,7 @@
 
     /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
     const provided = zabiStringsFor("topNavbar");
-    const text = $derived(mergeStrings(DEFAULT_TOP_NAVBAR_STRINGS, provided(), strings));
+    const text = $derived(mergeStrings<Required<TopNavbarStrings>>(DEFAULT_TOP_NAVBAR_STRINGS, provided(), strings));
 
     let isMenuOpen = $state(false);
     const sheet = $derived(menu !== "inline");
@@ -552,6 +552,7 @@
         <BottomSheet
             bind:isOpen={isMenuOpen}
             fit
+            fitMax="full"
             title={text.menuTitle}
             id={mobileMenuId}
             data-topnavbar-sheet=""

@@ -1001,6 +1001,8 @@ export interface BottomSheetProps
     snap?: BottomSheetSnap;
     /** As tall as the content, up to half the screen; one resting height, the grip only drags. */
     fit?: boolean;
+    /** With `fit`: the tallest the sheet grows before its content scrolls. */
+    fitMax?: 'half' | 'full';
     /** Render the overlay in `document.body`; `false` renders in place. */
     portal?: boolean;
     /** When false, Escape, the backdrop, the close button and a swipe down do not close it. */

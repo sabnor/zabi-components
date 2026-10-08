@@ -15,7 +15,7 @@ import {
 } from "../src/components/util/sidebar";
 import { getThemeMode, setThemeMode } from "../src/components/util/theme-mode";
 import { DEFAULT_SELECT_STRINGS } from "../src/components/util/select";
-import { DEFAULT_TOP_NAVBAR_STRINGS } from "../src/components/util/top-navbar";
+import { DEFAULT_TOP_NAVBAR_STRINGS, type TopNavbarStrings } from "../src/components/util/top-navbar";
 import { DEFAULT_CALENDAR_STRINGS } from "../src/components/util/calendar";
 import { MEDIA_GRID_STRINGS } from "../src/components/util/media-grid";
 import { PHOTO_GRID_STRINGS, PHOTO_VIEWER_STRINGS } from "../src/components/util/photo";
@@ -218,6 +218,9 @@ describe("the defaults are today's English", () => {
     });
 
     it("the strings objects, word for word", () => {
+        // A complete object written before `menuTitle` and `themeHeading` existed still type-checks.
+        const complete: TopNavbarStrings = { openMenu: "a", closeMenu: "b", opensInNewTab: "c" };
+        expect(complete.openMenu).toBe("a");
         expect(DEFAULT_TOP_NAVBAR_STRINGS).toEqual({
             openMenu: "Open menu",
             closeMenu: "Close menu",

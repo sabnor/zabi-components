@@ -95,6 +95,12 @@
          */
         fit?: boolean;
         /**
+         * With `fit`: the tallest the sheet grows before its content scrolls.
+         * `half` (the default) is half the screen; `full` is down from the
+         * status bar, like the `full` snap point. Ignored without `fit`.
+         */
+        fitMax?: "half" | "full";
+        /**
          * Render the overlay in `document.body`, so an ancestor with a
          * transform, filter or clipped overflow cannot trap it; pass `false`
          * to render in place. The theme class belongs on `<html>` or `<body>`;
@@ -141,6 +147,7 @@
         snapPoints,
         snap = $bindable(),
         fit = false,
+        fitMax = "half",
         portal = true,
         dismissible = true,
         onclose,
@@ -499,7 +506,7 @@ a background is dropped there, and the grip would be gone. -->
                 className,
             )}
             style:height={dragHeight !== null ? `${dragHeight}px` : fit ? "auto" : snapHeight}
-            style:max-height={fit ? HALF : undefined}
+            style:max-height={fit ? (fitMax === "full" ? FULL : HALF) : undefined}
             style:transform={dragOffset > 0 ? `translateY(${dragOffset}px)` : undefined}
             style:transition={dragging || !arrived ? "none" : undefined}
             role="dialog"

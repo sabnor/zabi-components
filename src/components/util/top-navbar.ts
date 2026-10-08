@@ -7,14 +7,19 @@ export interface TopNavbarStrings {
     /** The same button, while the inline menu is open (the sheet's own button closes it). */
     closeMenu: string;
     /** The phone menu's sheet: its heading and its accessible name, and the name of the links' `nav` when the bar has no `ariaLabel`. */
-    menuTitle: string;
+    menuTitle?: string;
     /** The heading over the theme choice in the phone menu's sheet. */
-    themeHeading: string;
+    themeHeading?: string;
     /** Read after the label of a link that opens in a new tab. */
     opensInNewTab: string;
 }
 
-export const DEFAULT_TOP_NAVBAR_STRINGS: TopNavbarStrings = {
+/**
+ * Every word, including the optional ones: `menuTitle` and `themeHeading` are
+ * optional in `TopNavbarStrings` so that code written before they existed, with
+ * a complete object, still type-checks.
+ */
+export const DEFAULT_TOP_NAVBAR_STRINGS: Required<TopNavbarStrings> = {
     openMenu: "Open menu",
     closeMenu: "Close menu",
     menuTitle: "Menu",

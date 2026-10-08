@@ -63,7 +63,7 @@ export const PhoneMenuSheet: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'The default below collapseAt. The menu button opens a modal bottom sheet as tall as its links, up to half the screen, which scrolls inside. Focus moves into it and returns to the button; Escape, the backdrop, the close button or a swipe down close it, and so does following a link. Below the links the caller\'s actions and the theme choice have a section of their own at the full width of the sheet: the theme toggle becomes a segmented control (light and dark, or system, light and dark with themeModes="three"), and a control in the actions can ask getTopNavbarPlace() to draw itself large in the sheet and compact in the bar. The page behind is out of reach and does not scroll. Narrow the canvas to see the menu button.'
+                story: 'The default below collapseAt. The menu button opens a modal bottom sheet as tall as its content, up to the full screen below the status bar, which scrolls inside. Focus moves into it and returns to the button; Escape, the backdrop, the close button or a swipe down close it, and so does following a link. Below the links the caller\'s actions and the theme choice have a section of their own at the full width of the sheet: the theme toggle becomes a segmented control (light and dark, or system, light and dark with themeModes="three"), and a control in the actions can ask getTopNavbarPlace() to draw itself large in the sheet and compact in the bar. The page behind is out of reach and does not scroll. Narrow the canvas to see the menu button.'
             }
         }
     }
@@ -92,7 +92,7 @@ export const ManyItemsCollapseAtXl: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Eight links do not fit a row at 768px. collapseAt="xl" keeps them in the menu until the screen is 1280px wide; the default, md, is unchanged. In the menu sheet each link is a full row of at least 44px, the sheet scrolls inside when the links are taller than half the screen, and it closes on a link, on Escape (focus returns to the menu button), on the backdrop, and when the screen passes the breakpoint.'
+                story: 'Eight links do not fit a row at 768px. collapseAt="xl" keeps them in the menu until the screen is 1280px wide; the default, md, is unchanged. In the menu sheet each link is a full row of at least 44px, the sheet scrolls inside when the links are taller than the screen, and it closes on a link, on Escape (focus returns to the menu button), on the backdrop, and when the screen passes the breakpoint.'
             }
         }
     }

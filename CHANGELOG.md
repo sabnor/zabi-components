@@ -12,6 +12,27 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.17] - 2026-10-08
+
+A seventeenth local preview build of the 9.0 direction, not published to npm. It
+finishes the `TopNavbar` sheet of alpha.16; no token, prop, variant or export of
+alpha.16 is removed or renamed, and no default changes. Run on this build: the
+type and design checks, the unit suite, the package build and a scratch install; no
+browser.
+### Changed
+
+- `TopNavbarStrings`: `menuTitle` (alpha.16) and the new `themeHeading` are optional in the
+  interface, with their defaults in `DEFAULT_TOP_NAVBAR_STRINGS` (now `Required<TopNavbarStrings>`).
+  Code that writes out a complete `TopNavbarStrings` object, as it could before alpha.16, type-checks
+  again; this repairs the note on alpha.16 that said it did not.
+- `TopNavbar` sheet: it grows with its content up to the full screen below the status bar, where
+  alpha.16 stopped at half of it, so eight links and the two sections below them do not scroll in
+  a short box. Choosing a theme or an accent does not close the sheet.
+### Added
+
+- `BottomSheet` `fitMax?: "half" | "full"` (default `"half"`): with `fit`, how tall the sheet may
+  grow before its content scrolls. Without it nothing changes.
+
 ## [9.0.0-alpha.16] - 2026-10-08
 
 A sixteenth local preview build of the 9.0 direction, not published to npm. One

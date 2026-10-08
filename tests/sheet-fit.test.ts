@@ -64,6 +64,15 @@ describe("BottomSheet fit", () => {
         expect(panel.querySelector("button[data-sheet-grip]")).toBeNull();
     });
 
+    it("grows to the full height with fitMax full, and still has one resting height", () => {
+        render(BottomSheet, { props: { isOpen: true, title: "Pick", fit: true, fitMax: "full", children: content } });
+        const panel = document.querySelector<HTMLElement>('[role="dialog"]')!;
+        expect(panel.style.height).toBe("auto");
+        expect(panel.style.maxHeight).toContain("100%");
+        expect(panel.style.maxHeight).not.toContain("50%");
+        expect(panel.getAttribute("data-snap")).toBe("half");
+    });
+
     it("is half the screen without fit, as before", () => {
         render(BottomSheet, { props: { isOpen: true, title: "Pick", children: content } });
         const panel = document.querySelector<HTMLElement>('[role="dialog"]')!;

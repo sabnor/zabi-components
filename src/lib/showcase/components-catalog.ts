@@ -7467,6 +7467,14 @@ pushToast({
                             "As tall as the content, up to half the screen, instead of half whatever it holds. One resting height: snapPoints and snap are ignored and the grip only drags.",
                     },
                     {
+                        name: "fitMax",
+                        type: "'half' | 'full'",
+                        required: false,
+                        defaultValue: "half",
+                        description:
+                            "With fit: the tallest the sheet grows before its content scrolls. half is half the screen; full is down from the status bar.",
+                    },
+                    {
                         name: "dismissible",
                         type: "boolean",
                         required: false,
@@ -8902,7 +8910,7 @@ pushToast({
                         required: false,
                         defaultValue: "sheet",
                         description:
-                            "How the links open below collapseAt. sheet is a modal bottom sheet, as tall as its links up to half the screen; inline is the panel under the bar of 8.1, a disclosure that pushes the page down. In the sheet the actions and a segmented theme choice have a section of their own; getTopNavbarPlace() tells an action whether it is in the bar or the menu.",
+                            "How the links open below collapseAt. sheet is a modal bottom sheet, as tall as its content up to the full screen; inline is the panel under the bar of 8.1, a disclosure that pushes the page down. In the sheet the actions and a segmented theme choice have a section of their own; getTopNavbarPlace() tells an action whether it is in the bar or the menu.",
                     },
                 ],
                 variants: [

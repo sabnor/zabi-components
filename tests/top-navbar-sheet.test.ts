@@ -67,6 +67,13 @@ describe("TopNavbar phone menu as a sheet", () => {
         expect(within(sheet()!).getByRole("navigation", { name: "Main navigation" })).toBeTruthy();
     });
 
+    it("is as tall as its content, up to the full screen and not half of it", async () => {
+        await open();
+        expect(sheet()!.style.height).toBe("auto");
+        expect(sheet()!.style.maxHeight).not.toContain("50%");
+        expect(sheet()!.style.maxHeight).toContain("100%");
+    });
+
     it("holds the links in order, the current page marked, and the external one flagged", async () => {
         await open({ currentPath: "/components" });
         const links = within(sheetNav()).getAllByRole("link");
@@ -103,6 +110,15 @@ describe("TopNavbar phone menu as a sheet", () => {
         const places = screen.getAllByTestId("place");
         expect(places.filter((place) => sheet()!.contains(place)).map((p) => p.dataset.place)).toEqual(["menu"]);
         expect(places.filter((place) => !sheet()!.contains(place)).map((p) => p.dataset.place)).toEqual(["bar"]);
+    });
+
+    it("leaves the sheet open when a theme is chosen, and the accent too", async () => {
+        const { user } = await open({ themeStorageKey: null });
+        await user.click(within(sheet()!).getByRole("radio", { name: "Dark" }));
+        await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(true));
+        expect(sheet()).not.toBeNull();
+        await user.click(within(sheet()!).getByRole("radio", { name: "Light" }));
+        expect(sheet()).not.toBeNull();
     });
 
     it("has a theme choice of light and dark that writes the page, and a press on the chosen one changes nothing", async () => {
