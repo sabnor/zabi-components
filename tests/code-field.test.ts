@@ -7,7 +7,9 @@ import CodeField from "../src/components/atoms/CodeField.svelte";
 import {
     activePlace,
     caretAfterSanitise,
+    codeGroups,
     codeLength,
+    nearestBox,
     pasteInto,
     replaceAt,
     sanitiseCode,
@@ -62,6 +64,113 @@ describe("helpers", () => {
         expect(codeLength(4.9)).toBe(4);
         expect(activePlace(6, 6)).toBe(5);
         expect(activePlace(2, 6)).toBe(2);
+    });
+});
+
+describe("grouping helpers", () => {
+    it("reads a number as each group's size and a list as the sizes", () => {
+        expect(codeGroups(4, 8)).toEqual([4, 4]);
+        expect(codeGroups(3, 8)).toEqual([3, 3, 2]);
+        expect(codeGroups([3, 3, 4], 10)).toEqual([3, 3, 4]);
+        expect(codeGroups([2], 6)).toEqual([2, 4]);
+        expect(codeGroups([4, 4, 4], 6)).toEqual([4, 2]);
+    });
+
+    it("means no grouping for one group or anything unusable", () => {
+        expect(codeGroups(undefined, 8)).toEqual([]);
+        expect(codeGroups(8, 8)).toEqual([]);
+        expect(codeGroups(0, 8)).toEqual([]);
+        expect(codeGroups(NaN, 8)).toEqual([]);
+        expect(codeGroups([], 8)).toEqual([]);
+        expect(codeGroups([-1, "x" as unknown as number], 8)).toEqual([]);
+    });
+
+    it("finds the box nearest a point, a row at a time", () => {
+        const rects = [
+            { left: 0, right: 40, top: 0, bottom: 48 },
+            { left: 50, right: 90, top: 0, bottom: 48 },
+            { left: 0, right: 40, top: 56, bottom: 104 },
+        ];
+        expect(nearestBox(rects, 45, 20)).toBe(0);
+        expect(nearestBox(rects, 70, 20)).toBe(1);
+        expect(nearestBox(rects, 100, 80)).toBe(2);
+        expect(nearestBox([], 0, 0)).toBe(-1);
+    });
+});
+
+describe("CodeField groups and size", () => {
+    it("draws eight places in two groups and keeps one input and one value", () => {
+        render(CodeField, { props: { name: "code", length: 8, groups: 4, value: "12345678" } });
+        expect(screen.getAllByRole("textbox")).toHaveLength(1);
+        const groups = Array.from(document.querySelectorAll("[data-code-group]"));
+        expect(groups).toHaveLength(2);
+        expect(groups.map((group) => group.querySelectorAll("[data-code-cell]").length)).toEqual([4, 4]);
+        expect(cells()).toEqual(["1", "2", "3", "4", "5", "6", "7", "8"]);
+        expect(field().value).toBe("12345678");
+        expect(document.querySelector("[data-code-cells]")?.getAttribute("aria-hidden")).toBe("true");
+        expect(document.querySelector("[data-code-cells]")?.className).toContain("flex-wrap");
+        // The grouping is not spoken: the same one description as without it.
+        expect(described(field())).toBe("8 digits");
+    });
+
+    it("fills from a paste with a space or a dash between the groups", async () => {
+        render(CodeField, { props: { length: 8, groups: 4 } });
+        field().focus();
+        pasteText(field(), "1234 5678");
+        await tick();
+        expect(field().value).toBe("12345678");
+        pasteText(field(), "8765-4321");
+        await tick();
+        expect(field().value).toBe("87654321");
+    });
+
+    it("has no groups when none are asked for, or only one", () => {
+        render(CodeField, { props: { length: 8 } });
+        expect(document.querySelectorAll("[data-code-group]")).toHaveLength(0);
+        expect(document.querySelector("[data-grouped]")).toBeNull();
+        cleanup();
+        render(CodeField, { props: { length: 8, groups: 8 } });
+        expect(document.querySelectorAll("[data-code-group]")).toHaveLength(0);
+    });
+
+    it("keeps the caret mark on the right box across groups", async () => {
+        render(CodeField, { props: { length: 8, groups: 4, value: "12345" } });
+        field().focus();
+        field().setSelectionRange(5, 5);
+        await fireEvent.keyUp(field());
+        expect(document.querySelector("[data-active]")).toBe(document.querySelectorAll("[data-code-cell]")[5]);
+    });
+
+    it("maps a tap to the nearest box, also on a second row", async () => {
+        render(CodeField, { props: { length: 8, groups: 4, value: "12345678" } });
+        const boxes = Array.from(document.querySelectorAll("[data-code-cell]")) as HTMLElement[];
+        boxes.forEach((box, index) => {
+            const row = Math.floor(index / 4);
+            const left = (index % 4) * 50;
+            box.getBoundingClientRect = () => ({ left, right: left + 40, top: row * 56, bottom: row * 56 + 48 }) as DOMRect;
+        });
+        await fireEvent.click(field(), { clientX: 105, clientY: 70 });
+        expect(field().selectionStart).toBe(6);
+    });
+
+    it("never makes a box smaller than its digit, whatever the text size", () => {
+        render(CodeField, { props: { length: 8, groups: 4 } });
+        const box = document.querySelector("[data-code-cell]") as HTMLElement;
+        expect(box.style.minInlineSize).toBe("1.15em");
+        expect((document.querySelector("[data-code-group]") as HTMLElement).style.minInlineSize).toContain("7.25rem");
+    });
+
+    it("has a compact size that is still 44px tall, and a large one", () => {
+        render(CodeField, { props: { size: "sm" } });
+        const small = document.querySelector("[data-code-cell]") as HTMLElement;
+        expect(small.className).toContain("h-11");
+        expect(small.className).toContain("text-lg");
+        cleanup();
+        render(CodeField, { props: { size: "lg" } });
+        expect((document.querySelector("[data-code-cell]") as HTMLElement).className).toContain("h-14");
+        cleanup();
+        render(CodeField, {});
+        expect((document.querySelector("[data-code-cell]") as HTMLElement).className).toContain("h-12");
     });
 });
 

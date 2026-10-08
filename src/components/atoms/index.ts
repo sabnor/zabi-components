@@ -14,7 +14,7 @@ export { default as CardFooter } from './CardFooter.svelte';
 export { default as Input } from './Input.svelte';
 export { default as CodeField } from './CodeField.svelte';
 export { DEFAULT_CODE_FIELD_STRINGS } from '../util/code-field.js';
-export type { CodeFieldMode, CodeFieldStrings } from '../util/code-field.js';
+export type { CodeFieldMode, CodeFieldSize, CodeFieldStrings } from '../util/code-field.js';
 export { default as Textarea } from './Textarea.svelte';
 export { default as PickerField } from './PickerField.svelte';
 export { default as Select } from './Select.svelte';

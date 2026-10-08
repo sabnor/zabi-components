@@ -33,4 +33,16 @@ describe("CodeField (server render)", () => {
         expect(body).toContain("Wrong code");
         expect(body).toContain("Six digits");
     });
+
+    it("renders a grouped, compact field as the same plain input, still posting one run of digits", () => {
+        const { body } = renderOnServer(CodeField, {
+            props: { name: "code", length: 8, groups: 4, size: "sm", value: "1234" },
+        });
+        expect(body.match(/<input/g)).toHaveLength(1);
+        expect(body).toMatch(/<input[^>]*name="code"/);
+        expect(body).toMatch(/<input[^>]*value="1234"/);
+        expect(body).toContain("h-11");
+        expect(body).toContain("8 digits");
+        expect(body).not.toContain("data-code-group");
+    });
 });

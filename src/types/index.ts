@@ -875,6 +875,10 @@ export interface CodeFieldProps
     length?: number;
     /** `numeric` (default): digits only. `alphanumeric` also takes letters. */
     mode?: CodeFieldMode;
+    /** Box size: `sm` (44px tall), `md` (default) or `lg`. */
+    size?: SizeVariant;
+    /** Draws the boxes in groups with a wider gap: a number is each group's size (`4` makes 4 and 4 of 8), a list gives each group's size. Only the drawing changes; the row wraps between groups when it cannot fit. */
+    groups?: number | number[];
     /** Names the field. Defaults to the provider's `codeField.label`, then "Verification code". */
     label?: string;
     /** Keeps the label for assistive technology and takes it off the screen. */

@@ -14,7 +14,7 @@ export { default as CardFooter } from './atoms/CardFooter.svelte';
 export { default as Input } from './atoms/Input.svelte';
 export { default as CodeField } from './atoms/CodeField.svelte';
 export { DEFAULT_CODE_FIELD_STRINGS } from './util/code-field.js';
-export type { CodeFieldMode, CodeFieldStrings } from './util/code-field.js';
+export type { CodeFieldMode, CodeFieldSize, CodeFieldStrings } from './util/code-field.js';
 export { default as Textarea } from './atoms/Textarea.svelte';
 export { default as PickerField } from './atoms/PickerField.svelte';
 export { default as Select } from './atoms/Select.svelte';

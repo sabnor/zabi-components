@@ -2,12 +2,18 @@
     import type { HTMLInputAttributes } from "svelte/elements";
     import type { SemanticVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
+    import type { SizeVariant } from "../types/variants.js";
     import {
         activePlace,
         caretAfterSanitise,
+        CODE_FIELD_GAP_REM,
+        CODE_FIELD_GROUP_GAP_REM,
+        CODE_FIELD_SIZES,
+        codeGroups,
         codeLength,
         DEFAULT_CODE_FIELD_STRINGS,
         isCodeChar,
+        nearestBox,
         pasteInto,
         replaceAt,
         sanitiseCode,
@@ -56,6 +62,16 @@
         length?: number;
         /** `numeric` (default): digits only. `alphanumeric` also takes letters. */
         mode?: CodeFieldMode;
+        /** Box size: `sm` (44px tall, a compact row), `md` (default), `lg`. */
+        size?: SizeVariant;
+        /**
+         * Draws the boxes in groups with a wider gap between them: a number is
+         * the size of each group (`4` makes 4 and 4 of 8), a list gives each
+         * group's size. Only the drawing changes: one input, one value, and a
+         * paste with spaces or dashes still fills it. A row that cannot fit at
+         * large text or a narrow width wraps between groups.
+         */
+        groups?: number | number[];
         /** Names the field. Defaults to the provider's `codeField.label`, then "Verification code". */
         label?: string;
         /** Keeps the label for assistive technology and takes it off the screen. */
@@ -91,6 +107,8 @@
         class: className = "",
         length: lengthProp = 6,
         mode = "numeric",
+        size = "md",
+        groups,
         label,
         labelHidden = false,
         required = false,
@@ -118,6 +136,11 @@
     $effect.pre(applyDefaults);
 
     const length = $derived(codeLength(lengthProp));
+    const sizing = $derived(CODE_FIELD_SIZES[size] ?? CODE_FIELD_SIZES.md);
+    const groupSizes = $derived(codeGroups(groups, length));
+    const grouped = $derived(groupSizes.length > 1);
+    /** Which group each box is in, for the drawing, and the first box of each. */
+    const groupStarts = $derived(groupSizes.map((_, index) => groupSizes.slice(0, index).reduce((sum, n) => sum + n, 0)));
     const provided = zabiStringsFor("codeField");
     const text = $derived(mergeStrings(DEFAULT_CODE_FIELD_STRINGS, provided(), strings));
     const shownLabel = $derived(label || text.label);
@@ -238,10 +261,11 @@
         restProps.onclick?.(event);
         if (!input || !cells) return;
         const boxes = Array.from(cells.querySelectorAll<HTMLElement>("[data-code-cell]"));
-        let index = boxes.findIndex((box) => {
-            const rect = box.getBoundingClientRect();
-            return event.clientX >= rect.left && event.clientX <= rect.right;
-        });
+        let index = nearestBox(
+            boxes.map((box) => box.getBoundingClientRect()),
+            event.clientX,
+            event.clientY,
+        );
         if (index < 0) return syncCaret();
         index = Math.min(index, input.value.length);
         try {
@@ -256,11 +280,31 @@
         enhanced
             ? "absolute inset-0 size-full min-w-0 cursor-text border-0 bg-transparent p-0 text-base text-transparent caret-transparent outline-none selection:bg-transparent disabled:cursor-not-allowed"
             : cn(
-                  "h-12 w-full rounded-control border bg-input px-3 text-center text-xl font-medium tracking-[0.35em] text-body tabular-nums hover:bg-input-hover disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text focus-ring",
+                  sizing.box,
+                  "w-full rounded-control border bg-input px-3 text-center text-xl font-medium tracking-[0.35em] text-body tabular-nums hover:bg-input-hover disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text focus-ring",
                   variantClass,
               ),
     );
 </script>
+
+{#snippet cell(place: string, index: number)}
+    <span
+        data-code-cell
+        data-active={index === active ? "" : undefined}
+        style:max-inline-size="{sizing.maxRem}rem"
+        style:min-inline-size="{sizing.minEm}em"
+        class={cn(
+            "flex flex-1 items-center justify-center rounded-control border bg-input font-medium text-body tabular-nums transition-colors duration-150",
+            sizing.box,
+            sizing.text,
+            variantClass,
+            disabled && "cursor-not-allowed bg-input-disabled text-action-disabled-text",
+            index === active && RING,
+        )}
+    >
+        {place}
+    </span>
+{/snippet}
 
 <div class={cn("w-full", className)}>
     <label for={inputId} class={cn("mb-2 block text-sm font-medium text-label", labelHidden && "sr-only")}>
@@ -268,26 +312,35 @@
     </label>
     <div
         class="relative"
-        style:max-inline-size="calc({length} * 3rem + {length - 1} * 0.5rem)"
+        style:max-inline-size="calc({length} * {sizing.maxRem}rem + {length - 1 - Math.max(groupSizes.length - 1, 0)} * {CODE_FIELD_GAP_REM}rem + {Math.max(groupSizes.length - 1, 0)} * {CODE_FIELD_GROUP_GAP_REM}rem)"
         bind:this={cells}
     >
         {#if enhanced}
-            <div class="flex gap-2" aria-hidden="true" data-code-cells>
-                {#each places as place, index (index)}
-                    <span
-                        data-code-cell
-                        data-active={index === active ? "" : undefined}
-                        style:max-inline-size="3rem"
-                        class={cn(
-                            "flex h-12 min-w-0 flex-1 items-center justify-center rounded-control border bg-input text-xl font-medium text-body tabular-nums transition-colors duration-150",
-                            variantClass,
-                            disabled && "cursor-not-allowed bg-input-disabled text-action-disabled-text",
-                            index === active && RING,
-                        )}
-                    >
-                        {place}
-                    </span>
-                {/each}
+            <div
+                class={cn("flex flex-wrap", grouped ? "gap-x-4 gap-y-2" : "gap-2")}
+                aria-hidden="true"
+                data-code-cells
+                data-grouped={grouped ? "" : undefined}
+            >
+                {#if grouped}
+                    {#each groupSizes as groupSize, group (group)}
+                        <div
+                            data-code-group
+                            class="flex gap-2"
+                            style:flex="{groupSize} 1 0"
+                            style:min-inline-size="calc({groupSize} * {sizing.minEm * sizing.digitRem}rem + {groupSize - 1} * {CODE_FIELD_GAP_REM}rem)"
+                            style:max-inline-size="calc({groupSize} * {sizing.maxRem}rem + {groupSize - 1} * {CODE_FIELD_GAP_REM}rem)"
+                        >
+                            {#each places.slice(groupStarts[group], groupStarts[group] + groupSize) as place, offset (offset)}
+                                {@render cell(place, groupStarts[group] + offset)}
+                            {/each}
+                        </div>
+                    {/each}
+                {:else}
+                    {#each places as place, index (index)}
+                        {@render cell(place, index)}
+                    {/each}
+                {/if}
             </div>
         {/if}
         <input

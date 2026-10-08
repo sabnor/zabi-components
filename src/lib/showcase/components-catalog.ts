@@ -386,6 +386,19 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "numeric takes digits only and opens the numeric keyboard; alphanumeric also takes letters.",
                     },
                     {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description: "Box size. sm is 44px tall, md 48px, lg 56px; the digit never gets wider than its box at large text.",
+                    },
+                    {
+                        name: "groups",
+                        type: "number | number[]",
+                        required: false,
+                        description: "Draws the boxes in groups with a wider gap: a number is each group's size (4 makes 4 and 4 of 8), a list gives each group's size. Only the drawing changes; one input, one value, and pasted spaces or dashes are dropped. A row that cannot fit wraps between groups.",
+                    },
+                    {
                         name: "label",
                         type: "string",
                         required: false,
@@ -472,6 +485,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "With an error",
                         description: "The error is tied to the input and announced",
                         code: '&lt;CodeField name="code" error="That code is not right." /&gt;',
+                    },
+                    {
+                        title: "Eight digits in two groups",
+                        description: "Read as 1234 5678; the value and the post stay 12345678",
+                        code: '&lt;CodeField name="code" length={8} groups={4} /&gt;',
                     },
                     {
                         title: "Four letters and digits",

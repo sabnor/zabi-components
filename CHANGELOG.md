@@ -12,6 +12,30 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.19] - 2026-10-08
+
+A nineteenth local preview build of the 9.0 direction, not published to npm. One
+entry from the app team (Z-104), about `CodeField`; no token, prop, variant,
+string key or export of alpha.18 is removed or renamed. One default changes where
+it was a defect, under Changed. Run on this build: the type and design checks,
+the unit suite, the package build and a scratch install; no browser.
+### Added
+
+- `CodeField` `groups?: number | number[]`: draws the boxes in groups with a wider gap
+  (`groups={4}` on 8 places is 4 and 4, `groups={[3, 3, 4]}` is explicit). Only the drawing:
+  one input, one value, `one-time-code`, the post and a paste of "1234 5678" or "1234-5678" are
+  unchanged, and a screen reader still hears one field. A row that cannot fit wraps between groups.
+- `CodeField` `size?: "sm" | "md" | "lg"` (default `"md"`, today's look): `sm` is a compact row, 44px tall.
+- Export of the type `CodeFieldSize`.
+
+### Changed
+
+- `CodeField` boxes no longer shrink below 1.15em of their own digit, so a digit is never wider than
+  its box at large text or a narrow screen (it overlapped the box edges at 200% text with eight
+  places); where the boxes would have been narrower the row now wraps (between groups when `groups`
+  is set). At 100% text nothing changes up to 9 places at 320px (10 at 360px); a longer code that is not grouped now wraps there instead of drawing slivers. A tap in the gap between boxes or on a second row now
+  puts the caret at the nearest box.
+
 ## [9.0.0-alpha.18] - 2026-10-08
 
 An eighteenth local preview build of the 9.0 direction, not published to npm. It

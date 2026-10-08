@@ -64,3 +64,67 @@ export function pasteInto(value: string, start: number, end: number, pasted: str
 export function activePlace(caret: number, length: number): number {
     return Math.max(0, Math.min(caret, length - 1));
 }
+
+/** The sizes of the boxes: the field's `size`. `md` is the size the field has always had. */
+export type CodeFieldSize = "sm" | "md" | "lg";
+
+/**
+ * Per size: the box height, the digit class, the widest a box grows (rem) and
+ * the least it is (`minEm`, in ems of its own digit, so a digit is never wider than its
+ * box at any text size). `sm` stays 44px tall, the least for a touch target.
+ */
+export const CODE_FIELD_SIZES: Record<CodeFieldSize, { box: string; text: string; digitRem: number; maxRem: number; minEm: number }> = {
+    sm: { box: "h-11", text: "text-lg", digitRem: 1.125, maxRem: 2.5, minEm: 1.15 },
+    md: { box: "h-12", text: "text-xl", digitRem: 1.25, maxRem: 3, minEm: 1.15 },
+    lg: { box: "h-14", text: "text-2xl", digitRem: 1.5, maxRem: 3.5, minEm: 1.15 },
+};
+
+/** The gap between boxes in a group, and the wider gap between groups (rem). */
+export const CODE_FIELD_GAP_REM = 0.5;
+export const CODE_FIELD_GROUP_GAP_REM = 1;
+
+/**
+ * `groups` as the sizes of the groups the boxes are drawn in. A number is the
+ * size of each group (4 for 8 places is 4 and 4, 3 for 8 is 3, 3 and 2); a list
+ * gives each group's size and the places left over form a last group. One
+ * group, or anything unusable, means no grouping: an empty list.
+ */
+export function codeGroups(groups: number | number[] | undefined, length: number): number[] {
+    if (groups === undefined) return [];
+    const sizes: number[] = [];
+    let left = length;
+    if (typeof groups === "number") {
+        if (!Number.isFinite(groups) || groups < 1) return [];
+        const each = Math.floor(groups);
+        while (left > 0) {
+            sizes.push(Math.min(each, left));
+            left -= each;
+        }
+    } else {
+        for (const size of groups) {
+            if (left <= 0) break;
+            if (!Number.isFinite(size) || size < 1) continue;
+            const take = Math.min(Math.floor(size), left);
+            sizes.push(take);
+            left -= take;
+        }
+        if (left > 0) sizes.push(left);
+    }
+    return sizes.length > 1 ? sizes : [];
+}
+
+/** The index of the box nearest to a point, by its rectangle; -1 when there are none. */
+export function nearestBox(rects: { left: number; right: number; top?: number; bottom?: number }[], x: number, y: number): number {
+    let best = -1;
+    let bestDistance = Infinity;
+    rects.forEach((rect, index) => {
+        const dx = Math.max(rect.left - x, 0, x - rect.right);
+        const dy = Math.max((rect.top ?? 0) - y, 0, y - (rect.bottom ?? 0));
+        const distance = dy * 1000 + dx;
+        if (distance < bestDistance) {
+            bestDistance = distance;
+            best = index;
+        }
+    });
+    return best;
+}
