@@ -18,4 +18,8 @@
         <Heading level={3} text="Avstängd" />
         <Text tone="description">Disabled</Text>
     </Card>
+    <Card type="submit" name="notification" value="n4" {size} tone="tint" loading>
+        <Heading level={3} text="Öppnas" />
+        <Text tone="description">Loading: busy, the press swallowed, still a Tab stop</Text>
+    </Card>
 </form>

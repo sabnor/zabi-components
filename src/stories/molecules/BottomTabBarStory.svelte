@@ -25,6 +25,8 @@
         withActiveIcons?: boolean;
         /** Draw the bar as a capsule inset from the edges. */
         floating?: boolean;
+        /** A tab that is on its way: it takes the mark, `aria-current` stays on the active one. */
+        pending?: string;
     }
 
     let {
@@ -37,6 +39,7 @@
         frameWidth = 360,
         withActiveIcons = false,
         floating = false,
+        pending,
     }: Props = $props();
 
     const all = $derived<BottomTabBarItem[]>([
@@ -67,5 +70,5 @@ own in an app the bar is fixed to the bottom of the screen. -->
     style="width: {frameWidth}px;"
 >
     <p class="p-4 text-sm text-description">Active: {active}</p>
-    <BottomTabBar {items} {active} {label} {badgeMax} {floating} position="static" onclick={select} />
+    <BottomTabBar {items} {active} {pending} {label} {badgeMax} {floating} position="static" onclick={select} />
 </div>

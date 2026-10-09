@@ -660,6 +660,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "With type: the card cannot be pressed, is dimmed and is skipped by the keyboard.",
                     },
                     {
+                        name: "loading",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "With type: the card's action is on its way, as Button's and Chip's loading. aria-busy and aria-disabled (not disabled), the press swallowed (nothing is submitted and onclick does not run), the pressed look held, size and Tab stop kept. No spinner. Ignored by a link card and a plain card.",
+                    },
+                    {
                         name: "fullWidth",
                         type: "boolean",
                         required: false,
@@ -7381,6 +7389,13 @@ pushToast({
                         defaultValue: "the current page",
                         description:
                             "The href of the active tab, or the path of the current page: the tab for that page or the closest one above it gets aria-current. Left out, the bar reads the address in the browser; in SvelteKit pass page.url.pathname so the server marks it too.",
+                    },
+                    {
+                        name: "pending",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The href or path of the tab a person has just pressed while its page is on its way. It takes the mark (pill, heavier icon, semibold label) at once; aria-current stays on the tab for active until active changes, and the pending link has aria-busy. Left out, or matching no tab, the mark and aria-current are on the same tab.",
                     },
                     {
                         name: "label",

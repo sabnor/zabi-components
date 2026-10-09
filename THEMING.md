@@ -202,7 +202,7 @@ short names: the short ones follow.
 | `--shadow-color` | `24 24 27` (dark: `0 0 0`) | The colour of `shadow-sm` and `shadow-lg`, as three space-separated RGB channels |
 | `--shadow-opacity` | `0.10` (dark: `0.24`) | The strength of the wide, soft layer of each shadow |
 | `--shadow-opacity-contact` | `0.06` (dark: `0.3`) | The strength of the tight contact layer |
-| `--z-dropdown`, `--z-sticky`, `--z-fixed`, `--z-modal-backdrop`, `--z-modal`, `--z-popover`, `--z-tooltip`, `--z-toast` | 1000 to 1080 | The layer of each floating component, when the app has its own stacking order to fit into |
+| `--z-dropdown`, `--z-sticky`, `--z-fixed`, `--z-modal-backdrop`, `--z-modal`, `--z-popover`, `--z-tooltip`, `--z-toast` | 1000 to 1080 | The layer of each floating component, when the app has its own stacking order to fit into. Each has a class of the same name (`z-sticky`, `z-fixed`, `z-modal`, …) that sets `z-index` from it |
 
 The shadow tokens are the only ones here with a separate dark value. A
 `:root` override after the imports replaces both; to keep two values, declare

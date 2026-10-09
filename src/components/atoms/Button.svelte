@@ -166,6 +166,20 @@
      */
     const BUSY_BUTTON = "bg-(--color-action-disabled) text-action-disabled-text cursor-not-allowed";
 
+    /**
+     * Forced colours (a Windows contrast theme) remove every fill, so a button
+     * told apart by its fill alone is told apart by nothing. The variants that
+     * are drawn by a fill get a 1px edge in a system colour there only;
+     * `ghost`, `link` and `text` stay bare, and `outline` has its own border.
+     * A disabled or loading button is the flat disabled fill, so it gets an
+     * edge in the disabled text colour. The `disabled:` copy beats
+     * `disabled:border-transparent`, which is the more specific rule.
+     */
+    const FORCED_EDGE = "forced-colors:border forced-colors:border-[color:ButtonBorder]";
+    const FORCED_EDGE_DISABLED_ONLY = "disabled:forced-colors:border disabled:forced-colors:border-[color:GrayText]";
+    const FORCED_EDGE_DISABLED =
+        "forced-colors:border forced-colors:border-[color:GrayText] disabled:forced-colors:border-[color:GrayText]";
+
     const disabledClass =
         "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:no-underline disabled:bg-none disabled:inset-shadow-none disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
 
@@ -224,12 +238,13 @@
         // `disabled:` does not match an `<a>`: a disabled link wears the
         // disabled pair itself, in place of its variant.
         const busyBox = variant === "outline" ? "border border-transparent" : variant === "link" ? "px-0" : variant === "text" ? "px-2" : "";
+        const drawnByFill = variant !== "ghost" && variant !== "link" && variant !== "text" && variant !== "outline";
         const state =
             isLink && isDisabled
-                ? DISABLED_LINK
+                ? `${DISABLED_LINK} ${FORCED_EDGE_DISABLED}`
                 : isBusy
-                  ? `${BUSY_BUTTON} ${busyBox}`
-                  : `${variantClass} ${disabledClass}`;
+                  ? `${BUSY_BUTTON} ${busyBox} ${FORCED_EDGE_DISABLED}`
+                  : `${variantClass} ${disabledClass} ${drawnByFill ? FORCED_EDGE : ""} ${FORCED_EDGE_DISABLED_ONLY}`;
         return cn(`${base} ${s.box} ${s.text} ${s.gap} ${state} ${className}`);
     });
 </script>

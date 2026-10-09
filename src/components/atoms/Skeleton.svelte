@@ -66,10 +66,15 @@
         block: "rounded-control",
     };
 
+    /**
+     * The variant's own box, at zero specificity (`:where()`): any size class at
+     * the call site wins over it in the stylesheet, whether `cn()` knows its name
+     * (`size-14`) or not (`size-sticker`, an app's own step).
+     */
     const defaultShape: Record<Variant, string> = {
-        text: "w-full h-3",
-        circle: "w-10 aspect-square",
-        block: "w-full h-32",
+        text: "[:where(&)]:w-full [:where(&)]:h-3",
+        circle: "[:where(&)]:w-10 aspect-square",
+        block: "[:where(&)]:w-full [:where(&)]:h-32",
     };
 
     const fill: Record<Tone, string> = {

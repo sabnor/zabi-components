@@ -182,6 +182,8 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'>
     form?: string;
     /** With `type`: the card cannot be pressed. */
     disabled?: boolean;
+    /** With `type`: the action is on its way (`aria-busy`, `aria-disabled`); the press is swallowed and the card stays a Tab stop. */
+    loading?: boolean;
     size?: SizeVariant;
     fullWidth?: boolean;
     class?: string;
@@ -745,6 +747,8 @@ export interface BottomTabBarProps extends Omit<HTMLAttributes<HTMLElement>, 'cl
     items: BottomTabBarItem[];
     /** The href of the active tab, or the path of the current page. Defaults to the current page. */
     active?: string;
+    /** The tab just pressed, while its page is on its way: it takes the mark, `aria-current` stays on `active`. */
+    pending?: string;
     /** Accessible name of the navigation landmark. */
     label?: string;
     /** What a badge adds to the tab's accessible name, after the label and a comma. */

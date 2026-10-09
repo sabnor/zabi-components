@@ -126,3 +126,21 @@ export const Floating: Story = {
         }
     }
 };
+
+export const Pending: Story = {
+    args: {
+        startActive: '/home',
+        pending: '/quiz',
+    },
+    render: (args) => ({
+        Component: BottomTabBarStory,
+        props: args,
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'pending is the tab a person has just pressed, while its page is still on its way. The pill, the heavier icon and the semibold label move to it at once; aria-current="page" stays on the active tab (Home here) until active changes, and the pending link has aria-busy. In the story the pressed tab becomes active, as the page would.'
+            }
+        }
+    }
+};

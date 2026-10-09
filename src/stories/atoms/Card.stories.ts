@@ -164,7 +164,7 @@ export const ButtonCard: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'With `type="submit"` the whole card is one `<button>`: it posts the form around it without scripts, with the same ring, hover and pressed states and 44px minimum as a link card. `name`, `value` and `form` go to the button; `disabled` dims it. Like a link card it must not contain another link or button. With `href` it is a link and `type` is ignored.'
+                story: 'With `type="submit"` the whole card is one `<button>`: it posts the form around it without scripts, with the same ring, hover and pressed states and 44px minimum as a link card. `name`, `value` and `form` go to the button; `disabled` dims it and takes it out of the Tab order; `loading` marks it busy (`aria-busy`, `aria-disabled`), swallows the press and holds the pressed look while it stays a Tab stop. Like a link card it must not contain another link or button. With `href` it is a link and `type` is ignored.'
             }
         }
     },

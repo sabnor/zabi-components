@@ -12,6 +12,29 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.22] - 2026-10-09
+
+A twenty-second local preview build of the 9.0 direction, not published to npm. Six entries
+from the app team (Z-108 to Z-113). No token, prop, variant, string key, export or data attribute of
+alpha.21 is removed or renamed. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install; no browser.
+
+### Added
+
+- `Card` `loading` (with `type`): `aria-busy` and `aria-disabled`, the press swallowed, the pressed look held,
+  size and Tab stop kept (Z-108, D225).
+- `BottomTabBar` `pending`: the tab just pressed takes the mark while `aria-current="page"` stays on `active`
+  until it changes; the pending link has `aria-busy` (Z-109, D226).
+- `.z-fixed`, beside `.z-sticky` and the other layer classes (Z-113, D230).
+
+### Fixed
+
+- `Button` in forced colours: the variants drawn by a fill (`primary`, `accent`, `secondary`, `danger`,
+  `tonal`) get a 1px `ButtonBorder` edge there, and a disabled or loading button a `GrayText` one (Z-110, D227).
+- `Stepper` inside a `SkeletonGroup` no longer renders its own `role="status"` (Z-111, D228).
+- `Skeleton`: the variant's width and height are written at zero specificity (`:where()`), so any size
+  class at the call site wins, including a size name of the app's own (Z-112, D229).
+
 ## [9.0.0-alpha.21] - 2026-10-08
 
 A twenty-first local preview build of the 9.0 direction, not published to npm. One entry

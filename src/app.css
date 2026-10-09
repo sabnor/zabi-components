@@ -3386,6 +3386,10 @@ body {
   z-index: var(--z-sticky);
 }
 
+.z-fixed {
+  z-index: var(--z-fixed);
+}
+
 .z-dropdown {
   z-index: var(--z-dropdown);
 }

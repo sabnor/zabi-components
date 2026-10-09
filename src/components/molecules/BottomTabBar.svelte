@@ -61,6 +61,15 @@
          * SvelteKit pass `page.url.pathname`, so the server marks it too.
          */
         active?: string;
+        /**
+         * The href or path of the tab a person has just pressed, while its
+         * page is still on its way. It takes the mark (the pill, the heavier
+         * icon, the semibold label) at once, but `aria-current="page"` stays
+         * on the tab for `active` until `active` changes, and the pending link
+         * has `aria-busy`. Left out, or when it matches no tab, the mark and
+         * `aria-current` are on the same tab, as before.
+         */
+        pending?: string;
         /** Accessible name of the navigation landmark. */
         label?: string;
         /**
@@ -98,6 +107,7 @@
     let {
         items,
         active,
+        pending,
         label = "Main",
         badgeLabel = defaultBadgeLabel,
         badgeMax = 99,
@@ -149,6 +159,11 @@
     });
 
     const activeHref = $derived(activeTabHref(items, active ?? locationPath));
+    const pendingHref = $derived(
+        pending !== undefined && pending !== "" ? activeTabHref(items, pending) : undefined,
+    );
+    /** The tab that wears the mark: the pending one, else the current one. */
+    const markHref = $derived(pendingHref ?? activeHref);
 
     $effect(() => {
         if (!isDevBuild()) return;
@@ -225,7 +240,9 @@
 {#snippet tabs()}
     <ul class="tabbar-list m-0 flex list-none items-stretch py-1">
         {#each items as item (item.href)}
-            {@const isActive = item.href === activeHref}
+            {@const isActive = item.href === markHref}
+            {@const isCurrent = item.href === activeHref}
+            {@const isPending = pendingHref !== undefined && item.href === pendingHref && !isCurrent}
             {@const Icon = isActive && item.activeIcon ? item.activeIcon : item.icon}
             {@const count = item.badge ?? 0}
             <li class="tabbar-tab flex">
@@ -236,7 +253,8 @@
                 <a
                     href={item.href}
                     class={linkClasses(isActive)}
-                    aria-current={isActive ? "page" : undefined}
+                    aria-current={isCurrent ? "page" : undefined}
+                    aria-busy={isPending ? "true" : undefined}
                     aria-label={count > 0 ? `${item.label}, ${badgeLabel(count, item)}` : undefined}
                 >
                     <!-- The pill is the active mark, with no outline: a pill with a

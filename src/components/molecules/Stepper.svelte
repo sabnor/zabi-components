@@ -6,6 +6,7 @@
     import type { HTMLAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
+    import { inSkeletonGroup } from "../util/skeleton.js";
     import {
         STEPPER_STRINGS,
         clampStep,
@@ -99,6 +100,9 @@
         await tick();
         bodies[index]?.focus();
     }
+
+    /** Inside a `SkeletonGroup` the group is the one status; a second one in it would be a live region in a live region. */
+    const inGroup = inSkeletonGroup();
 
     /** Read out once when the current step changes, and never for the first render. */
     let announced = $state("");
@@ -202,7 +206,9 @@
                 {/if}
             </div>
         </div>
-        <span class="sr-only" role="status" data-stepper-status>{announced}</span>
+        {#if !inGroup}
+            <span class="sr-only" role="status" data-stepper-status>{announced}</span>
+        {/if}
     </nav>
 {/if}
 
