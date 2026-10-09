@@ -31,6 +31,10 @@ export const RADIO_GROUP_OPTION_LABEL_ROW =
  * The checked fill is the primary action fill, so a ticked box and a primary
  * button are the same colour; it used to be a step paler (2.8:1 on the page).
  *
+ * The unchecked edge is the only thing that says a control is here, so it is
+ * the control boundary (3:1 on every surface, both themes); it was a fixed
+ * ramp step, 2.5:1 in light and 1.9 to 2.3:1 in dark.
+ *
  * The pressed dip and the hover fills are for a control that can be used.
  * The row around a disabled input still matches `:active` and `:hover`, so
  * without that a disabled box dipped under a finger and lit up under the
@@ -38,7 +42,7 @@ export const RADIO_GROUP_OPTION_LABEL_ROW =
  * hover is undone by a rule with one more `has-` in it, which outweighs it.
  */
 export const SELECTION_CONTROL_SHELL_STATE =
-    "group/control relative inline-flex items-center justify-center w-5 h-5 transition-all duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-base-400 bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-action-primary has-[:checked]:bg-action-primary has-[:checked]:group-hover:bg-action-primary-hover has-[:checked]:group-hover:border-action-primary-hover has-[:disabled]:has-[:checked]:group-hover:bg-action-primary has-[:disabled]:has-[:checked]:group-hover:border-action-primary has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
+    "group/control relative inline-flex items-center justify-center w-5 h-5 transition-all duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-control-border bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-action-primary has-[:checked]:bg-action-primary has-[:checked]:group-hover:bg-action-primary-hover has-[:checked]:group-hover:border-action-primary-hover has-[:disabled]:has-[:checked]:group-hover:bg-action-primary has-[:disabled]:has-[:checked]:group-hover:border-action-primary has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
 
 export type SelectionControlShape = "square" | "circle";
 

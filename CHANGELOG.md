@@ -12,6 +12,19 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.23] - 2026-10-09
+
+A twenty-third local preview build of the 9.0 direction, not published to npm. One entry
+from the app team (Z-114). No token, prop, variant, string key, export or data attribute of
+alpha.22 is removed or renamed. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install; no browser.
+
+### Fixed
+
+- `Checkbox`, `Radio` and `RadioGroup`: the edge of an unticked box is `--color-control-border` (3:1 on
+  every surface, both themes) and not the fixed step `base-400`, which was 2.5:1 in light and 1.9 to 2.3:1
+  in dark. In a brand or accent block it follows the block's on-colour too (Z-114, D231).
+
 ## [9.0.0-alpha.22] - 2026-10-09
 
 A twenty-second local preview build of the 9.0 direction, not published to npm. Six entries
