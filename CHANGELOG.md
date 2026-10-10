@@ -12,6 +12,23 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.28] - 2026-10-10
+
+A twenty-eighth local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.27 is removed or renamed.
+
+### Added
+
+- `AppBar`: the row carries `data-title-empty` when the bar has no `title`.
+
+### Fixed
+
+- `AppBar` with no `title` and a wide `leading`: the empty title part no longer asks for 72px, so it no longer
+  sends the bar to `data-title-row="own"` and takes a row of its own (the bar was 12px taller). A bar with
+  nothing to show as a title stays on one row whatever room is left, on the server and before it is measured
+  as well; `leading` is still cut to the room beside the back control and the actions. A bar with a title is
+  unchanged.
+
 ## [9.0.0-alpha.27] - 2026-10-10
 
 A twenty-seventh local preview build of the 9.0 direction, not published to npm. Loose ends. No token,

@@ -434,7 +434,8 @@
             delete bar.dataset.measuring;
 
             const left = inner - beside - gap * parts;
-            const next = left < TITLE_MIN ? "own" : "inline";
+            // A bar with no title has nothing to put on a row of its own.
+            const next = title && left < TITLE_MIN ? "own" : "inline";
             if (next !== titleRow) titleRow = next;
             const fixedParts = bar.querySelectorAll(
                 ":scope > [data-appbar-part='back'], :scope > [data-appbar-part='actions']",
@@ -477,6 +478,7 @@
     <div
         bind:this={row}
         data-title-row={titleRow ?? undefined}
+        data-title-empty={title ? undefined : ""}
         style:--appbar-leading-max={leadingMax !== null ? `${leadingMax}px` : undefined}
         class={cn(
             "appbar-row flex min-h-14 items-center gap-2 px-2 py-1 [--spacing:4px]",
@@ -528,6 +530,7 @@
                 <h6 class={titleClasses} data-appbar-part="title">{title}</h6>
             {/if}
         {:else}
+            <!-- Nothing to show: no width, so no 72px to find room for. -->
             <div class="min-w-0 flex-1" data-appbar-part="title"></div>
         {/if}
         {#if actions}
@@ -642,6 +645,22 @@
            icons' edges. */
         padding-inline: 8px;
         padding-block-end: 4px;
+    }
+
+    /*
+     * No title: the empty part asks for no width and no row, on the server
+     * and before measuring as well. One row whatever `leading` holds, which
+     * is cut to the room beside the back control and the actions. The part
+     * pulls back one gap, so the row spends none on it.
+     */
+    .appbar-row[data-title-empty] {
+        flex-wrap: nowrap;
+    }
+    .appbar-row[data-title-empty] :global(> [data-appbar-part="title"]) {
+        flex: 0 0 0;
+        min-width: 0;
+        padding: 0;
+        margin-inline-end: -8px;
     }
 
     /* While it measures: every part at the width it asks for, on one line. */

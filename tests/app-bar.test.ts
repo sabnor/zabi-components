@@ -428,4 +428,71 @@ describe("AppBar title", () => {
         expect(row().hasAttribute("data-title-row")).toBe(false);
         expect(row().style.getPropertyValue("--appbar-leading-max")).toBe("");
     });
+
+    describe("with no title (Z-122)", () => {
+        const emptyRow = () => bar().querySelector<HTMLElement>(".appbar-row")!;
+        const emptyPart = () => bar().querySelector<HTMLElement>("[data-appbar-part='title']")!;
+
+        /** jsdom has no layout: a 360px row with no padding or gap, a 48px back control, a 62px action and a `leading` of the width given. */
+        function laidOut(leadingWidth: number) {
+            vi.stubGlobal(
+                "ResizeObserver",
+                class {
+                    observe() {}
+                    disconnect() {}
+                    unobserve() {}
+                },
+            );
+            const computed = window.getComputedStyle.bind(window);
+            vi.spyOn(window, "getComputedStyle").mockImplementation((element: Element) => {
+                const style = computed(element);
+                return new Proxy(style, {
+                    get: (target, key) =>
+                        key === "paddingLeft" || key === "paddingRight" || key === "columnGap"
+                            ? "0px"
+                            : Reflect.get(target, key),
+                });
+            });
+            vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+                const part = this.dataset.appbarPart;
+                const width = this.classList.contains("appbar-row")
+                    ? 360
+                    : part === "back"
+                      ? 48
+                      : part === "actions"
+                        ? 62
+                        : this.getAttribute("data-testid") === "leading"
+                          ? leadingWidth
+                          : 0;
+                return { width, height: 0, top: 0, left: 0, right: width, bottom: 0, x: 0, y: 0, toJSON() {} } as DOMRect;
+            });
+        }
+
+        it("keeps an empty title part and marks the row, with no heading", () => {
+            render(AppBarHarness, { props: { title: "", backHref: "/quiz", withLeading: true, withActions: true } });
+            expect(within(bar()).queryByRole("heading")).toBeNull();
+            expect(emptyPart().tagName).toBe("DIV");
+            expect(emptyPart().textContent).toBe("");
+            expect(emptyRow().hasAttribute("data-title-empty")).toBe(true);
+        });
+
+        it("does not mark a bar that has a title", () => {
+            render(AppBarHarness, { props: { withLeading: true } });
+            expect(emptyRow().hasAttribute("data-title-empty")).toBe(false);
+        });
+
+        it("stays inline however wide leading is, and leading is still capped at the room beside back and actions", async () => {
+            laidOut(320);
+            render(AppBarHarness, { props: { title: "", backHref: "/quiz", withLeading: true, withActions: true } });
+            await vi.waitFor(() => expect(emptyRow().getAttribute("data-title-row")).toBe("inline"));
+            // 360 - 48 - 62, with padding and gaps stubbed to 0.
+            expect(emptyRow().style.getPropertyValue("--appbar-leading-max")).toBe("250px");
+        });
+
+        it("a bar with a title and too little room still takes its own row", async () => {
+            laidOut(320);
+            render(AppBarHarness, { props: { backHref: "/quiz", withLeading: true, withActions: true } });
+            await vi.waitFor(() => expect(emptyRow().getAttribute("data-title-row")).toBe("own"));
+        });
+    });
 });
