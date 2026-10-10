@@ -57,7 +57,7 @@ describe("leading snippet on Checkbox, Radio and Toggle", () => {
     ])("%s: without leading no wrapper is added", (_name, component) => {
         const { container } = render(component as never, { props: { label: "Anna" } as never });
         const label = container.querySelector("label")!;
-        expect(label.querySelector("span.shrink-0.inline-flex, span.inline-flex.shrink-0")).toBeNull();
+        expect(label.querySelector("span.shrink-0.inline-flex:not(.selection-control-shell)")).toBeNull();
         expect(label.className).not.toContain("gap-3 ");
     });
 });

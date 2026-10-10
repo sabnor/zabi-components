@@ -22,6 +22,7 @@
         hourChoices,
         minuteChoices,
         minuteStep,
+        openingTime,
         parseHourMinute,
         stepFitsLibraryPicker,
         timeInRange,
@@ -76,6 +77,7 @@
         placeholder?: string;
         picker?: "library" | "native";
         strings?: Partial<DateFieldStrings> | Partial<TimeFieldStrings>;
+        openAt?: string;
         "aria-describedby"?: string | null;
     }
 
@@ -101,6 +103,7 @@
         placeholder = "",
         picker = "library",
         strings,
+        openAt,
         "aria-describedby": describedBy,
         ...restProps
     }: Props = $props();
@@ -200,6 +203,9 @@
     let sheetSnap = $state<"half" | "full">("half");
     let draftHour = $state("");
     let draftMinute = $state("");
+    /** Where the columns stand while nothing is chosen. Set as the sheet opens; never written to `value`. */
+    let anchorHour = $state("");
+    let anchorMinute = $state("");
 
     function openPicker() {
         if (disabled || readonly) return;
@@ -214,6 +220,14 @@
             const now = parseHourMinute(value);
             draftHour = now ? String(now[0]).padStart(2, "0") : "";
             draftMinute = now ? String(now[1]).padStart(2, "0") : "";
+            const clock = new Date();
+            [anchorHour, anchorMinute] = openingTime({
+                openAt,
+                now: [clock.getHours(), clock.getMinutes()],
+                stepMinutes: minuteStep(step),
+                min,
+                max,
+            });
             sheetSnap = typeof window !== "undefined" && window.innerHeight >= 700 ? "half" : "full";
         }
         isOpen = true;
@@ -255,8 +269,11 @@
     function chooseHour(hour: string) {
         draftHour = hour;
         const options = minuteChoices({ locale, stepMinutes: minuteStep(step), hour, current: value, min, max });
-        // A minute the new hour does not allow, or none yet: the first one it does.
-        if (!draftMinute || options.find((option) => option.value === draftMinute)?.disabled !== false) {
+        // A minute the new hour does not allow: the first one it does. None yet: the one
+        // `openAt` asked for if the hour allows it (not the one "now" happens to stand at), else the first.
+        if (!draftMinute && parseHourMinute(openAt) && options.find((option) => option.value === anchorMinute)?.disabled === false) {
+            draftMinute = anchorMinute;
+        } else if (!draftMinute || options.find((option) => option.value === draftMinute)?.disabled !== false) {
             draftMinute = options.find((option) => !option.disabled)?.value ?? draftMinute;
         }
     }
@@ -378,6 +395,12 @@
     {#if canClear}
         {@render clearAction()}
     {/if}
+    {#if draftHour !== "" && draftMinute !== ""}
+        <span data-chosen-time class="me-auto min-w-0 self-center text-sm text-body">
+            {timeText.chosenTime}
+            <span class="font-semibold">{formatTime(`${draftHour}:${draftMinute}`, locale, format)}</span>
+        </span>
+    {/if}
     <Button variant="primary" disabled={!draftValid} onclick={done}>{timeText.done}</Button>
 {/snippet}
 
@@ -410,8 +433,8 @@
             footer={doneAction}
         >
             <div class="flex gap-3">
-                <TimeColumn label={timeText.hours} options={hours} selected={draftHour} onselect={chooseHour} />
-                <TimeColumn label={timeText.minutes} options={minutes} selected={draftMinute} onselect={(minute) => (draftMinute = minute)} />
+                <TimeColumn label={timeText.hours} options={hours} selected={draftHour} openAt={anchorHour} onselect={chooseHour} />
+                <TimeColumn label={timeText.minutes} options={minutes} selected={draftMinute} openAt={anchorMinute} onselect={(minute) => (draftMinute = minute)} />
             </div>
         </BottomSheet>
     {/if}

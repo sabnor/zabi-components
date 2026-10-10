@@ -399,10 +399,18 @@
         void title;
         void titleLines;
 
+        // `offsetWidth` is rounded: actions 62.016px wide read as 62, the row came out
+        // 0.016px too wide for what was left and wrapped. The laid-out width, up to the
+        // next pixel (layout units are 1/64px, so the tiny allowance is only float noise).
+        const widthOf = (element: HTMLElement) => Math.ceil(element.getBoundingClientRect().width - 0.001);
+
         const measure = () => {
             const style = getComputedStyle(bar);
+            // Down to the whole pixel, as the parts are counted up to it: `clientWidth` rounds either way.
             const inner =
-                bar.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+                Math.floor(bar.getBoundingClientRect().width + 0.001) -
+                parseFloat(style.paddingLeft) -
+                parseFloat(style.paddingRight);
             // Nothing is laid out (a hidden bar): leave it as it is.
             if (!(inner > 0)) return;
             const gap = parseFloat(style.columnGap) || 0;
@@ -416,11 +424,12 @@
             for (const child of bar.children) {
                 if (!(child instanceof HTMLElement)) continue;
                 const part = child.dataset.appbarPart;
-                if (part === "title" || child.offsetWidth === 0) continue;
+                const width = widthOf(child);
+                if (part === "title" || width <= 0) continue;
                 parts += 1;
-                beside += child.offsetWidth;
+                beside += width;
                 // The back control and the actions keep their width whatever happens.
-                if (part === "back" || part === "actions") fixed += child.offsetWidth;
+                if (part === "back" || part === "actions") fixed += width;
             }
             delete bar.dataset.measuring;
 

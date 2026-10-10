@@ -31,6 +31,8 @@
         picker?: 'library' | 'native';
         /** Presses the field's button once the story has mounted, so its picker is open. */
         openOnMount?: boolean;
+        /** Time only: where an empty field's picker opens, as HH:mm. */
+        openAt?: string;
     }
 
     let {
@@ -53,6 +55,7 @@
         placeholder,
         picker,
         openOnMount = false,
+        openAt,
     }: Props = $props();
 
     let wrapper: HTMLDivElement | undefined = $state();
@@ -65,6 +68,7 @@
     // svelte-ignore state_referenced_locally
     let value = $state(startValue ?? (kind === 'date' ? '2026-10-06' : '19:00'));
     const Field = $derived(kind === 'date' ? DateField : TimeField);
+    const timeOnly = $derived(kind === 'time' && openAt !== undefined ? { openAt } : {});
     const fieldLabel = $derived(label ?? (kind === 'date' ? 'Quiz date' : 'Starts'));
     const asText = $derived(kind === 'date' ? formatDate(value, locale) : formatTime(value, locale));
 </script>
@@ -75,7 +79,7 @@ under it is the same value as text in the story's locale. -->
     {#if inFormField}
         <FormField label={fieldLabel} description={hint} {error} {required} {disabled}>
             {#snippet control(props)}
-                <Field hideLabel bind:value {min} {max} {step} {size} locale={fieldLocale} {format} {placeholder} {picker} {...props} />
+                <Field hideLabel bind:value {min} {max} {step} {size} locale={fieldLocale} {format} {placeholder} {picker} {...timeOnly} {...props} />
             {/snippet}
         </FormField>
     {:else}
@@ -95,6 +99,7 @@ under it is the same value as text in the story's locale. -->
             {format}
             {placeholder}
             {picker}
+            {...timeOnly}
         />
     {/if}
     <p class="text-sm text-description">

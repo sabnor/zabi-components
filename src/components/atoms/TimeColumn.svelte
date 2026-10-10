@@ -10,7 +10,9 @@
      * A listbox of 44px rows. One row is the Tab stop (the chosen one, else
      * the first); Up and Down, Home and End move between rows, Enter and
      * Space choose the focused one, and typing digits jumps to a row. A row
-     * that is out of range stays focusable and says `aria-disabled`.
+     * that is out of range stays focusable and says `aria-disabled`. With
+     * nothing chosen, `openAt` is the row the column stands at and the keyboard
+     * starts from; it is not marked chosen.
      */
     interface Props {
         /** Accessible name of the listbox. */
@@ -19,9 +21,11 @@
         /** The `value` of the chosen option, or `""`. */
         selected: string;
         onselect: (value: string) => void;
+        /** The `value` of the row to stand at while nothing is chosen. It is not chosen. */
+        openAt?: string;
     }
 
-    let { label, options, selected, onselect }: Props = $props();
+    let { label, options, selected, onselect, openAt = "" }: Props = $props();
 
     let box: HTMLDivElement | undefined = $state();
     /** The row that takes Tab: where the keyboard was last, else the chosen one, else the first. */
@@ -32,19 +36,23 @@
             ? focusedValue
             : options.some((option) => option.value === selected)
               ? selected
-              : (options[0]?.value ?? null),
+              : options.some((option) => option.value === openAt)
+                ? openAt
+                : (options[0]?.value ?? null),
     );
 
     /**
-     * The chosen row is put in the middle of the column as it opens, and
-     * again when the choice changes (a new hour can move the minute). Measured
+     * The chosen row, else the `openAt` one, is put in the middle of the
+     * column as it opens, and again when the choice changes (a new hour can move the minute). Measured
      * from the two boxes, not `offsetTop`, which counts from the sheet. Set
      * straight on `scrollTop`: nothing here scrolls smoothly, so there is no
      * motion for `prefers-reduced-motion` to remove.
      */
     function centreSelected() {
         const column = box;
-        const row = column?.querySelector<HTMLElement>('[aria-selected="true"]');
+        const row =
+            column?.querySelector<HTMLElement>('[aria-selected="true"]') ??
+            (openAt ? rows().find((element) => element.dataset.value === openAt) : undefined);
         if (!column || !row || !column.clientHeight) return;
         const offset = row.getBoundingClientRect().top - column.getBoundingClientRect().top;
         column.scrollTop += offset - (column.clientHeight - row.offsetHeight) / 2;

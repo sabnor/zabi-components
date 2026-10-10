@@ -169,6 +169,18 @@ export const WithLocaleError: Story = {
     }
 };
 
+export const WithLocaleOpenAt: Story = {
+    args: { kind: 'time', fieldLocale: 'sv', startValue: '', label: 'Samling, tid', placeholder: 'Välj tid', openAt: '18:30', openOnMount: true },
+    parameters: {
+        layout: 'fullscreen',
+        docs: {
+            description: {
+                story: 'An empty field with openAt="18:30": the columns stand at 18 and 30 as the sheet opens, nothing is chosen, Done is off and the field stays empty until a time is chosen. Once one is, the sheet says it beside Done ("Chosen time 18:30"), so what Done will set is on the screen even when a column has been scrolled away from it. Without openAt the columns stand at now, on the minute step.'
+            }
+        }
+    }
+};
+
 export const WithLocalePickerOpen: Story = {
     args: { kind: 'time', fieldLocale: 'sv', startValue: '18:30', label: 'Tid', openOnMount: true },
     parameters: {

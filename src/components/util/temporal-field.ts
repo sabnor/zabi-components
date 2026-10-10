@@ -29,6 +29,8 @@ export interface TimeFieldStrings {
     hours: string;
     /** Accessible name of the column of minutes. */
     minutes: string;
+    /** The sheet's words beside Done for the time Done will set: "Chosen time 18:00". */
+    chosenTime: string;
     /** The sheet's name when the field has no label. */
     chooseTime: string;
 }
@@ -38,6 +40,7 @@ export const TIME_FIELD_STRINGS: TimeFieldStrings = {
     done: "Done",
     hours: "Hours",
     minutes: "Minutes",
+    chosenTime: "Chosen time",
     chooseTime: "Choose time",
 };
 
@@ -74,6 +77,36 @@ export function parseHourMinute(value: string | null | undefined): [number, numb
     const hour = Number(match[1]);
     const minute = Number(match[2]);
     return hour > 23 || minute > 59 ? null : [hour, minute];
+}
+
+/**
+ * The time an empty field's columns stand at: `openAt`, else `now` (an
+ * hour and a minute), kept within `min` and `max` and on the minute step.
+ * Only a place to scroll to; nothing is chosen. Two-digit strings, as the
+ * columns' option values.
+ */
+export function openingTime(options: {
+    openAt?: string;
+    now: [number, number];
+    stepMinutes: number;
+    min?: string;
+    max?: string;
+}): [string, string] {
+    const { openAt, now, stepMinutes, min, max } = options;
+    const [hour, minute] = parseHourMinute(openAt) ?? now;
+    let at = hour * 60 + minute;
+    const lower = parseHourMinute(min);
+    const upper = parseHourMinute(max);
+    const from = lower ? lower[0] * 60 + lower[1] : null;
+    const to = upper ? upper[0] * 60 + upper[1] : null;
+    const inRange = (value: number) => timeInRange(Math.floor(value / 60) % 24, value % 60, min, max);
+    if (!inRange(at)) {
+        const overMidnight = from !== null && to !== null && from > to;
+        at = from !== null && (overMidnight || at < from) ? from : (to ?? at);
+    }
+    const floored = Math.floor(at / stepMinutes) * stepMinutes;
+    const stepped = inRange(floored) ? floored : Math.min(Math.ceil(at / stepMinutes) * stepMinutes, 23 * 60 + 59);
+    return [pad2(Math.floor(stepped / 60)), pad2(stepped % 60)];
 }
 
 /**

@@ -1120,7 +1120,9 @@ export interface TimeFieldProps
     /** With `locale`: `library` (default) opens the library's picker in a sheet; `native` opens the platform's. */
     picker?: 'library' | 'native';
     /** With `locale`: the words the field says; replace any of them to translate. */
-    strings?: Partial<{ clear: string; done: string; hours: string; minutes: string; chooseTime: string }>;
+    strings?: Partial<{ clear: string; done: string; hours: string; minutes: string; chosenTime: string; chooseTime: string }>;
+    /** With `locale`, while the field is empty: the time the columns stand at when the sheet opens, as `HH:mm`. Not chosen; `value` stays empty. Left out: now, on the step. */
+    openAt?: string;
 }
 
 // Calendar component props

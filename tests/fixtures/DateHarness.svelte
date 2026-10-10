@@ -42,6 +42,8 @@
         format?: Intl.DateTimeFormatOptions;
         placeholder?: string;
         picker?: "library" | "native";
+        /** Time piece only: where an empty field's columns open. */
+        openAt?: string;
         onfieldchange?: (event: Event) => void;
         onfieldinput?: (event: Event) => void;
         oninvalid?: (event: Event) => void;
@@ -76,6 +78,7 @@
         format,
         placeholder,
         picker,
+        openAt,
         onfieldchange,
         onfieldinput,
         oninvalid,
@@ -89,6 +92,7 @@
     let selected = $state<string | null>(initialSelected);
 
     const Field = $derived(piece === "time" ? TimeField : DateField);
+    const timeOnly = $derived(piece === "time" && openAt !== undefined ? { openAt } : {});
 
     function submit(event: SubmitEvent) {
         event.preventDefault();
@@ -123,7 +127,7 @@
         {#if inFormField}
             <FormField {label} description={hint} error={fieldError} {required} {disabled}>
                 {#snippet control(props)}
-                    <Field hideLabel name="when" bind:value {min} {max} {step} {locale} {format} {placeholder} {picker} {strings} {...props} />
+                    <Field hideLabel name="when" bind:value {min} {max} {step} {locale} {format} {placeholder} {picker} {strings} {...timeOnly} {...props} />
                 {/snippet}
             </FormField>
         {:else}
@@ -146,6 +150,7 @@
                 {placeholder}
                 {picker}
                 {strings}
+                {...timeOnly}
                 onchange={onfieldchange}
                 oninput={onfieldinput}
                 {oninvalid}

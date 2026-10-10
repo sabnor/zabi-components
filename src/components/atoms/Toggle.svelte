@@ -101,7 +101,7 @@
 
     const toggleThumbClasses = $derived(() => {
         const base =
-            "toggle-switch-thumb pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow-sm transition-transform duration-(--duration-moderate) ease-spring flex items-center justify-center";
+            "toggle-switch-thumb pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-toggle-thumb shadow-sm transition-transform duration-(--duration-moderate) ease-spring flex items-center justify-center";
         const positionClasses = checked ? "translate-x-4" : "translate-x-0";
         return `${base} ${positionClasses}`;
     });

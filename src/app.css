@@ -2026,6 +2026,13 @@ body {
   background-color: var(--color-card);
 }
 
+/* The Toggle's knob. `--color-toggle-thumb` is declared nowhere, so any ancestor or the
+ * theme can set it; unset, the knob is the card colour, as it was. Above the forced-colours
+ * block on purpose: that block's `.toggle-switch-thumb` rule has to come later to win. */
+.bg-toggle-thumb {
+  background-color: var(--color-toggle-thumb, var(--color-card));
+}
+
 .bg-card-flat {
   background-color: var(--color-card-flat);
 }
@@ -2744,7 +2751,7 @@ body {
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
       .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
       .bg-energetic-subtle, .bg-error-subtle,
-      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-success-subtle, .bg-warning-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-toggle-thumb, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     ) {
     color: var(--zabi-theme-body);
@@ -2799,7 +2806,7 @@ body {
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
       .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
       .bg-energetic-subtle, .bg-error-subtle,
-      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-success-subtle, .bg-warning-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-toggle-thumb, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     )
     > :where(*) {

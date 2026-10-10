@@ -79,6 +79,12 @@
         picker?: "library" | "native";
         /** With `locale`: the words the field says; replace any of them to translate. */
         strings?: Partial<TimeFieldStrings>;
+        /**
+         * With `locale`, while the field is empty: the time the library's columns stand at when
+         * the sheet opens, as `HH:mm` (`"18:30"`). It is only where to scroll to: no row is
+         * chosen and `value` stays empty until the person chooses. Left out: now, on the step.
+         */
+        openAt?: string;
     };
 
     let {
@@ -102,6 +108,7 @@
         placeholder,
         picker = "library",
         strings,
+        openAt,
         ...restProps
     }: Props = $props();
 
@@ -139,5 +146,6 @@
     {placeholder}
     {picker}
     {strings}
+    {openAt}
     {...restProps}
 />

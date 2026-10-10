@@ -22,6 +22,14 @@ export const SELECTION_CONTROL_LABEL_ROW_BASE =
 
 export const SELECTION_CONTROL_LABEL_ROW = `flex items-center gap-2 ${SELECTION_CONTROL_LABEL_ROW_BASE}`;
 
+/**
+ * The row of a box and a one-part label: the box stays by the first line of a
+ * label that wraps (box and line are both 20px). On a coarse pointer the
+ * 12px above and below make a single line the 44px the row was; centring it
+ * with `items-center` would have put the box beside the middle of two lines.
+ */
+export const SELECTION_CONTROL_LABEL_ROW_FIRST_LINE = `flex items-start gap-2 pointer-coarse:py-3 ${SELECTION_CONTROL_LABEL_ROW_BASE}`;
+
 /** Radio option row: stacked label/description; `p-2` only (no `-m-2`) so vertical gaps stay even. */
 export const RADIO_GROUP_OPTION_LABEL_ROW =
     `flex items-start gap-2 p-2 pointer-coarse:min-h-11 group ${SELECTION_CONTROL_LABEL_ROW_INTERACTION} ${SELECTION_CONTROL_OPTION_ROW}`.trim();
@@ -47,7 +55,7 @@ export const RADIO_GROUP_OPTION_LABEL_ROW =
  * hover is undone by a rule with one more `has-` in it, which outweighs it.
  */
 export const SELECTION_CONTROL_SHELL_STATE =
-    "selection-control-shell group/control relative inline-flex items-center justify-center w-5 h-5 transition-all duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-control-border bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-action-primary has-[:checked]:bg-action-primary has-[:checked]:group-hover:bg-action-primary-hover has-[:checked]:group-hover:border-action-primary-hover has-[:disabled]:has-[:checked]:group-hover:bg-action-primary has-[:disabled]:has-[:checked]:group-hover:border-action-primary has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
+    "selection-control-shell group/control relative inline-flex shrink-0 items-center justify-center w-5 h-5 transition-all duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-control-border bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-action-primary has-[:checked]:bg-action-primary has-[:checked]:group-hover:bg-action-primary-hover has-[:checked]:group-hover:border-action-primary-hover has-[:disabled]:has-[:checked]:group-hover:bg-action-primary has-[:disabled]:has-[:checked]:group-hover:border-action-primary has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
 
 export type SelectionControlShape = "square" | "circle";
 
@@ -57,7 +65,7 @@ export function selectionControlShellClasses(shape: SelectionControlShape): stri
 }
 
 /** Radio circle control; `mt-0.5` aligns with multi-line labels. */
-export const RADIO_GROUP_CONTROL_SHELL = `${SELECTION_CONTROL_SHELL_STATE} mt-0.5 shrink-0 rounded-full`.trim();
+export const RADIO_GROUP_CONTROL_SHELL = `${SELECTION_CONTROL_SHELL_STATE} mt-0.5 rounded-full`.trim();
 
 /**
  * The real input, stretched over the 20px box and transparent, so a press on

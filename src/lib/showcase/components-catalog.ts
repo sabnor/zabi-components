@@ -3968,7 +3968,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "Partial<TimeFieldStrings>",
                         required: false,
                         description:
-                            "The words the field says: clear, done, hours, minutes, chooseTime (the sheet's name when the field has no label). A ZabiStringsProvider can set them once as timeField.",
+                            "The words the field says: clear, done, hours, minutes, chosenTime (beside Done, \"Chosen time 18:00\"), chooseTime (the sheet's name when the field has no label). A ZabiStringsProvider can set them once as timeField.",
+                    },
+                    {
+                        name: "openAt",
+                        type: "string",
+                        required: false,
+                        description:
+                            "With locale, while the field is empty: the time the sheet's columns stand at when it opens, as HH:mm (\"18:30\"). Only where to scroll to: no row is chosen and value stays empty until the person chooses. Left out: now, on the minute step.",
                     },
                 ],
                 variants: [

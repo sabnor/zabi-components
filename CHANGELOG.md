@@ -12,6 +12,29 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.25] - 2026-10-10
+
+A twenty-fifth local preview build of the 9.0 direction, not published to npm. Five entries
+from the app team (Z-117 to Z-121). No token, prop, variant, string key, export or data attribute of
+alpha.24 is removed or renamed; new props, tokens and string keys are optional. Run on this build: the
+type and design checks, the unit suite, the package build and a scratch install; no browser.
+
+### Added
+
+- `TimeField` `openAt` (`HH:mm`): where an empty field's columns stand when the sheet opens. Nothing is
+  chosen and `value` stays empty. Without it the columns stand at now, on the minute step. (Z-117, D235)
+- `TimeField` string key `chosenTime` ("Chosen time"): the sheet says the time Done will set, beside
+  Done, so it is on the screen even when a column is scrolled away from it (Z-118, D236).
+- `--color-toggle-thumb`, declared nowhere: the `Toggle` knob's colour. Unset, the knob is the card colour as
+  before (Z-121, D239).
+
+### Fixed
+
+- `Checkbox`, `Radio`: the box no longer shrinks when the label wraps (`shrink-0` always), and sits by the
+  first line of a label that wraps (Z-119, D237).
+- `AppBar`: the parts of the row are measured as laid out (up to the next pixel) and not by `offsetWidth`,
+  so actions with a fractional width no longer wrap to a row of their own (Z-120, D238).
+
 ## [9.0.0-alpha.24] - 2026-10-10
 
 A twenty-fourth local preview build of the 9.0 direction, not published to npm. Two entries
