@@ -12,6 +12,31 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.27] - 2026-10-10
+
+A twenty-seventh local preview build of the 9.0 direction, not published to npm. Loose ends. No token,
+prop, variant, string key, export or data attribute of alpha.26 is removed or renamed.
+
+### Added
+
+- `zabi-components/atoms` now also exports `Toast`, `Tooltip`, `Progress`, `Skeleton`, `SkeletonGroup`,
+  `CodeBlock`, `FeatureCard`, `OptimizedImage`, `DEFAULT_SKELETON_STRINGS` and the type `SkeletonStrings`,
+  which the root entry already had.
+- Bottom sheets (`BottomSheet`, `SlideUp`): content with `touch-action: none`, or `pan-x` alone, under the
+  finger keeps its own gesture (a map, a canvas, a drawing pad); no `data-sheet-no-drag` is needed.
+  `data-sheet-no-drag` still works.
+
+### Changed
+
+- Bottom sheets: the axis of a swipe in the content is decided once per gesture, after 8px. A swipe that
+  begins sideways stays sideways and never moves the sheet, even if it later turns down. A downward swipe
+  of under 8px no longer starts a drag. The grip is unchanged.
+
+### Fixed
+
+- `Drawer`: the overlay root is `overflow-clip`, not `overflow-hidden`, as the bottom sheet's already was
+  (WebKit scrolled a hidden root to a focused control while the panel was still off screen).
+
 ## [9.0.0-alpha.26] - 2026-10-10
 
 A twenty-sixth local preview build of the 9.0 direction, not published to npm. Three rulings from the

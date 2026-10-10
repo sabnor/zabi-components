@@ -29,13 +29,23 @@ export interface SheetDragTargets {
      * The scrolling content. A touch that starts here scrolls it; only a
      * downward swipe that begins with the content at its top moves the sheet,
      * and not one that begins on a box inside it that scrolls itself or on
-     * something marked `data-sheet-no-drag` (`contentTakesTouch`).
+     * something that handles its own gesture: marked `data-sheet-no-drag`,
+     * a range input, or with a `touch-action` that gives up vertical
+     * panning (`contentTakesTouch`). A swipe that begins sideways stays
+     * sideways and never moves the sheet.
      */
     scroller?: HTMLElement | null;
 }
 
 /** Movement under this many px is a press, not a drag. */
 export const DRAG_SLOP = 6;
+
+/**
+ * Movement, on either axis, after which a touch in the content has an axis:
+ * more across than down is sideways (a carousel, a row that scrolls, a
+ * swipeable item), and stays so until the finger lifts.
+ */
+export const AXIS_SLOP = 8;
 
 /** Controls in the handle zone that keep their own press, except the grip itself. */
 const INTERACTIVE = "button, a[href], input, select, textarea, [data-sheet-no-drag]";
@@ -49,9 +59,25 @@ const GRIP = "[data-sheet-grip]";
 const OWN_DRAG = "[data-sheet-no-drag], input[type='range']";
 
 /**
+ * Whether a computed `touch-action` hands vertical gestures to the element's
+ * own code: `none`, or panning on the x axis only. `auto`, `manipulation`,
+ * `pan-y` and the like let the browser pan vertically, which is the sheet's
+ * to take.
+ */
+function ownsVerticalGesture(touchAction: string): boolean {
+    const tokens = touchAction.trim().split(/\s+/);
+    if (tokens.includes("none")) return true;
+    const sideways = tokens.some((token) => token === "pan-x" || token === "pan-left" || token === "pan-right");
+    const vertical = tokens.some((token) => token === "pan-y" || token === "pan-up" || token === "pan-down");
+    return sideways && !vertical;
+}
+
+/**
  * Whether a touch that begins on `target` belongs to the content and not to the
  * sheet: it started on something that is dragged itself (`OWN_DRAG`), or it
- * has, between it and the sheet's `scroller`, a box that scrolls on the y axis.
+ * has, between it and the sheet's `scroller`, a box that scrolls on the y axis
+ * or one whose `touch-action` leaves vertical panning to the page's own code
+ * (`ownsVerticalGesture`: a map, a canvas, a drawing pad, a slider).
  * A box that can scroll keeps the gesture whether it is at its top or not: a
  * drag that sometimes scrolls a list and sometimes closes the sheet cannot be
  * predicted, and the list does not hand over what it cannot use
@@ -62,7 +88,9 @@ export function contentTakesTouch(target: EventTarget | null, scroller: HTMLElem
     if (!(target instanceof Element)) return false;
     if (target.closest(OWN_DRAG)) return true;
     for (let node: Element | null = target; node && node !== scroller; node = node.parentElement) {
-        const overflow = getComputedStyle(node).overflowY;
+        const style = getComputedStyle(node);
+        if (ownsVerticalGesture(style.getPropertyValue("touch-action"))) return true;
+        const overflow = style.overflowY;
         if ((overflow === "auto" || overflow === "scroll") && node.scrollHeight > node.clientHeight) {
             return true;
         }
@@ -221,6 +249,9 @@ export function attachSheetDrag(
     // is not passive can take it.
     let touchId: number | null = null;
     let touchStart = 0;
+    let touchStartX = 0;
+    /** Decided once per gesture, after `AXIS_SLOP`: null until then. */
+    let touchAxis: "x" | "y" | null = null;
     let touchDragging = false;
     let startedAtTop = false;
     /** The touch began on something inside the content that keeps it. */
@@ -234,6 +265,8 @@ export function attachSheetDrag(
         const touch = event.touches[0];
         touchId = touch.identifier;
         touchStart = touch.clientY;
+        touchStartX = touch.clientX;
+        touchAxis = null;
         touchDragging = false;
         startedAtTop = (scroller?.scrollTop ?? 0) <= 0;
         contentOwns = !!scroller && contentTakesTouch(event.target, scroller);
@@ -245,7 +278,13 @@ export function attachSheetDrag(
         const distance = touch.clientY - touchStart;
         if (!touchDragging) {
             // Content that has scrolled, or a swipe upwards: the content's.
-            if (contentOwns || !startedAtTop || (scroller?.scrollTop ?? 0) > 0) return;
+            if (contentOwns || touchAxis === "x" || !startedAtTop || (scroller?.scrollTop ?? 0) > 0) return;
+            if (touchAxis === null) {
+                const across = Math.abs(touch.clientX - touchStartX);
+                if (Math.max(across, Math.abs(distance)) < AXIS_SLOP) return;
+                touchAxis = across > Math.abs(distance) ? "x" : "y";
+                if (touchAxis === "x") return;
+            }
             if (distance < DRAG_SLOP || !allowed()) return;
             touchDragging = true;
             touchStart = touch.clientY;

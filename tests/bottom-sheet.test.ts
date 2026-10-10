@@ -741,6 +741,157 @@ describe("BottomSheet drags that start on something inside the content", () => {
     });
 });
 
+/** A touch that moves through the given [x, y] offsets from (100, 300), one event each, on `target`. */
+async function gesture(target: Element, path: [number, number][]) {
+    const tick = clock();
+    await fireEvent.touchStart(target, { touches: [touch(target, 300)] });
+    let prevented = false;
+    for (const [dx, dy] of path) {
+        tick(40);
+        const move = new TouchEvent("touchmove", {
+            bubbles: true,
+            cancelable: true,
+            touches: [{ ...touch(target, 300 + dy), clientX: 100 + dx } as unknown as Touch],
+        });
+        target.dispatchEvent(move);
+        prevented ||= move.defaultPrevented;
+    }
+    const [dx, dy] = path[path.length - 1];
+    await fireEvent.touchEnd(target, { changedTouches: [{ ...touch(target, 300 + dy), clientX: 100 + dx }] });
+    return prevented;
+}
+
+describe("BottomSheet and content that handles its own gesture (Z-107, D243)", () => {
+    const down: [number, number][] = [
+        [0, 30],
+        [0, 90],
+        [0, 200],
+        [0, 300],
+    ];
+
+    it("an element with touch-action: none under the finger keeps the drag, with no data-sheet-no-drag", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        const row = screen.getByTestId("inner-row") as HTMLElement;
+        row.style.touchAction = "none";
+        expect(getComputedStyle(row).getPropertyValue("touch-action")).toBe("none");
+        expect(await gesture(row, down)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("so does an ancestor of the touched element, up to the content", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        (screen.getByTestId("inner") as HTMLElement).style.touchAction = "none";
+        expect(await gesture(screen.getByTestId("inner-row"), down)).toBe(false);
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("pan-x alone gives up the vertical gesture; pan-y, manipulation and auto do not", async () => {
+        for (const [value, owned] of [
+            ["pan-x", true],
+            ["pan-x pinch-zoom", true],
+            ["pan-y", false],
+            ["pan-x pan-y", false],
+            ["manipulation", false],
+            ["auto", false],
+        ] as const) {
+            const onclose = vi.fn();
+            await openSheet({ onclose, inner: "short-list" });
+            layOut();
+            scrolls(screen.getByTestId("inner"), { content: 120, shown: 120 });
+            const row = screen.getByTestId("inner-row") as HTMLElement;
+            row.style.touchAction = value;
+            await gesture(row, down);
+            expect(onclose.mock.calls.length, value).toBe(owned ? 0 : 1);
+            cleanup();
+        }
+    });
+
+    it("a touch-action on something the finger did not touch changes nothing", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { content: 120, shown: 120 });
+        (screen.getByTestId("inner-row") as HTMLElement).style.touchAction = "none";
+        await gesture(screen.getByText("Pick what to show."), down);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+});
+
+describe("BottomSheet decides the axis of a swipe in the content once (Z-107, D244)", () => {
+    const stage = async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { content: 120, shown: 120 });
+        return { onclose, row: screen.getByText("Pick what to show.") };
+    };
+
+    it("a swipe that starts sideways and then turns down never moves the sheet", async () => {
+        const { onclose, row } = await stage();
+        const prevented = await gesture(row, [
+            [12, 2],
+            [30, 20],
+            [34, 120],
+            [34, 300],
+        ]);
+        expect(prevented).toBe(false);
+        expect(sheet().hasAttribute("data-dragging")).toBe(false);
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("a swipe that starts down and then turns sideways stays the sheet's", async () => {
+        const { onclose, row } = await stage();
+        const prevented = await gesture(row, [
+            [1, 14],
+            [40, 60],
+            [200, 100],
+            [260, 300],
+        ]);
+        expect(prevented).toBe(true);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("under the slop nothing is decided: a small wobble sideways does not claim the swipe", async () => {
+        const { onclose, row } = await stage();
+        await gesture(row, [
+            [5, 3],
+            [-4, 20],
+            [2, 120],
+            [0, 300],
+        ]);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("the next touch decides for itself", async () => {
+        const { onclose, row } = await stage();
+        await gesture(row, [
+            [30, 5],
+            [40, 200],
+        ]);
+        expect(onclose).not.toHaveBeenCalled();
+        await gesture(row, [
+            [0, 30],
+            [0, 120],
+            [0, 220],
+            [0, 300],
+        ]);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("the grip still drags, whichever way the pointer first moves", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        await dragGrip(300);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+});
+
 describe("snap point arithmetic", () => {
     it("keeps the snap points in use in order, and falls back to both", () => {
         expect(normaliseSnapPoints(["full", "half"])).toEqual(["half", "full"]);
