@@ -269,6 +269,8 @@
   "--color-surface-overlay-hover",
   "--color-surface-raised",
   "--color-tabbar-active",
+  "--color-toggle-knob",
+  "--color-toggle-knob-checked",
   "--color-toggle-track",
   "--color-toggle-track-active",
   "--color-toggle-track-border",

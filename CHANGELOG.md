@@ -12,6 +12,33 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.26] - 2026-10-10
+
+A twenty-sixth local preview build of the 9.0 direction, not published to npm. Three rulings from the
+owner (2026-10-10). No token, prop, variant, string key, export or data attribute of alpha.25 is removed or
+renamed. One default colour changes on purpose: the `Toggle` knob (below). Run on this build: the type and
+design checks, the unit suite, the package build and a scratch install; no browser.
+
+### Changed
+
+- `Toggle`: the default knob is now 3:1 or more on its track in every enabled state, light and dark
+  (WCAG 1.4.11). Before, the knob was the card colour: 1.27:1 on the off track in light and 1.57:1 in dark, and
+  1.74:1 to 3.39:1 on the primary fill in dark. Now off is `--color-toggle-knob` (light base-500: 3.81:1 on the resting
+  track, 3.53:1 hovered, 3.27:1 pressed; dark base-700: 7.07:1, 6.13:1, 5.23:1) and on is
+  `--color-toggle-knob-checked` (the primary fill's label colour: 4.86:1, 6.76:1, 9.44:1 on the fill at rest,
+  hovered, pressed). The off track's edge is unchanged (4.63:1 on the page and 4.83:1 on a card in light).
+  `--color-toggle-thumb` still wins when set; `--color-toggle-thumb-checked`, declared nowhere, sets the
+  on knob alone. The knob pairs are in the contrast guard. (Z-121, D240)
+
+### Fixed
+
+- `Checkbox`, `Radio`: the box is centred on the row again and the row keeps its height and touch target, as
+  before alpha.25; the first-line alignment and `pointer-coarse:py-3` of alpha.25 are withdrawn. The box
+  still does not shrink (`shrink-0`). (Z-119, D241)
+- Forced colours: a busy button `Card` (`loading`) has `GrayText` text and a dashed `GrayText` edge, and the
+  `Toaster` time bar's track has a `CanvasText` edge. Nothing changes outside `forced-colors: active`.
+  (D242)
+
 ## [9.0.0-alpha.25] - 2026-10-10
 
 A twenty-fifth local preview build of the 9.0 direction, not published to npm. Five entries

@@ -134,7 +134,9 @@
         if (!interactive) return "";
         if (isBusy) {
             // The pressed look, held: no hover or pressed rule is left to change it.
-            const held = "cursor-progress focus-ring";
+            // Forced colours drop the fills the held look is made of: GrayText text and a dashed inset edge say it there.
+            const held =
+                "cursor-progress focus-ring forced-colors:text-[color:GrayText] forced-colors:outline-1 forced-colors:outline-dashed forced-colors:-outline-offset-1 forced-colors:outline-[color:GrayText]";
             if (surface.filled) return `${held} relative after:absolute after:inset-0 after:rounded-[inherit] after:bg-current after:opacity-12 after:pointer-events-none`;
             switch (variant) {
                 case "elevated":

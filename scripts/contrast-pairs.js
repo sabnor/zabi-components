@@ -381,6 +381,17 @@ export function buildPairs() {
         // what finds the switch on the page and on a card.
         { name: 'toggle track edge on page', bg: '--color-surface-base', fg: '--color-toggle-track-border', min: AA_LARGE },
         { name: 'toggle track edge on card', bg: '--color-surface-raised', fg: '--color-toggle-track-border', min: AA_LARGE },
+        // WCAG 1.4.11: the knob is what shows where the switch is set, so it
+        // is held against every fill it can sit on. Off: the knob on the
+        // resting, hovered and pressed track; on: the knob on the primary fill
+        // at rest, hovered and pressed. The two tokens are the defaults an app's
+        // theme sets; an ancestor's `--color-toggle-thumb` is the app's to check.
+        { name: 'toggle knob on the off track', bg: '--color-toggle-track', fg: '--color-toggle-knob', min: AA_LARGE },
+        { name: 'toggle knob on the off track :hover', bg: '--color-toggle-track-hover', fg: '--color-toggle-knob', min: AA_LARGE },
+        { name: 'toggle knob on the off track :active', bg: '--color-toggle-track-active', fg: '--color-toggle-knob', min: AA_LARGE },
+        { name: 'toggle knob on the on track', bg: '--color-action-primary', fg: '--color-toggle-knob-checked', min: AA_LARGE },
+        { name: 'toggle knob on the on track :hover', bg: '--color-action-primary-hover', fg: '--color-toggle-knob-checked', min: AA_LARGE },
+        { name: 'toggle knob on the on track :active', bg: '--color-action-primary-active', fg: '--color-toggle-knob-checked', min: AA_LARGE },
         // WCAG 1.4.11: the fill of Progress must be seen against its track.
         { name: 'progress fill on track', bg: '--color-progress-track', fg: '--color-progress-fill', min: AA_LARGE },
         // Chip: a quiet neutral fill at rest, seen on the page and on a card

@@ -391,6 +391,14 @@
   --color-toggle-track-hover: var(--color-base-250);
   --color-toggle-track-active: var(--color-base-300);
   --color-toggle-track-border: var(--color-input-border);
+  /* Toggle knob, by default 3:1 or more on every track fill it sits on (WCAG
+   * 1.4.11). Off, a dark knob on the light track: base-500 is 3.81:1 on the
+   * resting track, 3.53:1 hovered and 3.27:1 pressed. On, the label colour of
+   * the primary fill: 4.86:1 at rest, 6.76:1 hovered and 9.44:1 pressed. The consumer's
+   * own `--color-toggle-thumb` and `--color-toggle-thumb-checked` (declared
+   * nowhere) come first; see `.bg-toggle-thumb`. */
+  --color-toggle-knob: var(--color-base-500);
+  --color-toggle-knob-checked: var(--color-action-primary-text);
 
   /* Progress — the bar of Progress. The fill is the primary action, so it
    * follows a pinned primary; the track is the field fill it always was. */
@@ -1281,6 +1289,10 @@ body {
   --color-toggle-track-hover: var(--color-base-350);
   --color-toggle-track-active: var(--color-base-400);
   --color-toggle-track-border: var(--color-input-border);
+  /* Toggle knob in dark: off, a light knob on the dark track (base-700, #d4d4d8:
+   * 7.07:1 resting, 5.23:1 pressed); on, as in light (the same 4.86:1 and up). */
+  --color-toggle-knob: var(--color-base-700);
+  --color-toggle-knob-checked: var(--color-action-primary-text);
   /* Hover 10%: 1.10:1 above the resting well on the page, the card and the overlay, body 8.65:1
    * or more and placeholder 4.68:1 or more on it. Was base-200. */
   --color-input-hover: color-mix(in srgb, var(--zabi-base-50) 10%, transparent);
@@ -2026,11 +2038,17 @@ body {
   background-color: var(--color-card);
 }
 
-/* The Toggle's knob. `--color-toggle-thumb` is declared nowhere, so any ancestor or the
- * theme can set it; unset, the knob is the card colour, as it was. Above the forced-colours
- * block on purpose: that block's `.toggle-switch-thumb` rule has to come later to win. */
+/* The Toggle's knob. `--color-toggle-thumb` and `--color-toggle-thumb-checked` are declared
+ * nowhere, so any ancestor or the theme can set them. Off: the thumb token, else the default
+ * knob. On: the checked token, else the thumb token (which an app that set one colour for both
+ * states keeps getting), else the default knob. Above the forced-colours block on purpose:
+ * that block's `.toggle-switch-thumb` rule has to come later to win. */
 .bg-toggle-thumb {
-  background-color: var(--color-toggle-thumb, var(--color-card));
+  background-color: var(--color-toggle-thumb, var(--color-toggle-knob));
+}
+
+.bg-toggle-thumb-checked {
+  background-color: var(--color-toggle-thumb-checked, var(--color-toggle-thumb, var(--color-toggle-knob-checked)));
 }
 
 .bg-card-flat {
@@ -2751,7 +2769,7 @@ body {
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
       .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
       .bg-energetic-subtle, .bg-error-subtle,
-      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-toggle-thumb, .bg-success-subtle, .bg-warning-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-toggle-thumb, .bg-toggle-thumb-checked, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     ) {
     color: var(--zabi-theme-body);
@@ -2806,7 +2824,7 @@ body {
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
       .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
       .bg-energetic-subtle, .bg-error-subtle,
-      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-toggle-thumb, .bg-success-subtle, .bg-warning-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-toggle-thumb, .bg-toggle-thumb-checked, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     )
     > :where(*) {

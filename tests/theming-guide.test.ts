@@ -86,6 +86,7 @@ const COMPONENT_PROPERTIES: Record<string, string> = {
     "--zabi-badge-neutral-text": "src/app.css",
     "--zabi-skeleton-fill": "src/app.css",
     "--color-toggle-thumb": "src/app.css",
+    "--color-toggle-thumb-checked": "src/app.css",
     "--zabi-chart-1": "src/components/util/chart.ts",
     "--zabi-chart-2": "src/components/util/chart.ts",
     "--zabi-chart-3": "src/components/util/chart.ts",

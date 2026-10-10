@@ -112,26 +112,22 @@ describe("Checkbox and Radio box keeps its size (Z-119)", () => {
         expect(classes(c.querySelector(".selection-control-shell")!)).toContain("shrink-0");
     });
 
-    it("a plain label row keeps the box by the first line; a leading element keeps it centred", () => {
+    it("the row is centred, as before alpha.25 (withdrawn first-line alignment, D241)", () => {
         const plain = render(Checkbox, { props: { label: "Plain" } }).container.querySelector("label")!;
-        expect(classes(plain)).toContain("items-start");
-        expect(classes(plain)).not.toContain("items-center");
-        expect(classes(plain)).toContain("pointer-coarse:py-3");
-        cleanup();
-        const led = render(Checkbox, {
-            props: { label: "With", leading: (() => {}) as never },
-        }).container.querySelector("label");
-        if (led) expect(classes(led)).toContain("items-center");
+        expect(classes(plain)).toContain("items-center");
+        expect(classes(plain)).not.toContain("items-start");
+        expect(classes(plain)).not.toContain("pointer-coarse:py-3");
+        expect(classes(plain)).toContain("pointer-coarse:min-h-11");
     });
 });
 
 describe("Toggle knob token (Z-121)", () => {
-    it("the knob reads --color-toggle-thumb in front of the card colour", () => {
+    it("the knob reads --color-toggle-thumb in front of the default knob", () => {
         render(Toggle, { props: { label: "Notiser" } });
         const thumb = screen.getByRole("switch").querySelector(".toggle-switch-thumb")!;
         expect(thumb.classList.contains("bg-toggle-thumb")).toBe(true);
         expect(thumb.classList.contains("bg-card")).toBe(false);
-        expect(css).toMatch(/\.bg-toggle-thumb \{\s*background-color: var\(--color-toggle-thumb, var\(--color-card\)\);/);
+        expect(css).toMatch(/\.bg-toggle-thumb \{\s*background-color: var\(--color-toggle-thumb, var\(--color-toggle-knob\)\);/);
     });
 
     it("the token is declared nowhere, and the class comes before the forced-colours thumb rule", () => {

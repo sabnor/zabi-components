@@ -10,7 +10,6 @@
     import {
         SELECTION_CONTROL_INPUT,
         SELECTION_CONTROL_LABEL_ROW,
-        SELECTION_CONTROL_LABEL_ROW_FIRST_LINE,
         selectionControlRingOverlayClasses,
         selectionControlShellClasses,
         type SelectionControlShape,
@@ -120,14 +119,8 @@
     const invalid = $derived(status.variant === "error" ? "true" : undefined);
 
     // With a description the row is two lines: the box sits at the top, as in RadioGroup.
-    // A label that wraps keeps the box by its first line; a `leading` element
-    // can be taller than a line, so that row stays centred.
     const labelWrapperClasses = $derived(
-        description
-            ? cn(SELECTION_CONTROL_LABEL_ROW, "items-start")
-            : leading
-              ? SELECTION_CONTROL_LABEL_ROW
-              : SELECTION_CONTROL_LABEL_ROW_FIRST_LINE,
+        description ? cn(SELECTION_CONTROL_LABEL_ROW, "items-start") : SELECTION_CONTROL_LABEL_ROW,
     );
 
     const controlContainerClasses = $derived(

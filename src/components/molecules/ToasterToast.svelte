@@ -652,7 +652,7 @@
 
     {#if timerActive && drawTimeLine}
         <div
-            class="pointer-events-none absolute bottom-0 left-0 right-0 h-1 bg-border/70"
+            class="pointer-events-none absolute bottom-0 left-0 right-0 h-1 bg-border/70 forced-colors:outline-1 forced-colors:-outline-offset-1 forced-colors:outline-[color:CanvasText]"
             data-toast-timeline
             transition:fade={{ duration: motion(180) }}
             aria-hidden="true"

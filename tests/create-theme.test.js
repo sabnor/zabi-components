@@ -800,20 +800,21 @@ test('without light or dark overrides the bytes are what they were before the op
   // Then for T0 (tranche 5): the chip, tint card and progress edge pairs, so the header counts 38 more pairs per run (the `flat` case, whose raised surface is light in dark too, also lists the tint card's dark pairs); nothing else in the output moved.
   // Then for the flat card: the flat card tokens and their stacked pairs, so the header counts more pairs and the bytes carry the tokens.
   // Then for Z-078: the dark field is a translucent step (and its placeholder moved), with its dark-only pairs over the page, a card and the overlay; light's bytes did not move.
+  // Then for Z-121 (alpha.26): the toggle knob pairs (six per mode), so the header counts more pairs; nothing else in the output moved.
   // Then for 16c: the material alphas and the backdrop brightness reach the generator, so the default material pairs are checked (and can warn), and the dark filters are restated.
   const before = {
-    plain: [{ brand: '#0026EA' }, '7bf536b1eeebbb0e45b300f6c30c1da4e8210efcbe1b884455696963c9e56b56'],
+    plain: [{ brand: '#0026EA' }, 'ecb4055f52f9a5b461d137b6b3ee4762e68179446f34c20624b46dc98b888e48'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      'da082634688e12d2e04a2a9e68fa10852aad148c489900585dabea60133cfcb6',
+      '0c61c98eab717665e6404571c35c2e789bd134342bdaf84a5318da4cceaee335',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      '80aa162ea8ce24836d7f2978ec1285446d780142ea5997630d5715f6cca9d5bc',
+      '880eb7ad6a6ad6882984090820ed088d11cdc77e65902822da0cde79919a2f1c',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '1c5f0d3be13758abab3cacf5cc56e2c4455b8d235ec17a9a99476914c5857c8f',
+      'e2da9848d53289cf8291759807531b3d99aa10ea04479aa610eeb0a24e9a2bc9',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
