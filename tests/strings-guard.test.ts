@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/svelte";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -24,6 +26,8 @@ import { RATING_STRINGS } from "../src/components/util/rating";
 import { DATE_FIELD_STRINGS, TIME_FIELD_STRINGS } from "../src/components/util/temporal-field";
 import { SORTABLE_LIST_STRINGS } from "../src/components/util/sortable-list";
 import { DEFAULT_TOASTER_STRINGS } from "../src/components/util/toaster";
+import { DEFAULT_CODE_FIELD_STRINGS } from "../src/components/util/code-field";
+import { DEFAULT_SKELETON_STRINGS } from "../src/components/util/skeleton";
 import { STEPPER_STRINGS } from "../src/components/util/stepper";
 import { DEFAULT_AVATAR_GROUP_STRINGS } from "../src/components/util/avatar";
 import { DEFAULT_PULL_TO_REFRESH_STRINGS } from "../src/components/util/pull-to-refresh";
@@ -458,6 +462,8 @@ const ENTRY_DEFAULTS: Record<keyof ZabiStrings, Words> = {
     alert: DEFAULT_ALERT_TEXTS as unknown as Words,
     avatarGroup: DEFAULT_AVATAR_GROUP_STRINGS as unknown as Words,
     codeBlock: DEFAULT_CODE_BLOCK_TEXTS as unknown as Words,
+    codeField: DEFAULT_CODE_FIELD_STRINGS as unknown as Words,
+    skeleton: DEFAULT_SKELETON_STRINGS as unknown as Words,
     imageUpload: DEFAULT_IMAGE_UPLOAD_TEXTS as unknown as Words,
     pullToRefresh: DEFAULT_PULL_TO_REFRESH_STRINGS as unknown as Words,
     swipeableListItem: DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS as unknown as Words,
@@ -567,6 +573,8 @@ const PROVIDED: {
     { kind: "Toast", entries: ["toast"] },
     { kind: "Alert", entries: ["alert"] },
     { kind: "CodeBlock", entries: ["codeBlock"] },
+    { kind: "CodeField", entries: ["codeField"] },
+    { kind: "Skeleton", entries: ["skeleton"] },
     { kind: "ImageUpload", entries: ["imageUpload"] },
     { kind: "UnsavedChangesBar", entries: ["unsavedChangesBar"] },
     // Select's own entry names the sheet's buttons too, and wins over `common`: see the test for that below.
@@ -668,6 +676,14 @@ describe.each(PROVIDED)("$kind under a ZabiStringsProvider", ({ kind, entries, c
 });
 
 describe("ZabiStringsProvider", () => {
+    it("every entry of ZabiStrings has its defaults in this guard, so a new one cannot be left out", () => {
+        const source = readFileSync(resolve(__dirname, "../src/components/util/zabi-strings.ts"), "utf8");
+        const body = source.slice(source.indexOf("export interface ZabiStrings {"));
+        const declared = [...body.slice(0, body.indexOf("\n}")).matchAll(/^ {4}(\w+)\?: Partial</gm)].map((m) => m[1]);
+        expect(declared.length).toBeGreaterThan(30);
+        expect(Object.keys(ENTRY_DEFAULTS).sort()).toEqual(declared.sort());
+    });
+
     it("the common words are today's English, word for word", () => {
         expect(DEFAULT_ZABI_COMMON_STRINGS).toEqual({
             close: "Close",

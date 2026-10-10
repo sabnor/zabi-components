@@ -586,3 +586,15 @@ describe("Drawer scrolling content", () => {
         expect(screen.queryByRole("group")).toBeNull();
     });
 });
+
+describe("Drawer overlay root", () => {
+    it("clips instead of hiding, so WebKit cannot scroll it to a focused control while the panel slides in", async () => {
+        const user = userEvent.setup();
+        render(DrawerHarness);
+        await openDrawer(user);
+        const root = drawer().parentElement!;
+        // `overflow: hidden` is a scroll container; `clip` is not (as in BottomSheet, Z-088).
+        expect(root.classList.contains("overflow-clip")).toBe(true);
+        expect(root.classList.contains("overflow-hidden")).toBe(false);
+    });
+});

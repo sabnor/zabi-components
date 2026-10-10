@@ -311,8 +311,11 @@
 
 {#if isOpen}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- `overflow-clip`, not `hidden` (as in BottomSheet): a clipped box is a
+    scroll container nobody can scroll, and WebKit scrolls one to a focused
+    element while the panel is still off screen. -->
     <div
-        class="group/overlay fixed inset-0 z-modal overflow-hidden {dismissible ? 'cursor-pointer' : 'cursor-default'} bg-overlay"
+        class="group/overlay fixed inset-0 z-modal overflow-clip {dismissible ? 'cursor-pointer' : 'cursor-default'} bg-overlay"
         style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
         data-overlay-depth={depth}
         use:portalTo={portal}

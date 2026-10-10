@@ -7,6 +7,8 @@
     import Drawer from "../../src/components/molecules/Drawer.svelte";
     import FormField from "../../src/components/molecules/FormField.svelte";
     import Modal from "../../src/components/molecules/Modal.svelte";
+    import CodeField from "../../src/components/atoms/CodeField.svelte";
+    import Skeleton from "../../src/components/atoms/Skeleton.svelte";
     import CodeBlock from "../../src/components/atoms/CodeBlock.svelte";
     import Toast from "../../src/components/atoms/Toast.svelte";
     import Alert from "../../src/components/molecules/Alert.svelte";
@@ -115,6 +117,10 @@
         <Alert variant="info" title="Obs" message="Läs detta" closable />
     {:else if kind === "CodeBlock"}
         <CodeBlock code="let a = 1;" />
+    {:else if kind === "CodeField"}
+        <CodeField name="code" />
+    {:else if kind === "Skeleton"}
+        <Skeleton />
     {:else if kind === "ImageUpload"}
         <ImageUpload label="Bild" />
     {:else if kind === "UnsavedChangesBar"}
