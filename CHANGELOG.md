@@ -12,6 +12,24 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.24] - 2026-10-10
+
+A twenty-fourth local preview build of the 9.0 direction, not published to npm. Two entries
+from the app team (Z-115, Z-116). No token, prop, variant, string key, export or data attribute of
+alpha.23 is removed or renamed; nothing changes outside `forced-colors: active`. Run on this
+build: the type and design checks, the unit suite, the package build and a scratch install; no browser.
+
+### Fixed
+
+- Forced colours (Windows contrast themes): `Toggle` has a 1px `ButtonText` edge on the track, a thumb
+  in `ButtonText`; on is a `Highlight` track with a `HighlightText` thumb; disabled is `GrayText`
+  (Z-115, D232).
+- Forced colours: a ticked `Checkbox`, `Radio` and `RadioGroup` option is a `Highlight` box with a
+  `HighlightText` tick or dot, an unticked one an edge in `ButtonText`, a disabled one `GrayText`
+  (Z-116, D233).
+- Forced colours: `Slider` has a `Highlight` fill on a `Canvas` track with a `ButtonText` edge, and the
+  `Toaster` time bar is `Highlight` (D234).
+
 ## [9.0.0-alpha.23] - 2026-10-09
 
 A twenty-third local preview build of the 9.0 direction, not published to npm. One entry

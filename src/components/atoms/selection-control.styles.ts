@@ -35,6 +35,11 @@ export const RADIO_GROUP_OPTION_LABEL_ROW =
  * the control boundary (3:1 on every surface, both themes); it was a fixed
  * ramp step, 2.5:1 in light and 1.9 to 2.3:1 in dark.
  *
+ * In forced colours every fill is gone, so a ticked box would read as an
+ * unticked one. `selection-control-shell` and `selection-control-dot` are the
+ * hooks for the rules in `app.css` that draw the ticked state as a system
+ * colour pair (`Highlight` / `HighlightText`) and the disabled one in `GrayText`.
+ *
  * The pressed dip and the hover fills are for a control that can be used.
  * The row around a disabled input still matches `:active` and `:hover`, so
  * without that a disabled box dipped under a finger and lit up under the
@@ -42,7 +47,7 @@ export const RADIO_GROUP_OPTION_LABEL_ROW =
  * hover is undone by a rule with one more `has-` in it, which outweighs it.
  */
 export const SELECTION_CONTROL_SHELL_STATE =
-    "group/control relative inline-flex items-center justify-center w-5 h-5 transition-all duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-control-border bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-action-primary has-[:checked]:bg-action-primary has-[:checked]:group-hover:bg-action-primary-hover has-[:checked]:group-hover:border-action-primary-hover has-[:disabled]:has-[:checked]:group-hover:bg-action-primary has-[:disabled]:has-[:checked]:group-hover:border-action-primary has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
+    "selection-control-shell group/control relative inline-flex items-center justify-center w-5 h-5 transition-all duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-control-border bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-action-primary has-[:checked]:bg-action-primary has-[:checked]:group-hover:bg-action-primary-hover has-[:checked]:group-hover:border-action-primary-hover has-[:disabled]:has-[:checked]:group-hover:bg-action-primary has-[:disabled]:has-[:checked]:group-hover:border-action-primary has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
 
 export type SelectionControlShape = "square" | "circle";
 
@@ -84,4 +89,4 @@ export const RADIO_GROUP_RING_OVERLAY = selectionControlRingOverlayClasses("circ
 
 /** Checked radio dot (shared with `Radio.svelte`). */
 export const RADIO_CHECKED_DOT_CLASSES =
-    "absolute size-2 rounded-full bg-action-primary-text pointer-events-none z-10 opacity-0 group-has-checked/control:opacity-100";
+    "selection-control-dot absolute size-2 rounded-full bg-action-primary-text pointer-events-none z-10 opacity-0 group-has-checked/control:opacity-100";

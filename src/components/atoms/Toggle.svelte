@@ -80,7 +80,9 @@
 
     const toggleButtonClasses = $derived(() => {
         const base =
-            `focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-(--duration-moderate) ease-standard focus:outline-none focus-visible:outline-none ${TOUCH_HIT_AREA}`;
+            `toggle-switch focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-(--duration-moderate) ease-standard focus:outline-none focus-visible:outline-none ${TOUCH_HIT_AREA}`;
+        // Forced colours drop the fills and the ring, so `app.css` draws the track
+        // there as a 1px edge with the thumb in a system colour (`.toggle-switch`).
         // A disabled switch has no hover or pressed fill: `:active` still matches a disabled button.
         // The off track is a light tint whose 1px edge carries the 3:1; the
         // edge is left off when on, where the primary fill is the boundary.
@@ -99,7 +101,7 @@
 
     const toggleThumbClasses = $derived(() => {
         const base =
-            "pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow-sm transition-transform duration-(--duration-moderate) ease-spring flex items-center justify-center";
+            "toggle-switch-thumb pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow-sm transition-transform duration-(--duration-moderate) ease-spring flex items-center justify-center";
         const positionClasses = checked ? "translate-x-4" : "translate-x-0";
         return `${base} ${positionClasses}`;
     });

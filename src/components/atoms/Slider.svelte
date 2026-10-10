@@ -292,6 +292,41 @@
         transition: box-shadow 150ms;
     }
 
+    /* Forced colours: the fills are gone and a gradient is not trusted to stay,
+       so the filled part is `Highlight` on a `Canvas` track with a `ButtonText`
+       edge, and a disabled slider is `GrayText`. The thumb keeps its ring. */
+    @media (forced-colors: active) {
+        .slider {
+            --zabi-slider-fill: Highlight;
+            --zabi-slider-rest: Canvas;
+        }
+
+        .slider:disabled {
+            --zabi-slider-fill: GrayText;
+            --zabi-slider-rest: Canvas;
+        }
+
+        .slider::-webkit-slider-runnable-track {
+            box-sizing: border-box;
+            border: 1px solid ButtonText;
+        }
+
+        .slider::-moz-range-track {
+            box-sizing: border-box;
+            border: 1px solid ButtonText;
+        }
+
+        .slider:disabled::-webkit-slider-runnable-track,
+        .slider:disabled::-moz-range-track {
+            border-color: GrayText;
+        }
+
+        .slider::-webkit-slider-thumb,
+        .slider::-moz-range-thumb {
+            background: Canvas;
+        }
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .slider::-webkit-slider-thumb {
             transition: none;

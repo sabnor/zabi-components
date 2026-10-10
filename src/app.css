@@ -2969,6 +2969,85 @@ body {
 }
 
 /* ========================================
+   SWITCH AND TICK BOXES IN FORCED COLOURS
+   ========================================
+   Forced colours drop every background and box-shadow, so a state shown by a
+   fill alone is shown by nothing: the Toggle's track and thumb were both the
+   canvas, and a ticked box (its tick too) was the canvas on the canvas.
+   System colours are kept there, so each state is a pair of them: on and
+   ticked are `Highlight` with a `HighlightText` thumb, tick or dot; off and
+   unticked are `Canvas` with a `ButtonText` edge; disabled is `GrayText`.
+   Outside the layers, like the focus rules above, so they also beat the
+   hover and pressed fills (which forced colours turn to the canvas, and
+   would hide the tick under a pointer). The focus outline is not touched. */
+@media (forced-colors: active) {
+  .toggle-switch {
+    border: 1px solid ButtonText;
+    background-color: Canvas;
+    background-image: none;
+  }
+  /* The thumb sits 2px in from the outer edge, as it does outside forced colours (the border is 1px of it). */
+  .toggle-switch-thumb {
+    top: 1px;
+    left: 1px;
+    background-color: ButtonText;
+  }
+  .toggle-switch[aria-checked="true"] {
+    border-color: Highlight;
+    background-color: Highlight;
+  }
+  .toggle-switch[aria-checked="true"] .toggle-switch-thumb {
+    background-color: HighlightText;
+  }
+  .toggle-switch:disabled {
+    border-color: GrayText;
+    opacity: 1;
+  }
+  .toggle-switch:disabled[aria-checked="true"] {
+    background-color: GrayText;
+  }
+  .toggle-switch:disabled .toggle-switch-thumb {
+    background-color: GrayText;
+  }
+  .toggle-switch:disabled[aria-checked="true"] .toggle-switch-thumb,
+  .toggle-switch:disabled[aria-busy="true"] .toggle-switch-thumb {
+    background-color: Canvas;
+  }
+
+  .selection-control-shell {
+    border-color: ButtonText;
+  }
+  .selection-control-shell:has(:checked) {
+    border-color: Highlight;
+    background-color: Highlight;
+  }
+  .selection-control-shell:has(:checked) > svg {
+    color: HighlightText;
+  }
+  .selection-control-shell:has(:checked) > .selection-control-dot {
+    background-color: HighlightText;
+  }
+  .selection-control-shell:has(:disabled) {
+    border-color: GrayText;
+    opacity: 1;
+  }
+  .selection-control-shell:has(:checked):has(:disabled) {
+    background-color: GrayText;
+  }
+  .selection-control-shell:has(:checked):has(:disabled) > svg {
+    color: Canvas;
+  }
+  .selection-control-shell:has(:checked):has(:disabled) > .selection-control-dot {
+    background-color: Canvas;
+  }
+  /* The row dims a disabled control with opacity; GrayText says it already. */
+  .selection-control-label-row-interaction:has(:disabled) {
+    opacity: 1;
+    color: GrayText;
+  }
+}
+
+/* ========================================
    ACTION UTILITY CLASSES
    ======================================== */
 /* These classes use the CSS variables defined in the @theme block above */

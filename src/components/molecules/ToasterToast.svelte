@@ -658,7 +658,7 @@
             aria-hidden="true"
         >
             <div
-                class="h-full {progressFillClass} transition-all duration-1000 ease-linear"
+                class="h-full {progressFillClass} forced-colors:bg-[color:Highlight]! transition-all duration-1000 ease-linear"
                 style="width: {(count / maxSeconds) * 100}%"
             ></div>
         </div>
