@@ -12,6 +12,18 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.31] - 2026-10-11
+
+A thirty-first local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.30 is removed or renamed.
+
+### Fixed
+
+- `Input`: a placeholder longer than the field ends in an ellipsis (`placeholder-shown:text-ellipsis`), not half way
+  through a letter. A typed value is unchanged: it still scrolls with the caret. A placeholder that fits looks the
+  same. Fields built on `Input` (`ColorPicker`, the search field of `Select`, `SidebarPanel` and
+  `SidebarNavigation`) get it too (Z-124, D252).
+
 ## [9.0.0-alpha.30] - 2026-10-11
 
 A thirtieth local preview build of the 9.0 direction, not published to npm. No token, prop, variant,

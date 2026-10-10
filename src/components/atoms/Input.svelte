@@ -255,7 +255,7 @@
          * field regardless of the layout around it.
          */
         const baseClasses =
-            "focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed";
+            "focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder placeholder-shown:text-ellipsis text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed";
 
         // A search field that brings its own clear button in `trailing` would
         // show two crosses: the browser's is taken away.
