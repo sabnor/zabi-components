@@ -78,7 +78,15 @@ export const Paragraph: Story = {
 };
 
 export const Decorative: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'No role, no label, hidden from assistive tech. Every piece still carries `data-skeleton` (its variant) and passes other div attributes through, so a test or a style finds it without the `animate-pulse` class.'
+            }
+        }
+    },
     args: {
-        decorative: true
-    }
+        decorative: true,
+        'data-testid': 'avatar-skeleton'
+    } as Story['args']
 };

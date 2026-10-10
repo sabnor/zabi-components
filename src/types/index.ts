@@ -660,7 +660,8 @@ export interface ProgressProps {
 }
 
 // Skeleton component props
-export interface SkeletonProps {
+export interface SkeletonProps
+    extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'role' | 'aria-busy' | 'aria-hidden'> {
     variant?: 'text' | 'circle' | 'block';
     width?: string | number;
     height?: string | number;
@@ -677,7 +678,7 @@ export interface SkeletonProps {
 }
 
 // SkeletonGroup component props: one status for the pieces inside it
-export interface SkeletonGroupProps {
+export interface SkeletonGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'role' | 'aria-busy'> {
     'aria-label'?: string;
     strings?: Partial<SkeletonStrings>;
     class?: string;

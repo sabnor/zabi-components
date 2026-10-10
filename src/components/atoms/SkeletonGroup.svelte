@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import type { HTMLAttributes } from "svelte/elements";
 
     import { cn } from "../util/cn.js";
     import { mergeStrings } from "../util/ready-made-strings.js";
@@ -12,16 +13,16 @@
      * hidden from assistive tech, so a screen's eight pieces are announced
      * once, not eight times.
      */
-    interface Props {
+    type Props = Omit<HTMLAttributes<HTMLDivElement>, "class" | "role" | "aria-busy"> & {
         /** The status label. Defaults to the provider's `skeleton.label`, then "Loading…". */
         "aria-label"?: string;
         /** Overrides for the built-in strings. */
         strings?: Partial<SkeletonStrings>;
         class?: string;
         children?: Snippet;
-    }
+    };
 
-    let { "aria-label": ariaLabel, strings, class: className = "", children }: Props = $props();
+    let { "aria-label": ariaLabel, strings, class: className = "", children, ...restProps }: Props = $props();
 
     provideSkeletonGroup();
 
@@ -30,6 +31,13 @@
     const text = $derived(mergeStrings(DEFAULT_SKELETON_STRINGS, provided(), strings));
 </script>
 
-<div class={cn(className)} role="status" aria-busy="true" aria-label={ariaLabel ?? text.label}>
+<div
+    {...restProps}
+    class={cn(className)}
+    role="status"
+    aria-busy="true"
+    aria-label={ariaLabel ?? text.label}
+    data-skeleton-group
+>
     {@render children?.()}
 </div>

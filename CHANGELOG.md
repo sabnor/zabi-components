@@ -12,6 +12,20 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.30] - 2026-10-11
+
+A thirtieth local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.29 is removed or renamed.
+
+### Added
+
+- `Skeleton`: every piece carries `data-skeleton` (its variant; a line of a `lines` paragraph is `text`, beside the
+  existing `data-skeleton-line`), in every branch: announced, `decorative`, and inside a `SkeletonGroup`. A
+  paragraph's wrapper has `data-skeleton-paragraph`. The `animate-pulse` class stays on the pieces (Z-123, D251).
+- `Skeleton` and `SkeletonGroup` pass other `div` attributes (`id`, `data-testid`, `style`, `aria-*`) to their
+  root element. `role`, `aria-busy`, `aria-hidden` and `data-skeleton` are not overridden. `SkeletonGroup` has
+  `data-skeleton-group`.
+
 ## [9.0.0-alpha.29] - 2026-10-10
 
 A twenty-ninth local preview build of the 9.0 direction, not published to npm. No token, prop, variant,

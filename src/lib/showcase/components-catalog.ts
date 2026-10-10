@@ -2480,7 +2480,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Draws the piece only: no role, no label, aria-hidden. For a piece beside a status of your own; a piece inside a SkeletonGroup is decorative already.",
+                            "Draws the piece only: no role, no label, aria-hidden. For a piece beside a status of your own; a piece inside a SkeletonGroup is decorative already. Either way the piece carries data-skeleton (its variant), and other div attributes (id, data-testid, style, aria-*) reach it; role, aria-busy and aria-hidden are not overridden.",
                     },
                     {
                         name: "tone",

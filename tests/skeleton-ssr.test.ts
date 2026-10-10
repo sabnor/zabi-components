@@ -29,3 +29,12 @@ describe("Skeleton on the server (Z-094)", () => {
         expect(render("group-provider")).toContain('aria-label="Laddar…"');
     });
 });
+
+describe("Skeleton hooks on the server (Z-123)", () => {
+    it("data-skeleton, data-skeleton-line and data-skeleton-group are in the markup", () => {
+        const html = render("group");
+        expect(html).toContain("data-skeleton-group");
+        expect(html).toContain('data-skeleton="circle"');
+        expect(html).toContain("data-skeleton-line");
+    });
+});
