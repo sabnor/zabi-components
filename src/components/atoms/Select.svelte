@@ -635,7 +635,7 @@
                                     type="button"
                                     role="option"
                                     aria-selected={isSameValue(value, option.value)}
-                                    class="focus-ring flex w-full items-center justify-start gap-2 rounded-control border-2 px-3 py-2 pointer-coarse:py-3 text-start text-sm font-medium transition-colors focus:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 {isSameValue(
+                                    class="focus-ring flex w-full items-center justify-start gap-2 rounded-control border-2 px-3 py-2 pointer-coarse:py-3 text-start text-sm font-medium transition-colors focus:outline-none cursor-pointer aria-disabled:cursor-not-allowed aria-disabled:opacity-50 {isSameValue(
                                         value,
                                         option.value,
                                     )

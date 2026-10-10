@@ -12,6 +12,17 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.29] - 2026-10-10
+
+A twenty-ninth local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.28 is removed or renamed.
+
+### Fixed
+
+- `Select`: an option in the list that opens has the pointer cursor, as a `DropdownItem` has; a disabled option
+  keeps `not-allowed`.
+- `ActionPanel` as a button (`onclick`, no `href`) has the pointer cursor.
+
 ## [9.0.0-alpha.28] - 2026-10-10
 
 A twenty-eighth local preview build of the 9.0 direction, not published to npm. No token, prop, variant,

@@ -59,7 +59,7 @@
      * variants.)
      */
     const interactiveClasses =
-        "bg-linear-to-b from-transparent to-transparent hover:border-border-medium hover:from-surface-hover hover:to-surface-hover active:scale-[0.99] active:from-surface-active active:to-surface-active";
+        "cursor-pointer bg-linear-to-b from-transparent to-transparent hover:border-border-medium hover:from-surface-hover hover:to-surface-hover active:scale-[0.99] active:from-surface-active active:to-surface-active";
 
     const disabledClasses = "opacity-50 cursor-not-allowed pointer-events-none";
 
