@@ -125,9 +125,19 @@ describe("what sits inside a brand, accent or custom block", () => {
         expect(classesOf(screen.getByRole("button", { name: "p" }))).toContain("bg-action-primary");
         expect(classesOf(screen.getByText("b"))).toContain("bg-action-primary");
         // brand block: the family of the block is inverted, the label colour is the fill.
-        expect(css).toMatch(/:where\(\.bg-action-primary\):where\(\.on-brand \*, \.on-accent \*, \.on-fill \*\)\s*\{[^}]*--color-action-primary: var\(--zabi-inv-primary\)/);
+        // Not on an element that is a block itself: a brand block inside an accent block keeps its fill.
+        expect(css).toMatch(/:where\(\.bg-action-primary:not\(\.on-brand, \.on-accent, \.on-fill\)\):where\(\.on-brand \*, \.on-accent \*, \.on-fill \*\)\s*\{[^}]*--color-action-primary: var\(--zabi-inv-primary\)/);
         expect(css).toMatch(/:where\(\.on-brand\)\s*\{[^}]*--zabi-inv-primary: var\(--color-on-brand\)[^}]*--zabi-inv-primary-text: var\(--color-action-primary\)/);
         expect(css).toMatch(/:where\(\.on-fill\)\s*\{[^}]*--zabi-inv-primary: var\(--zabi-on-fill, currentColor\)/);
+    });
+
+    it("a secondary Button on a brand block has the dark wash in both modes, and a surface inside gives the theme's back", () => {
+        render(Button, { variant: "secondary", text: "s" });
+        expect(classesOf(screen.getByRole("button", { name: "s" }))).toContain("bg-action-secondary");
+        expect(css).toMatch(/:where\(\.on-brand\)\s*\{[^}]*--zabi-inv-secondary: rgba\(9, 9, 11, 0\.1\)/);
+        expect(css).toMatch(/:where\(\.bg-action-secondary, \.bg-action-secondary-active\):where\(\.on-brand \*, \.on-accent \*, \.on-fill \*\)\s*\{[^}]*--color-action-secondary: var\(--zabi-inv-secondary\)/);
+        const surfaceBody = css.match(/--color-action-outline-border-hover: var\(--zabi-theme-action-outline-border-hover\);\n([^}]*)\}/)![1];
+        expect(surfaceBody).toContain("--zabi-inv-secondary: var(--color-action-secondary)");
     });
 
     it("the accent family is inverted in an accent block, and a surface inside gives it all back", () => {

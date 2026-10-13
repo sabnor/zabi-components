@@ -2722,6 +2722,17 @@ body {
     --zabi-inv-accent-hover: var(--color-accent-hover);
     --zabi-inv-accent-active: var(--color-accent-active);
     --zabi-inv-accent-text: var(--color-on-accent);
+    --zabi-inv-secondary: var(--color-action-secondary);
+    --zabi-inv-secondary-hover: var(--color-action-secondary-hover);
+    --zabi-inv-secondary-active: var(--color-action-secondary-active);
+  }
+  /* The secondary wash on a brand block is the dark one in dark mode too. The dark theme's
+   * wash is white, and the brand block keeps its hue in dark under a white label: a white
+   * wash under it left that label at 4.1:1. */
+  :where(.on-brand) {
+    --zabi-inv-secondary: rgba(9, 9, 11, 0.1);
+    --zabi-inv-secondary-hover: rgba(9, 9, 11, 0.15);
+    --zabi-inv-secondary-active: rgba(9, 9, 11, 0.2);
   }
   :where(.on-brand) {
     --zabi-inv-primary: var(--color-on-brand);
@@ -2744,13 +2755,20 @@ body {
     --zabi-inv-primary-text: var(--zabi-fill, var(--color-card));
     --zabi-inv-star: var(--zabi-on-fill, currentColor);
   }
-  :where(.bg-action-primary):where(.on-brand *, .on-accent *, .on-fill *) {
+  /* Not a block itself: a brand block inside an accent block is a block again, and would take
+   * its own label colour as its fill. */
+  :where(.bg-action-primary:not(.on-brand, .on-accent, .on-fill)):where(.on-brand *, .on-accent *, .on-fill *) {
     --color-action-primary: var(--zabi-inv-primary);
     --color-action-primary-hover: var(--zabi-inv-primary-hover);
     --color-action-primary-active: var(--zabi-inv-primary-active);
     --color-action-primary-text: var(--zabi-inv-primary-text);
   }
-  :where(.bg-accent):where(.on-brand *, .on-accent *, .on-fill *) {
+  :where(.bg-action-secondary, .bg-action-secondary-active):where(.on-brand *, .on-accent *, .on-fill *) {
+    --color-action-secondary: var(--zabi-inv-secondary);
+    --color-action-secondary-hover: var(--zabi-inv-secondary-hover);
+    --color-action-secondary-active: var(--zabi-inv-secondary-active);
+  }
+  :where(.bg-accent:not(.on-brand, .on-accent, .on-fill)):where(.on-brand *, .on-accent *, .on-fill *) {
     --color-accent: var(--zabi-inv-accent);
     --color-accent-hover: var(--zabi-inv-accent-hover);
     --color-accent-active: var(--zabi-inv-accent-active);
@@ -2794,6 +2812,9 @@ body {
     --zabi-inv-accent-hover: var(--color-accent-hover);
     --zabi-inv-accent-active: var(--color-accent-active);
     --zabi-inv-accent-text: var(--color-on-accent);
+    --zabi-inv-secondary: var(--color-action-secondary);
+    --zabi-inv-secondary-hover: var(--color-action-secondary-hover);
+    --zabi-inv-secondary-active: var(--color-action-secondary-active);
     --zabi-inv-star: initial;
   }
 

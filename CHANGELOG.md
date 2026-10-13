@@ -75,6 +75,18 @@ the line that restores 8.1.
   get in 8.1.0. Links follow an overridden primary (alpha.2, alpha.4).
 - The theme snapshot only gained names: no published token was removed.
 
+### Fixed since alpha.32
+
+Found by the first full browser run on 9.0.
+
+- A secondary `Button` or `IconButton` on a brand block (`on-brand`, `Card tone="brand"`, a brand `AppBar`) in
+  dark: its wash was the dark theme's white one, under the block's white label, which left the label at
+  4.1:1. On a brand block the wash is now the dark one in both modes (5.7:1). A surface inside the block gets
+  the theme's wash back.
+- A brand block inside an accent block, or an accent block inside a brand block, with or without a card
+  between them, took its own label colour as its fill: white text on white. The inversion of a solid fill
+  inside a block no longer applies to an element that is a block itself.
+
 ### Not verified
 
 The preview builds were tested lightly on purpose (type and design checks, unit tests in jsdom, the package
