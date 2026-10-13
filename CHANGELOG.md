@@ -12,6 +12,75 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0] - 2026-10-13
+
+9.0.0 is a new look and a larger set. Bars, sheets, menus and toasts are glass materials, the light page is
+near-white, dark mode is drawn on the neutral ramp, and solid controls have a soft gradient. The shell is
+redesigned: flush bars that turn to glass over content, a large `AppBar` title, an `AppShell` `navigation` slot
+with `AppNavigation`. New components include `Chip` and `ChipGroup`, `Block`, `Stat`, `PickerField`, `CodeField`,
+`SpeechBubble`, the SVG charts (`LineChart`, `BarChart`, `PieChart`, `Sparkline`) and `MapView` (from
+`zabi-components/map`, with `maplibre-gl` as an optional peer). It is a major because of what an app shows
+without a code change, not because of its API: nothing from 8.1.0 was removed or renamed, and every `exports`
+path, prop, variant and token is still there.
+
+The work was built as 32 local preview builds, none published to npm. Their sections below are the full record:
+every addition, every changed default and, where one exists, the line that restores the 8.1 look.
+
+### Upgrade notes
+
+Coming from 8.1.0, these are visible without a code change. The section named in brackets has the detail and
+the line that restores 8.1.
+
+**Appearance, light and dark**
+
+- The default typeface is the platform's UI face, and transitions use `--ease-standard` (alpha.1).
+- The light page is near-white (`--color-surface-base` is `--zabi-base-50`), a default `Card` has a 1px edge and
+  no shadow, status tints are a step lighter and shadows are softer (alpha.1).
+- Primary, accent and danger buttons, the `FloatingActionButton` and the on `Toggle` have a soft gradient. The
+  outline button has a 3:1 edge. The off `Toggle` is a light tint, and its knob is 3:1 on the track (alpha.2,
+  alpha.26).
+- `SegmentedControl` selects with a neutral thumb, and its indicator and the one in `Tabs` slide. `List` rows
+  are divided by a hairline, and a subtle `Badge` has no visible border (alpha.2).
+- `BottomSheet`, `Drawer`, `Modal`, the `Dropdown` menu, the `Select` list, `Tooltip` and every toast are frosted
+  glass. `Tooltip` has no arrow by default. `data-materials="opaque"` turns the glass off (alpha.2).
+- `AppBar`, `BottomTabBar`, `StickyActionBar` and `TopNavbar` are the page colour at rest and glass once content
+  is under them. `--color-surface-chrome` is the page colour. The active tab has no outline, and the sidebar
+  and the top navbar are restyled (alpha.3).
+- Dark surfaces are steps of the neutral ramp, the primary and danger buttons keep their hue in dark under a
+  white label (`createTheme({ darkPrimary: 'mirror' })` gives the 8.1 fills), and dark status tints are
+  low-chroma (alpha.4).
+- In dark, a form field is a translucent well and a flat `Card` is a translucent layer (alpha.6).
+
+**Layout and behaviour**
+
+- A `bg-*` or `border-*` class on a bar no longer changes its surface: the fill is painted on the material's
+  layer (alpha.3).
+- The `AppShell` footer lies over the scroller, so content passes under the tab bar (alpha.3).
+- `Collapsible` with the default trigger is a native `<details>` with a `<summary>`, not a `<button>`
+  (alpha.5).
+- `Input type="password"` has the show/hide button by default (`revealable={false}` removes it), and `Textarea`
+  has no resize grip on a touch screen (alpha.6).
+- A `Select` in a sheet with up to six options and no search gets a sheet as tall as its list
+  (`sheetFit={false}` restores the half sheet) (alpha.8).
+- A `RadioGroup` option's `description` is no longer part of the radio's name, and `Skeleton` is still under
+  reduced motion (alpha.12).
+- `TopNavbar` opens its links in a bottom sheet below `collapseAt` (alpha.16).
+- Toasts: a mouse holds the timer only once it has moved over the toast, a pushed id replaces the showing
+  toast in place, and a touch swipe dismisses (alpha.18).
+- `Button` is capped at its container's width and hyphenates a label that does not fit (alpha.32).
+
+**Themes**
+
+- `createTheme` checks the material pairs it used to skip, so a theme can get a contrast warning it did not
+  get in 8.1.0. Links follow an overridden primary (alpha.2, alpha.4).
+- The theme snapshot only gained names: no published token was removed.
+
+### Not verified
+
+The preview builds were tested lightly on purpose (type and design checks, unit tests in jsdom, the package
+build). Not done by anyone: a real phone, Safari, Firefox, a screen reader, an accessibility review. `MapView`
+has never been drawn against a real map: its tests use a stand-in for MapLibre.
+
 ## [9.0.0-alpha.32] - 2026-10-13
 
 A thirty-second local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
