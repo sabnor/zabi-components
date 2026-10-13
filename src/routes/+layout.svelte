@@ -74,7 +74,7 @@
         brand="Zabi Components"
         brandHref="/"
         ariaLabel="Main navigation"
-        className="bg-surface-raised supports-[backdrop-filter]:bg-surface-raised/90 backdrop-blur pt-[env(safe-area-inset-top,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]"
+        className="pt-[env(safe-area-inset-top,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]"
         items={navItems}
         navVariant="header"
         collapseAt="lg"
