@@ -13,7 +13,15 @@
         type CollapsibleTriggerState,
     } from "../util/collapsible.js";
 
-    /** Other attributes (`id`, `data-*`, ...) land on the host `<div>`. */
+    /**
+     * A trigger, then a panel of its own that it opens. It is not for a "show
+     * all" under a list: there the control comes after the content, and what
+     * it shows is more items of a list that is already on the screen. For
+     * that, put a `Button` with `aria-expanded` and `aria-controls` under the
+     * list and let the list draw the rest (Z-127).
+     *
+     * Other attributes (`id`, `data-*`, ...) land on the host `<div>`.
+     */
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class" | "title"> & {
         /** Extra classes for the host element. */
         class?: string;

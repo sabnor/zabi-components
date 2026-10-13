@@ -23,6 +23,7 @@ import ConfirmDialog from "../src/components/molecules/ConfirmDialog.svelte";
 import Drawer from "../src/components/molecules/Drawer.svelte";
 import Dropdown from "../src/components/molecules/Dropdown.svelte";
 import ImageUpload from "../src/components/molecules/ImageUpload.svelte";
+import MapView from "../src/components/molecules/MapView.svelte";
 import MediaGrid from "../src/components/molecules/MediaGrid.svelte";
 import Modal from "../src/components/molecules/Modal.svelte";
 import PhotoGrid from "../src/components/molecules/PhotoGrid.svelte";
@@ -129,6 +130,8 @@ const cases: Case[] = [
     { name: "SidebarPanel searchValue", component: SidebarPanel, prop: "searchValue", becomes: "", props: { items: [] } },
     { name: "SidebarPanel selectedItemId", component: SidebarPanel, prop: "selectedItemId", becomes: "", props: { items: [] } },
     { name: "SidebarShell", component: SidebarShell, prop: "isOpen", becomes: false },
+    // The library never arrives here, so the map stays where it starts.
+    { name: "MapView", component: MapView, prop: "status", becomes: "loading", props: { points: [], styleLight: "light.json", load: () => new Promise(() => {}) } },
 ];
 
 /** Props with `key` bound to state that starts as `undefined`. */
@@ -197,6 +200,9 @@ describe("bind:…={undefined}", () => {
             "ThemeToggle.mode",
             // The trigger's element, handed to the app once it is mounted.
             "PickerField.element",
+            // Where the map is, told once it has drawn: no position before that.
+            "MapView.center",
+            "MapView.zoom",
         ]);
         const tested = new Set(
             cases.map((entry) => `${entry.name.split(" ")[0]}.${entry.prop}`),

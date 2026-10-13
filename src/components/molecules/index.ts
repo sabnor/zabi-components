@@ -100,6 +100,7 @@ export type {
     PhotoGridSelectDetail,
     PhotoGridStrings,
     PhotoKey,
+    PhotoStatus,
     PhotoViewerAction,
     PhotoViewerCloseReason,
     PhotoViewerStrings,

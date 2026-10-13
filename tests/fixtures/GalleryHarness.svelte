@@ -30,6 +30,10 @@
         onselect?: (detail: PhotoGridSelectDetail) => void;
         onadded?: () => void;
         onopened?: (index: number) => void;
+        gridLoadError?: (photo: Photo, index: number) => void;
+        gridRetry?: (photo: Photo, index: number) => void;
+        viewerLoadError?: (photo: Photo, index: number) => void;
+        viewerRetry?: (photo: Photo, index: number) => void | Promise<void>;
 
         initialOpen?: boolean;
         initialIndex?: number;
@@ -71,6 +75,10 @@
         onselect,
         onadded,
         onopened,
+        gridLoadError,
+        gridRetry,
+        viewerLoadError,
+        viewerRetry,
         initialOpen = false,
         initialIndex = 0,
         actions,
@@ -114,6 +122,8 @@
             strings={gridStrings}
             onopen={handlesOpen ? show : undefined}
             onadd={withAdd ? () => onadded?.() : undefined}
+            onloaderror={gridLoadError}
+            onretry={gridRetry}
             aria-label="Quiz night photos"
             data-testid="grid"
         />
@@ -135,6 +145,8 @@
             {label}
             strings={viewerStrings}
             {onclose}
+            onloaderror={viewerLoadError}
+            onretry={viewerRetry}
             data-testid="viewer"
         />
     {/if}

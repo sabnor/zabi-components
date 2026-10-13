@@ -277,6 +277,10 @@ export interface CheckboxProps
      * leading image should have an empty alt: the label names the row.
      */
     leading?: Snippet;
+    /** A line under the label, inside it, tied to the box with `aria-describedby`; not part of the name. */
+    description?: string;
+    /** Where the box sits in the row: `end` puts it last, at the far edge. */
+    controlPosition?: 'start' | 'end';
     variant?: SemanticVariant;
     /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
     message?: string;
@@ -459,6 +463,12 @@ export interface TextareaProps
     hint?: string;
     /** An error under the field. It marks the field invalid and is announced; it wins over `variant` and `message`. */
     error?: string;
+    /** A character count under the field. It needs `maxlength`, and is part of the field's description. */
+    count?: boolean;
+    /** The count is shown from this many characters on. `0` (default): always. */
+    countFrom?: number;
+    /** The words of the count. Default: "12 / 2000". */
+    countText?: (count: { length: number; max: number; remaining: number }) => string;
     /** Ids of other elements that describe the field. The hint and the message are added after them. */
     'aria-describedby'?: string | null;
     oninput?: (event: Event) => void;
@@ -705,6 +715,10 @@ export interface ToggleProps
      * leading image should have an empty alt: the label names the row.
      */
     leading?: Snippet;
+    /** A line under the label, inside it, tied to the switch with `aria-describedby`; not part of the name. */
+    description?: string;
+    /** Ids of other elements that describe the switch. The description is added after them. */
+    'aria-describedby'?: string | null;
     /** The switch's accessible name when there is no visible `label`. */
     'aria-label'?: string;
     /** The id of an element of the page that names the switch. */
@@ -1177,6 +1191,10 @@ export interface PhotoGridProps
     onselect?: (detail: PhotoGridSelectDetail) => void;
     /** Puts an "Add photo" tile first and is called when it is pressed. */
     onadd?: () => void;
+    /** Called once when a thumbnail cannot be loaded, so the page can answer with a new address. */
+    onloaderror?: (photo: Photo, index: number) => void;
+    /** Puts a "Try again" button on each photo whose `status` is `error` and is called when it is pressed. */
+    onretry?: (photo: Photo, index: number) => void;
     /** Overrides for the built-in strings. */
     strings?: Partial<PhotoGridStrings>;
     /** Extra classes for the host element. */
@@ -1197,6 +1215,10 @@ export interface PhotoViewerProps extends Omit<HTMLAttributes<HTMLDivElement>, '
     portal?: boolean;
     /** Fired when the viewer closes itself, with what the user did. */
     onclose?: (detail: { reason: PhotoViewerCloseReason }) => void;
+    /** Called once when a full image cannot be loaded, so the page can answer with a new address. */
+    onloaderror?: (photo: Photo, index: number) => void;
+    /** Called when "Try again" is pressed, before the image is asked for again; a returned promise is waited for. */
+    onretry?: (photo: Photo, index: number) => void | Promise<void>;
     /** Accessible name of the dialog. */
     label?: string;
     /** Overrides for the built-in strings. */

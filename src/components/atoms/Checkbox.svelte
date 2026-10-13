@@ -28,6 +28,18 @@
          * should have an empty alt: the label names the row.
          */
         leading?: Snippet;
+        /**
+         * A line under the label, tied to the box with `aria-describedby`.
+         * It is inside the label, so a tap on it ticks the box; it does not
+         * join the name.
+         */
+        description?: string;
+        /**
+         * Where the box sits in the row. `end` puts it after the leading, the
+         * label and the description, at the far edge; the row is still one
+         * label and fills the width it is given.
+         */
+        controlPosition?: "start" | "end";
         variant?: SemanticVariant;
         /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
         message?: string;
@@ -50,6 +62,8 @@
         onChange,
         onchange,
         leading,
+        description,
+        controlPosition = "start",
         ...restProps
     }: Props = $props();
 
@@ -112,6 +126,8 @@
     {onchange}
     {mark}
     {leading}
+    {description}
+    {controlPosition}
     class={className}
     {...restProps}
 />

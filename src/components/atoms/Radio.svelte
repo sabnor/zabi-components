@@ -33,6 +33,12 @@
          * The label names the radio; the description does not join the name.
          */
         description?: string;
+        /**
+         * Where the radio sits in the row. `end` puts it after the leading,
+         * the label and the description, at the far edge; the row is still
+         * one label and fills the width it is given.
+         */
+        controlPosition?: "start" | "end";
         variant?: SemanticVariant;
         /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
         message?: string;
@@ -55,6 +61,7 @@
         onchange,
         leading,
         description,
+        controlPosition = "start",
         ...restProps
     }: Props = $props();
 
@@ -89,6 +96,7 @@
     {mark}
     {leading}
     {description}
+    {controlPosition}
     class={className}
     {...restProps}
 />

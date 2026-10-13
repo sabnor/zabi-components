@@ -3,7 +3,7 @@
     import type { SemanticVariant, SizeVariant } from '../types/variants.js';
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
-    import { fieldDescribedBy, fieldMessageState } from "../util/field.js";
+    import { fieldDescribedBy, fieldMessageState, type TextareaCount } from "../util/field.js";
     import FieldMessages from "./FieldMessages.svelte";
 
     /**
@@ -52,6 +52,16 @@
         hint?: string;
         /** An error under the field. It marks the field invalid and is announced; it wins over `variant` and `message`. */
         error?: string;
+        /**
+         * A character count under the field, at the end of the line the hint is on. It needs
+         * `maxlength`; without one nothing is shown. It is part of the field's description
+         * (`aria-describedby`) and is not a live region, so it is not read out at every key.
+         */
+        count?: boolean;
+        /** The count is shown from this many characters on. `0` (default): always. */
+        countFrom?: number;
+        /** The words of the count, for the page's language. Default: "12 / 2000". */
+        countText?: (count: TextareaCount) => string;
         oninput?: (event: Event) => void;
         /** Ids of other elements that describe the field. The hint and the message are added after them. */
         "aria-describedby"?: string | null;
@@ -77,6 +87,9 @@
         message = '',
         hint = '',
         error = '',
+        count = false,
+        countFrom = 0,
+        countText,
         oninput,
         'aria-describedby': describedBy,
         ...restProps
@@ -98,6 +111,26 @@
     const isDisabled = $derived(disabled || loading);
 
     const status = $derived(fieldMessageState({ variant, message, hint, error }));
+
+    // The count: only with a `maxlength`, and only once `countFrom` is reached.
+    // The length is the one `maxlength` counts (UTF-16 units).
+    const countMax = $derived(Number(restProps.maxlength));
+    const countLength = $derived((value ?? '').length);
+    const showCount = $derived(
+        count && Number.isFinite(countMax) && countMax > 0 && countLength >= countFrom,
+    );
+    const countLabel = $derived.by(() => {
+        if (!showCount) return '';
+        const state = { length: countLength, max: countMax, remaining: Math.max(0, countMax - countLength) };
+        return countText ? countText(state) : `${state.length} / ${state.max}`;
+    });
+    const countId = $derived(`${textareaId}-count`);
+    // The caller's ids, the hint and the message, then the count.
+    const fieldDescription = $derived(
+        [fieldDescribedBy(textareaId, status, describedBy), showCount ? countId : '']
+            .filter(Boolean)
+            .join(' ') || undefined,
+    );
 
     const variantClass = $derived(() => {
         return status.variant === 'success'
@@ -183,7 +216,7 @@
             aria-invalid={status.variant === 'error' ? 'true' : undefined}
             aria-required={required ? 'true' : undefined}
             aria-busy={loading ? 'true' : undefined}
-            aria-describedby={fieldDescribedBy(textareaId, status, describedBy)}
+            aria-describedby={fieldDescription}
             {...restProps}
         ></textarea>
         {#if loading}
@@ -197,5 +230,17 @@
             </span>
         {/if}
     </div>
-    <FieldMessages fieldId={textareaId} {status} {hint} gap="mt-1" />
+    {#if showCount}
+        <!-- The count ends the line the hint starts. Not a live region: it is read with the field. -->
+        <div class="flex items-start gap-3">
+            <div class="min-w-0 flex-1">
+                <FieldMessages fieldId={textareaId} {status} {hint} gap="mt-1" />
+            </div>
+            <p id={countId} class="mt-1 shrink-0 text-sm text-description tabular-nums" data-textarea-count>
+                {countLabel}
+            </p>
+        </div>
+    {:else}
+        <FieldMessages fieldId={textareaId} {status} {hint} gap="mt-1" />
+    {/if}
 </div>

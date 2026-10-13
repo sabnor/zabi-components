@@ -22,8 +22,11 @@
 
     export type ImageUploadVariant = "dropzone" | "button";
 
-    /** Why a file was turned away: `accept` does not allow it, or it is over `maxSize`. */
-    export type ImageUploadRejectReason = "type" | "size";
+    /**
+     * Why a file was turned away: `accept` does not allow it, it is over
+     * `maxSize`, or (only with `multiple` and `maxFiles`) it is one too many.
+     */
+    export type ImageUploadRejectReason = "type" | "size" | "count";
 
     export type ImageUploadPreviewDetail = {
         /** The current `value`. */
@@ -50,6 +53,16 @@
         buttonSize?: ButtonSize;
         /** The largest file taken, in bytes. A larger one goes to `onfilereject` with `"size"`. */
         maxSize?: number;
+        /**
+         * The chooser and a drop take several files, handed over together
+         * through `onfiles`, in the order they were chosen. The component
+         * then keeps none of them: no preview, `value` is not set and
+         * `onfileselect` is not called. The page shows them where it wants
+         * (a `PhotoGrid`, say).
+         */
+        multiple?: boolean;
+        /** With `multiple`: the most files taken in one go. The rest go to `onfilereject` with `"count"`. */
+        maxFiles?: number;
         /** `variant="button"`: the trigger's content, in place of `label`. */
         children?: Snippet;
         /** Id of the control the label points at; generated when omitted. */
@@ -99,6 +112,8 @@
         onfileselect?: (detail: ImageUploadFileDetail) => void;
         /** A dropped file that `accept` does not allow, or a dropped or chosen file over `maxSize`. */
         onfilereject?: (file: File, reason: ImageUploadRejectReason) => void;
+        /** With `multiple`: every file that was taken, in order. Not called with none. */
+        onfiles?: (files: File[]) => void;
     };
 
     let {
@@ -107,6 +122,8 @@
         buttonVariant = "secondary",
         buttonSize = "md",
         maxSize,
+        multiple = false,
+        maxFiles,
         id: idProp,
         label = "",
         value = $bindable<Exclude<Props["value"], undefined>>(),
@@ -132,6 +149,7 @@
         onbrowse,
         onfileselect,
         onfilereject,
+        onfiles,
         children,
         ...restProps
     }: Props = $props();
@@ -270,6 +288,15 @@
         const input = event.target as HTMLInputElement;
         if (!input.files || input.files.length === 0) return;
 
+        if (multiple) {
+            const files = Array.from(input.files);
+            onchange?.(event);
+            // Nothing here holds the files: cleared so the same ones can be chosen again.
+            input.value = "";
+            takeFiles(files, false);
+            return;
+        }
+
         const file = input.files[0];
         if (tooLarge(file)) {
             // Cleared so the same file can be chosen again after the app has said why.
@@ -281,6 +308,23 @@
 
         onchange?.(event);
         onfileselect?.({ file, url });
+    }
+
+    /**
+     * `multiple`: the files that pass go to `onfiles` together; each of the
+     * others goes to `onfilereject` with why. A drop is checked against
+     * `accept` here, as the chooser has already done for its own.
+     */
+    function takeFiles(files: File[], checkType: boolean) {
+        const limit = maxFiles !== undefined && maxFiles >= 0 ? Math.floor(maxFiles) : Infinity;
+        const taken: File[] = [];
+        for (const file of files) {
+            if (checkType && !matchesAccept(file)) onfilereject?.(file, "type");
+            else if (tooLarge(file)) onfilereject?.(file, "size");
+            else if (taken.length >= limit) onfilereject?.(file, "count");
+            else taken.push(file);
+        }
+        if (taken.length > 0) onfiles?.(taken);
     }
 
     function removeImage() {
@@ -354,6 +398,11 @@
         if (!carriesFiles(event)) return;
         event.preventDefault();
         if (disabled) return;
+
+        if (multiple) {
+            takeFiles(Array.from(event.dataTransfer?.files ?? []), true);
+            return;
+        }
 
         const file = event.dataTransfer?.files?.[0];
         if (!file) return;
@@ -528,6 +577,7 @@
         bind:this={fileInput}
         type="file"
         {accept}
+        {multiple}
         onchange={handleFileSelect}
         {disabled}
         class="hidden"

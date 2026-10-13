@@ -16,6 +16,7 @@ export { default as CodeField } from './atoms/CodeField.svelte';
 export { DEFAULT_CODE_FIELD_STRINGS } from './util/code-field.js';
 export type { CodeFieldMode, CodeFieldSize, CodeFieldStrings } from './util/code-field.js';
 export { default as Textarea } from './atoms/Textarea.svelte';
+export type { TextareaCount } from './util/field.js';
 export { default as PickerField } from './atoms/PickerField.svelte';
 export { default as Select } from './atoms/Select.svelte';
 export { default as Slider } from './atoms/Slider.svelte';
@@ -163,6 +164,7 @@ export type {
     PhotoGridSelectDetail,
     PhotoGridStrings,
     PhotoKey,
+    PhotoStatus,
     PhotoViewerAction,
     PhotoViewerCloseReason,
     PhotoViewerStrings,

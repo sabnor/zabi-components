@@ -327,7 +327,12 @@ describe("PhotoViewer focus and closing", () => {
         await open();
         const described = viewer().getAttribute("aria-describedby");
         expect(described).toBeTruthy();
-        const description = document.getElementById(described!)!;
+        // The photo and its place first; a caption and a credit, where there are any, after them.
+        const [first, ...rest] = described!.split(" ");
+        expect(rest.map((id) => document.getElementById(id)?.textContent?.trim())).toEqual([
+            "Round three, taken from the corner table.",
+        ]);
+        const description = document.getElementById(first)!;
         expect(description).toBe(viewer().querySelector("[data-photo-viewer-status]"));
         expect(description.textContent!.replace(/\s+/g, " ").trim()).toBe("Score sheet, 2 of 6");
         expect(description.getAttribute("aria-live")).toBe("polite");

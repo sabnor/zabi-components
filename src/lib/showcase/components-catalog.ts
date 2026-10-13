@@ -1349,6 +1349,21 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "undefined",
                         description: "Alias for onChange",
                     },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A line under the label, inside it, so a tap on it ticks the box. Tied to the box with aria-describedby; not part of the name.",
+                    },
+                    {
+                        name: "controlPosition",
+                        type: "'start' | 'end'",
+                        required: false,
+                        defaultValue: "start",
+                        description:
+                            "Where the box sits in the row. end puts it after the leading, the label and the description, at the far edge; the row is still one label and fills the width it is given.",
+                    },
                 ],
                 variants: [],
                 examples: [
@@ -1480,6 +1495,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "undefined",
                         description: "Alias for onChange",
+                    },
+                    {
+                        name: "controlPosition",
+                        type: "'start' | 'end'",
+                        required: false,
+                        defaultValue: "start",
+                        description:
+                            "Where the radio sits in the row. end puts it last, at the far edge; the row is still one label and fills the width it is given.",
                     },
                 ],
                 variants: [],
@@ -2879,6 +2902,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Shows a spinner and makes the button unavailable without taking focus from it: aria-disabled and aria-busy, still a Tab stop, and a press does nothing. Not the disabled attribute.",
                     },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A line under the label, inside it, so a tap on it toggles. Tied to the switch with aria-describedby, after any ids passed in; not part of the name. It needs a label.",
+                    },
                 ],
                 variants: [],
                 examples: [
@@ -2968,6 +2998,29 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         description:
                             "Ids of other elements that describe the field. The hint and the message are added after them, and only ids of elements that are rendered.",
+                    },
+                    {
+                        name: "count",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "A character count under the field, at the end of the line the hint is on. It needs maxlength. Part of the field's description (aria-describedby) and not a live region, so it is not read out at every key.",
+                    },
+                    {
+                        name: "countFrom",
+                        type: "number",
+                        required: false,
+                        defaultValue: "0",
+                        description:
+                            "The count is shown from this many characters on. 0: always.",
+                    },
+                    {
+                        name: "countText",
+                        type: "(count: { length: number; max: number; remaining: number }) => string",
+                        required: false,
+                        description:
+                            "The words of the count, for the page's language. Default: 12 / 2000.",
                     },
                 ],
                 variants: ["default", "success", "warning", "error"],
@@ -4701,6 +4754,28 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         description:
                             "Runs with a dropped file that accept does not allow (type), or a chosen or dropped file over maxSize (size).",
+                    },
+                    {
+                        name: "multiple",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "The chooser and a drop take several files, handed over together through onfiles in the order they were chosen. The component then keeps none: no preview, value is not set and onfileselect is not called.",
+                    },
+                    {
+                        name: "maxFiles",
+                        type: "number",
+                        required: false,
+                        description:
+                            "With multiple: the most files taken in one go. The rest go to onfilereject with count.",
+                    },
+                    {
+                        name: "onfiles",
+                        type: "(files: File[]) => void",
+                        required: false,
+                        description:
+                            "With multiple: every file that was taken, in order.",
                     },
                 ],
 
@@ -8031,6 +8106,20 @@ pushToast({
                         description:
                             "Extra classes for the host element. aria-label and aria-labelledby name the list.",
                     },
+                    {
+                        name: "onloaderror",
+                        type: "(photo: Photo, index: number) => void",
+                        required: false,
+                        description:
+                            "Called once when a thumbnail cannot be loaded, so the page can answer with a new address. A new thumbSrc or src for the same photo is tried at once.",
+                    },
+                    {
+                        name: "onretry",
+                        type: "(photo: Photo, index: number) => void",
+                        required: false,
+                        description:
+                            "Puts a Try again button on each photo whose status is error and is called when it is pressed. A photo's status (uploading, with an optional progress from 0 to 1, or error) is drawn on its tile and said in its name.",
+                    },
                 ],
                 variants: [
                     "single",
@@ -8163,6 +8252,20 @@ pushToast({
                         defaultValue: '""',
                         description:
                             "Extra classes for the dialog panel. The viewer is black behind the photo in both themes; its controls sit on plates in the theme's own surface colour.",
+                    },
+                    {
+                        name: "onloaderror",
+                        type: "(photo: Photo, index: number) => void",
+                        required: false,
+                        description:
+                            "Called once when a full image cannot be loaded, so the page can answer with a new address. A new src for the same photo is tried at once.",
+                    },
+                    {
+                        name: "onretry",
+                        type: "(photo: Photo, index: number) => void | Promise<void>",
+                        required: false,
+                        description:
+                            "Called when Try again is pressed, before the image is asked for again. Return a promise and the button waits for it, busy: time to fetch a fresh address.",
                     },
                 ],
                 variants: [

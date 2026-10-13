@@ -1,0 +1,563 @@
+<script lang="ts">
+    import { onMount, tick, untrack, type Snippet } from "svelte";
+    import type { HTMLAttributes } from "svelte/elements";
+    import Check from "@lucide/svelte/icons/check";
+    import { cn } from "../util/cn.js";
+    import {
+        attributionText,
+        boundsOf,
+        clusterMarkers,
+        insetOffset,
+        MAP_FIT_MAX_ZOOM,
+        MAP_MARKER_TAP,
+        MAP_VIEW_STRINGS,
+        pointsSignature,
+        type MapInset,
+        type MapLibreLike,
+        type MapLibreMapLike,
+        type MapLngLat,
+        type MapMarker,
+        type MapPixel,
+        type MapPoint,
+        type MapPointKey,
+        type MapViewPosition,
+        type MapViewStatus,
+        type MapViewStrings,
+    } from "../util/map-view.js";
+    import { mergeStrings } from "../util/ready-made-strings.js";
+    import { isThemeDark } from "../util/theme-mode.js";
+
+    /**
+     * A map with markers from a list, on MapLibre GL JS. It fills the box it
+     * is given and has no control of its own: a finger pans and pinches, and
+     * everything else is the page's.
+     *
+     * ```svelte
+     * <MapView {points} styleLight={light} styleDark={dark} bind:status onpointpress={open} />
+     * ```
+     *
+     * It comes from its own entry, `zabi-components/map`, and loads the map
+     * library (`maplibre-gl`, the app's own dependency) only when it is
+     * mounted in a browser: nothing else in the package brings any of it.
+     * Ask `mapViewSupported()` before offering a map at all.
+     *
+     * The markers are the map for a keyboard and a screen reader: each is a
+     * named button, in the order of `points`. Markers whose tap areas overlap
+     * are drawn as one with their number. Every move the component makes is a
+     * jump; the finger's own pan and pinch are the only motion.
+     *
+     * It shows no text of its own and no error: read `status` and put your
+     * own skeleton or empty state in its place.
+     *
+     * Other attributes (`id`, `data-*`, ...) land on the host `<div>`.
+     */
+    type Props = Omit<HTMLAttributes<HTMLDivElement>, "class" | "aria-label"> & {
+        /** The markers, in the order they take in the tab order. */
+        points: MapPoint[];
+        /** The style drawn in the light theme: a URL or a style object. Nothing about the tile host is fixed here. */
+        styleLight: string | object;
+        /** The style drawn while the page is dark (`data-theme` on `<html>`, which may follow the system). Without it, `styleLight`. */
+        styleDark?: string | object;
+        /** Called with the point when its marker is pressed. */
+        onpointpress?: (point: MapPoint, index: number) => void;
+        /** Called with the points a count marker holds when it is pressed. */
+        onclusterpress?: (points: MapPoint[]) => void;
+        /** Names a count marker from its points. Without it, `strings.cluster` with the count. */
+        clusterLabel?: (points: MapPoint[]) => string;
+        /** The closest the fit to the markers zooms in. */
+        fitMaxZoom?: number;
+        /**
+         * The middle of the map; supports `bind:center`. Given with `zoom`
+         * when the map is made, it opens there and is not fitted to the
+         * markers; set later, the map jumps there.
+         */
+        center?: MapLngLat;
+        /** The zoom; supports `bind:zoom`. */
+        zoom?: number;
+        /** Called when a move has ended, by the finger or by the component. */
+        onmove?: (position: MapViewPosition) => void;
+        /**
+         * The viewer's own position, from the page: a dot is drawn there and
+         * the map jumps to it when it is set or changes. The component never
+         * asks the browser for it.
+         */
+        viewer?: MapLngLat | null;
+        /** Where the map stands; supports `bind:status`. */
+        status?: MapViewStatus;
+        onstatus?: (status: MapViewStatus) => void;
+        /**
+         * The credit that is always shown, bottom left. Without it, the words
+         * of the attribution the style's sources carry, as plain text.
+         */
+        attribution?: string | Snippet;
+        /** Loads the map library. Default: `() => import("maplibre-gl")`. */
+        load?: () => Promise<unknown>;
+        /** Overrides for the built-in strings. */
+        strings?: Partial<MapViewStrings>;
+        /** Extra classes for the host element. */
+        class?: string;
+        /** Accessible name of the map. Without it, `strings.label`. */
+        "aria-label"?: string;
+    };
+
+    let {
+        points,
+        styleLight,
+        styleDark,
+        onpointpress,
+        onclusterpress,
+        clusterLabel,
+        fitMaxZoom = MAP_FIT_MAX_ZOOM,
+        center = $bindable<Props["center"]>(),
+        zoom = $bindable<Props["zoom"]>(),
+        onmove,
+        viewer = null,
+        status = $bindable<Exclude<Props["status"], undefined>>(),
+        onstatus,
+        attribution,
+        load,
+        strings,
+        class: className = "",
+        "aria-label": ariaLabel,
+        ...restProps
+    }: Props = $props();
+
+    // No fallback on a bindable prop: Svelte refuses `bind:…={undefined}` on
+    // one that has a fallback (`props_invalid_value`), and a page that throws
+    // while it hydrates never becomes interactive. The default is applied
+    // here instead: at once, for the server and the first render, and again
+    // whenever a parent hands back `undefined`.
+    const applyDefaults = () => {
+        if (status === undefined) status = "loading";
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
+
+    const text = $derived(mergeStrings(MAP_VIEW_STRINGS, strings));
+
+    let host = $state<HTMLDivElement>();
+    let surface = $state<HTMLDivElement>();
+    let instance: MapLibreMapLike | undefined;
+    /** The map has drawn once: it can be fitted and moved. */
+    let loaded = $state(false);
+    let dark = $state(false);
+    let markers = $state.raw<MapMarker<MapPoint>[]>([]);
+    let viewerPixel = $state.raw<MapPixel | null>(null);
+    let styleCredit = $state("");
+
+    const style = $derived(dark && styleDark ? styleDark : styleLight);
+    let appliedStyle: string | object | undefined;
+
+    function setStatus(next: MapViewStatus) {
+        if (status === next) return;
+        status = next;
+        onstatus?.(next);
+    }
+
+    // --- Tiles ---------------------------------------------------------------
+
+    /**
+     * "Tiles failed" is told when none has arrived, not at the first one that
+     * fails: the page puts its own message in the map's place, and a map with
+     * one hole in it is still a map. A tile that arrives later takes it back.
+     */
+    let tilesArrived = 0;
+    let tileErrors = 0;
+
+    function handleError(event: { tile?: unknown; sourceId?: unknown }) {
+        if (event?.tile || event?.sourceId) {
+            tileErrors += 1;
+            return;
+        }
+        // Not a tile: before the first draw it is the style that did not come.
+        if (!loaded && tilesArrived === 0) setStatus("tiles-error");
+    }
+
+    function handleData(event: { dataType?: string; tile?: unknown }) {
+        if (event?.dataType !== "source" || !event.tile) return;
+        tilesArrived += 1;
+        if (loaded && status === "tiles-error") setStatus("ready");
+    }
+
+    function handleIdle() {
+        if (tileErrors > 0 && tilesArrived === 0) setStatus("tiles-error");
+    }
+
+    // --- Markers -------------------------------------------------------------
+
+    /** Where each point is on the screen now, and which of them share a marker. */
+    function reproject() {
+        const map = instance;
+        if (!map) return;
+        const pixels = points.map((point) => map.project([point.lng, point.lat]));
+        const before = focusedKey;
+        markers = clusterMarkers(points, pixels);
+        viewerPixel = viewer ? map.project([viewer.lng, viewer.lat]) : null;
+        if (before !== null && !markers.some((marker) => marker.key === before)) followFocus(before);
+    }
+
+    /**
+     * The marker that has the focus keeps its element while others join it.
+     * When it joins a marker earlier in the list its element goes; the
+     * focus follows its point to the marker that now holds it.
+     */
+    let focusedKey: MapPointKey | null = null;
+
+    function followFocus(id: MapPointKey) {
+        const holder = markers.find((marker) => marker.points.some((point) => point.id === id));
+        focusedKey = null;
+        if (!holder) return;
+        void tick().then(() => {
+            const active = document.activeElement;
+            if (active && active !== document.body) return;
+            markerElement(holder.key)?.focus({ preventScroll: true });
+        });
+    }
+
+    function markerElement(key: MapPointKey): HTMLElement | undefined {
+        return Array.from(host?.querySelectorAll<HTMLElement>("[data-map-marker]") ?? []).find(
+            (element) => element.dataset.pointId === String(key),
+        );
+    }
+
+    /** A marker reached with Tab may be outside what is shown: the map jumps so that it is in view. */
+    function handleMarkerFocus(marker: MapMarker<MapPoint>) {
+        focusedKey = marker.key;
+        const map = instance;
+        if (!map || !host) return;
+        const inside =
+            marker.x >= 0 && marker.y >= 0 && marker.x <= host.clientWidth && marker.y <= host.clientHeight;
+        if (!inside) map.jumpTo({ center: map.unproject([marker.x, marker.y]) });
+    }
+
+    function handleMarkerBlur(event: FocusEvent) {
+        // A focus that went somewhere is let go; one that was dropped (the element was taken out) is followed.
+        if (event.relatedTarget) focusedKey = null;
+    }
+
+    function press(marker: MapMarker<MapPoint>) {
+        if (marker.points.length > 1) {
+            onclusterpress?.(marker.points);
+            return;
+        }
+        const point = marker.points[0];
+        onpointpress?.(point, points.indexOf(point));
+    }
+
+    function nameOf(marker: MapMarker<MapPoint>): string {
+        if (marker.points.length === 1) return marker.points[0].label;
+        return clusterLabel ? clusterLabel(marker.points) : text.cluster(marker.points.length);
+    }
+
+    // --- Moving ----------------------------------------------------------------
+
+    /** Fits the map to the markers, no closer than `fitMaxZoom`. A jump. */
+    export function fit() {
+        const map = instance;
+        const box = boundsOf(points);
+        if (!map || !box) return;
+        if (box[0][0] === box[1][0] && box[0][1] === box[1][1]) {
+            map.jumpTo({ center: box[0], zoom: fitMaxZoom });
+            return;
+        }
+        // Room for half a marker at each edge, so none is cut by it.
+        const camera = map.cameraForBounds(box, { padding: MAP_MARKER_TAP, maxZoom: fitMaxZoom });
+        if (camera) map.jumpTo(camera as { center?: MapLngLat; zoom?: number });
+    }
+
+    /**
+     * Puts a place in the middle of what `inset` leaves clear: a sheet over
+     * the lower part of the map is `{ bottom: its height }`. A jump.
+     */
+    export function showPlace(place: MapLngLat, options: { inset?: MapInset; zoom?: number } = {}) {
+        const map = instance;
+        if (!map) return;
+        map.jumpTo({ center: [place.lng, place.lat], zoom: options.zoom });
+        const offset = insetOffset(options.inset);
+        if (offset.x === 0 && offset.y === 0) return;
+        const middle = map.project([place.lng, place.lat]);
+        map.jumpTo({ center: map.unproject([middle.x - offset.x, middle.y - offset.y]) });
+    }
+
+    /** The same for one of `points`, by its id. Nothing happens for an id that is not there. */
+    export function showPoint(id: MapPointKey, options: { inset?: MapInset; zoom?: number } = {}) {
+        const point = points.find((candidate) => candidate.id === id);
+        if (point) showPlace(point, options);
+    }
+
+    /** What the map last told the page, so that the page handing it back moves nothing. */
+    let reported: MapViewPosition | null = null;
+
+    function reportPosition() {
+        const map = instance;
+        if (!map) return;
+        const at = map.getCenter();
+        const position = { center: { lng: at.lng, lat: at.lat }, zoom: map.getZoom() };
+        reported = position;
+        center = position.center;
+        zoom = position.zoom;
+        onmove?.(position);
+    }
+
+    $effect(() => {
+        const to = center;
+        const level = zoom;
+        if (!loaded) return;
+        untrack(() => {
+            const map = instance;
+            if (!map || (!to && level === undefined)) return;
+            const same =
+                reported !== null &&
+                (!to || (to.lng === reported.center.lng && to.lat === reported.center.lat)) &&
+                (level === undefined || level === reported.zoom);
+            if (!same) map.jumpTo({ center: to ? [to.lng, to.lat] : undefined, zoom: level });
+        });
+    });
+
+    /** The list the map was last fitted to. */
+    let fitted: string | null = null;
+
+    $effect(() => {
+        const signature = pointsSignature(points);
+        if (!loaded) return;
+        untrack(() => {
+            if (signature !== fitted) {
+                fitted = signature;
+                fit();
+            }
+            // A name or a check may have changed without anything moving.
+            reproject();
+        });
+    });
+
+    let viewerShown = "";
+
+    $effect(() => {
+        const at = viewer;
+        if (!loaded) return;
+        untrack(() => {
+            const signature = at ? `${at.lng}:${at.lat}` : "";
+            if (signature !== viewerShown) {
+                viewerShown = signature;
+                if (at) instance?.jumpTo({ center: [at.lng, at.lat] });
+            }
+            reproject();
+        });
+    });
+
+    // --- Theme and credit ------------------------------------------------------
+
+    $effect(() => {
+        const next = style;
+        untrack(() => {
+            if (!instance || next === appliedStyle) return;
+            appliedStyle = next;
+            // The position and the markers stay: the markers are this component's own elements.
+            instance.setStyle(next);
+        });
+    });
+
+    function readCredit() {
+        const map = instance;
+        if (!map) return;
+        const sources = map.getStyle()?.sources ?? {};
+        const found: string[] = [];
+        for (const [id, source] of Object.entries(sources)) {
+            const words = attributionText(map.getSource?.(id)?.attribution ?? source.attribution ?? "");
+            if (words && !found.includes(words)) found.push(words);
+        }
+        styleCredit = found.join(" · ");
+    }
+
+    // --- The map itself ----------------------------------------------------------
+
+    onMount(() => {
+        let gone = false;
+        dark = isThemeDark();
+        const readTheme = () => (dark = isThemeDark());
+        const themeObserver = new MutationObserver(readTheme);
+        themeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["data-theme", "class"],
+        });
+        const system = window.matchMedia?.("(prefers-color-scheme: dark)");
+        system?.addEventListener?.("change", readTheme);
+
+        void (async () => {
+            let library: MapLibreLike | undefined;
+            try {
+                const module = (await (load ? load() : import("maplibre-gl"))) as
+                    | (Partial<MapLibreLike> & { default?: MapLibreLike })
+                    | undefined;
+                library = module?.Map ? (module as MapLibreLike) : module?.default;
+                if (!library?.Map) throw new Error("no Map in the map library");
+            } catch {
+                if (!gone) setStatus("library-error");
+                return;
+            }
+            if (gone || !surface) return;
+            // Opened where the page says, if it says both; else fitted to the markers once it has drawn.
+            const restored = !!center && zoom !== undefined;
+            try {
+                appliedStyle = style;
+                instance = new library.Map({
+                    container: surface,
+                    style,
+                    // No control on the surface: the credit is drawn below, always open.
+                    attributionControl: false,
+                    maplibreLogo: false,
+                    // The finger's pan and pinch only: no turning, no tilting, no zoom that eases on a double tap.
+                    dragRotate: false,
+                    pitchWithRotate: false,
+                    touchPitch: false,
+                    doubleClickZoom: false,
+                    boxZoom: false,
+                    keyboard: false,
+                    ...(restored && center ? { center: [center.lng, center.lat], zoom } : {}),
+                });
+            } catch {
+                setStatus("library-error");
+                return;
+            }
+            const map = instance;
+            map.touchZoomRotate?.disableRotation();
+            // The markers are the map for a keyboard: the canvas is not a stop of its own.
+            map.getCanvas().tabIndex = -1;
+            map.on("error", handleError);
+            map.on("data", handleData);
+            map.on("idle", handleIdle);
+            map.on("styledata", readCredit);
+            map.on("sourcedata", readCredit);
+            map.on("move", reproject);
+            map.on("resize", reproject);
+            map.on("moveend", reportPosition);
+            map.on("load", () => {
+                if (gone) return;
+                if (restored) fitted = pointsSignature(points);
+                loaded = true;
+                if (tilesArrived > 0 || tileErrors === 0) setStatus("ready");
+                readCredit();
+                reproject();
+            });
+        })();
+
+        return () => {
+            gone = true;
+            themeObserver.disconnect();
+            system?.removeEventListener?.("change", readTheme);
+            instance?.remove();
+            instance = undefined;
+        };
+    });
+</script>
+
+<!-- `touch-action: none` and `data-sheet-no-drag`: a finger on the map pans the
+     map, and neither scrolls the page nor drags a sheet the map is in. -->
+<div
+    bind:this={host}
+    class={cn("relative size-full min-h-0 touch-none overflow-hidden", className)}
+    role="group"
+    aria-label={ariaLabel ?? text.label}
+    data-map-view
+    data-status={status}
+    data-sheet-no-drag
+    {...restProps}
+>
+    <!-- The library's own element is inside one more box: its stylesheet, where
+         a page has it, makes the element `relative`, and it must still fill. -->
+    <div class="absolute inset-0" aria-hidden="true">
+        <div bind:this={surface} class="map-surface relative size-full"></div>
+    </div>
+
+    <!-- In px throughout: a marker does not grow with the text size. In the
+         order of the list, which is the tab order. -->
+    <div class="pointer-events-none absolute inset-0" data-map-markers>
+        {#each markers as marker (marker.key)}
+            {@const count = marker.points.length}
+            {@const point = marker.points[0]}
+            <button
+                type="button"
+                class="focus-ring pointer-events-auto absolute top-0 left-0 flex size-[44px] cursor-pointer items-center justify-center rounded-full bg-transparent"
+                style:transform="translate({Math.round(marker.x - MAP_MARKER_TAP / 2)}px, {Math.round(
+                    marker.y - MAP_MARKER_TAP / 2,
+                )}px)"
+                aria-label={nameOf(marker)}
+                data-map-marker={count > 1 ? "cluster" : point.checked ? "checked" : "point"}
+                data-point-id={marker.key}
+                onfocus={() => handleMarkerFocus(marker)}
+                onblur={handleMarkerBlur}
+                onclick={() => press(marker)}
+            >
+                <!-- Each mark has a ring in the surface colour around it, so
+                     its edge shows on any tile in either style. -->
+                {#if count > 1}
+                    <span
+                        class="flex h-[28px] min-w-[28px] items-center justify-center rounded-full border-2 border-action-primary bg-surface-overlay px-[6px] text-[13px] leading-none font-semibold text-headline tabular-nums ring-2 ring-(--color-surface-overlay)"
+                    >
+                        {count}
+                    </span>
+                {:else if point.checked}
+                    <span
+                        class="flex size-[24px] items-center justify-center rounded-full bg-action-primary text-action-primary ring-2 ring-(--color-surface-overlay)"
+                    >
+                        <Check size={14} strokeWidth={3} aria-hidden="true" />
+                    </span>
+                {:else}
+                    <span
+                        class="size-[20px] rounded-full border-[3px] border-action-primary bg-surface-overlay ring-2 ring-(--color-surface-overlay)"
+                    ></span>
+                {/if}
+            </button>
+        {/each}
+        {#if viewerPixel}
+            <span
+                class="absolute top-0 left-0 size-[16px] rounded-full border-[3px] border-(--color-surface-overlay) bg-info"
+                style:transform="translate({Math.round(viewerPixel.x - 8)}px, {Math.round(viewerPixel.y - 8)}px)"
+                role="img"
+                aria-label={text.viewer}
+                data-map-viewer
+            ></span>
+        {/if}
+    </div>
+
+    <!-- Always open, never behind a button: the licence of the map data asks for it. -->
+    {#if attribution || styleCredit}
+        <p
+            class="pointer-events-auto absolute start-[4px] bottom-[4px] m-0 [max-inline-size:calc(100%-8px)] rounded-control bg-surface-overlay px-[6px] py-[2px] text-xs text-description"
+            data-map-attribution
+        >
+            {#if typeof attribution === "function"}
+                {@render attribution()}
+            {:else}
+                {attribution || styleCredit}
+            {/if}
+        </p>
+    {/if}
+</div>
+
+<style>
+    /* The few rules of the library's stylesheet the map needs, so that the page
+       does not have to load the rest of it: the canvas laid over the box, and
+       nothing of the browser's own panning under a finger. */
+    .map-surface {
+        overflow: hidden;
+    }
+
+    .map-surface :global(.maplibregl-canvas-container),
+    .map-surface :global(.maplibregl-canvas) {
+        touch-action: none;
+        user-select: none;
+    }
+
+    .map-surface :global(.maplibregl-canvas) {
+        position: absolute;
+        top: 0;
+        left: 0;
+        outline: none;
+    }
+
+    /* No control is asked for; the holders the library still makes take no room. */
+    .map-surface :global(.maplibregl-control-container) {
+        display: none;
+    }
+</style>

@@ -53,6 +53,12 @@
          * It is not part of the name: the label names the control.
          */
         description?: string;
+        /**
+         * Where the control sits in the row. `end` puts it after the leading,
+         * the label and the description, at the far edge; the row is still
+         * one label and fills the width it is given.
+         */
+        controlPosition?: "start" | "end";
         variant?: SemanticVariant;
         /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
         message?: string;
@@ -79,6 +85,7 @@
         mark,
         leading,
         description,
+        controlPosition = "start",
         variant = "default",
         message = "",
         hint = "",
@@ -119,13 +126,17 @@
     const invalid = $derived(status.variant === "error" ? "true" : undefined);
 
     // With a description the row is two lines: the box sits at the top, as in RadioGroup.
+    // At the end the control is moved by `order`, so the markup and what a
+    // screen reader meets first are the same in both positions.
+    const controlAtEnd = $derived(controlPosition === "end");
     const labelWrapperClasses = $derived(
-        description ? cn(SELECTION_CONTROL_LABEL_ROW, "items-start") : SELECTION_CONTROL_LABEL_ROW,
+        cn(SELECTION_CONTROL_LABEL_ROW, description && "items-start", controlAtEnd && "min-w-0 flex-1"),
     );
 
     const controlContainerClasses = $derived(
-        cn(selectionControlShellClasses(shape), description && "mt-0.5"),
+        cn(selectionControlShellClasses(shape), description && "mt-0.5", controlAtEnd && "order-last"),
     );
+    const labelTextClasses = $derived(controlAtEnd ? "min-w-0 flex-1" : "");
 
     const controlRingClasses = $derived(selectionControlRingOverlayClasses(shape));
 
@@ -227,7 +238,7 @@
             </span>
         {/if}
         {#if description}
-            <span class="flex flex-col gap-1">
+            <span class={cn("flex flex-col gap-1", labelTextClasses)}>
                 <span class="text-sm font-medium text-label">
                     {label}
                 </span>
@@ -237,7 +248,7 @@
                 </span>
             </span>
         {:else if label}
-            <span class="text-sm font-medium text-label">
+            <span class={cn("text-sm font-medium text-label", labelTextClasses)}>
                 {label}
             </span>
         {/if}
@@ -249,8 +260,8 @@
         <div class="flex items-center gap-2">
             {@render row()}
         </div>
-        <!-- Under the label text: the box is 20px and the gap 8px. -->
-        <div class="ps-7">
+        <!-- Under the label text: the box is 20px and the gap 8px. With the box at the end, from the row's edge. -->
+        <div class={controlAtEnd ? "" : "ps-7"}>
             <FieldMessages fieldId={controlId} {status} {hint} gap="mt-1" />
         </div>
     </div>

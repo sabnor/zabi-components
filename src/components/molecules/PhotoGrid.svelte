@@ -4,9 +4,11 @@
     import { untrack } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Check from "@lucide/svelte/icons/check";
+    import CircleAlert from "@lucide/svelte/icons/circle-alert";
     import ImageOff from "@lucide/svelte/icons/image-off";
     import Maximize2 from "@lucide/svelte/icons/maximize-2";
     import Plus from "@lucide/svelte/icons/plus";
+    import RotateCw from "@lucide/svelte/icons/rotate-cw";
     import Skeleton from "../atoms/Skeleton.svelte";
     import { isDevBuild } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
@@ -77,6 +79,17 @@
          * Open your own file picker or an ImageUpload from it.
          */
         onadd?: () => void;
+        /**
+         * Called once when a thumbnail cannot be loaded, so the page can answer
+         * with a new address (a signed one that has run out). A new `thumbSrc`
+         * or `src` for the same photo is tried at once.
+         */
+        onloaderror?: (photo: Photo, index: number) => void;
+        /**
+         * Puts a "Try again" button on each photo whose `status` is `error`
+         * and is called when it is pressed.
+         */
+        onretry?: (photo: Photo, index: number) => void;
         /** Overrides for the built-in strings. */
         strings?: Partial<PhotoGridStrings>;
         /** Extra classes for the host element. */
@@ -95,6 +108,8 @@
         selectedKeys = $bindable<Exclude<Props["selectedKeys"], undefined>>(),
         onselect,
         onadd,
+        onloaderror,
+        onretry,
         strings,
         class: className = "",
         "aria-label": ariaLabel,
@@ -162,16 +177,38 @@
         // again for every image each time one of the lists changes.
         untrack(() => {
             if (image.naturalWidth > 0) markLoaded(address);
-            else markFailed(address);
+            else if (markFailed(address)) reportFailed(address);
         });
+    }
+
+    /** Tells the page which photo an address that failed belongs to. */
+    function reportFailed(address: string) {
+        if (!onloaderror) return;
+        const index = photos.findIndex((photo) => (photo.thumbSrc ?? photo.src) === address);
+        if (index !== -1) onloaderror(photos[index], index);
     }
 
     function markLoaded(address: string) {
         if (!loaded.includes(address)) loaded = [...loaded, address];
     }
 
-    function markFailed(address: string) {
-        if (!failed.includes(address)) failed = [...failed, address];
+    /** True the first time an address fails, so the page is told once. */
+    function markFailed(address: string): boolean {
+        if (failed.includes(address)) return false;
+        failed = [...failed, address];
+        return true;
+    }
+
+    function nameWithStatus(photo: Photo, name: string): string {
+        if (photo.status === "uploading") return `${name}, ${text.uploading}`;
+        if (photo.status === "error") return `${name}, ${text.uploadFailed}`;
+        return name;
+    }
+
+    /** "40%" for an upload that says how far it has come; nothing for one that does not. */
+    function percent(progress: number | undefined): string {
+        if (progress === undefined || !Number.isFinite(progress)) return "";
+        return `${Math.round(Math.min(Math.max(progress, 0), 1) * 100)}%`;
     }
 
     /**
@@ -295,20 +332,29 @@
         onkeydown={handleKeydown}
     >
         {#if onadd}
-            <li class="relative aspect-square" data-photo-grid-tile onfocusin={() => handleTileFocus(ADD_KEY)}>
+            <li
+                class="@container relative aspect-square"
+                data-photo-grid-tile
+                onfocusin={() => handleTileFocus(ADD_KEY)}
+            >
                 <!-- A dashed edge the tile depends on to be seen, so in the
-                control-border colour; the label is shown, not only read out. -->
+                control-border colour; the label is shown, not only read out.
+                Nothing leaves the tile: the label is cut at two lines (the
+                name keeps the whole text), and the plus is drawn only where
+                the tile has room for it above two lines, which at 200% text
+                on a phone it has not (Z-136). -->
                 <button
                     type="button"
-                    class="focus-ring flex size-full cursor-pointer flex-col items-center justify-center gap-1 rounded-container border border-dashed border-control-border bg-transparent p-1 text-center text-xs font-medium text-body transition-colors duration-150 hover:bg-surface-hover active:bg-surface-active motion-reduce:transition-none"
+                    class="focus-ring flex size-full cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-container border border-dashed border-control-border bg-transparent p-1 text-center text-xs font-medium text-body transition-colors duration-150 hover:bg-surface-hover active:bg-surface-active motion-reduce:transition-none"
+                    aria-label={text.addPhoto}
                     aria-describedby={describedKey === ADD_KEY ? hintId : undefined}
                     tabindex={tabbableKey === ADD_KEY ? 0 : -1}
                     data-photo-grid-item
                     data-photo-grid-add
                     onclick={() => onadd?.()}
                 >
-                    <Plus size={24} class="shrink-0" aria-hidden="true" />
-                    <span class="[overflow-wrap:anywhere]">{text.addPhoto}</span>
+                    <Plus size={24} class="hidden shrink-0 @min-[calc(24px+3.5rem)]:block" aria-hidden="true" />
+                    <span class="line-clamp-2 [overflow-wrap:anywhere]">{text.addPhoto}</span>
                 </button>
             </li>
         {/if}
@@ -337,7 +383,7 @@
                             ? "outline-2 -outline-offset-2 outline-(--color-action-primary)"
                             : "outline-1 -outline-offset-1 outline-(--color-border) hover:outline-(--color-border-medium) active:scale-[0.98] motion-reduce:active:scale-100",
                     )}
-                    aria-label={more ? `${name}, ${text.morePhotos(counts.hidden)}` : name}
+                    aria-label={more ? `${name}, ${text.morePhotos(counts.hidden)}` : nameWithStatus(photo, name)}
                     aria-pressed={selects ? on : undefined}
                     aria-describedby={key === describedKey ? hintId : undefined}
                     {tabindex}
@@ -370,7 +416,9 @@
                                 loaded.includes(source) ? "opacity-100" : "opacity-0",
                             )}
                             onload={() => markLoaded(source)}
-                            onerror={() => markFailed(source)}
+                            onerror={() => {
+                                if (markFailed(source)) onloaderror?.(photo, index);
+                            }}
                             {@attach settled}
                         />
                     {/if}
@@ -380,6 +428,30 @@
                             data-photo-grid-check
                         >
                             <Check size={14} aria-hidden="true" />
+                        </span>
+                    {/if}
+                    {#if photo.status && !more}
+                        <!-- On its way, or not arrived: the photo is dimmed and
+                        the mark sits on an opaque plate, as the "+12" does. The
+                        name says it in words. -->
+                        <span
+                            class="absolute inset-0 flex items-center justify-center bg-overlay"
+                            aria-hidden="true"
+                            data-photo-grid-status={photo.status}
+                        >
+                            <span
+                                class="flex min-h-8 min-w-8 items-center justify-center rounded-control border border-control-border bg-surface-overlay px-1 text-xs font-semibold text-headline tabular-nums"
+                            >
+                                {#if photo.status === "error"}
+                                    <CircleAlert size={18} class="text-error-text" />
+                                {:else if percent(photo.progress)}
+                                    {percent(photo.progress)}
+                                {:else}
+                                    <span
+                                        class="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent motion-reduce:animate-pulse"
+                                    ></span>
+                                {/if}
+                            </span>
                         </span>
                     {/if}
                     {#if more}
@@ -399,6 +471,24 @@
                         </span>
                     {/if}
                 </button>
+                {#if photo.status === "error" && onretry && !more}
+                    <!-- Beside the tile's button, in the other bottom corner
+                    from the one that opens. -->
+                    <button
+                        type="button"
+                        class={cn(
+                            cornerMark,
+                            TOUCH_HIT_AREA,
+                            "focus-ring bottom-[4px] start-[4px] size-7 cursor-pointer border border-control-border bg-surface-overlay text-body transition-colors duration-150 hover:text-headline motion-reduce:transition-none",
+                        )}
+                        aria-label={text.retryUpload(name)}
+                        {tabindex}
+                        data-photo-grid-retry
+                        onclick={() => onretry?.(photo, index)}
+                    >
+                        <RotateCw size={14} aria-hidden="true" />
+                    </button>
+                {/if}
                 {#if selects && onopen}
                     <!-- Beside the tile's button, not inside it. An opaque
                     plate, so it reads over any photo; on a coarse pointer an

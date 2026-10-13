@@ -28,6 +28,14 @@
          */
         leading?: Snippet;
         /**
+         * A line under the label, tied to the switch with `aria-describedby`.
+         * It is inside the label, so a tap on it toggles; it does not join
+         * the name. It needs a `label`.
+         */
+        description?: string;
+        /** Ids of other elements that describe the switch. The description is added after them. */
+        "aria-describedby"?: string | null;
+        /**
          * The switch's accessible name when there is no visible `label`. With
          * neither this, `aria-labelledby` nor `label`, it is called "Toggle".
          */
@@ -48,6 +56,8 @@
         loading = false,
         label = "",
         leading,
+        description = "",
+        "aria-describedby": describedBy,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledby,
         onclick,
@@ -69,6 +79,8 @@
     const fallbackId = generateId("toggle");
     const toggleId = $derived(idProp ?? fallbackId);
     const isDisabled = $derived(disabled || loading);
+    const showDescription = $derived(!!description && !!label);
+    const descriptionId = $derived(`${toggleId}-description`);
 
     function handleClick(event: MouseEvent) {
         if (isDisabled) return;
@@ -110,7 +122,14 @@
 <!-- On a coarse pointer the row is 44px tall, so the switch's hit area (44px, around a
      24px switch) has room of its own: stacked 8px apart, the layer of one switch lay
      over the visible edge of the one above it and took its taps. -->
-<div class={cn("flex items-center gap-3 pointer-coarse:min-h-11", className)}>
+<div
+    class={cn(
+        "flex gap-3 pointer-coarse:min-h-11",
+        // With a description the row is two lines: the switch sits at the top.
+        showDescription ? "items-start pointer-coarse:py-3" : "items-center",
+        className,
+    )}
+>
     <button
         type="button"
         role="switch"
@@ -118,6 +137,7 @@
         aria-checked={checked}
         aria-label={ariaLabel ?? (label || ariaLabelledby ? undefined : "Toggle")}
         aria-labelledby={ariaLabelledby}
+        aria-describedby={[describedBy, showDescription ? descriptionId : ""].filter(Boolean).join(" ") || undefined}
         aria-busy={loading ? "true" : undefined}
         disabled={isDisabled}
         onclick={handleClick}
@@ -143,7 +163,7 @@
             for={toggleId}
             class="text-sm font-medium text-label {leading
                 ? 'inline-flex items-center gap-3 '
-                : ''}{isDisabled
+                : ''}{showDescription ? 'mt-0.5 ' : ''}{isDisabled
                 ? 'cursor-not-allowed opacity-50'
                 : 'cursor-pointer'}"
         >
@@ -152,7 +172,17 @@
                     {@render leading()}
                 </span>
             {/if}
-            {label}
+            {#if showDescription}
+                <span class="flex flex-col gap-1">
+                    <span>{label}</span>
+                    <!-- aria-hidden keeps it out of the name; aria-describedby still reads it. -->
+                    <span id={descriptionId} class="font-normal text-description" aria-hidden="true">
+                        {description}
+                    </span>
+                </span>
+            {:else}
+                {label}
+            {/if}
         </label>
     {/if}
 </div>

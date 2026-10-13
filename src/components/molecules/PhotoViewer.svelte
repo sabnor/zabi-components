@@ -16,6 +16,8 @@
     import { cn } from "../util/cn.js";
     import {
         focusFirstElement,
+        getFocusableElements,
+        isTopOverlay,
         joinOverlayStack,
         recoverStrayFocus,
         returnFocus,
@@ -77,6 +79,12 @@
      * on plates in the theme's own surface colour, so they read over any
      * photo in either theme.
      *
+     * It does not take the browser's Back. A history entry made by a
+     * component conflicts with the app's router (SvelteKit warns against
+     * `history.pushState` outside `$app/navigation`), so open the viewer from
+     * the router's own state: push a state on open, read `isOpen` from it,
+     * and go back to close (Z-131).
+     *
      * Other attributes (`id`, `data-*`, ...) land on the `role="dialog"` panel.
      */
     type Props = Omit<
@@ -103,6 +111,18 @@
         portal?: boolean;
         /** Fired when the viewer closes itself, with what the user did. */
         onclose?: (detail: { reason: PhotoViewerCloseReason }) => void;
+        /**
+         * Called once when a full image cannot be loaded, so the page can
+         * answer with a new address (a signed one that has run out). A new
+         * `src` for the same photo is tried at once.
+         */
+        onloaderror?: (photo: Photo, index: number) => void;
+        /**
+         * Called when "Try again" is pressed on a photo that failed, before
+         * the image is asked for again. Return a promise and the button waits
+         * for it, busy, so the page has time to fetch a fresh address.
+         */
+        onretry?: (photo: Photo, index: number) => void | Promise<void>;
         /** Accessible name of the dialog. */
         label?: string;
         /** Overrides for the built-in strings. */
@@ -118,6 +138,8 @@
         actions = [],
         portal = true,
         onclose,
+        onloaderror,
+        onretry,
         label = "Photo viewer",
         strings,
         class: className = "",
@@ -177,6 +199,8 @@
      */
     let openerGrid: Element | null = null;
     const statusId = generateId("photo-viewer-status");
+    const captionId = generateId("photo-viewer-caption");
+    const creditId = generateId("photo-viewer-credit");
     let rtl = $state(false);
 
     // --- Loading -----------------------------------------------------------
@@ -193,8 +217,13 @@
         if (!loaded.includes(source)) loaded = [...loaded, source];
     }
 
+    /** The page is told once for each address that fails. */
     function markFailed(source: string) {
-        if (!failed.includes(source)) failed = [...failed, source];
+        if (failed.includes(source)) return;
+        failed = [...failed, source];
+        if (!onloaderror) return;
+        const at = photos.findIndex((item) => item.src === source);
+        if (at !== -1) onloaderror(photos[at], at);
     }
 
     /** An image that was complete before anything was listening. */
@@ -209,7 +238,22 @@
         });
     }
 
-    function retry(source: string) {
+    /** Addresses whose "Try again" is waiting for the page's `onretry`. */
+    let retrying = $state<string[]>([]);
+
+    async function retry(item: Photo, at: number) {
+        const source = item.src;
+        if (retrying.includes(source)) return;
+        if (onretry) {
+            retrying = [...retrying, source];
+            try {
+                await onretry(item, at);
+            } catch {
+                // The page's own failure: the image is asked for again all the same.
+            } finally {
+                retrying = retrying.filter((candidate) => candidate !== source);
+            }
+        }
         failed = failed.filter((candidate) => candidate !== source);
         attempts = { ...attempts, [source]: (attempts[source] ?? 0) + 1 };
         // The button that was pressed goes with the message it was in: the
@@ -719,6 +763,37 @@
         if (!active || active === document.body) container.focus({ preventScroll: true });
     });
 
+    /**
+     * An action's button can go while it holds the focus: "Remove" is pressed,
+     * the photo leaves `photos`, and the one that shows next has no "Remove".
+     * Nothing tells the page when a focused element is taken out, and a
+     * confirm dialog between the press and the removal hands the focus back
+     * to a button that is gone. So the page is watched while the viewer is
+     * open: when something is taken out or put in and the focus is found on
+     * `<body>` with this viewer on top, its first control (Close) takes it.
+     */
+    $effect(() => {
+        const container = panel;
+        if (!isOpen || !container || typeof MutationObserver !== "function") return;
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const check = () => {
+            timer = undefined;
+            if (!focusActive || !container.isConnected || !isTopOverlay(container)) return;
+            const active = document.activeElement;
+            if (active && active !== document.body) return;
+            (getFocusableElements(container)[0] ?? container).focus({ preventScroll: true });
+        };
+        // After the change has settled: a dialog that is closing gives the focus back first.
+        const observer = new MutationObserver(() => {
+            if (timer === undefined) timer = setTimeout(check, 0);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        return () => {
+            observer.disconnect();
+            if (timer !== undefined) clearTimeout(timer);
+        };
+    });
+
     function showPhoto(turn: number) {
         captionOpen = false;
         void go(turn);
@@ -780,7 +855,12 @@
                     >
                         <ImageOff size={24} aria-hidden="true" />
                         <p>{text.loadError}</p>
-                        <Button variant="secondary" size="lg" onclick={() => retry(source)}>
+                        <Button
+                            variant="secondary"
+                            size="lg"
+                            loading={retrying.includes(source)}
+                            onclick={() => retry(item, at)}
+                        >
                             {text.retry}
                         </Button>
                     </div>
@@ -849,7 +929,9 @@
             role="dialog"
             aria-modal="true"
             aria-label={label}
-            aria-describedby={statusId}
+            aria-describedby={[statusId, photo.caption ? captionId : "", photo.credit ? creditId : ""]
+                .filter(Boolean)
+                .join(" ")}
             tabindex="-1"
             data-zoomed={zoomed ? "true" : undefined}
             {...restProps}
@@ -950,40 +1032,55 @@
             {/if}
 
             <!-- Bottom: the caption, then what can be done with the photo. -->
-            {#if photo.caption || actions.length > 0}
+            {#if photo.caption || photo.credit || actions.length > 0}
                 <div
                     class={cn(
                         "pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center gap-[8px] pb-[max(8px,env(safe-area-inset-bottom))]",
                         sides,
                     )}
                 >
-                    {#if photo.caption}
+                    {#if photo.caption || photo.credit}
                         <div
                             class={cn(
                                 plate,
                                 "pointer-events-auto flex w-full items-end gap-[8px] rounded-container px-3 py-2 text-sm sm:w-[min(100%,40rem)]",
+                                // The credit takes a line of its own under the caption.
+                                photo.credit && "flex-wrap gap-y-1",
                             )}
                             data-photo-viewer-caption
                         >
-                            <p
-                                bind:this={captionText}
-                                class={cn(
-                                    "min-w-0 flex-1 [overflow-wrap:anywhere]",
-                                    // The one thing in the viewer that scrolls under a finger.
-                                    captionOpen ? "max-h-[40dvh] touch-pan-y overflow-y-auto" : "line-clamp-2",
-                                )}
-                            >
-                                {photo.caption}
-                            </p>
-                            {#if captionLong || captionOpen}
-                                <button
-                                    type="button"
-                                    class="focus-ring -my-1 -me-1 min-h-11 shrink-0 cursor-pointer rounded-[calc(var(--radius-container)-4px)] px-2 text-sm font-medium text-link"
-                                    aria-expanded={captionOpen}
-                                    onclick={() => (captionOpen = !captionOpen)}
+                            {#if photo.caption}
+                                <p
+                                    id={captionId}
+                                    bind:this={captionText}
+                                    class={cn(
+                                        "min-w-0 flex-1 [overflow-wrap:anywhere]",
+                                        // The one thing in the viewer that scrolls under a finger.
+                                        captionOpen ? "max-h-[40dvh] touch-pan-y overflow-y-auto" : "line-clamp-2",
+                                    )}
                                 >
-                                    {captionOpen ? text.showLess : text.showMore}
-                                </button>
+                                    {photo.caption}
+                                </p>
+                                {#if captionLong || captionOpen}
+                                    <button
+                                        type="button"
+                                        class="focus-ring -my-1 -me-1 min-h-11 shrink-0 cursor-pointer rounded-[calc(var(--radius-container)-4px)] px-2 text-sm font-medium text-link"
+                                        aria-expanded={captionOpen}
+                                        onclick={() => (captionOpen = !captionOpen)}
+                                    >
+                                        {captionOpen ? text.showLess : text.showMore}
+                                    </button>
+                                {/if}
+                            {/if}
+                            {#if photo.credit}
+                                <!-- Quieter than the caption, and outside what More and Less fold. -->
+                                <p
+                                    id={creditId}
+                                    class="min-w-0 basis-full text-description [overflow-wrap:anywhere]"
+                                    data-photo-viewer-credit
+                                >
+                                    {photo.credit}
+                                </p>
                             {/if}
                         </div>
                     {/if}

@@ -27,7 +27,21 @@ export interface Photo {
     height: number;
     /** Shown under the photo in the viewer. */
     caption?: string;
+    /**
+     * A second, quieter line under the caption in the viewer: who took the
+     * photo, when. It is never folded away with a long caption.
+     */
+    credit?: string;
+    /**
+     * Where a photo that is being added stands, drawn on its tile in the grid:
+     * `uploading` (on its way) or `error` (it did not arrive). Left out: saved.
+     */
+    status?: PhotoStatus;
+    /** How far an `uploading` photo has come, from 0 to 1. Without it the tile shows a spinner. */
+    progress?: number;
 }
+
+export type PhotoStatus = "uploading" | "error";
 
 export function photoKey(photo: Photo): PhotoKey {
     return photo.id ?? photo.src;
@@ -55,6 +69,12 @@ export interface PhotoGridStrings {
     openPhoto: (name: string) => string;
     /** How to get around by keyboard. Read once when focus enters the grid, and shown while it has keyboard focus. */
     keyboardHint: string;
+    /** Added to the name of a photo whose `status` is `uploading`. */
+    uploading: string;
+    /** Added to the name of a photo whose `status` is `error`. */
+    uploadFailed: string;
+    /** Name of the button on a failed photo that tries again. */
+    retryUpload: (name: string) => string;
 }
 
 export const PHOTO_GRID_STRINGS: PhotoGridStrings = {
@@ -63,6 +83,9 @@ export const PHOTO_GRID_STRINGS: PhotoGridStrings = {
     morePhotos: (count) => `${count} more ${count === 1 ? "photo" : "photos"}`,
     openPhoto: (name) => `Open ${name}`,
     keyboardHint: "Use the arrow keys to move between photos.",
+    uploading: "Uploading",
+    uploadFailed: "Not uploaded",
+    retryUpload: (name) => `Try again: ${name}`,
 };
 
 /** What the user did to close the viewer. `swipe` is a swipe down on the photo. */

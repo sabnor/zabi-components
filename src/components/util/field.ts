@@ -70,3 +70,10 @@ export function fieldDescribedBy(
             .join(" ") || undefined
     );
 }
+
+/** What Textarea's `countText` is given: the characters typed, the limit, and how many are left. */
+export interface TextareaCount {
+    length: number;
+    max: number;
+    remaining: number;
+}

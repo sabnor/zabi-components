@@ -16,6 +16,7 @@ export { default as CodeField } from './CodeField.svelte';
 export { DEFAULT_CODE_FIELD_STRINGS } from '../util/code-field.js';
 export type { CodeFieldMode, CodeFieldSize, CodeFieldStrings } from '../util/code-field.js';
 export { default as Textarea } from './Textarea.svelte';
+export type { TextareaCount } from '../util/field.js';
 export { default as PickerField } from './PickerField.svelte';
 export { default as Select } from './Select.svelte';
 export { DEFAULT_SELECT_STRINGS } from '../util/select.js';

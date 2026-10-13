@@ -233,8 +233,10 @@
             );
         }
         // The label wraps when it has to, balanced over its lines; the icon
-        // and the spinner stay centred beside it.
-        const base = `${layout} focus-ring items-center justify-center rounded-button text-center ${variant === "text" ? "font-button-strong" : "font-button"} text-balance transition-colors duration-(--duration-base) cursor-pointer select-none`;
+        // and the spinner stay centred beside it. The button is never wider
+        // than what it is in: a word that alone does not fit is hyphenated by
+        // the page's language (Z-129).
+        const base = `${layout} [max-inline-size:100%] hyphens-auto focus-ring items-center justify-center rounded-button text-center ${variant === "text" ? "font-button-strong" : "font-button"} text-balance transition-colors duration-(--duration-base) cursor-pointer select-none`;
         // `disabled:` does not match an `<a>`: a disabled link wears the
         // disabled pair itself, in place of its variant.
         const busyBox = variant === "outline" ? "border border-transparent" : variant === "link" ? "px-0" : variant === "text" ? "px-2" : "";

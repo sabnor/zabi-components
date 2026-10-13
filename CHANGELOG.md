@@ -12,6 +12,73 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0-alpha.32] - 2026-10-13
+
+A thirty-second local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.31 is removed or renamed. Nothing in it has been rendered in a
+browser: type and design checks, unit tests in jsdom, the package build.
+
+### Added
+
+- `MapView`, from a new entry `zabi-components/map`: a map on MapLibre GL JS with markers from a list (Z-137,
+  D262). `maplibre-gl` is an optional peer dependency (`>=5.0.0`, built against 6.14.0): the app installs it, and
+  the component loads it with `import("maplibre-gl")` when it is mounted in a browser. No other entry of the
+  package exports the map, so importing anything else brings none of it. The library's stylesheet is not needed.
+  - `points` (`id`, `lng`, `lat`, `label`, `checked`), `styleLight` and `styleDark` (URL or object; the dark one
+    is drawn while `data-theme` on `<html>` is dark, or `auto` on a dark system, and a change keeps the position
+    and the markers), `onpointpress(point, index)`, `onclusterpress(points)`, `clusterLabel(points)`.
+  - Markers are buttons with a 44px tap area in px, in the order of `points`. Markers whose tap areas overlap are
+    one count marker, which sits at the place of its first point in the tab order and keeps its element (and the
+    focus) while others join or leave it. A marker reached with Tab outside the view is jumped into view.
+  - `fitMaxZoom` (default 16), `bind:center`, `bind:zoom`, `onmove`, and the methods `fit()`,
+    `showPoint(id, { inset, zoom })` and `showPlace(place, { inset, zoom })` through `bind:this`. Every move is a
+    jump. With `center` and `zoom` given at the start the map opens there and is not fitted.
+  - `viewer`: a dot at a position the page hands in; the map jumps to it. The component never asks the browser.
+  - `bind:status` / `onstatus`: `loading`, `ready`, `library-error`, `tiles-error`. `tiles-error` is told when the
+    style cannot be fetched, or tiles failed and none has arrived; a tile that arrives later takes it back.
+  - `attribution` (string or snippet); without it the words of the style's own attribution, as plain text. Always
+    shown, bottom left. `strings`: `label`, `cluster(count)`, `viewer`. `mapViewSupported()` answers whether the
+    browser has WebGL without loading the library.
+  - Not in `ZabiStringsProvider` yet: the words come through `strings`. A drag that starts on a marker does not
+    pan the map.
+- `Textarea`: `count`, `countFrom` and `countText` show a character count under the field when it has a
+  `maxlength`: "12 / 2000" by default, at the end of the line the hint is on, part of the field's description and
+  not a live region. `TextareaCount` is exported (Z-125, D254).
+- `Toggle`: `description`, a line under the label and inside it, so a tap on it toggles. It is tied to the switch
+  with `aria-describedby`, after any ids passed in, and does not join the name (Z-126, D255).
+- `Checkbox`: `description`, as `Radio` has. `Checkbox` and `Radio`: `controlPosition="end"` puts the control
+  last in the row, which then fills its width; the markup order is unchanged (Z-128, D256).
+- `ImageUpload`: `multiple`, `maxFiles` and `onfiles(files)`. With `multiple` the chooser and a drop take several
+  files and hand them over together, in order; the component keeps none (no preview, `value` not set,
+  `onfileselect` not called). `onfilereject` has a third reason, `"count"`, only with `maxFiles` (Z-130, D258).
+- `PhotoViewer`: `onloaderror(photo, index)`, once per address that fails, and `onretry(photo, index)`, called
+  when "Try again" is pressed; a promise it returns is waited for, with the button busy, before the image is
+  asked for again. `PhotoGrid`: `onloaderror(photo, index)` for a thumbnail (Z-132, D259).
+- `PhotoGrid`: a photo's `status` (`uploading`, with an optional `progress` from 0 to 1, or `error`) is drawn on
+  its tile and said in its name; `onretry(photo, index)` puts a "Try again" button on a failed one. New strings
+  with defaults: `uploading`, `uploadFailed`, `retryUpload(name)`. `PhotoStatus` is exported (Z-133, D260).
+- `PhotoViewer`: a photo's `credit` is a second, quieter line under the caption, outside what "More" folds. The
+  dialog is described by the caption and the credit after the photo's name and place (Z-135, D261).
+
+### Fixed
+
+- `Button`: never wider than its container (`max-inline-size: 100%`, as `Badge`), and a word that alone does not fit is hyphenated by
+  the page's language (`hyphens-auto`). A label that already wraps may now be hyphenated at a line's end
+  (Z-129, D257).
+- `Checkbox`, `Radio`, `RadioGroup`: the input's touch target is 44px in px, centred on the box. In rem it grew
+  with the text: 88px at 200%, past the screen's edge from a box at the end of a row (Z-128, D256).
+- `PhotoGrid`: nothing leaves the add tile at large text. The label is cut at two lines (the name keeps the whole
+  text) and the plus is drawn only where the tile has room for it above two lines (Z-136, D260).
+- `PhotoViewer`: when the control that had the focus is taken out (an action that goes with its photo, with or
+  without a confirm dialog between) and the focus is left on `<body>`, Close takes it (Z-134, D261).
+
+### Notes
+
+- `Collapsible` is not for a "show all" under a list; a `Button` with `aria-expanded` and `aria-controls` under
+  the list is the intended way (Z-127, D263).
+- `PhotoViewer` does not take the browser's Back: a history entry made by a component conflicts with the app's
+  router. Open it from the router's own state, as SvelteKit's shallow routing does (Z-131, D263).
+
 ## [9.0.0-alpha.31] - 2026-10-11
 
 A thirty-first local preview build of the 9.0 direction, not published to npm. No token, prop, variant,

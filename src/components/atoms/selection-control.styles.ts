@@ -71,10 +71,12 @@ export const RADIO_GROUP_CONTROL_SHELL = `${SELECTION_CONTROL_SHELL_STATE} mt-0.
  * On a coarse pointer it is 44 by 44px, centred on the box (12px further out
  * on each side), so the input itself is the touch target and not only the
  * row around it. The row is 44px tall there, so the inputs of two rows never
- * reach each other.
+ * reach each other. The 44 is in px and the centring is by halves: in rem it
+ * grew with the text (88px at 200%, 34px out on each side of a 20px box, and
+ * past the screen's edge from a box at the end of a row, Z-128).
  */
 export const SELECTION_CONTROL_INPUT =
-    "absolute -top-0.5 -start-0.5 m-0 size-5 cursor-pointer appearance-none opacity-0 disabled:cursor-not-allowed pointer-coarse:-top-3.5 pointer-coarse:-start-3.5 pointer-coarse:size-11";
+    "absolute -top-0.5 -left-0.5 m-0 size-5 cursor-pointer appearance-none opacity-0 disabled:cursor-not-allowed pointer-coarse:top-1/2 pointer-coarse:left-1/2 pointer-coarse:size-[44px] pointer-coarse:-translate-x-1/2 pointer-coarse:-translate-y-1/2";
 
 /** Full-bleed ring behind the mark (same geometry as SelectionControl inner ring). Lets a press through to the input. */
 export function selectionControlRingOverlayClasses(

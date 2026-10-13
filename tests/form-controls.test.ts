@@ -472,7 +472,13 @@ describe("Checkbox, Radio and RadioGroup: the real input takes the press", () =>
         expect(own).toEqual(expect.arrayContaining(["absolute", "size-5", "opacity-0"]));
         // On a touch screen the input itself is the 44px target, centred on the box.
         expect(own).toEqual(
-            expect.arrayContaining(["pointer-coarse:size-11", "pointer-coarse:-top-3.5", "pointer-coarse:-start-3.5"]),
+            expect.arrayContaining([
+                "pointer-coarse:size-[44px]",
+                "pointer-coarse:top-1/2",
+                "pointer-coarse:left-1/2",
+                "pointer-coarse:-translate-x-1/2",
+                "pointer-coarse:-translate-y-1/2",
+            ]),
         );
         // Everything else in the box lets a press through.
         for (const sibling of control.parentElement!.children) {
