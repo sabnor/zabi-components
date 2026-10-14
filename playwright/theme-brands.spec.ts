@@ -246,18 +246,18 @@ for (const viewport of WIDTHS) {
                     }
                 }
 
-                // Two roles are the same in light whatever the brand: a raised
-                // card is white, and the generator keeps a white label wherever
-                // white reaches 4.5:1. Both come from the ramps in dark.
+                // A raised card is white in light whatever the brand, and comes
+                // from the tinted ramp in dark. The label on the primary fill
+                // follows the light one in dark too (9.0, D135: the dark
+                // primary keeps the brand's hue under the same label).
                 expect(readings.light.amber.card).toBe(readings.light.default.card);
                 expect(
                     distance(readings.dark.default.card, readings.dark.amber.card),
                     `${path}: dark card surface`,
                 ).toBeGreaterThan(1);
-                expect(
-                    distance(readings.dark.default.label, readings.dark.amber.label),
-                    `${path}: dark label on the primary fill`,
-                ).toBeGreaterThan(10);
+                expect(readings.dark.amber.label, `${path}: dark label on the primary fill`).toBe(
+                    readings.light.amber.label,
+                );
 
                 // And the mode itself changed something, so "dark" was dark.
                 expect(distance(readings.light.amber.page, readings.dark.amber.page)).toBeGreaterThan(100);
