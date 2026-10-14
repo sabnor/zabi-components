@@ -95,7 +95,9 @@ test.describe("FloatingActionButton in an AppShell", () => {
         const button = await box(extended(page));
         const shell = await box(shellOf(page, 1));
         const tabs = await box(tabsOf(page, 1));
-        expect(Math.round(button.height)).toBe(56);
+        // 56px for one line. The docs frame is 211px wide on this phone since the 9.0 site
+        // layout, so the label wraps and the button grows downwards, as an extended one does.
+        expect(Math.round(button.height)).toBeGreaterThanOrEqual(56);
         expect(button.width).toBeGreaterThan(120);
         expect(Math.round(tabs.y - (button.y + button.height))).toBe(16);
         expect(
@@ -197,7 +199,8 @@ test.describe("FloatingActionButton — display modes", () => {
         expect(ring.colour).not.toBe("rgba(0, 0, 0, 0)");
         expect(ring.shadow).toContain("0px 0px 0px 2px");
         expect(ring.shadow).toContain(`${ring.colour} 0px 0px 0px 4px`);
-        expect(ring.shadow, "The button keeps its elevation while focused").toContain("15px -3px");
+        // `shadow-lg`'s far layer since 9.0.
+        expect(ring.shadow, "The button keeps its elevation while focused").toContain("0px 10px 30px 0px");
 
         // Not there without keyboard focus.
         await page.keyboard.press("Shift+Tab");
@@ -245,11 +248,12 @@ test.describe("FloatingActionButton — display modes", () => {
         expect(light.text).toBe(light.onPrimary);
 
         await page.evaluate(() => document.documentElement.classList.add("dark"));
-        // Past the fade from one fill to the other.
+        // Since 9.0 (D135) dark keeps the light primary step, so the fill may not change:
+        // what matters is that it is the dark theme's primary with its own label colour.
         await expect
             .poll(async () => {
                 const now = await colours();
-                return now.fill !== light.fill && now.fill === now.primary;
+                return now.fill === now.primary;
             })
             .toBe(true);
         const dark = await colours();
