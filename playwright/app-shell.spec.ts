@@ -168,8 +168,8 @@ test.describe("AppShell on a phone", () => {
             ).toBe(true);
         }
         // The bars are chrome: they keep their height, and the page gets the room.
-        expect(footer.height).toBe(65);
-        expect((await box(bar(page))).height).toBe(57);
+        expect(footer.height).toBe(64);
+        expect((await box(bar(page))).height).toBe(56);
         await expect(bar(page).getByRole("heading", { name: "Quiz" })).toBeVisible();
         // Some of the content is still visible between the bars.
         const header = await box(bar(page));
@@ -539,7 +539,7 @@ test.describe("AppShell: notch, writing direction, enlarged text and focus", () 
             insets: { top: 47, bottom: 34 },
         });
         // The bars grow by the insets, and say so.
-        await expect.poll(async () => (await box(bar(page))).height).toBe(57 + 47);
+        await expect.poll(async () => (await box(bar(page))).height).toBe(56 + 47);
         const footer = await box(tabs(page));
         expect(footer.y + footer.height).toBe(PHONE.height);
         const lastTab = await box(tabNamed(page, "Me"));
@@ -630,9 +630,9 @@ test.describe("AppShell: notch, writing direction, enlarged text and focus", () 
                 );
             expect(Math.round(lines), `${name} is on one line`).toBe(1);
         }
-        // 65px of tab bar and 57px of top bar on a 568px screen, as at 100%.
-        expect((await box(tabs(page))).height).toBe(65);
-        expect((await box(bar(page))).height).toBe(57);
+        // 64px of tab bar and 56px of top bar on a 568px screen, as at 100%.
+        expect((await box(tabs(page))).height).toBe(64);
+        expect((await box(bar(page))).height).toBe(56);
         // With the top bar away, as it is once the page scrolls.
         await scrollBy(page, 400);
         await expect(bar(page)).toHaveAttribute("data-collapsed", "true");

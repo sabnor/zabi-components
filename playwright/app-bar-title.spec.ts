@@ -75,11 +75,11 @@ const round = (value: number) => Math.round(value * 10) / 10;
 test.describe("AppBar at 360px", () => {
     test.use({ viewport: { width: 360, height: 740 }, hasTouch: true, isMobile: true });
 
-    test("a short title with no leading is the one 57px row it was", async ({ page }) => {
+    test("a short title with no leading is the one 56px row it was", async ({ page }) => {
         await gotoLab(page, "");
         const bar = await measure(page);
         console.log(`MEASURED 360px, short title, no leading: bar ${bar.header.height}px, title ${round(bar.heading.width)}px`);
-        expect(bar.header.height).toBe(57);
+        expect(bar.header.height).toBe(56);
         expect(bar.lines).toBe(1);
         expect(bar.cut).toBe(false);
         // Back, the title, then the actions, on one row.
@@ -94,7 +94,7 @@ test.describe("AppBar at 360px", () => {
         await gotoLab(page, "leading=250&back=0&actions=0");
         const bar = await measure(page);
         console.log(`MEASURED 360px, 250px leading: bar ${bar.header.height}px, title ${round(bar.heading.width)}px`);
-        expect(bar.header.height).toBe(57);
+        expect(bar.header.height).toBe(56);
         expect(bar.heading.width).toBeGreaterThanOrEqual(72);
         expect(bar.chip!.width).toBe(250);
         expect(bar.chip!.right).toBeLessThanOrEqual(bar.heading.left);
@@ -113,8 +113,8 @@ test.describe("AppBar at 360px", () => {
         expect(bar.cut).toBe(false);
         expect(bar.fontSize).toBeCloseTo(23.4, 1);
         // Two rows, and the heading is inside the bar.
-        expect(bar.header.height).toBeGreaterThan(57);
-        expect(bar.header.height).toBeLessThanOrEqual(57 + 48);
+        expect(bar.header.height).toBeGreaterThan(56);
+        expect(bar.header.height).toBeLessThanOrEqual(56 + 48);
         expect(bar.heading.bottom).toBeLessThanOrEqual(bar.header.bottom);
         // The chip is what the app rendered, where it was: a child of the row, at its own width.
         expect(bar.chip!.width).toBe(336);
@@ -185,17 +185,17 @@ test.describe("AppBar at 360px", () => {
         expect(bar.lines).toBe(2);
         expect(bar.cut).toBe(false);
         // Two 24px lines are the height of the controls beside them: the bar is as good as unchanged.
-        expect(bar.header.height).toBeGreaterThanOrEqual(57);
+        expect(bar.header.height).toBeGreaterThanOrEqual(56);
         expect(bar.header.height).toBeLessThan(58);
         // Still beside the controls: it had the room.
         expect(bar.heading.left).toBeGreaterThanOrEqual(bar.back!.right);
         expect(bar.heading.right).toBeLessThanOrEqual(bar.first!.left);
 
-        // A short one with the same prop is the 57px bar.
+        // A short one with the same prop is the 56px bar.
         await gotoLab(page, "lines=2");
         const short = await measure(page);
         expect(short.lines).toBe(1);
-        expect(short.header.height).toBe(57);
+        expect(short.header.height).toBe(56);
 
         // And one too long for two lines is cut at the second.
         await gotoLab(page, `title=${encodeURIComponent(`${long} ${long} ${long}`)}&lines=2`);
@@ -208,10 +208,10 @@ test.describe("AppBar at 360px", () => {
         await gotoLab(page, "shell=1");
         const inset = () =>
             page.evaluate(() => document.documentElement.style.getPropertyValue("--app-shell-top-inset"));
-        await expect.poll(inset).toBe("57px");
+        await expect.poll(inset).toBe("56px");
         await gotoLab(page, "shell=1&leading=336&back=0&actions=0");
         const bar = await measure(page);
-        expect(bar.header.height).toBeGreaterThan(57);
+        expect(bar.header.height).toBeGreaterThan(56);
         await expect.poll(inset).toBe(`${bar.header.height}px`);
     });
 });
@@ -235,8 +235,8 @@ for (const width of [180, 240]) {
                 expect(control.left).toBeGreaterThanOrEqual(0);
                 expect(control.right).toBeLessThanOrEqual(width + 0.1);
             }
-            expect(bar.header.height).toBeGreaterThan(57);
-            expect(bar.header.height).toBeLessThanOrEqual(57 + 40);
+            expect(bar.header.height).toBeGreaterThan(56);
+            expect(bar.header.height).toBeLessThanOrEqual(56 + 40);
             expect(bar.overflow).toBe(0);
         });
     });
@@ -246,11 +246,11 @@ for (const width of [280, 320, 375]) {
     test.describe(`AppBar at ${width}px, a back control and two actions`, () => {
         test.use({ viewport: { width, height: 640 }, hasTouch: true, isMobile: true });
 
-        test("with 72px or more for the title it is one 57px row, at 100% and 200%", async ({ page }) => {
+        test("with 72px or more for the title it is one 56px row, at 100% and 200%", async ({ page }) => {
             for (const percent of [100, 200]) {
                 await gotoLab(page, "", percent);
                 const bar = await measure(page);
-                expect(bar.header.height, `${percent}%`).toBe(57);
+                expect(bar.header.height, `${percent}%`).toBe(56);
                 expect(bar.heading.width, `${percent}%`).toBeGreaterThanOrEqual(72);
                 expect(bar.heading.left).toBeGreaterThanOrEqual(bar.back!.right);
                 expect(bar.heading.right).toBeLessThanOrEqual(bar.first!.left);

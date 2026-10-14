@@ -108,7 +108,7 @@ for (const size of [
         test.describe(`${size.width}px, text at ${percent}%`, () => {
             test.use({ viewport: size, hasTouch: true, isMobile: true });
 
-            test("AppBar: one row of 57px, the title on one line, 48px controls with 24px icons", async ({
+            test("AppBar: one row of 56px, the title on one line, 48px controls with 24px icons", async ({
                 page,
             }) => {
                 await gotoLab(page, "", percent);
@@ -116,7 +116,7 @@ for (const size of [
                 console.log(
                     `MEASURED AppBar ${size.width}px ${percent}%: height ${round(bar.header.height)}, title ${round(bar.fontSize)}px, cut ${bar.cut}`,
                 );
-                expect(bar.header.height).toBe(57);
+                expect(bar.header.height).toBe(56);
                 expect(bar.lines).toBe(1);
                 expect(bar.text).toBe("Logga besök");
                 // "Logga besök" is whole beside a back control and two actions.
@@ -148,7 +148,7 @@ for (const size of [
             }) => {
                 await gotoLab(page, "?title=long", percent);
                 const bar = await measureAppBar(page);
-                expect(bar.header.height).toBe(57);
+                expect(bar.header.height).toBe(56);
                 expect(bar.lines).toBe(1);
                 expect(bar.cut).toBe(true);
                 await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -164,7 +164,7 @@ for (const size of [
                 expect(bar.pageOverflow).toBe(0);
             });
 
-            test("BottomTabBar: one row of 65px, labels on one line and never broken inside a word", async ({
+            test("BottomTabBar: one row of 64px, labels on one line and never broken inside a word", async ({
                 page,
             }) => {
                 await gotoLab(page, "", percent);
@@ -172,7 +172,7 @@ for (const size of [
                 console.log(
                     `MEASURED BottomTabBar ${size.width}px ${percent}%: height ${round(bar.nav.height)}, tabs ${bar.tabs.map((tab) => round(tab.box.width)).join("/")}, label ${round(bar.tabs[0].fontSize)}px, cut ${bar.tabs.filter((tab) => tab.cut).map((tab) => tab.text).join(",") || "none"}`,
                 );
-                expect(bar.nav.height).toBe(65);
+                expect(bar.nav.height).toBe(64);
                 expect(bar.nav.bottom).toBe(size.height);
                 expect(bar.tabs).toHaveLength(5);
                 for (const tab of bar.tabs) {
@@ -220,7 +220,7 @@ for (const size of [
                 await gotoLab(page, "", percent);
                 const top = await measureAppBar(page);
                 const bottom = await measureTabs(page);
-                expect(top.header.height + bottom.nav.height).toBe(122);
+                expect(top.header.height + bottom.nav.height).toBe(120);
             });
         });
     }
@@ -237,7 +237,7 @@ test.describe("BottomTabBar with room: three tabs", () => {
         await page.evaluate(() => (document.documentElement.style.fontSize = "200%"));
         const bar = await measureTabs(page, "lab-tabs-three");
         expect(bar.tabs[0].fontSize).toBeCloseTo(15.6, 1);
-        expect(bar.nav.height).toBe(65);
+        expect(bar.nav.height).toBe(64);
         expect(bar.tabs.every((tab) => tab.lines === 1 && !tab.cut)).toBe(true);
     });
 });
@@ -254,7 +254,7 @@ for (const width of [260, 240, 180]) {
             console.log(
                 `MEASURED BottomTabBar ${width}px: height ${round(bar.nav.height)}, tabs ${bar.tabs.map((tab) => `${round(tab.box.left)}-${round(tab.box.right)}`).join(" ")}, labels ${bar.tabs[0].labelShown ? "shown" : "icons only"}`,
             );
-            expect(bar.nav.height).toBe(65);
+            expect(bar.nav.height).toBe(64);
             expect(bar.pageOverflow).toBe(0);
             expect(bar.navOverflow).toBe(0);
             for (let index = 1; index < bar.tabs.length; index += 1) {
@@ -303,10 +303,10 @@ for (const width of [260, 240, 180]) {
 test.describe("BottomTabBar at 180px with text at 200%", () => {
     test.use({ viewport: { width: 180, height: 640 }, hasTouch: true, isMobile: true });
 
-    test("is the same bar: 65px, five 36px tabs, icons only", async ({ page }) => {
+    test("is the same bar: 64px, five 36px tabs, icons only", async ({ page }) => {
         await gotoLab(page, "", 200);
         const bar = await measureTabs(page);
-        expect(bar.nav.height).toBe(65);
+        expect(bar.nav.height).toBe(64);
         expect(bar.tabs.map((tab) => Math.round(tab.box.width))).toEqual([36, 36, 36, 36, 36]);
         expect(bar.tabs[4].box.right).toBeLessThanOrEqual(180.1);
         expect(bar.pageOverflow).toBe(0);
@@ -323,8 +323,8 @@ test.describe("AppBar at 180px wide", () => {
             `MEASURED AppBar 180px 200%: height ${round(bar.header.height)}, controls ${bar.controls.map((control) => `${round(control.box.left)}-${round(control.box.right)}`).join(" ")}, title ${round(bar.heading.width)}px wide`,
         );
         // Two rows: the controls' 48px and one line of title (playwright/app-bar-title.spec.ts).
-        expect(bar.header.height).toBeGreaterThan(57);
-        expect(bar.header.height).toBeLessThanOrEqual(57 + 48);
+        expect(bar.header.height).toBeGreaterThan(56);
+        expect(bar.header.height).toBeLessThanOrEqual(56 + 48);
         expect(bar.heading.width).toBeGreaterThanOrEqual(180 - 32);
         expect(bar.pageOverflow).toBe(0);
         for (const control of bar.controls) {

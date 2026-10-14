@@ -189,7 +189,7 @@
         // the 4px. No gap between pill and label: 32px and a 16px line in a
         // 56px box leave the same 4px above and below as at the sides.
         const base =
-            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-0 rounded-[20px] px-[4px] text-center no-underline transition-colors duration-(--duration-base) motion-reduce:transition-none";
+            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-0 rounded-[20px] px-[2px] text-center no-underline transition-colors duration-(--duration-base) motion-reduce:transition-none";
         return isActive
             ? cn(base, "font-semibold text-nav-menu-item-active")
             : cn(
