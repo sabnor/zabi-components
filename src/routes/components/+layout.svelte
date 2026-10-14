@@ -150,7 +150,7 @@
             <div
                 class="relative flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain"
             >
-                <main class="flex-1 p-8">
+                <main class="flex-1 p-4 sm:p-8">
                 <div class="mb-6 flex items-center gap-3 lg:hidden">
                     <button
                         type="button"
