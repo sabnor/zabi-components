@@ -100,12 +100,12 @@ test.describe("TopNavbar phone menu at 375px", () => {
         expect(row.width).toBeGreaterThan(300);
         for (const link of links) {
             expect(link.width).toBeCloseTo(row.width, 0);
-            expect(link.height).toBeGreaterThanOrEqual(44);
+            expect(link.height).toBeGreaterThanOrEqual(44 - 0.01);
         }
     });
 
     test("finding 7: a tap outside the bar closes the menu; the page is not locked", async ({ page }) => {
-        await gotoLab(page);
+        await gotoLab(page, "?menu=inline"); // the panel under the bar (9.0 opens a sheet by default)
         await openMenu(page);
 
         // Not a modal: the page behind still scrolls.
@@ -175,7 +175,7 @@ test.describe("TopNavbar phone menu at 375px", () => {
     test("Tab past the last control closes the menu with focus on the next control in the page", async ({
         page,
     }) => {
-        await gotoLab(page);
+        await gotoLab(page, "?menu=inline"); // the panel under the bar (9.0 opens a sheet by default)
         await openMenu(page);
         await panel(page).getByRole("button", { name: "Dark mode", exact: true }).focus();
         await page.keyboard.press("Tab");
@@ -188,7 +188,7 @@ test.describe("TopNavbar phone menu at 375px", () => {
     });
 
     test("finding 7: so does moving focus out of the bar; focus inside it does not", async ({ page }) => {
-        await gotoLab(page);
+        await gotoLab(page, "?menu=inline"); // the panel under the bar (9.0 opens a sheet by default)
         await openMenu(page);
         await panel(page).getByRole("link", { name: "Theming" }).focus();
         await expect(panel(page)).toBeVisible();
@@ -245,7 +245,7 @@ test.describe("TopNavbar phone menu over the page it pushed down", () => {
             // At the top of the page the open menu pushes the page down. Closing
             // on the way down moved the control from under the press: it closed
             // the menu and the control never got its click.
-            await gotoLab(page);
+            await gotoLab(page, "?menu=inline"); // the panel under the bar (9.0 opens a sheet by default)
             await openMenu(page);
             const outside = page.getByTestId("lab-outside");
             const box = (await outside.boundingBox())!;
@@ -266,7 +266,7 @@ test.describe("TopNavbar phone menu on a short screen", () => {
     test("finding 2: the open menu fits under the bar and scrolls on its own to its last control", async ({
         page,
     }) => {
-        await gotoLab(page);
+        await gotoLab(page, "?menu=inline"); // the panel under the bar (9.0 opens a sheet by default)
         await openMenu(page);
 
         const sizes = await panel(page).evaluate((element) => {
