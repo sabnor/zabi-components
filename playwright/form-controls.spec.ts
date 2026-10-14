@@ -66,7 +66,9 @@ async function takesATouch(control: Locator) {
 const px = (value: string) => Number.parseFloat(value);
 
 const reveal = (page: Page) => page.getByTestId("input-demo-reveal");
-const revealButton = (page: Page) => page.getByRole("button", { name: "Show password" });
+// The reveal demo's own button: since 9.0 every password field on the page has one (revealable defaults to true).
+const revealButton = (page: Page) =>
+    reveal(page).locator("xpath=ancestor::*[.//button[@data-input-reveal]][1]").locator("button[data-input-reveal]");
 
 /** Waits until the reveal button answers: the page is usable before it hydrates. */
 async function inputPage(page: Page) {

@@ -225,7 +225,7 @@ test.describe("Toasts, the keyboard and what is under them", () => {
     test("--toaster-bottom-offset is for the page: over an overlay's footer it adds nothing", async ({
         page,
     }) => {
-        // A tab bar of the page, and the 65px the lab gives the stack to clear it.
+        // A tab bar of the page, and the 64px the lab gives the stack to clear it.
         await page.getByTestId("bar-toggle").click();
         const bar = page.getByTestId("standalone-bar");
         await expect(bar).toBeVisible();

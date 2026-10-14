@@ -12,6 +12,11 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Fixed
+
+- **BottomTabBar**: a tab's side padding is 2px (was 4px), so a five-tab bar keeps a label like "Kalender" whole at 320px.
+- **Toaster**: a stack that scrolls keeps the newest toast in view when its words arrive after it is shown and it grows. It was pushed below the end of the stack.
+
 ## [9.0.0] - 2026-10-13
 
 9.0.0 is a new look and a larger set. Bars, sheets, menus and toasts are glass materials, the light page is

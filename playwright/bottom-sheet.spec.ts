@@ -381,7 +381,8 @@ test.describe("BottomSheet — keyboard, motion and display modes", () => {
                 return { property: style.transitionProperty, duration: style.transitionDuration };
             });
         expect((await transition()).property).toContain("height");
-        expect((await transition()).duration).toBe("0.2s");
+        // `--duration-slow` on a spring since 9.0; it was a literal 200ms.
+        expect((await transition()).duration).toBe("0.3s");
 
         await page.emulateMedia({ reducedMotion: "reduce" });
         expect((await transition()).property).toBe("none");
@@ -407,10 +408,19 @@ test.describe("BottomSheet — keyboard, motion and display modes", () => {
                 const canvas = document.createElement("canvas");
                 canvas.width = canvas.height = 1;
                 const context = canvas.getContext("2d", { willReadFrequently: true })!;
-                const luminance = (colour: string) => {
+                // The panel is transparent since 9.0: its fill is the thick material on a layer,
+                // translucent over what is behind the sheet (the page under the backdrop).
+                const page = [document.body, document.documentElement]
+                    .map((element) => getComputedStyle(element).backgroundColor)
+                    .find((colour) => colour !== "rgba(0, 0, 0, 0)")!;
+                // The backdrop is the panel's own parent, the dialog's click target.
+                const under = [page, getComputedStyle(panel.parentElement!).backgroundColor];
+                const luminance = (colour: string, behind: string[] = []) => {
                     context.clearRect(0, 0, 1, 1);
-                    context.fillStyle = colour;
-                    context.fillRect(0, 0, 1, 1);
+                    for (const fill of [...behind, colour]) {
+                        context.fillStyle = fill;
+                        context.fillRect(0, 0, 1, 1);
+                    }
                     const [r, g, b] = [...context.getImageData(0, 0, 1, 1).data].map((value) => {
                         const channel = value / 255;
                         return channel <= 0.03928
@@ -421,7 +431,8 @@ test.describe("BottomSheet — keyboard, motion and display modes", () => {
                 };
                 const mark = panel.querySelector("[data-sheet-grip] > span")!;
                 const a = luminance(getComputedStyle(mark).backgroundColor);
-                const b = luminance(getComputedStyle(panel).backgroundColor);
+                const material = getComputedStyle(panel, "::after").backgroundColor;
+                const b = luminance(material, under);
                 return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
             });
         expect(await ratio(), "light").toBeGreaterThanOrEqual(3);

@@ -128,25 +128,30 @@ test.describe("SegmentedControl: touch, keyboard and small screens", () => {
         await expect(answerValue(page)).toHaveText("no");
     });
 
-    test("rendering: the selected segment carries the primary action fill and its text colour", async ({
-        page,
-    }) => {
-        const face = (label: string) =>
-            segment(view(page), label)
-                .locator(".segment-face")
-                .evaluate((element) => {
-                    const style = getComputedStyle(element);
-                    return { background: style.backgroundColor, colour: style.color };
-                });
+    // Z-052 (9.0): the default tone is neutral. The selected segment is a thumb in the card
+    // colour on the tinted track, drawn by the one sliding indicator; `tone="primary"` restores
+    // the primary fill.
+    test("rendering: the selected segment is the neutral thumb with the thumb's text colour", async ({ page }) => {
         // Let the colour transition end before reading it.
         await page.emulateMedia({ reducedMotion: "reduce" });
-        const selected = await face("List");
-        expect(selected.background).toBe(await token(page, "--color-action-primary"));
-        expect(selected.colour).toBe(await token(page, "--color-action-primary-text"));
+        const colour = (label: string) =>
+            segment(view(page), label)
+                .locator(".segment-face")
+                .evaluate((element) => getComputedStyle(element).color);
+        const thumb = await view(page)
+            .locator(".segment-indicator")
+            .evaluate((element) => getComputedStyle(element).backgroundColor);
+        expect(thumb).toBe(await token(page, "--color-segment-thumb"));
+        expect(thumb).not.toBe(await token(page, "--color-action-primary"));
+        expect(await colour("List")).toBe(await token(page, "--color-segment-thumb-text"));
+        expect(await colour("Month")).toBe(await token(page, "--color-body"));
 
-        const idle = await face("Month");
-        expect(idle.background).not.toBe(selected.background);
-        expect(idle.colour).toBe(await token(page, "--color-body"));
+        // The thumb sits on the selected segment.
+        const [mark, chosen] = await Promise.all([
+            view(page).locator(".segment-indicator").boundingBox(),
+            segment(view(page), "List").boundingBox(),
+        ]);
+        expect(Math.abs(mark!.x + mark!.width / 2 - (chosen!.x + chosen!.width / 2))).toBeLessThanOrEqual(1);
     });
 
     test("keyboard: the group is one Tab stop, the arrows move and select, and it reads as a named radio group", async ({
@@ -314,6 +319,11 @@ test.describe("SegmentedControl: touch, keyboard and small screens", () => {
                 }),
             }));
 
+        // The sliding indicator is measured again a frame after the resize; until then it
+        // keeps the wider size it had.
+        await expect
+            .poll(async () => Math.max(...(await measure()).hosts.map((host) => host.scroll)))
+            .toBeLessThanOrEqual(0);
         const narrow = await measure();
         expect(narrow.page).toBe(0);
         expect(narrow.hosts.length).toBeGreaterThanOrEqual(8);

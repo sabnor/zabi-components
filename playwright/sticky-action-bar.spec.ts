@@ -272,11 +272,19 @@ test.describe("StickyActionBar — in a form of its own, and display modes", () 
 
     test("forced colours: the bar keeps its edge", async ({ page }) => {
         await page.emulateMedia({ forcedColors: "active" });
+        // Since 9.0 (D124) the edge is a border on the material's layer, drawn once content is
+        // under the bar: a border, so forced colours keeps it where a shadow would go.
         const edge = await plain(page).evaluate((el) => {
-            const style = getComputedStyle(el);
-            return { width: style.borderTopWidth, style: style.borderTopStyle };
+            const style = getComputedStyle(el, "::before");
+            return {
+                under: el.getAttribute("data-scrolled-under"),
+                width: style.borderTopWidth,
+                style: style.borderTopStyle,
+                colour: style.borderTopColor,
+            };
         });
-        expect(edge).toEqual({ width: "1px", style: "solid" });
+        expect({ width: edge.width, style: edge.style }).toEqual({ width: "1px", style: "solid" });
+        if (edge.under === "true") expect(edge.colour).not.toBe("rgba(0, 0, 0, 0)");
     });
 });
 
@@ -415,9 +423,10 @@ test.describe("StickyActionBar — the keyboard, and where the bar's own box end
         await expect
             .poll(async () => Math.round((await box(bar(page))).y + (await box(bar(page))).height))
             .toBe(ABOVE_KEYBOARD);
-        // Raised by the keyboard's height less the tab bar under it.
+        // The tab bar lies over the scroller since 9.0 (f1b7cfa), so the lift is the keyboard's
+        // whole height from the box's bottom, and never less than the tab bar's overlay.
         expect(await bar(page).evaluate((el) => el.style.bottom)).toBe(
-            `${PHONE.height - ABOVE_KEYBOARD - Math.round(footer.height)}px`,
+            `max(${PHONE.height - ABOVE_KEYBOARD}px, var(--app-shell-footer-overlay, 0px))`,
         );
     });
 });

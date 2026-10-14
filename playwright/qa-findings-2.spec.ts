@@ -341,7 +341,8 @@ test.describe("TopNavbar: the phone menu under a status bar", () => {
     test.use({ viewport: { width: 568, height: 320 }, hasTouch: true, isMobile: true });
 
     test("the top safe-area inset comes off the menu's height limit", async ({ page }) => {
-        await page.goto("/chaos-lab/top-navbar", { waitUntil: "domcontentloaded" });
+        // The inline menu: the sheet is the 9.0 default and has a limit of its own.
+        await page.goto("/chaos-lab/top-navbar?menu=inline", { waitUntil: "domcontentloaded" });
         await expect(page.getByTestId("lab-hydrated")).toBeAttached({ timeout: 30_000 });
         const menuButton = page.getByRole("button", { name: /^(Open|Close) menu$/ });
         await menuButton.click();
@@ -349,14 +350,14 @@ test.describe("TopNavbar: the phone menu under a status bar", () => {
         await expect(panel).toBeVisible();
         const limit = () => panel.evaluate((element) => parseFloat(getComputedStyle(element).maxHeight));
 
-        // 320 - 64 (bar) - 1 (border).
-        expect(await limit()).toBeCloseTo(255, 0);
+        // 320 - 64 (bar). The bar's hairline is on its layer since 9.0 (D124), not a border.
+        expect(await limit()).toBeCloseTo(256, 0);
 
         const cdp = await page.context().newCDPSession(page);
         await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { top: 47 } });
-        await expect.poll(limit).toBeCloseTo(208, 0);
+        await expect.poll(limit).toBeCloseTo(209, 0);
         // Still its own scroller, now inside what is left.
         await expect(panel).toHaveAttribute("data-scrolls", "");
-        expect((await rect(panel)).height).toBeLessThanOrEqual(208.5);
+        expect((await rect(panel)).height).toBeLessThanOrEqual(209.5);
     });
 });

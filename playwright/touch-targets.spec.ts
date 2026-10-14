@@ -401,7 +401,8 @@ test.describe("touch targets on a coarse pointer", () => {
         { page: "Checkbox", name: "Checkbox row", locate: (page) => page.locator(PREVIEWS).locator("label").first(), property: "backgroundColor" },
         { page: "Toggle", name: "Toggle", locate: (page) => page.locator(PREVIEWS).getByRole("switch").first(), property: "backgroundColor" },
         { page: "Tabs", name: "unselected tab", locate: (page) => page.locator(PREVIEWS).getByRole("tab", { selected: false }).first(), property: "backgroundColor" },
-        { page: "Collapsible", name: "Collapsible trigger", locate: (page) => page.locator(PREVIEWS).locator("button[aria-expanded]").first(), property: "backgroundColor" },
+        // A native <summary> since 9.0 (D143).
+        { page: "Collapsible", name: "Collapsible trigger", locate: (page) => page.locator(PREVIEWS).locator("summary[data-collapsible-trigger]").first(), property: "backgroundColor" },
         { page: "NavigationMenu", name: "NavigationMenu trigger", locate: (page) => page.locator(PREVIEWS).getByRole("button", { name: "Components" }).first(), property: "backgroundColor" },
         { page: "SortableList", name: "SortableList handle", locate: (page) => page.locator(PREVIEWS).locator("button.size-8").first(), property: "backgroundColor" },
         { page: "SegmentedControl", name: "unselected segment", locate: (page) => page.locator(PREVIEWS).locator(".segment:has(input:not(:checked)) .segment-face").first(), property: "backgroundColor" },
@@ -447,8 +448,19 @@ test.describe("touch targets on a coarse pointer", () => {
                     const canvas = document.createElement("canvas");
                     canvas.width = canvas.height = 1;
                     const context = canvas.getContext("2d", { willReadFrequently: true })!;
+                    // The fill may be translucent (a press tint): it is seen over what is behind it.
+                    let behind = "rgb(255, 255, 255)";
+                    for (let up = node.parentElement; up; up = up.parentElement) {
+                        const colour = getComputedStyle(up).backgroundColor;
+                        if (colour !== "rgba(0, 0, 0, 0)" && !colour.startsWith("rgba")) {
+                            behind = colour;
+                            break;
+                        }
+                    }
                     const luminance = (colour: string) => {
                         context.clearRect(0, 0, 1, 1);
+                        context.fillStyle = behind;
+                        context.fillRect(0, 0, 1, 1);
                         context.fillStyle = colour;
                         context.fillRect(0, 0, 1, 1);
                         const [r, g, b] = [...context.getImageData(0, 0, 1, 1).data].slice(0, 3).map((channel) => {
@@ -506,7 +518,7 @@ test.describe("the same pages on a fine pointer", () => {
         expect((await first("Tabs", '[role="tab"]')).height).toBe(38);
         expect((await first("Checkbox", "label")).height).toBe(36);
         expect((await first("NavigationMenu", "button")).height).toBe(36);
-        expect((await first("Collapsible", "button[aria-expanded]")).height).toBe(36);
+        expect((await first("Collapsible", "summary[data-collapsible-trigger]")).height).toBe(36);
         const toggle = await first("Toggle", '[role="switch"]');
         expect([toggle.width, toggle.height]).toEqual([40, 24]);
         expect((await first("ThemeToggle", "button")).height).toBe(40);
@@ -561,8 +573,19 @@ test.describe("a toggled-on IconButton shows the press", () => {
                     const canvas = document.createElement("canvas");
                     canvas.width = canvas.height = 1;
                     const context = canvas.getContext("2d", { willReadFrequently: true })!;
+                    // The fill may be translucent (a press tint): it is seen over what is behind it.
+                    let behind = "rgb(255, 255, 255)";
+                    for (let up = node.parentElement; up; up = up.parentElement) {
+                        const colour = getComputedStyle(up).backgroundColor;
+                        if (colour !== "rgba(0, 0, 0, 0)" && !colour.startsWith("rgba")) {
+                            behind = colour;
+                            break;
+                        }
+                    }
                     const luminance = (colour: string) => {
                         context.clearRect(0, 0, 1, 1);
+                        context.fillStyle = behind;
+                        context.fillRect(0, 0, 1, 1);
                         context.fillStyle = colour;
                         context.fillRect(0, 0, 1, 1);
                         const [r, g, b] = [...context.getImageData(0, 0, 1, 1).data].slice(0, 3).map((channel) => {

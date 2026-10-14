@@ -106,12 +106,14 @@ test.describe("a toast of three seconds", () => {
         await expect(toast).toHaveCSS("opacity", "1");
         await expect.poll(() => toast.evaluate((el) => el.getAnimations().length)).toBe(0);
         expect(await secondsLeft(toast)).toBe(3);
-        // What is announced is there from the start, as one piece.
+        // What is announced is one piece, put into the live region a moment after the region
+        // itself (9.0: about 100ms, so a screen reader hears it).
         const live = toast.locator('[role="status"]');
         await expect(live).toHaveAttribute("aria-atomic", "true");
+        await page.clock.runFor(150);
         await expect(live).toHaveText("Draft saved.");
 
-        await page.clock.runFor(3000);
+        await page.clock.runFor(2850);
         // Its way out is an animation of its own; the toast is out of the page when that has ended.
         await expect(toasts(page)).toHaveCount(0);
         await expect(stack(page).locator("*")).toHaveCount(0);
@@ -221,7 +223,10 @@ test.describe("a finger on a toast", () => {
         await touchTap(page, await centre(toast.locator("[data-toast-message]")));
         await expect(pauses).toHaveText("Pauses: paused,running");
 
+        // The tap left the pointer at the centre: a mouse holds the timer once it has moved over
+        // the toast (9.0), so it moves there from a little to the side.
         const over = await centre(toast.locator("[data-toast-message]"));
+        await page.mouse.move(over.x - 12, over.y);
         await page.mouse.move(over.x, over.y);
         await expect(toast).toHaveAttribute("data-paused", "true");
         await page.mouse.down();
@@ -300,19 +305,23 @@ test.describe("a press on a toast, with something open under it", () => {
 
         const onPage = await pointOnThePage(page);
         await page.mouse.click(onPage.x, onPage.y);
-        await expect(menuButton, "A press on the page").toHaveAttribute("aria-expanded", "false");
+        await expect(menuButton, "A press outside the menu").toHaveAttribute("aria-expanded", "false");
         await expect(toast).toBeVisible();
     });
 });
 
-/** A point where the page itself is on top: not the bar with its open menu, not a toast. */
+/**
+ * A point outside what is open: not the bar, not the menu's panel, not a toast. Since 9.0 the
+ * phone menu is a bottom sheet, so outside it is its backdrop, over the page.
+ */
 const pointOnThePage = (page: Page) =>
     page.evaluate(() => {
         const x = Math.round(window.innerWidth / 2);
-        for (let y = window.innerHeight - 10; y > 0; y -= 10) {
-            if (document.elementFromPoint(x, y)?.closest("main")) return { x, y };
+        for (let y = 10; y < window.innerHeight; y += 10) {
+            const hit = document.elementFromPoint(x, y);
+            if (hit && !hit.closest('header, [role="dialog"], [data-zabi-toaster]')) return { x, y };
         }
-        throw new Error("The page is covered from top to bottom");
+        throw new Error("Nothing outside the bar, the menu and the toasts");
     });
 
 test.describe("Drawer on a phone with a home indicator", () => {

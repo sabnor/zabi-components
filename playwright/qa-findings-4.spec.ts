@@ -11,7 +11,8 @@ import { gotoHydrated } from "./helpers/hydration";
  * - Select: every option was a Tab stop, so the search field was a Shift+Tab
  *   per option away, and a typed letter did nothing.
  * - BottomTabBar: with the labels hidden, nothing but text colour told the
- *   active tab from the others, and not at 3:1.
+ *   active tab from the others. Since 9.0 (D107/D126) the marks are a tinted
+ *   pill, a heavier icon and a semibold label, with no outline.
  *
  * The AppBar's title on a narrow bar is in playwright/app-bar-title.spec.ts.
  */
@@ -256,53 +257,45 @@ test.describe("BottomTabBar: which tab is active, without reading", () => {
             test.describe(`${size.name}, ${dark ? "dark" : "light"}`, () => {
                 test.use({ viewport: { width: size.width, height: 640 }, hasTouch: true, isMobile: true });
 
-                test("the active tab has a mark at 3:1 against the bar that the others do not have", async ({
-                    page,
-                }) => {
+                // D107/D126 (9.0): no outline, which read as keyboard focus. The active tab is told
+                // apart by a set of marks, so not by colour alone: the tinted pill, a heavier (or
+                // filled) icon and a semibold label. The fill need not reach 3:1 on its own.
+                test("the active tab has marks of its own besides colour, and no outline", async ({ page }) => {
                     await gotoHydrated(page, BARS);
                     await setTheme(page, dark);
                     await page.waitForTimeout(250);
                     const measured = await page.getByTestId("lab-tabs-five").evaluate((element, toRgba) => {
                         const rgba = new Function(`return ${toRgba}`)() as (colour: string) => number[];
                         const nav = element.querySelector("nav")!;
-                        const bar = rgba(getComputedStyle(nav).backgroundColor);
-                        return {
-                            bar,
-                            tabs: [...nav.querySelectorAll("a")].map((link) => {
-                                const pill = link.querySelector<HTMLElement>(":scope > span")!;
-                                const style = getComputedStyle(pill);
-                                const label = link.querySelector<HTMLElement>(".tabbar-label")!;
-                                return {
-                                    active: link.getAttribute("aria-current") === "page",
-                                    pill: rgba(style.backgroundColor),
-                                    outline: style.outlineStyle !== "none" ? rgba(style.outlineColor) : [0, 0, 0, 0],
-                                    outlineWidth: parseFloat(style.outlineWidth),
-                                    outlineInside: parseFloat(style.outlineOffset) < 0,
-                                    labelShown: label.getBoundingClientRect().width > 2,
-                                    pillBox: [pill.getBoundingClientRect().width, pill.getBoundingClientRect().height],
-                                    tabWidth: link.getBoundingClientRect().width,
-                                };
-                            }),
-                        };
+                        return [...nav.querySelectorAll("a")].map((link) => {
+                            const pill = link.querySelector<HTMLElement>(":scope > span")!;
+                            const style = getComputedStyle(pill);
+                            const label = link.querySelector<HTMLElement>(".tabbar-label")!;
+                            const icon = pill.querySelector("svg")!;
+                            return {
+                                active: link.getAttribute("aria-current") === "page",
+                                pill: rgba(style.backgroundColor),
+                                outlined: style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0,
+                                stroke: parseFloat(icon.getAttribute("stroke-width") ?? getComputedStyle(icon).strokeWidth),
+                                weight: Number(getComputedStyle(label).fontWeight),
+                                labelShown: label.getBoundingClientRect().width > 2,
+                                pillHeight: pill.getBoundingClientRect().height,
+                            };
+                        });
                     }, TO_RGBA);
-                    const active = measured.tabs.find((tab) => tab.active)!;
-                    const others = measured.tabs.filter((tab) => !tab.active);
+                    const active = measured.find((tab) => tab.active)!;
+                    const others = measured.filter((tab) => !tab.active);
                     expect(active.labelShown).toBe(size.labels);
-
-                    const pillContrast = active.pill[3] === 255 ? contrast(active.pill, measured.bar) : 1;
-                    const outlineContrast =
-                        active.outline[3] === 255 && active.outlineWidth >= 2 ? contrast(active.outline, measured.bar) : 1;
-                    console.log(
-                        `MEASURED BottomTabBar ${size.name} ${dark ? "dark" : "light"}: pill fill ${round(pillContrast)}:1, pill outline ${round(outlineContrast)}:1 against the bar`,
-                    );
-                    // The outline is the mark that does not need colour vision or text: 2px, at 3:1 or better.
-                    expect(outlineContrast).toBeGreaterThanOrEqual(3);
-                    expect(active.outlineWidth).toBeGreaterThanOrEqual(2);
-                    // Inside the pill, so it is not cut off by the tab or the bar.
-                    expect(active.outlineInside).toBe(true);
-                    expect(active.pillBox[1]).toBe(32);
-                    // The other tabs have none.
-                    for (const tab of others) expect(tab.outline[3] === 255 && tab.outlineWidth > 0).toBe(false);
+                    expect(active.pillHeight).toBe(32);
+                    expect(active.pill[3]).toBeGreaterThan(0);
+                    expect(active.outlined).toBe(false);
+                    expect(active.weight).toBeGreaterThanOrEqual(600);
+                    for (const tab of others) {
+                        expect(tab.pill[3]).toBe(0);
+                        expect(tab.outlined).toBe(false);
+                        expect(tab.stroke).toBeLessThan(active.stroke);
+                        expect(tab.weight).toBeLessThan(600);
+                    }
                 });
             });
         }

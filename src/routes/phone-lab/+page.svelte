@@ -157,7 +157,7 @@
 </svelte:head>
 
 <Toaster
-    style={standaloneBar ? "--toaster-bottom-offset: calc(4rem + 1px)" : undefined}
+    style={standaloneBar ? "--toaster-bottom-offset: 4rem" : undefined}
     strings={swedish ? sv : undefined}
     onpausechange={({ paused }) => (pauses = [...pauses, paused ? "paused" : "running"])}
 />
@@ -252,7 +252,8 @@
         <!-- Left and right, in both strategies: where the bubble and its arrow end up. -->
         <div class="flex justify-center gap-6" data-testid="tip-sides">
             {#each [["left", false], ["right", false], ["left", true], ["right", true]] as const as [at, isFixed] (`${at}-${isFixed}`)}
-                <Tooltip content="Beside" placement={at} fixed={isFixed}>
+                <!-- Inverted: the tone with the arrow (9.0: the default glass bubble has none), which these place. -->
+                <Tooltip content="Beside" placement={at} fixed={isFixed} tone="inverted">
                     <button
                         type="button"
                         class="focus-ring rounded-control p-3 text-body"
