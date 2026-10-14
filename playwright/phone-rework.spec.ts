@@ -690,14 +690,14 @@ test.describe("Modal on a desktop", () => {
         await page.getByRole("button", { name: "Open modal" }).first().click();
         await expect(panel).toBeVisible();
 
-        expect(await box(panel)).toEqual({ x: 416, y: 311, width: 448, height: 178 });
+        expect(await box(panel)).toEqual({ x: 416, y: 312, width: 448, height: 176 });
         expect(await box(panel.getByRole("button", { name: "Close" }))).toEqual({
-            x: 807,
+            x: 808,
             y: 336,
             width: 32,
             height: 32,
         });
-        expect((await box(panel.getByRole("heading", { name: "Confirm changes" }))).x).toBe(441);
+        expect((await box(panel.getByRole("heading", { name: "Confirm changes" }))).x).toBe(440);
         await expect(panel).toHaveCSS("border-radius", "16px");
         // 90dvh is 90vh where no browser bar comes and goes.
         await expect(panel).toHaveCSS("max-height", "720px");
@@ -727,7 +727,7 @@ test.describe("Modal on a desktop", () => {
         expect(mobileClose.x).toBe(plainClose.x);
         expect(mobileClose.y - mobile.y).toBe(plainClose.y - plain.y);
         const field = await box(dialog(page, "mobile").getByRole("textbox").first());
-        expect(field.x - mobile.x, "24px gutter and the 1px border").toBe(25);
+        expect(field.x - mobile.x, "24px gutter; the glass panel has no border (9.0)").toBe(24);
         expect((await box(dialog(page, "mobile").locator("footer"))).height).toBe(plainFooter.height);
         await page.keyboard.press("Escape");
 
@@ -784,7 +784,7 @@ test.describe("Page and the safe areas", () => {
         const docs = page.locator("div.mx-auto.w-full.space-y-10").first();
         await expect(docs).toBeVisible();
         const rect = await box(docs);
-        expect({ x: rect.x, y: rect.y, width: rect.width }).toEqual({ x: 325, y: 97, width: 896 });
+        expect({ x: rect.x, y: rect.y, width: rect.width }).toEqual({ x: 325, y: 96, width: 896 });
         expect(await padding(docs)).toBe("0px 0px 0px 0px");
     });
 });

@@ -59,9 +59,10 @@ const CHROME: Record<
         contentGutter: number;
     }
 > = {
-    sheet: { header: 41, footer: 25, titleRoom: 292, titleFont: 20, titleLine: 28, close: 44, gutter: 16, contentGutter: 16 },
+    // 9.0: the overlays are glass with no 1px border of their own, so the sheet and drawer chrome is 1px less than in 8.1.
+    sheet: { header: 40, footer: 25, titleRoom: 292, titleFont: 20, titleLine: 28, close: 44, gutter: 16, contentGutter: 16 },
     modal: { header: 41, footer: 41, titleRoom: 280, titleFont: 24, titleLine: 32, close: 32, gutter: 24, contentGutter: 24 },
-    drawer: { header: 36, footer: 33, titleRoom: 279, titleFont: 24, titleLine: 32, close: 32, gutter: 25, contentGutter: 25 },
+    drawer: { header: 36, footer: 33, titleRoom: 280, titleFont: 24, titleLine: 32, close: 32, gutter: 24, contentGutter: 24 },
     slide: { header: 41, footer: 33, titleRoom: 280, titleFont: 24, titleLine: 32, close: 32, gutter: 24, contentGutter: 24 },
 };
 
