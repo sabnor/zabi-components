@@ -12,12 +12,7 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
-### Fixed
-
-- **BottomTabBar**: a tab's side padding is 2px (was 4px), so a five-tab bar keeps a label like "Kalender" whole at 320px.
-- **Toaster**: a stack that scrolls keeps the newest toast in view when its words arrive after it is shown and it grows. It was pushed below the end of the stack.
-
-## [9.0.0] - 2026-10-13
+## [9.0.0] - 2026-10-14
 
 9.0.0 is a new look and a larger set. Bars, sheets, menus and toasts are glass materials, the light page is
 near-white, dark mode is drawn on the neutral ramp, and solid controls have a soft gradient. The shell is
@@ -91,6 +86,10 @@ Found by the first full browser run on 9.0.
 - A brand block inside an accent block, or an accent block inside a brand block, with or without a card
   between them, took its own label colour as its fill: white text on white. The inversion of a solid fill
   inside a block no longer applies to an element that is a block itself.
+- `BottomTabBar`: a tab's side padding is 2px (was 4px), so a five-tab bar keeps a label like "Kalender"
+  whole at 320px.
+- `Toaster`: a stack that scrolls keeps the newest toast in view when its words arrive after it is shown and
+  it grows. It was pushed below the end of the stack.
 
 ### Not verified
 
