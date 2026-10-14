@@ -12,6 +12,1012 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.0.0] - 2026-10-13
+
+9.0.0 is a new look and a larger set. Bars, sheets, menus and toasts are glass materials, the light page is
+near-white, dark mode is drawn on the neutral ramp, and solid controls have a soft gradient. The shell is
+redesigned: flush bars that turn to glass over content, a large `AppBar` title, an `AppShell` `navigation` slot
+with `AppNavigation`. New components include `Chip` and `ChipGroup`, `Block`, `Stat`, `PickerField`, `CodeField`,
+`SpeechBubble`, the SVG charts (`LineChart`, `BarChart`, `PieChart`, `Sparkline`) and `MapView` (from
+`zabi-components/map`, with `maplibre-gl` as an optional peer). It is a major because of what an app shows
+without a code change, not because of its API: nothing from 8.1.0 was removed or renamed, and every `exports`
+path, prop, variant and token is still there.
+
+The work was built as 32 local preview builds, none published to npm. Their sections below are the full record:
+every addition, every changed default and, where one exists, the line that restores the 8.1 look.
+
+### Upgrade notes
+
+Coming from 8.1.0, these are visible without a code change. The section named in brackets has the detail and
+the line that restores 8.1.
+
+**Appearance, light and dark**
+
+- The default typeface is the platform's UI face, and transitions use `--ease-standard` (alpha.1).
+- The light page is near-white (`--color-surface-base` is `--zabi-base-50`), a default `Card` has a 1px edge and
+  no shadow, status tints are a step lighter and shadows are softer (alpha.1).
+- Primary, accent and danger buttons, the `FloatingActionButton` and the on `Toggle` have a soft gradient. The
+  outline button has a 3:1 edge. The off `Toggle` is a light tint, and its knob is 3:1 on the track (alpha.2,
+  alpha.26).
+- `SegmentedControl` selects with a neutral thumb, and its indicator and the one in `Tabs` slide. `List` rows
+  are divided by a hairline, and a subtle `Badge` has no visible border (alpha.2).
+- `BottomSheet`, `Drawer`, `Modal`, the `Dropdown` menu, the `Select` list, `Tooltip` and every toast are frosted
+  glass. `Tooltip` has no arrow by default. `data-materials="opaque"` turns the glass off (alpha.2).
+- `AppBar`, `BottomTabBar`, `StickyActionBar` and `TopNavbar` are the page colour at rest and glass once content
+  is under them. `--color-surface-chrome` is the page colour. The active tab has no outline, and the sidebar
+  and the top navbar are restyled (alpha.3).
+- Dark surfaces are steps of the neutral ramp, the primary and danger buttons keep their hue in dark under a
+  white label (`createTheme({ darkPrimary: 'mirror' })` gives the 8.1 fills), and dark status tints are
+  low-chroma (alpha.4).
+- In dark, a form field is a translucent well and a flat `Card` is a translucent layer (alpha.6).
+
+**Layout and behaviour**
+
+- A `bg-*` or `border-*` class on a bar no longer changes its surface: the fill is painted on the material's
+  layer (alpha.3).
+- The `AppShell` footer lies over the scroller, so content passes under the tab bar (alpha.3).
+- `Collapsible` with the default trigger is a native `<details>` with a `<summary>`, not a `<button>`
+  (alpha.5).
+- `Input type="password"` has the show/hide button by default (`revealable={false}` removes it), and `Textarea`
+  has no resize grip on a touch screen (alpha.6).
+- A `Select` in a sheet with up to six options and no search gets a sheet as tall as its list
+  (`sheetFit={false}` restores the half sheet) (alpha.8).
+- A `RadioGroup` option's `description` is no longer part of the radio's name, and `Skeleton` is still under
+  reduced motion (alpha.12).
+- `TopNavbar` opens its links in a bottom sheet below `collapseAt` (alpha.16).
+- Toasts: a mouse holds the timer only once it has moved over the toast, a pushed id replaces the showing
+  toast in place, and a touch swipe dismisses (alpha.18).
+- `Button` is capped at its container's width and hyphenates a label that does not fit (alpha.32).
+
+**Themes**
+
+- `createTheme` checks the material pairs it used to skip, so a theme can get a contrast warning it did not
+  get in 8.1.0. Links follow an overridden primary (alpha.2, alpha.4).
+- The theme snapshot only gained names: no published token was removed.
+
+### Fixed since alpha.32
+
+Found by the first full browser run on 9.0.
+
+- A secondary `Button` or `IconButton` on a brand block (`on-brand`, `Card tone="brand"`, a brand `AppBar`) in
+  dark: its wash was the dark theme's white one, under the block's white label, which left the label at
+  4.1:1. On a brand block the wash is now the dark one in both modes (5.7:1). A surface inside the block gets
+  the theme's wash back.
+- A brand block inside an accent block, or an accent block inside a brand block, with or without a card
+  between them, took its own label colour as its fill: white text on white. The inversion of a solid fill
+  inside a block no longer applies to an element that is a block itself.
+
+### Not verified
+
+The preview builds were tested lightly on purpose (type and design checks, unit tests in jsdom, the package
+build). Not done by anyone: a real phone, Safari, Firefox, a screen reader, an accessibility review. `MapView`
+has never been drawn against a real map: its tests use a stand-in for MapLibre.
+
+## [9.0.0-alpha.32] - 2026-10-13
+
+A thirty-second local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.31 is removed or renamed. Nothing in it has been rendered in a
+browser: type and design checks, unit tests in jsdom, the package build.
+
+### Added
+
+- `MapView`, from a new entry `zabi-components/map`: a map on MapLibre GL JS with markers from a list (Z-137,
+  D262). `maplibre-gl` is an optional peer dependency (`>=5.0.0`, built against 6.14.0): the app installs it, and
+  the component loads it with `import("maplibre-gl")` when it is mounted in a browser. No other entry of the
+  package exports the map, so importing anything else brings none of it. The library's stylesheet is not needed.
+  - `points` (`id`, `lng`, `lat`, `label`, `checked`), `styleLight` and `styleDark` (URL or object; the dark one
+    is drawn while `data-theme` on `<html>` is dark, or `auto` on a dark system, and a change keeps the position
+    and the markers), `onpointpress(point, index)`, `onclusterpress(points)`, `clusterLabel(points)`.
+  - Markers are buttons with a 44px tap area in px, in the order of `points`. Markers whose tap areas overlap are
+    one count marker, which sits at the place of its first point in the tab order and keeps its element (and the
+    focus) while others join or leave it. A marker reached with Tab outside the view is jumped into view.
+  - `fitMaxZoom` (default 16), `bind:center`, `bind:zoom`, `onmove`, and the methods `fit()`,
+    `showPoint(id, { inset, zoom })` and `showPlace(place, { inset, zoom })` through `bind:this`. Every move is a
+    jump. With `center` and `zoom` given at the start the map opens there and is not fitted.
+  - `viewer`: a dot at a position the page hands in; the map jumps to it. The component never asks the browser.
+  - `bind:status` / `onstatus`: `loading`, `ready`, `library-error`, `tiles-error`. `tiles-error` is told when the
+    style cannot be fetched, or tiles failed and none has arrived; a tile that arrives later takes it back.
+  - `attribution` (string or snippet); without it the words of the style's own attribution, as plain text. Always
+    shown, bottom left. `strings`: `label`, `cluster(count)`, `viewer`. `mapViewSupported()` answers whether the
+    browser has WebGL without loading the library.
+  - Not in `ZabiStringsProvider` yet: the words come through `strings`. A drag that starts on a marker does not
+    pan the map.
+- `Textarea`: `count`, `countFrom` and `countText` show a character count under the field when it has a
+  `maxlength`: "12 / 2000" by default, at the end of the line the hint is on, part of the field's description and
+  not a live region. `TextareaCount` is exported (Z-125, D254).
+- `Toggle`: `description`, a line under the label and inside it, so a tap on it toggles. It is tied to the switch
+  with `aria-describedby`, after any ids passed in, and does not join the name (Z-126, D255).
+- `Checkbox`: `description`, as `Radio` has. `Checkbox` and `Radio`: `controlPosition="end"` puts the control
+  last in the row, which then fills its width; the markup order is unchanged (Z-128, D256).
+- `ImageUpload`: `multiple`, `maxFiles` and `onfiles(files)`. With `multiple` the chooser and a drop take several
+  files and hand them over together, in order; the component keeps none (no preview, `value` not set,
+  `onfileselect` not called). `onfilereject` has a third reason, `"count"`, only with `maxFiles` (Z-130, D258).
+- `PhotoViewer`: `onloaderror(photo, index)`, once per address that fails, and `onretry(photo, index)`, called
+  when "Try again" is pressed; a promise it returns is waited for, with the button busy, before the image is
+  asked for again. `PhotoGrid`: `onloaderror(photo, index)` for a thumbnail (Z-132, D259).
+- `PhotoGrid`: a photo's `status` (`uploading`, with an optional `progress` from 0 to 1, or `error`) is drawn on
+  its tile and said in its name; `onretry(photo, index)` puts a "Try again" button on a failed one. New strings
+  with defaults: `uploading`, `uploadFailed`, `retryUpload(name)`. `PhotoStatus` is exported (Z-133, D260).
+- `PhotoViewer`: a photo's `credit` is a second, quieter line under the caption, outside what "More" folds. The
+  dialog is described by the caption and the credit after the photo's name and place (Z-135, D261).
+
+### Fixed
+
+- `Button`: never wider than its container (`max-inline-size: 100%`, as `Badge`), and a word that alone does not fit is hyphenated by
+  the page's language (`hyphens-auto`). A label that already wraps may now be hyphenated at a line's end
+  (Z-129, D257).
+- `Checkbox`, `Radio`, `RadioGroup`: the input's touch target is 44px in px, centred on the box. In rem it grew
+  with the text: 88px at 200%, past the screen's edge from a box at the end of a row (Z-128, D256).
+- `PhotoGrid`: nothing leaves the add tile at large text. The label is cut at two lines (the name keeps the whole
+  text) and the plus is drawn only where the tile has room for it above two lines (Z-136, D260).
+- `PhotoViewer`: when the control that had the focus is taken out (an action that goes with its photo, with or
+  without a confirm dialog between) and the focus is left on `<body>`, Close takes it (Z-134, D261).
+
+### Notes
+
+- `Collapsible` is not for a "show all" under a list; a `Button` with `aria-expanded` and `aria-controls` under
+  the list is the intended way (Z-127, D263).
+- `PhotoViewer` does not take the browser's Back: a history entry made by a component conflicts with the app's
+  router. Open it from the router's own state, as SvelteKit's shallow routing does (Z-131, D263).
+
+## [9.0.0-alpha.31] - 2026-10-11
+
+A thirty-first local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.30 is removed or renamed.
+
+### Fixed
+
+- `Input`: a placeholder longer than the field ends in an ellipsis (`placeholder-shown:text-ellipsis`), not half way
+  through a letter. A typed value is unchanged: it still scrolls with the caret. A placeholder that fits looks the
+  same. Fields built on `Input` (`ColorPicker`, the search field of `Select`, `SidebarPanel` and
+  `SidebarNavigation`) get it too (Z-124, D252).
+
+## [9.0.0-alpha.30] - 2026-10-11
+
+A thirtieth local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.29 is removed or renamed.
+
+### Added
+
+- `Skeleton`: every piece carries `data-skeleton` (its variant; a line of a `lines` paragraph is `text`, beside the
+  existing `data-skeleton-line`), in every branch: announced, `decorative`, and inside a `SkeletonGroup`. A
+  paragraph's wrapper has `data-skeleton-paragraph`. The `animate-pulse` class stays on the pieces (Z-123, D251).
+- `Skeleton` and `SkeletonGroup` pass other `div` attributes (`id`, `data-testid`, `style`, `aria-*`) to their
+  root element. `role`, `aria-busy`, `aria-hidden` and `data-skeleton` are not overridden. `SkeletonGroup` has
+  `data-skeleton-group`.
+
+## [9.0.0-alpha.29] - 2026-10-10
+
+A twenty-ninth local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.28 is removed or renamed.
+
+### Fixed
+
+- `Select`: an option in the list that opens has the pointer cursor, as a `DropdownItem` has; a disabled option
+  keeps `not-allowed`.
+- `ActionPanel` as a button (`onclick`, no `href`) has the pointer cursor.
+
+## [9.0.0-alpha.28] - 2026-10-10
+
+A twenty-eighth local preview build of the 9.0 direction, not published to npm. No token, prop, variant,
+string key, export or data attribute of alpha.27 is removed or renamed.
+
+### Added
+
+- `AppBar`: the row carries `data-title-empty` when the bar has no `title`.
+
+### Fixed
+
+- `AppBar` with no `title` and a wide `leading`: the empty title part no longer asks for 72px, so it no longer
+  sends the bar to `data-title-row="own"` and takes a row of its own (the bar was 12px taller). A bar with
+  nothing to show as a title stays on one row whatever room is left, on the server and before it is measured
+  as well; `leading` is still cut to the room beside the back control and the actions. A bar with a title is
+  unchanged.
+
+## [9.0.0-alpha.27] - 2026-10-10
+
+A twenty-seventh local preview build of the 9.0 direction, not published to npm. Loose ends. No token,
+prop, variant, string key, export or data attribute of alpha.26 is removed or renamed.
+
+### Added
+
+- `zabi-components/atoms` now also exports `Toast`, `Tooltip`, `Progress`, `Skeleton`, `SkeletonGroup`,
+  `CodeBlock`, `FeatureCard`, `OptimizedImage`, `DEFAULT_SKELETON_STRINGS` and the type `SkeletonStrings`,
+  which the root entry already had.
+- Bottom sheets (`BottomSheet`, `SlideUp`): content with `touch-action: none`, or `pan-x` alone, under the
+  finger keeps its own gesture (a map, a canvas, a drawing pad); no `data-sheet-no-drag` is needed.
+  `data-sheet-no-drag` still works.
+
+### Changed
+
+- Bottom sheets: the axis of a swipe in the content is decided once per gesture, after 8px. A swipe that
+  begins sideways stays sideways and never moves the sheet, even if it later turns down. A downward swipe
+  of under 8px no longer starts a drag. The grip is unchanged.
+
+### Fixed
+
+- `Drawer`: the overlay root is `overflow-clip`, not `overflow-hidden`, as the bottom sheet's already was
+  (WebKit scrolled a hidden root to a focused control while the panel was still off screen).
+
+## [9.0.0-alpha.26] - 2026-10-10
+
+A twenty-sixth local preview build of the 9.0 direction, not published to npm. Three rulings from the
+owner (2026-10-10). No token, prop, variant, string key, export or data attribute of alpha.25 is removed or
+renamed. One default colour changes on purpose: the `Toggle` knob (below). Run on this build: the type and
+design checks, the unit suite, the package build and a scratch install; no browser.
+
+### Changed
+
+- `Toggle`: the default knob is now 3:1 or more on its track in every enabled state, light and dark
+  (WCAG 1.4.11). Before, the knob was the card colour: 1.27:1 on the off track in light and 1.57:1 in dark, and
+  1.74:1 to 3.39:1 on the primary fill in dark. Now off is `--color-toggle-knob` (light base-500: 3.81:1 on the resting
+  track, 3.53:1 hovered, 3.27:1 pressed; dark base-700: 7.07:1, 6.13:1, 5.23:1) and on is
+  `--color-toggle-knob-checked` (the primary fill's label colour: 4.86:1, 6.76:1, 9.44:1 on the fill at rest,
+  hovered, pressed). The off track's edge is unchanged (4.63:1 on the page and 4.83:1 on a card in light).
+  `--color-toggle-thumb` still wins when set; `--color-toggle-thumb-checked`, declared nowhere, sets the
+  on knob alone. The knob pairs are in the contrast guard. (Z-121, D240)
+
+### Fixed
+
+- `Checkbox`, `Radio`: the box is centred on the row again and the row keeps its height and touch target, as
+  before alpha.25; the first-line alignment and `pointer-coarse:py-3` of alpha.25 are withdrawn. The box
+  still does not shrink (`shrink-0`). (Z-119, D241)
+- Forced colours: a busy button `Card` (`loading`) has `GrayText` text and a dashed `GrayText` edge, and the
+  `Toaster` time bar's track has a `CanvasText` edge. Nothing changes outside `forced-colors: active`.
+  (D242)
+
+## [9.0.0-alpha.25] - 2026-10-10
+
+A twenty-fifth local preview build of the 9.0 direction, not published to npm. Five entries
+from the app team (Z-117 to Z-121). No token, prop, variant, string key, export or data attribute of
+alpha.24 is removed or renamed; new props, tokens and string keys are optional. Run on this build: the
+type and design checks, the unit suite, the package build and a scratch install; no browser.
+
+### Added
+
+- `TimeField` `openAt` (`HH:mm`): where an empty field's columns stand when the sheet opens. Nothing is
+  chosen and `value` stays empty. Without it the columns stand at now, on the minute step. (Z-117, D235)
+- `TimeField` string key `chosenTime` ("Chosen time"): the sheet says the time Done will set, beside
+  Done, so it is on the screen even when a column is scrolled away from it (Z-118, D236).
+- `--color-toggle-thumb`, declared nowhere: the `Toggle` knob's colour. Unset, the knob is the card colour as
+  before (Z-121, D239).
+
+### Fixed
+
+- `Checkbox`, `Radio`: the box no longer shrinks when the label wraps (`shrink-0` always), and sits by the
+  first line of a label that wraps (Z-119, D237).
+- `AppBar`: the parts of the row are measured as laid out (up to the next pixel) and not by `offsetWidth`,
+  so actions with a fractional width no longer wrap to a row of their own (Z-120, D238).
+
+## [9.0.0-alpha.24] - 2026-10-10
+
+A twenty-fourth local preview build of the 9.0 direction, not published to npm. Two entries
+from the app team (Z-115, Z-116). No token, prop, variant, string key, export or data attribute of
+alpha.23 is removed or renamed; nothing changes outside `forced-colors: active`. Run on this
+build: the type and design checks, the unit suite, the package build and a scratch install; no browser.
+
+### Fixed
+
+- Forced colours (Windows contrast themes): `Toggle` has a 1px `ButtonText` edge on the track, a thumb
+  in `ButtonText`; on is a `Highlight` track with a `HighlightText` thumb; disabled is `GrayText`
+  (Z-115, D232).
+- Forced colours: a ticked `Checkbox`, `Radio` and `RadioGroup` option is a `Highlight` box with a
+  `HighlightText` tick or dot, an unticked one an edge in `ButtonText`, a disabled one `GrayText`
+  (Z-116, D233).
+- Forced colours: `Slider` has a `Highlight` fill on a `Canvas` track with a `ButtonText` edge, and the
+  `Toaster` time bar is `Highlight` (D234).
+
+## [9.0.0-alpha.23] - 2026-10-09
+
+A twenty-third local preview build of the 9.0 direction, not published to npm. One entry
+from the app team (Z-114). No token, prop, variant, string key, export or data attribute of
+alpha.22 is removed or renamed. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install; no browser.
+
+### Fixed
+
+- `Checkbox`, `Radio` and `RadioGroup`: the edge of an unticked box is `--color-control-border` (3:1 on
+  every surface, both themes) and not the fixed step `base-400`, which was 2.5:1 in light and 1.9 to 2.3:1
+  in dark. In a brand or accent block it follows the block's on-colour too (Z-114, D231).
+
+## [9.0.0-alpha.22] - 2026-10-09
+
+A twenty-second local preview build of the 9.0 direction, not published to npm. Six entries
+from the app team (Z-108 to Z-113). No token, prop, variant, string key, export or data attribute of
+alpha.21 is removed or renamed. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install; no browser.
+
+### Added
+
+- `Card` `loading` (with `type`): `aria-busy` and `aria-disabled`, the press swallowed, the pressed look held,
+  size and Tab stop kept (Z-108, D225).
+- `BottomTabBar` `pending`: the tab just pressed takes the mark while `aria-current="page"` stays on `active`
+  until it changes; the pending link has `aria-busy` (Z-109, D226).
+- `.z-fixed`, beside `.z-sticky` and the other layer classes (Z-113, D230).
+
+### Fixed
+
+- `Button` in forced colours: the variants drawn by a fill (`primary`, `accent`, `secondary`, `danger`,
+  `tonal`) get a 1px `ButtonBorder` edge there, and a disabled or loading button a `GrayText` one (Z-110, D227).
+- `Stepper` inside a `SkeletonGroup` no longer renders its own `role="status"` (Z-111, D228).
+- `Skeleton`: the variant's width and height are written at zero specificity (`:where()`), so any size
+  class at the call site wins, including a size name of the app's own (Z-112, D229).
+
+## [9.0.0-alpha.21] - 2026-10-08
+
+A twenty-first local preview build of the 9.0 direction, not published to npm. One entry
+from the app team (Z-107). No token, prop, variant, string key, export or data attribute of
+alpha.20 is removed or renamed. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install; no browser.
+
+### Fixed
+
+- `BottomSheet`, `SlideUp` (and so `Select`, `Dropdown` and `TopNavbar` sheets, `TimeField`, `DateField`): a
+  swipe down that starts on a box inside the content that scrolls by itself (the hours and minutes of
+  `TimeField`, the list of a `Select`, a long text area) no longer moves the sheet; the box keeps the
+  gesture, at its top too, and nothing is handed over mid-gesture (Z-107, D224). The sheet still follows
+  a swipe from the grip, the header, the content outside such a box when the content is at its top.
+  Default change: a swipe down on a scrolling box at its top used to close the sheet and now does not.
+
+### Added
+
+- `data-sheet-no-drag` is read for a touch in the content as well as in the header: anything carrying
+  it, or inside it, and every `<input type="range">`, keeps its drag from the sheet. `TimeField`'s
+  columns, `ColorPicker`'s colour map and the handle of `SortableList` carry it.
+
+## [9.0.0-alpha.20] - 2026-10-08
+
+A twentieth local preview build of the 9.0 direction, not published to npm. Two
+entries from the app team, the first time the snackbar was drawn in a browser
+(Z-105, Z-106). No token, prop, variant, string key or export of alpha.19 is removed
+or renamed. Run on this build: the type and design checks, the unit suite, the package
+build and a scratch install; no browser.
+### Added
+
+- `Toaster` `timeLine?: boolean` and `pushToast` / `ToastItem` `timeLine?: boolean`: whether the thin
+  bar along the bottom of a timed toast is drawn. Unset, it is drawn as before, except under a
+  confirmation in the snackbar that has nothing to press (timed, no action, `closable: false`),
+  where it is now left out. `false` leaves it out, `true` draws it; a toast's own value wins over the
+  Toaster's. The bar has `data-toast-timeline`; the sentence for a screen reader about the time left stays.
+- A unit test that fails on a Tailwind class put together at run time (`max-sm:${x}`, `w-[${px}px]`).
+### Changed
+
+- `Toaster mode="auto"`: the clip that makes the toast come out from behind the docked edge was a
+  class assembled at run time (`max-sm:` + the rule), which is in no stylesheet, so below 640px the
+  toast slid in over the tab bar. It is written out whole now. Nothing to change in an app; an app
+  that carried the class itself as a stand-in can remove it.
+- A snackbar confirmation with nothing to press no longer has the time bar (see Added); pass
+  `timeLine` to bring it back.
+
+## [9.0.0-alpha.19] - 2026-10-08
+
+A nineteenth local preview build of the 9.0 direction, not published to npm. One
+entry from the app team (Z-104), about `CodeField`; no token, prop, variant,
+string key or export of alpha.18 is removed or renamed. One default changes where
+it was a defect, under Changed. Run on this build: the type and design checks,
+the unit suite, the package build and a scratch install; no browser.
+### Added
+
+- `CodeField` `groups?: number | number[]`: draws the boxes in groups with a wider gap
+  (`groups={4}` on 8 places is 4 and 4, `groups={[3, 3, 4]}` is explicit). Only the drawing:
+  one input, one value, `one-time-code`, the post and a paste of "1234 5678" or "1234-5678" are
+  unchanged, and a screen reader still hears one field. A row that cannot fit wraps between groups.
+- `CodeField` `size?: "sm" | "md" | "lg"` (default `"md"`, today's look): `sm` is a compact row, 44px tall.
+- Export of the type `CodeFieldSize`.
+
+### Changed
+
+- `CodeField` boxes no longer shrink below 1.15em of their own digit, so a digit is never wider than
+  its box at large text or a narrow screen (it overlapped the box edges at 200% text with eight
+  places); where the boxes would have been narrower the row now wraps (between groups when `groups`
+  is set). At 100% text nothing changes up to 9 places at 320px (10 at 360px); a longer code that is not grouped now wraps there instead of drawing slivers. A tap in the gap between boxes or on a second row now
+  puts the caret at the nearest box.
+
+## [9.0.0-alpha.18] - 2026-10-08
+
+An eighteenth local preview build of the 9.0 direction, not published to npm. It
+makes the toast work on a phone (the app team's Z-097 to Z-103). No token, prop,
+variant, string key or export of alpha.17 is removed or renamed, and a `Toaster`
+with no new prop looks and behaves as before, except for the four defect fixes
+under Changed. Run on this build: the type and design checks, the unit suite,
+the package build and a scratch install; no browser, no screen reader.
+### Added
+
+- `Toaster` `mode?: "stack" | "snackbar" | "auto"` (default `"stack"`, type `ToasterMode`): the
+  snackbar is one row of 52px (two lines at most), one at a time, its action beside its text, set
+  directly above what is docked at the bottom and sliding out from behind that edge on
+  `--ease-standard` (no overshoot, no movement under reduced motion). `"auto"` is the snackbar below
+  640px and the stack from there up.
+- `Toaster` `max` (how many show; the oldest timed toast leaves, never an error, one with an action or
+  a persistent one; 1 in the snackbar), `avoid` (a CSS selector for what the stack must not lie on)
+  and `swipeToDismiss` (default `true`).
+- The toaster finds a `BottomTabBar` or `StickyActionBar` (`data-bar-edge="bottom"`), a
+  `FloatingActionButton` and a dirty `UnsavedChangesBar` (new `data-toast-clear`) that lie under the
+  stack and sits above the highest, at any width.
+- `pushToast` and `ToastItem`: `closable?: boolean` (default `true`); `false` leaves the close button
+  out of a short timed toast, which then has no control and takes no taps. `pushToast` takes `id?`.
+### Changed
+
+- A mouse holds a toast's timer once it has moved over the toast, not when the toast arrives under a
+  pointer at rest (Z-098: it never closed). `mouseenter` and `pointerenter` alone no longer hold it.
+- A toast pushed with the id of one that is showing replaces it in place and restarts its time
+  (before, a second item with the same id was added, which a keyed list cannot have).
+- A touch or a pen swipe dismisses a toast (sideways; `swipeToDismiss={false}` turns it off). The close
+  button stays. The toast has `touch-action: pan-y`.
+- One line of text is centred on the buttons beside it; text that wraps stays at the top.
+- The words of a toast are put in its `role="status"` / `role="alert"` element about 100 ms after the
+  toast is mounted, so the live region is in the page empty first (Z-102). The server's markup has
+  them at once. Tests that read a toast's text right after `pushToast` need to wait for it.
+
+## [9.0.0-alpha.17] - 2026-10-08
+
+A seventeenth local preview build of the 9.0 direction, not published to npm. It
+finishes the `TopNavbar` sheet of alpha.16; no token, prop, variant or export of
+alpha.16 is removed or renamed, and no default changes. Run on this build: the
+type and design checks, the unit suite, the package build and a scratch install; no
+browser.
+### Changed
+
+- `TopNavbarStrings`: `menuTitle` (alpha.16) and the new `themeHeading` are optional in the
+  interface, with their defaults in `DEFAULT_TOP_NAVBAR_STRINGS` (now `Required<TopNavbarStrings>`).
+  Code that writes out a complete `TopNavbarStrings` object, as it could before alpha.16, type-checks
+  again; this repairs the note on alpha.16 that said it did not.
+- `TopNavbar` sheet: it grows with its content up to the full screen below the status bar, where
+  alpha.16 stopped at half of it, so eight links and the two sections below them do not scroll in
+  a short box. Choosing a theme or an accent does not close the sheet.
+### Added
+
+- `BottomSheet` `fitMax?: "half" | "full"` (default `"half"`): with `fit`, how tall the sheet may
+  grow before its content scrolls. Without it nothing changes.
+
+## [9.0.0-alpha.16] - 2026-10-08
+
+A sixteenth local preview build of the 9.0 direction, not published to npm. One
+behaviour change in `TopNavbar`, which you can turn off with one attribute; no
+token, prop, variant or export of alpha.15 is removed or renamed. Run on this
+build: the type and design checks, the unit suite, the package build and a
+scratch install; no browser.
+### Changed
+
+- `TopNavbar`: below `collapseAt` the menu button opens the links in a bottom sheet (`BottomSheet`,
+  `fit`) instead of the panel under the bar. The sheet is a modal dialog: focus moves in and back
+  to the button, Escape, the backdrop, the close button and a swipe down close it, the page behind
+  is locked, it is named by the new string `menuTitle` ("Menu"), and its links sit in a `nav` named
+  by `ariaLabel` (else `menuTitle`). Rows are full width and 44px; `actions`, the theme toggle, the
+  current-page mark and the new-tab note are as in the panel; a followed link, a `currentPath`
+  change and a wider screen close it. The menu button gets `aria-haspopup="dialog"`, and the bar no
+  longer takes the glass while the menu is open. **Opt out:** `menu="inline"` is the panel of
+  alpha.15 and earlier, unchanged. Without script the phone menu is as inert as before.
+- `TopNavbar` sheet, below the links: the `actions` and the theme choice have a section of their
+  own at the full width of the sheet. The built-in theme toggle is a segmented control there
+  (light / dark, or system / light / dark with `themeModes="three"`, 44px on a touch screen, words
+  from `themeLabels`, heading from the new string `themeHeading`, "Theme"); it writes the page
+  as `ThemeToggle` does, which stays as it was in the bar. Actions are laid out in a column at
+  full width. The docs site's `BrandSwitcher` is a labelled group of large rows in the sheet and
+  the small button in the bar.
+- `BottomSheet`: the slide-in is on the standard curve (`--ease-standard`) with no overshoot;
+  snapping between snap points and settling a drag keep `--ease-spring`.
+### Added
+
+- `getTopNavbarPlace()` and type `TopNavbarPlace` (`"bar" | "menu"`): a control in `TopNavbar`'s
+  `actions` calls it while it initialises to know whether it is in the bar or the sheet; the
+  snippet gets no argument. `"bar"` outside a bar and in `menu="inline"`.
+- `TopNavbar` `menu?: "sheet" | "inline"` (default `"sheet"`), exported type `TopNavbarMenu`, strings
+  `menuTitle` and `themeHeading` in `TopNavbarStrings` (code that writes out a complete
+  `TopNavbarStrings` object needs the new keys; `strings` itself is partial). Stories for both modes, catalog entry, docs, `?menu=inline`
+  on the chaos-lab page.
+
+## [9.0.0-alpha.15] - 2026-10-08
+
+A fifteenth local preview build of the 9.0 direction, not published to npm. One
+addition to `AppShell`, `AppShellHeaderPart`; no token, prop, variant or export of
+alpha.14 is removed or renamed, and no default changes. Run on this build: the type
+and design checks, the unit suite, the package build and a scratch install; no
+browser.
+### Added
+
+- `AppShellHeaderPart`: the consumer chooses what stays at the top. Put several in `AppShell`'s
+  `header` snippet, each with `sticky` (default `true`) or `sticky={false}` to scroll away with
+  the content: the bar can leave while a filter row stays, or a large title can go while the bar
+  and the tabs stay. Plain `position: sticky` in the scroller's flow, no scroll listener; the
+  stuck parts stack under one another in document order (a part that scrolls away in between
+  does not leave a gap), and the shell reports only what is stuck as `--app-shell-top-inset` and
+  `scroll-padding-top`. One glass surface and one hairline under the lowest stuck part; the
+  status bar is covered by whatever is topmost, also after the first part has gone. Stuck parts
+  may cover 40% of the scroller at most, the lower ones then scroll (`data-released`). A header
+  without parts and `AppBar collapseOnScroll` / `largeTitle` behave as before. `AppBar` now
+  carries `data-appbar`. Types: `AppShellHeaderPartProps`. Story, catalog entry and demo toggle.
+
+## [9.0.0-alpha.14] - 2026-10-08
+
+A fourteenth local preview build of the 9.0 direction, not published to npm. One
+entry from the app team (Z-096), a new component `CodeField`; no token, prop,
+variant or export of alpha.13 is removed or renamed, and no default changes. Run
+on this build: the type and design checks, the unit suite, the package build and
+a scratch install; no browser.
+### Added
+
+- `CodeField`: a field for a verification or one-time code (Z-096). One real `<input>`
+  (`autocomplete="one-time-code"`, `inputmode="numeric"`) under boxes drawn and hidden from
+  assistive technology, so the iPhone and Android code suggestion, paste of a whole code
+  ("123 456" and "123-456" too, with the caret anywhere) and one accessible name work, and the
+  form posts the code by `name` with scripts off, where the input is a plain bordered field.
+  `length` (1 to 12, default 6), `value` (bindable), `mode` (`numeric` default, `alphanumeric`),
+  `label` / `labelHidden`, `hint`, `error`, `variant` + `message`, `required`, `disabled`,
+  `readonly`, `oncomplete(value)` and `strings`; the words (`codeField.label`,
+  `codeField.description`) come from `ZabiStringsProvider`. Exports: `CodeField`,
+  `DEFAULT_CODE_FIELD_STRINGS`, types `CodeFieldProps`, `CodeFieldMode`, `CodeFieldStrings`.
+
+## [9.0.0-alpha.13] - 2026-10-07
+
+A thirteenth local preview build of the 9.0 direction, not published to npm. Two
+entries from the app team (Z-094, Z-095), both about `Skeleton`; no token, prop,
+variant or export of alpha.12 is removed or renamed, and no default changes: a
+lone `Skeleton` is the same status named "Loading…". Run on this build: the type
+and design checks, the unit suite, the package build and a scratch install; no
+browser.
+### Added
+
+- `SkeletonGroup`: one `role="status"` with the loading label for the `Skeleton` pieces
+  inside it, which are hidden from assistive tech, so a screen of eight pieces is announced
+  once. `Skeleton` takes `decorative` (no role, no label, `aria-hidden`) for a piece beside
+  a status of your own, and `strings` (`label`); the label reads the provider's
+  `skeleton.label` before the English "Loading…", and `aria-label` still wins. A lone
+  `Skeleton` is unchanged. (Z-094)
+- `Skeleton` takes `tone="on-color"`: the surface's label colour at 24% (`bg-skeleton-on-color`,
+  in `@layer utilities`), for the `on-brand`, `on-accent` and `on-fill` blocks and a `Card` with
+  `tone`, in light and dark; `--zabi-skeleton-fill` replaces it. The default `tone="neutral"` is
+  `bg-neutral-subtle` as before. And `lines` (1 to 20, text variant): one placeholder with that many
+  lines and a shorter last line (60%); `width` and `class` apply to the paragraph, `height` to each
+  line, and it is one status like a lone piece. (Z-095)
+
+## [9.0.0-alpha.12] - 2026-10-07
+
+A twelfth local preview build of the 9.0 direction, not published to npm. Five
+entries from the app team (Z-089 to Z-093); no token, prop, variant or export of
+alpha.11 is removed or renamed. Two defaults change what a consumer gets: a
+`RadioGroup` option with a description is named by its label alone, and a
+one-line option is centred in its row. Run on this build: the type and design
+checks, the unit suite, the package build and a scratch install; no browser.
+
+### Added
+
+- `Chip` takes `loading` on its button forms (`type="submit"`, `"button"` and the toggle):
+  `aria-busy` and `aria-disabled`, a spinner over the label, the press swallowed, the
+  width and the focus kept, as `Button`'s. A link and a `checkbox` / `radio` chip ignore it. (Z-091)
+- `Checkbox` and `Radio` take `error`, `variant`, `message` and `hint`, drawn under the
+  label as on `Input`: an error is an alert, sets `aria-invalid` on a checkbox and is
+  tied to the input with `aria-describedby` (after the hint). `Toggle` is unchanged. (Z-090)
+
+### Fixed
+
+- `Skeleton` no longer pulses under `prefers-reduced-motion`: it is a still fill
+  (`motion-reduce:animate-none`). A `motion-reduce:animate-pulse` class on the
+  skeleton brings the pulse back. (Z-093)
+- `RadioGroup`: an option's `description` is no longer part of the radio's name; it is
+  `aria-hidden` and tied to the radio with `aria-describedby`, as `Radio`'s. A one-line
+  option is centred in its row (44px on touch) and its circle loses `mt-0.5`; a row
+  with a description keeps the radio at the top. A radio found by its two-sentence
+  name is now found by its label. (Z-092)
+- `Select` no longer outgrows its container: a width class (`w-48`) in a narrower
+  column is capped at the column (`.select-container { max-width: 100% }`, in the
+  components layer, so a `max-w-*` class of your own still wins). (Z-089)
+
+## [9.0.0-alpha.11] - 2026-10-07
+
+An eleventh local preview build of the 9.0 direction, not published to npm. One
+fix for the app team's report Z-088; no token, prop, variant or export of
+alpha.10 is removed or renamed. Run on this build: the type and design checks,
+the unit suite, the package build and a scratch install, and one run in
+Playwright's WebKit (an iPhone 15 profile, not iOS Safari).
+
+### Fixed
+
+- `BottomSheet` no longer rises to the top of the screen as it opens on WebKit,
+  and no longer rests 32px above the bottom edge. The overlay root was
+  `overflow: hidden`, a scroll container, and WebKit scrolled it to the focused
+  grip while the panel was still below the screen; it is now `overflow: clip`.
+  The slide's own spring (a 15px overshoot at half) is unchanged. To restore the
+  old root: `overflow-hidden` for `overflow-clip` on the root in
+  `BottomSheet.svelte`.
+
+## [9.0.0-alpha.10] - 2026-10-07
+
+A tenth local preview build of the 9.0 direction, not published to npm. One
+addition for the app team's request Z-087; no token, prop, variant or export of
+alpha.9 is removed or renamed, and nothing an app shows changes without a
+change to its code. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install. Not run: Playwright or any
+look in a browser.
+
+### Added
+
+- `Avatar` `children`: a snippet drawn inside the circle in place of `src` and
+  the initials, for an inline SVG that reads the page's tokens. It is
+  presentational; `name` stays the accessible name, and the circle keeps its
+  size.
+- `AvatarGroup` people take `picture?: Snippet`, the same for one person.
+- A list row's `avatarPicture?: Snippet` (`ListItemData`): the same in the
+  row's round; wins over `avatar` and `icon`; decorative unless `avatarAlt`
+  names it.
+
+## [9.0.0-alpha.9] - 2026-10-07
+
+A ninth local preview build of the 9.0 direction, not published to npm. Two
+additions for the app team's request Z-086; no token, prop, variant or export
+of alpha.8 is removed or renamed, and nothing an app shows changes without a
+change to its code. Run on this build: the type and design checks, the unit
+suite, the package build and a scratch install. Not run: Playwright or any
+look in a browser.
+
+### Added
+
+- `RadioGroup` `chosenRing` (default `true`). `chosenRing={false}` leaves the
+  filled radio to show the chosen row: the row's own ring is gone, and keyboard
+  focus keeps its ring.
+- `Radio` `description`: a line under the label, tied to the radio with
+  `aria-describedby`; the label alone names the radio.
+
+## [9.0.0-alpha.8] - 2026-10-07
+
+An eighth local preview build of the 9.0 direction, not published to npm. Four
+additions for the app team's requests Z-082 to Z-085; no token, prop, variant
+or export of alpha.7 is removed or renamed. One default changes what an app
+shows without a change to its code: a `Select` in a sheet with up to six
+options and no search field gets a sheet as tall as its list; `sheetFit={false}`
+restores the half-height sheet. Run on this build: the type and design checks,
+the unit suite, the package build and a scratch install. Not run: Playwright or
+any look in a browser.
+
+### Added
+
+- `Chip type="submit"` (Z-082; D185): a button chip that posts its form with `name` and `value`, and does not toggle; `selected` is the app's and is drawn as on a toggle and said with `aria-pressed`. `type="button"` is the same without the submit. Without a `type` a chip is the toggle button it was.
+- `Select` options take `lang` (Z-083; D186): set on the option's row, on the trigger's text while it is chosen and on the native `<option>`.
+- `Select sheetFit`, `Dropdown sheetFit` and `BottomSheet fit` (Z-084; D187): a sheet as tall as its content, up to half the screen, with one resting height.
+- `Card type="submit" | "button" | "reset"` with `name`, `value`, `form` and `disabled` (Z-085; D188): the whole card is one `<button>`, drawn and pressed as a link card is, with the 44px minimum. With `href` it is still a link.
+
+### Changed
+
+- A `Select` shown in a sheet, with up to six options and `searchable={false}`, now gets a sheet as tall as its list instead of half the screen (Z-084; D187). Restore the half sheet with `sheetFit={false}`.
+
+## [9.0.0-alpha.7] - 2026-10-07
+
+A seventh local preview build of the 9.0 direction, not published to npm. One
+addition on top of alpha.6; no token, prop, variant or export is removed or
+renamed, and with the new properties unset every `Badge` renders as before.
+
+### Added
+
+- `Badge` neutral subtle fill and text (Z-081; D184): `--zabi-badge-neutral-fill` and `--zabi-badge-neutral-text`, declared nowhere and read in front of `--color-neutral-subtle` and `--color-neutral-text`. Set on any ancestor or in the theme, in light and dark, they move the neutral subtle `Badge` (`variant="neutral"` or `"default"`) and nothing else: `Alert variant="neutral"`, `Skeleton`, `AvatarGroup`, `Header` and the other badge variants keep reading the neutral tokens. New classes `bg-badge-neutral` and `text-badge-neutral` (`@layer utilities`), the first listed beside `bg-neutral-subtle` in the colour-block rules, so a badge in `on-brand`, `on-accent`, `on-fill` and `Card tone` is restored as before. Theme output gains only those lines.
+
+## [9.0.0-alpha.6] - 2026-10-07
+
+A sixth local preview build of the 9.0 direction, not published to npm; 8.1.0
+stays the stable version. New: the charts drawn in plain SVG (`LineChart`,
+`BarChart`, `PieChart`, `Sparkline`) and `SpeechBubble`. Extended: `Textarea`
+(`resize`, `autogrow`, `maxRows`), `ImageUpload` (`variant="button"`,
+`maxSize`), `ConfirmDialog` (`cancelVariant`). No token, prop, variant or
+export is removed or renamed. Four things change what an app shows without a
+change to its code, each with the line that restores the earlier look in its
+entry below: a dark form field is a well a step lighter than its surface; a
+dark flat `Card` is a translucent layer; a `Textarea` has no resize grip on a
+touch screen; `Input type="password"` has the show/hide button by default.
+Run on this build: the type and design checks, the unit suite, the theme
+tests, the package build and a scratch install. Not run: Playwright, an
+accessibility pass, any look in a browser at the changes since alpha.5 other
+than the charts.
+
+### Added
+
+- `ImageUpload variant="button"` (Z-076; D183): only the trigger, for a photo that is one choice in a row of others. A `Button` that opens the file chooser (`buttonVariant`, default `secondary`; `buttonSize`, default `md`; its text is `label`, or `children`), with `accept`, `onclick`, `onbrowse`, `onchange`, `onfileselect`, `bind:value`, `disabled`, the error block and the polite announcement as in the dropzone; no drop area, no preview, no Change or Remove. The default `variant="dropzone"` is unchanged.
+- `ImageUpload maxSize` (bytes), in both variants: a larger file, chosen or dropped, is not selected and goes to `onfilereject`, which now gets a second argument, `"type"` or `"size"`. Without `maxSize` nothing changes. The component had no size limit before.
+
+- `Textarea autogrow` and `maxRows` (Z-077; D181): the field grows with its content from `rows` up to `maxRows` rows and scrolls after that (no limit without `maxRows`). It uses `field-sizing: content` where the browser has it and measures the content elsewhere. An autogrow field has no resize grip.
+
+- `ConfirmDialog cancelVariant` (Z-080; D182): the cancel button's `Button` variant, any `ButtonVariant`. The default is `outline`, so nothing changes; `tonal`, `secondary`, `ghost` or `text` for an app that has no outline button. Cancel stays the first control and keeps the initial focus.
+
+- **Charts in plain SVG: `LineChart`, `BarChart`, `PieChart`, `Sparkline`** (Z-004; D156 to D159). The library draws its own charts and has no chart-library dependency; no dependency was added. The three charts are each a `figure` whose `figcaption` is the required `label` (`labelHidden` keeps it for assistive technology only); the drawing is hidden from assistive technology and the same numbers are in a real `table`, off screen unless `showTable`. They take the width of their container and are laid out in real pixels, so text is never scaled; before they are measured (on the server) they are drawn 600 wide and scaled to fit.
+  - `LineChart`: `series` (`{ name, points, color? }[]`; `null` in `points` leaves a gap), `xLabels`, `yMin`, `yMax`, `yFormat` (`'number'`, `'percent'` where 72 is "72 %", or a function), `height` (px, default 240), `legend` (default: on for more than one series), `markers` (default on: a different shape per series, so lines differ by more than colour), `xTitle`, `locale`, `glass`. Pointing at or tapping the plot shows the values at that x label in a pane of the thick material that floats over the plot beside the guide, as a `Tooltip` does; there is no keyboard route to that readout, the table is.
+  - `BarChart`: `data` (`{ label, value, color? }[]`), `color`, `yMax`, `yFormat`, `height`, `showValues` (default on), `categoryTitle`, `valueTitle`, `locale`. One set of upright bars from a zero line; values below zero are drawn downward.
+  - `PieChart`: `data`, `donut`, `center` (a snippet in the middle of the ring), `format`, `size` (px, default 192; shrinks with the container), `legend` (default on: each slice's label, value and share), `categoryTitle`, `valueTitle`, `shareTitle`, `locale`. Slices run clockwise from twelve o'clock in the order given and are parted by a thin cut, so they need no border colour; in a full pie the cut narrows to a point at the centre, so every slice runs to the middle.
+  - `Sparkline` (atom): `points`, `label` (an image by that name; without it, decoration), `color`, `min`, `max`. 5rem by 1.5rem unless `class` says otherwise.
+  - Colours: a series without a `color` takes `--zabi-chart-1` to `--zabi-chart-6` by its place; these are declared nowhere and fall back to steps of the library's own ramps: `--color-action-primary` (what a `Progress` fills with), `--color-accent-500`, `--color-brand-900`, `--color-accent-700`, `--color-base-500`, and for a sixth series a plum mixed from the brand and error ramps. None is a status colour. On the default theme each is 3:1 or more on a card in light and dark and any two differ for a reader who does not see red and green. `color` takes one of `primary`, `accent`, `success`, `warning`, `error`, `info`, `neutral`, or any CSS colour; in a chart that names one, a series without a `color` steps past the series colour nearest to it. In forced colours the marks are drawn in `CanvasText`.
+  - Built from the library's parts: the caption is set like a `Progress` label; a bar is a `Progress` fill stood on end (at most 24px wide, a round far end) and with a `yMax` each bar stands in a `Progress` track up to it, the values in a row over the tracks; grid lines are `--color-border` and the base line `--color-border-strong`; the `PieChart` key is set like `List` rows (name, value, share; parted in `--zabi-list-divider-color`) and takes the width beside the drawing, or the full width under it when the chart itself is narrower than 26rem; `showTable` shows the library's `Table`, numbers at the end of their column; a donut's ring is a third of the radius and takes a `center` snippet (a `Stat` fits); lines are 2px with 8px markers, each in a ring cut out of the lines so it shows whatever is behind the chart (`--zabi-chart-surface` paints the ring instead); a `Sparkline` ends in a dot on its last value. Chart text is 0.75rem with tabular numerals and the value axis is as wide as its widest label as drawn, so both follow the reader's text size.
+  - Glass marks: the slices of a `PieChart` and the bars of a `BarChart` are drawn as glass by default: the series colour, opaque, under the veil of a solid control, with one pixel of light on the top of the rim, a soft sheen under it and a soft shadow. No backdrop blur is involved (an SVG shape takes none), so it reads on a plain card too. Flat fills with reduced transparency, more contrast, forced colours and inside `data-materials="opaque"`. Line markers, key marks and the `Sparkline` dot stay flat.
+  - Glass panel: `glass` on `LineChart`, `BarChart` and `PieChart` stands the chart on a panel of the thick material (off by default: it needs a wash, a tint or a picture behind it, and on a plain card it shows only an edge and a shadow). It is the library's `material-thick`, so reduced transparency, more contrast, forced colours, no `backdrop-filter` and `data-materials="opaque"` make it the opaque surface. Over a solid brand or accent fill some series colours fall under 3:1 on it; THEMING.md has the numbers.
+  - Types `ChartSeries`, `ChartDatum`, `ChartColor`, `ChartColorName`, `ChartFormat` are exported. Not included: stacked or grouped bars, horizontal bars, areas, a second axis, zoom, animation.
+- **`SpeechBubble`** (Z-075; D155): a quotation in a bubble with a drawn tail. A `figure` whose `figcaption` is `label` (a string or a snippet; `labelHidden` keeps it for assistive technology only) and whose content is a `blockquote` with the children as real, selectable text. `side` (`end` default, `start`; follows the text direction) places the tail; `tone` is `ink` (default: the headline colour as fill and the page colour as text, so dark in light and light in dark) or `paper` (the two swapped, for a bubble on a filled block). `decoration` is a snippet drawn on the top corner of the tail's side. Four custom properties declared nowhere, set on the component or any ancestor: `--zabi-bubble-fill` and `--zabi-bubble-text` (win over `tone`), `--zabi-bubble-radius` (any `border-radius` value, the eight-value form included; default `1.5rem`) and `--zabi-bubble-tilt` (turns the fill and tail, not the text; default `0deg`). The tail is an inline SVG in the fill colour, sized in rem; tail, fill and decoration are hidden from assistive technology; in forced colours the bubble is a 2px outline and the tail is not drawn. The type is `text-lg font-medium` on the figure and can be replaced through `class`. Not included: a copy action and a speaker slot.
+
+### Changed
+
+- `Textarea` has no resize grip on a touch screen (Z-077; D181). New prop `resize`: `auto` (default: the browser's vertical grip with a mouse or trackpad, none where the pointer is coarse), `vertical`, `none`. On a phone the grip was 16px in the field's corner and dragging it scrolled the page. Desktop is unchanged. The earlier behaviour everywhere: `resize="vertical"`. A `resize-*` class passed in `class` still wins.
+
+- **In dark, a form field is a well of its own, not the page colour inside an edge** (Z-078; D180). `--color-input` in dark is a translucent step of the neutral ramp (base-50 at 7%; `-hover` 10%, `-focus` 7%, `-active` 15%) instead of the page step, so `Input`, `Textarea`, `Select`, `DateField`, `TimeField` and `PickerField` are a little lighter than whatever they sit on: 1.20:1 off the page, 1.22:1 off a card, 1.23:1 off a sheet on the default theme, with no rule per surface. Light is unchanged. The field edge (`--color-input-border`) is unchanged and stays 3:1 against the surface outside the field; against the lifted fill inside it is 3.05:1 on the page, 2.79:1 on a card and 2.50:1 on a sheet. The dark placeholder is a shade lighter (`#ababb3`, was `#a1a1aa`) to keep 4.5:1 on the lifted fill; on a pressed field in a sheet it is 4.08:1. New tokens, additive: `--color-input-solid`, `-solid-hover`, `-solid-focus`, `-solid-active`, the opaque field a colour block (`.on-brand`, `.on-accent`, `.on-fill`) uses, where a translucent fill would sit on the block's colour. New guard pairs in `check:contrast` and in `createTheme`'s check, dark only, laid over the page, a card and the overlay: the well against its surface (1.15:1), value and placeholder on every field state, the hover and pressed steps, the edge on the fill. `--color-surface-inset`, `--color-input-disabled` and the progress track are unchanged. Restore the earlier dark field: `overrides: { dark: { '--color-input': 'var(--color-surface-inset)', '--color-input-hover': 'var(--color-base-200)', '--color-input-focus': 'var(--color-base-150)', '--color-input-active': 'color-mix(in srgb, var(--zabi-base-50) 10%, var(--color-surface-inset))', '--color-input-placeholder': 'var(--color-base-600)' } }`.
+
+- `Input type="password"` has the show/hide button by default (`revealable` now defaults to `true`). Pass `revealable={false}` for a password field without it. Other types are unaffected.
+
+- In dark, `Card variant="flat"` is a translucent, slightly lighter layer (the neutral ramp's base-50 at 7%, hover 11%, pressed 15%) instead of the opaque card fill, so flat cards nested in each other, in a default card, an elevated card or a sheet each read a step lighter and stay visible. Light is unchanged: a light flat card computes to the same fill as before. New tokens `--color-card-flat`, `--color-card-flat-hover`, `--color-card-flat-active` (utilities `bg-card-flat`, `hover:bg-card-flat-hover`, `active:bg-card-flat-active`), settable through `createTheme` `overrides`. To keep the opaque dark fill: `overrides: { dark: { '--color-card-flat': 'var(--color-card)' } }`, and the same for `-hover` and `-active` (`var(--color-card-hover)`, `var(--color-card-active)`).
+
+### Fixed
+
+- `BottomSheet`: the panel's height no longer transitions while the sheet slides in (Z-079). The height transition is for snapping and for settling a drag; during the slide-in a late change of height rode the spring and moved the content after it had arrived. It is switched on when the slide has ended (at once under reduced motion). The slide itself and the snaps keep the spring.
+
+- `Input type="search"` with a clear button of its own in `trailing` no longer also shows the browser's clear cross in Chrome and Safari. A search field without `trailing` keeps the browser's.
+
+## [9.0.0-alpha.5] - 2026-10-07
+
+A fifth local preview build of the 9.0 direction, not published to npm; 8.1.0
+stays the stable version. It is the components the consuming app asked for.
+New: `Chip` and `ChipGroup` (a link, a toggle button or a real radio or
+checkbox input under one tonal selected style, in a wrap or a one-row layout
+that scrolls sideways), `Block` (the full-width colour section), `Stat`,
+`PickerField` (a field-shaped trigger for an app's own sheet). Extended: `Card`
+is linkable (`href`) and takes a `tone` or a custom `fill`; `Collapsible` is a
+native `<details>` and opens without scripts; `Progress` gets a 16px size, a
+segmented form and a track edge token; `Rating` a compact score, 40px stars
+and a soft empty state; `Heading` a display variant on a display typeface
+token; `Checkbox`, `Radio` and `Toggle` a `leading` snippet; `Alert` an edge
+that can be turned off and a brand variant; `DateField` and `TimeField` a
+`locale` with the library's own display and picker over the native input.
+No token, prop, variant or export is removed or renamed. Four things change
+what a consumer sees or gets without a code change, each listed under Changed
+or Fixed with what restores it where something does: the default
+`Collapsible` trigger is a `<summary>` instead of a `<button>`; a solid
+control in a colour block's own colour is inverted inside that block; a
+`Stepper` bar's upcoming segments are filled with the progress track; and the
+floating `BottomTabBar` is 72px tall with equal insets. Built quickly and
+tested lightly on purpose: the type and design checks, the unit run, the theme
+tests, the package build and a scratch install were run on it, and the new
+components' stories were looked at once in Storybook with headless Chromium in
+light and dark at phone and desktop widths (two things were fixed from that
+look). No browser suite was run, there was no accessibility or QA review, and
+nothing was tried on a real phone, in Safari or Firefox, without scripts in a
+real browser, at 200% text, right-to-left, in forced colours, or with a
+keyboard or a screen reader.
+
+### Added
+
+- **Chip tokens** (Z-051): `--color-chip`, `-hover`, `-active`, `-text` (a quiet neutral fill without an edge: `base-200` / `300` / `350` in light, `--zabi-base-750` / `700` / `650` in dark, the label is the headline colour) and `--color-chip-selected`, `-hover`, `-active`, `-text`, which default to the tonal role (`--color-action-tonal*`), so an app that themes tonal gets matching chips. Classes `bg-chip`, `hover:bg-chip-hover`, `active:bg-chip-active`, `text-chip-text`, `bg-chip-selected`, `hover:bg-chip-selected-hover`, `active:bg-chip-selected-active`, `text-chip-selected-text`. Label pairs guarded at 4.5:1 on all fills in both modes, in the library and in `createTheme`.
+- **`--color-card-tint`** (`bg-card-tint`; Z-055): the brand tint as a surface for content. `brand-100` in light, the brand at 8% over the card in dark. Text roles and the link are guarded on it at 4.5:1, the focus ring, the field edge and the outline-button edge at 3:1.
+- **`.on-fill`** (Z-055): the on-colour scope for a fill the app chooses. Like `.on-brand`, with the label colour taken from `--zabi-on-fill` (fallback `currentColor`): text roles, links, edges and focus rings inside take it, and a surface inside (a Card, a field, a Chip) gets the theme's roles back. The library cannot check the contrast of a colour picked at run time.
+- **`--color-progress-track-border`** (`border-progress-track-border`; Z-049): the edge of the Progress track, by default the field edge as before. `createTheme` writes `transparent` for a mode in which an overridden `--color-progress-track` itself reaches 3:1 against the page and the card and the app did not set the edge; an edge the app sets itself is never moved.
+- **`--font-family-display`** (`font-display`; Z-058): a second typeface as a token; follows `--font-family-heading` until set. `cn` knows `font-heading` and `font-display` as font families.
+- **`Checkbox`, `Radio` and `Toggle` take a `leading` snippet** (Z-060; D145): drawn inside the one `<label>`, between the control and the label text (an avatar in an attendee list), so a press on it toggles the control. The accessible name stays the `label` string; give a leading image an empty alt. Without `leading` the markup is unchanged.
+- **`Chip`** (Z-051; D144): one pill, four forms. With `href` it is a link (`selected` sets `aria-current`, `current` picks its value) and works without scripts; with `type="checkbox"` or `type="radio"` it is a real input inside a label, which submits in a form without scripts and whose selected look follows the native `:checked`, so a choice made before hydration shows at once and is kept; otherwise it is a toggle button with `aria-pressed`. One selected style in every form and both modes: the tonal fill and label (`--color-chip-selected*`) and a semibold label, no outline and no solid fill; a system-colour outline in forced colours. Props: `selected` (bindable), `size` (`sm` 28px, `md` 32px, `lg` 40px; a 44px target on coarse pointers without growing the box), `leading`, `checkmark` (a check while selected; on for a checkbox and a toggle button, off for a link and a radio), `disabled`, `name`, `value`, `required`, `form`, `onchange`. A repeat press on the selected radio chip does nothing; a checkbox or toggle chip turns off.
+- **`ChipGroup`** (Z-051, Z-059; D144): `layout="wrap"` (default) or `layout="row"`, one line that scrolls sideways without a scrollbar, with the chosen chip brought into view on load (only the row scrolls; `scrollSelectedIntoView={false}` turns it off) and an edge cue, `edge="fade"` (default: a mask on a side that has more chips beyond it, so it works on any background; none on the server or before hydration) or `edge="none"`. `label` (or `aria-label` / `aria-labelledby`) names the group, `showLabel` shows it. With `type="radio"` or `type="checkbox"`, `name` and `value` (bindable; a string, or an array for checkboxes) the chips inside are inputs that take only a `value`. A `ChipGroup` inside a `ChipGroup` is a named sub-group in the same row or wrap, with a wider gap (24px) between sub-groups.
+- **`Progress size="xl"`** (16px) and **`Progress segmented`** (Z-049; D147): `segmented` draws `max` separate segments with `value` of them filled, for a count such as 4 of 19 (`max` a whole number from 2 to 24; any other `max` draws the continuous bar and warns in a dev build). Still one `role="progressbar"`, with `aria-valuetext` from the new string `progress.valueText(value, max)` ("4 of 19"; set it once in `ZabiStringsProvider` or per instance with `strings`), and with `label` the read-out is that text instead of the percent.
+- **`Card href`** (Z-042; D146): the card itself is an `<a>` (with `target`, `rel`), so the whole card is the link and it works without scripts: focus ring on the card edge, hover and pressed states, a 44px minimum, the content keeps the body colour. A link card must not hold other interactive elements.
+- **`Card tone`, `fill` and `onFill`** (Z-055; D146): `tone="neutral"` (default, unchanged), `"tint"` (`--color-card-tint`), `"brand"` (the primary fill with the `on-brand` scope) or `"accent"`; `fill` with `onFill` is a colour the app chooses with its label colour (the new `on-fill` scope; the app holds that pair to 4.5:1, the library cannot check it). A toned card has no border and no shadow (unless `variant="elevated"`). Text, links, outline and ghost buttons, edges and focus rings inside take the fill's label colour; a neutral Card, a field or an Alert inside is a surface with the theme's colours again. An interactive toned card shows hover and pressed as a veil of its own text colour.
+- **`Block`** (Z-055; D146): the full-width, square-cornered colour section, with the same `tone`, `fill` and `onFill`, `padding` (`none`, `sm`, `md`, `lg`) and `as` (`div`, `section`, `header`, `footer`, `article`, `aside`). It does not break out of a padded parent by itself: place it outside the padded container or give it a negative inline margin through `class`.
+- **`Rating compact`** (Z-054, Z-066; D149): a score for a list, not a control: one filled star and the number ("4,0", through `formatValue`), from the real `value` and `max`, as one image with one accessible name ("4 of 5 stars", the readonly string). It implies `readonly`. Sizes `sm` (14px), `md` (16px), `lg` (20px), `xl` (28px star, 30px number) and `display` (40px star, 48px number in the display face).
+- **`Rating size="xl"`** (40px stars, for a large input) and **`Rating empty="soft"`** (Z-054; D149): an empty star as a soft filled shape with no outline, in `--zabi-rating-off-fill` (falls back to `--color-control-track`; declared nowhere, set it on any ancestor). The soft fill is below 3:1 against the page by default, so it suits a rating with a visible label and value; in forced colours it is an outline. The default stays `empty="outline"`.
+- **`Stat`** (Z-058; D150): a figure with a label. `value`, `label`, `unit` (after the value, smaller, on the same baseline: `value="4" unit="av 19"`), `size` (`sm` 24px, `md` 36px, `lg` 48px), `align`, `labelPosition` (`below`, `above`), or children for a figure that needs markup. The value is in the display face with tabular figures; plain text in reading order, no role.
+- **`Heading variant="display"`** (Z-058; D150): the display face (`--font-family-display`) with its own steps: 60px (48px below `sm`), 48 (36), 36 (30), 30, 24 and 20px by `size ?? level`, balanced wrapping. Its weight and tracking are two custom properties declared nowhere, shared with `Stat`: `--zabi-display-weight` (default 700) and `--zabi-display-tracking` (default -0.02em). So a second typeface is three properties on any ancestor and no CSS rule. `variant="heading"` (default) is unchanged.
+- **`Alert bordered`, `--zabi-alert-border-width` and `Alert variant="brand"`** (Z-072; D152). `bordered={false}` makes the edge transparent (the box keeps its size); the edge's width reads `--zabi-alert-border-width` (default `1px`, declared nowhere), so `--zabi-alert-border-width: 0px` on `:root` or any ancestor removes the edge from every Alert under it with no prop. `variant="brand"` is the theme's brand tint (`--color-action-primary-subtle`, edge `--color-action-primary-border`, icon in the link colour), with `role="status"`. `variant="neutral"` already existed. The default Alert is unchanged.
+- **`PickerField`** (Z-071; D151): a field-shaped trigger that opens whatever the app gives it (its own sheet with search, a page). It looks and measures like a `Select` of the same `size`, with `label`, `hint`, `error` (and `variant` / `message`) wired as on the other fields, `value` (the text of what is chosen), `placeholder`, a `leading` snippet, children for a rich value, and a chevron. It is a `<button aria-haspopup="dialog">` named by the label and the value (`haspopup`, `expanded` and `controls` set the ARIA attributes), `bind:element` hands the app the trigger to return focus to, and `name` with `formValue` submit the chosen id through a hidden input. With `href` it is a link, for a picker that is a page and works without scripts.
+- **`DateField` and `TimeField` take a `locale`** (Z-053; D153). Without it nothing changes. With it, the server and the page before hydration still render the native `<input type="date|time">` (the fallback without scripts; it submits as before). Once the page runs, the native input stays as the form control, out of sight, and a field-shaped button takes its place in the same box, showing the value in the app's locale through `Intl.DateTimeFormat` ("10 nov. 2026", "18:30", never the browser's own format), with `format` (the `Intl` options, for "tis 6 okt") and `placeholder`. Pressing it opens the library's picker in a `BottomSheet` titled by the label: the `Calendar` for a date (choosing a day sets the value, closes and returns focus; `min` and `max` are honoured), and two listbox columns, hours and minutes, for a time (hours labelled as the locale writes them, minutes every `step`, 5 minutes without one, a value off the step kept as its own option; Done commits). Clear is offered when the field is not `required`. `picker="native"` keeps the locale display and opens the platform's picker with `showPicker()` instead (and a `step` under a minute does the same); where that is refused the native input comes back. `input` and `change` fire on the native input for a value set by the picker, and a `required` empty field moves focus to the button instead of showing a bubble on a hidden control. New strings `dateField` and `timeField` (`clear`, `done`, `hours`, `minutes`, `chooseDate`, `chooseTime`) through `ZabiStringsProvider` or `strings`. The sheet is used at every width in this build. `PickerField` gains a `trailing` snippet that replaces its chevron.
+
+### Changed
+
+- **`Collapsible` opens without scripts** (Z-041; D143). With the default trigger (`title`) it is now a native `<details>` / `<summary>`: it opens before hydration and for a visitor without scripts, a toggle made before hydration is kept, find-in-page opens it, and a single-open `CollapsibleGroup` gives its panels a shared `name` so the browser keeps them exclusive too. Markup change: the default trigger is a `<summary>` (it keeps `id`, `data-collapsible-trigger` and `triggerClass`), not a `<button>` with `aria-expanded`, the heading of `headingLevel` is inside it, and the panel is no longer `hidden` while closed (a form inside a closed panel keeps its values and still submits them, as before). A test that looked for `role="button"` needs the summary instead. A `disabled` panel has `aria-disabled` and leaves the tab order. With a custom `trigger` snippet nothing changes, and that path still needs scripts. No prop is added or removed.
+- **`Progress` reads its track edge from `--color-progress-track-border`** (class `border-progress-track-border`, was the hard-coded `border-input-border`; Z-049). The default value is the same field edge, so nothing moves until the token is set (or `createTheme` sets it to `transparent` for a track that reaches 3:1 on its own).
+- **`Stepper`, bar layout: an upcoming segment is a filled track** (Z-050; D147): fill `--color-progress-track`, edge `--color-progress-track-border`, instead of a hollow `--color-control-border` outline. With the default tokens it looks nearly as it did (the field fill inside the field edge); an app that themes the progress track gets a filled, edgeless track. Restore the 8.1 outline on any ancestor: `--zabi-stepper-upcoming-fill: transparent; --zabi-stepper-upcoming-edge: var(--color-control-border)`.
+- **A solid control in the block's own colour is inverted inside a block** (D148). Inside `.on-brand`, `.on-accent` and `.on-fill` (so inside `Card tone="brand"`, a brand `AppBar`, or a block an app already marks), an element with `bg-action-primary` on a brand block (a primary `Button`, a solid brand `Badge`, a checked `Checkbox`), or with `bg-accent` on an accent block, was the same colour as the block; it now takes the block's label colour as its fill and the block's colour as its text, with hover and pressed mixed from the two, and a filled `Rating` star takes the label colour. A surface inside the block restores the theme's values. Outside a block nothing changes.
+- **`AppBar`: the row's fixed pixel scale is documented** (Z-074) on the `leading` and `actions` props: the row sets `--spacing: 4px`, so content placed there should be sized on it (`size-9`, or `calc(var(--spacing) * 9)`), not in rem, or it grows at 200% text while the bar's own controls do not. No behaviour change.
+
+### Fixed
+
+- **The floating `BottomTabBar` capsule is concentric with its tabs** (D154): the tabs sat 8px inside the capsule at its ends but 4px above and below, under a 28px corner. They now sit the same distance inside on all four sides (the list's gap: 8px, less in a very narrow bar), and the capsule's radius is the tab's 20px plus that distance, so outer radius = inner radius + padding holds at every width. The floating bar is 72px tall (was 64px); `--app-shell-bottom-inset` follows, it is measured. The edge-to-edge bar is unchanged.
+- **`Alert`: the close button's radius follows `--zabi-alert-border-width`**, so it stays concentric with the alert when the edge is set to `0px`.
+- **The active tab's forced-colours outline is the system highlight colour** in `BottomTabBar` and `AppNavigation`: the class `forced-colors:outline-(color:Highlight)` was never emitted (that form is for custom properties), so the outline fell back to the text colour. It is `forced-colors:outline-[color:Highlight]` now. `ring-(color:--color-bar)`, the ring around a tab's count, was checked in the built stylesheet and is emitted.
+- **`TimeField` picker: the chosen minute is in view and the chosen row is legible** (found in the look at this build): the columns centred their chosen row from `offsetTop`, which counts from the sheet, so only the focused hours column was right; and the chosen row's label kept the body colour on the primary fill in light. Both corrected before the build was packed.
+- **Storybook: `Heading / All levels`, `Display` and `Display with own face` render** (they passed a string as a component), and the `Stat` row on a brand block wraps on a phone.
+
+## [9.0.0-alpha.4] - 2026-10-06
+
+A fourth local preview build of the 9.0 visual direction, not published to npm;
+8.1.0 stays the stable version. It is dark mode on its own terms: the dark
+surfaces are steps of the neutral ramp, so a tinted neutral keeps its hue and
+chroma on every level, in two tone steps, with overlays set apart by a rim and
+a shadow instead of by grey; the primary and danger buttons keep their colour
+in dark under a white label; the dark status tints are low-chroma tints of the
+card; and dark sheets, menus and bars show glass again, because the dark
+material dims what is behind it. Light does not change, with one exception:
+the light thick material is 88% instead of 86%. `createTheme` gains
+`darkPrimary`, now checks the material pairs it was silently skipping (a theme
+may get a warning it did not get before), and keeps the ramp's ink in the mode
+an override did not name. AppShell gains `flushTop` and AppBar a fourth tone,
+`inherit`; `cn` merges the named spacing steps. No token, prop, variant or
+export is removed or renamed; `tokens/surface-ladder.js` (not a published
+file) exports steps instead of wash alphas. Several dark defaults change what a
+consumer sees, and each has a line that restores the earlier look. Built
+quickly and tested lightly on purpose: the type and design checks, the unit
+run, the theme tests, the package build and a scratch install were run on it,
+and the shell, Card, Alert, Badge, Button, Progress, Toggle, SegmentedControl,
+Select, Modal and BottomSheet stories were looked at once in Storybook in dark
+and light at phone and desktop widths. No browser suite was run (the library's
+Playwright specs will need updating for the new looks), there was no
+accessibility or QA review, and nothing was tried on a real phone, in Safari or
+Firefox, at 200% text or with a keyboard.
+
+### Added
+
+- **`AppShell flushTop`** (Z-065; D140): without a `header`, the content no longer gets the top safe-area padding, so a colour block at the top of a tab screen runs under the status bar and the content handles the safe area itself (`--app-shell-top-inset` keeps its value; an `AppBar position="static"` in the block pads by it). Default `false`; with a `header` it does nothing.
+- **`AppBar tone="inherit"`** (Z-067; D140): a bar inside a block that is not the primary colour. No fill of its own, never the glass or the hairline, and the title, back control, ghost actions, links, borders and focus rings take the text colour the block gives (the `on-brand` scope with `--color-on-brand: currentColor`). A sticky bar that must cover scrolling content takes its fill from the app: `class="[--color-bar:var(--your-block-colour)]"`. Contrast inside the block is the app's to check. Story: "Design System/Organisms/AppShell (9.0) / Colour Block Under Status Bar".
+
+### Changed
+
+- **Dark surfaces are steps of the neutral ramp** (Z-044; D133, D134). `--color-surface-raised` is `var(--zabi-base-850)` (`#1f1f22`, was a 6.4% white wash, `#262629`), `--color-surface-elevated` and `--color-surface-overlay` are both `var(--zabi-base-800)` (`#27272a`; were `#363638` and `#454547`), `--color-surface-overlay-hover` is `var(--zabi-base-750)` and `--color-surface-inset` (and so `--color-input`) is the page step, `var(--zabi-base-900)`. The page does not move. Two tone steps in all (OKLCH L 21.0, 24.1, 27.4), and with a tinted neutral every surface keeps the ramp's hue and chroma instead of greying as it rises. An overlay is no longer a lighter grey than a card: it is set apart by its rim (`--color-material-rim`, 12% to 14% of `--zabi-base-50`: 1.85:1 on the page, 1.72:1 on a card, 1.56:1 on the overlay) and a stronger dark shadow (`--shadow-opacity` 0.24 to 0.5, `--shadow-opacity-contact` 0.3 to 0.4). What follows the ladder in dark: `--color-border` and `--color-border-weak` are `base-250` (`#333338`: 1.41:1 on the page, 1.31:1 on a card; a quieter hairline than before), `--color-progress-track` is `base-250` (the field is the page colour now), `--color-input-disabled` is `base-75`, `--color-segment-thumb` is `base-400`, `--color-card-active` and `--color-surface-4` are the overlay hover step. Light is unchanged. Restore the 8.1 dark ladder: `overrides: { dark: { '--color-surface-raised': 'color-mix(in srgb, var(--zabi-base-50) 6.4%, var(--zabi-base-900))', '--color-surface-elevated': 'color-mix(in srgb, var(--zabi-base-50) 13.1%, var(--zabi-base-900))', '--color-surface-overlay': 'color-mix(in srgb, var(--zabi-base-50) 19.7%, var(--zabi-base-900))', '--color-surface-inset': 'var(--color-base-150)', '--color-border': 'var(--color-base-200)', '--shadow-opacity': '0.24', '--shadow-opacity-contact': '0.3' } }`.
+- **The primary action keeps the brand hue in dark** (Z-043; D135). The dark primary was the mirrored pale step (`--color-brand-600`, physical step 400) with a dark label; it is now the same physical steps as light, `--color-action-primary: var(--zabi-brand-600)`, `-hover: var(--zabi-brand-700)`, `-active: var(--zabi-brand-800)`, with the light label: `--zabi-on-brand-dark` defaults to `var(--zabi-on-brand)` (white; was `var(--zabi-brand-950)`). White on step 600 is 4.76:1 or more on any ramp; the default fill is 3.65:1 on the dark page, 3.39:1 on a card and 3.07:1 on an overlay. Everything that reads the primary follows: checked Checkbox, Radio and Toggle, the Progress fill, Stepper, the solid brand Badge, the FAB, the brand AppBar. Danger does the same (`--color-action-danger: var(--zabi-error-600)`, 700, 800, label `var(--zabi-error-50)`), so a destructive button is one red in both modes. The focus ring, links, the brand tints, the tonal button and the active navigation fills stay on the mirrored ramp: they are text, rings and tints on a dark surface. With the fill a mid step under a white label, the dark control veil is darken-only as in light (`--gradient-control-top-strength: 0%`, `-bottom-strength: 14%`; were 22% and 6%); the accent keeps 22% and 6% in its own strengths, because its dark fill is still the light step under a dark label. `--color-progress-track` in dark is `base-75` (`#101013`, a well just below the page) so the mid-step fill holds 3:1 on it. Restore 8.1 in one option: `createTheme({ darkPrimary: 'mirror' })` (CLI `--dark-primary mirror`); without the generator, set the three fills to `var(--color-brand-600 | 700 | 800)`, `--zabi-on-brand-dark: var(--zabi-brand-950)` and the two strengths under `.dark`.
+- **`createTheme({ darkPrimary })`** (Z-043): `'brand'` (default, what the library does, nothing extra written) or `'mirror'` (the 8.1 dark fills for primary and danger, the label chosen by the contrast check, the 22% / 6% veil, written under the dark selectors). A `dark` or `both` override of a role wins over both. In dark the label tried first is now white (the ramp's dark end if white fails, so a pale dark primary of the app's own keeps a dark label). With `pin`, a colour that fails in dark falls back to what this option gives, which is step 600 with white by default. An app that overrides `--color-action-primary` for both modes with a semantic step keeps its mirrored dark primary; move the override under `light` to get the brand step in dark.
+- **Four more guarded pairs**: the primary fill and the danger fill against the page and against a card, 3:1, both modes (until now only a pinned colour was held to this).
+- **Dark status tints are low-chroma tints of the card** (Z-057; D136). `--color-success-subtle`, `--color-warning-subtle`, `--color-error-subtle`, `--color-info-subtle`, `--color-energetic-subtle` and `--color-accent-subtle` were the mirrored step 100 (physical 900: the dark error surface was `#660002`); each is now `color-mix(in srgb, var(--zabi-<ramp>-500) 16%, var(--color-surface-raised))`, and the matching `-border` the same mix at 36%. `--color-action-danger-subtle` is the error tint, its hover the mix at 20% and its pressed step at 32%. The hue stays in the icon and the text, which did not move. Light is unchanged. Restore 8.1 per family: `overrides: { dark: { '--color-error-subtle': 'var(--color-error-100)', '--color-error-border': 'var(--color-error-200)' } }`.
+- **Alert's status icon is drawn at stroke 2.5** (was lucide's 2), in both modes, so it holds its weight beside the text.
+- **Dark materials show glass again** (D137). Dark sheets, menus and modals were 98% opaque, because faint text had to hold 4.5:1 over a white backdrop. The dark backdrop filter now also dims what is behind the glass: new token `--material-backdrop-brightness` (`1` in light, an identity; `0.6` in dark), and the three `--material-filter-*` tokens end in `brightness(var(--material-backdrop-brightness))`. The brightest thing behind dark glass is therefore near-white times 0.6, and the contrast guard measures the fill over that dimmed backdrop (material pairs only; every fallback that removes the filter also makes the fill opaque, so the rule is what a browser paints). Dark alphas re-solved on it: `--material-alpha-thin` 66% to 60%, `--material-alpha-regular` (bars) 76% to 68%, `--material-alpha-thick` 98% to 72% (floors 30, 47 and 68). No text role moved and the thick material still carries all five. Restore the 8.1-like opaque dark overlays: `overrides: { dark: { '--material-alpha-thick': '98%', '--material-backdrop-brightness': '1' } }`, or `data-materials="opaque"`.
+- **`createTheme` now checks the material pairs** (D138). The generator's data did not carry `--material-alpha-*`, so every "text on a material" pair was skipped without a word: a theme reported "all 278 role pairs pass" and the same input now checks 354. An app whose text or surface overrides make glass unreadable over the worst backdrop gets a warning it did not get before; the fix is the alpha of that level for that mode, for example `overrides: { light: { '--material-alpha-thin': '68%' } }`. `--material-alpha-*` and `--material-backdrop-brightness` are honoured per mode in the check.
+- **Light `--material-alpha-thick` is 88%** (was 86%), found by that check: with a strongly tinted neutral (`neutralChroma: 0.08`) the caption on a light sheet over a black backdrop was 4.47:1 at 86%. Neutral hues at chroma 0 to 0.1 now pass. Restore: `overrides: { light: { '--material-alpha-thick': '86%' } }`.
+- **The dark half of the surface elevation guard is a new rule** (D134), because the old one (four levels, each 5 to 8 lightness points above the last) described the old design. Now: every dark surface role is declared as one step of the neutral ramp, not a mix; lightness never falls from page to overlay and the card is lighter than the page; at most two tone steps above the page, each 2 to 5 OKLCH L points, the top within 8; the overlay rim reaches 1.5:1 against the page and the card and 1.3:1 against the overlay; the card edge reaches 1.2:1 against the page and the card, as in light. `tokens/surface-ladder.js` exports `SURFACE_STEP` in place of the wash alphas.
+- **The field edge is guarded on the elevated and overlay surfaces too**, in both modes (`--color-input-border` at 3:1; a field in a sheet or a modal). Two more guarded pairs in `createTheme`'s check.
+
+### Fixed
+
+- **`cn` knows the named spacing steps** (Z-064): `xs`, `sm`, `md`, `lg`, `xl` and `2xl` (`--spacing-*`) are registered with the class merger as spacing values, so a call-site `p-sm` beats a component's `p-xs`, and the same for margin, gap, inset and the other spacing groups. Until now `p-xs p-sm` kept both classes and the stylesheet order picked the padding. `3xl` is not registered: the library has no `--spacing-3xl`.
+- **`createTheme`: an ink role overridden in one mode keeps the ramp's ink in the other** (Z-061). With `neutralChroma`, a role such as `--color-action-secondary` set under `overrides.light` alone got the library's grey `rgba(250, 250, 250, 0.09)` under the dark selectors; it now gets the tinted `color-mix(in srgb, var(--zabi-base-50) 9%, transparent)` that the option derives, as it does without the override. The same holds the other way: a role set under `overrides.dark` alone keeps the tinted mix in light (it fell back to the library's grey there). Roles: `--color-action-secondary` (and `-hover`, `-active`), `--color-surface-hover`, `--color-surface-active`, `--color-border-overlay`, `--shadow-color`. An app that restated the dark mixes as a workaround can delete them; to keep the old grey in the other mode, set it there.
+
+## [9.0.0-alpha.3] - 2026-10-06
+
+A third local preview build of the 9.0 visual direction, not published to npm;
+8.1.0 stays the stable version. It is the redesign of the shell: AppBar,
+BottomTabBar, StickyActionBar and TopNavbar are flush with the page and turn to
+glass once content scrolls under them; the AppShell footer lies over the
+scroller; the active tab loses its outline; the sidebar and the top navbar have
+one active indicator, sentence-case headings and tighter rows; AppBar gains a
+large title that condenses and a brand tone; IconButton gains a count; and
+AppShell gains a `navigation` slot that is tabs, a rail or a sidebar by
+breakpoint, with `AppNavigation` as its ready-made content. No token, prop,
+variant or export is removed or renamed; several defaults change what a consumer
+sees, and each has a line that restores 8.1 where one exists. Built quickly and
+tested lightly on purpose: the type and design checks, the unit run, the theme
+tests, the package build and a scratch install were run on it, and the new
+shell stories were looked at once in Storybook (light and dark, at phone, tablet
+and desktop widths, at rest and scrolled). No browser suite was run (the
+library's Playwright specs will need updating for the new looks), there was no
+accessibility or QA review, and nothing was tried on a real phone, in Safari or
+Firefox, at 200% text or with a keyboard. Dark mode is still not art-directed.
+
+### Added
+
+- **Bar tokens** (Z-045; D124): `--color-bar` (a bar's fill at rest, default `var(--color-surface-chrome)`), `--color-bar-border` (the hairline a bar shows once content is under it: the headline colour at 10%), `--color-bar-brand` (the fill of an on-brand AppBar, default `var(--color-action-primary)`) and `--color-tabbar-active` (the active tab's pill, default `var(--color-nav-menu-active)`; Z-046). All four are restated in dark and settable through `createTheme` `overrides` per mode. Classes `bg-tabbar-active`, `bg-bar-brand`, `border-bar`. Guarded pairs: the active tab label on its pill, on-brand text on the brand bar, the headline on a bar at rest.
+- **`.material-bar`**: the surface of a bar. A `::before` layer paints `--color-bar` at rest and, when the element has `data-scrolled-under="true"`, the regular material with a 1px `--color-bar-border` hairline on the content side (`data-bar-edge="bottom"` puts it on the top edge). The element itself has no `backdrop-filter`, so a Dropdown or Tooltip in a bar is still placed against the screen. Under the opaque fallbacks a scrolled bar is the page colour with the hairline.
+- **`.material-layer-regular`**: the layer form of the regular material, as `.material-layer-thick` is for the thick one, for a floating bar that holds controls.
+
+- **`BottomTabBarItem.activeIcon`** (Z-046): drawn instead of `icon` on the active tab, typically the filled form. Without it the same icon is drawn with a heavier stroke (2.5) when active; `BottomTabBarIcon` now also accepts `strokeWidth`.
+- **`BottomTabBar floating`** (D126): the bar as a rounded glass capsule inset 12px from the screen edges, always on the regular material. Default `false`.
+- **AppShell `navigation` slot** (D101-S, D130): `navigation?: Snippet<[{ placement: "tabs" | "rail" | "sidebar" }]>` and `navigationPlacement?: "auto" | "tabs" | "rail" | "sidebar"` (default `"auto"`). One navigation, rendered once and first in the DOM, placed by CSS: tabs over the bottom of the screen below 48rem (768px), a rail from 48rem and a sidebar from 64rem (1024px) as a full-height column at the inline start; a forced value applies at every width. The server render is right without scripts. The host carries `data-navigation-placement`; `--app-shell-bottom-inset` counts the tabs (and a `footer`, which then sits directly above them); new `--app-shell-start-inset` is the rail's or sidebar's width (`0px` as tabs), mirrored on `<html>` with the other two. `footer`, `header` and `children` work as before, and a shell without `navigation` renders the markup it always did. Types `AppShellNavigationPlacement`, `AppShellNavigationMode`, `AppShellNavigationContext` and the constants `APP_SHELL_RAIL_MIN_WIDTH`, `APP_SHELL_SIDEBAR_MIN_WIDTH`.
+- **`AppNavigation`** (new organism; D130): the ready-made content for the slot. Takes the `BottomTabBar` item list (`items`, `active`, `label`, `badgeLabel`, `badgeMax`, `floating`) and draws it as a BottomTabBar, an 80px rail (icon in the tab pill over a label) or a 256px sidebar (36px rows, icon before the label, count at the end, one tinted active indicator), by CSS alone; `header` and `footer` snippets go above and below the list in the side forms. Outside a shell it is the tab bar.
+- **Stories**: `Design System/Organisms/AppShell (9.0)` shows the redesigned shell as a phone, a phone with floating tabs, a tablet rail, a desktop sidebar, adaptive, and with a brand bar. The prototype story stays beside it.
+- **`AppBar largeTitle`** (Z-045; D128): the title large (30px bold, capped at 39px, two lines at most) on a second row under the 56px bar. The large row scrolls away with the content, with no scroll-linked animation; the bar stays and shows the title small once the large one has gone under it. The heading element is the large title; the small one is hidden from assistive technology. In an AppShell, `--app-shell-top-inset` is the condensed height. `collapseOnScroll` is ignored with it (a dev build warns). Before the bar is measured, and without scripts, the whole header sticks with the large title in view.
+- **`AppBar tone`** (Z-045; D129): `"default"`, `"transparent"` (no fill at rest, glass once content is under it: for a canvas, an image or a colour block behind the bar) or `"brand"` (`--color-bar-brand` with on-brand text and controls, opaque at rest and scrolled, no hairline, so a brand block directly under the bar joins it). The header carries `data-tone`.
+- **`AppBar position`** (Z-067): `"sticky"` (default) or `"static"` for a bar in the flow of the page, inside a block of the content: it scrolls away with the block and is never glass. `class="static"`, the 8.1 way to say this, is read as `position="static"` (the bar is `relative`, because the material's layer is placed against it).
+- **`IconButton count`, `countLabel`, `countMax`** (Z-056 part 1; D131): a count in the attention colour drawn inside the button's own box, in its upper end corner, so a bar or an `overflow` ancestor cannot cut it. `99+` above `countMax` (default 99); a dot at `xs` and `sm`; nothing for 0 or while loading. The accessible name is the `label`, a comma and `countLabel(count)` (default "3 new").
+- **`scrollEdge`** on AppBar, BottomTabBar, StickyActionBar and TopNavbar (D123): `"auto"` (default: flush at rest, glass and a hairline once content is under the bar), `"always"` or `"never"`. Each bar writes `data-scrolled-under="true|false"` on its root (`"false"` on the server).
+- **`AppShell canvas`** (D125): paints the shell with `bg-canvas` (the page colour with the brand wash) and lets the header bar rest transparent over it. Default `false`.
+- **AppShell scroll state**: `data-scrolled-top` and `data-scrolled-bottom` on the host, and `--app-shell-footer-overlay` on the scroller (the bottom inset when a footer lies over it, else `0px`). `getAppShell()` in `util/app-shell` gives a component inside a shell the same state; `util/scroll-edge` (`watchScrollEdge`) is the helper for a bar on its own.
+
+### Changed (visible in 9.0)
+
+- **Bars are flush with the page and turn to glass when content scrolls under them** (Z-045; D108, D123, D124). AppBar, BottomTabBar, StickyActionBar and TopNavbar are the page colour with no line at rest; once content is under one it takes the regular material and a 1px hairline on the content side. They no longer have a border of their own, so AppBar is 56px (was 57) and BottomTabBar 64px (was 65); an app that hard-coded 57px or 65px should read `--app-shell-top-inset` / `--app-shell-bottom-inset` or use the new numbers. Restore 8.1's look: `scrollEdge="always"` on the bar together with `data-materials="opaque"` on `<html>` and `--color-surface-chrome: var(--color-surface-raised)` (a permanent opaque raised bar with its line).
+- **BottomTabBar: the active tab has no outline** (Z-046; D107, D126). It is marked by the tinted pill (`--color-tabbar-active`), a filled or heavier icon, a semibold label and the active colour; the focus ring shows on `:focus-visible` only. Under forced colours the pill keeps a system-colour outline. The count badge is the attention colour (the solid error fill) with a 2px ring in the bar colour. Restore 8.1: none by token (the outline was the reported defect); `--color-tabbar-active` takes any fill.
+- **Sidebar and TopNavbar restyled** (D127). SidebarNavigation: one active indicator, the tinted fill with the active text colour and a semibold label (the 3px leading bar is gone; forced colours keep an outline); rows are 36px at 14px with 20px icons and 44px on coarse pointers; sections are separated by space, not lines. SidebarNavSection headings are sentence case as written (no `uppercase`, no tracking), 12px medium. SidebarShell reads `--color-surface-chrome` (the page colour) with a weak hairline on the content side and no shadow in the `card` layout. SidebarPanel is a flat card (no shadow or ring; `variant="elevated"` now looks the same as the default) and its selected row uses the same single indicator. TopNavbar links are 14px without tracking, medium, semibold when active. Restore 8.1: none by token or prop.
+- **A `bg-*` or `border-*` class on a bar no longer changes its surface.** The fill and the hairline are painted on the material's layer, not on the bar element, so `class="bg-transparent border-b-0"` on an AppBar (or a `bg-*` on BottomTabBar, StickyActionBar, TopNavbar) has no visible effect. Use `tone="transparent"` or `tone="brand"` on AppBar, or set `--color-bar` on the bar (`class="[--color-bar:transparent]"`, any colour) and `scrollEdge="never"` for no glass and no line.
+- **The AppShell footer lies over the scroller** (D125) instead of taking a row of its own, so content passes under the tab bar. `--app-shell-bottom-inset` has the same meaning and value; the shell now gives the content that much bottom padding and the scroller that much `scroll-padding-bottom`. A floating button at `bottom: calc(var(--app-shell-bottom-inset) + 1rem)` sits where it did. Content that sized itself to the scroller's height (`min-h-full`) is now as tall as the screen minus the header only; its end is still above the footer because of the padding. No restore short of reverting.
+- **StickyActionBar and UnsavedChangesBar in a shell with a footer** stick above the footer (they read `--app-shell-footer-overlay`). **UnsavedChangesBar** is the regular material (rim, highlight, soft shadow) instead of an opaque card with a border and `shadow-lg`; `data-materials="opaque"` makes it opaque.
+- **`--color-surface-chrome` is the page colour** (`var(--color-surface-base)`) in both modes, not the raised surface (D108), so bars and sidebars that read it are flush with the page. The regular material is mixed from it and was re-solved: light 84% (was 80%), dark 76% (unchanged); thin stays 58% / 66%. Restore 8.1: `--color-surface-chrome: var(--color-surface-raised)` (per mode in `overrides`).
+
+## [9.0.0-alpha.2] - 2026-10-06
+
+A second local preview build of the 9.0 visual direction, not published to npm;
+8.1.0 stays the stable version. It adds the first restyled components on top of
+alpha.1's token layer: List and Badge without their double outlines, a sliding
+indicator in Tabs and SegmentedControl, gradient solid buttons with new `tonal`
+and `text` variants and a 56px size, a lighter off Toggle, the seven overlays
+on the thick material and a spring for BottomSheet. Bars, the shell and dark
+mode are not touched yet. No token, prop, variant or export is removed or
+renamed; several defaults change what a consumer sees, and each has a line that
+restores 8.1 where one exists. Built quickly and tested lightly on purpose: the
+type and design checks, the unit run, the theme tests, the package build and a
+scratch install were run on it. NOTHING was rendered: no browser suite, no
+Storybook or visual check in either mode, no accessibility or QA review, so the
+glass, the sliding indicators and the springs have never been seen. Using it is
+the test.
+
+### Added
+
+- **Button `variant="tonal"`** (Z-047): the tonal fill with its brand label, flat, for secondary actions and chosen answers. IconButton has it too.
+- **Button `variant="text"`** (Z-048): a standalone text action in the link colour (the on-colour inside `.on-brand` and `.on-accent`): no underline, a semibold label, the box and 44px touch target of the other variants, `px-2`, a hover and pressed tint. With `href` it is still a boxed action; `variant="link"` with `href` stays the underlined link for a sentence. IconButton shows it as its link look.
+- **Button `size="xl"`** (Z-047): 56px. Button only; `SizeVariant` is unchanged. New type `ButtonSize` (`SizeVariant | "xl"`), exported with `ButtonVariant`. `scripts/check-control-geometry.js` holds it to the same one-line rule as the other sizes.
+- **`--zabi-button-radius` and `--zabi-button-font-weight`** (Z-047) are now read by Button (and the inline link), through `rounded-button`, `font-button` and `font-button-strong`. Defaults are today's corner and a 500 label (600 for `text`).
+- **Control gradient, darken-only in light** (design review: "controls are flat"). `--gradient-control-top-strength` is 0% in light (the fill at the top is the control's own colour, so the label keeps its full contrast and an app's brand colour is not altered) and `--gradient-control-bottom-strength` 14% of `--zabi-base-950` (was 4% / 6%); dark stays 22% / 6%. The veil is for primary, accent and danger: `bg-control-gradient` serves danger too, and danger's label is now a guarded gradient pair. New `--gradient-control-accent-top-strength` and `--gradient-control-accent-bottom-strength` (default: the shared strengths) so one control can differ. The highlight now uses Tailwind's inset-shadow variable (`--tw-inset-shadow`) instead of `--tw-shadow`, so a `shadow-*` class on the same element draws as well. `createTheme` flips a veil to lighten-only in a mode where a dark label would fail the darkened bottom (a light accent), writes 0% if no strength passes, and never moves a strength you set. Restore: `--gradient-control-top-strength: 4%; --gradient-control-bottom-strength: 6%` in light.
+- **Tonal action role** (Z-047): `--color-action-tonal`, `--color-action-tonal-hover`, `--color-action-tonal-active`, `--color-action-tonal-text`; classes `bg-action-tonal` (with its hover and pressed states), `text-action-tonal`. Light is the brand-100 tint with a brand-800 label (8.15, 6.94 and 6.25:1 on rest, hover and pressed); dark the deep tint with the light label (9.48, 6.94, 5.86). `.bg-action-tonal` is a surface inside `.on-brand` and `.on-accent`.
+- **Outline edge, guarded at 3:1** (Z-047): `--color-action-outline-border` and `--color-action-outline-border-hover` (the field edge, 4.63:1 on the light page, 4.83:1 on a card; dark 3.67 and 3.12), classes `border-action-outline` and `hover:border-action-outline-hover`; the block's label colour inside `.on-brand` and `.on-accent`. Restore the old edge: `--color-action-outline-border: var(--color-border); --color-action-outline-border-hover: var(--color-border-medium)`.
+- **Button corner and label weight, apart from fields** (Z-047): `rounded-button` (`--zabi-button-radius`, falling back to `--radius-control`), `font-button` (`--zabi-button-font-weight`, falling back to 500) and `font-button-strong` (600, for the text variant). Declared nowhere, so set them on any ancestor or in `createTheme` `overrides`; a scoped `--radius-control` still flows. Defaults keep today's look.
+- **Toggle off track** that does not read as disabled: `--color-toggle-track` (light base-200, dark base-300), `-hover`, `-active`, and the edge `--color-toggle-track-border` (the field edge: 4.63:1 on the light page, 4.83:1 on a card, dark 3.67 and 3.12). Classes `bg-toggle-track` (with hover and pressed) and `ring-toggle-track` (an inset 1px edge that does not change the switch's size). `--color-control-track*` is untouched; Slider and Progress look as before. Restore: `--color-toggle-track: var(--color-control-track); --color-toggle-track-hover: var(--color-control-track-hover); --color-toggle-track-active: var(--color-control-track-active); --color-toggle-track-border: transparent`.
+- **`SegmentedControl tone`** (Z-052): `"neutral"` (default) or `"primary"`. Neutral draws the selected segment as a thumb: card colour, headline-coloured label, `--shadow-sm` and a 1px edge, on the tinted track. New tokens `--color-segment-thumb` (light: the raised surface; dark: the overlay surface), `--color-segment-thumb-text` and `--color-segment-thumb-border` (the control boundary, held to 3:1 against the track over the page and over a card, with the thumb text held to 4.5:1 on the thumb).
+- **A sliding indicator in Tabs and SegmentedControl.** After mount the selected item's mark (the underline, the pill, the thumb or the primary fill) is one element that moves and resizes to the selected item over `--duration-moderate`: with `--ease-spring` for the pill and the thumb, `--ease-standard` for the underline. It is measured, so it follows resizes, zoomed text (a wrapped SegmentedControl moves the thumb in two dimensions), right-to-left layouts and a scrolling tablist. Server-rendered, before hydration, without ResizeObserver or layout, and under forced colours the selected item draws its own mark as before. No motion under reduced motion.
+- **`Badge variant="brand"`** (Z-056 part 3): the primary brand colour as a badge, subtle (brand tint, link-coloured text) and solid (the primary fill with its label). New token `--color-action-primary-border` (the brand tint's edge), and the guarded pairs `badge subtle · brand` and `badge solid · brand`.
+- **`Badge bordered`** (Z-056 part 2): puts a subtle badge's family edge back. Default `false`.
+- **`--zabi-list-row-border-color`** (default `transparent`) and **`--zabi-list-divider-color`** (default `var(--color-border)`): set on a list or any ancestor.
+- **`.material-layer-thick`** (package 10): the thick material in a form for a container that holds fixed-position content. The fill, backdrop filter, highlight and rim are painted on a `::before` layer behind the content (isolated, `z-index: -1`, same tokens as `.material-thick`, so every fallback applies); the element itself carries only the outer shadow, so it is not the containing block of its `position: fixed` descendants. The element must be positioned and must not scroll its own content. Use it for any panel that can hold a popover; use `.material-thick` for a leaf.
+- **`Tooltip tone`**: `"material"` (default) or `"inverted"`. Typed in `TooltipProps`, documented in the catalog and the story.
+- **Guarded pairs on the thick material**: a Toast's status text (`--color-success-text`, `--color-error-text`, `--color-warning-text`, 4.5:1), the status colours as icons (3:1) and `--color-link` (4.5:1), each over the worst backdrop and over the page, in both modes.
+
+### Changed (visible in 9.0)
+
+- **A soft gradient on primary, accent and danger Buttons and IconButtons, the FloatingActionButton and the on Toggle** (design review: "controls are flat"): a darker bottom and a 1px top highlight over the control's own fill. None when disabled, loading, or a toggled-on IconButton. Restore 8.1: `--gradient-control-bottom-strength: 0%; --shadow-control-highlight: none` (and `--gradient-control-accent-bottom-strength: 0%` if the accent strength was set apart).
+- **The outline Button and IconButton have a 3:1 edge** (Z-047), not the 1.25:1 card edge. Restore 8.1: `--color-action-outline-border: var(--color-border); --color-action-outline-border-hover: var(--color-border-medium)`.
+- **The off Toggle is a light tint with a 1px edge**, no longer the mid-grey that read as disabled; its colour change and the thumb's slide use the motion tokens (`--duration-moderate`, the thumb on the spring easing). Restore 8.1: `--color-toggle-track: var(--color-control-track); --color-toggle-track-hover: var(--color-control-track-hover); --color-toggle-track-active: var(--color-control-track-active); --color-toggle-track-border: transparent`.
+- Button, IconButton and the FloatingActionButton change colour over `--duration-base` instead of a literal 150ms, so reduced motion zeroes it.
+- **`createTheme`: links follow an overridden primary** (Z-048). An app that sets `--color-action-primary` in `overrides` (and not `--color-link`) gets `--color-link` equal to it, and `--color-link-hover` equal to the primary hover if it set one, in each mode the override applies to, as long as no guarded pair fails that did not before; otherwise the ramp's link stays in that mode. An explicit `--color-link` always wins. The library default stays `--color-link: var(--color-brand-700)`. The generator also resolves the control veil pairs now (it skipped them before). Restore: `overrides: { '--color-link': 'var(--color-brand-700)', '--color-link-hover': 'var(--color-brand-800)' }`.
+- **SegmentedControl: the selected segment is a neutral thumb, not a solid primary fill** (Z-052), so the control is no longer louder than the screen's main button. Restore 8.1: `tone="primary"`.
+- **The indicators of Tabs and SegmentedControl slide** between items instead of switching. Restore 8.1: `--duration-moderate: 0s` on the component or an ancestor makes the move instant (the token is shared with other components); reduced motion already has none.
+- **List rows have no border of their own; a hairline divides them.** A row inside the bordered `.list-group` shell (or a bare `<List>`) drew a second outline; now rows keep a transparent 1px border (so height and text do not move) and a 1px `--color-border` divider sits in the gap between rows, none above the first or below the last, hidden next to a selected row (which keeps its fill and `border-action-primary` edge). The `.list-group` shell keeps its one border. Row transitions use the motion tokens. Restore 8.1: `--zabi-list-row-border-color: var(--color-border); --zabi-list-divider-color: transparent;` on the list or any ancestor.
+- **A subtle Badge has no visible border.** The 1px border box stays (same height), drawn transparent. Restore 8.1: `bordered` on the Badge. Solid badges are unchanged.
+- **BottomSheet arrives on a spring.** The slide in, the move between snap points and the settle after a drag use `--ease-spring` over `--duration-slow` (300ms); they were a literal 200ms ease-out. The slide in reads both tokens from the sheet, so a theme that sets them is followed, and falls back to `ease-out` where the tokens cannot be read or the engine rejects a `linear()` easing. A 2rem filler under the panel's bottom edge keeps the overshoot from showing the page. Reduced motion is unchanged (no slide, no transition), and so are drag, snap logic, focus and scroll lock. Restore 8.1: on the sheet or an ancestor, `--ease-spring: var(--ease-out); --duration-slow: 200ms` (both tokens are shared with other components), or `class="duration-200 ease-out"` on the `BottomSheet`.
+- **Overlays are frosted glass** (package 10): BottomSheet, Drawer, Modal, the Dropdown menu, the Select list, the Tooltip bubble and every Toast (and Toaster toast) take the thick material instead of an opaque overlay fill with a border and `shadow-lg`; the material brings its own rim and shadow. Dividers inside a header or footer, row hover and selected fills, and the scrims behind Modal, Drawer and BottomSheet are unchanged. Dark thick is 98% opaque by design for now, so a dark overlay shows almost no glass. In Modal, Drawer and BottomSheet the glass is a layer behind the content: the Drawer panel lost its edge border and the BottomSheet its top and side borders (the rim replaces them), and a Modal's panel no longer scrolls itself: its Card does (`overflow-y-auto` moved from the panel to the Card, `min-h-0` added), and the Card takes the panel's full corner radius. A fixed-position popover inside any of them is placed against the viewport exactly as before, with materials on or off. Restore 8.1: `data-materials="opaque"` on the root or any ancestor (a portaled overlay lives under `body`, so put it on `html` or `body`) gives opaque overlay surfaces. The 8.1 `shadow-lg` and 1px border look itself is not restorable with one token.
+- **The Tooltip bubble is glass with body text and no arrow by default.** The arrow is a second shape on a translucent fill and would show a seam. Restore 8.1: `tone="inverted"` (the dark bubble with its arrow, still reading `--color-tooltip-bg` and `--color-tooltip-fg`).
+- **Toast text uses the status `-text` colour** (`text-success-text`, `text-error-text`, `text-warning-text`) instead of the plain status colour, which is 3.7:1 to 3.9:1 on glass; the border stays the plain colour. The neutral toast draws no second border. A Dropdown danger item uses `text-error-text` for the same reason. Restore 8.1: none by token; the colours are slightly darker in light and lighter in dark.
+- **Overlay motion reads the tokens**: Dropdown fades over `--duration-moderate` with `--ease-standard`, the Modal's slide over `--duration-slow` with `--ease-out`, the Drawer reads `--duration-moderate` and `--ease-out` for its slide, the Select over `--duration-base` and `--duration-moderate`, the Tooltip over `--duration-moderate`. Reduced motion zeroes them.
+
+### Fixed
+
+- **Z-040: the pressed field follows the field.** `--color-input-active` (the
+  pressed Select trigger) is now derived from `--color-input`, so an app that
+  sets the light card colour through `createTheme` `overrides.light` no longer
+  trips "pressed field against the resting field". Light mixes 12% of the ink
+  (`--zabi-base-900`) into the field, dark 10% of the light end
+  (`--zabi-base-50`). On the default theme light moves from `#e4e4e7` to
+  `#e3e3e4` and dark from `#333338` to `#353538`. An app that overrode
+  `--color-input-active` by hand to get past the check can delete that override.
+  Restore: `--color-input-active: var(--color-base-200)` in light,
+  `var(--color-base-250)` in dark. The neutral chroma at the light end is not a
+  new option: set the page per mode (`overrides.light`, `--color-surface-base`),
+  see THEMING.md.
+
+## [9.0.0-alpha.1] - 2026-10-06
+
+A local preview build of the 9.0 visual direction, not published to npm; 8.1.0
+stays the stable version. It holds the token layer only (surfaces, status
+colours, materials, gradients, motion, typeface): no component is restyled yet
+except the default `Card` and the `ImageUpload` hover plate, and dark mode is
+not yet art-directed. No token, prop or export is removed or renamed; values
+move, and each visible change below has a line that restores 8.1. Built quickly
+and tested lightly on purpose: the type and design checks, one unit run, the
+theme tests, the package build and a scratch install were run on it. NOTHING
+was rendered: no browser suite, no Storybook or visual check in either mode, no
+accessibility or QA review. Using it is the test.
+
+### Added
+
+- **Motion tokens.** `--duration-fast|base|moderate|slow` (100, 150, 200, 300ms) and `--ease-standard` (`cubic-bezier(0.2, 0, 0, 1)`), `--ease-out` (Tailwind's own curve) and `--ease-spring` (a lightly damped `linear()` spring with one overshoot, with a cubic-bezier fallback where `linear()` is unsupported). Utilities: `ease-standard`, `ease-out`, `ease-spring`; durations are `duration-(--duration-moderate)` (Tailwind has no `duration-fast` style name for custom properties). Under `prefers-reduced-motion: reduce` the four durations become `0s` and the spring becomes the standard curve, in both modes and over an app's own values (`:root:root`, like the materials fallback), so everything that reads the tokens follows. All are settable through `createTheme` `overrides`.
+- **Materials (frosted glass) for what floats over content.** Tokens `--color-material-thin|regular|thick` (the fills: `--color-surface-chrome` at an alpha for thin and regular, `--color-surface-overlay` for thick), `--material-alpha-thin|regular|thick`, `--material-blur-thin|regular|thick`, `--material-saturate`, `--material-filter-*`, `--color-material-highlight`, `--color-material-rim`, `--shadow-material` and `--shadow-opacity-contact`, and the classes `material-thin`, `material-regular` and `material-thick` (fill, backdrop filter, edge and shadow; they compose with `rounded-*` and `focus-ring`). Highlight, rim and shadow derive from the neutral ramp, so `neutralChroma` tints them. No component uses them yet except the `ImageUpload` hover plate.
+- **Alpha floors in the contrast guard.** Each material is composited over the worst backdrop of the mode (`--zabi-base-950` behind light, `--zabi-base-50` behind dark) and over the page: thin must give its headline 4.5:1, regular its headline, body and label, thick all five text roles, and regular and thick the focus ring 3:1 (a thin control's ring is drawn outside it). Shipped alphas for thin, regular and thick: light 58, 80 and 86, dark 66, 76 and 98, each the smallest whole 2% that passes except light thin, whose floor is lower. Dark thick is close to opaque because captions must hold over a white backdrop; dark is art-directed in a later 9.0 change. `scripts/contrast-pairs.js` has a `behind` form that `createTheme` evaluates too, so an app's generated theme gets the same floor; every material token is settable through `overrides` (`light`, `dark`, `both`).
+- **Fallbacks and `data-materials="opaque"`.** The fills become the opaque surface they are made from, and the blur goes, under `prefers-reduced-transparency: reduce`, `prefers-contrast: more`, `forced-colors: active`, where `backdrop-filter` is unsupported, and where the root or any ancestor has `data-materials="opaque"`. Under forced colors the rim is a `CanvasText` outline. The fallbacks are in the theme files and in `zabi-components-colors.css`.
+- **Gradient tokens and three classes.** Canvas: `--gradient-canvas` (two soft radial washes from brand 300 and accent 300, a `background-image` only), its stops `--color-canvas-wash-brand` and `--color-canvas-wash-accent`, and `--gradient-canvas-strength` (light 55%, dark 25%); the class `bg-canvas` adds `--color-surface-base` under it. The library does not paint it on `body`. Controls: `--gradient-control` and `--gradient-control-accent`, a translucent veil over the control's own `background-color` (so hover and pressed fills still show), with the veil colours `--color-control-gradient-start|end` and `--color-control-gradient-accent-start|end`, strengths `--gradient-control-top-strength` and `--gradient-control-bottom-strength`, and `--shadow-control-highlight` (an inset 1px top edge); classes `bg-control-gradient` and `bg-control-gradient-accent` (the highlight goes through Tailwind's shadow variables, so `focus-ring` still draws). All follow a custom `brand` and `accent` and are settable through `createTheme` `overrides` (`light`, `dark`, `both`). No component uses them yet.
+- **Worst-case rule for gradients.** Contrast is never measured against a gradient. The guard holds the five text roles, `--color-link` (4.5:1), `--color-focus-ring` and `--color-input-border` (3:1) on each canvas wash stop over `--color-surface-base`, and the solid-button label on both veil ends over rest, hover and pressed fills (4.5:1). Solved strengths: canvas light 55 and dark 25 (the prototype used 85 and 45); top veil light 4 and dark 22. `createTheme` evaluates the same pairs.
+- `scripts/check-token-violations.js` fails `backdrop-blur-*` and `backdrop-filter` in `src/components`. The `ImageUpload` hover plate (`bg-surface-overlay/60 backdrop-blur-md`) is now `material-thin`.
+
+### Changed (visible in 9.0)
+
+- **Default typeface is the platform's UI face.** `--font-family-sans` is `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif` plus the emoji faces; `--font-family-heading` still follows it; `--font-family-mono` is `ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace` (it was Monaco, Menlo, Ubuntu Mono). The library and its Storybook no longer load Nunito Sans, so a default install downloads no font. The face now differs by platform (San Francisco, Segoe UI, Roboto) and text widths change, so truncation and wrapping can move. Restore 8.1: load Nunito Sans yourself and set `--font-family-sans: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif` on `:root` after the imports. The docs site keeps Familjen Grotesk for its marketing headings.
+- **Default transition curve.** `transition`, `transition-colors`, `transition-opacity` and the rest, where a component sets no duration of its own, now use `--ease-standard` instead of Tailwind's `cubic-bezier(0.4, 0, 0.2, 1)`; the duration stays 150ms (`--duration-base`). Restore Tailwind's curve: `--default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1)` on `:root` after the imports, or `createTheme({ …, overrides: { '--default-transition-timing-function': 'cubic-bezier(0.4, 0, 0.2, 1)' } })`.
+- **Light page and cards.** The light page is now near-white (`--color-surface-base` is `--zabi-base-50`, `#fafafa`; it was `--zabi-base-150`, `#ececee`), and `--color-page` and `--color-background` follow it. A default `Card` now has a 1px `--color-border` edge and no shadow (it used `shadow-sm`, and `hover:shadow-lg` when clickable); it is the same as `variant="outlined"`, which stays. `elevated` and `flat` are unchanged. A clickable card's hover fill is now `--color-card-hover` = base-150 (was base-100) and its pressed fill base-200, and `--color-input-disabled` is base-150 and `--color-background-secondary` base-100, so they still read against the lighter page. Dark does not change.
+- **New token `--color-surface-chrome`** (and the `bg-surface-chrome` utility) for bars and sidebars: `var(--color-surface-raised)` in both modes. The components do not read it yet. In `createTheme`, set it per mode with `overrides: { light: { '--color-surface-chrome': … }, dark: { … } }`.
+- **Restore 8.1.** Page: `createTheme({ …, overrides: { light: { '--color-surface-base': 'var(--zabi-base-150)' } } })`, or `--color-surface-base: var(--zabi-base-150)` in light CSS. Card: there is no `variant` that gives the old shadowed default; pass `class="border-transparent shadow-sm"` to approximate it.
+- **Status colours.** Every `-subtle` fill moves from ramp step 200 to step 100 and every `-border` from 300 to 200 in light (`success`, `warning`, `error`, `energetic`, `accent`, `info`; `--color-action-primary-subtle` and its hover and pressed steps follow, to 100, 200 and 300/200). Neutral's fill is `--color-base-200` (was 250) and its edge `--color-base-250` (was 300). Dark already used 100 and 200 and is only affected by the regenerated ramps below. The `warning`, `citron` (the default `accent` and `energetic`) and `pine` (`success`) ramps are regenerated on the same lightness curve with new hue and chroma, which is breaking by the repo's policy for every `--zabi-warning-*`, `--zabi-citron-*`, `--zabi-accent-*` and `--zabi-pine-*` step. Step 600: warning `#9e6000` to `#a05f00`, citron and accent `#707400` to `#5d7900`, pine `#00805e` to `#00804b`. Contrast ratios are unchanged to within rounding. An app that passes its own `accent` or `brand` to `createTheme` is unaffected, except that its dark mirror of `success`, `warning` and `energetic` follows the new ramps.
+- **Restore 8.1 status colours.** Subtle fills: set `--color-<family>-subtle: var(--color-<ramp>-200)` and `--color-<family>-border: var(--color-<ramp>-300)` (ramp `pine` for success, `iris` for info, `citron` for energetic) in light, and `--color-neutral-subtle: var(--color-base-250)`, `--color-neutral-border: var(--color-base-300)`. Ramps: pass the old colour to `createTheme` (`accent: '#707400'`) or set the old `--zabi-*` steps on `:root`; the 8.1 seeds were warning hue 82, shift -24, chroma 0.165; citron hue 112, chroma 0.135; pine hue 170, chroma 0.115.
+- **Softer, layered shadows.** `--shadow-sm|md|lg|xl` keep their names and are each a tight contact shadow plus a wider soft one. `--shadow-opacity` is now the strength of the wide layer: `0.10` in light (was `0.14`) and `0.24` in dark (was `0.3`); the new `--shadow-opacity-contact` is the contact layer, `0.06` light and `0.3` dark. Restore 8.1: in light `--shadow-opacity: 0.14`, `--shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity))`, `--shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity))`, `--shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity))`, `--shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity))`; in dark the same with `--shadow-opacity: 0.3`.
+- The surface guard (`scripts/check-surface-elevation.js`) now checks the light surfaces by the card edge (`--color-border` at 1.2:1 or more on the page and the card) instead of a lightness ladder; the dark rules are unchanged.
+
 ## [8.1.0] - 2026-10-06
 
 8.1.0 adds a theme generator (`zabi-theme`, `createTheme`) and an accent colour,

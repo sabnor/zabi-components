@@ -3,8 +3,9 @@
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import ArrowLeft from "@lucide/svelte/icons/arrow-left";
-    import { findScrollParent } from "../util/app-shell.js";
+    import { findScrollParent, getAppShell, isDevBuild } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
+    import { resolveScrolledUnder, watchScrollEdge, type ScrollEdgeMode } from "../util/scroll-edge.js";
 
     /**
      * The bar at the top of a phone screen: where you are, the way back, and
@@ -23,6 +24,16 @@
      * and the actions leave it less (a wide chip in `leading`, a very narrow
      * bar), it takes a second row of its own, as wide as the bar, and they
      * stay together on the first.
+     *
+     * The bar is flush with the page and page-coloured at rest. Once content
+     * has scrolled under it, it turns to frosted glass with a hairline below
+     * it. Inside an `AppShell` the shell says when; on a page of its own the
+     * bar watches the window or its nearest scrolling ancestor.
+     *
+     * With `largeTitle` the title is also drawn large on a second row under
+     * the bar. That row scrolls away with the content (nothing is animated),
+     * the 56px row stays, and its own small title fades in once the large
+     * one has gone under it. The heading is the large one.
      */
     type Props = Omit<HTMLAttributes<HTMLElement>, "class" | "title"> & {
         /** The name of the screen, as a heading. */
@@ -59,6 +70,11 @@
          * width; when that leaves the title under 72px the title moves to a
          * row of its own, and a `leading` wider than the row is held to the
          * row's width.
+         * The bar's row is on a fixed pixel scale (`--spacing: 4px` on the
+         * row), so the bar's own controls do not grow with the text size.
+         * Size what you place here on the same scale (Tailwind numeric
+         * classes such as `size-9`, or `calc(var(--spacing) * 9)`), not in
+         * rem, or it grows at 200% text while the bar's controls do not.
          */
         leading?: Snippet;
         /**
@@ -66,8 +82,54 @@
          * a 48px target; put anything more in a menu. Their size does not
          * grow with the text size here: inside the bar the spacing scale is
          * in px.
+         * The bar's row is on a fixed pixel scale (`--spacing: 4px` on the
+         * row), so the bar's own controls do not grow with the text size.
+         * Size what you place here on the same scale (Tailwind numeric
+         * classes such as `size-9`, or `calc(var(--spacing) * 9)`), not in
+         * rem, or it grows at 200% text while the bar's controls do not.
          */
         actions?: Snippet;
+        /**
+         * When the bar shows the glass and the hairline. `auto` follows the
+         * scroll position: flush at the top, glass once content is under it.
+         * `always` is glass all the time, `never` flush all the time.
+         */
+        scrollEdge?: ScrollEdgeMode;
+        /**
+         * Draws the title large (30px bold, two lines at most) on a second row
+         * under the bar. It scrolls away with the content; the bar keeps its
+         * 56px row, which shows the title small once the large one is gone.
+         * The heading is the large title; the small one is hidden from
+         * assistive technology. Needs `title`. `collapseOnScroll` is ignored
+         * with it. Before the bar has been measured (the server, no scripts)
+         * the whole header simply sticks and the large title stays.
+         */
+        largeTitle?: boolean;
+        /**
+         * The bar's fill. `default` is the page colour at rest. `transparent`
+         * has none at rest, for a canvas, an image or a colour block laid
+         * behind the bar, and takes the glass once content is under it.
+         * `brand` is the brand colour with on-brand text and controls, at rest
+         * and scrolled, with no glass and no hairline, so a brand block
+         * directly under the bar joins it. With `largeTitle` the large row is
+         * part of the brand block.
+         * `inherit` is for a bar inside a block of another colour: no fill of
+         * its own, no glass and no hairline at any scroll position, and the
+         * title, back control, actions, links, borders and focus rings take
+         * the colour the block gives the text. A sticky bar that has to cover
+         * scrolling content takes its fill from the app:
+         * `class="[--color-bar:var(--my-block-colour)]"`.
+         */
+        tone?: "default" | "transparent" | "brand" | "inherit";
+        /**
+         * `sticky` (default) keeps the bar at the top of what scrolls.
+         * `static` leaves it where it is in the page, for a bar that sits
+         * inside a block of the content: it scrolls away with the block, is
+         * never glass, and `collapseOnScroll` and the condensing of
+         * `largeTitle` do nothing. `class="static"`, the 8.1 way to say this,
+         * is read as `position="static"`.
+         */
+        position?: "sticky" | "static";
         class?: string;
     };
 
@@ -81,6 +143,10 @@
         titleLines = 1,
         leading,
         actions,
+        scrollEdge = "auto",
+        largeTitle = false,
+        tone = "default",
+        position = "sticky",
         class: className = "",
         ...restProps
     }: Props = $props();
@@ -90,15 +156,96 @@
     const backLabel = $derived(backLabelGiven ?? common().back);
 
     let host: HTMLElement | undefined = $state();
+
+    /**
+     * In the flow of the page, not stuck to the top. The material's layer is
+     * placed against the bar, so the bar is always positioned: `relative`
+     * here, and a `static` class from the caller is taken out and read as this.
+     */
+    const classStatic = $derived(/(?:^|\s)static(?:\s|$)/.test(className));
+    const inFlow = $derived(position === "static" || classStatic);
+    const ownClass = $derived(
+        classStatic ? className.replace(/(?:^|\s)static(?=\s|$)/g, " ").trim() : className,
+    );
+
+    /** A large title needs a title to be large. */
+    const large = $derived(largeTitle && !!title);
+    /** The two scroll behaviours fight: with a large title, `collapseOnScroll` is ignored. */
+    const collapses = $derived(collapseOnScroll && !large && !inFlow);
+
+    $effect(() => {
+        if (!isDevBuild()) return;
+        if (largeTitle && collapseOnScroll) {
+            console.warn(
+                "[zabi-components] AppBar: `collapseOnScroll` is ignored with `largeTitle`; " +
+                    "the large title already condenses on scroll.",
+            );
+        }
+    });
+
+    /** The large row, and its measured height in px: how far the header sticks above the top. Null until measured. */
+    let largeRow: HTMLElement | undefined = $state();
+    let largeHeight = $state<number | null>(null);
+    const overscroll = $derived(
+        large && !inFlow && largeHeight !== null && largeHeight > 0 ? largeHeight : 0,
+    );
+
+    $effect(() => {
+        const el = largeRow;
+        if (!el || typeof ResizeObserver === "undefined") {
+            largeHeight = null;
+            return;
+        }
+        const measure = () => {
+            const height = el.getBoundingClientRect().height;
+            // No layout (a hidden bar, a test DOM): stay as unmeasured.
+            largeHeight = height > 0 ? height : null;
+        };
+        measure();
+        const observer = new ResizeObserver(measure);
+        observer.observe(el);
+        return () => observer.disconnect();
+    });
+
+    /** Content is under the bar: from the shell if there is one, else from its own scroller. */
+    const shell = getAppShell();
+    let ownScrolled = $state(false);
+    $effect(() => {
+        if (shell || (scrollEdge !== "auto" && !large) || !host) return;
+        return watchScrollEdge(findScrollParent(host), (edge) => (ownScrolled = edge.top), overscroll);
+    });
+    /** Past the large row: the standard title shows and the bar is over content. Never before it has been measured. */
+    const condensed = $derived(
+        large && overscroll > 0 && (shell ? shell.scrolledTop : ownScrolled),
+    );
+    const scrolledUnder = $derived(
+        // An opaque brand bar has no glass and no hairline whatever the mode says, nor has
+        // one that takes its block's colours (glass over any colour is not readable).
+        // Nor has a bar in the flow of the page: nothing scrolls under it.
+        tone === "brand" || tone === "inherit" || inFlow
+            ? false
+            : resolveScrolledUnder(
+                  scrollEdge,
+                  large ? condensed : shell ? shell.scrolledTop : ownScrolled,
+              ),
+    );
+
+    // Inside a shell the sticky container is the shell's header wrapper.
+    $effect(() => {
+        if (!shell || !(overscroll > 0)) return;
+        shell.setHeaderOverscroll(overscroll);
+        return () => shell.setHeaderOverscroll(0);
+    });
+
     /** Scrolled out of view. Only ever true with `collapseOnScroll`. */
     let scrolledAway = $state(false);
-    const collapsed = $derived(collapseOnScroll && scrolledAway);
+    const collapsed = $derived(collapses && scrolledAway);
 
     /** Scrolling less than this in one direction does not move the bar. */
     const SCROLL_TOLERANCE = 8;
 
     $effect(() => {
-        if (!collapseOnScroll || !host) return;
+        if (!collapses || !host) return;
         const bar = host;
         const parent = findScrollParent(bar);
         const target: HTMLElement | Window = parent ?? window;
@@ -187,8 +334,13 @@
     });
 
     /** A 48px ghost target, the same as `IconButton` at `variant="ghost" size="lg"`. */
-    const backClasses =
-        "focus-ring focus-ring--muted inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-control bg-transparent text-headline transition-colors duration-150 hover:bg-surface-hover active:bg-surface-active";
+    const backClasses = $derived(
+        "focus-ring focus-ring--muted inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-control bg-transparent text-headline transition-colors duration-(--duration-base) " +
+            // The page's hover fills are a dark veil: on the brand fill the on-brand colour is what shows.
+            (tone === "brand" || tone === "inherit"
+                ? "hover:bg-[color-mix(in_srgb,var(--color-on-brand)_16%,transparent)] active:bg-[color-mix(in_srgb,var(--color-on-brand)_26%,transparent)]"
+                : "hover:bg-surface-hover active:bg-surface-active"),
+    );
 
     const hasBack = $derived(backHref !== undefined || onback !== undefined);
 
@@ -211,6 +363,35 @@
     let leadingMax = $state<number | null>(null);
     let row: HTMLElement | undefined = $state();
 
+    /** 1.875rem, and no more than 39px however large the text is set: capped as the bar's other sizes are. */
+    const largeClasses =
+        "appbar-large-title m-0 text-[length:min(1.875rem,39px)] leading-[1.15] font-bold text-headline line-clamp-2 [overflow-wrap:anywhere]";
+
+    const headerClasses = $derived(
+        cn(
+            cn(!large && "material-bar", inFlow ? "relative" : "sticky top-0 z-sticky"),
+            // Clear of the status bar and the notch, and of the corners in landscape. With a
+            // large title the status-bar strip is the 56px row's, so it stays covered when stuck.
+            large
+                ? "pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]"
+                : "pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
+            !large && "transition-transform duration-(--duration-moderate) ease-out motion-reduce:transition-none",
+            // The strip under the status bar stays, so content never shows through it.
+            !large && collapsed && "-translate-y-[calc(100%-env(safe-area-inset-top,0px))]",
+            // `--color-bar` is scoped on the element that carries `material-bar`.
+            !large && tone === "transparent" && "[--color-bar:transparent]",
+            !large && tone === "brand" && "[--color-bar:var(--color-bar-brand)]",
+            // With a large title the inner bar takes whatever the header says (see below), so a caller's fill reaches it.
+            tone === "inherit" && "[--color-bar:transparent]",
+            tone === "brand" && "on-brand",
+            // The on-brand scope with the on-colour left as the block's own text colour; the
+            // focus ring's gap is the block's, not the brand fill.
+            tone === "inherit" && "on-brand [--color-on-brand:currentColor] [--color-focus-ring-offset:transparent]",
+            // The caller's classes come last: their `[--color-bar:…]` replaces the tone's.
+            ownClass,
+        ),
+    );
+
     $effect(() => {
         const bar = row;
         if (!bar || typeof ResizeObserver === "undefined") return;
@@ -218,10 +399,18 @@
         void title;
         void titleLines;
 
+        // `offsetWidth` is rounded: actions 62.016px wide read as 62, the row came out
+        // 0.016px too wide for what was left and wrapped. The laid-out width, up to the
+        // next pixel (layout units are 1/64px, so the tiny allowance is only float noise).
+        const widthOf = (element: HTMLElement) => Math.ceil(element.getBoundingClientRect().width - 0.001);
+
         const measure = () => {
             const style = getComputedStyle(bar);
+            // Down to the whole pixel, as the parts are counted up to it: `clientWidth` rounds either way.
             const inner =
-                bar.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+                Math.floor(bar.getBoundingClientRect().width + 0.001) -
+                parseFloat(style.paddingLeft) -
+                parseFloat(style.paddingRight);
             // Nothing is laid out (a hidden bar): leave it as it is.
             if (!(inner > 0)) return;
             const gap = parseFloat(style.columnGap) || 0;
@@ -235,16 +424,18 @@
             for (const child of bar.children) {
                 if (!(child instanceof HTMLElement)) continue;
                 const part = child.dataset.appbarPart;
-                if (part === "title" || child.offsetWidth === 0) continue;
+                const width = widthOf(child);
+                if (part === "title" || width <= 0) continue;
                 parts += 1;
-                beside += child.offsetWidth;
+                beside += width;
                 // The back control and the actions keep their width whatever happens.
-                if (part === "back" || part === "actions") fixed += child.offsetWidth;
+                if (part === "back" || part === "actions") fixed += width;
             }
             delete bar.dataset.measuring;
 
             const left = inner - beside - gap * parts;
-            const next = left < TITLE_MIN ? "own" : "inline";
+            // A bar with no title has nothing to put on a row of its own.
+            const next = title && left < TITLE_MIN ? "own" : "inline";
             if (next !== titleRow) titleRow = next;
             const fixedParts = bar.querySelectorAll(
                 ":scope > [data-appbar-part='back'], :scope > [data-appbar-part='actions']",
@@ -274,20 +465,7 @@
     });
 </script>
 
-<header
-    bind:this={host}
-    data-collapsed={collapseOnScroll ? String(collapsed) : undefined}
-    class={cn(
-        "sticky top-0 z-sticky border-b border-border-weak bg-surface-elevated",
-        // Clear of the status bar and the notch, and of the corners in landscape.
-        "pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-        "transition-transform duration-200 ease-out motion-reduce:transition-none",
-        // The strip under the status bar stays, so content never shows through it.
-        collapsed && "-translate-y-[calc(100%-env(safe-area-inset-top,0px))]",
-        className,
-    )}
-    {...restProps}
->
+{#snippet barRow()}
     <!-- `--spacing: 4px`: Tailwind sizes everything from `--spacing`, which
     is 0.25rem, so a 48px button was 96px with the text at 200% and the bar
     wrapped to 225px. In px here, the back control, the actions and whatever
@@ -300,10 +478,11 @@
     <div
         bind:this={row}
         data-title-row={titleRow ?? undefined}
+        data-title-empty={title ? undefined : ""}
         style:--appbar-leading-max={leadingMax !== null ? `${leadingMax}px` : undefined}
         class={cn(
             "appbar-row flex min-h-14 items-center gap-2 px-2 py-1 [--spacing:4px]",
-            "transition-opacity duration-200 ease-out motion-reduce:transition-none",
+            "transition-opacity duration-(--duration-moderate) ease-out motion-reduce:transition-none",
             collapsed && "pointer-events-none opacity-0",
         )}
     >
@@ -322,14 +501,22 @@
             `titleLines={2}`. 1.125rem, and no more than 1.3 times that
             (23.4px) however large the text is set.
             One branch per level, not a dynamic element: hydration takes a dynamic
-            element out and puts it back, which blurs a control inside it that the user
-            had already tabbed to. -->
+            element out and puts it back, which blurs a control inside it that the
+            user had already tabbed to. -->
             {@const titleClasses = cn(
                 "appbar-title m-0 text-[length:min(1.125rem,23.4px)] leading-[1.34] font-semibold text-headline",
                 titleLines === 2 ? "line-clamp-2 [overflow-wrap:anywhere]" : "truncate",
                 !hasBack && !leading && "ps-2",
             )}
-            {#if headingLevel === 1}
+            {#if large}
+                <!-- The large row holds the heading. This one only repeats the text for the
+                eye, in the title's place so the row measures as before. -->
+                <p
+                    class={cn(titleClasses, "transition-opacity duration-(--duration-base)", condensed ? "opacity-100" : "opacity-0")}
+                    data-appbar-part="title"
+                    aria-hidden="true"
+                >{title}</p>
+            {:else if headingLevel === 1}
                 <h1 class={titleClasses} data-appbar-part="title">{title}</h1>
             {:else if headingLevel === 2}
                 <h2 class={titleClasses} data-appbar-part="title">{title}</h2>
@@ -343,6 +530,7 @@
                 <h6 class={titleClasses} data-appbar-part="title">{title}</h6>
             {/if}
         {:else}
+            <!-- Nothing to show: no width, so no 72px to find room for. -->
             <div class="min-w-0 flex-1" data-appbar-part="title"></div>
         {/if}
         {#if actions}
@@ -351,6 +539,61 @@
             </div>
         {/if}
     </div>
+{/snippet}
+
+<header
+    bind:this={host}
+    data-appbar=""
+    data-tone={tone}
+    data-large-title={large ? "" : undefined}
+    data-condensed={large ? String(condensed) : undefined}
+    data-collapsed={collapses ? String(collapsed) : undefined}
+    data-scrolled-under={large ? undefined : String(scrolledUnder)}
+    style:top={large && !shell && overscroll > 0 ? `-${overscroll}px` : undefined}
+    class={headerClasses}
+    {...restProps}
+>
+    {#if large}
+        <!-- Two rows. The header sticks at minus the large row's height and the
+        56px row sticks at 0 inside it, so the large row scrolls away behind a bar
+        that stays: no scroll-linked animation, no jump. The surface and the
+        status-bar strip belong to the 56px row; the large row is on the page
+        (on the brand fill, with `tone="brand"`). -->
+        <div
+            data-appbar-bar
+            data-scrolled-under={String(scrolledUnder)}
+            class={cn(
+                "material-bar pt-[env(safe-area-inset-top)]",
+                inFlow ? "relative" : "sticky top-0",
+                tone === "transparent" && "[--color-bar:transparent]",
+                tone === "brand" && "[--color-bar:var(--color-bar-brand)]",
+                tone === "inherit" && "[--color-bar:inherit]",
+            )}
+        >
+            {@render barRow()}
+        </div>
+        <div
+            bind:this={largeRow}
+            data-appbar-large
+            class={cn("px-[16px] pt-[4px] pb-[8px]", tone === "brand" && "bg-bar-brand")}
+        >
+            {#if headingLevel === 1}
+                <h1 class={largeClasses}>{title}</h1>
+            {:else if headingLevel === 2}
+                <h2 class={largeClasses}>{title}</h2>
+            {:else if headingLevel === 3}
+                <h3 class={largeClasses}>{title}</h3>
+            {:else if headingLevel === 4}
+                <h4 class={largeClasses}>{title}</h4>
+            {:else if headingLevel === 5}
+                <h5 class={largeClasses}>{title}</h5>
+            {:else}
+                <h6 class={largeClasses}>{title}</h6>
+            {/if}
+        </div>
+    {:else}
+        {@render barRow()}
+    {/if}
 </header>
 
 <style>
@@ -402,6 +645,22 @@
            icons' edges. */
         padding-inline: 8px;
         padding-block-end: 4px;
+    }
+
+    /*
+     * No title: the empty part asks for no width and no row, on the server
+     * and before measuring as well. One row whatever `leading` holds, which
+     * is cut to the room beside the back control and the actions. The part
+     * pulls back one gap, so the row spends none on it.
+     */
+    .appbar-row[data-title-empty] {
+        flex-wrap: nowrap;
+    }
+    .appbar-row[data-title-empty] :global(> [data-appbar-part="title"]) {
+        flex: 0 0 0;
+        min-width: 0;
+        padding: 0;
+        margin-inline-end: -8px;
     }
 
     /* While it measures: every part at the width it asks for, on one line. */

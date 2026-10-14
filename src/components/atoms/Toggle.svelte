@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import type { HTMLButtonAttributes } from "svelte/elements";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
@@ -21,6 +22,20 @@
         loading?: boolean;
         label?: string;
         /**
+         * Drawn inside the one label, between the switch and the label text,
+         * as decoration for the name `label` already gives. A leading image
+         * should have an empty alt: the label names the row.
+         */
+        leading?: Snippet;
+        /**
+         * A line under the label, tied to the switch with `aria-describedby`.
+         * It is inside the label, so a tap on it toggles; it does not join
+         * the name. It needs a `label`.
+         */
+        description?: string;
+        /** Ids of other elements that describe the switch. The description is added after them. */
+        "aria-describedby"?: string | null;
+        /**
          * The switch's accessible name when there is no visible `label`. With
          * neither this, `aria-labelledby` nor `label`, it is called "Toggle".
          */
@@ -40,6 +55,9 @@
         disabled = false,
         loading = false,
         label = "",
+        leading,
+        description = "",
+        "aria-describedby": describedBy,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledby,
         onclick,
@@ -61,6 +79,8 @@
     const fallbackId = generateId("toggle");
     const toggleId = $derived(idProp ?? fallbackId);
     const isDisabled = $derived(disabled || loading);
+    const showDescription = $derived(!!description && !!label);
+    const descriptionId = $derived(`${toggleId}-description`);
 
     function handleClick(event: MouseEvent) {
         if (isDisabled) return;
@@ -72,13 +92,19 @@
 
     const toggleButtonClasses = $derived(() => {
         const base =
-            `focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:outline-none ${TOUCH_HIT_AREA}`;
+            `toggle-switch focus-ring relative inline-flex w-10 h-6 flex-shrink-0 rounded-full border-0 transition-colors duration-(--duration-moderate) ease-standard focus:outline-none focus-visible:outline-none ${TOUCH_HIT_AREA}`;
+        // Forced colours drop the fills and the ring, so `app.css` draws the track
+        // there as a 1px edge with the thumb in a system colour (`.toggle-switch`).
         // A disabled switch has no hover or pressed fill: `:active` still matches a disabled button.
+        // The off track is a light tint whose 1px edge carries the 3:1; the
+        // edge is left off when on, where the primary fill is the boundary.
+        // The on fill wears the control veil, as a primary Button does, but
+        // not when disabled (a flat, dimmed switch).
         const colorClass = checked
-            ? "bg-action-primary hover:bg-action-primary-hover active:bg-action-primary-active"
+            ? `${isDisabled ? "" : "bg-control-gradient "}bg-action-primary hover:bg-action-primary-hover active:bg-action-primary-active`
             : isDisabled
-              ? "bg-control-track"
-              : "bg-control-track hover:bg-control-track-hover active:bg-control-track-active";
+              ? "bg-(--color-toggle-track) ring-toggle-track"
+              : "bg-toggle-track ring-toggle-track";
         const stateClass = isDisabled
             ? "opacity-50 cursor-not-allowed"
             : "cursor-pointer";
@@ -87,8 +113,8 @@
 
     const toggleThumbClasses = $derived(() => {
         const base =
-            "pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow-sm transition-transform duration-200 ease-in-out flex items-center justify-center";
-        const positionClasses = checked ? "translate-x-4" : "translate-x-0";
+            "toggle-switch-thumb pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full shadow-sm transition-transform duration-(--duration-moderate) ease-spring flex items-center justify-center";
+        const positionClasses = checked ? "bg-toggle-thumb-checked translate-x-4" : "bg-toggle-thumb translate-x-0";
         return `${base} ${positionClasses}`;
     });
 </script>
@@ -96,7 +122,14 @@
 <!-- On a coarse pointer the row is 44px tall, so the switch's hit area (44px, around a
      24px switch) has room of its own: stacked 8px apart, the layer of one switch lay
      over the visible edge of the one above it and took its taps. -->
-<div class={cn("flex items-center gap-3 pointer-coarse:min-h-11", className)}>
+<div
+    class={cn(
+        "flex gap-3 pointer-coarse:min-h-11",
+        // With a description the row is two lines: the switch sits at the top.
+        showDescription ? "items-start pointer-coarse:py-3" : "items-center",
+        className,
+    )}
+>
     <button
         type="button"
         role="switch"
@@ -104,6 +137,7 @@
         aria-checked={checked}
         aria-label={ariaLabel ?? (label || ariaLabelledby ? undefined : "Toggle")}
         aria-labelledby={ariaLabelledby}
+        aria-describedby={[describedBy, showDescription ? descriptionId : ""].filter(Boolean).join(" ") || undefined}
         aria-busy={loading ? "true" : undefined}
         disabled={isDisabled}
         onclick={handleClick}
@@ -124,14 +158,31 @@
         <input type="hidden" {name} {value} />
     {/if}
 
-    {#if label}
+    {#if label || leading}
         <label
             for={toggleId}
-            class="text-sm font-medium text-label {isDisabled
+            class="text-sm font-medium text-label {leading
+                ? 'inline-flex items-center gap-3 '
+                : ''}{showDescription ? 'mt-0.5 ' : ''}{isDisabled
                 ? 'cursor-not-allowed opacity-50'
                 : 'cursor-pointer'}"
         >
-            {label}
+            {#if leading}
+                <span class="inline-flex shrink-0 items-center">
+                    {@render leading()}
+                </span>
+            {/if}
+            {#if showDescription}
+                <span class="flex flex-col gap-1">
+                    <span>{label}</span>
+                    <!-- aria-hidden keeps it out of the name; aria-describedby still reads it. -->
+                    <span id={descriptionId} class="font-normal text-description" aria-hidden="true">
+                        {description}
+                    </span>
+                </span>
+            {:else}
+                {label}
+            {/if}
         </label>
     {/if}
 </div>

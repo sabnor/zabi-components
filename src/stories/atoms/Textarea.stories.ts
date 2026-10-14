@@ -50,6 +50,23 @@ export const WithRows: Story = {
     }
 };
 
+export const Autogrow: Story = {
+    args: {
+        label: 'Note',
+        placeholder: 'Grows from two rows to six, then scrolls',
+        rows: 2,
+        maxRows: 6,
+        autogrow: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'autogrow lets the field follow its content between rows and maxRows. It has no resize grip. Without autogrow the grip is the browser\'s vertical one with a mouse and absent on a touch screen; resize="vertical" or "none" sets it for both.'
+            }
+        }
+    }
+};
+
 export const Success: Story = {
     args: {
         label: 'Success Textarea',

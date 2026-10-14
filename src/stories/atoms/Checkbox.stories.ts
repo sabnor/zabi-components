@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Checkbox from '../../components/atoms/Checkbox.svelte';
+import SelectionLeadingStory from './SelectionLeadingStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Checkbox',
@@ -85,6 +86,32 @@ export const WithoutLabel: Story = {
         docs: {
             description: {
                 story: 'In a table row or a list there is often no room for a visible label. Pass aria-label so the checkbox still has a name.'
+            }
+        }
+    }
+};
+
+export const WithLeading: StoryObj<typeof SelectionLeadingStory> = {
+    render: () => ({ Component: SelectionLeadingStory, props: { control: 'checkbox' } }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'The leading snippet sits inside the one label, between the checkbox and the name, so pressing the avatar changes the control. Give the avatar an empty alt: the label already names the row.'
+            }
+        }
+    }
+};
+
+export const WithError: Story = {
+    args: {
+        label: 'I accept the terms',
+        error: 'You must accept the terms to continue',
+        hint: 'Required to create an account'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'error, message (with a variant) and hint are drawn as on Input, under the label. The error is announced as an alert, sets aria-invalid on the box and is tied to it with aria-describedby, after the hint.'
             }
         }
     }

@@ -1,13 +1,23 @@
 export { default as Toggle } from './atoms/Toggle.svelte';
 export { default as Badge } from './atoms/Badge.svelte';
+export { default as Stat } from './atoms/Stat.svelte';
+export { default as SpeechBubble } from './atoms/SpeechBubble.svelte';
+export { default as Sparkline } from './atoms/Sparkline.svelte';
+export { default as Chip } from './atoms/Chip.svelte';
 export { default as Button } from './atoms/Button.svelte';
 export { default as IconButton } from './atoms/IconButton.svelte';
+export { default as Block } from './atoms/Block.svelte';
 export { default as Card } from './atoms/Card.svelte';
 export { default as CardHeader } from './atoms/CardHeader.svelte';
 export { default as CardContent } from './atoms/CardContent.svelte';
 export { default as CardFooter } from './atoms/CardFooter.svelte';
 export { default as Input } from './atoms/Input.svelte';
+export { default as CodeField } from './atoms/CodeField.svelte';
+export { DEFAULT_CODE_FIELD_STRINGS } from './util/code-field.js';
+export type { CodeFieldMode, CodeFieldSize, CodeFieldStrings } from './util/code-field.js';
 export { default as Textarea } from './atoms/Textarea.svelte';
+export type { TextareaCount } from './util/field.js';
+export { default as PickerField } from './atoms/PickerField.svelte';
 export { default as Select } from './atoms/Select.svelte';
 export { default as Slider } from './atoms/Slider.svelte';
 export { default as ColorPicker } from './atoms/ColorPicker.svelte';
@@ -35,6 +45,9 @@ export { default as Toast } from './atoms/Toast.svelte';
 export { default as Tooltip } from './atoms/Tooltip.svelte';
 export { default as Progress } from './atoms/Progress.svelte';
 export { default as Skeleton } from './atoms/Skeleton.svelte';
+export { default as SkeletonGroup } from './atoms/SkeletonGroup.svelte';
+export { DEFAULT_SKELETON_STRINGS } from './util/skeleton.js';
+export type { SkeletonStrings } from './util/skeleton.js';
 export { default as Checkbox } from './atoms/Checkbox.svelte';
 export { default as Radio } from './atoms/Radio.svelte';
 export { default as CodeBlock } from './atoms/CodeBlock.svelte';
@@ -43,6 +56,7 @@ export { default as OptimizedImage } from './atoms/OptimizedImage.svelte';
 export { default as ActionPanel } from './atoms/ActionPanel.svelte';
 export { default as Spinner } from './atoms/Spinner.svelte';
 export { default as Rating } from './atoms/Rating.svelte';
+export type { ProgressStrings } from './util/progress.js';
 export type { RatingStrings } from './util/rating.js';
 export { default as FloatingActionButton } from './atoms/FloatingActionButton.svelte';
 export { default as DateField } from './atoms/DateField.svelte';
@@ -75,6 +89,7 @@ export { default as Modal } from './molecules/Modal.svelte';
 export { default as SlideUp } from './molecules/SlideUp.svelte';
 export { default as Tabs } from './molecules/Tabs.svelte';
 export { default as RadioGroup } from './molecules/RadioGroup.svelte';
+export { default as ChipGroup } from './molecules/ChipGroup.svelte';
 export { default as SegmentedControl } from './molecules/SegmentedControl.svelte';
 export type {
     SegmentedControlIcon,
@@ -149,6 +164,7 @@ export type {
     PhotoGridSelectDetail,
     PhotoGridStrings,
     PhotoKey,
+    PhotoStatus,
     PhotoViewerAction,
     PhotoViewerCloseReason,
     PhotoViewerStrings,
@@ -157,6 +173,16 @@ export { default as Avatar } from './atoms/Avatar.svelte';
 export { default as AvatarGroup } from './molecules/AvatarGroup.svelte';
 export { DEFAULT_AVATAR_GROUP_STRINGS } from './util/avatar.js';
 export type { AvatarGroupStrings, AvatarPerson, AvatarSize } from './util/avatar.js';
+export { default as LineChart } from './molecules/LineChart.svelte';
+export { default as BarChart } from './molecules/BarChart.svelte';
+export { default as PieChart } from './molecules/PieChart.svelte';
+export type {
+    ChartColor,
+    ChartColorName,
+    ChartDatum,
+    ChartFormat,
+    ChartSeries,
+} from './util/chart.js';
 export { default as Stepper } from './molecules/Stepper.svelte';
 export type {
     StepperItem,
@@ -176,11 +202,12 @@ export {
     type ToastLevel,
 } from './molecules/toast-store.js';
 export { DEFAULT_TOASTER_STRINGS, TOAST_DURATIONS } from './util/toaster.js';
-export type { ToasterStrings, ToastPauseChange, ToastDuration } from './util/toaster.js';
+export type { ToasterStrings, ToasterMode, ToastPauseChange, ToastDuration } from './util/toaster.js';
 export { DEFAULT_SELECT_STRINGS } from './util/select.js';
 export type { SelectStrings, SelectPresentation } from './util/select.js';
 export { DEFAULT_TOP_NAVBAR_STRINGS } from './util/top-navbar.js';
-export type { TopNavbarStrings } from './util/top-navbar.js';
+export type { TopNavbarStrings, TopNavbarPlace } from './util/top-navbar.js';
+export { getTopNavbarPlace } from './util/top-navbar.js';
 export {
     DEFAULT_SIDEBAR_ACCOUNT_PANEL_STRINGS,
     DEFAULT_SIDEBAR_BRAND_HEADER_STRINGS,
@@ -212,6 +239,17 @@ export { default as SidebarShell } from './organisms/SidebarShell.svelte';
 export { default as SidebarAccountPanel } from './organisms/SidebarAccountPanel.svelte';
 export { default as SidebarPanel } from './organisms/SidebarPanel.svelte';
 export { default as AppShell } from './organisms/AppShell.svelte';
+export { default as AppShellHeaderPart } from './organisms/AppShellHeaderPart.svelte';
+export { default as AppNavigation } from './organisms/AppNavigation.svelte';
+export {
+    APP_SHELL_RAIL_MIN_WIDTH,
+    APP_SHELL_SIDEBAR_MIN_WIDTH,
+} from './util/app-shell.js';
+export type {
+    AppShellNavigationContext,
+    AppShellNavigationMode,
+    AppShellNavigationPlacement,
+} from './util/app-shell.js';
 
 import { generateId } from './util/ssr-safe.js';
 

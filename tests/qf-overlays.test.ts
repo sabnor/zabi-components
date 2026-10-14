@@ -284,7 +284,7 @@ describe.each(["modal", "sheet", "drawer", "slide"] as const)(
                 expect(node.getAttribute("aria-hidden")).not.toBe("true");
                 expect(node.hasAttribute("inert")).toBe(false);
             }
-            expect(region.querySelector('[role="status"]')?.textContent).toContain("Saved");
+            await waitFor(() => expect(region.querySelector('[role="status"]')?.textContent).toContain("Saved"));
         });
     },
 );

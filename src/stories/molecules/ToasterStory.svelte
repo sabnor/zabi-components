@@ -2,7 +2,7 @@
     import Toaster from '../../components/molecules/Toaster.svelte';
     import Button from '../../components/atoms/Button.svelte';
     import { pushToast } from '../../components/molecules/toast-store.js';
-    import type { ToastDuration } from '../../components/util/toaster.js';
+    import type { ToasterMode, ToastDuration } from '../../components/util/toaster.js';
 
     interface Props {
         /** An app in Swedish: its own toasts, and the toaster's own words in Swedish too. */
@@ -13,9 +13,16 @@
         length?: "short" | "medium" | "long" | "persistent";
         /** What a toast pushed without a duration gets, in place of medium. */
         defaultDuration?: ToastDuration;
+        /** The stack, the snackbar for a phone, or the snackbar below 640px. */
+        mode?: ToasterMode;
+        timeLine?: boolean;
+        /** How many toasts show at once. */
+        max?: number;
+        /** Story only: a bar docked at the bottom, as a BottomTabBar would be, for the snackbar to sit above. */
+        bar?: boolean;
     }
 
-    let { swedish = false, showCountdown = false, length, defaultDuration }: Props = $props();
+    let { swedish = false, showCountdown = false, length, defaultDuration, mode = "stack", max, bar = false, timeLine }: Props = $props();
 
     /** A text that suits each length: what it is for. */
     const samples = {
@@ -135,6 +142,15 @@
                 })}
         />
     </div>
-    <Toaster {showCountdown} {defaultDuration} />
+    {#if bar}
+        <!-- Stands in for a BottomTabBar: the snackbar finds it by `data-bar-edge`. -->
+        <div
+            class="fixed inset-x-0 bottom-0 z-sticky flex h-16 items-center justify-around border-t border-border bg-surface-chrome text-sm text-description"
+            data-bar-edge="bottom"
+        >
+            <span>Home</span><span>Rounds</span><span>Profile</span>
+        </div>
+    {/if}
+    <Toaster {showCountdown} {defaultDuration} {mode} {max} {timeLine} />
 </div>
 {/if}

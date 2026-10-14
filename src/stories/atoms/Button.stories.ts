@@ -83,6 +83,48 @@ export const Link: Story = {
     }
 };
 
+export const Tonal: Story = {
+    args: {
+        variant: 'tonal',
+        text: 'Button'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A brand-tinted fill with a brand label: the quieter action beside a primary, and a chosen answer.'
+            }
+        }
+    }
+};
+
+export const Text: Story = {
+    args: {
+        variant: 'text',
+        text: 'Change booking'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A standalone text action: no underline, a semibold label in the link colour, the same height as the other buttons. With href it is still a boxed action; only variant link with href is an underlined link inside a sentence.'
+            }
+        }
+    }
+};
+
+export const ExtraLarge: Story = {
+    args: {
+        size: 'xl',
+        text: 'Button'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'xl is 56px tall. Only Button has it.'
+            }
+        }
+    }
+};
+
 export const Ghost: Story = {
     args: {
         variant: 'ghost',

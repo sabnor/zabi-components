@@ -11,6 +11,11 @@
  * Each pair is token names only (`bg`, `fg`) and a minimum; resolving them is
  * the reader's job. A pair may name a second foreground, `orFg`: it passes when
  * either foreground reaches the minimum against `bg`.
+ *
+ * A pair may also name `behind`: `bg` is then a translucent paint (a material's
+ * `color-mix(… p%, transparent)`) and the pair is measured on what it makes
+ * laid source-over on that token. `behind` is one token, or `{ light, dark }`
+ * for a token per mode. A material is never judged alone: see MATERIALS.
  */
 
 export const AA_NORMAL = 4.5;
@@ -19,6 +24,26 @@ export const AA_LARGE = 3.0;
 export const MIN_PRESSED = 1.25;
 /** Value text against placeholder text: enough to tell a filled field from an empty one. */
 export const MIN_VALUE_OVER_PLACEHOLDER = 1.75;
+/** The dark field's well against the surface it sits on (page, card, overlay): where the field is lighter than its surface. */
+export const MIN_FIELD_WELL = 1.15;
+/** A hovered field against the resting one: a step that can be seen, as the other state steps are. */
+export const MIN_FIELD_HOVER_STEP = 1.08;
+/** A neutral fill that has no edge (a Chip at rest): what it takes to be seen on the page and on a card. */
+export const MIN_EDGELESS_FILL = 1.2;
+
+/** What is written on a tint card (Card tone="tint"): [name, token, the least it needs against the tint]. */
+const TINT_CARD_ROLES = [
+    ['headline', '--color-headline', AA_NORMAL],
+    ['body', '--color-body', AA_NORMAL],
+    ['label', '--color-label', AA_NORMAL],
+    ['description', '--color-description', AA_NORMAL],
+    ['caption', '--color-caption', AA_NORMAL],
+    ['link', '--color-link', AA_NORMAL],
+    // A form can sit on a tint card: its field edge and an outline Button's edge are the only boundary they have.
+    ['focus ring', '--color-focus-ring', AA_LARGE],
+    ['field edge', '--color-input-border', AA_LARGE],
+    ['outline button edge', '--color-action-outline-border', AA_LARGE],
+];
 
 const FAMILIES = ['success', 'warning', 'error', 'info', 'energetic', 'neutral'];
 
@@ -70,6 +95,8 @@ export const BLOCK_ROLES = [
     ['--color-border-medium', AA_LARGE],
     ['--color-border-strong', AA_LARGE],
     ['--color-control-border', AA_LARGE],
+    ['--color-action-outline-border', AA_LARGE],
+    ['--color-action-outline-border-hover', AA_LARGE],
     ['--color-focus-ring', AA_LARGE],
     ['--color-focus-ring-muted', AA_LARGE],
     ['--color-focus-ring-danger', AA_LARGE],
@@ -81,7 +108,92 @@ export const BLOCK_ROLES = [
  * on it. Inside a block it has to be in the list that gives the roles back
  * their theme values, or its text is the block's label colour on a card.
  */
-export const SURFACE_CLASS = /^(surface-[\w-]+|card(-elevated)?|background|input(-disabled)?|[\w-]+-subtle|nav-menu-active|action-disabled)$/;
+export const SURFACE_CLASS = /^(surface-[\w-]+|card(-elevated|-tint)?|chip(-selected)?|background|input(-disabled)?|[\w-]+-subtle|nav-menu-active|action-disabled)$/;
+
+/**
+ * The worst thing a material can float over: the far end of the neutral ramp.
+ * A photo can be that dark or that bright, so light glass is judged over
+ * step 950 and dark glass over step 50.
+ *
+ * In dark that backdrop is dimmed before the fill is laid on it (D137): the
+ * material's backdrop-filter carries `brightness(var(--material-backdrop-brightness))`,
+ * which multiplies the sRGB channels of what is behind, so the brightest thing
+ * behind dark glass is step 50 times the factor, not step 50. Pairs flagged
+ * `material: true` are dimmed that way, by the mode's own value of the token
+ * (1 in light, an identity). The dimming is only real while the filter is on;
+ * each fallback that drops the filter also makes the fill the opaque surface.
+ * Other `behind` pairs (canvas wash, control gradients) are not filtered.
+ */
+export const WORST_BACKDROP = { light: '--zabi-base-950', dark: '--zabi-base-50' };
+
+/** The token a pair's `behind` names in `mode`, or null for a pair without one. */
+export function behindToken(pair, mode) {
+    if (!pair.behind) return null;
+    return typeof pair.behind === 'string' ? pair.behind : pair.behind[mode];
+}
+
+/**
+ * The materials (D97) and the roles each may carry, each held to its floor on
+ * the worst backdrop AND over the mode's own page (the easy case, so a fill
+ * cannot pass by being too dark). Each alpha in src/app.css is the smallest
+ * whole percent that passes all of these, plus a margin; a lower one fails here.
+ *  thin: a control on a bar (an icon, a short headline-coloured label)
+ *  regular: bars, the tab bar, a floating sidebar
+ *  thick: sheets, menus, modals, toasts, tooltips: all five text roles
+ * Regular and thick also keep the focus ring at 3:1 (WCAG 1.4.11): controls sit
+ * inside a bar or a sheet, so their rings are drawn on the material. Thin does
+ * not (D106): it is a single control, and its ring is drawn around it, outside
+ * the material, against the offset gap.
+ */
+export const MATERIALS = [
+    { name: 'thin', fill: '--color-material-thin', text: ['headline'], ring: false },
+    { name: 'regular', fill: '--color-material-regular', text: ['headline', 'body', 'label'] },
+    { name: 'thick', fill: '--color-material-thick', text: ['headline', 'body', 'label', 'description', 'caption'] },
+];
+
+/** The two named stops of the canvas wash (--gradient-canvas) and the text roles on it. */
+export const CANVAS_STOPS = [
+    { name: 'brand', token: '--color-canvas-wash-brand' },
+    { name: 'accent', token: '--color-canvas-wash-accent' },
+];
+export const CANVAS_TEXT = ['headline', 'body', 'label', 'description', 'caption'];
+
+/**
+ * The solid controls that take a gradient: a translucent veil (start on top,
+ * end at the bottom) over the control's own fill, per state. The label is
+ * held at 4.5:1 on both ends of each state.
+ *
+ * `strengths` are the two tokens that set the veil's top and bottom, which
+ * createTheme moves when an app's label makes the default veil fail. Primary
+ * and danger share one veil (the class `bg-control-gradient`), so they share
+ * strengths: a change for one is a change for both.
+ */
+export const CONTROL_GRADIENTS = [
+    {
+        name: 'primary',
+        start: '--color-control-gradient-start',
+        end: '--color-control-gradient-end',
+        on: '--color-action-primary-text',
+        fills: [['rest', '--color-action-primary'], ['hover', '--color-action-primary-hover'], ['active', '--color-action-primary-active']],
+        strengths: ['--gradient-control-top-strength', '--gradient-control-bottom-strength'],
+    },
+    {
+        name: 'danger',
+        start: '--color-control-gradient-start',
+        end: '--color-control-gradient-end',
+        on: '--color-action-danger-text',
+        fills: [['rest', '--color-action-danger'], ['hover', '--color-action-danger-hover'], ['active', '--color-action-danger-active']],
+        strengths: ['--gradient-control-top-strength', '--gradient-control-bottom-strength'],
+    },
+    {
+        name: 'accent',
+        start: '--color-control-gradient-accent-start',
+        end: '--color-control-gradient-accent-end',
+        on: '--color-on-accent',
+        fills: [['rest', '--color-accent'], ['hover', '--color-accent-hover'], ['active', '--color-accent-active']],
+        strengths: ['--gradient-control-accent-top-strength', '--gradient-control-accent-bottom-strength'],
+    },
+];
 
 export function buildPairs() {
     const pairs = [];
@@ -116,6 +228,13 @@ export function buildPairs() {
             min: AA_NORMAL,
         });
     }
+
+    // Badge / brand: the subtle text is the link role (as the label of a
+    // selected pill tab); the solid label is the primary fill's own.
+    pairs.push(
+        { name: 'badge subtle · brand', bg: '--color-action-primary-subtle', fg: '--color-link', min: AA_NORMAL },
+        { name: 'badge solid · brand', bg: '--color-action-primary', fg: '--color-action-primary-text', min: AA_NORMAL },
+    );
 
     // Accent — the second brand colour. Solid fills carry --color-on-accent
     // (not the card surface, as a status badge does): an app that re-colours
@@ -204,6 +323,12 @@ export function buildPairs() {
         // primary button it is the 2px offset gap that separates the two.
         { name: 'focus offset gap on primary button', bg: '--color-action-primary', fg: '--color-focus-ring-offset', min: AA_LARGE },
         { name: 'focus ring against its offset gap', bg: '--color-focus-ring-offset', fg: '--color-focus-ring', min: AA_LARGE },
+        // WCAG 1.4.11: a solid fill has to be seen against what it sits on.
+        // `pin` held its own colour to this; the library's fills are held too.
+        { name: 'primary fill against the page', bg: '--color-surface-base', fg: '--color-action-primary', min: AA_LARGE },
+        { name: 'primary fill against a card', bg: '--color-surface-raised', fg: '--color-action-primary', min: AA_LARGE },
+        { name: 'danger fill against the page', bg: '--color-surface-base', fg: '--color-action-danger', min: AA_LARGE },
+        { name: 'danger fill against a card', bg: '--color-surface-raised', fg: '--color-action-danger', min: AA_LARGE },
     );
 
     // WCAG 1.4.11 again, on the rest of the ladder. The four pairs above stop
@@ -223,16 +348,171 @@ export function buildPairs() {
     // WCAG 1.4.11: the edge of a form field is what finds the field, and on a
     // white card the field fill is the card, so the edge is all there is. It was
     // base-350 in light (1.9:1 on white) and was in no pair at all. Held to 3:1
-    // against the fill, the page and the card. Not the overlay: the dark overlay
-    // (#454547) needs a lighter step than the other three (base-600, not
-    // base-500), which is a separate decision; light overlay is the card.
+    // against the fill, the page, the card, the elevated surface and the overlay
+    // (a field in a modal or a sheet). The dark overlay is the elevated tone now
+    // (#27272a), where base-500 is 3.08:1; it used to be a lighter grey that needed
+    // a lighter step than the other three.
     pairs.push(
         { name: 'field edge on the field fill', bg: '--color-input', fg: '--color-input-border', min: AA_LARGE },
         { name: 'field edge on page', bg: '--color-background', fg: '--color-input-border', min: AA_LARGE },
         { name: 'field edge on card', bg: '--color-surface-raised', fg: '--color-input-border', min: AA_LARGE },
+        { name: 'field edge on elevated', bg: '--color-surface-elevated', fg: '--color-input-border', min: AA_LARGE },
+        { name: 'field edge on overlay', bg: '--color-surface-overlay', fg: '--color-input-border', min: AA_LARGE },
+        // WCAG 1.4.11: the selected segment of a SegmentedControl is told from the
+        // others by its edge. The track is translucent ink, so it is measured over
+        // the page and over a card, the two surfaces it is placed on.
+        { name: 'segment thumb edge on the track over the page', bg: '--color-action-secondary', fg: '--color-segment-thumb-border', min: AA_LARGE, behind: '--color-surface-base' },
+        { name: 'segment thumb edge on the track over a card', bg: '--color-action-secondary', fg: '--color-segment-thumb-border', min: AA_LARGE, behind: '--color-surface-raised' },
+        { name: 'segment thumb text on the thumb', bg: '--color-segment-thumb', fg: '--color-segment-thumb-text', min: AA_NORMAL },
+        // Button variant="tonal": the brand as text on the brand tint, rest,
+        // hovered and held. The label is the link role, the lightest brand step
+        // that holds 4.5:1 on all three.
+        { name: 'tonal label', bg: '--color-action-tonal', fg: '--color-action-tonal-text', min: AA_NORMAL },
+        { name: 'tonal label :hover', bg: '--color-action-tonal-hover', fg: '--color-action-tonal-text', min: AA_NORMAL },
+        { name: 'tonal label :active', bg: '--color-action-tonal-active', fg: '--color-action-tonal-text', min: AA_NORMAL },
+        { name: 'held tonal fill against its resting fill', bg: '--color-action-tonal', fg: '--color-action-tonal-active', min: MIN_PRESSED },
+        // WCAG 1.4.11: the edge of an outline Button is its only boundary. It
+        // was the card edge, 1.25:1 on the page.
+        { name: 'outline button edge on page', bg: '--color-surface-base', fg: '--color-action-outline-border', min: AA_LARGE },
+        { name: 'outline button edge on card', bg: '--color-surface-raised', fg: '--color-action-outline-border', min: AA_LARGE },
+        { name: 'outline button edge :hover on page', bg: '--color-surface-base', fg: '--color-action-outline-border-hover', min: AA_LARGE },
+        { name: 'outline button edge :hover on card', bg: '--color-surface-raised', fg: '--color-action-outline-border-hover', min: AA_LARGE },
+        // WCAG 1.4.11: the off Toggle's track is a light tint, so its edge is
+        // what finds the switch on the page and on a card.
+        { name: 'toggle track edge on page', bg: '--color-surface-base', fg: '--color-toggle-track-border', min: AA_LARGE },
+        { name: 'toggle track edge on card', bg: '--color-surface-raised', fg: '--color-toggle-track-border', min: AA_LARGE },
+        // WCAG 1.4.11: the knob is what shows where the switch is set, so it
+        // is held against every fill it can sit on. Off: the knob on the
+        // resting, hovered and pressed track; on: the knob on the primary fill
+        // at rest, hovered and pressed. The two tokens are the defaults an app's
+        // theme sets; an ancestor's `--color-toggle-thumb` is the app's to check.
+        { name: 'toggle knob on the off track', bg: '--color-toggle-track', fg: '--color-toggle-knob', min: AA_LARGE },
+        { name: 'toggle knob on the off track :hover', bg: '--color-toggle-track-hover', fg: '--color-toggle-knob', min: AA_LARGE },
+        { name: 'toggle knob on the off track :active', bg: '--color-toggle-track-active', fg: '--color-toggle-knob', min: AA_LARGE },
+        { name: 'toggle knob on the on track', bg: '--color-action-primary', fg: '--color-toggle-knob-checked', min: AA_LARGE },
+        { name: 'toggle knob on the on track :hover', bg: '--color-action-primary-hover', fg: '--color-toggle-knob-checked', min: AA_LARGE },
+        { name: 'toggle knob on the on track :active', bg: '--color-action-primary-active', fg: '--color-toggle-knob-checked', min: AA_LARGE },
         // WCAG 1.4.11: the fill of Progress must be seen against its track.
         { name: 'progress fill on track', bg: '--color-progress-track', fg: '--color-progress-fill', min: AA_LARGE },
+        // Chip: a quiet neutral fill at rest, seen on the page and on a card
+        // without an edge, with a label that holds 4.5:1 on all three of its
+        // fills. The selected chip is tonal by default; its own label is held
+        // on its own three fills, so an app that sets them is checked.
+        { name: 'chip fill against the page', bg: '--color-surface-base', fg: '--color-chip', min: MIN_EDGELESS_FILL },
+        { name: 'chip fill against a card', bg: '--color-surface-raised', fg: '--color-chip', min: MIN_EDGELESS_FILL },
+        { name: 'chip label', bg: '--color-chip', fg: '--color-chip-text', min: AA_NORMAL },
+        { name: 'chip label :hover', bg: '--color-chip-hover', fg: '--color-chip-text', min: AA_NORMAL },
+        { name: 'chip label :active', bg: '--color-chip-active', fg: '--color-chip-text', min: AA_NORMAL },
+        { name: 'selected chip label', bg: '--color-chip-selected', fg: '--color-chip-selected-text', min: AA_NORMAL },
+        { name: 'selected chip label :hover', bg: '--color-chip-selected-hover', fg: '--color-chip-selected-text', min: AA_NORMAL },
+        { name: 'selected chip label :active', bg: '--color-chip-selected-active', fg: '--color-chip-selected-text', min: AA_NORMAL },
+        // WCAG 1.4.11: the edge of the Progress track. The default track is the
+        // field fill, 1.00:1 on a card, so the edge is what finds it; an app
+        // whose track reaches 3:1 itself sets the edge to `transparent`, and a
+        // pair with no flat colour is skipped.
+        { name: 'progress track edge on page', bg: '--color-surface-base', fg: '--color-progress-track-border', min: AA_LARGE },
+        { name: 'progress track edge on card', bg: '--color-surface-raised', fg: '--color-progress-track-border', min: AA_LARGE },
+        // Bars (D124, D126, D129): the tokens a component may not paint with a raw value.
+        { name: 'active tab label on the tab pill', bg: '--color-tabbar-active', fg: '--color-nav-menu-item-active', min: AA_NORMAL },
+        { name: 'on-brand text on an on-brand bar', bg: '--color-bar-brand', fg: '--color-on-brand', min: AA_NORMAL },
+        { name: 'headline on a bar at rest', bg: '--color-bar', fg: '--color-headline', min: AA_NORMAL },
     );
+
+    // Card tone="tint": the brand tint as a surface for content.
+    for (const [role, fg, min] of TINT_CARD_ROLES) {
+        pairs.push({ name: `tint card · ${role}`, bg: '--color-card-tint', fg, min });
+    }
+
+    // Card variant="flat": in dark a translucent step, so what is behind it is part of the pair. In light
+    // the fill is the card, opaque, and the layers change nothing. The stacks held are the deepest that
+    // text can still be read on: three layers over the card, two over the overlay (a flat card in a flat
+    // card in a sheet), one over the page. Three over the overlay is not held: the caption is 4.1:1 there.
+    // The field edge and the outline Button's edge are 3:1 on one layer over the page only (3.03:1); on a
+    // layer over a card or an overlay they are 2.8:1 or less at any alpha that shows the layer (THEMING.md).
+    const FLAT_STACKS = [['three layers over the card', '--color-surface-raised', 3], ['two layers over the overlay', '--color-surface-overlay', 2], ['one layer over the page', '--color-surface-base', 1]];
+    for (const [where, behind, layers] of FLAT_STACKS) {
+        for (const [role, fg, min] of TINT_CARD_ROLES) {
+            if (min === AA_LARGE && role !== 'focus ring' && layers !== 1) continue;
+            if (min === AA_LARGE && role !== 'focus ring' && behind !== '--color-surface-base') continue;
+            pairs.push({ name: `flat card · ${role} (${where})`, bg: '--color-card-flat', fg, min, behind, layers });
+        }
+    }
+
+    // The dark field is a translucent step of the neutral ramp, so what it sits on is part of every pair
+    // it is in: laid over the page, a card and the overlay (`only: 'dark'`; light's field is opaque and
+    // its pairs above are unchanged). `fgPaint` lays the foreground over the same backdrop too, for a pair
+    // of two fills. Held: the well is 1.15:1 or more off its surface (the default is 1.20 to 1.23; the
+    // app asked for 1.2, a tinted ramp that moves the neutral steps keeps 1.15), the value and every
+    // placeholder 4.5:1 on all four fills, the pressed step 1.25:1 past rest and the hover step 1.08:1.
+    // Two floors are lower than the rest, and measured, not chosen to pass: the placeholder on a pressed
+    // field over the overlay is 4.0:1 (4.10 measured; the pressed step needs 1.25:1 past a resting well
+    // that is already light, and the value text allows a placeholder only so pale: body over placeholder
+    // is held to 1.75:1), and the edge against the lifted fill is 2.7:1 on a card and 2.4:1 on the
+    // overlay (2.79 and 2.50 measured) while the edge against the surface outside it stays 3:1 in
+    // 'field edge on page / card / elevated / overlay'.
+    const FIELD_SURFACES = [['the page', '--color-surface-base', AA_LARGE, AA_NORMAL], ['a card', '--color-surface-raised', 2.7, AA_NORMAL], ['the overlay', '--color-surface-overlay', 2.4, 4.0]];
+    for (const [where, behind, edgeMin, pressedPlaceholderMin] of FIELD_SURFACES) {
+        const field = (name, bg, fg, min, extra = {}) => pairs.push({ name: `${name} (over ${where})`, bg, fg, min, behind, only: 'dark', ...extra });
+        field('field well against its surface', '--color-input', behind, MIN_FIELD_WELL);
+        field('input value', '--color-input', '--color-body', AA_NORMAL);
+        field('input value on a pressed field', '--color-input-active', '--color-body', AA_NORMAL);
+        field('input placeholder', '--color-input', '--color-input-placeholder', AA_NORMAL);
+        field('input placeholder on a hovered field', '--color-input-hover', '--color-input-placeholder', AA_NORMAL);
+        field('input placeholder on a focused field', '--color-input-focus', '--color-input-placeholder', AA_NORMAL);
+        field('input placeholder on a pressed field', '--color-input-active', '--color-input-placeholder', pressedPlaceholderMin);
+        field('pressed field against the resting field', '--color-input', '--color-input-active', MIN_PRESSED, { fgPaint: true });
+        field('hovered field against the resting field', '--color-input', '--color-input-hover', MIN_FIELD_HOVER_STEP, { fgPaint: true });
+        field('field edge on the field fill', '--color-input', '--color-input-border', edgeMin);
+    }
+
+    for (const material of MATERIALS) {
+        for (const [where, behind] of [['the worst backdrop', WORST_BACKDROP], ['the page', '--color-surface-base']]) {
+            for (const role of material.text) {
+                pairs.push({ name: `material ${material.name} · ${role} over ${where}`, bg: material.fill, fg: `--color-${role}`, min: AA_NORMAL, behind, material: true });
+            }
+            if (material.ring !== false) {
+                pairs.push({ name: `material ${material.name} · focus ring over ${where}`, bg: material.fill, fg: '--color-focus-ring', min: AA_LARGE, behind, material: true });
+            }
+        }
+    }
+
+    // What the overlays put on the thick material beyond the five roles: a Toast's
+    // status-coloured text and a Dropdown danger item, both in the family's -text
+    // step (the plain family colour is 3.7:1 to 3.9:1 on glass: it stays the
+    // icon and border colour, held at 3:1), and the link in a Toaster toast.
+    // Held the same way:
+    // over the worst backdrop and over the page.
+    for (const [where, behind] of [['the worst backdrop', WORST_BACKDROP], ['the page', '--color-surface-base']]) {
+        const thick = '--color-material-thick';
+        for (const family of ['success', 'error', 'warning']) {
+            pairs.push({ name: `material thick · ${family} text over ${where}`, bg: thick, fg: `--color-${family}-text`, min: AA_NORMAL, behind, material: true });
+        }
+        pairs.push({ name: `material thick · link over ${where}`, bg: thick, fg: '--color-link', min: AA_NORMAL, behind, material: true });
+        for (const family of ['success', 'error', 'warning', 'info']) {
+            pairs.push({ name: `material thick · ${family} icon over ${where}`, bg: thick, fg: `--color-${family}`, min: AA_LARGE, behind, material: true });
+        }
+    }
+
+    // Gradients (D99): never judged as a gradient, only at their worst stops.
+    // The canvas wash is strongest at its centre, where it is the stop colour
+    // over the page; every text role that can sit on the canvas is held there.
+    for (const stop of CANVAS_STOPS) {
+        for (const role of CANVAS_TEXT) {
+            pairs.push({ name: `canvas wash ${stop.name} · ${role}`, bg: stop.token, fg: `--color-${role}`, min: AA_NORMAL, behind: '--color-surface-base' });
+        }
+        pairs.push({ name: `canvas wash ${stop.name} · link`, bg: stop.token, fg: '--color-link', min: AA_NORMAL, behind: '--color-surface-base' });
+        pairs.push({ name: `canvas wash ${stop.name} · focus ring`, bg: stop.token, fg: '--color-focus-ring', min: AA_LARGE, behind: '--color-surface-base' });
+        pairs.push({ name: `canvas wash ${stop.name} · field edge`, bg: stop.token, fg: '--color-input-border', min: AA_LARGE, behind: '--color-surface-base' });
+    }
+    // The control gradient is a veil over the control's own fill, so each state
+    // is the veil stop over that state's fill, and the label must hold on both ends.
+    for (const control of CONTROL_GRADIENTS) {
+        for (const [state, fill] of control.fills) {
+            for (const [end, bg] of [['top', control.start], ['bottom', control.end]]) {
+                pairs.push({ name: `${control.name} gradient ${end} · ${state}`, bg, fg: control.on, min: AA_NORMAL, behind: fill, gradient: control.name });
+            }
+        }
+    }
 
     return pairs;
 }

@@ -89,9 +89,11 @@ describe("menus share one edge and one surface", () => {
 
     it("Dropdown", () => {
         render(LightModeHarness);
-        const popup = screen.getByTestId("dropdown").querySelector(".shadow-lg");
+        const popup = screen.getByTestId("dropdown").querySelector(".material-layer-thick");
 
-        expect(classesOf(popup)).toEqual(expect.arrayContaining(recipe));
+        // The thick material brings the overlay fill, the rim and the shadow.
+        expect(classesOf(popup)).toContain("material-layer-thick");
+        expect(classesOf(popup)).not.toContain("shadow-lg");
         expect(classesOf(popup)).not.toContain("border-border");
     });
 
@@ -221,9 +223,10 @@ describe("state variants that used to lose to a hand-written colour class", () =
         expect(selected).not.toContain("border-border");
         expect(selected).not.toContain("focus-visible:bg-surface-hover");
         expect(selected).toContain("focus-ring");
-        expect(idle).toEqual(
-            expect.arrayContaining(["border-border", "focus-visible:bg-surface-hover"]),
-        );
+        expect(idle).toContain("focus-visible:bg-surface-hover");
+        // 9.0: no resting border of its own; the edge is a custom property that defaults to transparent.
+        expect(idle).not.toContain("border-border");
+        expect(idle).toContain("border-[color:var(--zabi-list-row-border-color,transparent)]");
     });
 });
 

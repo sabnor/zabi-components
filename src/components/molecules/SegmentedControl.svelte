@@ -6,6 +6,12 @@
     import { isRtl, radioKeyIndex } from "../util/radio-keys.js";
     import type { SegmentedControlOption } from "../util/segmented-control.js";
     import { generateId } from "../util/ssr-safe.js";
+    import {
+        afterFrame,
+        measureIndicator,
+        observeSizes,
+        type IndicatorBox,
+    } from "../util/sliding-indicator.js";
 
     /** Other attributes (`data-*`, `id`, ...) land on the host element. */
     type Props = Omit<
@@ -34,6 +40,12 @@
          * form reset leaves it alone.
          */
         name?: string;
+        /**
+         * The look of the selected segment. `neutral`: a card-coloured thumb with
+         * the headline colour on a tinted track, which does not compete with the
+         * screen's main button. `primary`: a solid primary fill, as in 8.1.
+         */
+        tone?: "neutral" | "primary";
         disabled?: boolean;
         /** Called with the new value when the user picks another segment. */
         onchange?: (value: string) => void;
@@ -49,6 +61,7 @@
         size = "md",
         fullWidth = true,
         name = "",
+        tone = "neutral",
         disabled = false,
         onchange,
         ...restProps
@@ -77,6 +90,43 @@
     const enabled = $derived(
         options.filter((option) => !disabled && !option.disabled),
     );
+
+    /**
+     * The sliding indicator. Until a box has been measured (on the server,
+     * before hydration, with no layout) it is null and the checked segment draws
+     * its own selected look; with a box, the host is marked ready and that look
+     * moves to the indicator, which slides between segments.
+     */
+    let host = $state<HTMLDivElement | null>(null);
+    let indicator = $state<IndicatorBox | null>(null);
+    /** Off for the first placement, so the indicator appears in place and does not fly in. */
+    let indicatorMotion = $state(false);
+
+    const faceOf = (input: HTMLInputElement | undefined) =>
+        input?.nextElementSibling as HTMLElement | null | undefined;
+
+    function measure() {
+        const face = value === undefined ? undefined : faceOf(inputs[value]);
+        indicator = host && face ? measureIndicator(host, face) : null;
+    }
+
+    // After the DOM has followed a change of selection, options, size or look.
+    $effect(() => {
+        void [options, size, fullWidth, tone, host, value];
+        measure();
+    });
+
+    // The segments wrap and resize with zoomed text, a loaded font or a narrower container.
+    $effect(() => {
+        void options;
+        if (!host) return;
+        return observeSizes([host, ...Object.values(inputs).map(faceOf)], measure);
+    });
+
+    $effect(() => {
+        if (!indicator || indicatorMotion) return;
+        return afterFrame(() => (indicatorMotion = true));
+    });
 
     /** The segment that takes Tab: the selected one, or the first that can be chosen. */
     const tabStop = $derived(
@@ -128,6 +178,10 @@ one changes nothing, and the value goes with a form. -->
 <div
     class={cn("segmented", fullWidth ? "w-full" : "", className)}
     data-size={size}
+    data-tone={tone}
+    data-indicator={indicator ? "ready" : undefined}
+    data-indicator-motion={indicator && indicatorMotion ? "" : undefined}
+    bind:this={host}
     data-full-width={fullWidth ? "" : undefined}
     role="radiogroup"
     aria-label={ariaLabelledby ? undefined : label || ariaLabel}
@@ -135,6 +189,17 @@ one changes nothing, and the value goes with a form. -->
     aria-disabled={disabled ? "true" : undefined}
     {...restProps}
 >
+    {#if indicator}
+        <!-- Under the segments (it comes first and they are positioned), and never in their way. -->
+        <span
+            class="segment-indicator"
+            aria-hidden="true"
+            data-disabled={disabled || options.find((option) => option.value === value)?.disabled
+                ? ""
+                : undefined}
+            style="transform: translate({indicator.x}px, {indicator.y}px); width: {indicator.width}px; height: {indicator.height}px;"
+        ></span>
+    {/if}
     {#each options as option (option.value)}
         {@const optionDisabled = disabled || !!option.disabled}
         {@const Icon = option.icon}
@@ -184,6 +249,8 @@ one changes nothing, and the value goes with a form. -->
         border: 1px solid var(--color-border);
         border-radius: var(--radius-control);
         background: var(--color-action-secondary);
+        /* The sliding indicator is placed against the padding box. */
+        position: relative;
     }
 
     .segmented:not([data-full-width]) {
@@ -241,8 +308,8 @@ one changes nothing, and the value goes with a form. -->
         line-height: 1.25;
         text-align: center;
         transition:
-            background-color 150ms,
-            color 150ms;
+            background-color var(--duration-base),
+            color var(--duration-base);
     }
 
     /* A long label wraps onto a second line, and breaks inside a word only when a word alone does not fit. */
@@ -263,9 +330,64 @@ one changes nothing, and the value goes with a form. -->
         background: var(--color-surface-active);
     }
 
+    /*
+     * The selected look, drawn by the segment itself: before the page hydrates,
+     * and wherever the indicator cannot be measured. Neutral is a thumb: the
+     * card colour with a soft shadow and an edge (the edge, held to 3:1 against
+     * the track, is what tells it from the others; the fill is only a step).
+     */
     input:checked + .segment-face {
+        background: var(--color-segment-thumb);
+        color: var(--color-segment-thumb-text);
+        box-shadow:
+            var(--shadow-sm),
+            0 0 0 1px var(--color-segment-thumb-border);
+    }
+
+    :where(.segmented[data-tone="primary"]) input:checked + .segment-face {
         background: var(--color-action-primary);
         color: var(--color-action-primary-text);
+        box-shadow: none;
+    }
+
+    /* With an indicator the segment keeps only its label colour. */
+    @media (forced-colors: none) {
+        :where(.segmented[data-indicator="ready"]) input:checked + .segment-face {
+            background: transparent;
+            box-shadow: none;
+        }
+    }
+
+    .segment-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        border-radius: calc(var(--radius-control) - var(--zabi-segment-inset) - 1px);
+        background: var(--color-segment-thumb);
+        box-shadow:
+            var(--shadow-sm),
+            0 0 0 1px var(--color-segment-thumb-border);
+    }
+
+    .segmented[data-tone="primary"] .segment-indicator {
+        background: var(--color-action-primary);
+        box-shadow: none;
+    }
+
+    /* Only once the first placement is on screen: the thumb then slides and resizes. */
+    .segmented[data-indicator-motion] .segment-indicator {
+        transition:
+            transform var(--duration-moderate) var(--ease-spring),
+            width var(--duration-moderate) var(--ease-spring),
+            height var(--duration-moderate) var(--ease-spring);
+    }
+
+    /* Forced colours keep the segment's own Highlight look below. */
+    @media (forced-colors: active) {
+        .segment-indicator {
+            display: none;
+        }
     }
 
     /* Same geometry as `.focus-ring`: a 2px gap, then a 2px ring. */
@@ -280,6 +402,16 @@ one changes nothing, and the value goes with a form. -->
     }
 
     input:disabled + .segment-face {
+        opacity: 0.5;
+    }
+
+    /* A disabled neutral thumb keeps its edge at full strength, so it is still seen; only its label dims. */
+    :where(.segmented[data-tone="neutral"]) input:checked:disabled + .segment-face {
+        opacity: 1;
+        color: color-mix(in srgb, var(--color-segment-thumb-text) 50%, transparent);
+    }
+
+    .segmented[data-tone="primary"] .segment-indicator[data-disabled] {
         opacity: 0.5;
     }
 
@@ -316,7 +448,8 @@ one changes nothing, and the value goes with a form. -->
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .segment-face {
+        .segment-face,
+        .segmented[data-indicator-motion] .segment-indicator {
             transition: none;
         }
     }

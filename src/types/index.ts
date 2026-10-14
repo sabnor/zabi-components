@@ -14,8 +14,13 @@ import type {
     HTMLButtonAttributes,
     HTMLInputAttributes,
     HTMLTextareaAttributes,
+    SVGAttributes,
 } from 'svelte/elements';
 import type { BottomTabBarItem } from '../components/util/bottom-tab-bar.js';
+import type {
+    AppShellNavigationContext,
+    AppShellNavigationMode,
+} from '../components/util/app-shell.js';
 import type { CalendarEvent, CalendarStrings } from '../components/util/calendar.js';
 import type {
     Photo,
@@ -32,14 +37,20 @@ import type {
 } from '../components/util/bottom-sheet.js';
 import type {
     BadgeVariant,
+    ButtonSize,
     ButtonVariant,
     CardVariant,
     OnFillTone,
+    SurfaceTone,
     ExtendedSemanticVariant,
     SemanticVariant,
     SizeVariant,
 } from './variants.js';
 import type { AvatarGroupStrings, AvatarPerson, AvatarSize } from '../components/util/avatar.js';
+import type { ChartColor, ChartDatum, ChartFormat, ChartSeries } from '../components/util/chart.js';
+import type { ProgressStrings } from '../components/util/progress.js';
+import type { SkeletonStrings } from '../components/util/skeleton.js';
+import type { CodeFieldMode, CodeFieldStrings } from '../components/util/code-field.js';
 import type { RatingStrings } from '../components/util/rating.js';
 import type {
     StepperItem,
@@ -67,7 +78,7 @@ export interface ButtonProps extends Omit<HTMLButtonAttributes, 'class'> {
      * styled them, and they render as `primary`.
      */
     variant?: ButtonVariant | 'success' | 'warning' | 'info' | 'neutral';
-    size?: SizeVariant;
+    size?: ButtonSize;
     disabled?: boolean;
     loading?: boolean;
     type?: 'button' | 'submit' | 'reset';
@@ -123,15 +134,56 @@ export interface HeadingProps extends Omit<HTMLAttributes<HTMLHeadingElement>, '
     text?: string;
     /** Text colour: `headline` by default; `inherit`, `on-brand` or `on-accent` on a filled block. */
     tone?: 'headline' | OnFillTone;
+    /** `heading` (default) or `display`: the second face and larger steps. */
+    variant?: 'heading' | 'display';
     class?: string;
     children?: Snippet;
     /** @deprecated never accepted by the component; use `class`. */
     className?: string;
 }
 
+// Block component props
+export interface BlockProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** `neutral` (the card surface), `tint`, `brand` or `accent`. */
+    tone?: SurfaceTone;
+    /** A fill the app chooses, any CSS colour. Wins over `tone`; the app checks the contrast of the pair. */
+    fill?: string;
+    /** The label colour on `fill`. */
+    onFill?: string;
+    /** Inner space: `none`, `sm`, `md` (default) or `lg`. */
+    padding?: 'none' | 'sm' | 'md' | 'lg';
+    /** The element, `div` by default. */
+    as?: 'div' | 'section' | 'header' | 'footer' | 'article' | 'aside';
+    /** A Block does not break out of a padded parent: put it outside, or pass a negative inline margin (`-mx-4`). */
+    class?: string;
+    children?: Snippet;
+}
+
 // Card component props
 export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
     variant?: CardVariant;
+    /** `neutral` (default), `tint`, `brand` or `accent`; brand and accent re-point text, links and controls inside. */
+    tone?: SurfaceTone;
+    /** A fill the app chooses, any CSS colour. Wins over `tone`; the app checks the contrast of the pair. */
+    fill?: string;
+    /** The label colour on `fill`. */
+    onFill?: string;
+    /** The card is an `<a>`. A link card must not contain other interactive elements. */
+    href?: string;
+    target?: HTMLAnchorAttributes['target'];
+    rel?: string;
+    /** The card is a `<button>` (ignored with `href`): `submit` posts the form around it. Like a link card it must not contain other interactive elements. */
+    type?: 'submit' | 'button' | 'reset';
+    /** With `type`: the name the button submits under. */
+    name?: string;
+    /** With `type`: what the button submits. */
+    value?: string;
+    /** With `type`: the id of the form it belongs to. */
+    form?: string;
+    /** With `type`: the card cannot be pressed. */
+    disabled?: boolean;
+    /** With `type`: the action is on its way (`aria-busy`, `aria-disabled`); the press is swallowed and the card stays a Tab stop. */
+    loading?: boolean;
     size?: SizeVariant;
     fullWidth?: boolean;
     class?: string;
@@ -187,7 +239,7 @@ export interface InputProps
     leading?: Snippet;
     /** Drawn inside the field, after the text. */
     trailing?: Snippet;
-    /** With `type="password"`: adds a button that shows the password as text, and hides it again. */
+    /** With `type="password"`: a button that shows the password as text, and hides it again. On by default; `false` leaves it out. */
     revealable?: boolean;
     /** Accessible name of that button, the same in both states. */
     revealLabel?: string;
@@ -220,6 +272,22 @@ export interface CheckboxProps
     disabled?: boolean;
     loading?: boolean;
     label?: string;
+    /**
+     * Drawn inside the one label, between the box and the label text. A
+     * leading image should have an empty alt: the label names the row.
+     */
+    leading?: Snippet;
+    /** A line under the label, inside it, tied to the box with `aria-describedby`; not part of the name. */
+    description?: string;
+    /** Where the box sits in the row: `end` puts it last, at the far edge. */
+    controlPosition?: 'start' | 'end';
+    variant?: SemanticVariant;
+    /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
+    message?: string;
+    /** Help text under the control, read out with it. */
+    hint?: string;
+    /** An error under the control: an alert, tied to the input; a checkbox also gets `aria-invalid`. It wins over `variant` and `message`. */
+    error?: string;
     onchange?: (event: Event) => void;
     /** Same as `onchange`; both are called. */
     onChange?: (event: Event) => void;
@@ -248,7 +316,7 @@ export interface SelectProps
     > {
     /** Id of the trigger. Omit to auto-generate. */
     id?: string;
-    options?: Array<{ value: string | number; label: string; disabled?: boolean }>;
+    options?: Array<{ value: string | number; label: string; disabled?: boolean; lang?: string }>;
     value?: string | number | undefined;
     searchable?: boolean;
     searchPlaceholder?: string;
@@ -256,6 +324,8 @@ export interface SelectProps
     menuWidth?: string;
     /** `auto` (the default): a BottomSheet on a phone, under the field elsewhere. */
     presentation?: "auto" | "popover" | "sheet" | "native";
+    /** In a sheet, a short list (up to six options) without a search field gets a sheet as tall as the list. Default `true`; `false` keeps the half-height sheet. */
+    sheetFit?: boolean;
     /** The component's own texts; see `SelectStrings`. The single-text props win over it. */
     strings?: Partial<import("../components/util/select.js").SelectStrings>;
     noResultsText?: string;
@@ -287,6 +357,69 @@ export interface SelectProps
     className?: string;
 }
 
+// PickerField component props
+export interface PickerFieldProps
+    extends Omit<
+        HTMLButtonAttributes,
+        | 'class'
+        | 'value'
+        | 'name'
+        | 'disabled'
+        | 'type'
+        | 'onclick'
+        | 'aria-describedby'
+        | 'aria-haspopup'
+        | 'aria-expanded'
+        | 'aria-controls'
+        | 'children'
+    > {
+    /** Id of the control. Omit to auto-generate. */
+    id?: string;
+    /** The label above the field. It is part of the control's name. */
+    label?: string;
+    /** The text of what is chosen. It is display text; `formValue` is what a form sends. */
+    value?: string;
+    /** Shown in the placeholder colour while there is no `value`. */
+    placeholder?: string;
+    /** An icon or an avatar before the text. */
+    leading?: Snippet;
+    /** Replaces the chevron at the end: a calendar or a clock, say. It is decoration, so it should be `aria-hidden`. */
+    trailing?: Snippet;
+    /** Replaces the value text, for rich content. The control is still named by `value`, so give that too. */
+    children?: Snippet;
+    size?: 'sm' | 'md' | 'lg';
+    disabled?: boolean;
+    /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
+    message?: string;
+    variant?: 'default' | 'success' | 'warning' | 'error';
+    /** Help text under the field, read out with it. */
+    hint?: string;
+    /** An error under the field, announced. A button cannot take `aria-invalid`, so the error is the error edge colour and the described-by message; it wins over `variant` and `message`. */
+    error?: string;
+    /** What the control opens: `aria-haspopup`. Default `"dialog"`. Not put on a link. */
+    haspopup?: 'dialog' | 'listbox' | 'menu' | 'true';
+    /** Whether what it opens is open now: `aria-expanded`, and the chevron turns. Leave it out and neither is set. Not put on a link. */
+    expanded?: boolean;
+    /** Id of what it opens: `aria-controls`. */
+    controls?: string;
+    /** Makes the control a link to this address, which works without scripts: a page that does the picking. With scripts, `onclick` may call `preventDefault()` and open a sheet instead. */
+    href?: string;
+    /** With `href`: where the link opens. */
+    target?: HTMLAnchorAttributes['target'];
+    /** With `href`: the link's relationship, such as `noopener`. */
+    rel?: HTMLAnchorAttributes['rel'];
+    /** The name a hidden input submits `formValue` under. Without it there is no hidden input. */
+    name?: string;
+    /** What the form submits for the choice, such as an id. */
+    formValue?: string;
+    /** The inner `<button>` (or `<a>`). Bindable: the app focuses it when its sheet closes, so a keyboard user is back where they were. */
+    element?: HTMLButtonElement | HTMLAnchorElement | null;
+    /** Ids of other elements that describe the field. The hint and the message are added after them. */
+    'aria-describedby'?: string | null;
+    onclick?: (event: MouseEvent) => void;
+    class?: string;
+}
+
 export interface SelectEvents {
     change: { value: string; event: Event };
 }
@@ -314,6 +447,12 @@ export interface TextareaProps
     placeholder?: string;
     required?: boolean;
     rows?: number;
+    /** The resize grip: `auto` (default) is vertical with a mouse and none on a touch screen. */
+    resize?: 'auto' | 'none' | 'vertical';
+    /** The field grows with its content, from `rows` up to `maxRows`. */
+    autogrow?: boolean;
+    /** The tallest an `autogrow` field gets, in rows. */
+    maxRows?: number;
     disabled?: boolean;
     loading?: boolean;
     size?: SizeVariant;
@@ -324,6 +463,12 @@ export interface TextareaProps
     hint?: string;
     /** An error under the field. It marks the field invalid and is announced; it wins over `variant` and `message`. */
     error?: string;
+    /** A character count under the field. It needs `maxlength`, and is part of the field's description. */
+    count?: boolean;
+    /** The count is shown from this many characters on. `0` (default): always. */
+    countFrom?: number;
+    /** The words of the count. Default: "12 / 2000". */
+    countText?: (count: { length: number; max: number; remaining: number }) => string;
     /** Ids of other elements that describe the field. The hint and the message are added after them. */
     'aria-describedby'?: string | null;
     oninput?: (event: Event) => void;
@@ -379,7 +524,7 @@ export interface ModalEvents {
 
 // Alert component props
 export interface AlertProps {
-    variant?: ExtendedSemanticVariant;
+    variant?: ExtendedSemanticVariant | 'brand';
     title?: string;
     message?: string;
     closable?: boolean;
@@ -389,6 +534,8 @@ export interface AlertProps {
     open?: boolean;
     /** Shrink to content instead of filling the container. */
     inline?: boolean;
+    /** Draws the tinted edge (default `true`). `false` keeps the 1px and makes it transparent; `--zabi-alert-border-width: 0px` on any ancestor removes it for every alert under it. */
+    bordered?: boolean;
     onclick?: (event: Event) => void;
     class?: string;
     /** @deprecated use `class`. */
@@ -398,11 +545,45 @@ export interface AlertProps {
     type?: 'success' | 'error' | 'warning' | 'info';
 }
 
+// Stat component props
+export interface StatProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
+    /** The figure, shown as given. */
+    value: string | number;
+    label?: string;
+    /** Drawn after the value, smaller, on the same baseline. */
+    unit?: string;
+    size?: 'sm' | 'md' | 'lg';
+    align?: 'start' | 'center' | 'end';
+    labelPosition?: 'below' | 'above';
+    class?: string;
+    /** Replaces `value` for a figure that needs markup. */
+    children?: Snippet;
+}
+
+// SpeechBubble component props
+export interface SpeechBubbleProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** The caption that names the quotation; a `figcaption`. A snippet for the app's own text style. */
+    label?: string | Snippet;
+    /** Keeps the caption for assistive technology and takes it off the screen. */
+    labelHidden?: boolean;
+    /** The side the tail is on; follows the text direction. */
+    side?: 'end' | 'start';
+    /** `ink` (default) or `paper`; `--zabi-bubble-fill` and `--zabi-bubble-text` win over both. */
+    tone?: 'ink' | 'paper';
+    /** A drawing on the top corner of the tail's side, hidden from assistive technology. */
+    decoration?: Snippet;
+    class?: string;
+    /** The quoted text. */
+    children?: Snippet;
+}
+
 // Badge component props
 export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'class'> {
     variant?: BadgeVariant;
     size?: SizeVariant;
     emphasis?: 'subtle' | 'solid';
+    /** Draws the family's edge on a subtle badge. Default `false`. */
+    bordered?: boolean;
     /** Label text. Ignored when `children` is provided. */
     text?: string;
     showIcon?: boolean;
@@ -412,11 +593,72 @@ export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'class
     className?: string;
 }
 
+// Chip component props
+export interface ChipProps
+    extends Omit<HTMLButtonAttributes, 'class' | 'type' | 'value' | 'onchange' | 'children'> {
+    /** Makes the chip a link to this address, which works without scripts. */
+    href?: string;
+    target?: HTMLAnchorAttributes['target'];
+    rel?: HTMLAnchorAttributes['rel'];
+    download?: HTMLAnchorAttributes['download'];
+    hreflang?: HTMLAnchorAttributes['hreflang'];
+    /** With `href`: what `aria-current` says while `selected`. Default `"true"`. */
+    current?: 'page' | 'true' | 'step' | 'location' | 'date' | 'time';
+    /** `checkbox` or `radio`: a real input under the chip. `submit` or `button`: a button that does not toggle (`selected` is drawn and said with `aria-pressed`, the app decides it). Without it (and without `href`) the chip is a toggle button. */
+    type?: 'checkbox' | 'radio' | 'submit' | 'button';
+    name?: string;
+    value?: string;
+    /** The chip is chosen. Bindable. */
+    selected?: boolean;
+    required?: boolean;
+    form?: string;
+    /** 28, 32 or 40px tall. Default `md`. */
+    size?: 'sm' | 'md' | 'lg';
+    /** An icon or an avatar before the label. */
+    leading?: Snippet;
+    /** A check icon before the label while selected. On for a checkbox and a toggle button, off for a link and a radio. */
+    checkmark?: boolean;
+    /** A button chip (`submit`, `button` or the toggle) while its action is on its way: `aria-busy` and `aria-disabled`, a spinner, the press swallowed, width and focus kept. Ignored by a link and by `checkbox` / `radio`. */
+    loading?: boolean;
+    /** Called with the new `selected` when a person changes it. */
+    onchange?: (selected: boolean) => void;
+    class?: string;
+    children?: Snippet;
+}
+
+// ChipGroup component props
+export interface ChipGroupProps
+    extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'onchange' | 'children'> {
+    class?: string;
+    /** `wrap` (default) or `row`: one line that scrolls sideways. */
+    layout?: 'wrap' | 'row';
+    /** The group's accessible name. Not shown unless `showLabel`. */
+    label?: string;
+    showLabel?: boolean;
+    /** `radio` or `checkbox`: the chips are inputs sharing this group's `name` and `value`. */
+    type?: 'radio' | 'checkbox';
+    name?: string;
+    /** Bindable: a string (or `undefined`) for `radio`, an array of strings for `checkbox`. */
+    value?: string | string[] | undefined;
+    disabled?: boolean;
+    /** With `layout="row"`: `fade` (default) or `none`. */
+    edge?: 'fade' | 'none';
+    /** With `layout="row"`: bring the chosen chip into view on load. Default `true`. */
+    scrollSelectedIntoView?: boolean;
+    onchange?: (value: string | string[] | undefined) => void;
+    children?: Snippet;
+}
+
 // Progress component props
 export interface ProgressProps {
     value?: number;
     max?: number;
-    size?: SizeVariant;
+    /** Bar height: 4, 8, 12 and 16px. */
+    size?: 'sm' | 'md' | 'lg' | 'xl';
+    /** Draws `max` separate segments (a whole number from 2 to 24), `value` of them filled; any other `max` draws the continuous bar. */
+    segmented?: boolean;
+    /** Overrides for the built-in strings. */
+    strings?: Partial<ProgressStrings>;
     label?: string;
     /** Names the progressbar when there is no visible `label`. */
     'aria-label'?: string;
@@ -428,12 +670,29 @@ export interface ProgressProps {
 }
 
 // Skeleton component props
-export interface SkeletonProps {
+export interface SkeletonProps
+    extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'role' | 'aria-busy' | 'aria-hidden'> {
     variant?: 'text' | 'circle' | 'block';
     width?: string | number;
     height?: string | number;
     class?: string;
     'aria-label'?: string;
+    /** Overrides for the built-in strings. */
+    strings?: Partial<SkeletonStrings>;
+    /** No role, no label, hidden from assistive tech. */
+    decorative?: boolean;
+    /** "on-color" is for a brand, accent or fill block. */
+    tone?: 'neutral' | 'on-color';
+    /** Text variant only: this many lines (1 to 20), the last one shorter. */
+    lines?: number;
+}
+
+// SkeletonGroup component props: one status for the pieces inside it
+export interface SkeletonGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'role' | 'aria-busy'> {
+    'aria-label'?: string;
+    strings?: Partial<SkeletonStrings>;
+    class?: string;
+    children?: Snippet;
 }
 
 // Toggle component props and events
@@ -451,6 +710,15 @@ export interface ToggleProps
     disabled?: boolean;
     loading?: boolean;
     label?: string;
+    /**
+     * Drawn inside the one label, between the switch and the label text. A
+     * leading image should have an empty alt: the label names the row.
+     */
+    leading?: Snippet;
+    /** A line under the label, inside it, tied to the switch with `aria-describedby`; not part of the name. */
+    description?: string;
+    /** Ids of other elements that describe the switch. The description is added after them. */
+    'aria-describedby'?: string | null;
     /** The switch's accessible name when there is no visible `label`. */
     'aria-label'?: string;
     /** The id of an element of the page that names the switch. */
@@ -478,6 +746,8 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'clas
     fixed?: boolean;
     /** Milliseconds a tooltip opened by a tap stays; `0` keeps it until it is dismissed. */
     touchDuration?: number;
+    /** `material` (default): thick glass with body text and no arrow. `inverted`: the 8.1 dark bubble with an arrow. */
+    tone?: 'material' | 'inverted';
     class?: string;
     children?: Snippet;
     /** @deprecated never accepted by the component; use `placement`. */
@@ -492,6 +762,8 @@ export interface BottomTabBarProps extends Omit<HTMLAttributes<HTMLElement>, 'cl
     items: BottomTabBarItem[];
     /** The href of the active tab, or the path of the current page. Defaults to the current page. */
     active?: string;
+    /** The tab just pressed, while its page is on its way: it takes the mark, `aria-current` stays on `active`. */
+    pending?: string;
     /** Accessible name of the navigation landmark. */
     label?: string;
     /** What a badge adds to the tab's accessible name, after the label and a comma. */
@@ -500,6 +772,10 @@ export interface BottomTabBarProps extends Omit<HTMLAttributes<HTMLElement>, 'cl
     badgeMax?: number;
     /** Defaults to `fixed`, or to `static` inside an `AppShell`. */
     position?: 'fixed' | 'static';
+    /** When the bar shows the glass and the hairline: `auto` follows the scroll position, `always`, `never`. Default `auto`. */
+    scrollEdge?: 'auto' | 'always' | 'never';
+    /** Draws the bar as a rounded glass capsule inset from the screen edges. Default false. */
+    floating?: boolean;
     class?: string;
 }
 
@@ -521,10 +797,18 @@ export interface AppBarProps extends Omit<HTMLAttributes<HTMLElement>, 'class' |
     collapseOnScroll?: boolean;
     /** How many lines the title may take before it is cut. Default 1. */
     titleLines?: 1 | 2;
-    /** Before the title, after the back control. */
+    /** Before the title, after the back control. The bar's row is on a fixed pixel scale (`--spacing: 4px`), so the bar's own controls do not grow with the text size. Size what you place here on the same scale (Tailwind numeric classes such as `size-9`, or `calc(var(--spacing) * 9)`), not in rem, or it grows at 200% text while the bar's controls do not. */
     leading?: Snippet;
-    /** After the title. At most two icon buttons. */
+    /** After the title. At most two icon buttons. The bar's row is on a fixed pixel scale (`--spacing: 4px`), so the bar's own controls do not grow with the text size. Size what you place here on the same scale (Tailwind numeric classes such as `size-9`, or `calc(var(--spacing) * 9)`), not in rem, or it grows at 200% text while the bar's controls do not. */
     actions?: Snippet;
+    /** When the bar shows the glass and the hairline: `auto` follows the scroll position, `always`, `never`. Default `auto`. */
+    scrollEdge?: 'auto' | 'always' | 'never';
+    /** Draws the title large on a second row that scrolls away; the bar then shows it small. */
+    largeTitle?: boolean;
+    /** The bar's fill: the page colour, none at rest, the brand colour with on-brand content, or none with the colours of the block it sits in (`inherit`). Default `default`. */
+    tone?: 'default' | 'transparent' | 'brand' | 'inherit';
+    /** `sticky` (default), or `static` for a bar in the flow of the page. */
+    position?: 'sticky' | 'static';
     class?: string;
 }
 
@@ -538,9 +822,104 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'cla
     contentElement?: 'main' | 'div';
     /** The bottom bar, a `BottomTabBar`. */
     footer?: Snippet;
+    /** Paints the shell with the page colour and the brand wash, and lets it show through the header. */
+    canvas?: boolean;
+    /** One navigation, drawn as tabs, a rail or a sidebar; `AppNavigation` is the ready-made content. */
+    navigation?: Snippet<[AppShellNavigationContext]>;
+    /** Where the `navigation` goes. `auto` (default): tabs below 48rem, a rail from 48rem, a sidebar from 64rem. */
+    navigationPlacement?: AppShellNavigationMode;
+    /** Without a `header`, no top safe-area padding on the content: it starts at the top of the screen and handles the safe area itself. */
+    flushTop?: boolean;
     class?: string;
     /** Added after the two custom properties the shell sets. */
     style?: string;
+}
+
+// AppShellHeaderPart component props
+export interface AppShellHeaderPartProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
+    /** The part's content: an `AppBar`, a search field, filter chips, tabs. */
+    children?: Snippet;
+    /** Stays at the top under the parts that stick above it (default), or scrolls away with the content. */
+    sticky?: boolean;
+    class?: string;
+}
+
+// AppNavigation component props
+export interface AppNavigationProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
+    /** The destinations, as for `BottomTabBar`. */
+    items: BottomTabBarItem[];
+    /** The href of the active destination, or the path of the current page. Defaults to the current page. */
+    active?: string;
+    /** Accessible name of the navigation landmark. */
+    label?: string;
+    /** What a count adds to the link's accessible name, after the label and a comma. */
+    badgeLabel?: (count: number, item: BottomTabBarItem) => string;
+    /** Counts above this show as `99+`. */
+    badgeMax?: number;
+    /** Draws the tab bar form as a floating capsule of glass. */
+    floating?: boolean;
+    /** Above the list in the rail and the sidebar. */
+    header?: Snippet<[{ placement: 'rail' | 'sidebar' }]>;
+    /** Below the list in the rail and the sidebar. */
+    footer?: Snippet<[{ placement: 'rail' | 'sidebar' }]>;
+    class?: string;
+}
+
+// CodeField component props: one input under drawn boxes, for a verification code
+export interface CodeFieldProps
+    extends Omit<
+        HTMLInputAttributes,
+        | 'class'
+        | 'size'
+        | 'value'
+        | 'type'
+        | 'id'
+        | 'name'
+        | 'required'
+        | 'disabled'
+        | 'readonly'
+        | 'maxlength'
+        | 'oninput'
+        | 'onblur'
+        | 'aria-label'
+        | 'aria-describedby'
+    > {
+    id?: string;
+    /** The code typed so far. Bindable. */
+    value?: string;
+    /** The name the code is posted under, with or without scripts. */
+    name?: string;
+    class?: string;
+    /** Places in the code, a whole number from 1 to 12. Default 6. */
+    length?: number;
+    /** `numeric` (default): digits only. `alphanumeric` also takes letters. */
+    mode?: CodeFieldMode;
+    /** Box size: `sm` (44px tall), `md` (default) or `lg`. */
+    size?: SizeVariant;
+    /** Draws the boxes in groups with a wider gap: a number is each group's size (`4` makes 4 and 4 of 8), a list gives each group's size. Only the drawing changes; the row wraps between groups when it cannot fit. */
+    groups?: number | number[];
+    /** Names the field. Defaults to the provider's `codeField.label`, then "Verification code". */
+    label?: string;
+    /** Keeps the label for assistive technology and takes it off the screen. */
+    labelHidden?: boolean;
+    required?: boolean;
+    disabled?: boolean;
+    readonly?: boolean;
+    variant?: SemanticVariant;
+    /** Status text under the field; shown with a `success`, `warning` or `error` variant. */
+    message?: string;
+    /** Help text under the field, read out with it. */
+    hint?: string;
+    /** An error under the field: marks it invalid and is announced; wins over `variant` and `message`. */
+    error?: string;
+    /** Called with the code when the last place is filled. It does not submit anything. */
+    oncomplete?: (value: string) => void;
+    /** Overrides for the built-in strings: label, description. */
+    strings?: Partial<CodeFieldStrings>;
+    oninput?: (event: Event) => void;
+    onblur?: (event: Event) => void;
+    'aria-label'?: string;
+    'aria-describedby'?: string | null;
 }
 
 // Rating component props
@@ -558,7 +937,8 @@ export interface RatingProps
     hideLabel?: boolean;
     'aria-label'?: string;
     'aria-labelledby'?: string;
-    size?: SizeVariant;
+    /** `xl` is 40px stars; `display` is a display-size compact score (`xl` as a row of stars). */
+    size?: 'sm' | 'md' | 'lg' | 'xl' | 'display';
     /** Colour of a filled star: the primary action colour, or the app's accent. */
     tone?: 'primary' | 'accent';
     /** Shows a score: one image with one name, and stars can be partly filled. */
@@ -567,6 +947,10 @@ export interface RatingProps
     clearable?: boolean;
     disabled?: boolean;
     name?: string;
+    /** A read-only score: one star and the number; implies `readonly`. */
+    compact?: boolean;
+    /** An empty star: a hollow `outline` (default) or a `soft` fill. */
+    empty?: 'outline' | 'soft';
     /** On by default when `readonly`. */
     showValue?: boolean;
     formatValue?: (value: number) => string;
@@ -593,6 +977,8 @@ export interface SegmentedControlProps
     /** Equal-width segments that fill the row. */
     fullWidth?: boolean;
     name?: string;
+    /** Look of the selected segment: a card-coloured thumb (`neutral`, default) or the solid primary fill. */
+    tone?: 'neutral' | 'primary';
     disabled?: boolean;
     onchange?: (value: string) => void;
 }
@@ -616,6 +1002,8 @@ export interface FloatingActionButtonProps extends Omit<HTMLAttributes<HTMLEleme
 export interface StickyActionBarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'style'> {
     /** Accessible name. With it the bar is a group. */
     label?: string;
+    /** When the bar shows the glass and the hairline: `auto` follows the scroll position, `always`, `never`. Default `auto`. */
+    scrollEdge?: 'auto' | 'always' | 'never';
     class?: string;
     /** Added after the offset and margin the bar sets while the keyboard is up. */
     style?: string;
@@ -634,6 +1022,10 @@ export interface BottomSheetProps
     snapPoints?: BottomSheetSnap[];
     /** The snap point the sheet is at. Bindable. */
     snap?: BottomSheetSnap;
+    /** As tall as the content, up to half the screen; one resting height, the grip only drags. */
+    fit?: boolean;
+    /** With `fit`: the tallest the sheet grows before its content scrolls. */
+    fitMax?: 'half' | 'full';
     /** Render the overlay in `document.body`; `false` renders in place. */
     portal?: boolean;
     /** When false, Escape, the backdrop, the close button and a swipe down do not close it. */
@@ -689,6 +1081,16 @@ export interface DateFieldProps
     size?: SizeVariant;
     /** Extra classes for the `<input>`. */
     class?: string;
+    /** Language of the field, as a BCP 47 tag or a list of them. With it the field shows the value in that language and opens the library's own picker; without it, the native input. */
+    locale?: string | string[];
+    /** With `locale`: how the value is shown, as options of `Intl.DateTimeFormat`. */
+    format?: Intl.DateTimeFormatOptions;
+    /** With `locale`: shown in the placeholder colour while the field is empty. */
+    placeholder?: string;
+    /** With `locale`: `library` (default) opens the library's picker in a sheet; `native` opens the platform's. */
+    picker?: 'library' | 'native';
+    /** With `locale`: the words the field says; replace any of them to translate. */
+    strings?: Partial<{ clear: string; chooseDate: string }>;
 }
 
 // TimeField component props
@@ -724,6 +1126,18 @@ export interface TimeFieldProps
     size?: SizeVariant;
     /** Extra classes for the `<input>`. */
     class?: string;
+    /** Language of the field, as a BCP 47 tag or a list of them. With it the field shows the value in that language and opens the library's own picker; without it, the native input. */
+    locale?: string | string[];
+    /** With `locale`: how the value is shown, as options of `Intl.DateTimeFormat`. */
+    format?: Intl.DateTimeFormatOptions;
+    /** With `locale`: shown in the placeholder colour while the field is empty. */
+    placeholder?: string;
+    /** With `locale`: `library` (default) opens the library's picker in a sheet; `native` opens the platform's. */
+    picker?: 'library' | 'native';
+    /** With `locale`: the words the field says; replace any of them to translate. */
+    strings?: Partial<{ clear: string; done: string; hours: string; minutes: string; chosenTime: string; chooseTime: string }>;
+    /** With `locale`, while the field is empty: the time the columns stand at when the sheet opens, as `HH:mm`. Not chosen; `value` stays empty. Left out: now, on the step. */
+    openAt?: string;
 }
 
 // Calendar component props
@@ -777,6 +1191,10 @@ export interface PhotoGridProps
     onselect?: (detail: PhotoGridSelectDetail) => void;
     /** Puts an "Add photo" tile first and is called when it is pressed. */
     onadd?: () => void;
+    /** Called once when a thumbnail cannot be loaded, so the page can answer with a new address. */
+    onloaderror?: (photo: Photo, index: number) => void;
+    /** Puts a "Try again" button on each photo whose `status` is `error` and is called when it is pressed. */
+    onretry?: (photo: Photo, index: number) => void;
     /** Overrides for the built-in strings. */
     strings?: Partial<PhotoGridStrings>;
     /** Extra classes for the host element. */
@@ -797,6 +1215,10 @@ export interface PhotoViewerProps extends Omit<HTMLAttributes<HTMLDivElement>, '
     portal?: boolean;
     /** Fired when the viewer closes itself, with what the user did. */
     onclose?: (detail: { reason: PhotoViewerCloseReason }) => void;
+    /** Called once when a full image cannot be loaded, so the page can answer with a new address. */
+    onloaderror?: (photo: Photo, index: number) => void;
+    /** Called when "Try again" is pressed, before the image is asked for again; a returned promise is waited for. */
+    onretry?: (photo: Photo, index: number) => void | Promise<void>;
     /** Accessible name of the dialog. */
     label?: string;
     /** Overrides for the built-in strings. */
@@ -841,6 +1263,8 @@ export interface AvatarProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'clas
     alt?: string;
     /** Language the initials are upper-cased in. The page's own by default. */
     locale?: string;
+    /** The picture drawn inside the circle (an inline SVG), in place of `src` and the initials. */
+    children?: Snippet;
     class?: string;
 }
 
@@ -861,25 +1285,133 @@ export interface AvatarGroupProps extends Omit<HTMLAttributes<HTMLUListElement>,
     class?: string;
 }
 
+// LineChart component props
+export interface LineChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** The lines: a `name` and one value per x label (`null` leaves a gap). */
+    series: ChartSeries[];
+    /** The labels along the x axis, one per point. */
+    xLabels?: string[];
+    /** The bottom of the y axis. Without it, the lowest value rounded down to a tick. */
+    yMin?: number;
+    /** The top of the y axis. Without it, the highest value rounded up to a tick. */
+    yMax?: number;
+    /** `number` (default), `percent` (72 is "72 %"), or a function. */
+    yFormat?: ChartFormat;
+    /** Height of the drawing in px. */
+    height?: number;
+    /** The caption, and what the chart is called. */
+    label: string;
+    labelHidden?: boolean;
+    /** The key under the plot. Without it, shown when there is more than one series. */
+    legend?: boolean;
+    /** A marker on every point, a different shape per series. */
+    markers?: boolean;
+    /** Shows the data table under the chart. */
+    showTable?: boolean;
+    /** The heading of the table's first column. */
+    xTitle?: string;
+    locale?: string;
+    class?: string;
+    /** Stands the chart on a panel of the thick material (frosted glass). Off by default. */
+    glass?: boolean;
+}
+
+// BarChart component props
+export interface BarChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** The bars, in order. */
+    data: ChartDatum[];
+    /** The colour of the bars. Without it, the first series colour. */
+    color?: ChartColor;
+    /** The top of the value axis. */
+    yMax?: number;
+    /** `number` (default), `percent` (72 is "72 %"), or a function. */
+    yFormat?: ChartFormat;
+    /** Height of the drawing in px. */
+    height?: number;
+    /** The caption, and what the chart is called. */
+    label: string;
+    labelHidden?: boolean;
+    /** Writes each value over its bar. */
+    showValues?: boolean;
+    /** Shows the data table under the chart. */
+    showTable?: boolean;
+    categoryTitle?: string;
+    valueTitle?: string;
+    locale?: string;
+    class?: string;
+    /** Stands the chart on a panel of the thick material (frosted glass). Off by default. */
+    glass?: boolean;
+}
+
+// PieChart component props
+export interface PieChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
+    /** The slices, in order, clockwise from twelve o'clock. */
+    data: ChartDatum[];
+    /** A ring, not a full disc. */
+    donut?: boolean;
+    /** `number` (default), `percent` (72 is "72 %"), or a function. */
+    format?: ChartFormat;
+    /** The widest the drawing gets, in px. */
+    size?: number;
+    /** The caption, and what the chart is called. */
+    label: string;
+    labelHidden?: boolean;
+    /** The key beside the drawing: each slice's label, value and share. */
+    legend?: boolean;
+    /** Shows the data table under the chart. */
+    showTable?: boolean;
+    categoryTitle?: string;
+    valueTitle?: string;
+    shareTitle?: string;
+    locale?: string;
+    class?: string;
+    /** What stands in the middle of the ring (`donut`): the total, or the one share that matters. */
+    center?: Snippet;
+    /** Stands the chart on a panel of the thick material (frosted glass). Off by default. */
+    glass?: boolean;
+}
+
+// Sparkline component props
+export interface SparklineProps extends Omit<SVGAttributes<SVGSVGElement>, 'class' | 'points' | 'min' | 'max' | 'color'> {
+    /** The values, in order. `null` leaves a gap. */
+    points: Array<number | null>;
+    /** What the image is called. Without it the line is decoration. */
+    label?: string;
+    /** A theme colour by name or any CSS colour. */
+    color?: ChartColor;
+    min?: number;
+    max?: number;
+    class?: string;
+}
+
 // Component type definitions
 export type Button = ZabiComponent<ButtonProps, ButtonEvents>;
 export type Heading = ZabiComponent<HeadingProps>;
+export type Block = ZabiComponent<BlockProps>;
 export type Card = ZabiComponent<CardProps>;
 export type Input = ZabiComponent<InputProps, InputEvents>;
 export type Checkbox = ZabiComponent<CheckboxProps, CheckboxEvents>;
 export type Select = ZabiComponent<SelectProps, SelectEvents>;
+export type PickerField = ZabiComponent<PickerFieldProps>;
 export type Textarea = ZabiComponent<TextareaProps, TextareaEvents>;
 export type Modal = ZabiComponent<ModalProps, ModalEvents>;
 export type Alert = ZabiComponent<AlertProps>;
 export type Badge = ZabiComponent<BadgeProps>;
+export type Stat = ZabiComponent<StatProps>;
+export type SpeechBubble = ZabiComponent<SpeechBubbleProps>;
+export type Chip = ZabiComponent<ChipProps>;
+export type ChipGroup = ZabiComponent<ChipGroupProps>;
 export type Progress = ZabiComponent<ProgressProps>;
 export type Skeleton = ZabiComponent<SkeletonProps>;
+export type SkeletonGroup = ZabiComponent<SkeletonGroupProps>;
 export type Toggle = ZabiComponent<ToggleProps, ToggleEvents>;
 export type Tooltip = ZabiComponent<TooltipProps>;
 export type BottomTabBar = ZabiComponent<BottomTabBarProps>;
 export type AppBar = ZabiComponent<AppBarProps>;
 export type AppShell = ZabiComponent<AppShellProps>;
+export type AppNavigation = ZabiComponent<AppNavigationProps>;
 export type Rating = ZabiComponent<RatingProps>;
+export type CodeField = ZabiComponent<CodeFieldProps>;
 export type SegmentedControl = ZabiComponent<SegmentedControlProps>;
 export type FloatingActionButton = ZabiComponent<FloatingActionButtonProps>;
 export type StickyActionBar = ZabiComponent<StickyActionBarProps>;
@@ -891,4 +1423,8 @@ export type PhotoGrid = ZabiComponent<PhotoGridProps>;
 export type PhotoViewer = ZabiComponent<PhotoViewerProps>;
 export type Avatar = ZabiComponent<AvatarProps>;
 export type AvatarGroup = ZabiComponent<AvatarGroupProps>;
+export type LineChart = ZabiComponent<LineChartProps>;
+export type BarChart = ZabiComponent<BarChartProps>;
+export type PieChart = ZabiComponent<PieChartProps>;
+export type Sparkline = ZabiComponent<SparklineProps>;
 export type Stepper = ZabiComponent<StepperProps>;

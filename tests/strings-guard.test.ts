@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/svelte";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -15,13 +17,17 @@ import {
 } from "../src/components/util/sidebar";
 import { getThemeMode, setThemeMode } from "../src/components/util/theme-mode";
 import { DEFAULT_SELECT_STRINGS } from "../src/components/util/select";
-import { DEFAULT_TOP_NAVBAR_STRINGS } from "../src/components/util/top-navbar";
+import { DEFAULT_TOP_NAVBAR_STRINGS, type TopNavbarStrings } from "../src/components/util/top-navbar";
 import { DEFAULT_CALENDAR_STRINGS } from "../src/components/util/calendar";
 import { MEDIA_GRID_STRINGS } from "../src/components/util/media-grid";
 import { PHOTO_GRID_STRINGS, PHOTO_VIEWER_STRINGS } from "../src/components/util/photo";
+import { PROGRESS_STRINGS } from "../src/components/util/progress";
 import { RATING_STRINGS } from "../src/components/util/rating";
+import { DATE_FIELD_STRINGS, TIME_FIELD_STRINGS } from "../src/components/util/temporal-field";
 import { SORTABLE_LIST_STRINGS } from "../src/components/util/sortable-list";
 import { DEFAULT_TOASTER_STRINGS } from "../src/components/util/toaster";
+import { DEFAULT_CODE_FIELD_STRINGS } from "../src/components/util/code-field";
+import { DEFAULT_SKELETON_STRINGS } from "../src/components/util/skeleton";
 import { STEPPER_STRINGS } from "../src/components/util/stepper";
 import { DEFAULT_AVATAR_GROUP_STRINGS } from "../src/components/util/avatar";
 import { DEFAULT_PULL_TO_REFRESH_STRINGS } from "../src/components/util/pull-to-refresh";
@@ -216,9 +222,14 @@ describe("the defaults are today's English", () => {
     });
 
     it("the strings objects, word for word", () => {
+        // A complete object written before `menuTitle` and `themeHeading` existed still type-checks.
+        const complete: TopNavbarStrings = { openMenu: "a", closeMenu: "b", opensInNewTab: "c" };
+        expect(complete.openMenu).toBe("a");
         expect(DEFAULT_TOP_NAVBAR_STRINGS).toEqual({
             openMenu: "Open menu",
             closeMenu: "Close menu",
+            menuTitle: "Menu",
+            themeHeading: "Theme",
             opensInNewTab: "(opens in a new tab)",
         });
         expect(DEFAULT_COLOR_PICKER_STRINGS).toEqual({
@@ -451,6 +462,8 @@ const ENTRY_DEFAULTS: Record<keyof ZabiStrings, Words> = {
     alert: DEFAULT_ALERT_TEXTS as unknown as Words,
     avatarGroup: DEFAULT_AVATAR_GROUP_STRINGS as unknown as Words,
     codeBlock: DEFAULT_CODE_BLOCK_TEXTS as unknown as Words,
+    codeField: DEFAULT_CODE_FIELD_STRINGS as unknown as Words,
+    skeleton: DEFAULT_SKELETON_STRINGS as unknown as Words,
     imageUpload: DEFAULT_IMAGE_UPLOAD_TEXTS as unknown as Words,
     pullToRefresh: DEFAULT_PULL_TO_REFRESH_STRINGS as unknown as Words,
     swipeableListItem: DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS as unknown as Words,
@@ -464,6 +477,9 @@ const ENTRY_DEFAULTS: Record<keyof ZabiStrings, Words> = {
     photoGrid: PHOTO_GRID_STRINGS as unknown as Words,
     photoViewer: PHOTO_VIEWER_STRINGS as unknown as Words,
     propsTable: DEFAULT_PROPS_TABLE_STRINGS as unknown as Words,
+    dateField: DATE_FIELD_STRINGS as unknown as Words,
+    timeField: TIME_FIELD_STRINGS as unknown as Words,
+    progress: PROGRESS_STRINGS as unknown as Words,
     rating: RATING_STRINGS as unknown as Words,
     toaster: DEFAULT_TOASTER_STRINGS as unknown as Words,
     select: DEFAULT_SELECT_STRINGS as unknown as Words,
@@ -549,12 +565,16 @@ const PROVIDED: {
     // Mounted under the provider, with one toast on screen.
     { kind: "Toaster", entries: ["toaster"] },
     { kind: "Rating", entries: ["rating"] },
+    { kind: "DateField", entries: ["dateField"] },
+    { kind: "TimeField", entries: ["timeField"] },
     { kind: "AvatarGroup", entries: ["avatarGroup"] },
     { kind: "SwipeableListItem", entries: ["swipeableListItem"] },
     { kind: "PullToRefresh", entries: ["pullToRefresh"] },
     { kind: "Toast", entries: ["toast"] },
     { kind: "Alert", entries: ["alert"] },
     { kind: "CodeBlock", entries: ["codeBlock"] },
+    { kind: "CodeField", entries: ["codeField"] },
+    { kind: "Skeleton", entries: ["skeleton"] },
     { kind: "ImageUpload", entries: ["imageUpload"] },
     { kind: "UnsavedChangesBar", entries: ["unsavedChangesBar"] },
     // Select's own entry names the sheet's buttons too, and wins over `common`: see the test for that below.
@@ -586,6 +606,16 @@ async function revealProvided(kind: string) {
     }
     if (kind === "Toaster") {
         await waitFor(() => expect(document.querySelector("[data-toast-id]")).not.toBeNull());
+        return;
+    }
+    if (kind === "DateField" || kind === "TimeField") {
+        const button = await waitFor(() => {
+            const found = document.querySelector<HTMLElement>('button[aria-haspopup="dialog"]');
+            expect(found).not.toBeNull();
+            return found!;
+        });
+        await fireEvent.click(button);
+        await waitFor(() => expect(document.querySelector('[role="dialog"]')).not.toBeNull());
         return;
     }
     if (
@@ -646,6 +676,14 @@ describe.each(PROVIDED)("$kind under a ZabiStringsProvider", ({ kind, entries, c
 });
 
 describe("ZabiStringsProvider", () => {
+    it("every entry of ZabiStrings has its defaults in this guard, so a new one cannot be left out", () => {
+        const source = readFileSync(resolve(__dirname, "../src/components/util/zabi-strings.ts"), "utf8");
+        const body = source.slice(source.indexOf("export interface ZabiStrings {"));
+        const declared = [...body.slice(0, body.indexOf("\n}")).matchAll(/^ {4}(\w+)\?: Partial</gm)].map((m) => m[1]);
+        expect(declared.length).toBeGreaterThan(30);
+        expect(Object.keys(ENTRY_DEFAULTS).sort()).toEqual(declared.sort());
+    });
+
     it("the common words are today's English, word for word", () => {
         expect(DEFAULT_ZABI_COMMON_STRINGS).toEqual({
             close: "Close",

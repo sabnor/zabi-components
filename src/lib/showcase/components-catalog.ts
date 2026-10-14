@@ -6,7 +6,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Button",
                 category: "atoms",
                 description:
-                    "Seven variants from primary to link, with accent for the app's second colour; three sizes, loading and disabled states.",
+                    "Nine variants, from primary to link, including tonal and text for quieter actions; four sizes up to 56px, with loading and disabled states.",
                 props: [
                     {
                         name: "variant",
@@ -14,7 +14,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "primary",
                         description:
-                            "primary | secondary | danger | ghost | outline | link | accent. accent is the fill --color-accent with the label --color-on-accent.",
+                            "primary | secondary | danger | ghost | outline | link | accent | tonal | text. accent is the fill --color-accent with the label --color-on-accent. primary, accent and danger carry a soft gradient and top highlight. tonal is a brand-tinted fill with a brand label, for secondary actions and chosen answers. outline has a 3:1 edge. text is a standalone text action in the link colour with no underline; link is the underlined one for sentences. Corner and label weight follow --zabi-button-radius and --zabi-button-font-weight.",
                     },
                     {
                         name: "size",
@@ -22,7 +22,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "md",
                         description:
-                            "sm, md or lg: 32, 40 or 48px tall. On a touch screen sm and md are 44px tall, so a row of controls still lines up. Use lg for the main action on a phone.",
+                            "sm, md, lg or xl: 32, 40, 48 or 56px tall (xl is Button only). On a touch screen sm and md are 44px tall, so a row of controls still lines up. Use lg or xl for the main action on a phone.",
                     },
                     {
                         name: "disabled",
@@ -146,6 +146,29 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "",
                         description: "Accessible label for icon-only buttons",
+                    },
+                    {
+                        name: "count",
+                        type: "number",
+                        required: false,
+                        description:
+                            "A count drawn on the button in the attention colour, inside its own box, so a bar or an overflow ancestor cannot cut it. Nothing for 0, a negative number or undefined; hidden while loading. At xs and sm a dot is drawn instead of the number. Needs label: the accessible name becomes the label, a comma and countLabel(count).",
+                    },
+                    {
+                        name: "countLabel",
+                        type: "(count: number) => string",
+                        required: false,
+                        defaultValue: '"N new"',
+                        description:
+                            "What the count adds to the accessible name, after the label.",
+                    },
+                    {
+                        name: "countMax",
+                        type: "number",
+                        required: false,
+                        defaultValue: "99",
+                        description:
+                            "Above this the badge reads 99+. The accessible name keeps the real count.",
                     },
                     {
                         name: "href",
@@ -293,9 +316,9 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         name: "revealable",
                         type: "boolean",
                         required: false,
-                        defaultValue: "false",
+                        defaultValue: "true",
                         description:
-                            "With type password: adds a button at the end of the field that shows the password as text and hides it again. It keeps the caret, leaves autocomplete alone, and is a 44px target on a touch screen.",
+                            "With type password: a button at the end of the field that shows the password as text and hides it again. On by default; false leaves it out. It keeps the caret, leaves autocomplete alone, and is a 44px target on a touch screen.",
                     },
                     {
                         name: "revealLabel",
@@ -329,10 +352,223 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "CodeField",
+                category: "atoms",
+                description:
+                    "A field for a verification code: one real input under drawn boxes, so autofill, paste and the numeric keyboard work and the form posts by name.",
+                props: [
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        defaultValue: "''",
+                        description: "The code typed so far. Bindable.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        defaultValue: "''",
+                        description: "The name the code is posted under in a form, with scripts on or off.",
+                    },
+                    {
+                        name: "length",
+                        type: "number",
+                        required: false,
+                        defaultValue: "6",
+                        description: "Places in the code: a whole number from 1 to 12.",
+                    },
+                    {
+                        name: "mode",
+                        type: "'numeric' | 'alphanumeric'",
+                        required: false,
+                        defaultValue: "numeric",
+                        description: "numeric takes digits only and opens the numeric keyboard; alphanumeric also takes letters.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description: "Box size. sm is 44px tall, md 48px, lg 56px; the digit never gets wider than its box at large text.",
+                    },
+                    {
+                        name: "groups",
+                        type: "number | number[]",
+                        required: false,
+                        description: "Draws the boxes in groups with a wider gap: a number is each group's size (4 makes 4 and 4 of 8), a list gives each group's size. Only the drawing changes; one input, one value, and pasted spaces or dashes are dropped. A row that cannot fit wraps between groups.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description: "Names the field. Defaults to the strings provider's codeField.label, then 'Verification code'.",
+                    },
+                    {
+                        name: "labelHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Keeps the label for assistive technology and takes it off the screen.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: "''",
+                        description: "Help text under the field, read out with it.",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: "''",
+                        description: "An error under the field. It marks the field invalid and is announced; it wins over variant and message.",
+                    },
+                    {
+                        name: "variant",
+                        type: "SemanticVariant",
+                        required: false,
+                        defaultValue: "default",
+                        description: "Colours the boxes' edge for success, warning or error; message shows with a non-default variant.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        defaultValue: "''",
+                        description: "Status text under the field, shown with a success, warning or error variant.",
+                    },
+                    {
+                        name: "required",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Marks the input required.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Disables the input.",
+                    },
+                    {
+                        name: "readonly",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Shows the code without letting it be changed.",
+                    },
+                    {
+                        name: "oncomplete",
+                        type: "(value: string) => void",
+                        required: false,
+                        description: "Called with the code when the last place is filled by typing, pasting or autofill. It does not submit anything.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<CodeFieldStrings>",
+                        required: false,
+                        defaultValue: "{}",
+                        description: "Overrides for the built-in strings: label, description.",
+                    },
+                ],
+                variants: ["default", "success", "warning", "error"],
+                examples: [
+                    {
+                        title: "A login code",
+                        description: "Six digits, posted as code; autofill and paste fill it",
+                        code: '&lt;form method="POST"&gt;\n  &lt;CodeField name="code" required /&gt;\n  &lt;Button type="submit"&gt;Log in&lt;/Button&gt;\n&lt;/form&gt;',
+                    },
+                    {
+                        title: "With an error",
+                        description: "The error is tied to the input and announced",
+                        code: '&lt;CodeField name="code" error="That code is not right." /&gt;',
+                    },
+                    {
+                        title: "Eight digits in two groups",
+                        description: "Read as 1234 5678; the value and the post stay 12345678",
+                        code: '&lt;CodeField name="code" length={8} groups={4} /&gt;',
+                    },
+                    {
+                        title: "Four letters and digits",
+                        description: "A different length and letters allowed; oncomplete runs when the last place is in",
+                        code: '&lt;CodeField length={4} mode="alphanumeric" oncomplete={(code) =&gt; check(code)} /&gt;',
+                    },
+                ],
+            },
+            {
+                name: "Block",
+                category: "atoms",
+                description:
+                    "A full-width, square-cornered colour section, one colour per block. It does not break out of a padded parent: put it outside, or pass -mx-4.",
+                props: [
+                    {
+                        name: "tone",
+                        type: "SurfaceTone",
+                        required: false,
+                        defaultValue: "neutral",
+                        description:
+                            "neutral (the card surface), tint, brand or accent.",
+                    },
+                    {
+                        name: "fill",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A fill of your own, any CSS colour (var(--group-colour)). Wins over tone. The library cannot check the contrast of fill and onFill: you must.",
+                    },
+                    {
+                        name: "onFill",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The label colour on fill, any CSS colour. Without it the label is the block's own text colour.",
+                    },
+                    {
+                        name: "padding",
+                        type: '"none" | "sm" | "md" | "lg"',
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Inner space: sm 16 and 16, md 16 inline and 24 block, lg 24 and 32.",
+                    },
+                    {
+                        name: "as",
+                        type: '"div" | "section" | "header" | "footer" | "article" | "aside"',
+                        required: false,
+                        defaultValue: "div",
+                        description:
+                            "The element. A section needs a name: aria-label or aria-labelledby.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Extra classes, such as -mx-4 to reach the edges of a padded parent.",
+                    },
+                ],
+                variants: ["neutral", "tint", "brand", "accent"],
+                examples: [
+                    {
+                        title: "Two blocks in a page",
+                        description:
+                            "A brand block followed by a tint block, one colour each.",
+                        code: `<Block as="section" tone="brand" aria-labelledby="offer">
+  <Heading id="offer" level={2} text="Join the club" />
+  <Button variant="outline" href="/join" text="Join" />
+</Block>
+<Block tone="tint">...</Block>`,
+                    },
+                ],
+            },
+            {
                 name: "Card",
                 category: "atoms",
                 description:
-                    "Container with four surface treatments, a padding step, and an optional clickable mode.",
+                    "Container with four surface treatments, a tone or a fill of your own, a padding step, and a clickable or link mode.",
                 props: [
                     {
                         name: "variant",
@@ -349,6 +585,87 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "md",
                         description:
                             "Padding step. The corner radius does not change with it.",
+                    },
+                    {
+                        name: "tone",
+                        type: "SurfaceTone",
+                        required: false,
+                        defaultValue: "neutral",
+                        description:
+                            "Fill: neutral (the card surface), tint, brand or accent. A filled card has no border; brand and accent re-point the text, links, Button, Badge and Rating inside to the fill's label colour.",
+                    },
+                    {
+                        name: "fill",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A fill of your own, any CSS colour. Wins over tone. Set onFill beside it; the library cannot check their contrast, you must.",
+                    },
+                    {
+                        name: "onFill",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The label colour on fill, any CSS colour.",
+                    },
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The card itself is a link (an a element): the whole card, with the focus ring on its edge and a pressed state. It works without scripts. A link card must not contain a link, a button or a field.",
+                    },
+                    {
+                        name: "target",
+                        type: "string",
+                        required: false,
+                        description: "With href: where the link opens.",
+                    },
+                    {
+                        name: "rel",
+                        type: "string",
+                        required: false,
+                        description: "With href: the link's relationship, such as noopener.",
+                    },
+                    {
+                        name: "type",
+                        type: '"submit" | "button" | "reset"',
+                        required: false,
+                        description:
+                            "The card itself is a <button>, drawn and pressed as a link card is, with the 44px minimum. submit posts the form around it without scripts. Ignored with href. Like a link card it must not contain other interactive elements.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        description: "With type: the name the button submits under.",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        description: "With type: what the button submits.",
+                    },
+                    {
+                        name: "form",
+                        type: "string",
+                        required: false,
+                        description: "With type: the id of the form the button belongs to, when it is not inside one.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "With type: the card cannot be pressed, is dimmed and is skipped by the keyboard.",
+                    },
+                    {
+                        name: "loading",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "With type: the card's action is on its way, as Button's and Chip's loading. aria-busy and aria-disabled (not disabled), the press swallowed (nothing is submitted and onclick does not run), the pressed look held, size and Tab stop kept. No spinner. Ignored by a link card and a plain card.",
                     },
                     {
                         name: "fullWidth",
@@ -381,11 +698,27 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
                 examples: [
                     {
-                        title: "Basic Card",
-                        description: "Simple card with title and content",
-                        code: `<Card title="Card Title">
-  <p>Card content goes here</p>
-</Card>`,
+                        title: "Card variants, link and tones",
+                        description:
+                            "The three surface treatments, a card that is one link, and the tint, brand and accent fills.",
+                        code: `<Card>
+  <CardHeader title="Default" />
+  <CardContent><p>A hairline edge and no shadow.</p></CardContent>
+</Card>
+
+<Card variant="elevated">…</Card>
+<Card variant="flat">…</Card>
+
+<!-- The whole card is one link -->
+<Card href="/pubs/42">
+  <CardHeader title="Link" />
+  <CardContent><p>Hover, pressed and focus states.</p></CardContent>
+</Card>
+
+<!-- Fills: text and controls inside take the fill's label colour -->
+<Card tone="tint">…</Card>
+<Card tone="brand">…</Card>
+<Card tone="accent">…</Card>`,
                     },
                 ],
             },
@@ -472,7 +805,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: true,
                         defaultValue: "[]",
                         description:
-                            "Array of ListItemData: id, label, optional description, href, icon, avatar, avatarAlt, disabled, link target / rel",
+                            "Array of ListItemData: id, label, optional description, href, icon, avatar, avatarAlt, avatarPicture (a snippet: an inline drawing in the round, wins over avatar), disabled, link target / rel",
                     },
                     {
                         name: "ariaLabel",
@@ -554,7 +887,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Badge",
                 category: "atoms",
                 description:
-                    "Small status label in the semantic tones, plus neutral, energetic and the app's accent.",
+                    "Small status label in the semantic tones, plus neutral, energetic, the app's accent and the brand colour. No outline unless bordered.",
                 props: [
                     {
                         name: "text",
@@ -578,8 +911,16 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "20, 24 or 28px tall for a label on one line. A label that does not fit wraps and the badge grows, keeping the corner of one line.",
                     },
+                    {
+                        name: "bordered",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the family's edge on a subtle badge (the 8.1 look). Solid badges never have one.",
+                    },
                 ],
-                variants: ["default", "success", "warning", "error", "info", "neutral", "energetic", "accent"],
+                variants: ["default", "success", "warning", "error", "info", "neutral", "energetic", "accent", "brand"],
                 examples: [
                     {
                         title: "Basic Badge",
@@ -590,6 +931,304 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Variants",
                         description: "Different badge variants",
                         code: '&lt;Badge variant="success" text="Active" /&gt;\n&lt;Badge variant="warning" text="Pending" /&gt;\n&lt;Badge variant="error" text="Error" /&gt;',
+                    },
+                ],
+            },
+            {
+                name: "Stat",
+                category: "atoms",
+                description:
+                    "A figure with a label and an optional unit, in the display face, in three sizes.",
+                props: [
+                    {
+                        name: "value",
+                        type: "string | number",
+                        required: true,
+                        description: "The figure, shown as given. The app formats numbers for its locale.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description: "Text under the figure (or above it with labelPosition).",
+                    },
+                    {
+                        name: "unit",
+                        type: "string",
+                        required: false,
+                        description: "Drawn after the value, smaller, on the same baseline: value 4 and unit av 19.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description: "The value at 24, 36 or 48px.",
+                    },
+                    {
+                        name: "align",
+                        type: "'start' | 'center' | 'end'",
+                        required: false,
+                        defaultValue: "start",
+                        description: "Where the figure and label sit in the width they are given.",
+                    },
+                    {
+                        name: "labelPosition",
+                        type: "'below' | 'above'",
+                        required: false,
+                        defaultValue: "below",
+                        description: "The label follows the figure in reading order, or comes first.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description: "Replaces value for a figure that needs markup, such as a superscript.",
+                    },
+                ],
+                variants: ["sm", "md", "lg", "start", "center", "end", "below", "above"],
+                examples: [
+                    {
+                        title: "Value, unit and label",
+                        description: "A score with its total",
+                        code: '&lt;Stat value="4" unit="av 19" label="pubar besökta" size="lg" /&gt;',
+                    },
+                ],
+            },
+            {
+                name: "SpeechBubble",
+                category: "atoms",
+                description:
+                    "A quotation in a bubble with a drawn tail: a figure with a caption and a blockquote, themed by four custom properties.",
+                props: [
+                    {
+                        name: "label",
+                        type: "string | Snippet",
+                        required: false,
+                        description: "The caption that names the quotation, rendered as the figcaption and read before it.",
+                    },
+                    {
+                        name: "labelHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Keeps the caption for assistive technology and takes it off the screen.",
+                    },
+                    {
+                        name: "side",
+                        type: "'end' | 'start'",
+                        required: false,
+                        defaultValue: "end",
+                        description: "The side the tail is on. Follows the text direction.",
+                    },
+                    {
+                        name: "tone",
+                        type: "'ink' | 'paper'",
+                        required: false,
+                        defaultValue: "ink",
+                        description:
+                            "ink: the headline colour as fill and the page colour as text. paper: the two swapped, for a filled block. --zabi-bubble-fill and --zabi-bubble-text win over both.",
+                    },
+                    {
+                        name: "decoration",
+                        type: "Snippet",
+                        required: false,
+                        description: "A drawing on the top corner of the tail's side, hidden from assistive technology.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description: "The quoted text: real, selectable text in the blockquote.",
+                    },
+                ],
+                variants: ["end", "start", "ink", "paper"],
+                examples: [
+                    {
+                        title: "A line to say",
+                        description: "The label is read first, then the quotation",
+                        code: '&lt;SpeechBubble label="Säg så här i luren"&gt;\n  &lt;p&gt;Hej, vi vill boka bord för quiz på onsdag.&lt;/p&gt;\n&lt;/SpeechBubble&gt;',
+                    },
+                    {
+                        title: "A hand-cut shape",
+                        description: "Radius, tilt and colours are custom properties on any ancestor",
+                        code: '&lt;div style="--zabi-bubble-radius: 1.75rem 2.25rem 2rem 2.5rem / 2.25rem 1.75rem 2.5rem 1.9rem; --zabi-bubble-tilt: -1.2deg"&gt;\n  &lt;SpeechBubble label="Säg så här i luren" side="start"&gt;...&lt;/SpeechBubble&gt;\n&lt;/div&gt;',
+                    },
+                ],
+            },
+            {
+                name: "Sparkline",
+                category: "atoms",
+                description:
+                    "A small line with no axes, for a trend beside a figure or in a table cell. Plain SVG, named by its label.",
+                props: [
+                    {
+                        name: "points",
+                        type: "(number | null)[]",
+                        required: true,
+                        description:
+                            "The values, in order. null leaves a gap.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "What the image is called. Without it the line is decoration, hidden from assistive technology.",
+                    },
+                    {
+                        name: "color",
+                        type: "ChartColor",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "primary, accent, success, warning, error, info, neutral, or any CSS colour. Without it, the first series colour.",
+                    },
+                    {
+                        name: "min",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The bottom of the scale. Without it, the lowest value.",
+                    },
+                    {
+                        name: "max",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The top of the scale. Without it, the highest value.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Beside a figure",
+                        description: "5rem by 1.5rem unless class says otherwise",
+                        code: "<Sparkline points={[3, 5, 4, 7, 6, 9]} label=\"Poäng, sex senaste: stigande\" />",
+                    },
+                    {
+                        title: "Sized and coloured",
+                        description: "The line stretches to the box and keeps its thickness",
+                        code: "<Sparkline points={values} label=\"Poäng, åtta senaste: stigande\" color=\"success\" class=\"h-8 w-full\" />",
+                    },
+                ],
+            },
+            {
+                name: "Chip",
+                category: "atoms",
+                description:
+                    "A pill for filtering and choosing: a link, a toggle button, a checkbox or a radio, with one tonal selected look.",
+                props: [
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Makes the chip a link. It works without scripts. A disabled link has no href and is aria-disabled.",
+                    },
+                    {
+                        name: "current",
+                        type: '"page" | "true" | "step" | "location" | "date" | "time"',
+                        required: false,
+                        defaultValue: '"true"',
+                        description: "With href: what aria-current says while the chip is selected.",
+                    },
+                    {
+                        name: "type",
+                        type: '"checkbox" | "radio" | "submit" | "button"',
+                        required: false,
+                        description:
+                            "checkbox or radio: a real input under the chip, which submits in a form without scripts. submit or button: a button that does not toggle; a press posts the form (submit, with name and value) or only calls onclick, and selected, which the app decides, is drawn as on a toggle and said with aria-pressed. Without a type, and without href, the chip is a toggle button (aria-pressed). Inside a ChipGroup with a type, the group's.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        description: "Name the input submits under. Inside a ChipGroup with a name, the group's.",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        description: "What the input submits, and what a ChipGroup's value holds when the chip is chosen.",
+                    },
+                    {
+                        name: "selected",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "The chip is chosen (bind:selected). One prop for checked, aria-pressed and aria-current. A toggle button or a checkbox chip turns off when pressed again; a radio never does.",
+                    },
+                    {
+                        name: "size",
+                        type: '"sm" | "md" | "lg"',
+                        required: false,
+                        defaultValue: '"md"',
+                        description:
+                            "28, 32 or 40px tall. On a coarse pointer the touch target reaches 44px; the box does not grow.",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        description: "An icon or an avatar before the label.",
+                    },
+                    {
+                        name: "checkmark",
+                        type: "boolean",
+                        required: false,
+                        description:
+                            "A check icon before the label while selected. On for a checkbox and a toggle button, off for a link and a radio.",
+                    },
+                    {
+                        name: "loading",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "A button chip (submit, button or toggle) while its action is on its way: aria-busy and aria-disabled, a spinner over the label, the press swallowed, the width kept and focus kept. Ignored by a link and by checkbox and radio chips.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Half transparent and out of reach.",
+                    },
+                    {
+                        name: "required",
+                        type: "boolean",
+                        required: false,
+                        description: "For an input chip: it must be chosen for the form to submit.",
+                    },
+                    {
+                        name: "form",
+                        type: "string",
+                        required: false,
+                        description: "The id of the form the chip belongs to.",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(selected: boolean) => void",
+                        required: false,
+                        description: "Called with the new selected when a person changes it.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Link chips",
+                        description: "Plain links that work before and without scripts",
+                        code: '&lt;Chip href="/pubs?filter=open" selected&gt;Open&lt;/Chip&gt;\n&lt;Chip href="/pubs?filter=all"&gt;All&lt;/Chip&gt;',
+                    },
+                    {
+                        title: "Toggle button",
+                        description: "Pressed or not",
+                        code: "&lt;Chip bind:selected&gt;Open now&lt;/Chip&gt;",
                     },
                 ],
             },
@@ -627,6 +1266,45 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "",
                         description: "Checkbox label",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Drawn inside the one label, between the box and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
+                    },
+                    {
+                        name: "variant",
+                        type: "'default' | 'success' | 'warning' | 'error'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "Status of the box. With a message it shows the text under it; error also marks the input invalid.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Status text under the box, shown with a success, warning or error variant. For neutral help, use hint.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Help text under the box, read out with it (aria-describedby).",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "An error under the box: announced as an alert and tied to the input. On a checkbox it also sets aria-invalid. It wins over variant and message.",
                     },
                     {
                         name: "name",
@@ -670,6 +1348,21 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "undefined",
                         description: "Alias for onChange",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A line under the label, inside it, so a tap on it ticks the box. Tied to the box with aria-describedby; not part of the name.",
+                    },
+                    {
+                        name: "controlPosition",
+                        type: "'start' | 'end'",
+                        required: false,
+                        defaultValue: "start",
+                        description:
+                            "Where the box sits in the row. end puts it after the leading, the label and the description, at the far edge; the row is still one label and fills the width it is given.",
                     },
                 ],
                 variants: [],
@@ -721,6 +1414,53 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Visible label text",
                     },
                     {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Drawn inside the one label, between the dot and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "A line under the label, tied to the radio with aria-describedby. The label names the radio; the description does not join the name.",
+                    },
+                    {
+                        name: "variant",
+                        type: "'default' | 'success' | 'warning' | 'error'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "Status of the radio. With a message it shows the text under it; error also marks the input invalid.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Status text under the radio, shown with a success, warning or error variant. For neutral help, use hint.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Help text under the radio, read out with it (aria-describedby).",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "An error under the radio: announced as an alert and tied to the input. On a checkbox it also sets aria-invalid. It wins over variant and message.",
+                    },
+                    {
                         name: "checked",
                         type: "boolean",
                         required: false,
@@ -756,6 +1496,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "undefined",
                         description: "Alias for onChange",
                     },
+                    {
+                        name: "controlPosition",
+                        type: "'start' | 'end'",
+                        required: false,
+                        defaultValue: "start",
+                        description:
+                            "Where the radio sits in the row. end puts it last, at the far edge; the row is still one label and fills the width it is given.",
+                    },
                 ],
                 variants: [],
                 examples: [
@@ -775,14 +1523,15 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Select",
                 category: "atoms",
                 description:
-                    "Dropdown with type-ahead search, scrollable options and validation states.",
+                    "Dropdown with type-ahead search and validation states. Fills its container; a width class narrows it, and it never outgrows it.",
                 props: [
                     {
                         name: "options",
                         type: "array",
                         required: true,
                         defaultValue: "[]",
-                        description: "Select options",
+                        description:
+                            "Select options: { value, label, disabled?, lang? }. lang is the label's language (BCP 47, \"en\") when it is not the page's, set on the option's row, on the trigger's text while it is chosen and on the native <option>.",
                     },
                     {
                         name: "value",
@@ -812,6 +1561,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "true",
                         description: "Enable search input",
+                    },
+                    {
+                        name: "sheetFit",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "In a sheet, a short list (up to six options) without a search field gets a sheet as tall as the list, not half the screen. false keeps the half-height sheet.",
                     },
                     {
                         name: "searchPlaceholder",
@@ -881,6 +1638,178 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Select with search and scrollable options list",
                         code: '&lt;Select label="Select a value" searchable={true} maxMenuHeight="50vh" options={options} /&gt;',
+                    },
+                ],
+            },
+            {
+                name: "PickerField",
+                category: "atoms",
+                description:
+                    "A field that looks like a Select and opens whatever the app gives it, such as its own sheet. One button named by its label and value.",
+                props: [
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The label above the field. It is part of the control's name.",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The text of what is chosen: display text, and the second half of the control's name. formValue is what a form sends.",
+                    },
+                    {
+                        name: "placeholder",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Shown in the placeholder colour while there is no value.",
+                    },
+                    {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "An icon or an avatar before the text.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Replaces the value text, for rich content. Give value too: it names the control.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "Height of the field: 32, 40 or 48px, as Select, Input and Button. 44px on a touch screen for sm and md.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Not pressable. A disabled link has no href and is aria-disabled.",
+                    },
+                    {
+                        name: "variant",
+                        type: "'default' | 'success' | 'warning' | 'error'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "The edge colour. A message shows under it in the other three.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Status text under the field, with a success, warning or error variant.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Help text under the field, read out with it.",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        description:
+                            "An error under the field, announced. A button has no aria-invalid, so the error is the edge colour and the described-by message.",
+                    },
+                    {
+                        name: "haspopup",
+                        type: "\"dialog\" | \"listbox\" | \"menu\" | \"true\"",
+                        required: false,
+                        defaultValue: "\"dialog\"",
+                        description:
+                            "What it opens: aria-haspopup. Not put on a link.",
+                    },
+                    {
+                        name: "expanded",
+                        type: "boolean",
+                        required: false,
+                        description:
+                            "Whether what it opens is open: aria-expanded, and the chevron turns. Not set unless given. Not put on a link.",
+                    },
+                    {
+                        name: "controls",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of what it opens: aria-controls.",
+                    },
+                    {
+                        name: "href",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Makes the control a link, which works without scripts: a page that does the picking. With scripts, onclick may call preventDefault() and open a sheet instead.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        description:
+                            "With formValue, a hidden input submits the choice under this name. Without a name there is no hidden input.",
+                    },
+                    {
+                        name: "formValue",
+                        type: "string",
+                        required: false,
+                        description:
+                            "What the form submits, such as an id.",
+                    },
+                    {
+                        name: "element",
+                        type: "HTMLButtonElement | HTMLAnchorElement | null",
+                        required: false,
+                        description:
+                            "Bindable. The inner button or link: focus it when your sheet closes.",
+                    },
+                    {
+                        name: "onclick",
+                        type: "(event: MouseEvent) => void",
+                        required: false,
+                        description:
+                            "Opens your sheet. The component opens nothing itself.",
+                    },
+                    {
+                        name: "aria-describedby",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Ids of other elements that describe the field. The hint and the message are added after them.",
+                    },
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of the control. Generated when omitted.",
+                    },
+                ],
+                variants: ["default", "success", "warning", "error"],
+                examples: [
+                    {
+                        title: "Opens the app's sheet",
+                        description: "A field that shows the chosen pub and opens a BottomSheet",
+                        code: '&lt;PickerField label="Pub" value="The Bishops Arms" expanded={open} onclick={() => (open = true)} /&gt;',
+                    },
+                    {
+                        title: "Link without scripts",
+                        description: "A link to a page that does the picking",
+                        code: '&lt;PickerField label="Pub" placeholder="Choose a pub" href="/pubs/choose" /&gt;',
                     },
                 ],
             },
@@ -1113,11 +2042,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "size",
-                        type: "'sm' | 'md' | 'lg'",
+                        type: "'sm' | 'md' | 'lg' | 'xl' | 'display'",
                         required: false,
                         defaultValue: "md",
                         description:
-                            "Size of a star. An interactive star is a 44px target at every size. The empty star's outline is drawn in --color-control-border, 3:1 or better on every surface level in light and dark.",
+                            "Size of a star: xl is 40px stars; display is a display-size compact score (a row of stars treats it as xl). An interactive star is a 44px target at every size. The empty star's outline is drawn in --color-control-border, 3:1 or better on every surface level in light and dark.",
                     },
                     {
                         name: "readonly",
@@ -1126,6 +2055,22 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "false",
                         description:
                             "Shows a score as one image with one name; a star can be partly filled. A read-only rating has no inputs, so it submits nothing, even with name.",
+                    },
+                    {
+                        name: "compact",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "A score for a list: one filled star and the number (\"4,0\") from the real value and max, with one accessible name (\"4 of 5 stars\"). Implies readonly; clearable, name, onchange and showValue are ignored. Sizes sm to display: 14, 16, 20, 28 and 40px stars.",
+                    },
+                    {
+                        name: "empty",
+                        type: "'outline' | 'soft'",
+                        required: false,
+                        defaultValue: "outline",
+                        description:
+                            "What an empty star looks like: a hollow outline, or a soft fill with no outline (--zabi-rating-off-fill, default --color-control-track). The soft fill is below 3:1 against the page, so use it with a visible label and value. An outline in forced colours.",
                     },
                     {
                         name: "clearable",
@@ -1425,6 +2370,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Text colour. On a filled block: inherit takes the block's own colour, on-brand and on-accent are the label colours of the primary and accent fills.",
                     },
+                    {
+                        name: "variant",
+                        type: "'heading' | 'display'",
+                        required: false,
+                        defaultValue: "heading",
+                        description:
+                            "display sets the line in --font-family-display with larger steps (60px for level 1, 48 on a phone). Weight and tracking come from --zabi-display-weight and --zabi-display-tracking.",
+                    },
                 ],
 
                 examples: [
@@ -1434,9 +2387,9 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         code: "&lt;Heading level={1}&gt;Main Title&lt;/Heading&gt;",
                     },
                     {
-                        title: "Variants",
-                        description: "Different heading variants",
-                        code: '&lt;Heading level={1} variant="display"&gt;Display Heading&lt;/Heading&gt;\n&lt;Heading level={2} variant="subtitle"&gt;Subtitle&lt;/Heading&gt;',
+                        title: "Display",
+                        description: "The display face and larger steps",
+                        code: '&lt;Heading level={1} variant="display"&gt;Display Heading&lt;/Heading&gt;\n&lt;Heading level={2} variant="display"&gt;Display level 2&lt;/Heading&gt;',
                     },
                 ],
             },
@@ -1535,7 +2488,38 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "'Loading…'",
                         description:
-                            "Label announced by assistive tech. Keep the default for generic loading, or set to something more specific (e.g. 'Loading profile') when the skeleton stands in for a named region.",
+                            "Label announced by assistive tech. Defaults to the strings provider's skeleton.label, then 'Loading…'. Set something more specific (e.g. 'Loading profile') when the skeleton stands in for a named region.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<SkeletonStrings>",
+                        required: false,
+                        defaultValue: "{}",
+                        description: "Overrides for the built-in strings: label.",
+                    },
+                    {
+                        name: "decorative",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the piece only: no role, no label, aria-hidden. For a piece beside a status of your own; a piece inside a SkeletonGroup is decorative already. Either way the piece carries data-skeleton (its variant), and other div attributes (id, data-testid, style, aria-*) reach it; role, aria-busy and aria-hidden are not overridden.",
+                    },
+                    {
+                        name: "tone",
+                        type: "'neutral' | 'on-color'",
+                        required: false,
+                        defaultValue: "'neutral'",
+                        description:
+                            "neutral is the quiet fill for a page or a card. on-color is the surface's label colour at 24%, for a brand, accent or fill block (on-brand, on-accent, on-fill, a Card with tone), in light and dark. Set --zabi-skeleton-fill on an ancestor to replace it.",
+                    },
+                    {
+                        name: "lines",
+                        type: "number",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Text variant only: draws this many lines (1 to 20) as one placeholder with a shorter last line. class and width then apply to the whole paragraph, height to each line.",
                     },
                 ],
                 variants: ["text", "circle", "block"],
@@ -1575,6 +2559,59 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Media block above a title and description — a drop-in placeholder for feed cards, blog previews, and product tiles.",
                         code: '&lt;article class="space-y-3"&gt;\n  &lt;Skeleton variant="block" /&gt;\n  &lt;Skeleton variant="text" width="70%" height={16} /&gt;\n  &lt;div class="space-y-2"&gt;\n    &lt;Skeleton variant="text" /&gt;\n    &lt;Skeleton variant="text" width="85%" /&gt;\n  &lt;/div&gt;\n&lt;/article&gt;',
+                    },
+                    {
+                        title: "One status for a screen",
+                        description:
+                            "SkeletonGroup is the one loading status; the pieces inside it are hidden from assistive tech.",
+                        code: '&lt;SkeletonGroup&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;Skeleton lines={2} /&gt;\n&lt;/SkeletonGroup&gt;',
+                    },
+                    {
+                        title: "Paragraph",
+                        description: "lines draws a paragraph in one piece: the last line is shorter.",
+                        code: '&lt;Skeleton lines={3} /&gt;',
+                    },
+                    {
+                        title: "On a colour block",
+                        description: "tone=\"on-color\" reads on a brand, accent or fill block, in light and dark.",
+                        code: '&lt;div class="on-brand p-4"&gt;\n  &lt;Skeleton variant="block" tone="on-color" /&gt;\n&lt;/div&gt;',
+                    },
+                ],
+            },
+            {
+                name: "SkeletonGroup",
+                category: "atoms",
+                description:
+                    "One loading status for the Skeleton pieces inside it: a single role=status with the label, its pieces hidden from assistive tech.",
+                props: [
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "'Loading…'",
+                        description:
+                            "Label announced for the whole group. Defaults to the strings provider's skeleton.label, then 'Loading…'.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<SkeletonStrings>",
+                        required: false,
+                        defaultValue: "{}",
+                        description: "Overrides for the built-in strings: label.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: "''",
+                        description: "Extra classes on the group's element.",
+                    },
+                ],
+                examples: [
+                    {
+                        title: "A screen's placeholders",
+                        description: "Three pieces, announced once.",
+                        code: '&lt;SkeletonGroup aria-label="Loading profile"&gt;\n  &lt;Skeleton variant="circle" /&gt;\n  &lt;Skeleton lines={3} /&gt;\n&lt;/SkeletonGroup&gt;',
                     },
                 ],
             },
@@ -1718,8 +2755,16 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "On a touch screen a tap on the trigger opens the tooltip and the trigger still acts. By default (0) it stays until a second tap, a tap elsewhere, Escape, scrolling or focus leaving, because the tap also leaves focus on the trigger. Give milliseconds to have it close by itself after that long too. A mouse and a keyboard are not affected.",
                     },
+                    {
+                        name: "tone",
+                        type: '"material" | "inverted"',
+                        required: false,
+                        defaultValue: '"material"',
+                        description:
+                            "material: the bubble is thick glass with body text and no arrow. inverted: the 8.1 bubble, dark with light text and an arrow.",
+                    },
                 ],
-                variants: [],
+                variants: ["material", "inverted"],
                 examples: [
                     {
                         title: "Basic Tooltip",
@@ -1803,7 +2848,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Toggle",
                 category: "atoms",
                 description:
-                    "Accessible switch-style toggle with optional label and loading state.",
+                    "Accessible switch-style toggle with optional label and loading state. The off track is a light tint with a 1px edge; the on track is the primary fill.",
                 props: [
                     {
                         name: "aria-label",
@@ -1835,6 +2880,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Visible label. On a touch screen the switch takes taps a little past its edge: give two toggles side by side 16px between them, or a row each.",
                     },
                     {
+                        name: "leading",
+                        type: "Snippet",
+                        required: false,
+                        defaultValue: "undefined",
+                        description:
+                            "Drawn inside the one label, between the switch and the label text, as decoration for the name label already gives (an Avatar, an icon). A leading image should have an empty alt: the label names the row.",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,
@@ -1848,6 +2901,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "false",
                         description:
                             "Shows a spinner and makes the button unavailable without taking focus from it: aria-disabled and aria-busy, still a Tab stop, and a press does nothing. Not the disabled attribute.",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A line under the label, inside it, so a tap on it toggles. Tied to the switch with aria-describedby, after any ids passed in; not part of the name. It needs a label.",
                     },
                 ],
                 variants: [],
@@ -1878,6 +2938,29 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: '""',
                         description: "Field label",
+                    },
+                    {
+                        name: "resize",
+                        type: "'auto' | 'none' | 'vertical'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "The resize grip. auto: the browser's vertical grip with a mouse or trackpad, none on a touch screen. vertical shows it everywhere, none never. An autogrow field has no grip.",
+                    },
+                    {
+                        name: "autogrow",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "The field grows with its content, from rows up to maxRows, and scrolls after that.",
+                    },
+                    {
+                        name: "maxRows",
+                        type: "number",
+                        required: false,
+                        description:
+                            "The tallest an autogrow field gets, in rows. Without it the field has no limit.",
                     },
                     {
                         name: "variant",
@@ -1916,6 +2999,29 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Ids of other elements that describe the field. The hint and the message are added after them, and only ids of elements that are rendered.",
                     },
+                    {
+                        name: "count",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "A character count under the field, at the end of the line the hint is on. It needs maxlength. Part of the field's description (aria-describedby) and not a live region, so it is not read out at every key.",
+                    },
+                    {
+                        name: "countFrom",
+                        type: "number",
+                        required: false,
+                        defaultValue: "0",
+                        description:
+                            "The count is shown from this many characters on. 0: always.",
+                    },
+                    {
+                        name: "countText",
+                        type: "(count: { length: number; max: number; remaining: number }) => string",
+                        required: false,
+                        description:
+                            "The words of the count, for the page's language. Default: 12 / 2000.",
+                    },
                 ],
                 variants: ["default", "success", "warning", "error"],
                 examples: [
@@ -1923,6 +3029,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Basic textarea",
                         description: "Label and placeholder",
                         code: '<Textarea label="Notes" placeholder="…" />',
+                    },
+                    {
+                        title: "Grows with its content",
+                        description: "From two rows to six, then it scrolls; no resize grip",
+                        code: '<Textarea label="Note" rows={2} maxRows={6} autogrow bind:value={note} />',
                     },
                 ],
             },
@@ -1948,10 +3059,25 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "size",
-                        type: "'sm' | 'md' | 'lg'",
+                        type: "'sm' | 'md' | 'lg' | 'xl'",
                         required: false,
                         defaultValue: "md",
-                        description: "Bar height",
+                        description: "Bar height: 4, 8, 12 and 16px",
+                    },
+                    {
+                        name: "segmented",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws max separate segments, value of them filled, for a count such as 4 of 19. max must be a whole number from 2 to 24, otherwise the continuous bar is drawn. The read-out beside the label is the count instead of the percent",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<ProgressStrings>",
+                        required: false,
+                        description:
+                            "Overrides for the built-in strings: valueText(value, max), the count of a segmented bar (\"4 of 19\")",
                     },
                     {
                         name: "label",
@@ -1961,12 +3087,17 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Optional label",
                     },
                 ],
-                variants: ["sm", "md", "lg"],
+                variants: ["sm", "md", "lg", "xl"],
                 examples: [
                     {
                         title: "Progress",
                         description: "Value relative to max",
                         code: '<Progress value={40} max={100} label="Upload" />',
+                    },
+                    {
+                        title: "Segmented",
+                        description: "A count such as 4 of 19",
+                        code: '<Progress value={4} max={19} segmented label="Round" />',
                     },
                 ],
             },
@@ -2504,7 +3635,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 <FloatingActionButton
     label="New quiz"
     href="/quiz/new"
-    style="--fab-bottom-offset: 65px"
+    style="--fab-bottom-offset: 64px"
 />`,
                     },
                 ],
@@ -2513,7 +3644,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "DateField",
                 category: "atoms",
                 description:
-                    "Date field that opens the device's own date picker, styled like Input; the value is an ISO date.",
+                    "Date field styled like Input; with a locale it shows the date in that language and opens the library's calendar. The value is an ISO date.",
                 props: [
                     {
                         name: "value",
@@ -2628,6 +3759,43 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Extra classes for the input. Other attributes land on the input too.",
                     },
+                    {
+                        name: "locale",
+                        type: "string | string[]",
+                        required: false,
+                        description:
+                            "Language of the field, as a BCP 47 tag such as sv or en-GB. With it the field shows the value in that language whatever the browser's is, and opens the library's own picker; the native input stays in the form, out of sight. Without it, and before the page has run or without scripts, the field is the native input.",
+                    },
+                    {
+                        name: "format",
+                        type: "Intl.DateTimeFormatOptions",
+                        required: false,
+                        description:
+                            "With locale: how the value is shown. Default: what formatDate gives for the locale. The value itself stays in the native format.",
+                    },
+                    {
+                        name: "placeholder",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "With locale: shown in the placeholder colour while the field is empty.",
+                    },
+                    {
+                        name: "picker",
+                        type: "'library' | 'native'",
+                        required: false,
+                        defaultValue: "library",
+                        description:
+                            "With locale: \"library\" (default) opens the library's Calendar in a sheet, with Clear unless the field is required; \"native\" opens the platform's own date picker.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<DateFieldStrings>",
+                        required: false,
+                        description:
+                            "The words the field says: clear, chooseDate (the sheet's name when the field has no label). A ZabiStringsProvider can set them once as dateField.",
+                    },
                 ],
                 variants: [
                     "sm",
@@ -2651,6 +3819,22 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 
 <!-- 6 okt. 2026 -->
 <p>{formatDate(value, "en-GB")}</p>`,
+                    },
+                    {
+                        title: "A locale: the library's own display and picker",
+                        description:
+                            "With locale the field shows the date in that language whatever the browser's is, and opens the Calendar in a sheet. The native input stays in the form, out of sight, and is what shows without scripts. format changes how the date is written; picker=\"native\" opens the platform's picker instead",
+                        code: `<DateField label="Datum" name="date" locale="sv" bind:value placeholder="Välj datum" />
+
+<!-- tis 6 okt -->
+<DateField
+    label="Datum"
+    locale="sv"
+    format={{ weekday: "short", day: "numeric", month: "short" }}
+    bind:value
+/>
+
+<DateField label="Datum" locale="sv" picker="native" bind:value />`,
                     },
                     {
                         title: "Limits, a hint, an error, and inside FormField",
@@ -2687,7 +3871,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "TimeField",
                 category: "atoms",
                 description:
-                    "Time field that opens the device's own time picker, styled like Input; the value is 24-hour HH:mm.",
+                    "Time field styled like Input; with a locale it shows the time in that language and opens the library's hour and minute picker. The value is 24-hour HH:mm.",
                 props: [
                     {
                         name: "value",
@@ -2802,6 +3986,50 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description:
                             "Extra classes for the input. Other attributes land on the input too.",
                     },
+                    {
+                        name: "locale",
+                        type: "string | string[]",
+                        required: false,
+                        description:
+                            "Language of the field, as a BCP 47 tag such as sv or en-GB. With it the field shows the value in that language whatever the browser's is, and opens the library's own picker; the native input stays in the form, out of sight. Without it, and before the page has run or without scripts, the field is the native input.",
+                    },
+                    {
+                        name: "format",
+                        type: "Intl.DateTimeFormatOptions",
+                        required: false,
+                        description:
+                            "With locale: how the value is shown. Default: what formatTime gives for the locale. The value itself stays in the native format.",
+                    },
+                    {
+                        name: "placeholder",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "With locale: shown in the placeholder colour while the field is empty.",
+                    },
+                    {
+                        name: "picker",
+                        type: "'library' | 'native'",
+                        required: false,
+                        defaultValue: "library",
+                        description:
+                            "With locale: \"library\" (default) opens hours and minutes in two columns in a sheet, with Done and Clear; \"native\" opens the platform's own time picker. A step under 60 seconds, or any, uses the platform's picker too.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<TimeFieldStrings>",
+                        required: false,
+                        description:
+                            "The words the field says: clear, done, hours, minutes, chosenTime (beside Done, \"Chosen time 18:00\"), chooseTime (the sheet's name when the field has no label). A ZabiStringsProvider can set them once as timeField.",
+                    },
+                    {
+                        name: "openAt",
+                        type: "string",
+                        required: false,
+                        description:
+                            "With locale, while the field is empty: the time the sheet's columns stand at when it opens, as HH:mm (\"18:30\"). Only where to scroll to: no row is chosen and value stays empty until the person chooses. Left out: now, on the minute step.",
+                    },
                 ],
                 variants: [
                     "sm",
@@ -2825,6 +4053,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 
 <!-- 19:00 -->
 <p>{formatTime(value, "en-GB")}</p>`,
+                    },
+                    {
+                        title: "A locale: the library's own display and picker",
+                        description:
+                            "With locale the field shows the time in that language (18:30 in Swedish, never 06:30 PM) and opens hours and minutes in a sheet, with Done. step is in seconds: 900 is every 15 minutes, none is every 5. A step under 60 uses the platform's picker. Without scripts it is the native input",
+                        code: `<TimeField label="Tid" name="time" locale="sv" bind:value placeholder="Välj tid" />
+
+<TimeField label="Tid" locale="sv" step={900} min="17:00" max="21:30" bind:value />`,
                     },
                     {
                         title: "Limits, a hint, an error, and inside FormField",
@@ -2894,6 +4130,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Accessible name, when it should differ from name. An empty alt makes the avatar decorative, for a name printed beside it.",
                     },
                     {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "The picture drawn inside the circle at the avatar's size, for an inline SVG that reads the page's tokens. Takes the place of src and the initials; presentational, the name is still name.",
+                    },
+                    {
                         name: "locale",
                         type: "string",
                         required: false,
@@ -2919,6 +4162,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
 <Avatar name="Ada Lovelace" size="lg" />`,
                     },
                     {
+                        title: "An inline drawing",
+                        description:
+                            "An SVG as children fills the circle in place of the initials",
+                        code: `<Avatar name="Ada Lovelace">
+    <svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="var(--color-link)" /></svg>
+</Avatar>`,
+                    },
+                    {
                         title: "Fallbacks and a decorative avatar",
                         description:
                             "A picture that does not load, an empty name, and alt left empty beside a printed name",
@@ -2941,7 +4192,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "string",
                         required: false,
                         defaultValue: "info",
-                        description: "Alert variant",
+                        description: "info | success | warning | error | neutral | energetic | brand. brand is the theme's brand tint with the link colour for the icon.",
                     },
                     {
                         name: "title",
@@ -2971,8 +4222,15 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "Dismiss alert",
                         description: "Accessible name of the close button a closable alert has, for translation.",
                     },
+                    {
+                        name: "bordered",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "false makes the edge transparent; the box keeps its size. To remove the edge from every alert at once, set --zabi-alert-border-width: 0px on any ancestor (default 1px).",
+                    },
                 ],
-                variants: ["info", "success", "warning", "error"],
+                variants: ["info", "success", "warning", "error", "brand"],
                 examples: [
                     {
                         title: "Basic Alert",
@@ -3304,12 +4562,41 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "Id of the control the label points at. Generated when omitted.",
                     },
                     {
+                        name: "variant",
+                        type: "'dropzone' | 'button'",
+                        required: false,
+                        defaultValue: "dropzone",
+                        description:
+                            "dropzone: the drop area, and the preview with Change and Remove once there is a value. button: only a button that opens the file chooser, for a row of choices; no drop area, no preview and no Remove. The picked file comes through onfileselect and bind:value. The button's text is label, or children.",
+                    },
+                    {
+                        name: "buttonVariant",
+                        type: "ButtonVariant",
+                        required: false,
+                        defaultValue: "secondary",
+                        description: "With variant=\"button\": the trigger's Button variant.",
+                    },
+                    {
+                        name: "buttonSize",
+                        type: "ButtonSize",
+                        required: false,
+                        defaultValue: "md",
+                        description: "With variant=\"button\": the trigger's Button size.",
+                    },
+                    {
                         name: "accept",
                         type: "string",
                         required: false,
                         defaultValue: "image/*",
                         description:
                             "File types the chooser offers and a drop accepts.",
+                    },
+                    {
+                        name: "maxSize",
+                        type: "number",
+                        required: false,
+                        description:
+                            "The largest file taken, in bytes. A larger one, chosen or dropped, is not selected and goes to onfilereject with \"size\".",
                     },
                     {
                         name: "placeholder",
@@ -3463,10 +4750,32 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "onfilereject",
-                        type: "(file: File) => void",
+                        type: "(file: File, reason: 'type' | 'size') => void",
                         required: false,
                         description:
-                            "Runs with a dropped file that accept does not allow.",
+                            "Runs with a dropped file that accept does not allow (type), or a chosen or dropped file over maxSize (size).",
+                    },
+                    {
+                        name: "multiple",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "The chooser and a drop take several files, handed over together through onfiles in the order they were chosen. The component then keeps none: no preview, value is not set and onfileselect is not called.",
+                    },
+                    {
+                        name: "maxFiles",
+                        type: "number",
+                        required: false,
+                        description:
+                            "With multiple: the most files taken in one go. The rest go to onfilereject with count.",
+                    },
+                    {
+                        name: "onfiles",
+                        type: "(files: File[]) => void",
+                        required: false,
+                        description:
+                            "With multiple: every file that was taken, in order.",
                     },
                 ],
 
@@ -3480,6 +4789,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Media Library",
                         description: "Open your own picker and accept video",
                         code: '&lt;ImageUpload label="Hero" accept="image/*,video/*" bind:value onbrowse={openLibrary} /&gt;',
+                    },
+                    {
+                        title: "Only the trigger",
+                        description: "A button in a row of choices; the app shows the picked image itself",
+                        code: '&lt;ImageUpload variant="button" buttonVariant="tonal" label="Choose a photo" maxSize={5_000_000} onfileselect={({ file }) =&gt; crop(file)} onfilereject={(file, reason) =&gt; explain(reason)} /&gt;',
                     },
                 ],
             },
@@ -3890,7 +5204,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Adds a grip at the top and lets a swipe down close the sheet. A swipe on the content closes only when the content is at its top. The close button, the backdrop and Escape stay.",
+                            "Adds a grip at the top and lets a swipe down close the sheet. A swipe on the content closes only when the content is at its top. Never from a box inside it that scrolls by itself, or from something marked data-sheet-no-drag. The close button, the backdrop and Escape stay.",
                     },
                     {
                         name: "onclick",
@@ -4060,7 +5374,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "Toaster",
                 category: "molecules",
                 description:
-                    "Fixed notification region for pushToast; mount once near the app root. On a phone it spans the width, clear of the home indicator and a tab bar.",
+                    "Fixed notification region for pushToast; mount once near the app root. On a phone it is a compact snackbar above any docked bar (mode auto).",
                 props: [
                     {
                         name: "strings",
@@ -4094,6 +5408,43 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "How long a toast stays when it was pushed without a duration: short is 3 seconds, medium 7, long 14, persistent until it is dismissed; a number is milliseconds. An error and a toast with an action still stay until dismissed, a toast with 121 to 240 characters of title and message still gets at least long, and a longer one still stays. A duration on the toast itself always wins. The three lengths are exported as TOAST_DURATIONS, the type as ToastDuration.",
                     },
                     {
+                        name: "mode",
+                        type: "'stack' | 'snackbar' | 'auto'",
+                        required: false,
+                        defaultValue: "'stack'",
+                        description:
+                            "stack: the stack in the corner, across the width on a phone. snackbar: the compact form for a phone at every width, one row of 52px, its action beside the text, one at a time, set directly above what is docked at the bottom and coming out from behind that edge. auto: the snackbar below 640px, the stack from there up. The type is ToasterMode.",
+                    },
+                    {
+                        name: "max",
+                        type: "number",
+                        required: false,
+                        description:
+                            "How many toasts show at once. The oldest timed toast leaves when a newer one arrives; an error, a toast with an action and one that is persistent are never dropped, so there can be more while they show. No limit by default, and 1 in the snackbar.",
+                    },
+                    {
+                        name: "avoid",
+                        type: "string",
+                        required: false,
+                        description:
+                            "A CSS selector for elements the stack must not lie on, such as the button a screen ends in. A BottomTabBar, a StickyActionBar, a FloatingActionButton and an UnsavedChangesBar that lie under the stack are found by themselves; when something named here does too, the stack sits above it.",
+                    },
+                    {
+                        name: "timeLine",
+                        type: "boolean",
+                        required: false,
+                        description:
+                            "The thin bar along the bottom of a timed toast that empties over its time. Unset: drawn, except under a confirmation in the snackbar that has nothing to press (timed, no action, closable: false). false leaves it out everywhere, true draws it everywhere; timeLine on a toast wins. The sentence for a screen reader about the time left stays.",
+                    },
+                    {
+                        name: "swipeToDismiss",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "A touch or a pen drags a toast away sideways, and down in the snackbar; past 40% of its width or a flick it goes, otherwise it settles back. A mouse does not drag. The dismiss button stays for a keyboard and a screen reader.",
+                    },
+                    {
                         name: "onpausechange",
                         type: "(detail: { id: string; paused: boolean }) => void",
                         required: false,
@@ -4115,7 +5466,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Toaster",
                         description:
                             "Stacked toasts, bottom-right from 640px up and across the width below that. Inside an AppShell the stack sits above the tab bar by itself. For a BottomTabBar on its own, a StickyActionBar or a FloatingActionButton, give its height in --toaster-bottom-offset: 72px for a FloatingActionButton, which it would otherwise cover. That offset is for what is on the page: over a modal overlay the stack keeps off the overlay's header (and its close button) and off a pinned footer by itself, above the panel or between the two, and the offset is not added on top. Over the on-screen keyboard it sits above the keyboard. Tab goes from the overlay into the toasts and back. More toasts than fit scroll. The safe-area insets are zero until the page sets viewport-fit=cover",
-                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: 65px\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
+                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster />\npushToast({ message: 'Saved', type: 'success' });\n\n<!-- Above a BottomTabBar that is not in an AppShell -->\n<Toaster style=\"--toaster-bottom-offset: 64px\" />\n\n<!-- Above a FloatingActionButton: 56px of button and 16px under it -->\n<Toaster style=\"--toaster-bottom-offset: 72px\" />",
+                    },
+                    {
+                        title: "A toast for a phone",
+                        description:
+                            "mode=\"auto\" makes the toast a snackbar below 640px: one row, one at a time, directly above a BottomTabBar, a StickyActionBar or a FloatingActionButton that lies under it, coming out from behind that edge and going back into it. avoid names the button a screen ends in. A touch swipe dismisses it; the dismiss button stays. closable: false leaves the button out of a short timed confirmation, which then takes no taps and has no time bar (timeLine brings it back) (an error, a toast with an action or details, and one that stays keep the button). Pushing with the id of a toast that is showing replaces it in place.",
+                        code: "import { Toaster, pushToast } from 'zabi-components';\n\n<Toaster mode=\"auto\" avoid=\"[data-primary-action]\" />\n\npushToast({ id: 'saved', message: 'Name saved', type: 'success', duration: 'short', closable: false });\npushToast({ message: 'Round archived', action: { label: 'Undo', onclick: restore } });",
                     },
                     {
                         title: "How long a toast stays",
@@ -4167,7 +5524,8 @@ pushToast({
                         type: "RadioGroupOption[]",
                         required: true,
                         defaultValue: "[]",
-                        description: "value, label, optional description/disabled",
+                        description:
+                            "value, label, optional description/disabled. A description is tied to the radio with aria-describedby and is not part of its name.",
                     },
                     {
                         name: "value",
@@ -4191,6 +5549,14 @@ pushToast({
                         defaultValue: '""',
                         description: "Accessible group label",
                     },
+                    {
+                        name: "chosenRing",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Draw a ring round the chosen row. false leaves the filled radio to show the choice; keyboard focus keeps its ring either way.",
+                    },
                 ],
                 variants: [],
                 examples: [
@@ -4202,6 +5568,103 @@ pushToast({
   options={[{ value: 'a', label: 'Basic' }, { value: 'b', label: 'Pro' }]}
   bind:value
 />`,
+                    },
+                ],
+            },
+            {
+                name: "ChipGroup",
+                category: "molecules",
+                description:
+                    "A named set of chips. Wraps, or is one row that scrolls sideways with an edge fade. Radio and checkbox groups hold the value.",
+                props: [
+                    {
+                        name: "layout",
+                        type: '"wrap" | "row"',
+                        required: false,
+                        defaultValue: '"wrap"',
+                        description:
+                            "wrap breaks onto as many lines as it needs. row is one line that scrolls sideways, with the chosen chip brought into view on load.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "The group's accessible name. Not shown unless showLabel. aria-label and aria-labelledby also work.",
+                    },
+                    {
+                        name: "showLabel",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Shows label as text above the group (beside it, in a sub-group).",
+                    },
+                    {
+                        name: "type",
+                        type: '"radio" | "checkbox"',
+                        required: false,
+                        description:
+                            "The chips are inputs that share this group's name and value. Without it the group only lays out its chips (links, toggle buttons). A radio group has the radiogroup role.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        description: "Name the inputs submit under.",
+                    },
+                    {
+                        name: "value",
+                        type: "string | string[] | undefined",
+                        required: false,
+                        description:
+                            "What is chosen (bind:value): a string, or undefined for none, for radio; an array of strings for checkbox.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Disables every chip in the group.",
+                    },
+                    {
+                        name: "edge",
+                        type: '"fade" | "none"',
+                        required: false,
+                        defaultValue: '"fade"',
+                        description:
+                            "With layout row: fade dims a side that has more chips beyond it (a mask, so it works on any background); none never does.",
+                    },
+                    {
+                        name: "scrollSelectedIntoView",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description: "With layout row: bring the chosen chip into view when the row appears. Only the row scrolls.",
+                    },
+                    {
+                        name: "onchange",
+                        type: "(value: string | string[] | undefined) => void",
+                        required: false,
+                        description: "Called with the new value when a person changes it.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Radio group",
+                        description: "Choose one",
+                        code: `<ChipGroup label="Plan" type="radio" name="plan" bind:value>
+  <Chip value="basic">Basic</Chip>
+  <Chip value="pro">Pro</Chip>
+</ChipGroup>`,
+                    },
+                    {
+                        title: "One row of link chips",
+                        description: "Scrolls sideways, the chosen one in view",
+                        code: `<ChipGroup label="Filter" layout="row">
+  <Chip href="/pubs?f=all">All</Chip>
+  <Chip href="/pubs?f=open" selected>Open</Chip>
+</ChipGroup>`,
                     },
                 ],
             },
@@ -4358,6 +5821,14 @@ pushToast({
                             "Name the value is submitted under in a form. Without a name the control is not part of the form around it: it submits nothing and a form reset leaves it alone.",
                     },
                     {
+                        name: "tone",
+                        type: "'neutral' | 'primary'",
+                        required: false,
+                        defaultValue: "neutral",
+                        description:
+                            "Look of the selected segment. neutral: a card-coloured thumb with the headline colour on a tinted track. primary: the solid primary fill, as in 8.1.",
+                    },
+                    {
                         name: "disabled",
                         type: "boolean",
                         required: false,
@@ -4378,6 +5849,7 @@ pushToast({
                     "md",
                     "lg",
                     "fullWidth",
+                    "primary",
                     "disabled",
                 ],
                 examples: [
@@ -5167,7 +6639,7 @@ pushToast({
                 name: "Collapsible",
                 category: "molecules",
                 description:
-                    "A trigger wired to a panel it shows and hides, with a built-in header button or your own, alone or as an accordion.",
+                    "A panel with a trigger, alone or as an accordion. The built-in header is a native details and summary, so it opens without scripts.",
                 props: [
                     {
                         name: "open",
@@ -5188,21 +6660,21 @@ pushToast({
                         type: "string",
                         required: false,
                         description:
-                            "Text of the default trigger, a full-width header button with a chevron.",
+                            "Text of the default trigger, a full-width header with a chevron. It is a native details and summary, so it opens and closes without scripts.",
                     },
                     {
                         name: "trigger",
                         type: "Snippet<[CollapsibleTriggerProps, CollapsibleTriggerState]>",
                         required: false,
                         description:
-                            "Your own header in place of the default trigger. Spread the first argument on a button; the second carries open and disabled.",
+                            "Your own header in place of the default trigger. Spread the first argument on a button; the second carries open and disabled. Needs scripts: use title for content that must open without them.",
                     },
                     {
                         name: "headingLevel",
                         type: "1 | 2 | 3 | 4 | 5 | 6",
                         required: false,
                         description:
-                            "Wraps the default trigger in a heading of that level. No heading when omitted.",
+                            "Puts a heading of that level inside the default trigger. No heading when omitted.",
                     },
                     {
                         name: "disabled",
@@ -5218,7 +6690,7 @@ pushToast({
                         required: false,
                         defaultValue: "false",
                         description:
-                            "Removes the content while closed. By default it stays in the DOM, hidden, so a form inside keeps its values.",
+                            "Removes the content while closed. By default it stays in the DOM, inside the closed details, so a form inside keeps its values and still submits them.",
                     },
                     {
                         name: "region",
@@ -5232,7 +6704,7 @@ pushToast({
                         type: "string",
                         required: false,
                         defaultValue: '""',
-                        description: "Extra classes for the default trigger button.",
+                        description: "Extra classes for the default trigger (a summary).",
                     },
                     {
                         name: "panelClass",
@@ -5399,6 +6871,14 @@ pushToast({
                         required: false,
                         defaultValue: "Cancel",
                         description: "Text of the cancel button.",
+                    },
+                    {
+                        name: "cancelVariant",
+                        type: "ButtonVariant",
+                        required: false,
+                        defaultValue: "outline",
+                        description:
+                            "The cancel button's Button variant: tonal, secondary, ghost or text for an app that has no outline button. Cancel stays the first control and keeps the initial focus.",
                     },
                     {
                         name: "onconfirm",
@@ -5820,6 +7300,38 @@ pushToast({
                     "Top bar for a phone screen: a title that always has room, a back control and up to two actions; can hide while the page scrolls.",
                 props: [
                     {
+                        name: "scrollEdge",
+                        type: "'auto' | 'always' | 'never'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the top, glass once content is under it; inside an AppShell the shell says when); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
+                    },
+                    {
+                        name: "largeTitle",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the title large (30px bold, two lines at most) on a second row under the 56px bar. The row scrolls away with the content, nothing is animated, and the bar's own title fades in once it has gone under. The heading is the large title; the small one is hidden from assistive technology. Needs title. collapseOnScroll is ignored with it (a dev-build warning says so). Inside an AppShell, --app-shell-top-inset reports the condensed height. Before measurement, on the server and without scripts, the whole header sticks at full height.",
+                    },
+                    {
+                        name: "tone",
+                        type: "'default' | 'transparent' | 'brand' | 'inherit'",
+                        required: false,
+                        defaultValue: "default",
+                        description:
+                            "The bar's fill. default is the page colour at rest. transparent has no fill at rest, for a canvas, an image or a colour block behind the bar, and takes the glass once content is under it. brand is the brand colour with on-brand text and controls, opaque at rest and scrolled, with no glass and no hairline, so a brand block directly under it joins it; with largeTitle the large row is part of the block. inherit is for a bar inside a block of another colour: no fill of its own, no glass and no hairline at any scroll position, and the title, back control, actions, links, borders and focus rings take the block's text colour. A sticky bar over scrolling content takes its fill from the app: class=\"[--color-bar:var(--my-block-colour)]\". Written as data-tone.",
+                    },
+                    {
+                        name: "position",
+                        type: "'sticky' | 'static'",
+                        required: false,
+                        defaultValue: "sticky",
+                        description:
+                            "sticky keeps the bar at the top of what scrolls. static leaves it in the flow of the page, for a bar inside a block of the content: it scrolls away with the block and is never glass. class=\"static\" is read as position=\"static\".",
+                    },
+                    {
                         name: "title",
                         type: "string",
                         required: false,
@@ -5878,14 +7390,14 @@ pushToast({
                         type: "Snippet",
                         required: false,
                         description:
-                            "After the title. At most two icon buttons, at size lg so each is a 48px target; put anything more in a menu. The limit is not enforced.",
+                            "After the title. At most two icon buttons, at size lg so each is a 48px target; put anything more in a menu. The limit is not enforced. The bar's row is on a fixed pixel scale (--spacing: 4px on the row), so its own controls do not grow with the text size; size what you place here on the same scale (Tailwind numeric classes such as size-9, or calc(var(--spacing) * 9)), not in rem, or it grows at 200% text while the bar's controls do not.",
                     },
                     {
                         name: "leading",
                         type: "Snippet",
                         required: false,
                         description:
-                            "Before the title, after the back control: a logo or an avatar.",
+                            "Before the title, after the back control: a logo or an avatar. The bar's row is on a fixed pixel scale (--spacing: 4px on the row), so its own controls do not grow with the text size; size what you place here on the same scale (Tailwind numeric classes such as size-9, or calc(var(--spacing) * 9)), not in rem, or it grows at 200% text while the bar's controls do not.",
                     },
                     {
                         name: "class",
@@ -5898,6 +7410,8 @@ pushToast({
                 ],
                 variants: [
                     "collapseOnScroll",
+                    "largeTitle",
+                    "tone",
                 ],
                 examples: [
                     {
@@ -5936,11 +7450,19 @@ pushToast({
                     "Navigation bar at the bottom of a phone screen: three to five links, each an icon over a short label, with optional counts.",
                 props: [
                     {
+                        name: "scrollEdge",
+                        type: "'auto' | 'always' | 'never'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the end of the content, glass while content is under it; inside an AppShell the shell says when); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
+                    },
+                    {
                         name: "items",
                         type: "BottomTabBarItem[]",
                         required: true,
                         description:
-                            "Three to five destinations, each { href, label, icon, badge? }. icon is a component such as a lucide icon; badge is a count. A development build warns outside three to five. The bar is one 65px row at every text size: a label is one line, grows with the reader's text size up to 1.3 times and no further than its tab has room for, and is cut with an ellipsis, never inside a word, when it still does not fit. A tab narrower than 52px (five tabs below 260px) shows its icon only. The link is always named by the full label, so keep labels to one short word.",
+                            "Three to five destinations, each { href, label, icon, activeIcon?, badge? }. icon is a component such as a lucide icon; activeIcon is drawn instead of it on the active tab (typically the filled form; without it icon is drawn with a heavier stroke); badge is a count, drawn in the attention colour. A development build warns outside three to five. The bar is one 64px row at every text size: a label is one line, grows with the reader's text size up to 1.3 times and no further than its tab has room for, and is cut with an ellipsis, never inside a word, when it still does not fit. A tab narrower than 52px (five tabs below 260px) shows its icon only. The link is always named by the full label, so keep labels to one short word.",
                     },
                     {
                         name: "active",
@@ -5949,6 +7471,13 @@ pushToast({
                         defaultValue: "the current page",
                         description:
                             "The href of the active tab, or the path of the current page: the tab for that page or the closest one above it gets aria-current. Left out, the bar reads the address in the browser; in SvelteKit pass page.url.pathname so the server marks it too.",
+                    },
+                    {
+                        name: "pending",
+                        type: "string",
+                        required: false,
+                        description:
+                            "The href or path of the tab a person has just pressed while its page is on its way. It takes the mark (pill, heavier icon, semibold label) at once; aria-current stays on the tab for active until active changes, and the pending link has aria-busy. Left out, or matching no tab, the mark and aria-current are on the same tab.",
                     },
                     {
                         name: "label",
@@ -5980,7 +7509,15 @@ pushToast({
                         required: false,
                         defaultValue: "fixed (static inside AppShell)",
                         description:
-                            "fixed pins the bar to the bottom of the screen; static leaves it where it is in the page. AppShell places the bar itself. A fixed bar on its own lies over the page: give the page padding-bottom and scroll-padding-bottom of the bar's height, calc(65px + env(safe-area-inset-bottom)) by default, so the last content and a focused field are not under it.",
+                            "fixed pins the bar to the bottom of the screen; static leaves it where it is in the page. AppShell places the bar itself. A fixed bar on its own lies over the page: give the page padding-bottom and scroll-padding-bottom of the bar's height, calc(64px + env(safe-area-inset-bottom)) by default, so the last content and a focused field are not under it.",
+                    },
+                    {
+                        name: "floating",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the bar as a rounded capsule of glass inset 12px from the screen edges and from the home indicator, instead of edge to edge. It is always the regular material because content is always under it, so scrollEdge has no effect. The nav keeps its landmark, safe-area padding and position and becomes transparent; the height a shell measures includes the 12px.",
                     },
                     {
                         name: "class",
@@ -6078,6 +7615,22 @@ pushToast({
                         defaultValue: "the lowest snap point",
                         description:
                             "The snap point the sheet is at. Bindable: it follows a drag and the grip, and you can set it.",
+                    },
+                    {
+                        name: "fit",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "As tall as the content, up to half the screen, instead of half whatever it holds. One resting height: snapPoints and snap are ignored and the grip only drags.",
+                    },
+                    {
+                        name: "fitMax",
+                        type: "'half' | 'full'",
+                        required: false,
+                        defaultValue: "half",
+                        description:
+                            "With fit: the tallest the sheet grows before its content scrolls. half is half the screen; full is down from the status bar.",
                     },
                     {
                         name: "dismissible",
@@ -6212,6 +7765,14 @@ pushToast({
                 description:
                     "Bar that keeps a form's main button at the bottom of the screen and above the on-screen keyboard.",
                 props: [
+                    {
+                        name: "scrollEdge",
+                        type: "'auto' | 'always' | 'never'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the end of the content, glass while content is under it; inside an AppShell the shell says when); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
+                    },
                     {
                         name: "children",
                         type: "Snippet",
@@ -6545,6 +8106,20 @@ pushToast({
                         description:
                             "Extra classes for the host element. aria-label and aria-labelledby name the list.",
                     },
+                    {
+                        name: "onloaderror",
+                        type: "(photo: Photo, index: number) => void",
+                        required: false,
+                        description:
+                            "Called once when a thumbnail cannot be loaded, so the page can answer with a new address. A new thumbSrc or src for the same photo is tried at once.",
+                    },
+                    {
+                        name: "onretry",
+                        type: "(photo: Photo, index: number) => void",
+                        required: false,
+                        description:
+                            "Puts a Try again button on each photo whose status is error and is called when it is pressed. A photo's status (uploading, with an optional progress from 0 to 1, or error) is drawn on its tile and said in its name.",
+                    },
                 ],
                 variants: [
                     "single",
@@ -6677,6 +8252,20 @@ pushToast({
                         defaultValue: '""',
                         description:
                             "Extra classes for the dialog panel. The viewer is black behind the photo in both themes; its controls sit on plates in the theme's own surface colour.",
+                    },
+                    {
+                        name: "onloaderror",
+                        type: "(photo: Photo, index: number) => void",
+                        required: false,
+                        description:
+                            "Called once when a full image cannot be loaded, so the page can answer with a new address. A new src for the same photo is tried at once.",
+                    },
+                    {
+                        name: "onretry",
+                        type: "(photo: Photo, index: number) => void | Promise<void>",
+                        required: false,
+                        description:
+                            "Called when Try again is pressed, before the image is asked for again. Return a promise and the button waits for it, busy: time to fetch a fresh address.",
                     },
                 ],
                 variants: [
@@ -6923,10 +8512,10 @@ pushToast({
                 props: [
                     {
                         name: "people",
-                        type: "{ name: string; src?: string }[]",
+                        type: "{ name: string; src?: string; picture?: Snippet }[]",
                         required: true,
                         description:
-                            "The people, in the order they are shown.",
+                            "The people, in the order they are shown. A person's picture is an inline drawing in place of src and the initials.",
                     },
                     {
                         name: "max",
@@ -6996,20 +8585,437 @@ pushToast({
                     },
                 ],
             },
+            {
+                name: "LineChart",
+                category: "molecules",
+                description:
+                    "A line chart for one or a few series over shared x labels, drawn as plain SVG with a data table behind it. No chart library.",
+                props: [
+                    {
+                        name: "series",
+                        type: "{ name: string; points: (number | null)[]; color?: ChartColor }[]",
+                        required: true,
+                        description:
+                            "The lines: a name and one value per x label; null leaves a gap. Up to six keep a colour of their own.",
+                    },
+                    {
+                        name: "xLabels",
+                        type: "string[]",
+                        required: false,
+                        defaultValue: "[]",
+                        description:
+                            "The labels along the x axis, one per point. Labels that do not fit are thinned out.",
+                    },
+                    {
+                        name: "yMin",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The bottom of the y axis. Without it, the lowest value rounded down to a tick.",
+                    },
+                    {
+                        name: "yMax",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The top of the y axis. Without it, the highest value rounded up to a tick.",
+                    },
+                    {
+                        name: "yFormat",
+                        type: "'number' | 'percent' | ((value: number) => string)",
+                        required: false,
+                        defaultValue: "number",
+                        description:
+                            "How a value is written: number, percent (72 is \"72 %\"), or a function of your own.",
+                    },
+                    {
+                        name: "height",
+                        type: "number",
+                        required: false,
+                        defaultValue: "240",
+                        description:
+                            "Height of the drawing in px. The width is the container's.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: true,
+                        description:
+                            "The caption, and what the chart is called.",
+                    },
+                    {
+                        name: "labelHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Keeps the caption for assistive technology and takes it off the screen.",
+                    },
+                    {
+                        name: "legend",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The key under the plot. Without it, shown when there is more than one series.",
+                    },
+                    {
+                        name: "markers",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "A marker on every point, a different shape per series, so two lines differ by more than colour.",
+                    },
+                    {
+                        name: "showTable",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the data table under the chart; otherwise it is there for assistive technology only.",
+                    },
+                    {
+                        name: "xTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                        description:
+                            "The heading of the table's first column: what the x labels are.",
+                    },
+                    {
+                        name: "glass",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Stands the chart on a panel of the thick material (frosted glass), for a chart over a wash, a tint or a picture. It is the panel only: the slices and bars are glass with or without it. On a plain card it shows nothing; over a solid brand or accent fill some series colours fall under 3:1.",
+                    },
+                    {
+                        name: "locale",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The language of the built-in number formats. Without it, the runtime's; pass one on a server-rendered page.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Results over time",
+                        description: "Two series in percent on a fixed 0 to 100 axis; point at or tap the plot and the values come up in a pane beside the guide",
+                        code: "<LineChart\n    label=\"Rätt svar per vecka\"\n    xTitle=\"Vecka\"\n    xLabels={['v. 36', 'v. 37', 'v. 38', 'v. 39', 'v. 40']}\n    series={[\n        { name: 'Vårt lag', points: [62, 68, 71, 66, 78] },\n        { name: 'Snitt', points: [58, 60, 59, 63, 64] },\n    ]}\n    yMin={0}\n    yMax={100}\n    yFormat=\"percent\"\n/>",
+                    },
+                    {
+                        title: "Colours of your own",
+                        description: "The six series colours are custom properties on any ancestor; a series may also name a theme colour, here neutral for the line it is measured against",
+                        code: "<div style=\"--zabi-chart-1: var(--color-accent)\">\n    <LineChart label=\"Poäng\" xTitle=\"Vecka\" {xLabels} series={[{ name: 'Poäng', points }, { name: 'Mål', points: goal, color: 'neutral' }]} showTable />\n</div>",
+                    },
+                    {
+                        title: "On glass",
+                        description: "The same chart on a tint card, without and with glass. Point at either: the values come up in a pane of the same material, which is there with or without glass",
+                        code: "<Card tone=\"tint\">\n    <div class=\"grid gap-6 md:grid-cols-2\">\n        <LineChart label=\"Utan glas\" {xLabels} {series} yMin={0} yMax={100} yFormat=\"percent\" height={200} />\n        <LineChart glass label=\"Med glas\" {xLabels} {series} yMin={0} yMax={100} yFormat=\"percent\" height={200} />\n    </div>\n</Card>",
+                    },
+                ],
+            },
+            {
+                name: "BarChart",
+                category: "molecules",
+                description:
+                    "A bar chart of one set of values, drawn as plain SVG: upright bars from a zero line, each with its label and value, and a data table behind it.",
+                props: [
+                    {
+                        name: "data",
+                        type: "{ label: string; value: number; color?: ChartColor }[]",
+                        required: true,
+                        description:
+                            "The bars, in order.",
+                    },
+                    {
+                        name: "color",
+                        type: "ChartColor",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The colour of the bars: primary, accent, success, warning, error, info, neutral, or any CSS colour. Without it, the first series colour.",
+                    },
+                    {
+                        name: "yMax",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The top of the value axis, and the ceiling each bar is measured against: with it every bar stands in a track that reaches it, as a Progress does. Without it, the highest value rounded up to a tick and no tracks. Zero is always on the axis.",
+                    },
+                    {
+                        name: "yFormat",
+                        type: "'number' | 'percent' | ((value: number) => string)",
+                        required: false,
+                        defaultValue: "number",
+                        description:
+                            "How a value is written: number, percent (72 is \"72 %\"), or a function of your own.",
+                    },
+                    {
+                        name: "height",
+                        type: "number",
+                        required: false,
+                        defaultValue: "240",
+                        description:
+                            "Height of the drawing in px. The width is the container's.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: true,
+                        description:
+                            "The caption, and what the chart is called.",
+                    },
+                    {
+                        name: "labelHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Keeps the caption for assistive technology and takes it off the screen.",
+                    },
+                    {
+                        name: "showValues",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Writes each value over its bar, while the bars are wide enough for it.",
+                    },
+                    {
+                        name: "showTable",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the data table under the chart; otherwise it is there for assistive technology only.",
+                    },
+                    {
+                        name: "categoryTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Category",
+                        description:
+                            "The heading of the table's first column.",
+                    },
+                    {
+                        name: "valueTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Value",
+                        description:
+                            "The heading of the table's value column.",
+                    },
+                    {
+                        name: "glass",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Stands the chart on a panel of the thick material (frosted glass), for a chart over a wash, a tint or a picture. It is the panel only: the slices and bars are glass with or without it. On a plain card it shows nothing; over a solid brand or accent fill some series colours fall under 3:1.",
+                    },
+                    {
+                        name: "locale",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The language of the built-in number formats. Without it, the runtime's; pass one on a server-rendered page.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "Points per round",
+                        description: "Out of ten: yMax is the ceiling, so each bar stands in a track up to it, the way a Progress does",
+                        code: "<BarChart\n    label=\"Poäng per runda\"\n    categoryTitle=\"Runda\"\n    valueTitle=\"Poäng\"\n    data={[\n        { label: 'R1', value: 7 },\n        { label: 'R2', value: 9 },\n        { label: 'R3', value: 4 },\n        { label: 'R4', value: 8 },\n    ]}\n    yMax={10}\n/>",
+                    },
+                    {
+                        title: "Games per day",
+                        description: "No ceiling, so no tracks: the axis ends at the first round number above the highest bar",
+                        code: "<BarChart\n    label=\"Spelade per dag\"\n    categoryTitle=\"Dag\"\n    valueTitle=\"Spelade\"\n    data={[\n        { label: 'Mån', value: 12 },\n        { label: 'Tis', value: 18 },\n        { label: 'Ons', value: 9 },\n        { label: 'Tors', value: 22 },\n        { label: 'Fre', value: 15 },\n    ]}\n/>",
+                    },
+                    {
+                        title: "On glass",
+                        description: "The same chart on a tint card, without and with the glass panel under it; the bars are glass in both, and the tracks stay the Progress track",
+                        code: "<Card tone=\"tint\">\n    <div class=\"grid gap-6 md:grid-cols-2\">\n        <BarChart label=\"Utan glas\" data={rounds} yMax={10} height={200} />\n        <BarChart glass label=\"Med glas\" data={rounds} yMax={10} height={200} />\n    </div>\n</Card>",
+                    },
+                    {
+                        title: "Glass and flat",
+                        description: "The bars are glass by default, as the slices of a PieChart are. Inside data-materials=\"opaque\", as with reduced transparency, more contrast or forced colours, they are the flat fill of a Progress",
+                        code: "<div class=\"grid gap-6 md:grid-cols-2\">\n    <BarChart label=\"Glas\" data={rounds} yMax={10} height={200} />\n    <div data-materials=\"opaque\">\n        <BarChart label=\"Platt\" data={rounds} yMax={10} height={200} />\n    </div>\n</div>",
+                    },
+                ],
+            },
+            {
+                name: "PieChart",
+                category: "molecules",
+                description:
+                    "A pie chart, or a ring with donut, in plain SVG: parts of a whole, a key with each slice's label, value and share, and a data table behind it.",
+                props: [
+                    {
+                        name: "data",
+                        type: "{ label: string; value: number; color?: ChartColor }[]",
+                        required: true,
+                        description:
+                            "The slices, in order, clockwise from twelve o'clock. Keep it to six or fewer; after six the colours repeat.",
+                    },
+                    {
+                        name: "donut",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "A ring, not a full disc.",
+                    },
+                    {
+                        name: "center",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "What stands in the middle of the ring: the total, or the one share that matters; a Stat fits. Only with donut. Assistive technology reads it.",
+                    },
+                    {
+                        name: "format",
+                        type: "'number' | 'percent' | ((value: number) => string)",
+                        required: false,
+                        defaultValue: "number",
+                        description:
+                            "How a value is written: number, percent (72 is \"72 %\"), or a function of your own.",
+                    },
+                    {
+                        name: "size",
+                        type: "number",
+                        required: false,
+                        defaultValue: "192",
+                        description:
+                            "The widest the drawing gets, in px. It shrinks with its container.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: true,
+                        description:
+                            "The caption, and what the chart is called.",
+                    },
+                    {
+                        name: "labelHidden",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Keeps the caption for assistive technology and takes it off the screen.",
+                    },
+                    {
+                        name: "legend",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "The key beside the drawing: each slice's label, value and share. Without it, show the table.",
+                    },
+                    {
+                        name: "showTable",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Shows the data table under the chart; otherwise it is there for assistive technology only.",
+                    },
+                    {
+                        name: "categoryTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Category",
+                        description:
+                            "The heading of the table's first column.",
+                    },
+                    {
+                        name: "valueTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Value",
+                        description:
+                            "The heading of the table's value column.",
+                    },
+                    {
+                        name: "shareTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Share",
+                        description:
+                            "The heading of the table's share column.",
+                    },
+                    {
+                        name: "glass",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Stands the chart on a panel of the thick material (frosted glass), for a chart over a wash, a tint or a picture. It is the panel only: the slices and bars are glass with or without it. On a plain card it shows nothing; over a solid brand or accent fill some series colours fall under 3:1.",
+                    },
+                    {
+                        name: "locale",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "The language of the built-in number formats. Without it, the runtime's; pass one on a server-rendered page.",
+                    },
+                ],
+                variants: ["donut"],
+                examples: [
+                    {
+                        title: "Answers",
+                        description: "Right and wrong are states, so they take the theme's status colours by name, and neutral for the rest",
+                        code: "<PieChart\n    label=\"Svar\"\n    data={[\n        { label: 'Rätt', value: 14, color: 'success' },\n        { label: 'Fel', value: 4, color: 'error' },\n        { label: 'Överhoppade', value: 2, color: 'neutral' },\n    ]}\n/>",
+                    },
+                    {
+                        title: "Donut",
+                        description: "Six categories in the six series colours, with a Stat for the total in the middle of the ring",
+                        code: "<PieChart donut label=\"Frågor per kategori\" categoryTitle=\"Kategori\" valueTitle=\"Frågor\" data={categories}>\n    {#snippet center()}\n        <Stat value={40} label=\"frågor\" size=\"sm\" align=\"center\" />\n    {/snippet}\n</PieChart>",
+                    },
+                    {
+                        title: "On glass",
+                        description: "The same ring on a tint card, without and with the glass panel under it; the slices are glass in both",
+                        code: "<Card tone=\"tint\">\n    <div class=\"grid gap-6 md:grid-cols-2\">\n        <PieChart donut label=\"Utan glas\" data={categories} size={144} />\n        <PieChart glass donut label=\"Med glas\" data={categories} size={144} />\n    </div>\n</Card>",
+                    },
+                    {
+                        title: "Glass and flat",
+                        description: "The slices are glass by default: their own colour under a soft veil, with a hairline of light on the rim. Inside data-materials=\"opaque\", as with reduced transparency, more contrast or forced colours, they are the flat fills",
+                        code: "<div class=\"grid gap-6 md:grid-cols-2\">\n    <PieChart donut label=\"Glas\" data={categories} size={144} />\n    <div data-materials=\"opaque\">\n        <PieChart donut label=\"Platt\" data={categories} size={144} />\n    </div>\n</div>",
+                    },
+                ],
+            },
         ],
         organisms: [
             {
                 name: "TopNavbar",
                 category: "organisms",
                 description:
-                    "Top bar with brand, optional link list, theme toggle and a responsive mobile menu. Use embedded for a link-only strip inside your own header.",
+                    "Top bar with brand, links, theme toggle and a phone menu that opens as a sheet. Use embedded for a link-only strip inside your own header.",
                 props: [
+                    {
+                        name: "scrollEdge",
+                        type: "'auto' | 'always' | 'never'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "When the bar shows the glass and the hairline. auto follows the scroll position (flush at the top, glass once content is under it, and while the inline phone menu is open); always is glass all the time, never is flush all the time. The bar writes the result as data-scrolled-under on itself.",
+                    },
                     {
                         name: "strings",
                         type: "Partial<TopNavbarStrings>",
                         required: false,
                         description:
-                            "The words the bar says by itself: openMenu and closeMenu (the phone menu's button) and opensInNewTab (read after a link that opens a new tab).",
+                            "The words the bar says by itself: openMenu and closeMenu (the phone menu's button), menuTitle (the name of the menu sheet) and opensInNewTab (read after a link that opens a new tab).",
                     },
                     {
                         name: "themeModes",
@@ -7084,6 +9090,14 @@ pushToast({
                         description:
                             "Breakpoint at which the links move from the phone menu into the bar. Raise it when the row has more items than fit at 768px.",
                     },
+                    {
+                        name: "menu",
+                        type: "'sheet' | 'inline'",
+                        required: false,
+                        defaultValue: "sheet",
+                        description:
+                            "How the links open below collapseAt. sheet is a modal bottom sheet, as tall as its content up to the full screen; inline is the panel under the bar of 8.1, a disclosure that pushes the page down. In the sheet the actions and a segmented theme choice have a section of their own; getTopNavbarPlace() tells an action whether it is in the bar or the menu.",
+                    },
                 ],
                 variants: [
                     "header",
@@ -7095,6 +9109,11 @@ pushToast({
                         title: "TopNavbar with inline links",
                         description: "Full bar with items prop",
                         code: '&lt;TopNavbar brand="App" brandHref="/" items={navItems} navVariant="header" currentPath="/" /&gt;',
+                    },
+                    {
+                        title: "Phone menu under the bar",
+                        description: "Keep the 8.1 inline panel instead of the sheet",
+                        code: '&lt;TopNavbar brand="App" items={navItems} menu="inline" /&gt;',
                     },
                     {
                         title: "Embedded link list",
@@ -7722,14 +9741,22 @@ pushToast({
                 name: "AppShell",
                 category: "organisms",
                 description:
-                    "Phone app layout: a top bar, content that scrolls and a bottom tab bar, as tall as the screen and clear of the safe areas.",
+                    "App layout: top bar, scrolling content and a bottom bar, as tall as the screen. An optional navigation is tabs, a rail or a sidebar by width.",
                 props: [
+                    {
+                        name: "canvas",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Paints the shell with the page colour and the brand wash (bg-canvas) instead of the plain page colour, and lets the wash show through the header bar at rest.",
+                    },
                     {
                         name: "header",
                         type: "Snippet",
                         required: false,
                         description:
-                            "The top bar, an AppBar. It stays at the top of the scrolling area and handles the safe area above it.",
+                            "The top bar, an AppBar. It stays at the top of the scrolling area and handles the safe area above it. Or several AppShellHeaderPart blocks, each of which sticks or scrolls away with the content.",
                     },
                     {
                         name: "children",
@@ -7751,7 +9778,30 @@ pushToast({
                         type: "Snippet",
                         required: false,
                         description:
-                            "The bottom bar, a BottomTabBar. It sits below the scrolling area and handles the safe area below it.",
+                            "The bottom bar, a BottomTabBar. It lies over the bottom of the scrolling area, so content passes beneath it, and handles the safe area below it.",
+                    },
+                    {
+                        name: "navigation",
+                        type: "Snippet<[{ placement: 'tabs' | 'rail' | 'sidebar' }]>",
+                        required: false,
+                        description:
+                            "One navigation, drawn as tabs over the bottom of the screen, a rail or a sidebar by navigationPlacement. Rendered once and placed by CSS, so the server's markup is right at every width. It comes first in the DOM (Tab goes navigation, header, content). As tabs it lies over the bottom like footer, and the footer sits directly above it; as a rail or sidebar it is a full-height column at the inline start and the header, content and footer take the rest. --app-shell-bottom-inset counts the tabs, so a sticky action bar or a floating button clears them; --app-shell-start-inset is the column's width. placement is the forced value, or in auto what the viewport says once mounted (tabs on the server and before mount). AppNavigation is the ready-made content. Without it the shell is exactly what it was.",
+                    },
+                    {
+                        name: "navigationPlacement",
+                        type: "'auto' | 'tabs' | 'rail' | 'sidebar'",
+                        required: false,
+                        defaultValue: "auto",
+                        description:
+                            "Where the navigation goes. auto follows the viewport in CSS: tabs below 48rem (768px), a rail from 48rem, a sidebar from 64rem (1024px, the breakpoint SidebarShell uses). The others apply at every width. The host carries it as data-navigation-placement.",
+                    },
+                    {
+                        name: "flushTop",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Without a header, leaves out the content's padding for the status bar and the notch, so it starts at the top of the screen and a block of colour can run under the status bar. The content then handles the safe area itself: pad by --app-shell-top-inset, or put an AppBar position=\"static\" in the block. --app-shell-top-inset keeps its value. With a header it does nothing.",
                     },
                     {
                         name: "class",
@@ -7767,7 +9817,7 @@ pushToast({
                         required: false,
                         defaultValue: '""',
                         description:
-                            "Added after the two custom properties the host sets: --app-shell-top-inset and --app-shell-bottom-inset, the heights of the header and the footer with their safe areas. While the shell is mounted both are also set on the html element, so an overlay moved to the body can read them.",
+                            "Added after the custom properties the host sets: --app-shell-top-inset and --app-shell-bottom-inset, the heights of the header and of what lies over the bottom (the footer, and navigation placed as tabs) with their safe areas, and with a navigation --app-shell-start-inset, the width of the rail or sidebar (0px as tabs). The scroller also sets --app-shell-footer-overlay (the bottom inset with a footer, 0px without), and the host data-scrolled-top and data-scrolled-bottom. While the shell is mounted both are also set on the html element, so an overlay moved to the body can read them.",
                     },
                 ],
                 variants: [],
@@ -7817,6 +9867,172 @@ pushToast({
     {#snippet footer()}
         <BottomTabBar {items} active={page.url.pathname} />
     {/snippet}
+</AppShell>`,
+                    },
+                ],
+            },
+            {
+                name: "AppShellHeaderPart",
+                category: "organisms",
+                description:
+                    "One part of an AppShell header: it sticks to the top of the scrolling area or scrolls away with the content, so a filter row can stay while the bar leaves.",
+                props: [
+                    {
+                        name: "sticky",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Stays at the top under the parts that stick above it (true), or scrolls away with the content (false). The parts that stick stack in document order with no gap and no overlap, however many parts that scroll away are between them. The shell reports only what is stuck as --app-shell-top-inset and scroll-padding-top. The glass and one hairline sit under the lowest stuck part once content is under it; the status bar is covered by whatever is topmost. When the stuck parts would cover more than 40% of the scroller (landscape, 200% text) the lower ones stop sticking and carry data-released. The part writes data-sticky; data-scrolled-under is on the sticky ones.",
+                    },
+                    {
+                        name: "children",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "The part's content: an AppBar, a search field, a row of filter chips, tabs. An AppBar with largeTitle condenses inside its part; collapseOnScroll is for a header without parts.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes on the part. Pad with padding, not margin: the shell measures the part's box.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "The bar scrolls away, the filter row stays",
+                        description:
+                            "Parts go side by side in the header snippet, in the order they are drawn. Nothing but the parts' heights is measured. A header without parts is one block that sticks, as before.",
+                        code: `<AppShell>
+    {#snippet header()}
+        <AppShellHeaderPart sticky={false}>
+            <AppBar title="Quizzes" />
+        </AppShellHeaderPart>
+        <AppShellHeaderPart class="px-4 py-2">
+            <FilterChips />
+        </AppShellHeaderPart>
+    {/snippet}
+    <div class="p-4">…</div>
+</AppShell>`,
+                    },
+                    {
+                        title: "A large title that leaves, a bar and tabs that stay",
+                        description:
+                            "The AppBar condenses to its 56px row as it does alone; the tabs stick directly under it.",
+                        code: `{#snippet header()}
+    <AppShellHeaderPart><AppBar title="Quizzes" largeTitle /></AppShellHeaderPart>
+    <AppShellHeaderPart><Tabs {tabs} bind:activeTab fullWidth /></AppShellHeaderPart>
+{/snippet}`,
+                    },
+                ],
+            },
+            {
+                name: "AppNavigation",
+                category: "organisms",
+                description:
+                    "Content for AppShell's navigation slot: one list drawn as a tab bar, a rail or a sidebar by the shell's placement, in CSS alone.",
+                props: [
+                    {
+                        name: "items",
+                        type: "BottomTabBarItem[]",
+                        required: true,
+                        description:
+                            "The destinations, as for BottomTabBar: { href, label, icon, activeIcon?, badge? }. activeIcon is drawn instead of icon on the active one (without it icon is drawn with a heavier stroke); badge is a count in the attention colour.",
+                    },
+                    {
+                        name: "active",
+                        type: "string",
+                        required: false,
+                        defaultValue: "the current page",
+                        description:
+                            "The href of the active destination, or the path of the current page: the one for that page or the closest one above it gets aria-current. Left out, the address is read in the browser; in SvelteKit pass page.url.pathname so the server marks it too.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: "Main",
+                        description:
+                            "Accessible name of the navigation landmark. Only one of the two forms is shown, so only one landmark is exposed.",
+                    },
+                    {
+                        name: "badgeLabel",
+                        type: "(count: number, item: BottomTabBarItem) => string",
+                        required: false,
+                        defaultValue: "(count) => `${count} new`",
+                        description:
+                            "What a count adds to the link's accessible name, after the label and a comma: Inbox, 3 new.",
+                    },
+                    {
+                        name: "badgeMax",
+                        type: "number",
+                        required: false,
+                        defaultValue: "99",
+                        description:
+                            "Counts above this show as 99+. The accessible name keeps the real count.",
+                    },
+                    {
+                        name: "floating",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Draws the tab bar form as a floating capsule of glass (see BottomTabBar). The rail and the sidebar are unaffected.",
+                    },
+                    {
+                        name: "header",
+                        type: "Snippet<[{ placement: 'rail' | 'sidebar' }]>",
+                        required: false,
+                        description:
+                            "Above the list in the rail and the sidebar: a logo or a workspace switcher. Not shown as tabs. placement is the shell's; before the shell knows the viewport (the server, before mount) it is sidebar.",
+                    },
+                    {
+                        name: "footer",
+                        type: "Snippet<[{ placement: 'rail' | 'sidebar' }]>",
+                        required: false,
+                        description:
+                            "Below the list in the rail and the sidebar: an account row. Not shown as tabs.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Extra classes for the root element.",
+                    },
+                ],
+                variants: [],
+                examples: [
+                    {
+                        title: "One navigation for every width",
+                        description:
+                            "Tabs below 768px, a rail from 768px, a sidebar from 1024px, in the markup the server sends. Resize the window to see it move; nothing is mounted again",
+                        code: `<script lang="ts">
+    import { AppBar, AppNavigation, AppShell } from "zabi-components";
+    import Bell from "@lucide/svelte/icons/bell";
+    import House from "@lucide/svelte/icons/house";
+    import Trophy from "@lucide/svelte/icons/trophy";
+    import { page } from "$app/state";
+
+    const items = [
+        { href: "/", label: "Home", icon: House },
+        { href: "/quiz", label: "Quiz", icon: Trophy },
+        { href: "/inbox", label: "Inbox", icon: Bell, badge: 3 },
+    ];
+</script>
+
+<AppShell>
+    {#snippet navigation()}
+        <AppNavigation {items} active={page.url.pathname} />
+    {/snippet}
+    {#snippet header()}
+        <AppBar title="Quiz" largeTitle />
+    {/snippet}
+    <div class="p-4">…</div>
 </AppShell>`,
                     },
                 ],

@@ -230,6 +230,21 @@ async function buildCSS() {
     // Not a token, so it is not in the @theme block: the light theme's own scheme.
     colorsCss += LIGHT_SCHEME_CSS_MINIFIED + '\n';
   }
+  // The materials' fallbacks and the reduced-motion block are token-only, so a vanilla-CSS app gets them too.
+  const fallback = [];
+  let inFallback = false;
+  appAst.each((node) => {
+    if (node.type === 'comment') {
+      if (/@(materials-fallback|motion-reduced)-start/.test(node.text)) inFallback = true;
+      if (/@(materials-fallback|motion-reduced)-end/.test(node.text)) inFallback = false;
+      return;
+    }
+    if (inFallback) {
+      const copy = node.clone();
+      copy.walkComments((c) => c.remove());
+      fallback.push(copy.toString().replace(/\s+/g, ' ').trim());
+    }
+  });
   const darkChunks = [];
   appAst.walkRules((rule) => {
     const selectors = (rule.selectors ?? [rule.selector]).map((s) => s.trim());
@@ -239,6 +254,7 @@ async function buildCSS() {
   if (darkChunks.length > 0) {
     colorsCss += darkThemeCssMinified(darkChunks.join('')) + '\n';
   }
+  if (fallback.length > 0) colorsCss += fallback.join('\n') + '\n';
 
   const colorsOutputFile = path.join(__dirname, '../dist/zabi-components-colors.css');
   fs.writeFileSync(colorsOutputFile, colorsCss);

@@ -29,6 +29,13 @@
  *      Radius is chosen by role (`rounded-control` / `rounded-container` /
  *      `rounded-overlay` / `rounded-pill`), never by size. The library
  *      previously had eight radii in play, from a 2px Badge to a 24px Modal.
+ *      `rounded-button` is the control radius by default (src/app.css reads
+ *      `--zabi-button-radius` and falls back to `--radius-control`), so an app
+ *      can round its buttons without rounding its fields (Z-047). It is a
+ *      rule change to match a decided design, not a loosened threshold: it is
+ *      the same role radius, and a Button may use either class. The stylesheet
+ *      is checked to keep that fallback, so `rounded-button` cannot drift off
+ *      the control corner.
  *
  * Run: node scripts/check-control-geometry.js
  */
@@ -48,15 +55,22 @@ const EXPECTED_HEIGHT = { sm: 'h-8', md: 'h-10', lg: 'h-12' };
  * dense pointer-first layouts; no text control is that small, so it is not on
  * the shared scale, but it is pinned here so it cannot drift either.
  */
-const EXTRA_HEIGHT = { 'atoms/IconButton.svelte': { xs: 'h-6' } };
+const EXTRA_HEIGHT = { 'atoms/IconButton.svelte': { xs: 'h-6' }, 'atoms/Button.svelte': { xl: 'h-14' } };
 
 const CONTROLS = [
     'atoms/Button.svelte',
     'atoms/IconButton.svelte',
     'atoms/Input.svelte',
     'atoms/Select.svelte',
+    'atoms/PickerField.svelte',
     'atoms/Slider.svelte',
 ];
+
+/** Where a control's size map is written, when it is not in the component itself. Select and PickerField share one. */
+const SIZE_SOURCE = {
+    'atoms/Select.svelte': 'util/field-control.ts',
+    'atoms/PickerField.svelte': 'util/field-control.ts',
+};
 
 /** Sizes below 44px, which have to grow on a coarse pointer. `lg` (48px) does not. */
 const TOUCH_SIZES = ['sm', 'md'];
@@ -110,9 +124,9 @@ const LINE_HEIGHT_PX = { 'text-xs': 16, 'text-sm': 20, 'text-base': 24, 'text-lg
 const BORDER_PX = 2;
 
 /** The `text:` value of each arm of the size map, as `boxesBySize` reads `box:`. */
-function textsBySize(source) {
+function textsBySize(source, extraSizes = []) {
     const found = { sm: null, md: null, lg: null };
-    for (const size of ['sm', 'lg']) {
+    for (const size of ['sm', 'lg', ...extraSizes]) {
         const arm = new RegExp(`size === "${size}"[\\s\\S]{0,240}?text:\\s*"([^"]+)"`);
         const m = source.match(arm);
         if (m) found[size] = m[1];
@@ -175,7 +189,7 @@ function main() {
     // 1. Heights
     const table = {};
     for (const rel of CONTROLS) {
-        const full = path.join(componentsDir, rel);
+        const full = path.join(componentsDir, SIZE_SOURCE[rel] ?? rel);
         if (!fs.existsSync(full)) {
             failures.push(`${rel} not found`);
             continue;
@@ -202,6 +216,13 @@ function main() {
             }
         }
         const texts = textsBySize(source);
+        // Button's `xl` (56px) is held to the same rule as the shared sizes.
+        const extraBoxes = boxesBySize(source, Object.keys(extra));
+        const extraTexts = textsBySize(source, Object.keys(extra));
+        for (const size of Object.keys(extra)) {
+            const problem = minHeightProblem(extraBoxes[size], extraTexts[size]);
+            if (problem) failures.push(`${rel}: size "${size}" ${problem}`);
+        }
         for (const size of ['sm', 'md', 'lg']) {
             const problem = minHeightProblem(boxes[size], texts[size]);
             if (problem) failures.push(`${rel}: size "${size}" ${problem}`);
@@ -225,11 +246,11 @@ function main() {
         }
     }
 
-    console.log('  component                 sm     md     lg     xs');
+    console.log('  component                 sm     md     lg     xs/xl');
     for (const [rel, h] of Object.entries(table)) {
         console.log(
             '  ' + rel.replace(/^.*\//, '').padEnd(24) +
-            String(h.sm).padEnd(7) + String(h.md).padEnd(7) + String(h.lg).padEnd(7) + (h.xs ?? ''),
+            String(h.sm).padEnd(7) + String(h.md).padEnd(7) + String(h.lg).padEnd(7) + (h.xs ?? h.xl ?? ''),
         );
     }
 
@@ -244,9 +265,15 @@ function main() {
     }
     if (radiusOffenders.length) {
         failures.push(
-            't-shirt radii found — use rounded-control / rounded-container / rounded-overlay / rounded-pill:\n      ' +
+            't-shirt radii found — use rounded-control / rounded-button / rounded-container / rounded-overlay / rounded-pill:\n      ' +
             radiusOffenders.join('\n      '),
         );
+    }
+
+    // `rounded-button` stands for the control radius by default.
+    const appCss = fs.readFileSync(path.join(__dirname, '../src/app.css'), 'utf8');
+    if (!/\.rounded-button\s*\{\s*border-radius:\s*var\(--zabi-button-radius,\s*var\(--radius-control\)\);/.test(appCss)) {
+        failures.push('src/app.css: .rounded-button must be `border-radius: var(--zabi-button-radius, var(--radius-control))`, the control radius unless an app sets the button radius');
     }
 
     if (failures.length) {

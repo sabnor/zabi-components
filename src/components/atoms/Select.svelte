@@ -17,6 +17,7 @@
     import { generateId } from "../util/ssr-safe.js";
     import { isInsideToastRegion } from "../util/focus-utils.js";
     import { cn } from "../util/cn.js";
+    import { FIELD_CONTROL_SURFACE, fieldControlEdge, fieldControlSize } from "../util/field-control.js";
     import { fieldDescribedBy, fieldMessageState } from "../util/field.js";
     import FieldMessages from "./FieldMessages.svelte";
 
@@ -54,6 +55,12 @@
             value: string | number;
             label: string;
             disabled?: boolean;
+            /**
+             * The language of the label, as a BCP 47 tag (`"en"`), when it is
+             * not the page's (WCAG 3.1.2). Set on the option's row, on the
+             * trigger's text while it is chosen, and on the native `<option>`.
+             */
+            lang?: string;
         }>;
         searchable?: boolean;
         /**
@@ -76,6 +83,12 @@
          * no search field, and none of the loading or empty states.
          */
         presentation?: SelectPresentation;
+        /**
+         * In a sheet, a short list (up to six options) without a search field
+         * gets a sheet as tall as the list, not half the screen. `false`
+         * keeps the half-height sheet.
+         */
+        sheetFit?: boolean;
         noResultsText?: string;
         isLoading?: boolean;
         loadingText?: string;
@@ -118,6 +131,7 @@
         maxMenuHeight = "60dvh",
         menuWidth = "100%",
         presentation = "auto",
+        sheetFit = true,
         noResultsText,
         isLoading = false,
         loadingText,
@@ -185,32 +199,12 @@
     let selectContainer: HTMLDivElement;
     let searchQuery = $state("");
 
-    // Same fixed height scale as Button, IconButton and Input (32 / 40 / 48),
-    // and the same 16px text below `sm`, so a Select beside an Input matches it.
-    const sizeClass = $derived(() => {
-        // A minimum height, so a label that wraps makes the trigger taller
-        // instead of being cut. One line is exactly 32, 40 or 48px: the
-        // padding leaves room for the line and the border inside it, and is
-        // a step smaller below `sm`, where the text is 16px on a 24px line. `native` is the same box for the native
-        // select, which is always one line.
-        if (size === "sm") return { box: "min-h-8 px-3 py-1 max-sm:py-0 pointer-coarse:min-h-11", text: "text-sm max-sm:text-base", native: "h-8 ps-3 pe-9 pointer-coarse:h-11", chevron: "end-3" };
-        if (size === "lg") return { box: "min-h-12 px-4 py-2", text: "text-base", native: "h-12 ps-4 pe-10", chevron: "end-4" };
-        return { box: "min-h-10 px-3 py-2 max-sm:py-1 pointer-coarse:min-h-11", text: "text-sm max-sm:text-base", native: "h-10 ps-3 pe-9 pointer-coarse:h-11", chevron: "end-3" };
-    });
+    const sizeClass = $derived(() => fieldControlSize(size));
 
-    const variantClass = $derived(() => {
-        return status.variant === "success"
-            ? "border-success focus-visible:border-success"
-            : status.variant === "warning"
-              ? "border-warning focus-visible:border-warning"
-              : status.variant === "error"
-                ? "border-error focus-visible:border-error"
-                : "border-input-border enabled:hover:border-input-border-hover";
-    });
+    const variantClass = $derived(() => fieldControlEdge(status.variant));
 
     /** What the trigger and the visible native select share: the field's surface, edge and states. */
-    const fieldSurface =
-        "focus-ring w-full min-w-0 cursor-pointer rounded-control border bg-input text-body transition-colors duration-150 hover:bg-input-hover active:bg-input-active focus-visible:bg-input-focus focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-input-disabled disabled:text-action-disabled-text";
+    const fieldSurface = FIELD_CONTROL_SURFACE;
 
     const triggerClasses = $derived(() => {
         const sizeStyles = sizeClass();
@@ -501,6 +495,7 @@
             <option
                 value={String(option.value)}
                 disabled={option.disabled}
+                lang={option.lang}
                 selected={isSameValue(value, option.value)}
             >
                 {option.label}
@@ -536,6 +531,7 @@
         sheetExpandLabel={text.expandLabel}
         sheetCollapseLabel={text.collapseLabel}
         sheetSnap={searchable && options.length > 6 ? "full" : "half"}
+        sheetFit={sheetFit && !searchable && options.length <= 6}
     >
         {#snippet trigger(aria)}
             <!-- A select-only combobox, as the ARIA practices describe it:
@@ -568,6 +564,7 @@
                 control to read the rest. The chevron stays in the middle of
                 the box, however many lines there are. -->
                 <span
+                    lang={isLoading || isEmpty() ? undefined : selectedOption?.lang}
                     class="min-w-0 flex-1 text-start [overflow-wrap:anywhere] {disabled
                         ? ''
                         : isLoading
@@ -586,7 +583,7 @@
                 </span>
                 <ChevronDown
                     size={20}
-                    class="shrink-0 text-description transition-transform duration-200 motion-reduce:transition-none {isOpen
+                    class="shrink-0 text-description transition-transform duration-(--duration-moderate) motion-reduce:transition-none {isOpen
                         ? 'rotate-180'
                         : ''}"
                 />
@@ -614,7 +611,7 @@
         {#snippet children()}
             <!-- `px-1` twice: the inner one is room for an option's focus
             ring inside the scrolling box, and together with the panel's
-            border they put the options 9px from its corner. -->
+            1px rim they put the options 9px from its corner. -->
             <div class="px-1 pb-2 pt-1" style:width={menuWidth} data-menu-width>
                 <div
                     class="overflow-y-auto px-1"
@@ -638,7 +635,7 @@
                                     type="button"
                                     role="option"
                                     aria-selected={isSameValue(value, option.value)}
-                                    class="focus-ring flex w-full items-center justify-start gap-2 rounded-control border-2 px-3 py-2 pointer-coarse:py-3 text-start text-sm font-medium transition-colors focus:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 {isSameValue(
+                                    class="focus-ring flex w-full items-center justify-start gap-2 rounded-control border-2 px-3 py-2 pointer-coarse:py-3 text-start text-sm font-medium transition-colors focus:outline-none cursor-pointer aria-disabled:cursor-not-allowed aria-disabled:opacity-50 {isSameValue(
                                         value,
                                         option.value,
                                     )
@@ -647,6 +644,7 @@
                                           ? 'border-transparent bg-transparent text-body'
                                           : 'border-transparent bg-transparent text-body hover:bg-surface-overlay-hover active:bg-surface-active'}"
                                     aria-disabled={option.disabled ? "true" : undefined}
+                                    lang={option.lang}
                                     {...buttonRestProps}
                                     onclick={() =>
                                         handleOptionClick(option.value)}

@@ -487,7 +487,7 @@ describe("ImageUpload", () => {
         const pdf = new File(["p"], "notes.pdf", { type: "application/pdf" });
         await fireEvent.drop(dropzone(), dropOf(pdf));
         expect(onfileselect).not.toHaveBeenCalled();
-        expect(onfilereject).toHaveBeenCalledWith(pdf);
+        expect(onfilereject).toHaveBeenCalledWith(pdf, "type");
 
         await rerender({ disabled: true });
         await fireEvent.dragEnter(dropzone(), { dataTransfer: { types: ["Files"] } });

@@ -1,13 +1,13 @@
 /**
- * Regenerates the dark-mode surface levels in src/app.css from
+ * Regenerates the dark-mode surface roles in src/app.css from
  * tokens/surface-ladder.js.
  *
- * Only the `.dark` block is touched: the light levels are white and base-100,
- * which are not washes of anything.
+ * Only the `.dark` block is touched: the light levels are white and base-100.
  *
- * What is written is `color-mix()` over `--zabi-base-*`, not hex, so the
- * ladder follows an app's neutral override. The hex in the log below is what
- * those expressions resolve to with the default greys.
+ * What is written is `var(--zabi-base-N)`, a step of the neutral ramp, not hex,
+ * so hue and chroma are the ramp's own and the surfaces follow an app's
+ * neutral override. The hex in the log below is what those resolve to with
+ * the default greys.
  *
  * Run via `npm run sync:tokens`, which `npm run build:css` calls.
  * Verify with `node scripts/check-surface-elevation.js`.
@@ -20,9 +20,7 @@ import { converter } from 'culori';
 import {
     generateSurfaceLadder,
     generateSurfaceLadderCss,
-    SURFACE_ALPHA,
-    DARK_BASE_STEP,
-    WASH_STEP,
+    SURFACE_STEP,
 } from '../tokens/surface-ladder.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -55,20 +53,12 @@ function run() {
 
     fs.writeFileSync(appCssPath, css.slice(0, darkStart) + dark + css.slice(darkEnd), 'utf8');
 
-    console.log(
-        `generate-surfaces: rewrote ${rewritten} dark surface levels ` +
-            `(--zabi-base-${WASH_STEP} over --zabi-base-${DARK_BASE_STEP})`,
-    );
-    let previous = null;
+    console.log(`generate-surfaces: rewrote ${rewritten} dark surface roles (steps of --zabi-base-*)`);
+    const page = lightness(levels['surface-base']);
     for (const [name, hex] of Object.entries(levels)) {
         const l = lightness(hex);
-        const alpha = SURFACE_ALPHA[name];
-        const step = previous === null ? '' : `  +${(l - previous).toFixed(1)} L`;
-        console.log(
-            `  ${name.padEnd(17)} ${hex}  L ${String(l).padStart(5)}` +
-                `${alpha ? `  wash ${(alpha * 100).toFixed(1)}%` : '  (page)'}${step}`,
-        );
-        previous = l;
+        const above = `  ${l - page >= 0 ? '+' : ''}${(l - page).toFixed(1)} L over the page`;
+        console.log(`  ${name.padEnd(22)} ${hex}  L ${String(l).padStart(5)}  --zabi-base-${SURFACE_STEP[name]}${above}`);
     }
 }
 

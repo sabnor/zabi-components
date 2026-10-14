@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import CardWithContent from './CardWithContent.svelte';
 import CardCompound from './CardCompound.svelte';
+import CardTonesStory from './CardTonesStory.svelte';
+import CardLinkStory from './CardLinkStory.svelte';
+import CardButtonStory from './CardButtonStory.svelte';
+import CardFlatLayersStory from './CardFlatLayersStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Card',
@@ -141,4 +145,51 @@ export const CompoundElevated: Story = {
         Component: CardCompound,
         props: args
     })
+};
+
+export const LinkCard: Story = {
+    name: 'Link card',
+    parameters: {
+        docs: {
+            description: {
+                story: 'With `href` the whole card is one `<a>`: the focus ring follows the card edge, there is a hover and pressed state, and it works without scripts. A link card must not contain another link or button.'
+            }
+        }
+    },
+    render: (args) => ({ Component: CardLinkStory, props: args })
+};
+
+export const ButtonCard: Story = {
+    name: 'Button card',
+    parameters: {
+        docs: {
+            description: {
+                story: 'With `type="submit"` the whole card is one `<button>`: it posts the form around it without scripts, with the same ring, hover and pressed states and 44px minimum as a link card. `name`, `value` and `form` go to the button; `disabled` dims it and takes it out of the Tab order; `loading` marks it busy (`aria-busy`, `aria-disabled`), swallows the press and holds the pressed look while it stays a Tab stop. Like a link card it must not contain another link or button. With `href` it is a link and `type` is ignored.'
+            }
+        }
+    },
+    render: (args) => ({ Component: CardButtonStory, props: args })
+};
+
+export const Tones: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'Neutral, tint, brand, accent and a custom fill with its on-colour. On brand, accent and a custom fill the heading, text, link, Button, Badge and Rating inside take the fill\'s label colour. The library cannot check the contrast of a custom fill: the app must.'
+            }
+        }
+    },
+    render: (args) => ({ Component: CardTonesStory, props: args })
+};
+
+export const FlatLayers: Story = {
+    name: 'Flat layers',
+    parameters: {
+        docs: {
+            description: {
+                story: 'In dark, a flat card is a translucent, slightly lighter layer, so flat cards nested in each other, in a default card or in an elevated card each read a step lighter. In light it is the card surface, as before. Restore the opaque fill with `overrides: { dark: { \'--color-card-flat\': \'var(--color-card)\' } }`.'
+            }
+        }
+    },
+    render: (args) => ({ Component: CardFlatLayersStory, props: args })
 };

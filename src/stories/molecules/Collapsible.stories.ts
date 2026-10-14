@@ -9,7 +9,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'A trigger and the panel it shows and hides. The component owns the wiring: the ids, aria-expanded and aria-controls on the trigger, and the name of the panel. Pass a title for the built-in header button, or a trigger snippet to put the wiring on your own button inside your own header. Closed content stays in the DOM under hidden, so it takes no focus and a form inside it keeps its values. CollapsibleGroup turns several into an accordion.'
+                    'A trigger and the panel it shows and hides. Pass a title for the built-in header, a native details and summary: it opens and closes without scripts, before hydration and for a visitor who has none, and closed content stays in the DOM so a form inside it keeps its values and still submits them. Pass a trigger snippet instead to put the wiring on your own button inside your own header; that path needs scripts, because the button and the hidden panel are yours. CollapsibleGroup turns several into an accordion, exclusive without scripts too in browsers that support it.'
             }
         }
     },
@@ -27,7 +27,7 @@ export const Default: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'The default trigger is a full-width button with a chevron. Enter and Space toggle it, because it is a native button.'
+                story: 'The default trigger is a full-width summary with a chevron, inside a native details. Enter and Space toggle it and it works with JavaScript off, because the browser does the toggling. Find-in-page opens it too.'
             }
         }
     }
@@ -45,7 +45,7 @@ export const InsideAHeading: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'headingLevel wraps the default trigger in a real heading, so the section shows up in the document outline. Pick the level that fits the page.'
+                story: 'headingLevel puts a real heading inside the summary, so the section shows up in the document outline. Pick the level that fits the page.'
             }
         }
     }
@@ -63,7 +63,7 @@ export const CustomTrigger: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'The trigger snippet renders your own header. Spread its first argument on a button and the wiring is done; the second argument carries the open state. Other buttons in the header are left alone.'
+                story: 'The trigger snippet renders your own header. Spread its first argument on a button and the wiring is done; the second argument carries the open state. Other buttons in the header are left alone. This one needs scripts: use title for content that must open without them.'
             }
         }
     }

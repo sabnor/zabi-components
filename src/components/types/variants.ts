@@ -21,14 +21,17 @@ export type ExtendedSemanticVariant = SemanticVariant | 'neutral' | 'energetic';
  * Button style variants - used for different button styles
  * These are style-based variants, not semantic color variants
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link' | 'accent';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link' | 'accent' | 'tonal' | 'text';
+
+/** Button's sizes: the shared scale plus `xl` (56px), which only Button has. */
+export type ButtonSize = SizeVariant | 'xl';
 
 /**
  * Badge variants: the semantic families, and `accent`, the app's second brand
- * colour (`--color-accent`). `energetic` is a family of its own and stays on
+ * colour (`--color-accent`), and `brand`, the primary one. `energetic` is a family of its own and stays on
  * the library's citron when an app changes its accent.
  */
-export type BadgeVariant = ExtendedSemanticVariant | 'accent';
+export type BadgeVariant = ExtendedSemanticVariant | 'accent' | 'brand';
 
 /**
  * Text colour of a Heading or Text that sits on a filled block.
@@ -43,6 +46,14 @@ export type OnFillTone = 'inherit' | 'on-brand' | 'on-accent';
  * Card style variants - used for different card appearances
  */
 export type CardVariant = 'default' | 'elevated' | 'outlined' | 'flat';
+
+/**
+ * What a Card or Block is filled with: the component's own surface
+ * (`neutral`), the brand tint as a content surface (`tint`), or the brand or
+ * accent colour (`brand`, `accent`), which also re-point the text, links,
+ * controls and focus rings inside to the fill's label colour.
+ */
+export type SurfaceTone = 'neutral' | 'tint' | 'brand' | 'accent';
 
 /**
  * Component size variants - consistent across all components

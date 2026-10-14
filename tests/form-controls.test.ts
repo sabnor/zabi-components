@@ -305,11 +305,16 @@ describe("Input: revealable", () => {
         expect(screen.getByRole("button", { name: "Visa lösenord" })).toBeTruthy();
     });
 
-    it("is not there on another type, or without the prop", () => {
+    it("is there on a password field without being asked for", () => {
+        render(Input, { props: { label: "Lösenord", type: "password" } });
+        expect(screen.getByRole("button", { name: "Show password" })).toBeTruthy();
+    });
+
+    it("is not there on another type, or when turned off", () => {
         render(Input, { props: { label: "E-post", type: "email", revealable: true } });
         expect(screen.queryByRole("button")).toBeNull();
         cleanup();
-        render(Input, { props: { label: "Lösenord", type: "password" } });
+        render(Input, { props: { label: "Lösenord", type: "password", revealable: false } });
         expect(screen.queryByRole("button")).toBeNull();
     });
 
@@ -467,7 +472,13 @@ describe("Checkbox, Radio and RadioGroup: the real input takes the press", () =>
         expect(own).toEqual(expect.arrayContaining(["absolute", "size-5", "opacity-0"]));
         // On a touch screen the input itself is the 44px target, centred on the box.
         expect(own).toEqual(
-            expect.arrayContaining(["pointer-coarse:size-11", "pointer-coarse:-top-3.5", "pointer-coarse:-start-3.5"]),
+            expect.arrayContaining([
+                "pointer-coarse:size-[44px]",
+                "pointer-coarse:top-1/2",
+                "pointer-coarse:left-1/2",
+                "pointer-coarse:-translate-x-1/2",
+                "pointer-coarse:-translate-y-1/2",
+            ]),
         );
         // Everything else in the box lets a press through.
         for (const sibling of control.parentElement!.children) {
@@ -501,7 +512,7 @@ describe("ListItem: a row is a link, a button, or plain content", () => {
         expect(own).not.toContain("focus-ring");
         expect(own.some((name) => name.startsWith("hover:") || name.startsWith("active:"))).toBe(false);
         // The same box as a row that can be pressed.
-        expect(own).toEqual(expect.arrayContaining(["flex", "border", "border-border", "px-4", "py-3"]));
+        expect(own).toEqual(expect.arrayContaining(["flex", "border", "border-[color:var(--zabi-list-row-border-color,transparent)]", "px-4", "py-3"]));
     });
 
     it("a List without onclick renders such rows, and the links among them stay links", () => {

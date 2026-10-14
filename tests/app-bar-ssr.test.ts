@@ -51,4 +51,14 @@ describe("AppBar on the server", () => {
         expect(order.every((at) => at > -1)).toBe(true);
         expect([...order].sort((a, b) => a - b)).toEqual(order);
     });
+
+    it("gives a bar with no title one row from the first paint: no wrap fallback for the empty part (Z-122)", () => {
+        const { body } = renderOnServer(AppBarHarness, {
+            props: { title: "", backHref: "/quiz", withActions: true, withLeading: true },
+        });
+        expect(body).toMatch(/<div[^>]*data-title-empty/);
+        expect(body).not.toContain("data-title-row");
+        expect(body).not.toMatch(/<h\d/);
+        expect(body).toMatch(/<div[^>]*data-appbar-part="title"/);
+    });
 });

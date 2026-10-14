@@ -1,5 +1,7 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import type { HTMLInputAttributes } from "svelte/elements";
+    import type { SemanticVariant } from "../types/variants.js";
     import SelectionControl from "./SelectionControl.svelte";
     import type { SelectionControlMarkProps } from "./SelectionControl.svelte";
     import { RADIO_CHECKED_DOT_CLASSES } from "./selection-control.styles";
@@ -20,6 +22,30 @@
         checked?: boolean;
         onChange?: (event: Event) => void;
         onchange?: (event: Event) => void;
+        /**
+         * Drawn inside the one label, between the box and the label text, as
+         * decoration for the name `label` already gives. A leading image
+         * should have an empty alt: the label names the row.
+         */
+        leading?: Snippet;
+        /**
+         * A line under the label, tied to the radio with `aria-describedby`.
+         * The label names the radio; the description does not join the name.
+         */
+        description?: string;
+        /**
+         * Where the radio sits in the row. `end` puts it after the leading,
+         * the label and the description, at the far edge; the row is still
+         * one label and fills the width it is given.
+         */
+        controlPosition?: "start" | "end";
+        variant?: SemanticVariant;
+        /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
+        message?: string;
+        /** Help text under the control, read out with it. */
+        hint?: string;
+        /** An error under the control. It marks the input invalid and is announced; it wins over `variant` and `message`. */
+        error?: string;
     };
 
     let {
@@ -33,6 +59,9 @@
         checked = $bindable<Exclude<Props["checked"], undefined>>(),
         onChange,
         onchange,
+        leading,
+        description,
+        controlPosition = "start",
         ...restProps
     }: Props = $props();
 
@@ -65,6 +94,9 @@
     {onChange}
     {onchange}
     {mark}
+    {leading}
+    {description}
+    {controlPosition}
     class={className}
     {...restProps}
 />

@@ -8,7 +8,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Fixed notification region; pair it with pushToast from the toast store. Mount once near the app root. A toast can carry one action, such as Undo: it then stays until it is dismissed unless you give it a duration, and focusToasts() moves keyboard focus to the newest toast. Offer the same action elsewhere in the page as well. Below 640px the stack spans the width with 16px on each side; it keeps clear of the home indicator and sits above an AppShell tab bar. For a bar of your own that is fixed to the bottom, set --toaster-bottom-offset to its height on the Toaster or an ancestor: 72px above a FloatingActionButton. Over a modal overlay with a footer at the bottom of the screen the stack moves above the footer by itself, and the overlay\'s Tab cycle takes the toast controls in. More toasts than fit scroll.'
+                    'Fixed notification region; pair it with pushToast from the toast store. Mount once near the app root. A toast can carry one action, such as Undo: it then stays until it is dismissed unless you give it a duration, and focusToasts() moves keyboard focus to the newest toast. Offer the same action elsewhere in the page as well. Below 640px the stack spans the width with 16px on each side; it keeps clear of the home indicator and sits above an AppShell tab bar. For a bar of your own that is fixed to the bottom, set --toaster-bottom-offset to its height on the Toaster or an ancestor: 72px above a FloatingActionButton. Over a modal overlay with a footer at the bottom of the screen the stack moves above the footer by itself, and the overlay\'s Tab cycle takes the toast controls in. More toasts than fit scroll. For a phone, mode="auto" makes the toast a snackbar below 640px: one row, one at a time, above a docked tab bar, sticky action bar or floating action button, swiped away with a finger.'
             }
         }, layout: 'fullscreen' },
     tags: ['autodocs'],
@@ -26,6 +26,17 @@ const meta = {
             options: ['short', 'medium', 'long', 'persistent'],
             description: 'Story only: push toasts with this duration. short is 3 seconds, medium 7, long 14; persistent stays until dismissed'
         },
+        mode: {
+            control: 'inline-radio',
+            options: ['stack', 'snackbar', 'auto'],
+            description: 'stack: the stack in the corner. snackbar: the compact form for a phone, one at a time, above what is docked at the bottom. auto: the snackbar below 640px'
+        },
+        timeLine: {
+            control: 'inline-radio',
+            options: [undefined, true, false],
+            description: 'The thin time bar along the bottom of a toast. Unset: drawn, except under a confirmation in the snackbar that has nothing to press. false leaves it out everywhere, true draws it everywhere'
+        },
+        max: { control: 'number', description: 'How many toasts show at once; the oldest timed one leaves' },
         defaultDuration: {
             control: 'inline-radio',
             options: ['short', 'medium', 'long', 'persistent'],
@@ -108,6 +119,42 @@ export const Persistent: Story = {
 /** `defaultDuration` on the Toaster: every toast pushed without a duration gets it, in place of medium. The error still stays. */
 export const DefaultDuration: Story = {
     args: { defaultDuration: 'short', showCountdown: true },
+    render: (args) => ({
+        Component: ToasterStory,
+        props: args,
+    }),
+};
+
+/**
+ * `mode="snackbar"` (or `"auto"`, below 640px): one row, one at a time, set directly above what is
+ * docked at the bottom (here a stand-in tab bar with `data-bar-edge="bottom"`), coming out from behind
+ * that edge and going back into it. Swipe it sideways or down with a finger; the dismiss button stays.
+ * View the story at phone width.
+ */
+export const Snackbar: Story = {
+    args: { mode: 'snackbar', bar: true },
+    render: (args) => ({
+        Component: ToasterStory,
+        props: args,
+    }),
+};
+
+/**
+ * A confirmation pushed with `closable: false` has nothing to press, so the snackbar draws no time bar under it
+ * (the 4px bar under a 52px row would be the loudest thing in it). A toast with a button keeps the bar, and the
+ * stack keeps it for every toast. `timeLine` on the Toaster or on a toast says otherwise.
+ */
+export const SnackbarWithoutTimeLine: Story = {
+    args: { mode: 'snackbar', bar: true, length: 'short', timeLine: false },
+    render: (args) => ({
+        Component: ToasterStory,
+        props: args,
+    }),
+};
+
+/** `max={2}` in the stack: the oldest timed toast leaves for a newer one, an error and a toast with an action stay. */
+export const Limited: Story = {
+    args: { max: 2 },
     render: (args) => ({
         Component: ToasterStory,
         props: args,

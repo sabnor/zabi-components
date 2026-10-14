@@ -21,7 +21,9 @@ import { extendTailwindMerge } from "tailwind-merge";
  * role names, not scale values, so they have to be declared or tailwind-merge
  * keeps both and we are back to stylesheet order deciding.
  */
-const RADIUS_ROLES = ["control", "container", "overlay", "pill"];
+// `button` is the control corner an app can set apart from its fields
+// (`rounded-button`, src/app.css), so a call-site `rounded-full` still beats it.
+const RADIUS_ROLES = ["control", "button", "container", "overlay", "pill"];
 
 /**
  * Every corner group tailwind-merge knows about, so `rounded-t-overlay` on a
@@ -35,11 +37,34 @@ const RADIUS_GROUPS = [
     "rounded-tl", "rounded-tr", "rounded-br", "rounded-bl",
 ];
 
+/**
+ * The named spacing steps (`--spacing-xs` to `--spacing-2xl`, src/app.css).
+ * tailwind-merge knows the numeric scale only, so `p-xs p-sm` kept both and
+ * stylesheet order picked the padding. Declared as theme spacing, they count
+ * in every group that takes a spacing value: padding, margin, gap, inset,
+ * size, scroll padding and the rest.
+ */
+const SPACING_STEPS = ["xs", "sm", "md", "lg", "xl", "2xl"];
+
 const twMerge = extendTailwindMerge({
     extend: {
-        classGroups: Object.fromEntries(
-            RADIUS_GROUPS.map((group) => [group, [{ [group]: RADIUS_ROLES }]]),
-        ),
+        theme: {
+            spacing: SPACING_STEPS,
+            // The two theme faces (`font-heading`, `font-display`, from --font-heading
+            // and --font-display). tailwind-merge already reads any plain name after
+            // `font-` as a family; they are listed so that stays true if that rule
+            // narrows to the weights.
+            font: ["heading", "display"],
+        },
+        classGroups: {
+            ...Object.fromEntries(RADIUS_GROUPS.map((group) => [group, [{ [group]: RADIUS_ROLES }]])),
+            // The control veils are background images, not colours: without
+            // this they would delete the fill beside them (`bg-action-primary`)
+            // as a conflicting `bg-*`, and the fill would be gone.
+            "bg-image": [{ bg: ["control-gradient", "control-gradient-accent"] }],
+            // Button's label weights, so a call-site `font-bold` still wins.
+            "font-weight": [{ font: ["button", "button-strong"] }],
+        },
     },
 });
 

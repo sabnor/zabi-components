@@ -12,6 +12,7 @@
         message?: string;
         confirmLabel?: string;
         cancelLabel?: string;
+        cancelVariant?: "outline" | "tonal" | "ghost";
         loading?: boolean;
         loadingLabel?: string;
         portal?: boolean;
@@ -28,6 +29,7 @@
         message = "The project and its files are removed for everyone.",
         confirmLabel,
         cancelLabel,
+        cancelVariant,
         loading = false,
         loadingLabel,
         portal,
@@ -54,6 +56,7 @@
         {variant}
         {confirmLabel}
         {cancelLabel}
+        {cancelVariant}
         {loading}
         {loadingLabel}
         {portal}

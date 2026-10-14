@@ -42,6 +42,7 @@ const NOT_TOKENS = new Set([
     "--set-light",
     "--set-dark",
     "--neutral-chroma",
+    "--dark-primary",
     "--help",
     "--pin",
     "--pin-accent",
@@ -76,6 +77,28 @@ const COMPONENT_PROPERTIES: Record<string, string> = {
     "--zabi-rating-on-active": "src/components/atoms/Rating.svelte",
     "--zabi-rating-on-edge": "src/components/atoms/Rating.svelte",
     "--zabi-rating-off": "src/components/atoms/Rating.svelte",
+    "--zabi-rating-off-fill": "src/components/atoms/Rating.svelte",
+    "--zabi-bubble-fill": "src/components/atoms/SpeechBubble.svelte",
+    "--zabi-bubble-text": "src/components/atoms/SpeechBubble.svelte",
+    "--zabi-bubble-radius": "src/components/atoms/SpeechBubble.svelte",
+    "--zabi-bubble-tilt": "src/components/atoms/SpeechBubble.svelte",
+    "--zabi-badge-neutral-fill": "src/app.css",
+    "--zabi-badge-neutral-text": "src/app.css",
+    "--zabi-skeleton-fill": "src/app.css",
+    "--color-toggle-thumb": "src/app.css",
+    "--color-toggle-thumb-checked": "src/app.css",
+    "--zabi-chart-1": "src/components/util/chart.ts",
+    "--zabi-chart-2": "src/components/util/chart.ts",
+    "--zabi-chart-3": "src/components/util/chart.ts",
+    "--zabi-chart-4": "src/components/util/chart.ts",
+    "--zabi-chart-5": "src/components/util/chart.ts",
+    "--zabi-chart-6": "src/components/util/chart.ts",
+    "--zabi-chart-surface": "src/components/molecules/LineChart.svelte",
+    // The label colour of a block an app fills itself, read by the `on-fill` scope.
+    "--zabi-on-fill": "src/app.css",
+    // Button reads these through `rounded-button` and `font-button`, which are in the stylesheet.
+    "--zabi-button-radius": "src/app.css",
+    "--zabi-button-font-weight": "src/app.css",
 };
 
 function mentioned(text: string): string[] {

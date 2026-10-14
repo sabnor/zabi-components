@@ -57,7 +57,7 @@ async function syncThemeTokens() {
   css = replaceSection(
     css,
     '  /*\n   * Custom base (gray) ramp — single physical scale for --color-base-*.',
-    '  /* Typography - Nunito Sans font family */',
+    '  /* Typography - the platform UI face, no font is downloaded */',
     lightPhysicalBlock,
   );
   css = replaceSection(

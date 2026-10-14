@@ -67,6 +67,30 @@ export const doc: ComponentDoc = makeDoc({
   </div>
 </article>`,
         },
+        {
+            title: "One status for a screen",
+            description:
+                "SkeletonGroup is the one loading status; the pieces inside it are hidden from assistive tech.",
+            demoId: demoId("Skeleton", "group"),
+            code: `<SkeletonGroup>
+  <Skeleton variant="circle" />
+  <Skeleton lines={2} />
+</SkeletonGroup>`,
+        },
+        {
+            title: "Paragraph",
+            description: "lines draws a paragraph in one piece; the last line is shorter.",
+            demoId: demoId("Skeleton", "paragraph"),
+            code: `<Skeleton lines={3} />`,
+        },
+        {
+            title: "On a colour block",
+            description: `tone="on-color" reads on a brand, accent or fill block, in light and dark.`,
+            demoId: demoId("Skeleton", "onColor"),
+            code: `<div class="on-brand p-4">
+  <Skeleton variant="block" tone="on-color" />
+</div>`,
+        },
     ],
     variantsStates: ["text", "circle", "block"],
     props,
@@ -78,6 +102,7 @@ export const doc: ComponentDoc = makeDoc({
         whenToAvoid: [
             "Avoid for unknown/dynamic layouts — use a lighter loading state instead.",
             "Avoid showing skeletons for very fast operations (it can feel like flicker).",
+            "Do not leave eight loose pieces as eight status regions: wrap a screen's pieces in SkeletonGroup, or set decorative on each.",
         ],
     },
 });

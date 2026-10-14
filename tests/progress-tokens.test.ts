@@ -11,7 +11,8 @@ describe("Progress colours", () => {
         const track = screen.getByRole("progressbar");
         const fill = track.firstElementChild as HTMLElement;
         expect(track.className).toContain("bg-progress-track");
-        expect(track.className).toContain("border-input-border");
+        expect(track.className).toContain("border-progress-track-border");
+        expect(track.className).not.toContain("border-input-border");
         expect(track.className).not.toMatch(/\bbg-input\b/);
         expect(fill.className).toContain("bg-progress-fill");
         expect(fill.className).not.toMatch(/brand-\d/);

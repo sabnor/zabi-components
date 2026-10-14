@@ -34,9 +34,19 @@
         weekStartsOn?: number;
         locale?: string;
         isDateDisabled?: (date: string) => boolean;
-        strings?: Partial<CalendarStrings>;
+        strings?: Partial<CalendarStrings> | Record<string, string>;
         onselect?: (date: string) => void;
         onmonthchange?: (month: string) => void;
+
+        /** The field's own props with a `locale` (`locale`, `strings` and `onselect` are shared with the calendar piece). */
+        format?: Intl.DateTimeFormatOptions;
+        placeholder?: string;
+        picker?: "library" | "native";
+        /** Time piece only: where an empty field's columns open. */
+        openAt?: string;
+        onfieldchange?: (event: Event) => void;
+        onfieldinput?: (event: Event) => void;
+        oninvalid?: (event: Event) => void;
     }
 
     let {
@@ -65,6 +75,13 @@
         strings,
         onselect,
         onmonthchange,
+        format,
+        placeholder,
+        picker,
+        openAt,
+        onfieldchange,
+        onfieldinput,
+        oninvalid,
     }: Props = $props();
 
     // svelte-ignore state_referenced_locally
@@ -75,6 +92,7 @@
     let selected = $state<string | null>(initialSelected);
 
     const Field = $derived(piece === "time" ? TimeField : DateField);
+    const timeOnly = $derived(piece === "time" && openAt !== undefined ? { openAt } : {});
 
     function submit(event: SubmitEvent) {
         event.preventDefault();
@@ -109,7 +127,7 @@
         {#if inFormField}
             <FormField {label} description={hint} error={fieldError} {required} {disabled}>
                 {#snippet control(props)}
-                    <Field hideLabel name="when" bind:value {min} {max} {step} {...props} />
+                    <Field hideLabel name="when" bind:value {min} {max} {step} {locale} {format} {placeholder} {picker} {strings} {...timeOnly} {...props} />
                 {/snippet}
             </FormField>
         {:else}
@@ -127,6 +145,15 @@
                 {readonly}
                 {size}
                 class={fieldClass}
+                {locale}
+                {format}
+                {placeholder}
+                {picker}
+                {strings}
+                {...timeOnly}
+                onchange={onfieldchange}
+                oninput={onfieldinput}
+                {oninvalid}
                 data-testid="field"
             />
         {/if}

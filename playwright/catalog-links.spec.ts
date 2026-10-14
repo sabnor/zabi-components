@@ -17,16 +17,17 @@ test.describe("the catalog's category links", () => {
         const catalog = page.getByRole("navigation", { name: "Component catalog" });
         const addresses = await catalog.locator("a").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
         expect(addresses.length).toBeGreaterThan(10);
-        for (const address of addresses) expect(address).toMatch(/^\/components\/[A-Za-z]+(\?catalog=all)?(#[a-z-]+)?$/);
+        for (const address of addresses) expect(address).toMatch(/^\/components\/[A-Za-z]+(\?catalog=[a-z]+)?(#[a-z-]+)?$/);
     });
 
     test("a category leads to its first component, and is marked as where you are", async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 900 });
         await gotoHydrated(page, "/components/Button");
         const catalog = page.getByRole("navigation", { name: "Component catalog" });
-        const atoms = catalog.getByRole("link", { name: /^Atoms/ });
+        const all = catalog.getByRole("link", { name: /^All/ });
         const molecules = catalog.getByRole("link", { name: /^Molecules/ });
-        await expect(atoms).toHaveAttribute("aria-current", "location");
+        // Opened with no category named, the catalog lists everything.
+        await expect(all).toHaveAttribute("aria-current", "location");
         await expect(molecules).not.toHaveAttribute("aria-current", /.+/);
         // The page itself is one row, the category another: one of each.
         await expect(catalog.locator('a[aria-current="page"]')).toHaveCount(1);
@@ -34,15 +35,16 @@ test.describe("the catalog's category links", () => {
 
         const target = await molecules.getAttribute("href");
         await molecules.click();
-        await expect(page).toHaveURL(new RegExp(`${target!.split("#")[0]}`));
+        await expect(page).toHaveURL(new RegExp(`${target!.split("?")[0]}`));
+        await expect(page).toHaveURL(/\?catalog=molecules/);
         await expect(molecules).toHaveAttribute("aria-current", "location");
-        await expect(atoms).not.toHaveAttribute("aria-current", /.+/);
+        await expect(all).not.toHaveAttribute("aria-current", /.+/);
         await expect(catalog.locator('a[aria-current="page"]')).toHaveCount(1);
         await expect(page.locator("main h1").first()).not.toHaveText("Button");
 
-        // All: every component, and the address says so.
+        // All: every component, and the address names no category.
         await catalog.getByRole("link", { name: /^All/ }).click();
-        await expect(page).toHaveURL(/\?catalog=all/);
+        await expect(page).not.toHaveURL(/\?catalog=/);
         await expect(catalog.getByRole("link", { name: /^All/ })).toHaveAttribute("aria-current", "location");
     });
 

@@ -48,6 +48,8 @@ const fakeTheTimer = () => vi.useFakeTimers({ toFake: ["setInterval", "clearInte
 const toast = () => document.querySelector<HTMLElement>("[data-toast-id]")!;
 async function shown() {
     await waitFor(() => expect(toast()).not.toBeNull());
+    // The words are put in a moment after the toast is mounted (see `spoken` in ToasterToast).
+    await waitFor(() => expect(toast().querySelector("h4, p")?.textContent?.trim()).not.toBe(""));
     return toast();
 }
 
@@ -76,6 +78,8 @@ const chars = (count: number) => "a".repeat(count);
 function pointer(target: Element, type: string, pointerType: "touch" | "mouse" | "pen") {
     const event = new MouseEvent(type, { bubbles: !/enter$|leave$/.test(type), cancelable: true });
     Object.defineProperty(event, "pointerType", { value: pointerType });
+    // A real move has a distance; a browser repeating a position for a toast that came up under it does not.
+    if (type === "pointermove") Object.defineProperty(event, "movementX", { value: 3 });
     target.dispatchEvent(event);
 }
 
@@ -398,7 +402,7 @@ describe("the other pointers", () => {
     it("a mouse holds the timer while it is over the toast; pressing and releasing changes nothing", async () => {
         const { card, said } = await timed();
         pointer(card, "pointerenter", "mouse");
-        card.dispatchEvent(new MouseEvent("mouseenter"));
+        pointer(card, "pointermove", "mouse");
         await waitFor(() => expect(card.getAttribute("data-paused")).toBe("true"));
         pointer(card, "pointerdown", "mouse");
         pointer(card, "pointerup", "mouse");
@@ -418,7 +422,7 @@ describe("the other pointers", () => {
         await waitFor(() => expect(said()).toBe("paused,running"));
 
         pointer(card, "pointerenter", "mouse");
-        card.dispatchEvent(new MouseEvent("mouseenter"));
+        pointer(card, "pointermove", "mouse");
         await waitFor(() => expect(card.getAttribute("data-paused")).toBe("true"));
         pointer(card, "pointerleave", "mouse");
         card.dispatchEvent(new MouseEvent("mouseleave"));
@@ -430,6 +434,7 @@ describe("the other pointers", () => {
         const { card, said } = await timed();
         // In range above the screen, then down, then up, still in range.
         pointer(card, "pointerenter", "pen");
+        pointer(card, "pointermove", "pen");
         await waitFor(() => expect(card.getAttribute("data-paused")).toBe("true"));
         pointer(card, "pointerdown", "pen");
         pointer(card, "pointerup", "pen");

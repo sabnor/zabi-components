@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import postcss from 'postcss';
-import { readThemeMaps, resolveTokenColor } from '../scripts/resolve-tokens.js';
+import { readThemeMaps, resolveTokenColor, resolveTokenValue } from '../scripts/resolve-tokens.js';
 import { buildThemeData, renderThemeData, GENERATOR_FILES, THEME_DATA_FILE } from '../scripts/build-create-theme.js';
 import { TARGET_LIGHTNESS, measureLightness } from '../tokens/chromatic-scales.js';
 
@@ -125,12 +125,14 @@ for (const brand of BRANDS) {
     assert.equal(resolveTokenColor(light, '--color-focus-ring'), step(600));
     assert.equal(resolveTokenColor(light, '--color-link'), step(700));
     assert.equal(resolveTokenColor(light, '--color-action-primary-text'), '#ffffff');
-    assert.equal(resolveTokenColor(dark, '--color-action-primary'), step(400));
-    assert.equal(resolveTokenColor(dark, '--color-action-primary-hover'), step(300));
-    // The same step as the dark primary fill: brand-500 was under 3:1 on the overlay.
+    // The primary keeps its hue in dark (Z-043): the same steps as light, a white label.
+    assert.equal(resolveTokenColor(dark, '--color-action-primary'), step(600));
+    assert.equal(resolveTokenColor(dark, '--color-action-primary-hover'), step(700));
+    assert.equal(resolveTokenColor(dark, '--color-action-primary-active'), step(800));
+    // The ring and the link stay on the light mirrored steps: brand-500 was under 3:1 on the overlay.
     assert.equal(resolveTokenColor(dark, '--color-focus-ring'), step(400));
     assert.equal(resolveTokenColor(dark, '--color-link'), step(300));
-    assert.equal(resolveTokenColor(dark, '--color-action-primary-text'), step(950));
+    assert.equal(resolveTokenColor(dark, '--color-action-primary-text'), '#ffffff');
   });
 }
 
@@ -149,10 +151,10 @@ test('the input colour supplies hue and chroma and is reported against its close
 });
 
 test('the "on" colours are chosen so the label passes on the fill', () => {
-  // Default recipe: fill at 600 carries white; the mirrored dark fill carries the ramp's dark end.
+  // Default recipe: fill at 600 carries white, in light and in dark (the same fill).
   const plain = createTheme({ brand: '#C17B00', accent: '#ff3366' });
   assert.equal(plain.tokens['--zabi-on-brand'], '#ffffff');
-  assert.equal(plain.tokens['--zabi-on-brand-dark'], 'var(--zabi-brand-950)');
+  assert.equal(plain.tokens['--zabi-on-brand-dark'], '#ffffff');
   assert.equal(plain.tokens['--zabi-on-accent'], '#ffffff');
   assert.equal(plain.tokens['--zabi-on-accent-dark'], 'var(--zabi-accent-950)');
 
@@ -177,21 +179,36 @@ test('a role pair below WCAG AA comes back as a structured warning, per mode', (
   const result = createTheme({ brand: '#0026EA', overrides: { '--color-link': 'var(--zabi-brand-400)' } });
   const warnings = contrastWarnings(result);
   // The link colour is also the icon of a toggled-on ghost IconButton, held
-  // down, and the label of a selected pill Tab.
+  // down, the label of a selected pill Tab, the text of a subtle brand Badge and
+  // the active label of a BottomTabBar (--color-nav-menu-item-active).
   assert.deepEqual(warnings.map((w) => `${w.mode} ${w.pair}`), [
+    'light badge subtle · brand',
     'light link on page',
     'light link on card',
     'light icon on a held toggled-on fill',
     'light label on a selected pill tab',
+    'light active tab label on the tab pill',
+    // The link is also written on a tint card (Card tone="tint").
+    'light tint card · link',
+    // And on a flat card, held on three stacks (Card variant="flat"; in light the layers change nothing).
+    'light flat card · link (three layers over the card)',
+    'light flat card · link (two layers over the overlay)',
+    'light flat card · link (one layer over the page)',
+    // The link is also written on the thick material (a Toaster toast), judged over both backdrops.
+    'light material thick · link over the worst backdrop',
+    'light material thick · link over the page',
+    'dark flat card · link (three layers over the card)',
+    'dark flat card · link (two layers over the overlay)',
+    'dark material thick · link over the worst backdrop',
   ]);
-  const [onPage] = warnings;
+  const onPage = warnings.find((w) => w.pair === 'link on page');
   assert.equal(onPage.required, 4.5);
   assert.ok(onPage.ratio < 4.5 && onPage.ratio > 1);
   assert.deepEqual(onPage.foreground, { token: '--color-link', value: result.tokens['--zabi-brand-400'] });
-  assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#ececee' });
-  assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #ececee is [\d.]+:1, needs 4\.5:1/);
+  assert.deepEqual(onPage.background, { token: '--color-surface-base', value: '#fafafa' });
+  assert.match(onPage.message, /light · link on page: #[0-9a-f]{6} on #fafafa is [\d.]+:1, needs 4\.5:1/);
   // The failure is in the file too, so it is not lost when stderr is.
-  assert.match(result.css, /Contrast: 4 of \d+ role pairs are below WCAG AA:/);
+  assert.match(result.css, /Contrast: 15 of \d+ role pairs are below WCAG AA:/);
 
   // 3:1 pairs are checked as well: a focus ring too pale for the page.
   const ring = createTheme({ brand: '#0026EA', overrides: { '--color-focus': 'var(--zabi-brand-300)' } });
@@ -324,7 +341,7 @@ test('the bin warns on stderr, and --strict turns a failed pair into exit 1', ()
   const lenient = run(...args);
   assert.equal(lenient.status, 0);
   assert.match(lenient.stderr, /warning: light · link on page: .* needs 4\.5:1/);
-  assert.match(lenient.stderr, /4 role pairs below WCAG AA\./);
+  assert.match(lenient.stderr, /15 role pairs below WCAG AA\./);
   assert.match(lenient.stdout, /--color-link: var\(--zabi-brand-400\);/);
 
   const strict = run(...args, '--strict');
@@ -376,7 +393,7 @@ test('without pin the output is what it was: no dark rule, no new fields', () =>
   // The frozen bytes of the unpinned ultramarine theme: the header and the first and last declarations.
   const { css } = createTheme({ brand: '#0026EA' });
   assert.ok(css.includes(' * is not pinned to a step: the exact hex may not appear below.\n'));
-  assert.ok(css.endsWith('  --zabi-on-brand-dark: var(--zabi-brand-950);\n}\n'));
+  assert.ok(css.endsWith('  --zabi-on-brand-dark: #ffffff;\n}\n'));
 });
 
 test('pin puts the exact colour on the light primary action and leaves dark as it was', () => {
@@ -389,7 +406,7 @@ test('pin puts the exact colour on the light primary action and leaves dark as i
   // The ramp is the unpinned ramp: tints, borders and every other role keep their place.
   for (const step of RAMP_STEPS) assert.equal(pinned.tokens[`--zabi-brand-${step}`], plain.tokens[`--zabi-brand-${step}`]);
   assert.deepEqual(pinned.closest, plain.closest);
-  assert.equal(resolveTokenColor(light, '--color-action-primary-subtle'), plain.tokens['--zabi-brand-200']);
+  assert.equal(resolveTokenColor(light, '--color-action-primary-subtle'), plain.tokens['--zabi-brand-100']);
 
   // Light: the fill is the colour, to the byte, with a white label at about 8.5:1.
   assert.equal(pinned.tokens['--color-action-primary'], brand);
@@ -419,11 +436,11 @@ test('pin puts the exact colour on the light primary action and leaves dark as i
   for (const token of guardedTokens) {
     assert.equal(resolveTokenColor(dark, token), resolveTokenColor(plainDark, token), `dark ${token}`);
   }
-  assert.equal(resolveTokenColor(dark, '--color-action-primary'), plain.tokens['--zabi-brand-400']);
+  assert.equal(resolveTokenColor(dark, '--color-action-primary'), plain.tokens['--zabi-brand-600']);
   assert.equal(resolveTokenColor(dark, '--color-link'), plain.tokens['--zabi-brand-300']);
   // The dark rule only remaps roles: no hex, as in the library's own dark block.
   for (const [role, value] of Object.entries(pinned.darkTokens)) {
-    assert.match(value, /^var\(--color-brand-\d+\)$/, `${role}: ${value}`);
+    assert.match(value, /^var\(--(color|zabi)-brand-\d+\)$/, `${role}: ${value}`);
     assert.ok(role in pinned.tokens, `${role} is restated in dark without being set on :root`);
   }
 
@@ -468,18 +485,19 @@ test('a colour that needs a dark label is pinned with one, and its states go lig
   for (const colour of [fill, hover, pressed]) assert.ok(ratio(label, colour) >= 4.5, `${label} on ${colour}`);
   assert.ok(measureLightness(hover) > measureLightness(fill) && measureLightness(pressed) > measureLightness(hover));
   assert.equal(pinned.pinned.brand.light.states, 'lighter');
-  // As text on a white card the amber is 3.4:1: links and the ring stay on the ramp, which passes.
+  // As text on a white card the amber is 3.4:1, so links stay on the ramp. The ring needs 3:1,
+  // which the amber reaches on the near-white page (it did not on the old grey one), so it is pinned.
+  // The ring is also drawn on glass, where the amber does not reach 3:1 over the worst backdrop (the
+  // material pairs are checked for the default fills since 16c), so it stays on the ramp too.
   assert.deepEqual(pinned.pinned.brand.light.onRamp, ['focus ring', 'link']);
   assert.equal(resolveTokenColor(light, '--color-link'), pinned.tokens['--zabi-brand-700']);
-  assert.equal(resolveTokenColor(light, '--color-focus-ring'), pinned.tokens['--zabi-brand-600']);
   // It passes on a dark page, so dark takes the colour too.
   assert.equal(pinned.pinned.brand.dark.pinned, true);
   assert.equal(resolveTokenColor(dark, '--color-action-primary'), '#c17b00');
   assert.ok(ratio(resolveTokenColor(dark, '--color-action-primary-text'), '#c17b00') >= 4.5);
-  // The one thing it cannot do is reported, and the colour is not moved to hide it.
-  assert.deepEqual(contrastWarnings(pinned).map((w) => `${w.mode} ${w.pair} ${w.ratio}`), [
-    'light pinned primary fill against the page 2.92',
-  ]);
+  // On the near-white page the amber reaches 3:1, so nothing is left to report (on the old
+  // grey page it was 2.92:1 and was reported; the next test keeps a colour that still fails).
+  assert.deepEqual(contrastWarnings(pinned), []);
 });
 
 test('a colour that cannot be a light button is pinned anyway, and every failing pair is a warning', () => {
@@ -490,7 +508,10 @@ test('a colour that cannot be a light button is pinned anyway, and every failing
   const failed = contrastWarnings(pinned).map((w) => `${w.mode} ${w.pair}`);
   assert.deepEqual(failed, [
     'light focus offset gap on primary button',
-    // Pale yellow on the white track: the progress bar follows the primary, so it is as pale.
+    // A pale yellow fill is not seen against the white page or card, and the
+    // progress bar follows the primary, so it is as pale on its track.
+    'light primary fill against the page',
+    'light primary fill against a card',
     'light progress fill on track',
     'light pinned primary fill against the page',
     'light pinned primary fill against a card',
@@ -538,11 +559,12 @@ test('the bin takes --pin and --pin-accent, says what it pinned, and --strict st
   // Without the flag the bin's output is the unpinned file.
   assert.equal(run('--brand', '#0026EA').stdout, createTheme({ brand: '#0026EA' }).css);
 
-  const amber = run('--brand', '#C17B00', '--pin');
+  // A lighter amber than #C17B00: that one reaches 3:1 on the near-white page.
+  const amber = run('--brand', '#D08A00', '--pin');
   assert.equal(amber.status, 0);
-  assert.match(amber.stderr, /warning: light · pinned primary fill against the page: #c17b00 on #ececee is 2\.92:1, needs 3:1/);
-  assert.match(amber.stderr, /brand #c17b00 is pinned in light and in dark\./);
-  assert.equal(run('--brand', '#C17B00', '--pin', '--strict').status, 1);
+  assert.match(amber.stderr, /warning: light · pinned primary fill against the page: #d08a00 on #fafafa is 2\.75:1, needs 3:1/);
+  assert.match(amber.stderr, /brand #d08a00 is pinned in light and in dark\./);
+  assert.equal(run('--brand', '#D08A00', '--pin', '--strict').status, 1);
   assert.equal(run('--brand', '#0026EA', '--pin', '--strict').status, 0);
 
   const both = run('--brand', '#0026EA', '--accent', '#B4005A', '--pin', '--pin-accent');
@@ -704,6 +726,28 @@ test('a role the app overrides is not replaced by an ink role, in either mode', 
   assert.ok(!('--shadow-color' in result.darkTokens));
 });
 
+test('an ink role overridden in one mode keeps the ramp ink in the other (Z-061)', () => {
+  const base = { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 };
+  const plain = createTheme(base);
+  const tintedDark = 'color-mix(in srgb, var(--zabi-base-50) 9%, transparent)';
+  assert.equal(plain.darkTokens['--color-action-secondary'], tintedDark);
+
+  // Light only: dark is the tinted mix, not the library's rgba(250, 250, 250, 0.09).
+  const lightOnly = createTheme({ ...base, overrides: { light: { '--color-action-secondary': '#dde6ff', '--shadow-color': '1 2 3' } } });
+  assert.equal(lightOnly.tokens['--color-action-secondary'], '#dde6ff');
+  assert.equal(lightOnly.darkTokens['--color-action-secondary'], tintedDark);
+  assert.equal(lightOnly.tokens['--shadow-color'], '1 2 3');
+  assert.equal(lightOnly.darkTokens['--shadow-color'], plain.darkTokens['--shadow-color']);
+  // The roles it did not name are what they are without the override.
+  assert.equal(lightOnly.darkTokens['--color-action-secondary-hover'], plain.darkTokens['--color-action-secondary-hover']);
+  assert.equal(lightOnly.tokens['--color-action-secondary-hover'], plain.tokens['--color-action-secondary-hover']);
+
+  // Dark only: light keeps the ramp ink.
+  const darkOnly = createTheme({ ...base, overrides: { dark: { '--color-action-secondary': '#222233' } } });
+  assert.equal(darkOnly.tokens['--color-action-secondary'], plain.tokens['--color-action-secondary']);
+  assert.equal(darkOnly.darkTokens['--color-action-secondary'], '#222233');
+});
+
 test('neutralChroma works together with pin and keeps the dark half of both', () => {
   const result = createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: true });
   assert.ok(result.pinned.brand);
@@ -747,21 +791,30 @@ const declarationOf = (block, name) => new RegExp(`${name}: ([^;]+);`).exec(bloc
 
 test('without light or dark overrides the bytes are what they were before the option existed', () => {
   // Hashes of the css from the generator before per-mode overrides. The header
-  // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193:
+  // counts the contrast pairs, so they move when a pair is added (188 to 192 to 193 to 195, then the segment thumb pairs; the flat hash moved when the pressed field became a mix of the field:
   // the field edge on the field fill, the page and the card, then the progress fill on its track, each in both modes).
+  // They moved again for 9a: the generator now resolves the control veil pairs (the strengths are in its data) and the tonal, outline and toggle pairs were added, so the header counts 260; the bar pairs (active tab pill, on-brand bar, headline on a bar) moved the header and the bytes again, and so did the chrome token and the bar tokens; and the pinned amber's veil is flipped to lighten-only (its label is dark).
+  // Then for Z-043: the dark primary and danger are the light steps with a white label (the dark label knob is white, the header counts 4 more pairs: the primary and danger fills against the page and the card).
+  // Then for 16a (Z-044): the field edge is guarded on the elevated surface and the overlay (two pairs per mode, so the header counts 4 more), and the dark surfaces, hairline, rim and shadows moved.
+  // Then for 16b (Z-057): the dark status tints are mixes over the card surface, so a flat override of the card surface (the `flat` case) restates them and its bytes moved.
+  // Then for T0 (tranche 5): the chip, tint card and progress edge pairs, so the header counts 38 more pairs per run (the `flat` case, whose raised surface is light in dark too, also lists the tint card's dark pairs); nothing else in the output moved.
+  // Then for the flat card: the flat card tokens and their stacked pairs, so the header counts more pairs and the bytes carry the tokens.
+  // Then for Z-078: the dark field is a translucent step (and its placeholder moved), with its dark-only pairs over the page, a card and the overlay; light's bytes did not move.
+  // Then for Z-121 (alpha.26): the toggle knob pairs (six per mode), so the header counts more pairs; nothing else in the output moved.
+  // Then for 16c: the material alphas and the backdrop brightness reach the generator, so the default material pairs are checked (and can warn), and the dark filters are restated.
   const before = {
-    plain: [{ brand: '#0026EA' }, 'e6f5363cea616208faf1d96cb8356ef30343b8e1ab69f9078b3594c8db187a81'],
+    plain: [{ brand: '#0026EA' }, 'ecb4055f52f9a5b461d137b6b3ee4762e68179446f34c20624b46dc98b888e48'],
     flat: [
       { brand: '#0026EA', overrides: { '--color-surface-raised': '#f8faff', '--color-link': 'var(--color-brand-800)' } },
-      '906b8bc12d9f39a7bae9537deb6cdbb6a50d0b1ef604ab2b0f00b82fe0ef3d18',
+      '0c61c98eab717665e6404571c35c2e789bd134342bdaf84a5318da4cceaee335',
     ],
     pinned: [
       { brand: '#C17B00', accent: '#ff3366', pin: true, overrides: { '--color-link': 'var(--color-brand-800)' } },
-      'f2a95b9f00ea0aeab36130047eb9eb2127abe1a79f7488ddf2a95dfc11f2c8d5',
+      '880eb7ad6a6ad6882984090820ed088d11cdc77e65902822da0cde79919a2f1c',
     ],
     neutral: [
       { brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true }, overrides: { '--shadow-color': '1 2 3' } },
-      '53c9d24b5323a68052bfee711725a4cf9da2ba373d6da10d91a38dbba905dba8',
+      'e2da9848d53289cf8291759807531b3d99aa10ea04479aa610eeb0a24e9a2bc9',
     ],
   };
   for (const [name, [options, hash]] of Object.entries(before)) {
@@ -800,6 +853,49 @@ test('a dark override is written only under the dark selectors', () => {
   assert.doesNotMatch(root, /--color-surface-raised/);
   assert.equal(declarationOf(darkRule(result.css), '--color-surface-raised'), '#101820');
   assert.equal(declarationOf(mediaRule(result.css), '--color-surface-raised'), '#101820');
+});
+
+test('the page and the chrome surface are settable per mode, with dark restated', () => {
+  assert.equal(defaults.light['--color-surface-base'], 'var(--color-base-50)');
+  // D108: the bar fill is the page colour in both modes.
+  assert.equal(defaults.light['--color-surface-chrome'], 'var(--color-surface-base)');
+  assert.equal(defaults.darkOnly['--color-surface-chrome'], 'var(--color-surface-base)');
+  const lightPage = { '--color-surface-base': 'var(--zabi-base-150)' };
+  const result = createTheme({ brand: '#0026EA', overrides: { light: lightPage } });
+  const root = result.css.slice(0, result.css.indexOf('.dark,'));
+  assert.equal(declarationOf(root, '--color-surface-base'), 'var(--zabi-base-150)');
+  for (const block of [darkRule(result.css), mediaRule(result.css)]) {
+    assert.equal(declarationOf(block, '--color-surface-base'), defaults.darkOnly['--color-surface-base']);
+  }
+  const chrome = createTheme({
+    brand: '#0026EA',
+    overrides: { light: { '--color-surface-chrome': '#f8faff' }, dark: { '--color-surface-chrome': '#101820' } },
+  });
+  assert.equal(declarationOf(chrome.css.slice(0, chrome.css.indexOf('.dark,')), '--color-surface-chrome'), '#f8faff');
+  assert.equal(declarationOf(darkRule(chrome.css), '--color-surface-chrome'), '#101820');
+  assert.equal(declarationOf(mediaRule(chrome.css), '--color-surface-chrome'), '#101820');
+});
+
+test('the bar tokens (D124) default from existing tokens, are restated in dark, and are settable per mode', () => {
+  const defaultsOf = { '--color-bar': 'var(--color-surface-chrome)', '--color-bar-brand': 'var(--color-action-primary)', '--color-tabbar-active': 'var(--color-nav-menu-active)' };
+  for (const [name, value] of Object.entries(defaultsOf)) {
+    assert.equal(defaults.light[name], value, name);
+    assert.equal(defaults.darkOnly[name], value, `${name} in dark`);
+  }
+  assert.match(defaults.light['--color-bar-border'], /var\(--color-headline\) 10%/);
+  assert.equal(defaults.darkOnly['--color-bar-border'], defaults.light['--color-bar-border']);
+  const result = createTheme({
+    brand: '#0026EA',
+    overrides: { '--color-bar-brand': '#0026EA', light: { '--color-bar': '#f8faff', '--color-bar-border': '#cbd5e1' }, dark: { '--color-bar': '#101820', '--color-tabbar-active': '#1b2a3a' } },
+  });
+  const root = result.css.slice(0, result.css.indexOf('.dark,'));
+  assert.equal(declarationOf(root, '--color-bar'), '#f8faff');
+  assert.equal(declarationOf(darkRule(result.css), '--color-bar'), '#101820');
+  assert.equal(declarationOf(darkRule(result.css), '--color-tabbar-active'), '#1b2a3a');
+  assert.equal(declarationOf(darkRule(result.css), '--color-bar-border'), defaults.darkOnly['--color-bar-border']);
+  assert.equal(declarationOf(root, '--color-bar-brand'), '#0026EA');
+  // A flat override reaches both modes through the cascade: dark does not restate it.
+  assert.equal(declarationOf(darkRule(result.css), '--color-bar-brand'), undefined);
 });
 
 test('both, flat keys and a mode: the specific mode wins in its mode', () => {
@@ -850,7 +946,8 @@ test('per-mode overrides take part in the "on" colours and leave pin and the ink
     overrides: { dark: { '--color-surface-hover': 'rgba(255, 255, 255, 0.2)' } },
   });
   assert.equal(ink.darkTokens['--color-surface-hover'], 'rgba(255, 255, 255, 0.2)');
-  assert.equal('--color-surface-hover' in ink.tokens, false);
+  // Light, which it did not name, keeps the ramp's ink (Z-061; until 9.0 it fell back to the library's grey).
+  assert.equal(ink.tokens['--color-surface-hover'], createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 }).tokens['--color-surface-hover']);
 });
 
 test('an overridden ramp token restates the ramp the file writes, not the library default', () => {
@@ -882,7 +979,7 @@ test('the bin takes --set-light and --set-dark, and --set alone is still the fla
     light.stdout,
     createTheme({ brand: '#0026EA', overrides: { light: { '--color-surface-raised': '#f8faff', '--color-surface-overlay': '#f8faff' } } }).css,
   );
-  assert.match(light.stdout, /\.dark,\n\[data-theme="dark"\] \{\n {2}--color-surface-raised: color-mix/);
+  assert.match(light.stdout, /\.dark,\n\[data-theme="dark"\] \{\n {2}--color-surface-raised: var\(--zabi-base-850\)/);
 
   const mixed = run('--brand', '#0026EA', '--set', '--color-link=var(--color-brand-800)', '--set-dark', '--color-surface-raised=#101820');
   assert.equal(mixed.status, 0, mixed.stderr);
@@ -904,14 +1001,538 @@ test('the bin takes --set-light and --set-dark, and --set alone is still the fla
   assert.match(help, /--set-dark <t>=<v>/);
 });
 
-test('the field edge is a guarded foreground: 3:1 on the field fill, the page and the card', async () => {
+test('the field edge is a guarded foreground: 3:1 on the field fill, the page, the card, the elevated surface and the overlay', async () => {
   const { buildPairs } = await import('../scripts/contrast-pairs.js');
-  const pairs = buildPairs().filter((p) => p.fg === '--color-input-border');
+  const pairs = buildPairs().filter((p) => p.fg === '--color-input-border' && !p.behind);
   assert.deepEqual(
     pairs.map((p) => [p.bg, p.min]).sort(),
-    [['--color-background', 3], ['--color-input', 3], ['--color-surface-raised', 3]],
+    // The sixth is the tint card (Card tone="tint"): a form can sit on it.
+    [['--color-background', 3], ['--color-card-tint', 3], ['--color-input', 3], ['--color-surface-elevated', 3], ['--color-surface-overlay', 3], ['--color-surface-raised', 3]],
   );
   // The generator ships the same list, so a consumer's theme is checked too.
-  const shipped = JSON.parse(JSON.stringify(buildThemeData().pairs)).filter((p) => p.fg === '--color-input-border');
-  assert.equal(shipped.length, 3);
+  const shipped = JSON.parse(JSON.stringify(buildThemeData().pairs)).filter((p) => p.fg === '--color-input-border' && !p.behind);
+  assert.equal(shipped.length, 6);
+});
+
+/* ---------- materials (D97) ---------- */
+
+const MATERIAL_FILL = (percent) => `color-mix(in srgb, var(--color-surface-chrome) ${percent}%, transparent)`;
+const materialWarnings = (result, level) => contrastWarnings(result).filter((w) => w.pair.startsWith(`material ${level} `));
+
+test('the library meets its own material floors, and a material one step below fails the guard', () => {
+  const css = fs.readFileSync(path.join(projectRoot, 'src', 'app.css'), 'utf8');
+  const guard = (source) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'zabi-materials-'));
+    const file = path.join(dir, 'app.css');
+    fs.writeFileSync(file, source);
+    return spawnSync(process.execPath, [path.join(projectRoot, 'scripts', 'check-contrast.js'), file], { encoding: 'utf8' });
+  };
+  assert.equal(guard(css).status, 0, 'the shipped alphas must pass');
+  // The floors against the page-colour chrome: light 82% (focus ring over the
+  // worst backdrop), dark 47% (on the backdrop dimmed by 0.6); shipped with a
+  // margin. Below the floor fails.
+  assert.ok(css.includes('--material-alpha-regular: 84%;') && css.includes('--material-alpha-regular: 68%;'));
+  const light = guard(css.replace('--material-alpha-regular: 84%;', '--material-alpha-regular: 80%;'));
+  assert.equal(light.status, 1);
+  assert.match(light.stderr, /light · material regular · .* over the worst backdrop/);
+  const dark = guard(css.replace('--material-alpha-regular: 68%;', '--material-alpha-regular: 44%;'));
+  assert.equal(dark.status, 1);
+  assert.match(dark.stderr, /dark · material regular · .* over the worst backdrop/);
+  // Thick carries the caption: it fails first on that, in dark, where its floor is 68%. 64% is under it.
+  const thick = guard(css.replace('--material-alpha-thick: 72%;', '--material-alpha-thick: 64%;'));
+  assert.equal(thick.status, 1);
+  assert.match(thick.stderr, /dark · material thick · caption over the worst backdrop/);
+});
+
+test('material tokens are overridable per mode with dark restated, and a too-thin fill is reported', () => {
+  const data = buildThemeData();
+  assert.ok(data.pairs.some((pair) => pair.behind && pair.bg === '--color-material-thick'), 'the material pairs are not in the shared list');
+  const ok = createTheme({
+    brand: '#0026EA',
+    overrides: { light: { '--color-material-regular': MATERIAL_FILL(90) }, dark: { '--color-material-regular': MATERIAL_FILL(92) } },
+  });
+  assert.equal(ok.tokens['--color-material-regular'], MATERIAL_FILL(90));
+  assert.equal(ok.darkTokens['--color-material-regular'], MATERIAL_FILL(92));
+  assert.deepEqual(materialWarnings(ok, 'regular'), []);
+
+  // Light only, too thin: reported in light; dark is restated with the library's own value, so it stays clean.
+  const thin = createTheme({ brand: '#0026EA', overrides: { light: { '--color-material-regular': MATERIAL_FILL(40) } } });
+  assert.equal(thin.tokens['--color-material-regular'], MATERIAL_FILL(40));
+  assert.equal(thin.darkTokens['--color-material-regular'], defaults.light['--color-material-regular']);
+  const warned = materialWarnings(thin, 'regular');
+  assert.ok(warned.length > 0 && warned.every((w) => w.mode === 'light'), JSON.stringify(warned.map((w) => w.message)));
+  assert.ok(warned.some((w) => /over the worst backdrop/.test(w.pair)));
+
+  // Dark too thin, and `both`: each mode is read with its own value.
+  const both = createTheme({ brand: '#0026EA', overrides: { '--color-material-thin': MATERIAL_FILL(20) } });
+  assert.deepEqual([...new Set(materialWarnings(both, 'thin').map((w) => w.mode))].sort(), ['dark', 'light']);
+
+  // The highlight, rim and shadow follow a neutral override.
+  const tinted = createTheme({ brand: '#0026EA', neutral: '#607296', neutralChroma: 0.05 });
+  assert.deepEqual(contrastWarnings(tinted), []);
+  const maps = themed({ ...tinted.tokens });
+  assert.match(defaults.light['--color-material-rim'], /var\(--zabi-base-900\)/);
+  assert.match(defaults.darkOnly['--color-material-rim'], /var\(--zabi-base-50\)/);
+  assert.ok(maps.light['--zabi-base-900'] !== defaults.light['--zabi-base-900']);
+});
+
+/* ---------- gradients (D99) ---------- */
+
+test('the gradient worst-case pairs pass as shipped, and one step above the solved strength fails the guard', () => {
+  const css = fs.readFileSync(path.join(projectRoot, 'src', 'app.css'), 'utf8');
+  const guard = (source) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'zabi-gradients-'));
+    const file = path.join(dir, 'app.css');
+    fs.writeFileSync(file, source);
+    return spawnSync(process.execPath, [path.join(projectRoot, 'scripts', 'check-contrast.js'), file], { encoding: 'utf8' });
+  };
+  assert.equal(guard(css).status, 0, 'the shipped strengths must pass');
+  assert.ok(css.includes('--gradient-canvas-strength: 55%;') && css.includes('--gradient-canvas-strength: 25%;'));
+  const light = guard(css.replace('--gradient-canvas-strength: 55%;', '--gradient-canvas-strength: 60%;'));
+  assert.equal(light.status, 1);
+  assert.match(light.stderr, /light · canvas wash (brand|accent) · /);
+  const dark = guard(css.replace('--gradient-canvas-strength: 25%;', '--gradient-canvas-strength: 30%;'));
+  assert.equal(dark.status, 1);
+  assert.match(dark.stderr, /dark · canvas wash (brand|accent) · field edge/);
+  // Light is darken-only: a lightened top takes the white label under 4.5:1.
+  assert.ok(css.includes('--gradient-control-top-strength: 0%;') && css.includes('--gradient-control-bottom-strength: 14%;'));
+  const veil = guard(css.replace('--gradient-control-top-strength: 0%;', '--gradient-control-top-strength: 10%;'));
+  assert.equal(veil.status, 1);
+  assert.match(veil.stderr, /light · (primary|accent|danger) gradient top · /);
+});
+
+test('gradient tokens follow a rebrand and are overridable per mode with dark restated', () => {
+  const brandOnly = createTheme({ brand: '#0026EA' });
+  const rebrand = createTheme({ brand: '#B4231C', accent: '#0F766E' });
+  const resolved = (r) => themed({ ...r.tokens });
+  // The wash reads the brand and accent ramps, which a rebrand regenerates.
+  assert.match(resolved(rebrand).light['--color-canvas-wash-brand'], /--color-brand-300/);
+  assert.match(resolved(rebrand).light['--color-canvas-wash-accent'], /--color-accent-300/);
+  assert.notEqual(brandOnly.tokens['--zabi-brand-300'], rebrand.tokens['--zabi-brand-300']);
+  assert.notEqual(brandOnly.tokens['--zabi-accent-300'], rebrand.tokens['--zabi-accent-300']);
+  assert.ok(buildThemeData().pairs.some((p) => p.behind && p.bg === '--color-canvas-wash-brand'));
+  const gradientWarnings = (r) => contrastWarnings(r).filter((w) => /canvas wash|gradient (top|bottom)/.test(w.pair));
+  assert.deepEqual(gradientWarnings(rebrand), []);
+
+  const set = createTheme({
+    brand: '#0026EA',
+    overrides: { light: { '--gradient-canvas-strength': '95%' }, dark: { '--gradient-canvas-strength': '40%' } },
+  });
+  assert.equal(set.tokens['--gradient-canvas-strength'], '95%');
+  assert.equal(set.darkTokens['--gradient-canvas-strength'], '40%');
+  assert.ok(gradientWarnings(set).some((w) => w.mode === 'light' && /canvas wash/.test(w.pair)));
+});
+
+test('a light card override does not break the pressed field: the pressed colour follows the field', () => {
+  // Z-040: with the card at #f8faff the pressed field was a fixed base-200,
+  // 1.21:1 against it, below the 1.25 the generator holds.
+  const result = createTheme({
+    brand: '#0026EA',
+    neutral: '#607296',
+    neutralChroma: 0.08,
+    overrides: { light: { '--color-surface-raised': '#f8faff' } },
+  });
+  const pressed = contrastWarnings(result).filter((w) => /pressed field/.test(w.pair));
+  assert.deepEqual(pressed.map((w) => `${w.mode} ${w.pair}`), []);
+  // The pressed colour is derived, in both modes, not a ramp step.
+  assert.match(defaults.light['--color-input-active'], /^color-mix\(/);
+  assert.match(defaults.darkOnly['--color-input-active'], /^color-mix\(/);
+});
+
+/* ---------- 9a: control gradients, link follow, button and toggle tokens ---------- */
+
+test('the default call emits no gradient strengths and no link role', () => {
+  const result = createTheme({ brand: '#0026EA' });
+  for (const name of Object.keys(result.tokens)) {
+    assert.ok(!/^--gradient-control-/.test(name) && name !== '--color-link', name);
+  }
+  assert.equal(result.darkTokens, undefined);
+  // The veil pairs are checked by the generator now (the strengths are in its data),
+  // for primary, accent and danger, and all pass.
+  const veil = buildThemeData().pairs.filter((pair) => pair.gradient);
+  assert.deepEqual([...new Set(veil.map((pair) => pair.gradient))].sort(), ['accent', 'danger', 'primary']);
+  assert.deepEqual(contrastWarnings(result), []);
+});
+
+test('an accent with a dark label gets a lighten-only veil, not a warning', () => {
+  // A light pink fill with a navy label (5.9, 5.1 and 4.7:1): darkening the bottom
+  // by 14% takes the label under 4.5:1 on hover and pressed.
+  const accent = { '--color-accent': '#E27AA6', '--color-accent-hover': '#D96C9B', '--color-accent-active': '#D4639A', '--color-on-accent': '#0B1B4D' };
+  const result = createTheme({ brand: '#0026EA', overrides: accent });
+  const veil = (r) => r.warnings.filter((w) => / gradient /.test(w.pair));
+  assert.deepEqual(veil(result), []);
+  assert.equal(result.tokens['--gradient-control-accent-top-strength'], '14%');
+  assert.equal(result.tokens['--gradient-control-accent-bottom-strength'], '0%');
+  // Primary and danger keep the shared veil.
+  assert.ok(!('--gradient-control-top-strength' in result.tokens));
+  // Light was flipped, so dark says its own: here it fails too and flips as well.
+  assert.ok('--gradient-control-accent-top-strength' in result.darkTokens);
+  assert.ok('--gradient-control-accent-bottom-strength' in result.darkTokens);
+  // The flipped veil is what a page computes.
+  const page = themed({ ...result.tokens });
+  assert.match(resolveTokenValue(page.light, '--gradient-control-accent-top-strength'), /^14%$/);
+
+  // An explicit strength wins and is only warned about.
+  const explicit = createTheme({
+    brand: '#0026EA',
+    overrides: { ...accent, '--gradient-control-accent-top-strength': '0%', '--gradient-control-accent-bottom-strength': '14%' },
+  });
+  assert.equal(explicit.tokens['--gradient-control-accent-bottom-strength'], '14%');
+  assert.ok(veil(explicit).some((w) => w.mode === 'light' && /accent gradient bottom/.test(w.pair)));
+});
+
+test('a fill no veil can save gets no veil rather than a failing one', () => {
+  // The pressed fill alone is 4.39:1 under its label: every strength fails.
+  const result = createTheme({
+    brand: '#0026EA',
+    overrides: { '--color-accent': '#E27AA6', '--color-accent-hover': '#D96C9B', '--color-accent-active': '#CF5C94', '--color-on-accent': '#0B1B4D' },
+  });
+  assert.equal(result.tokens['--gradient-control-accent-top-strength'], '0%');
+  assert.equal(result.tokens['--gradient-control-accent-bottom-strength'], '0%');
+  assert.ok(result.warnings.some((w) => w.pair === 'accent fill :active'));
+});
+
+test('--color-link follows an overridden primary where every guarded pair still passes', () => {
+  const primary = {
+    '--color-action-primary': 'var(--color-brand-800)',
+    '--color-action-primary-hover': 'var(--color-brand-900)',
+    '--color-action-primary-active': 'var(--color-brand-950)',
+  };
+  const app = createTheme({ brand: '#0026EA', overrides: primary });
+  assert.equal(app.tokens['--color-link'], 'var(--color-brand-800)');
+  assert.equal(app.tokens['--color-link-hover'], 'var(--color-brand-900)');
+  assert.deepEqual(contrastWarnings(app), []);
+  // Both modes follow, since the override reaches both.
+  assert.equal(app.darkTokens['--color-link'], 'var(--color-brand-800)');
+
+  // Without a hover override only the link moves: the library's hover step is not the app's.
+  const noHover = createTheme({ brand: '#0026EA', overrides: { '--color-action-primary': 'var(--color-brand-800)' } });
+  assert.equal(noHover.tokens['--color-link'], 'var(--color-brand-800)');
+  assert.ok(!('--color-link-hover' in noHover.tokens));
+
+  // Only in the mode the override is set in: a light primary leaves dark's link on the library's.
+  const lightOnly = createTheme({ brand: '#0026EA', overrides: { light: primary } });
+  assert.equal(lightOnly.tokens['--color-link'], 'var(--color-brand-800)');
+  assert.equal(lightOnly.darkTokens['--color-link'], defaults.darkOnly['--color-link'] ?? defaults.light['--color-link']);
+
+  // A primary that fails a link pair (brand-300 as text on the page) leaves the link on the ramp.
+  const pale = createTheme({ brand: '#0026EA', overrides: { light: { '--color-action-primary': 'var(--color-brand-300)' } } });
+  assert.ok(!('--color-link' in pale.tokens));
+  assert.ok(!('--color-link' in (pale.darkTokens ?? {})));
+
+  // An explicit link wins, in the mode it is set in.
+  const explicit = createTheme({ brand: '#0026EA', overrides: { ...primary, '--color-link': 'var(--color-brand-700)' } });
+  assert.equal(explicit.tokens['--color-link'], 'var(--color-brand-700)');
+  assert.ok(!('--color-link-hover' in explicit.tokens));
+});
+
+test('the button and toggle tokens exist in both modes and take overrides', () => {
+  for (const name of [
+    '--color-action-tonal', '--color-action-tonal-hover', '--color-action-tonal-active', '--color-action-tonal-text',
+    '--color-action-outline-border', '--color-action-outline-border-hover',
+    '--color-toggle-track', '--color-toggle-track-hover', '--color-toggle-track-active', '--color-toggle-track-border',
+    '--gradient-control-accent-top-strength', '--gradient-control-accent-bottom-strength',
+  ]) {
+    assert.ok(name in defaults.light, `light ${name}`);
+    assert.ok(name in defaults.darkOnly, `dark ${name}`);
+  }
+  // Read through a fallback, declared nowhere: setting them is only an override.
+  assert.ok(!('--zabi-button-radius' in defaults.light) && !('--zabi-button-font-weight' in defaults.light));
+  const result = createTheme({
+    brand: '#0026EA',
+    overrides: { '--zabi-button-radius': '9999px', light: { '--zabi-button-font-weight': '600' } },
+  });
+  assert.equal(result.tokens['--zabi-button-radius'], '9999px');
+  assert.equal(result.tokens['--zabi-button-font-weight'], '600');
+  assert.match(result.css, /--zabi-button-radius: 9999px;/);
+  assert.deepEqual(contrastWarnings(result), []);
+});
+
+test('the chip, tint card and progress edge tokens exist in both modes, are guarded, and take overrides', () => {
+  const chip = [
+    '--color-chip', '--color-chip-hover', '--color-chip-active', '--color-chip-text',
+    '--color-chip-selected', '--color-chip-selected-hover', '--color-chip-selected-active', '--color-chip-selected-text',
+  ];
+  for (const name of [...chip, '--color-card-tint', '--color-progress-track-border']) {
+    assert.ok(name in defaults.light, `light ${name}`);
+    assert.ok(name in defaults.darkOnly, `dark ${name}`);
+  }
+  // The selected chip is the tonal role by default, as its own tokens.
+  for (const suffix of ['', '-hover', '-active', '-text']) {
+    assert.equal(defaults.light[`--color-chip-selected${suffix}`], `var(--color-action-tonal${suffix})`);
+    assert.equal(defaults.darkOnly[`--color-chip-selected${suffix}`], `var(--color-action-tonal${suffix})`);
+  }
+  assert.equal(defaults.light['--color-progress-track-border'], 'var(--color-input-border)');
+  assert.equal(defaults.darkOnly['--color-progress-track-border'], 'var(--color-input-border)');
+  // The pairs are in the list the generator ships, so an app's overrides are checked against them.
+  const shipped = buildThemeData().pairs.map((pair) => pair.name);
+  for (const name of ['chip label', 'chip label :active', 'selected chip label :hover', 'chip fill against a card', 'tint card · caption', 'tint card · field edge', 'tint card · outline button edge', 'progress track edge on card']) {
+    assert.ok(shipped.includes(name), name);
+  }
+  assert.deepEqual(contrastWarnings(createTheme({ brand: '#0026EA' })), []);
+  // A chip label too pale for its fill, in light only, is a warning for light only.
+  const pale = createTheme({ brand: '#0026EA', overrides: { light: { '--color-chip-text': '#a1a1aa', '--color-card-tint': '#cddcff' } } });
+  const names = contrastWarnings(pale).map((w) => `${w.mode} ${w.pair}`);
+  assert.ok(names.includes('light chip label') && names.includes('light chip label :active'), names.join('\n'));
+  assert.ok(names.includes('light tint card · headline') === false);
+  assert.ok(names.some((name) => name.startsWith('light tint card')), 'a tint card that is too deep for the field edge warns');
+  assert.ok(!names.some((name) => name.startsWith('dark')), names.join('\n'));
+  assert.equal(declarationOf(darkRule(pale.css), '--color-chip-text'), defaults.darkOnly['--color-chip-text']);
+});
+
+test('the flat card tokens: the card in light, a translucent ramp step in dark, derived from the ramp, guarded on stacked layers and settable', () => {
+  assert.equal(defaults.light['--color-card-flat'], 'var(--color-card)');
+  assert.equal(defaults.light['--color-card-flat-hover'], 'var(--color-card-hover)');
+  assert.equal(defaults.light['--color-card-flat-active'], 'var(--color-card-active)');
+  assert.equal(defaults.darkOnly['--color-card-flat'], 'color-mix(in srgb, var(--zabi-base-50) 7%, transparent)');
+  assert.equal(defaults.darkOnly['--color-card-flat-hover'], 'color-mix(in srgb, var(--zabi-base-50) 11%, transparent)');
+  assert.equal(defaults.darkOnly['--color-card-flat-active'], 'color-mix(in srgb, var(--zabi-base-50) 15%, transparent)');
+  const shipped = buildThemeData().pairs.filter((pair) => pair.bg === '--color-card-flat');
+  assert.ok(shipped.some((pair) => pair.behind === '--color-surface-raised' && pair.layers === 3 && pair.fg === '--color-caption'));
+  assert.ok(shipped.some((pair) => pair.behind === '--color-surface-overlay' && pair.layers === 2 && pair.fg === '--color-link'));
+  assert.deepEqual(contrastWarnings(createTheme({ brand: '#0026EA' })), []);
+  // A dark layer too strong to read the caption on, three deep, is a warning for dark only.
+  const strong = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-card-flat': 'color-mix(in srgb, #fafafa 20%, transparent)' } } });
+  const names = contrastWarnings(strong).map((w) => `${w.mode} ${w.pair}`);
+  assert.ok(names.some((name) => name.startsWith('dark flat card · caption (three layers')), names.join('\n'));
+  assert.ok(!names.some((name) => name.startsWith('light')), names.join('\n'));
+  // The restore line of the changelog: the opaque card fill, which leaves no layer to stack.
+  const restored = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-card-flat': 'var(--color-card)' } } });
+  assert.deepEqual(contrastWarnings(restored), []);
+  assert.equal(declarationOf(darkRule(restored.css), '--color-card-flat'), 'var(--color-card)');
+});
+
+test('the dark field tokens: a translucent ramp step lifted off its surface, guarded over the page, a card and the overlay, settable, opaque inside a colour block', () => {
+  assert.equal(defaults.darkOnly['--color-input'], 'color-mix(in srgb, var(--zabi-base-50) 7%, transparent)');
+  assert.equal(defaults.darkOnly['--color-input-hover'], 'color-mix(in srgb, var(--zabi-base-50) 10%, transparent)');
+  assert.equal(defaults.darkOnly['--color-input-focus'], 'color-mix(in srgb, var(--zabi-base-50) 7%, transparent)');
+  assert.equal(defaults.darkOnly['--color-input-active'], 'color-mix(in srgb, var(--zabi-base-50) 15%, transparent)');
+  // Light is the opaque field it was, and the disabled well is unchanged in both modes.
+  assert.equal(defaults.light['--color-input'], 'var(--color-surface-raised)');
+  assert.equal(defaults.light['--color-input-hover'], 'var(--color-base-100)');
+  assert.equal(defaults.light['--color-input-focus'], 'var(--color-surface-raised)');
+  assert.equal(defaults.darkOnly['--color-input-disabled'], 'var(--color-base-75)');
+  assert.equal(defaults.darkOnly['--color-surface-inset'], 'var(--zabi-base-900)');
+  // The opaque steps a field takes inside a colour block are the old dark field.
+  assert.equal(defaults.darkOnly['--color-input-solid'], 'var(--color-surface-inset)');
+  assert.equal(defaults.darkOnly['--color-input-solid-hover'], 'var(--color-base-200)');
+  assert.equal(defaults.light['--color-input-solid'], 'var(--color-input)');
+  // The well is guarded against each surface, in dark only, and the pairs lay the field over it.
+  const shipped = buildThemeData().pairs.filter((pair) => pair.name.startsWith('field well against its surface'));
+  assert.deepEqual(shipped.map((pair) => pair.behind), ['--color-surface-base', '--color-surface-raised', '--color-surface-overlay']);
+  assert.ok(shipped.every((pair) => pair.only === 'dark' && pair.bg === '--color-input' && pair.min === 1.15));
+  assert.ok(buildThemeData().pairs.some((pair) => pair.fgPaint && pair.fg === '--color-input-active' && pair.min === 1.25));
+  assert.deepEqual(contrastWarnings(createTheme({ brand: '#0026EA' })), []);
+  // A field too faint to see off its surface is a warning for dark only, on all three surfaces.
+  const faint = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-input': 'color-mix(in srgb, #fafafa 3%, transparent)' } } });
+  const names = contrastWarnings(faint).map((w) => `${w.mode} ${w.pair}`);
+  for (const where of ['the page', 'a card', 'the overlay']) assert.ok(names.includes(`dark field well against its surface (over ${where})`), names.join('\n'));
+  assert.ok(!names.some((name) => name.startsWith('light')), names.join('\n'));
+  // A pressed step too close to the resting one fails, though neither is a flat colour.
+  const flatPress = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-input-active': 'color-mix(in srgb, #fafafa 8%, transparent)' } } });
+  assert.ok(contrastWarnings(flatPress).some((w) => w.pair.startsWith('pressed field against the resting field')));
+  // The restore line of the changelog: the old opaque field, which passes the pairs it was held to.
+  const restored = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-input': 'var(--color-surface-inset)', '--color-input-hover': 'var(--color-base-200)', '--color-input-focus': 'var(--color-base-150)', '--color-input-active': 'color-mix(in srgb, var(--zabi-base-50) 10%, var(--color-surface-inset))', '--color-input-placeholder': 'var(--color-base-600)' } } });
+  assert.deepEqual(contrastWarnings(restored).map((w) => w.pair).filter((pair) => !/field well against/.test(pair)), []);
+});
+
+test('createTheme writes a transparent progress track edge where the app\'s own track reaches 3:1 on the page and the card', () => {
+  const edge = '--color-progress-track-border';
+  const track = '--color-progress-track';
+  const rootOf = (css) => css.slice(0, css.indexOf('.dark,'));
+  // Nothing set: nothing written, and the default stays the field edge.
+  const plain = createTheme({ brand: '#0026EA' });
+  assert.equal(plain.tokens[edge], undefined);
+  assert.equal(declarationOf(plain.css, edge), undefined);
+  // A track that reaches 3:1 on the page (#fafafa) and the card (#fff) in light, and keeps the fill against it: the edge goes, in light only.
+  const solid = createTheme({ brand: '#0026EA', overrides: { light: { [track]: '#18181b' } } });
+  assert.equal(declarationOf(rootOf(solid.css), edge), 'transparent');
+  assert.equal(declarationOf(darkRule(solid.css), edge), 'var(--color-input-border)');
+  assert.deepEqual(contrastWarnings(solid), []);
+  // Under `both`, in each mode that passes: #71717a is 4.8:1 on white and 3.67:1 and 3.40:1 on the dark page and card (a white fill reads on it in both).
+  const both = createTheme({ brand: '#0026EA', overrides: { [track]: '#71717a', '--color-progress-fill': '#ffffff' } });
+  assert.equal(declarationOf(rootOf(both.css), edge), 'transparent');
+  assert.equal(declarationOf(darkRule(both.css), edge), 'transparent');
+  // Dark alone.
+  const dark = createTheme({ brand: '#0026EA', overrides: { dark: { [track]: '#d4d4d8' } } });
+  assert.equal(declarationOf(rootOf(dark.css), edge), undefined);
+  assert.equal(declarationOf(darkRule(dark.css), edge), 'transparent');
+  // A track that does not reach 3:1 keeps the edge: Quizrundan's base-250 is 1.3:1.
+  const faint = createTheme({ brand: '#0026EA', overrides: { [track]: 'var(--color-base-250)' } });
+  assert.equal(declarationOf(faint.css, edge), undefined);
+  // Reaching it on the page and not on the card is not enough: both are needed.
+  const pageOnly = createTheme({ brand: '#0026EA', overrides: { light: { [track]: '#7a7a82', '--color-surface-raised': '#7a7a82' } } });
+  assert.equal(declarationOf(rootOf(pageOnly.css), edge), undefined);
+  // An edge the app sets is its decision, in either mode or both: never moved.
+  const own = createTheme({ brand: '#0026EA', overrides: { light: { [track]: '#71717a', [edge]: '#52525b' } } });
+  assert.equal(declarationOf(rootOf(own.css), edge), '#52525b');
+  const ownBoth = createTheme({ brand: '#0026EA', overrides: { [track]: '#71717a', [edge]: 'var(--color-border)' } });
+  assert.equal(declarationOf(rootOf(ownBoth.css), edge), 'var(--color-border)');
+  assert.equal(declarationOf(darkRule(ownBoth.css), edge), undefined);
+  // An edge the app sets to transparent itself is no warning, with a track that would need it or not.
+  for (const track_ of ['#71717a', 'var(--color-base-250)']) {
+    const quiet = createTheme({ brand: '#0026EA', overrides: { [edge]: 'transparent', [track]: track_ } });
+    assert.equal(declarationOf(rootOf(quiet.css), edge), 'transparent');
+    assert.deepEqual(contrastWarnings(quiet).filter((w) => w.pair.startsWith('progress track edge')), []);
+  }
+  // And an edge below 3:1 that the app sets is reported.
+  const weak = createTheme({ brand: '#0026EA', overrides: { [edge]: 'var(--color-base-250)' } });
+  assert.deepEqual(contrastWarnings(weak).filter((w) => w.pair.startsWith('progress track edge')).map((w) => `${w.mode} ${w.pair}`), [
+    'light progress track edge on page', 'light progress track edge on card', 'dark progress track edge on page', 'dark progress track edge on card',
+  ]);
+});
+
+/* ---------- darkPrimary (Z-043): the primary action keeps its hue in dark ---------- */
+
+const flatDarkOverrides = {
+  '--zabi-brand-800': '#0026ea',
+  '--color-action-primary': 'var(--color-brand-800)',
+  '--color-action-primary-hover': 'var(--color-brand-900)',
+  '--color-action-primary-active': 'var(--color-brand-950)',
+  '--color-accent': '#eb8ffe',
+  '--color-accent-hover': 'var(--zabi-accent-300)',
+  '--color-accent-active': 'var(--zabi-accent-200)',
+  '--zabi-on-accent': '#183a89',
+  '--zabi-on-accent-dark': '#183a89',
+  '--color-focus': 'var(--color-brand-800)',
+  '--color-link-hover': 'var(--color-brand-900)',
+  '--color-progress-track': 'var(--color-base-250)',
+};
+const appInput = { brand: '#0026EA', accent: '#EB8FFE', neutral: '#607296', neutralChroma: 0.08 };
+
+test('darkPrimary "brand" is the default and writes nothing extra; bad values are TypeErrors', () => {
+  const plain = createTheme({ brand: '#0026EA' });
+  assert.deepEqual(createTheme({ brand: '#0026EA', darkPrimary: 'brand' }), plain);
+  assert.deepEqual(createTheme({ brand: '#0026EA', darkPrimary: undefined }), plain);
+  assert.equal(plain.darkTokens, undefined);
+  assert.ok(!plain.css.includes('.dark'));
+  for (const bad of ['Mirror', 'light', true, 1, {}]) {
+    assert.throws(() => createTheme({ brand: '#0026EA', darkPrimary: bad }), (error) => error instanceof TypeError && /darkPrimary must be "brand" or "mirror"/.test(error.message), String(bad));
+  }
+});
+
+test('darkPrimary "mirror" restores the 8.1 dark fills, label and veil, and every pair passes', () => {
+  for (const brand of BRANDS) {
+    const result = createTheme({ brand, darkPrimary: 'mirror' });
+    assert.deepEqual(contrastWarnings(result), [], brand);
+    assert.deepEqual(result.darkTokens, {
+      '--color-action-primary': 'var(--color-brand-600)',
+      '--color-action-primary-hover': 'var(--color-brand-700)',
+      '--color-action-primary-active': 'var(--color-brand-800)',
+      '--color-action-danger': 'var(--color-error-600)',
+      '--color-action-danger-hover': 'var(--color-error-700)',
+      '--color-action-danger-active': 'var(--color-error-800)',
+      '--color-action-danger-text': 'var(--color-error-50)',
+      '--gradient-control-top-strength': '22%',
+      '--gradient-control-bottom-strength': '6%',
+    });
+    // The label is chosen for the pale fill: the ramp's dark end, as in 8.1.
+    assert.equal(result.tokens['--zabi-on-brand-dark'], 'var(--zabi-brand-950)');
+    const { dark } = themedPinned(result);
+    assert.equal(resolveTokenColor(dark, '--color-action-primary'), result.tokens['--zabi-brand-400']);
+    assert.equal(resolveTokenColor(dark, '--color-action-primary-text'), result.tokens['--zabi-brand-950']);
+    for (const selector of ['.dark,', '[data-theme="auto"]']) assert.ok(result.css.includes(selector));
+  }
+});
+
+test('darkPrimary "mirror" gives way to an app override of the same role', () => {
+  const result = createTheme({ brand: '#0026EA', darkPrimary: 'mirror', overrides: { dark: { '--color-action-primary': 'var(--color-brand-700)' }, both: { '--color-action-danger': 'var(--color-error-700)' } } });
+  assert.equal(result.darkTokens['--color-action-primary'], 'var(--color-brand-700)');
+  assert.ok(!('--color-action-danger' in result.darkTokens));
+  assert.ok(result.darkTokens['--color-action-primary-hover']);
+});
+
+test('the dark label tries white first, and keeps the ramp dark end when white fails', () => {
+  assert.equal(createTheme({ brand: '#0026EA' }).tokens['--zabi-on-brand-dark'], '#ffffff');
+  // An app that moves the dark primary to a pale step (the mirrored steps) keeps a dark label.
+  const pale = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-action-primary': 'var(--color-brand-600)', '--color-action-primary-hover': 'var(--color-brand-700)', '--color-action-primary-active': 'var(--color-brand-800)' } } });
+  assert.equal(pale.tokens['--zabi-on-brand-dark'], 'var(--zabi-brand-950)');
+  assert.deepEqual(contrastWarnings(pale), []);
+});
+
+test('darkPrimary with pin: dark takes the pin only where nothing fails, else what it has without pin', () => {
+  // This blue fails against the dark page: dark keeps step 600 (or the mirrored step).
+  const brand = createTheme({ brand: '#0026EA', pin: true });
+  assert.equal(brand.pinned.brand.dark.pinned, false);
+  assert.equal(brand.darkTokens['--color-action-primary'], 'var(--zabi-brand-600)');
+  assert.equal(brand.darkTokens['--color-action-primary-active'], 'var(--zabi-brand-800)');
+  assert.deepEqual(contrastWarnings(brand), []);
+  const mirror = createTheme({ brand: '#0026EA', pin: true, darkPrimary: 'mirror' });
+  assert.equal(mirror.pinned.brand.dark.pinned, false);
+  assert.equal(mirror.darkTokens['--color-action-primary'], 'var(--color-brand-600)');
+  assert.equal(mirror.darkTokens['--color-action-danger'], 'var(--color-error-600)');
+  assert.deepEqual(contrastWarnings(mirror), []);
+  // A mid blue passes in dark: it is pinned there, with darker states as in light.
+  const mid = createTheme({ brand: '#2b65ff', pin: true });
+  assert.equal(mid.pinned.brand.dark.pinned, true);
+  assert.equal(mid.pinned.brand.dark.states, 'darker');
+  assert.equal(mid.darkTokens['--color-action-primary'], '#2b65ff');
+});
+
+test('an app that sets the primary flat for both modes gets no warnings and keeps its dark primary', () => {
+  const result = createTheme({ ...appInput, overrides: flatDarkOverrides });
+  assert.deepEqual(result.warnings, []);
+  assert.ok(!('--color-action-primary' in result.darkTokens), 'the flat override is left alone in dark');
+  const { dark } = themedPinned(result);
+  assert.equal(resolveTokenColor(dark, '--color-action-primary'), result.tokens['--zabi-brand-200']);
+});
+
+test('the same override under light gives the brand step 600 with a white label in dark', () => {
+  const { '--color-action-primary': p, '--color-action-primary-hover': h, '--color-action-primary-active': a, ...rest } = flatDarkOverrides;
+  const result = createTheme({ ...appInput, overrides: { both: rest, light: { '--color-action-primary': p, '--color-action-primary-hover': h, '--color-action-primary-active': a } } });
+  const { light, dark } = themedPinned(result);
+  assert.equal(resolveTokenColor(dark, '--color-action-primary'), '#2b65ff');
+  assert.equal(resolveTokenColor(dark, '--color-action-primary-text'), '#ffffff');
+  assert.equal(resolveTokenColor(light, '--color-action-primary'), '#0026ea');
+  // The app's own track override (base-250 in both modes) is the one pair that
+  // fails: the 600 fill is 2.62:1 on it. Reported, not hidden.
+  assert.deepEqual(result.warnings.map((w) => `${w.mode} ${w.pair}`), ['dark progress fill on track']);
+});
+
+test('the bin takes --dark-primary', () => {
+  const args = ['--brand', '#0026EA'];
+  assert.equal(run(...args, '--dark-primary', 'brand').stdout, createTheme({ brand: '#0026EA' }).css);
+  assert.equal(run(...args, '--dark-primary=mirror').stdout, createTheme({ brand: '#0026EA', darkPrimary: 'mirror' }).css);
+  const bad = run(...args, '--dark-primary', 'pale');
+  assert.equal(bad.status, 2);
+  assert.match(bad.stderr, /darkPrimary must be "brand" or "mirror"/);
+});
+
+test('the guard dims only material pairs, and createTheme reads --material-backdrop-brightness per mode', () => {
+  const data = buildThemeData();
+  const flagged = data.pairs.filter((pair) => pair.material);
+  assert.ok(flagged.length > 0 && flagged.every((pair) => pair.bg.startsWith('--color-material-') && pair.behind));
+  // Every other pair with a `behind` (canvas wash, control gradients) is not filtered.
+  assert.ok(data.pairs.some((pair) => pair.behind && !pair.material));
+  assert.ok(data.pairs.filter((pair) => pair.bg.startsWith('--color-material-')).every((pair) => pair.material));
+  assert.equal(data.light['--material-backdrop-brightness'], '1');
+  assert.equal(data.darkOnly['--material-backdrop-brightness'], '0.6');
+
+  assert.deepEqual(materialWarnings(createTheme({ brand: '#0026EA' }), 'thick'), []);
+  const undimmed = createTheme({ brand: '#0026EA', overrides: { dark: { '--material-backdrop-brightness': '1' } } });
+  assert.equal(undimmed.darkTokens['--material-backdrop-brightness'], '1');
+  const warned = ['thin', 'regular', 'thick'].flatMap((level) => materialWarnings(undimmed, level));
+  assert.ok(warned.length > 0 && warned.every((w) => w.mode === 'dark'), JSON.stringify(warned.map((w) => w.message)));
+  assert.ok(warned.some((w) => /over the worst backdrop/.test(w.pair)));
+  // The canvas-wash and control pairs do not read it.
+  const nonMaterial = contrastWarnings(undimmed).filter((w) => !w.pair.startsWith('material '));
+  assert.deepEqual(nonMaterial, contrastWarnings(createTheme({ brand: '#0026EA' })).filter((w) => !w.pair.startsWith('material ')));
+});
+
+test('in dark the filters carry the brightness and every fallback gives none and an opaque fill', () => {
+  const css = fs.readFileSync(path.join(projectRoot, 'src', 'app.css'), 'utf8');
+  const dark = css.slice(css.indexOf('\n.dark {'), css.indexOf('MATERIALS — fallbacks and classes'));
+  for (const level of ['thin', 'regular', 'thick']) {
+    assert.match(dark, new RegExp(`--material-filter-${level}: blur\\(.*\\) saturate\\(.*\\) brightness\\(var\\(--material-backdrop-brightness\\)\\);`));
+  }
+  assert.match(dark, /--material-backdrop-brightness: 0\.6;/);
+  assert.ok(!/--color-material-(thin|regular|thick):/.test(dark), 'dark must not restate the fills');
+  const fallbacks = css.slice(css.indexOf('@materials-fallback-start'), css.indexOf('@materials-fallback-end'));
+  const blocks = fallbacks.match(/(?::root:root|\[data-materials="opaque"\]\[data-materials="opaque"\])\s*\{[^}]*\}/g);
+  assert.equal(blocks.length, 3);
+  for (const block of blocks) {
+    for (const level of ['thin', 'regular', 'thick']) assert.match(block, new RegExp(`--material-filter-${level}: none;`));
+    assert.match(block, /--color-material-thin: var\(--color-surface-chrome\);/);
+    assert.match(block, /--color-material-thick: var\(--color-surface-overlay\);/);
+  }
 });

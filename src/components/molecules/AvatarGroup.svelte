@@ -93,7 +93,7 @@
 >
     {#each shown as person, index (index)}
         <li class={cn("flex", index > 0 && (OVERLAP[size] ?? OVERLAP.md))}>
-            <Avatar name={person.name} src={person.src} {size} {locale} class={ring} />
+            <Avatar name={person.name} src={person.src} children={person.picture} {size} {locale} class={ring} />
         </li>
     {/each}
     {#if split.hidden > 0}

@@ -23,6 +23,7 @@
     import FeatureCard from "../../components/atoms/FeatureCard.svelte";
     import OptimizedImage from "../../components/atoms/OptimizedImage.svelte";
     import Skeleton from "../../components/atoms/Skeleton.svelte";
+    import SkeletonGroup from "../../components/atoms/SkeletonGroup.svelte";
     import Toast from "../../components/atoms/Toast.svelte";
     import Toaster from "../../components/molecules/Toaster.svelte";
     import { pushToast } from "../../components/molecules/toast-store.js";
@@ -446,42 +447,62 @@
             {:else if component.name === "Card"}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Card>
-                        <CardHeader title="Default Card" />
+                        <CardHeader title="Default" />
                         <CardContent>
                             <p class="text-description">
-                                This is a default card with clean styling.
+                                A hairline edge and no shadow. The standard
+                                container for grouped content.
                             </p>
                         </CardContent>
                     </Card>
                     <Card variant="elevated">
-                        <CardHeader title="Elevated Card" />
+                        <CardHeader title="Elevated" />
                         <CardContent>
                             <p class="text-description">
-                                This card indicates a successful action.
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card variant="outlined">
-                        <CardHeader title="Outlined Card" />
-                        <CardContent>
-                            <p class="text-description">
-                                This card shows a warning state.
+                                A raised surface with a shadow, for content
+                                that floats above the page.
                             </p>
                         </CardContent>
                     </Card>
                     <Card variant="flat">
-                        <CardHeader title="Flat Card" />
+                        <CardHeader title="Flat" />
                         <CardContent>
                             <p class="text-description">
-                                This card indicates an error state.
+                                No edge and no shadow, for a quiet group
+                                inside another surface.
                             </p>
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader title="Info Card" />
+                    <Card href="#card-link" ariaLabel="Link card">
+                        <CardHeader title="Link" />
                         <CardContent>
                             <p class="text-description">
-                                This card provides informational content.
+                                With href the whole card is one link, with
+                                hover, pressed and focus states.
+                            </p>
+                        </CardContent>
+                    </Card>
+                    <Card tone="tint">
+                        <CardHeader title="Tint" />
+                        <CardContent>
+                            <p>A soft brand tint. The fill is the edge.</p>
+                        </CardContent>
+                    </Card>
+                    <Card tone="brand">
+                        <CardHeader title="Brand" />
+                        <CardContent>
+                            <p>
+                                The brand fill. Text and controls inside
+                                take its label colour.
+                            </p>
+                        </CardContent>
+                    </Card>
+                    <Card tone="accent">
+                        <CardHeader title="Accent" />
+                        <CardContent>
+                            <p>
+                                The accent fill, for the one block that
+                                should stand out.
                             </p>
                         </CardContent>
                     </Card>
@@ -1491,6 +1512,19 @@
                             <Skeleton variant="text" width="85%" />
                         </div>
                     </article>
+                {:else if exampleIndex === 6}
+                    <SkeletonGroup class="flex w-full items-center gap-3">
+                        <Skeleton variant="circle" />
+                        <Skeleton lines={2} class="flex-1" />
+                    </SkeletonGroup>
+                {:else if exampleIndex === 7}
+                    <div class="w-full">
+                        <Skeleton lines={3} />
+                    </div>
+                {:else if exampleIndex === 8}
+                    <div class="on-brand w-full rounded-container bg-action-primary p-4">
+                        <Skeleton variant="block" tone="on-color" />
+                    </div>
                 {/if}
             {:else if component.name === "Toast"}
                 {#if exampleIndex === 0}

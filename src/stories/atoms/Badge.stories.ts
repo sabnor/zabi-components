@@ -10,7 +10,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Small status label in the semantic tones, plus neutral, energetic and the app\'s accent.'
+                    'Small status label in the semantic tones, plus neutral, energetic, the app\'s accent and the brand colour. A subtle badge has no outline unless `bordered`. The neutral subtle badge (`variant="neutral"` or `"default"`) reads `--zabi-badge-neutral-fill` and `--zabi-badge-neutral-text` in front of the neutral tokens: set them on any ancestor or in the theme to move that badge and nothing else.'
             }
         },
         layout: 'centered'
@@ -19,12 +19,15 @@ const meta = {
     argTypes: {
         variant: {
             control: 'select',
-            options: ['default', 'success', 'warning', 'error', 'info', 'neutral', 'energetic', 'accent']
+            options: ['default', 'success', 'warning', 'error', 'info', 'neutral', 'energetic', 'accent', 'brand']
         },
         text: {
             control: 'text'
         },
         showIcon: {
+            control: 'boolean'
+        },
+        bordered: {
             control: 'boolean'
         },
         emphasis: {
@@ -83,6 +86,28 @@ export const Energetic: Story = {
     args: {
         variant: 'energetic',
         text: 'Energetic Badge'
+    }
+};
+
+export const Brand: Story = {
+    args: {
+        variant: 'brand',
+        text: 'Medlem'
+    }
+};
+
+export const Bordered: Story = {
+    args: {
+        variant: 'info',
+        text: 'Bokat',
+        bordered: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Subtle badges have no outline by default; `bordered` puts the family edge back.'
+            }
+        }
     }
 };
 

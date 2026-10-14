@@ -20,7 +20,7 @@
      * <FloatingActionButton
      *     label="New quiz"
      *     onclick={create}
-     *     style="--fab-bottom-offset: 65px"
+     *     style="--fab-bottom-offset: 64px"
      * />
      * ```
      *
@@ -125,8 +125,8 @@
             extended ? "min-h-14 min-w-14" : "size-[56px]",
             // Transparent until forced-colors mode draws it: the fill is gone there.
             "border border-transparent",
-            "bg-action-primary text-action-primary",
-            "transition-[background-color,scale] duration-150 active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100",
+            "bg-action-primary bg-control-gradient text-action-primary",
+            "transition-[background-color,scale] duration-(--duration-base) active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100",
             extended ? "px-5 py-2 text-sm font-medium" : "p-0",
             // Never wider than the screen it floats on, margins included.
             "[max-inline-size:calc(100%_-_32px)]",
@@ -156,6 +156,7 @@
         class={classes}
         aria-label={extended ? undefined : label}
         data-position={position}
+        data-toast-clear
         {...restProps}
     >
         {@render content()}
@@ -167,6 +168,7 @@
         class={classes}
         aria-label={extended ? undefined : label}
         data-position={position}
+        data-toast-clear
         {...restProps}
     >
         {@render content()}

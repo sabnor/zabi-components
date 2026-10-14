@@ -66,6 +66,17 @@ const shadowScaleRegex =
     /(?<![\w-])(?:[a-z-]+:)*shadow(?:-(?!sm\b|lg\b|none\b)[a-z0-9[\]/.-]+)?(?![\w-])/g;
 
 /**
+ * Glass is a material (`material-thin|regular|thick`), which sets the fill,
+ * the blur and the edge together and has fallbacks for reduced transparency,
+ * more contrast, forced colors and `data-materials="opaque"`. A raw
+ * `backdrop-blur-*` or `backdrop-filter` in a component has none of that, and
+ * its fill has no alpha floor: text over it is judged by nothing. Stories and
+ * prototypes are not scanned. Comment lines are skipped.
+ */
+const rawBackdropRegex =
+    /(?<![\w-])(?:[a-z-]+:)*backdrop-blur(?:-[a-z0-9[\]/.-]+)?(?![\w-])|(?<![\w-])(?:-webkit-)?backdrop-filter(?![\w-])/g;
+
+/**
  * Layout spacing rides the 4px grid. Half-steps in gap/space/padding read as
  * a second, competing rhythm — `gap-1.5` next to `gap-2` is a 2px wobble
  * nobody chose.
@@ -167,6 +178,18 @@ function scanForViolations() {
                 hint: "elevation is two steps: shadow-sm (raised) or shadow-lg (floating); shadow-none for none",
             });
         }
+        while ((match = rawBackdropRegex.exec(content)) !== null) {
+            const lineNumber = getLineNumber(content, match.index);
+            const line = content.split("\n")[lineNumber - 1] || "";
+            if (isCommentLine(line)) continue;
+            violations.push({
+                file,
+                lineNumber,
+                value: match[0],
+                line: line.trim(),
+                hint: "use material-thin | material-regular | material-thick: they carry the fill alpha floor and the opaque fallbacks",
+            });
+        }
         while ((match = halfStepSpacingRegex.exec(content)) !== null) {
             const lineNumber = getLineNumber(content, match.index);
             const line = content.split("\n")[lineNumber - 1] || "";
@@ -236,7 +259,7 @@ function scanForViolations() {
 
     if (violations.length === 0) {
         console.log(
-            "✅ No token violations found (hardcoded hex, raw Tailwind palette classes, fixed ramp steps in interaction states, off-scale shadows, half-step spacing).",
+            "✅ No token violations found (hardcoded hex, raw Tailwind palette classes, fixed ramp steps in interaction states, off-scale shadows, raw backdrop blur, half-step spacing).",
         );
         return;
     }

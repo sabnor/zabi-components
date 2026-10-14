@@ -36,6 +36,7 @@ export { default as Header } from './Header.svelte';
 export { default as EmptyState } from './EmptyState.svelte';
 export { default as Toaster } from './Toaster.svelte';
 export { default as RadioGroup } from './RadioGroup.svelte';
+export { default as ChipGroup } from './ChipGroup.svelte';
 export { default as SegmentedControl } from './SegmentedControl.svelte';
 export type {
     SegmentedControlIcon,
@@ -99,6 +100,7 @@ export type {
     PhotoGridSelectDetail,
     PhotoGridStrings,
     PhotoKey,
+    PhotoStatus,
     PhotoViewerAction,
     PhotoViewerCloseReason,
     PhotoViewerStrings,
@@ -106,6 +108,16 @@ export type {
 export { default as AvatarGroup } from './AvatarGroup.svelte';
 export { DEFAULT_AVATAR_GROUP_STRINGS } from '../util/avatar.js';
 export type { AvatarGroupStrings, AvatarPerson } from '../util/avatar.js';
+export { default as LineChart } from './LineChart.svelte';
+export { default as BarChart } from './BarChart.svelte';
+export { default as PieChart } from './PieChart.svelte';
+export type {
+    ChartColor,
+    ChartColorName,
+    ChartDatum,
+    ChartFormat,
+    ChartSeries,
+} from '../util/chart.js';
 export { default as Stepper } from './Stepper.svelte';
 export type {
     StepperItem,
@@ -116,7 +128,7 @@ export type {
 } from '../util/stepper.js';
 export * from './toast-store.js';
 export { DEFAULT_TOASTER_STRINGS, TOAST_DURATIONS } from '../util/toaster.js';
-export type { ToasterStrings, ToastPauseChange, ToastDuration } from '../util/toaster.js';
+export type { ToasterStrings, ToasterMode, ToastPauseChange, ToastDuration } from '../util/toaster.js';
 export { DEFAULT_SELECT_STRINGS } from '../util/select.js';
 export type { SelectStrings, SelectPresentation } from '../util/select.js';
 export {

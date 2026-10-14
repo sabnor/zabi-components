@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Progress from '../../components/atoms/Progress.svelte';
+import SegmentedSizesStory from './ProgressSegmentedSizesStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Progress',
@@ -91,6 +92,45 @@ export const WithoutLabel: Story = {
         docs: {
             description: {
                 story: 'Without a visible label, pass aria-label so screen readers can say what is progressing.'
+            }
+        }
+    }
+};
+
+export const ExtraLarge: Story = {
+    name: 'Extra large',
+    args: {
+        label: 'Processing',
+        value: 55,
+        size: 'xl',
+        class: 'w-80'
+    }
+};
+
+export const Segmented: Story = {
+    args: {
+        label: 'Round',
+        value: 4,
+        max: 19,
+        segmented: true,
+        class: 'w-80'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'segmented draws max separate segments (a whole number from 2 to 24), value of them filled. Screen readers get one progressbar with the text "4 of 19". Any other max draws the continuous bar.'
+            }
+        }
+    }
+};
+
+export const SegmentedSizes: Story = {
+    name: 'Segmented, in each size',
+    render: (() => ({ Component: SegmentedSizesStory })) as unknown as Story['render'],
+    parameters: {
+        docs: {
+            description: {
+                story: '4 of 19 and 3 of 5, in all four sizes.'
             }
         }
     }

@@ -153,6 +153,109 @@ describe("BottomSheet semantics", () => {
     });
 });
 
+describe("BottomSheet motion", () => {
+    // jsdom has no matchMedia, which the component reads as "reduced motion".
+    const mediaList = (reduce: boolean) =>
+        ((q: string) => ({ matches: reduce && q.includes("reduce"), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} })) as never;
+    const stubAnimate = (impl?: (...args: unknown[]) => unknown) => {
+        const animate = vi.fn(impl ?? (() => ({})));
+        HTMLElement.prototype.animate = animate as never;
+        window.matchMedia = mediaList(false);
+        return animate;
+    };
+    afterEach(() => {
+        delete (HTMLElement.prototype as { animate?: unknown }).animate;
+        delete (window as { matchMedia?: unknown }).matchMedia;
+    });
+
+    it("carries the thick material as a layer, not a filter on the panel", async () => {
+        await openSheet();
+        const classes = sheet().getAttribute("class")!.split(/\s+/);
+        expect(classes).toContain("material-layer-thick");
+        expect(classes).not.toContain("material-thick");
+        expect(classes).not.toContain("shadow-lg");
+        expect(classes).not.toContain("bg-surface-overlay");
+    });
+
+    it("uses the motion tokens for snapping, with a filler under the bottom edge", async () => {
+        await openSheet();
+        const cls = sheet().getAttribute("class")!;
+        expect(cls).toContain("duration-(--duration-slow)");
+        expect(cls).toContain("ease-spring");
+        expect(cls).not.toMatch(/duration-(150|200|300)\b/);
+        expect(cls).toContain("after:top-full");
+        expect(cls).toContain("after:pointer-events-none");
+        // The panel is transparent (its fill is on a layer), so the filler paints the material token.
+        expect(cls).toContain("after:bg-(--color-material-thick)");
+        expect(cls).not.toContain("after:[background:inherit]");
+    });
+
+    it("slides in over the slow duration with the standard easing, not the spring, when the tokens are readable", async () => {
+        const animate = stubAnimate();
+        const real = window.getComputedStyle;
+        vi.spyOn(window, "getComputedStyle").mockImplementation((el, pseudo) => {
+            const style = real(el, pseudo);
+            return new Proxy(style, {
+                get: (t, key) =>
+                    key === "getPropertyValue"
+                        ? (name: string) =>
+                              name === "--duration-slow"
+                                  ? "0.3s"
+                                  : name === "--ease-standard"
+                                    ? " cubic-bezier(0.2, 0, 0, 1) "
+                                    : name === "--ease-spring"
+                                      ? "linear(0, 1.05, 1)"
+                                      : t.getPropertyValue(name)
+                        : Reflect.get(t, key).bind?.(t) ?? Reflect.get(t, key),
+            });
+        });
+        await openSheet();
+        expect(animate).toHaveBeenCalledTimes(1);
+        expect(animate.mock.calls[0][1]).toEqual({ duration: 300, easing: "cubic-bezier(0.2, 0, 0, 1)" });
+    });
+
+    it("falls back to 300ms and ease-out without tokens, and when the easing is rejected", async () => {
+        const animate = stubAnimate();
+        await openSheet();
+        expect(animate.mock.calls[0][1]).toEqual({ duration: 300, easing: "ease-out" });
+        cleanup();
+
+        const rejecting = stubAnimate((_f, options) => {
+            if ((options as { easing: string }).easing !== "ease-out") throw new TypeError("bad easing");
+            return {};
+        });
+        const real = window.getComputedStyle;
+        vi.spyOn(window, "getComputedStyle").mockImplementation((el, pseudo) => {
+            const style = real(el, pseudo);
+            return new Proxy(style, {
+                get: (t, key) =>
+                    key === "getPropertyValue"
+                        ? (name: string) => (name === "--ease-standard" ? "linear(0, 1)" : t.getPropertyValue(name))
+                        : Reflect.get(t, key).bind?.(t) ?? Reflect.get(t, key),
+            });
+        });
+        await openSheet();
+        expect(rejecting).toHaveBeenCalledTimes(2);
+        expect(rejecting.mock.calls[1][1]).toEqual({ duration: 300, easing: "ease-out" });
+    });
+
+    it("does not animate under reduced motion", async () => {
+        const animate = stubAnimate();
+        window.matchMedia = mediaList(true);
+        await openSheet();
+        expect(animate).not.toHaveBeenCalled();
+    });
+
+    it("has no height transition until the slide-in has ended (Z-079)", async () => {
+        stubAnimate();
+        await openSheet();
+        // The slide is on: a change of height now is applied at once, not sprung.
+        expect(sheet().style.transition).toBe("none");
+        await new Promise((resolve) => setTimeout(resolve, 320));
+        expect(sheet().style.transition).toBe("");
+    });
+});
+
 describe("BottomSheet snap points", () => {
     // The heights themselves need a stylesheet and layout, and jsdom does not
     // parse `min()` and `max()`: they are in playwright/bottom-sheet.spec.ts.
@@ -529,6 +632,266 @@ describe("BottomSheet touching the content", () => {
     });
 });
 
+/**
+ * jsdom has no layout: whether a box "scrolls" is stubbed with its scroll and
+ * client heights. Nothing here was run against a real touch screen.
+ */
+function scrolls(box: Element, { scrollTop = 0, content = 400, shown = 120 } = {}) {
+    Object.defineProperty(box, "scrollHeight", { configurable: true, value: content });
+    Object.defineProperty(box, "clientHeight", { configurable: true, value: shown });
+    (box as HTMLElement).scrollTop = scrollTop;
+}
+
+/** A swipe down of `distance` that starts on `target`, bubbling to the content. */
+async function swipeFrom(target: Element, distance: number) {
+    const tick = clock();
+    await fireEvent.touchStart(target, { touches: [touch(target, 300)] });
+    let prevented = false;
+    for (let step = 1; step <= 10; step += 1) {
+        tick(40);
+        const move = new TouchEvent("touchmove", {
+            bubbles: true,
+            cancelable: true,
+            touches: [touch(target, 300 + (distance * step) / 10) as unknown as Touch],
+        });
+        target.dispatchEvent(move);
+        prevented ||= move.defaultPrevented;
+    }
+    await fireEvent.touchEnd(target, { changedTouches: [touch(target, 300 + distance)] });
+    return prevented;
+}
+
+describe("BottomSheet drags that start on something inside the content", () => {
+    it("a drag on the grip moves the sheet", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        await dragGrip(300);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("a drag down on a list that scrolls and is scrolled leaves the sheet where it is", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        const list = screen.getByTestId("inner");
+        scrolls(list, { scrollTop: 80 });
+        expect(await swipeFrom(screen.getByTestId("inner-row"), 300)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("keeps a drag down on a list at its own top with the list, too: it never hands over", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { scrollTop: 0 });
+        expect(await swipeFrom(screen.getByTestId("inner-row"), 300)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(sheet().hasAttribute("data-dragging")).toBe(false);
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("a list with nothing to scroll does not hold the sheet back", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { content: 120, shown: 120 });
+        await swipeFrom(screen.getByTestId("inner-row"), 300);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("a drag on something marked data-sheet-no-drag leaves the sheet where it is", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "opt-out" });
+        layOut();
+        expect(await swipeFrom(screen.getByTestId("inner-row"), 300)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("a drag on a range input leaves the sheet where it is", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "range" });
+        layOut();
+        expect(await swipeFrom(screen.getByTestId("inner"), 300)).toBe(false);
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("the content outside the list still hands a pull down at its top to the sheet", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { scrollTop: 80 });
+        await swipeFrom(screen.getByText("Pick what to show."), 300);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("the time columns of TimeField, inside a sheet, keep a drag down", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "time-column" });
+        layOut();
+        const column = sheet().querySelector("[data-time-column]")!;
+        expect(column.hasAttribute("data-sheet-no-drag")).toBe(true);
+        scrolls(column, { scrollTop: 0, content: 176, shown: 176 });
+        const row = column.querySelector("[role=option]")!;
+        expect(await swipeFrom(row, 300)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(onclose).not.toHaveBeenCalled();
+    });
+});
+
+/** A touch that moves through the given [x, y] offsets from (100, 300), one event each, on `target`. */
+async function gesture(target: Element, path: [number, number][]) {
+    const tick = clock();
+    await fireEvent.touchStart(target, { touches: [touch(target, 300)] });
+    let prevented = false;
+    for (const [dx, dy] of path) {
+        tick(40);
+        const move = new TouchEvent("touchmove", {
+            bubbles: true,
+            cancelable: true,
+            touches: [{ ...touch(target, 300 + dy), clientX: 100 + dx } as unknown as Touch],
+        });
+        target.dispatchEvent(move);
+        prevented ||= move.defaultPrevented;
+    }
+    const [dx, dy] = path[path.length - 1];
+    await fireEvent.touchEnd(target, { changedTouches: [{ ...touch(target, 300 + dy), clientX: 100 + dx }] });
+    return prevented;
+}
+
+describe("BottomSheet and content that handles its own gesture (Z-107, D243)", () => {
+    const down: [number, number][] = [
+        [0, 30],
+        [0, 90],
+        [0, 200],
+        [0, 300],
+    ];
+
+    it("an element with touch-action: none under the finger keeps the drag, with no data-sheet-no-drag", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        const row = screen.getByTestId("inner-row") as HTMLElement;
+        row.style.touchAction = "none";
+        expect(getComputedStyle(row).getPropertyValue("touch-action")).toBe("none");
+        expect(await gesture(row, down)).toBe(false);
+        expect(maybeSheet()).not.toBeNull();
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("so does an ancestor of the touched element, up to the content", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        (screen.getByTestId("inner") as HTMLElement).style.touchAction = "none";
+        expect(await gesture(screen.getByTestId("inner-row"), down)).toBe(false);
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("pan-x alone gives up the vertical gesture; pan-y, manipulation and auto do not", async () => {
+        for (const [value, owned] of [
+            ["pan-x", true],
+            ["pan-x pinch-zoom", true],
+            ["pan-y", false],
+            ["pan-x pan-y", false],
+            ["manipulation", false],
+            ["auto", false],
+        ] as const) {
+            const onclose = vi.fn();
+            await openSheet({ onclose, inner: "short-list" });
+            layOut();
+            scrolls(screen.getByTestId("inner"), { content: 120, shown: 120 });
+            const row = screen.getByTestId("inner-row") as HTMLElement;
+            row.style.touchAction = value;
+            await gesture(row, down);
+            expect(onclose.mock.calls.length, value).toBe(owned ? 0 : 1);
+            cleanup();
+        }
+    });
+
+    it("a touch-action on something the finger did not touch changes nothing", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { content: 120, shown: 120 });
+        (screen.getByTestId("inner-row") as HTMLElement).style.touchAction = "none";
+        await gesture(screen.getByText("Pick what to show."), down);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+});
+
+describe("BottomSheet decides the axis of a swipe in the content once (Z-107, D244)", () => {
+    const stage = async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "short-list" });
+        layOut();
+        scrolls(screen.getByTestId("inner"), { content: 120, shown: 120 });
+        return { onclose, row: screen.getByText("Pick what to show.") };
+    };
+
+    it("a swipe that starts sideways and then turns down never moves the sheet", async () => {
+        const { onclose, row } = await stage();
+        const prevented = await gesture(row, [
+            [12, 2],
+            [30, 20],
+            [34, 120],
+            [34, 300],
+        ]);
+        expect(prevented).toBe(false);
+        expect(sheet().hasAttribute("data-dragging")).toBe(false);
+        expect(onclose).not.toHaveBeenCalled();
+    });
+
+    it("a swipe that starts down and then turns sideways stays the sheet's", async () => {
+        const { onclose, row } = await stage();
+        const prevented = await gesture(row, [
+            [1, 14],
+            [40, 60],
+            [200, 100],
+            [260, 300],
+        ]);
+        expect(prevented).toBe(true);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("under the slop nothing is decided: a small wobble sideways does not claim the swipe", async () => {
+        const { onclose, row } = await stage();
+        await gesture(row, [
+            [5, 3],
+            [-4, 20],
+            [2, 120],
+            [0, 300],
+        ]);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("the next touch decides for itself", async () => {
+        const { onclose, row } = await stage();
+        await gesture(row, [
+            [30, 5],
+            [40, 200],
+        ]);
+        expect(onclose).not.toHaveBeenCalled();
+        await gesture(row, [
+            [0, 30],
+            [0, 120],
+            [0, 220],
+            [0, 300],
+        ]);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+
+    it("the grip still drags, whichever way the pointer first moves", async () => {
+        const onclose = vi.fn();
+        await openSheet({ onclose, inner: "list" });
+        layOut();
+        await dragGrip(300);
+        expect(onclose).toHaveBeenCalledWith({ reason: "swipe" });
+    });
+});
+
 describe("snap point arithmetic", () => {
     it("keeps the snap points in use in order, and falls back to both", () => {
         expect(normaliseSnapPoints(["full", "half"])).toEqual(["half", "full"]);
@@ -559,5 +922,17 @@ describe("snap point arithmetic", () => {
         expect(settleSnap({ ...base, startIndex: 1, velocity: 1 })).toBe(0);
         expect(settleSnap({ ...base, startIndex: 0, velocity: 1 })).toBe(-1);
         expect(settleSnap({ ...base, startIndex: 0, velocity: 1, canClose: false })).toBe(0);
+    });
+});
+
+describe("BottomSheet overlay root", () => {
+    it("clips instead of hiding, so WebKit cannot scroll it to the focused grip while the panel slides in", async () => {
+        await openSheet();
+        const root = sheet().parentElement!;
+        // `overflow: hidden` is still a scroll container; `clip` is not. With it the
+        // root scrolled by the panel's own height as focus moved to the grip, and
+        // the sheet rose to the top of the screen (Z-088).
+        expect(root.classList.contains("overflow-clip")).toBe(true);
+        expect(root.classList.contains("overflow-hidden")).toBe(false);
     });
 });

@@ -29,6 +29,46 @@ describe("cn", () => {
         expect(cn("rounded-bl-pill", "rounded-bl-control")).toBe("rounded-bl-control");
     });
 
+    it("knows the button corner, the label weights and the control veils", () => {
+        expect(cn("rounded-button", "rounded-full")).toBe("rounded-full");
+        expect(cn("rounded-button", "rounded-container")).toBe("rounded-container");
+        expect(cn("font-button", "font-bold")).toBe("font-bold");
+        expect(cn("font-medium", "font-button-strong")).toBe("font-button-strong");
+        // The theme faces are families: the last one wins, and a weight beside one is kept.
+        expect(cn("font-display", "font-sans")).toBe("font-sans");
+        expect(cn("font-sans", "font-display")).toBe("font-display");
+        expect(cn("font-heading", "font-display")).toBe("font-display");
+        expect(cn("font-display", "font-bold")).toBe("font-display font-bold");
+        // The flat card fill is a colour like the card: the last one wins, and the state steps are their own variants.
+        expect(cn("bg-card-flat", "bg-card")).toBe("bg-card");
+        expect(cn("bg-card", "bg-card-flat")).toBe("bg-card-flat");
+        expect(cn("bg-card-flat", "hover:bg-card-flat-hover", "active:bg-card-flat-active")).toBe("bg-card-flat hover:bg-card-flat-hover active:bg-card-flat-active");
+        // A veil is an image: it neither removes the fill beside it nor is removed by it.
+        expect(cn("bg-control-gradient", "bg-action-primary")).toBe("bg-control-gradient bg-action-primary");
+        expect(cn("bg-action-primary", "bg-control-gradient")).toBe("bg-action-primary bg-control-gradient");
+        expect(cn("bg-control-gradient", "bg-none")).toBe("bg-none");
+    });
+
+    it("resolves the named spacing steps, for padding, margin and gap", () => {
+        // Z-064: `p-xs p-sm` kept both, and the stylesheet order picked 4px.
+        expect(cn("p-xs", "p-sm")).toBe("p-sm");
+        expect(cn("p-sm", "p-xs")).toBe("p-xs");
+        expect(cn("p-6", "p-sm")).toBe("p-sm");
+        expect(cn("p-2xl", "p-4")).toBe("p-4");
+        expect(cn("px-md", "px-lg")).toBe("px-lg");
+        expect(cn("p-md", "px-lg")).toBe("p-md px-lg");
+        expect(cn("px-lg", "p-md")).toBe("p-md");
+        expect(cn("m-xs", "m-xl")).toBe("m-xl");
+        expect(cn("-mt-sm", "mt-md")).toBe("mt-md");
+        expect(cn("gap-sm", "gap-lg")).toBe("gap-lg");
+        expect(cn("gap-x-xs", "gap-x-2")).toBe("gap-x-2");
+        expect(cn("space-y-sm", "space-y-md")).toBe("space-y-md");
+        // A named step in another group is untouched: font size, container width, radius, shadow.
+        expect(cn("p-sm", "text-sm", "max-w-sm", "rounded-sm", "shadow-sm")).toBe("p-sm text-sm max-w-sm rounded-sm shadow-sm");
+        expect(cn("text-xs", "text-headline")).toBe("text-xs text-headline");
+        expect(cn("text-sm", "text-lg")).toBe("text-lg");
+    });
+
     it("keeps utilities that do not conflict", () => {
         expect(cn("flex items-center", "gap-2")).toBe("flex items-center gap-2");
     });
@@ -39,6 +79,18 @@ describe("cn", () => {
 });
 
 describe("call-site class overrides", () => {
+    it("Card: the default variant is a bordered card without a shadow, like outlined", () => {
+        const classes = (variant?: "outlined" | "elevated") => {
+            const { container } = render(Card, { props: { ariaLabel: "card", variant } });
+            return (container.firstElementChild as HTMLElement).className;
+        };
+        expect(classes()).toContain("border-border");
+        expect(classes()).toContain("shadow-none");
+        expect(classes()).not.toContain("shadow-sm");
+        expect(classes("outlined")).toContain("border-border");
+        expect(classes("elevated")).toContain("shadow-lg");
+    });
+
     it("Card: a call-site radius replaces the component's own", () => {
         const { container } = render(Card, {
             props: { ariaLabel: "card", class: "rounded-pill" },

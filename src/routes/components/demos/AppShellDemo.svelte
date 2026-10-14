@@ -7,11 +7,13 @@
     import User from "@lucide/svelte/icons/user";
     import Users from "@lucide/svelte/icons/users";
     import Button from "../../../components/atoms/Button.svelte";
+    import Chip from "../../../components/atoms/Chip.svelte";
     import FloatingActionButton from "../../../components/atoms/FloatingActionButton.svelte";
     import IconButton from "../../../components/atoms/IconButton.svelte";
     import AppBar from "../../../components/molecules/AppBar.svelte";
     import BottomTabBar from "../../../components/molecules/BottomTabBar.svelte";
     import AppShell from "../../../components/organisms/AppShell.svelte";
+    import AppShellHeaderPart from "../../../components/organisms/AppShellHeaderPart.svelte";
     import type { BottomTabBarItem } from "../../../components/util/bottom-tab-bar.js";
     import type { DemoRendererProps } from "./types";
 
@@ -34,6 +36,8 @@
 
     let active = $state("/quiz");
     let fullScreen = $state(false);
+    /** The header as two parts: the bar scrolls away, the filter row stays. */
+    let headerParts = $state(false);
     let lastAction = $state("none yet");
     const title = $derived(items.find((item) => item.href === active)?.label ?? "");
 
@@ -46,36 +50,53 @@
     }
 </script>
 
+{#snippet bar()}
+    <AppBar
+        {title}
+        headingLevel={2}
+        collapseOnScroll={!headerParts}
+        onback={fullScreen ? () => (fullScreen = false) : undefined}
+        backLabel="Close full screen"
+    >
+        {#snippet actions()}
+            <IconButton
+                variant="ghost"
+                size="lg"
+                label="Search"
+                onclick={() => (lastAction = "Search")}
+            >
+                <Search size={20} />
+            </IconButton>
+            <IconButton
+                variant="ghost"
+                size="lg"
+                label="Share"
+                onclick={() => (lastAction = "Share")}
+            >
+                <Share2 size={20} />
+            </IconButton>
+        {/snippet}
+    </AppBar>
+{/snippet}
+
 {#snippet shell(className: string)}
     <!-- `div`, because this page has its own `<main>`. In an app, leave it out. -->
     <AppShell class={className} contentElement="div" data-testid="app-shell-demo">
         {#snippet header()}
-            <AppBar
-                {title}
-                headingLevel={2}
-                collapseOnScroll
-                onback={fullScreen ? () => (fullScreen = false) : undefined}
-                backLabel="Close full screen"
-            >
-                {#snippet actions()}
-                    <IconButton
-                        variant="ghost"
-                        size="lg"
-                        label="Search"
-                        onclick={() => (lastAction = "Search")}
-                    >
-                        <Search size={20} />
-                    </IconButton>
-                    <IconButton
-                        variant="ghost"
-                        size="lg"
-                        label="Share"
-                        onclick={() => (lastAction = "Share")}
-                    >
-                        <Share2 size={20} />
-                    </IconButton>
-                {/snippet}
-            </AppBar>
+            {#if headerParts}
+                <AppShellHeaderPart sticky={false}>
+                    {@render bar()}
+                </AppShellHeaderPart>
+                <AppShellHeaderPart>
+                    <div class="flex gap-2 overflow-x-auto px-4 py-2" role="group" aria-label="Filter">
+                        {#each ["All", "Open", "Mine", "Archived"] as filter, index (filter)}
+                            <Chip selected={index === 0}>{filter}</Chip>
+                        {/each}
+                    </div>
+                </AppShellHeaderPart>
+            {:else}
+                {@render bar()}
+            {/if}
         {/snippet}
         <!-- `pb-24`: room for the last row to scroll clear of the floating button. -->
         <ul class="m-0 list-none space-y-3 p-4 pb-24">
@@ -105,6 +126,9 @@
         <div class="flex flex-wrap items-center gap-3">
             <Button variant="secondary" onclick={() => (fullScreen = true)}>
                 Open full screen
+            </Button>
+            <Button variant="secondary" onclick={() => (headerParts = !headerParts)}>
+                {headerParts ? "Header: bar scrolls, filter sticks" : "Header: one block"}
             </Button>
             <p class="text-sm text-description" data-testid="app-shell-demo-action">
                 Last action: {lastAction}

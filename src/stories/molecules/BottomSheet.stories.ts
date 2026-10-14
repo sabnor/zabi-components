@@ -27,7 +27,7 @@ export const Default: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Half and full. Drag the grip up to full and back, or press it; drag or flick it down past half to close. The list scrolls under a finger, and a swipe down moves the sheet only from the top of the list.'
+                story: 'Half and full. Drag the grip up to full and back, or press it; drag or flick it down past half to close. The list scrolls under a finger, and a swipe down moves the sheet only from the top of the list. A box inside the content that scrolls by itself (a Select list, the time columns of TimeField) keeps its own swipes, and anything with data-sheet-no-drag (a map, a wheel) keeps its drag from the sheet. So does an element with touch-action: none, or pan-x alone (a canvas, a drawing pad), with no attribute. A swipe that begins sideways (a carousel, a row that scrolls) stays sideways and never moves the sheet; the axis is decided once, after 8px.'
             }
         }
     }
@@ -64,6 +64,25 @@ export const OneSnapPoint: Story = {
         docs: {
             description: {
                 story: 'A short form at half height only. With one snap point the grip is not a button: it only drags, down to close. Focus starts in the field through initialFocus.'
+            }
+        }
+    }
+};
+
+export const Fit: Story = {
+    args: {
+        fit: true,
+        form: true,
+        title: 'Rename team',
+    },
+    render: (args) => ({
+        Component: BottomSheetStory,
+        props: args,
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'With fit the sheet is as tall as its content, up to half the screen, instead of half whatever it holds. It has one resting height, so snapPoints and snap are ignored and the grip only drags (down to close). Select uses it for a short list without a search field.'
             }
         }
     }

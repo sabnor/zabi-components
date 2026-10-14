@@ -3,6 +3,9 @@
     import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
     import type { ButtonVariant, SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
+    import { isDevBuild } from "../util/app-shell.js";
+    import { badgeText, defaultBadgeLabel } from "../util/bottom-tab-bar.js";
+    import Badge from "./Badge.svelte";
 
     /** The shared scale plus `xs`, which only the icon button has. */
     type IconButtonSize = SizeVariant | "xs";
@@ -56,6 +59,19 @@
         loading?: boolean;
         /** Required for icon-only usage (no visible text). */
         label?: string;
+        /**
+         * A count drawn on the button, in the attention colour, inside the
+         * button's own box (so a bar or an `overflow` ancestor cannot cut it).
+         * Nothing is drawn for 0, a negative number or when it is left out;
+         * while `loading` it is hidden. At `xs` and `sm` there is no room for
+         * a number: a dot is drawn instead. Needs `label`: the accessible name
+         * becomes the label, a comma and `countLabel(count)`.
+         */
+        count?: number;
+        /** What the count adds to the accessible name, after the label. Default: "3 new". */
+        countLabel?: (count: number) => string;
+        /** Above this the badge reads `99+`. The accessible name keeps the real count. */
+        countMax?: number;
         class?: string;
         children?: Snippet;
     };
@@ -70,6 +86,9 @@
         type,
         href,
         label = "",
+        count,
+        countLabel = defaultBadgeLabel,
+        countMax = 99,
         class: className = "",
         onclick,
         children,
@@ -77,6 +96,22 @@
     }: Props = $props();
 
     const isDisabled = $derived(!!disabled || loading);
+
+    /** A count is drawn only for a positive number, and not while loading. */
+    const hasCount = $derived(typeof count === "number" && count > 0);
+    const showCount = $derived(hasCount && !loading);
+    /** `xs` and `sm` have no room for a number beside the icon: a dot. */
+    const countAsDot = $derived(size === "xs" || size === "sm");
+    const accessibleName = $derived(
+        showCount && label ? `${label}, ${countLabel(count as number)}` : label || undefined,
+    );
+
+    $effect(() => {
+        if (!isDevBuild() || !hasCount || label) return;
+        console.warn(
+            "[zabi-components] IconButton: `count` needs a `label`; without it the count has no accessible name.",
+        );
+    });
     /**
      * Loading without `disabled`: unavailable, and still where focus is.
      *
@@ -157,13 +192,18 @@
     });
 
     const disabledClass =
-        "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
+        "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:bg-none disabled:inset-shadow-none disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
 
     const isDangerTone = $derived(
         tone === "danger" && (variant === "ghost" || variant === "outline"),
     );
 
     const variantClass = $derived.by(() => {
+        // The veil of the solid fills, as on Button. Not when disabled, and
+        // not on a toggled-on button (`pressedClass`): that holds the pressed
+        // fill flat, with its outline as the shape.
+        const veil = disabled || (isToggle && pressed) ? "" : "bg-control-gradient ";
+        const veilAccent = disabled || (isToggle && pressed) ? "" : "bg-control-gradient-accent ";
         if (isDangerTone) {
             const fill =
                 "text-error hover:bg-action-danger-subtle active:bg-action-danger-subtle-hover active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger";
@@ -174,19 +214,22 @@
         switch (variant) {
             case "secondary":
                 return "bg-action-secondary text-headline hover:bg-action-secondary-hover active:bg-action-secondary-active active:scale-[0.98] motion-reduce:active:scale-100";
+            case "tonal":
+                return "bg-action-tonal text-action-tonal active:scale-[0.98] motion-reduce:active:scale-100";
             case "danger":
-                return "bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger";
+                return `${veil}bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger`;
             case "ghost":
                 return "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--muted";
             case "outline":
-                return "bg-transparent border border-border text-headline hover:bg-surface-hover hover:border-border-medium active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100";
+                return "bg-transparent border border-action-outline text-headline hover:bg-surface-hover hover:border-action-outline-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100";
             case "link":
+            case "text":
                 return "bg-transparent text-link hover:text-link-hover focus-ring--muted";
             case "accent":
-                return "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98] motion-reduce:active:scale-100";
+                return `${veilAccent}bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98] motion-reduce:active:scale-100`;
             case "primary":
             default:
-                return "bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] motion-reduce:active:scale-100";
+                return `${veil}bg-action-primary text-action-primary hover:bg-action-primary-hover active:bg-action-primary-active active:scale-[0.98] motion-reduce:active:scale-100`;
         }
     });
 
@@ -215,7 +258,12 @@
             case "ghost":
             case "outline":
             case "link":
+            case "text":
                 return `bg-action-primary-subtle text-link hover:bg-action-primary-subtle-hover active:bg-action-primary-subtle-active ${outline}`;
+            case "tonal":
+                // The tonal fill keeps its own hover and pressed steps; the
+                // outline is what shows it is on.
+                return outline;
             case "accent":
                 return `bg-accent-active hover:bg-accent-active ${outline}`;
             case "primary":
@@ -226,7 +274,7 @@
 
     const buttonClasses = $derived.by(() => {
         const base =
-            "inline-flex focus-ring items-center justify-center rounded-control shrink-0 transition-colors duration-150 cursor-pointer select-none";
+            "inline-flex focus-ring items-center justify-center rounded-control shrink-0 transition-colors duration-(--duration-base) cursor-pointer select-none";
         // `disabled:` does not match an `<a>`: a disabled link wears the
         // disabled pair itself, in place of its variant. So does a loading
         // button, which is not `:disabled` (it keeps focus): with the
@@ -236,7 +284,8 @@
             isDisabled && (isLink || isBusy)
                 ? "bg-(--color-action-disabled) text-action-disabled-text border border-transparent cursor-not-allowed"
                 : `${variantClass} ${isLink ? "" : pressedClass} ${disabledClass}`;
-        return cn(`${base} ${sizeClass.box} ${state} ${className}`);
+        // Relative only for the badge: it is placed against the button's own box.
+        return cn(`${base} ${showCount ? "relative " : ""}${sizeClass.box} ${state} ${className}`);
     });
 </script>
 
@@ -248,6 +297,29 @@
         ></span>
     {:else if children}
         {@render children()}
+    {/if}
+    {#if showCount}
+        <!-- Inside the box, in its upper end corner, whatever the size: the box
+        edge is the outer edge, so nothing outside it can cut it. Decorative; the
+        name carries the count. -->
+        {#if countAsDot}
+            <span
+                class="pointer-events-none absolute end-0.5 top-0.5 size-2 rounded-full bg-error"
+                aria-hidden="true"
+                data-icon-button-count="dot"
+            ></span>
+        {:else}
+            <Badge
+                size="sm"
+                emphasis="solid"
+                variant="error"
+                aria-hidden="true"
+                data-icon-button-count="badge"
+                class="pointer-events-none absolute end-0.5 top-0.5 h-[18px] min-h-[18px] min-w-[18px] px-[5px] py-0 text-[11px] leading-[18px] whitespace-nowrap"
+            >
+                {badgeText(count as number, countMax)}
+            </Badge>
+        {/if}
     {/if}
 {/snippet}
 
@@ -261,7 +333,7 @@
         role={isDisabled ? "link" : undefined}
         aria-disabled={isDisabled ? "true" : undefined}
         aria-busy={loading ? "true" : undefined}
-        aria-label={label || undefined}
+        aria-label={accessibleName}
         {...(restProps as unknown as HTMLAnchorAttributes)}
         onclick={handleLinkClick}
     >
@@ -276,7 +348,7 @@
         aria-busy={loading ? "true" : undefined}
         aria-pressed={pressed}
         onclick={handleClick}
-        aria-label={label || undefined}
+        aria-label={accessibleName}
         {...restProps}
     >
         {@render content()}

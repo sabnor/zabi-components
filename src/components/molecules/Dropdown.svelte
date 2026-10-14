@@ -60,6 +60,8 @@
          * to six `options`, all of it for more. The grip moves it either way.
          */
         sheetSnap?: BottomSheetSnap;
+        /** The sheet is as tall as the list, up to half the screen (BottomSheet `fit`); the grip then only drags. Off by default. */
+        sheetFit?: boolean;
         /** Accessible name of the sheet's close button. */
         sheetCloseLabel?: string;
         /** Accessible name of the sheet's grip while its button takes the sheet up a step. */
@@ -93,6 +95,7 @@
         fullWidth = false,
         sheetTitle = undefined,
         sheetSnap = undefined,
+        sheetFit = false,
         sheetCloseLabel: sheetCloseLabelGiven,
         sheetExpandLabel: sheetExpandLabelGiven,
         sheetCollapseLabel: sheetCollapseLabelGiven,
@@ -562,7 +565,11 @@
             // the corner: within a pixel of concentric.
             // A column, so that the list below can be the part that scrolls
             // when the menu is limited in height.
-            'flex flex-col rounded-overlay border border-border-overlay bg-surface-overlay py-2 shadow-lg transition-[opacity,translate] duration-200 ease-in-out motion-reduce:transition-none',
+            // The layer form of the material: a menu may hold content that
+            // places itself with `position: fixed` (a nested Dropdown, a
+            // Tooltip), and a backdrop-filter on the menu itself would make it
+            // the containing block of that content.
+            'material-layer-thick flex flex-col rounded-overlay py-2 transition-[opacity,translate] duration-(--duration-moderate) ease-standard motion-reduce:transition-none',
             transformClasses(),
         ]
             .join(' ')
@@ -590,6 +597,7 @@
         <BottomSheet
             bind:isOpen
             snap={sheetSnap ?? (options.length > 6 ? 'full' : 'half')}
+            fit={sheetFit}
             title={sheetTitle || ariaLabel}
             closeLabel={sheetCloseLabel}
             expandLabel={sheetExpandLabel}

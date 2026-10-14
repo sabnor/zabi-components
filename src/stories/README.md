@@ -19,7 +19,7 @@ npm run build:site         # site build, with Storybook copied into static/story
 | `Colors.mdx` | Ramps and semantic tokens, read from `src/app.css` through `tokens.ts` |
 | `atoms/` | ActionPanel, Badge, Button, Card, Checkbox, CodeBlock, ColorPicker, Container, DateField, Divider, FeatureCard, FloatingActionButton, Heading, IconButton, Input, List, ListItem, OptimizedImage, Progress, Rating, Select, Skeleton, Slider, Spinner, Table, Text, Textarea, ThemeToggle, TimeField, Toast, Toggle, Tooltip |
 | `molecules/` | Alert, AppBar, BottomSheet, BottomTabBar, Calendar, Collapsible, ConfirmDialog, ContactForm, Drawer, Dropdown, EmptyState, Form, FormField, ImageUpload, MediaGrid, Modal, NavigationMenu, Page, PhotoGrid, PhotoViewer, Section, SegmentedControl, SlideUp, SortableList, Stepper, StickyActionBar, Tabs, Toaster, UnsavedChangesBar |
-| `organisms/` | AppShell, SidebarNavigation, SidebarNavigation/Account panel, SidebarPanel, TopNavbar, TopNavbar/Inline nav |
+| `organisms/` | AppShell, AppShell (9.0), SidebarNavigation, SidebarNavigation/Account panel, SidebarPanel, TopNavbar, TopNavbar/Inline nav |
 
 A `.svelte` file beside a story is a wrapper for it, used when a story needs
 children, snippets or local state that story args cannot express.

@@ -23,6 +23,12 @@ const meta = {
             control: 'select',
             options: ['top', 'bottom', 'left', 'right']
         },
+        tone: {
+            control: 'select',
+            options: ['material', 'inverted'],
+            description:
+                'material (default): the bubble is thick glass with body text and no arrow. inverted: the 8.1 dark bubble with an arrow'
+        },
         touchDuration: {
             control: 'number',
             description:
@@ -167,6 +173,26 @@ export const OnAnUnavailableButton: Story = {
                 Component: Button,
                 props: { variant: 'primary', 'aria-disabled': 'true' },
                 children: ['Publish']
+            }
+        ]
+    })
+};
+
+/** The 8.1 bubble: a dark fill with light text and an arrow, for a page where glass does not read. */
+export const Inverted: Story = {
+    args: {
+        content: 'Adds a question to the round',
+        placement: 'bottom',
+        tone: 'inverted'
+    },
+    render: (args) => ({
+        Component: Tooltip,
+        props: args,
+        children: [
+            {
+                Component: Button,
+                props: { variant: 'primary' },
+                children: ['Add question']
             }
         ]
     })

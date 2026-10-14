@@ -69,7 +69,7 @@
     const itemClasses = $derived(
         cn(
             "focus-ring flex w-full items-start justify-start gap-2 rounded-control px-3 py-2 pointer-coarse:py-3 text-start text-sm transition-colors focus:outline-none",
-            tone === "danger" ? "text-error focus-ring--danger" : "text-body",
+            tone === "danger" ? "text-error-text focus-ring--danger" : "text-body",
             disabled
                 ? "cursor-not-allowed"
                 : tone === "danger"

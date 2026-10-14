@@ -8,6 +8,8 @@ export default defineConfig({
     testDir: "playwright",
     // Opens every route once before the first test; PLAYWRIGHT_WARMUP=0 skips it (see RELEASING.md).
     globalSetup: "./playwright/global-setup.ts",
+    // Specs that pin WebKit run on request (PLAYWRIGHT_WEBKIT=1), not in the default run.
+    testIgnore: process.env.PLAYWRIGHT_WEBKIT === "1" ? [] : ["**/*-webkit.spec.ts"],
     timeout: 60_000,
     expect: { timeout: 15_000 },
     fullyParallel: true,

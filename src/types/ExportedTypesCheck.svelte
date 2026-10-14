@@ -9,15 +9,22 @@
      * component takes; they were never props.
      */
     import Badge from "../components/atoms/Badge.svelte";
+    import Stat from "../components/atoms/Stat.svelte";
+    import SpeechBubble from "../components/atoms/SpeechBubble.svelte";
+    import Chip from "../components/atoms/Chip.svelte";
+    import ChipGroup from "../components/molecules/ChipGroup.svelte";
     import Button from "../components/atoms/Button.svelte";
     import Card from "../components/atoms/Card.svelte";
     import Checkbox from "../components/atoms/Checkbox.svelte";
     import Heading from "../components/atoms/Heading.svelte";
     import Input from "../components/atoms/Input.svelte";
+    import CodeField from "../components/atoms/CodeField.svelte";
     import Progress from "../components/atoms/Progress.svelte";
     import Rating from "../components/atoms/Rating.svelte";
+    import PickerField from "../components/atoms/PickerField.svelte";
     import Select from "../components/atoms/Select.svelte";
     import Skeleton from "../components/atoms/Skeleton.svelte";
+    import SkeletonGroup from "../components/atoms/SkeletonGroup.svelte";
     import Textarea from "../components/atoms/Textarea.svelte";
     import Toggle from "../components/atoms/Toggle.svelte";
     import Tooltip from "../components/atoms/Tooltip.svelte";
@@ -27,6 +34,8 @@
     import AppBar from "../components/molecules/AppBar.svelte";
     import BottomTabBar from "../components/molecules/BottomTabBar.svelte";
     import AppShell from "../components/organisms/AppShell.svelte";
+    import AppShellHeaderPart from "../components/organisms/AppShellHeaderPart.svelte";
+    import AppNavigation from "../components/organisms/AppNavigation.svelte";
     import FloatingActionButton from "../components/atoms/FloatingActionButton.svelte";
     import BottomSheet from "../components/molecules/BottomSheet.svelte";
     import StickyActionBar from "../components/molecules/StickyActionBar.svelte";
@@ -38,19 +47,30 @@
     import Stepper from "../components/molecules/Stepper.svelte";
     import Avatar from "../components/atoms/Avatar.svelte";
     import AvatarGroup from "../components/molecules/AvatarGroup.svelte";
+    import LineChart from "../components/molecules/LineChart.svelte";
+    import BarChart from "../components/molecules/BarChart.svelte";
+    import PieChart from "../components/molecules/PieChart.svelte";
+    import Sparkline from "../components/atoms/Sparkline.svelte";
     import type {
         AlertProps,
         BadgeProps,
+        StatProps,
+        SpeechBubbleProps,
+        ChipProps,
+        ChipGroupProps,
         ButtonProps,
         CardProps,
         CheckboxProps,
         HeadingProps,
         InputProps,
+        CodeFieldProps,
         ModalProps,
         ProgressProps,
         RatingProps,
         SegmentedControlProps,
+        PickerFieldProps,
         SelectProps,
+        SkeletonGroupProps,
         SkeletonProps,
         TextareaProps,
         ToggleProps,
@@ -58,6 +78,8 @@
         AppBarProps,
         BottomTabBarProps,
         AppShellProps,
+        AppShellHeaderPartProps,
+        AppNavigationProps,
         FloatingActionButtonProps,
         BottomSheetProps,
         StickyActionBarProps,
@@ -69,29 +91,42 @@
         StepperProps,
         AvatarProps,
         AvatarGroupProps,
+        LineChartProps,
+        BarChartProps,
+        PieChartProps,
+        SparklineProps,
     } from "./index";
 
     interface Props {
         alert?: AlertProps;
         badge?: BadgeProps;
+        stat?: StatProps;
+        speechBubble?: SpeechBubbleProps;
+        chip?: ChipProps;
+        chipGroup?: ChipGroupProps;
         /** `variant` still lists four values Button never had; see the interface. */
         button?: Omit<ButtonProps, "variant">;
         card?: CardProps;
         checkbox?: CheckboxProps;
         heading?: HeadingProps;
         input?: InputProps;
+        codeField?: CodeFieldProps;
         modal?: ModalProps;
         progress?: ProgressProps;
         rating?: RatingProps;
         segmentedControl?: SegmentedControlProps;
+        pickerField?: PickerFieldProps;
         select?: SelectProps;
         skeleton?: SkeletonProps;
+        skeletonGroup?: SkeletonGroupProps;
         textarea?: TextareaProps;
         toggle?: ToggleProps;
         tooltip?: TooltipProps;
         appBar?: AppBarProps;
         bottomTabBar?: BottomTabBarProps;
         appShell?: AppShellProps;
+        appShellHeaderPart?: AppShellHeaderPartProps;
+        appNavigation?: AppNavigationProps;
         floatingActionButton?: FloatingActionButtonProps;
         bottomSheet?: BottomSheetProps;
         stickyActionBar?: StickyActionBarProps;
@@ -103,28 +138,41 @@
         stepper?: StepperProps;
         avatar?: AvatarProps;
         avatarGroup?: AvatarGroupProps;
+        lineChart?: LineChartProps;
+        barChart?: BarChartProps;
+        pieChart?: PieChartProps;
+        sparkline?: SparklineProps;
     }
 
     let {
         alert = {},
         badge = {},
+        stat,
+        speechBubble = {},
+        chip = {},
+        chipGroup = {},
         button = {},
         card = {},
         checkbox = {},
         heading = {},
         input = {},
+        codeField = {},
         modal = {},
         progress = {},
         rating = {},
         segmentedControl = { options: [] },
+        pickerField = {},
         select = {},
         skeleton = {},
+        skeletonGroup = {},
         textarea = {},
         toggle = {},
         tooltip = {},
         appBar = {},
         bottomTabBar = { items: [] },
         appShell = {},
+        appShellHeaderPart = {},
+        appNavigation = { items: [] },
         floatingActionButton = { label: "" },
         bottomSheet = { title: "" },
         stickyActionBar = {},
@@ -136,28 +184,41 @@
         stepper = { steps: [] },
         avatar = { name: "" },
         avatarGroup = { people: [] },
+        lineChart,
+        barChart,
+        pieChart,
+        sparkline,
     }: Props = $props();
 </script>
 
 <Alert {...alert} />
 <Badge {...badge} />
+{#if stat}<Stat {...stat} />{/if}
+<SpeechBubble {...speechBubble} />
+<Chip {...chip} />
+<ChipGroup {...chipGroup} />
 <Button {...button} />
 <Card {...card} />
 <Checkbox {...checkbox} />
 <Heading {...heading} />
 <Input {...input} />
+<CodeField {...codeField} />
 <Modal {...modal} />
 <Progress {...progress} />
 <Rating {...rating} />
 <SegmentedControl {...segmentedControl} />
+<PickerField {...pickerField} />
 <Select {...select} />
 <Skeleton {...skeleton} />
+<SkeletonGroup {...skeletonGroup} />
 <Textarea {...textarea} />
 <Toggle {...toggle} />
 <Tooltip {...tooltip} />
 <AppBar {...appBar} />
 <BottomTabBar {...bottomTabBar} />
 <AppShell {...appShell} />
+<AppShellHeaderPart {...appShellHeaderPart} />
+<AppNavigation {...appNavigation} />
 <FloatingActionButton {...floatingActionButton} />
 <BottomSheet {...bottomSheet} />
 <StickyActionBar {...stickyActionBar} />
@@ -169,3 +230,7 @@
 <Stepper {...stepper} />
 <Avatar {...avatar} />
 <AvatarGroup {...avatarGroup} />
+{#if lineChart}<LineChart {...lineChart} />{/if}
+{#if barChart}<BarChart {...barChart} />{/if}
+{#if pieChart}<PieChart {...pieChart} />{/if}
+{#if sparkline}<Sparkline {...sparkline} />{/if}

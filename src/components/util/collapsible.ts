@@ -50,6 +50,12 @@ export interface CollapsibleGroupRegistration {
 export interface CollapsibleGroupContext {
     /** False when opening one panel closes the others. */
     readonly multiple: boolean;
+    /**
+     * Shared `name` for the `<details>` of the default triggers when the group
+     * is single-open, so the browser keeps them exclusive without scripts.
+     * `undefined` when `multiple`.
+     */
+    readonly exclusiveName: string | undefined;
     register: (member: CollapsibleGroupMember) => CollapsibleGroupRegistration;
     /** Called whenever a member is open, however it got there. */
     opened: (member: CollapsibleGroupMember) => void;

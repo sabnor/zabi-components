@@ -6,8 +6,7 @@
     import Section from "../../../components/molecules/Section.svelte";
     import type { PageData } from "./$types";
 
-    import ExternalLink from "@lucide/svelte/icons/external-link";
-    import { GITHUB_URL, layerPath, layers } from "$lib/marketing/content";
+    import { layerPath, layers } from "$lib/marketing/content";
     import Seo from "$lib/marketing/Seo.svelte";
     let { data }: { data: PageData } = $props();
 
@@ -97,45 +96,3 @@
         <PropsTable props={component.props} />
     </Section>
 </Page>
-
-<footer
-    class="mt-16 -mx-8 border-t border-border bg-surface-raised px-8 py-8"
->
-    <div class="mx-auto max-w-4xl">
-        <div
-            class="flex flex-col items-center justify-between gap-4 md:flex-row"
-        >
-            <div class="text-center md:text-left">
-                <p class="mb-2 text-description">
-                    Zabi Components is open source under the MIT license.
-                </p>
-                <p class="text-sm text-caption">
-                    © {new Date().getFullYear()} Zabi Components.
-                </p>
-            </div>
-            <div class="flex gap-6">
-                <a
-                    href="/docs"
-                    class="text-description transition-colors hover:text-headline"
-                    >Docs</a
-                >
-                <a
-                    href="/components"
-                    class="text-description transition-colors hover:text-headline"
-                    >Components</a
-                >
-                <a
-                    href={GITHUB_URL}
-                    class="inline-flex items-center text-description transition-colors hover:text-headline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >GitHub<ExternalLink
-                        size={12}
-                        class="ml-1 shrink-0 opacity-70"
-                        aria-hidden="true"
-                    /><span class="sr-only">(opens in a new tab)</span></a
-                >
-            </div>
-        </div>
-    </div>
-</footer>

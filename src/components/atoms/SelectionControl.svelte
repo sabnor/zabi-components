@@ -4,6 +4,9 @@
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
     import { groupBinding } from "../util/hydration.js";
+    import { fieldDescribedBy, fieldMessageState } from "../util/field.js";
+    import type { SemanticVariant } from "../types/variants.js";
+    import FieldMessages from "./FieldMessages.svelte";
     import {
         SELECTION_CONTROL_INPUT,
         SELECTION_CONTROL_LABEL_ROW,
@@ -39,6 +42,30 @@
         onChange?: (event: Event) => void;
         onchange?: (event: Event) => void;
         mark?: Snippet<[SelectionControlMarkProps]>;
+        /**
+         * Drawn inside the one label, between the control and the label text,
+         * as decoration for the name `label` already gives. A leading image
+         * should have an empty alt: the label names the row.
+         */
+        leading?: Snippet;
+        /**
+         * A line under the label, tied to the input with `aria-describedby`.
+         * It is not part of the name: the label names the control.
+         */
+        description?: string;
+        /**
+         * Where the control sits in the row. `end` puts it after the leading,
+         * the label and the description, at the far edge; the row is still
+         * one label and fills the width it is given.
+         */
+        controlPosition?: "start" | "end";
+        variant?: SemanticVariant;
+        /** Status text under the control. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
+        message?: string;
+        /** Help text under the control, read out with it. */
+        hint?: string;
+        /** An error under the control. It marks the input invalid and is announced; it wins over `variant` and `message`. */
+        error?: string;
     };
 
     let {
@@ -56,6 +83,13 @@
         onChange,
         onchange,
         mark,
+        leading,
+        description,
+        controlPosition = "start",
+        variant = "default",
+        message = "",
+        hint = "",
+        error = "",
         ...restProps
     }: Props = $props();
 
@@ -75,9 +109,34 @@
     const controlId = $derived(idProp ?? fallbackId);
     const isDisabled = $derived(disabled || loading);
 
-    const labelWrapperClasses = SELECTION_CONTROL_LABEL_ROW;
+    const descriptionId = $derived(`${controlId}-description`);
+    const status = $derived(fieldMessageState({ variant, message, hint, error }));
+    const hasFieldText = $derived(status.showMessage || status.showHint);
+    // The caller's ids, then the description, the hint and the message.
+    const describedBy = $derived(
+        fieldDescribedBy(
+            controlId,
+            status,
+            [restProps["aria-describedby"], description ? descriptionId : undefined]
+                .filter(Boolean)
+                .join(" "),
+        ),
+    );
+    // `aria-invalid` is not supported by the radio role: a radio's error is said by its description.
+    const invalid = $derived(status.variant === "error" ? "true" : undefined);
 
-    const controlContainerClasses = $derived(selectionControlShellClasses(shape));
+    // With a description the row is two lines: the box sits at the top, as in RadioGroup.
+    // At the end the control is moved by `order`, so the markup and what a
+    // screen reader meets first are the same in both positions.
+    const controlAtEnd = $derived(controlPosition === "end");
+    const labelWrapperClasses = $derived(
+        cn(SELECTION_CONTROL_LABEL_ROW, description && "items-start", controlAtEnd && "min-w-0 flex-1"),
+    );
+
+    const controlContainerClasses = $derived(
+        cn(selectionControlShellClasses(shape), description && "mt-0.5", controlAtEnd && "order-last"),
+    );
+    const labelTextClasses = $derived(controlAtEnd ? "min-w-0 flex-1" : "");
 
     const controlRingClasses = $derived(selectionControlRingOverlayClasses(shape));
 
@@ -132,7 +191,7 @@
     }
 </script>
 
-<div class={cn("flex items-center gap-2", className)}>
+{#snippet row()}
     <label for={controlId} class={labelWrapperClasses}>
         <span class={controlContainerClasses}>
             <!-- One branch per type: a binding needs a type it can read. -->
@@ -149,6 +208,8 @@
                     aria-busy={loading ? "true" : undefined}
                     onchange={handleChange}
                     {...restProps}
+                    aria-describedby={describedBy}
+                    aria-invalid={invalid ?? restProps["aria-invalid"]}
                 />
             {:else}
                 <input
@@ -163,6 +224,7 @@
                     aria-busy={loading ? "true" : undefined}
                     onchange={handleChange}
                     {...restProps}
+                    aria-describedby={describedBy}
                 />
             {/if}
             <span class={controlRingClasses}></span>
@@ -170,10 +232,41 @@
                 {@render mark({ checked: !!checked, loading, disabled: isDisabled })}
             {/if}
         </span>
-        {#if label}
-            <span class="text-sm font-medium text-label">
+        {#if leading}
+            <span class="inline-flex shrink-0 items-center">
+                {@render leading()}
+            </span>
+        {/if}
+        {#if description}
+            <span class={cn("flex flex-col gap-1", labelTextClasses)}>
+                <span class="text-sm font-medium text-label">
+                    {label}
+                </span>
+                <!-- aria-hidden keeps it out of the name; aria-describedby still reads it. -->
+                <span id={descriptionId} class="text-sm text-description" aria-hidden="true">
+                    {description}
+                </span>
+            </span>
+        {:else if label}
+            <span class={cn("text-sm font-medium text-label", labelTextClasses)}>
                 {label}
             </span>
         {/if}
     </label>
-</div>
+{/snippet}
+
+{#if hasFieldText}
+    <div class={cn("flex flex-col", className)}>
+        <div class="flex items-center gap-2">
+            {@render row()}
+        </div>
+        <!-- Under the label text: the box is 20px and the gap 8px. With the box at the end, from the row's edge. -->
+        <div class={controlAtEnd ? "" : "ps-7"}>
+            <FieldMessages fieldId={controlId} {status} {hint} gap="mt-1" />
+        </div>
+    </div>
+{:else}
+    <div class={cn("flex items-center gap-2", className)}>
+        {@render row()}
+    </div>
+{/if}

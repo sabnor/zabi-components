@@ -5,7 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import TopNavbar from "../src/components/organisms/TopNavbar.svelte";
 
 /**
- * TopNavbar's phone menu: when it closes, where focus goes, and what the menu
+ * TopNavbar's inline phone menu (`menu="inline"`, the panel under the bar):
+ * when it closes, where focus goes, and what the menu
  * button says about it. jsdom applies no media query, so the row and the menu
  * are both in the DOM here; what is shown at which width, and every size, is
  * in playwright/top-navbar.spec.ts.
@@ -34,14 +35,14 @@ const menuLink = (name: string) =>
 async function open(props: Record<string, unknown> = {}) {
     const user = userEvent.setup();
     const view = render(TopNavbar, {
-        props: { brand: "Zabi", brandHref: "/", items, preventNavigation: true, ...props },
+        props: { brand: "Zabi", brandHref: "/", items, preventNavigation: true, menu: "inline", ...props },
     });
     await user.click(menuButton());
     expect(panel()).not.toBeNull();
     return { user, ...view };
 }
 
-describe("TopNavbar phone menu", () => {
+describe("TopNavbar inline phone menu", () => {
     it("names its panel with aria-controls only while the panel exists", async () => {
         const { user } = await open();
         expect(menuButton().getAttribute("aria-expanded")).toBe("true");

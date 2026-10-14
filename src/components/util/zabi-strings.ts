@@ -25,8 +25,11 @@ import { getContext, setContext } from "svelte";
 
 import type { AvatarGroupStrings } from "./avatar.js";
 import type { CalendarStrings } from "./calendar.js";
+import type { DateFieldStrings, TimeFieldStrings } from "./temporal-field.js";
 import type { MediaGridStrings } from "./media-grid.js";
+import type { CodeFieldStrings } from "./code-field.js";
 import type { PhotoGridStrings, PhotoViewerStrings } from "./photo.js";
+import type { ProgressStrings } from "./progress.js";
 import type { PullToRefreshStrings } from "./pull-to-refresh.js";
 import type { RatingStrings } from "./rating.js";
 import type {
@@ -36,6 +39,7 @@ import type {
     PropsTableStrings,
 } from "./ready-made-strings.js";
 import type { SelectStrings } from "./select.js";
+import type { SkeletonStrings } from "./skeleton.js";
 import type {
     SidebarAccountPanelStrings,
     SidebarBrandHeaderStrings,
@@ -156,7 +160,9 @@ export interface ZabiStrings {
     avatarGroup?: Partial<AvatarGroupStrings>;
     calendar?: Partial<CalendarStrings>;
     codeBlock?: Partial<CodeBlockTexts>;
+    codeField?: Partial<CodeFieldStrings>;
     colorPicker?: Partial<ColorPickerStrings>;
+    dateField?: Partial<DateFieldStrings>;
     componentDemo?: Partial<ComponentDemoStrings>;
     contactForm?: Partial<ContactFormStrings>;
     imageUpload?: Partial<ImageUploadTexts>;
@@ -164,9 +170,11 @@ export interface ZabiStrings {
     photoGrid?: Partial<PhotoGridStrings>;
     photoViewer?: Partial<PhotoViewerStrings>;
     propsTable?: Partial<PropsTableStrings>;
+    progress?: Partial<ProgressStrings>;
     pullToRefresh?: Partial<PullToRefreshStrings>;
     rating?: Partial<RatingStrings>;
     select?: Partial<SelectStrings>;
+    skeleton?: Partial<SkeletonStrings>;
     sidebarAccountPanel?: Partial<SidebarAccountPanelStrings>;
     sidebarBrandHeader?: Partial<SidebarBrandHeaderStrings>;
     sidebarFooter?: Partial<SidebarFooterStrings>;
@@ -175,6 +183,7 @@ export interface ZabiStrings {
     stepper?: Partial<StepperStrings>;
     swipeableListItem?: Partial<SwipeableListItemStrings>;
     themeToggle?: Partial<ThemeToggleLabels>;
+    timeField?: Partial<TimeFieldStrings>;
     toast?: Partial<ToastTexts>;
     toaster?: Partial<ToasterStrings>;
     topNavbar?: Partial<TopNavbarStrings>;

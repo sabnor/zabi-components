@@ -240,6 +240,11 @@ export function joinOverlayStack(panel: HTMLElement): {
     };
 }
 
+/** Whether `panel` is the overlay on top of the stack: the one opened last. */
+export function isTopOverlay(panel: HTMLElement): boolean {
+    return overlayStack[overlayStack.length - 1]?.panel === panel;
+}
+
 /**
  * Keeps a modal overlay in charge of the keyboard when focus has left it
  * without a Tab: the focused control was disabled or removed and the browser

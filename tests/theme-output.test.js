@@ -9,9 +9,17 @@ import postcss from 'postcss';
 import {
   readThemeMaps,
   resolveTokenColor,
+  resolveTokenPaint,
   resolveTokenValue,
 } from '../scripts/resolve-tokens.js';
 import { generateSurfaceLadder } from '../tokens/surface-ladder.js';
+
+/** `p`% of `a` over `b`, in sRGB, the way `color-mix(in srgb, a p%, b)` rounds. */
+function mixHex(a, p, b) {
+  const ch = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const [x, y] = [ch(a), ch(b)];
+  return '#' + x.map((v, i) => Math.round((v * p) / 100 + (y[i] * (100 - p)) / 100).toString(16).padStart(2, '0')).join('');
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -266,20 +274,22 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-border-strong': '#71717a',
         '--color-control-border': '#71717a',
         '--color-focus-ring-muted': '#71717a',
-        // The pressed Select trigger: a step past hover (#f4f4f5).
-        '--color-input-active': '#e4e4e7',
+        // The pressed Select trigger: 12% of the ink into the white field.
+        '--color-input-active': '#e3e3e4',
         '--color-link': '#3c52ba',
-        '--color-surface-base': '#ececee',
+        '--color-surface-base': '#fafafa',
         '--color-surface-raised': '#ffffff',
         '--color-headline': '#18181b',
-        '--color-accent': '#707400',
+        '--color-accent': '#5d7900',
         '--color-on-accent': '#ffffff',
-        '--color-energetic': '#707400',
+        '--color-energetic': '#5d7900',
       },
       dark: {
-        '--color-action-primary': '#92a9ff',
-        '--color-action-primary-text': '#111d49',
-        '--color-on-brand': '#111d49',
+        // The primary keeps its hue in dark (Z-043): the light steps, a white label.
+        // The ring, link and tints stay on the mirrored (light) steps.
+        '--color-action-primary': '#4f68da',
+        '--color-action-primary-text': '#ffffff',
+        '--color-on-brand': '#ffffff',
         '--color-focus-ring': '#92a9ff',
         '--color-nav-menu-focus': '#92a9ff',
         // The decorative edge stays on the mirror's fixed point; the two roles
@@ -288,25 +298,37 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-border-strong': '#71717a',
         '--color-control-border': '#a1a1aa',
         '--color-focus-ring-muted': '#a1a1aa',
-        '--color-input-active': '#333338',
+        // The dark field fills are translucent steps of the ramp (below), so they have no flat colour here.
         '--color-link': '#b5c6ff',
-        // The ladder was four baked hex values; it is now color-mix() over the
-        // neutral ramp and has to land on exactly the same four.
+        // The dark surfaces are plain steps of the neutral ramp (D133/D134): page 900,
+        // card 850, elevated and overlay 800 (two tone steps), overlay hover 750, inset 900.
         '--color-surface-base': '#18181b',
-        '--color-surface-raised': '#262629',
-        '--color-surface-elevated': '#363638',
-        '--color-surface-overlay': '#454547',
-        '--color-surface-overlay-hover': '#52525b',
+        '--color-surface-raised': '#1f1f22',
+        '--color-surface-elevated': '#27272a',
+        '--color-surface-overlay': '#27272a',
+        '--color-surface-overlay-hover': '#333338',
+        '--color-surface-inset': '#18181b',
+        '--color-border': '#333338',
         '--color-headline': '#f4f4f5',
         '--color-base-50': '#09090b',
         '--color-base-950': '#fafafa',
-        '--color-accent': '#aab063',
-        '--color-on-accent': '#202100',
-        '--color-energetic': '#aab063',
+        '--color-accent': '#99b55e',
+        '--color-on-accent': '#192300',
+        '--color-energetic': '#99b55e',
       },
     };
     for (const [token, hex] of Object.entries(expected.light)) assert.equal(resolveTokenColor(light, token), hex, `light ${token}`);
     for (const [token, hex] of Object.entries(expected.dark)) assert.equal(resolveTokenColor(dark, token), hex, `dark ${token}`);
+    // The dark field: base-50 at 7% (rest, focus), 10% (hover) and 15% (pressed), over whatever it sits on (Z-078).
+    for (const [token, alpha] of Object.entries({ '--color-input': 0.07, '--color-input-focus': 0.07, '--color-input-hover': 0.1, '--color-input-active': 0.15 })) {
+      const paint = resolveTokenPaint(dark, token);
+      assert.equal(paint.hex, '#fafafa', `dark ${token}`);
+      assert.ok(Math.abs(paint.alpha - alpha) < 1e-9, `dark ${token} alpha ${paint.alpha}`);
+    }
+    // Light's field is opaque and did not move.
+    assert.equal(resolveTokenColor(light, '--color-input'), '#ffffff');
+    assert.equal(resolveTokenColor(light, '--color-input-hover'), '#f4f4f5');
+    assert.equal(resolveTokenColor(light, '--color-input-focus'), '#ffffff');
   });
 
   test(`${sourceName}: one :root override of --zabi-brand-* restyles light and dark`, () => {
@@ -320,18 +342,20 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-action-primary': amber[600],
         '--color-action-primary-hover': amber[700],
         '--color-action-primary-active': amber[800],
-        '--color-action-primary-subtle': amber[200],
+        '--color-action-primary-subtle': amber[100],
         '--color-primary': amber[600],
         '--color-focus-ring': amber[600],
         '--color-nav-menu-focus': amber[600],
         '--color-link': amber[700],
         '--color-link-hover': amber[800],
-        '--color-nav-menu-active': amber[200],
+        '--color-nav-menu-active': amber[100],
       },
       dark: {
-        '--color-action-primary': amber[400],
-        '--color-action-primary-hover': amber[300],
-        '--color-action-primary-active': amber[200],
+        // The dark fill is the same physical steps as light, so an override of
+        // the ramp restyles it; the roles that are text or rings stay mirrored.
+        '--color-action-primary': amber[600],
+        '--color-action-primary-hover': amber[700],
+        '--color-action-primary-active': amber[800],
         '--color-action-primary-subtle': amber[900],
         '--color-primary': amber[400],
         '--color-focus-ring': amber[400],
@@ -339,8 +363,8 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-link': amber[300],
         '--color-link-hover': amber[200],
         '--color-nav-menu-active': amber[900],
-        // The dark label is the dark end of whatever ramp the app supplied.
-        '--color-action-primary-text': amber[950],
+        // The dark label follows the light one (white): same fill, same label.
+        '--color-action-primary-text': '#ffffff',
       },
     };
     for (const [token, hex] of Object.entries(expected.light)) assert.equal(resolveTokenColor(light, token), hex, `light ${token}`);
@@ -376,7 +400,12 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
     assert.equal(resolveTokenColor(darkKnob.light, '--color-action-primary-text'), '#ffffff');
     assert.equal(resolveTokenColor(darkKnob.dark, '--color-action-primary-text'), '#ffffff');
     const lightKnob = themed(maps, { '--zabi-on-brand': '#000000' });
-    assert.equal(resolveTokenColor(lightKnob.dark, '--color-action-primary-text'), '#111d49');
+    // The dark fill is the light fill, so the light label carries to dark
+    // unless the dark knob is set (an amber brand sets one knob, not two).
+    assert.equal(resolveTokenColor(lightKnob.dark, '--color-action-primary-text'), '#000000');
+    const darkOnly = themed(maps, { '--zabi-on-brand-dark': '#111d49' });
+    assert.equal(resolveTokenColor(darkOnly.light, '--color-action-primary-text'), '#ffffff');
+    assert.equal(resolveTokenColor(darkOnly.dark, '--color-action-primary-text'), '#111d49');
   });
 
   test(`${sourceName}: one :root override of --zabi-accent-* restyles light and dark`, () => {
@@ -390,8 +419,8 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-accent': pink[600],
         '--color-accent-hover': pink[700],
         '--color-accent-active': pink[800],
-        '--color-accent-subtle': pink[200],
-        '--color-accent-border': pink[300],
+        '--color-accent-subtle': pink[100],
+        '--color-accent-border': pink[200],
         '--color-accent-text': pink[700],
         '--color-on-accent': '#ffffff',
       },
@@ -399,8 +428,9 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-accent': pink[400],
         '--color-accent-hover': pink[300],
         '--color-accent-active': pink[200],
-        '--color-accent-subtle': pink[900],
-        '--color-accent-border': pink[800],
+        // The hue thinned into the card surface (16% / 36% of step 500 over #1f1f22), not a mirrored step.
+        '--color-accent-subtle': mixHex(pink[500], 16, '#1f1f22'),
+        '--color-accent-border': mixHex(pink[500], 36, '#1f1f22'),
         '--color-accent-text': pink[300],
         '--color-on-accent': pink[950],
       },
@@ -428,13 +458,13 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
     for (const name of Object.keys(overrides)) assert.ok(!(name in maps.darkOnly), `dark re-declares ${name}`);
     const { light, dark } = themed(maps, overrides);
 
-    // The four dark levels an app's neutral produces, from the same ladder the
-    // build uses: its step 50 washed over its step 900.
+    // The dark surface roles an app's neutral produces, from the same ladder the
+    // build uses: its own steps 900, 850, 800 and 750, hue and chroma kept.
     const ladder = generateSurfaceLadder(stone);
 
     const expected = {
       light: {
-        '--color-surface-base': stone[150],
+        '--color-surface-base': stone[50],
         '--color-surface-elevated': stone[100],
         '--color-surface-inset': stone[100],
         '--color-headline': stone[900],
@@ -442,7 +472,7 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-description': stone[600],
         '--color-border': stone[300],
         '--color-input-border': stone[500],
-        '--color-neutral-subtle': stone[250],
+        '--color-neutral-subtle': stone[200],
         '--color-action-disabled': stone[250],
         '--color-tooltip-bg': stone[800],
       },
@@ -451,14 +481,14 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
         '--color-surface-raised': ladder['surface-raised'],
         '--color-surface-elevated': ladder['surface-elevated'],
         '--color-surface-overlay': ladder['surface-overlay'],
-        '--color-surface-overlay-hover': stone[600],
-        '--color-surface-inset': stone[850],
+        '--color-surface-overlay-hover': stone[750],
+        '--color-surface-inset': stone[900],
         '--color-card': ladder['surface-raised'],
         '--color-background': stone[900],
         '--color-headline': stone[100],
         '--color-body': stone[200],
         '--color-description': stone[300],
-        '--color-border': stone[700],
+        '--color-border': stone[750],
         '--color-input-border': stone[500],
         '--color-neutral-subtle': stone[700],
         '--color-action-disabled': stone[800],
@@ -493,7 +523,8 @@ for (const [sourceName, load] of Object.entries(TOKEN_SOURCES)) {
   test(`${sourceName}: font tokens default to today's values and follow one override`, () => {
     const { light } = load();
     assert.equal(resolveTokenValue(light, '--font-family-heading'), resolveTokenValue(light, '--font-family-sans'));
-    assert.equal(resolveTokenValue(light, '--font-family-mono'), '"Monaco", "Menlo", "Ubuntu Mono", monospace');
+    assert.equal(resolveTokenValue(light, '--font-family-sans'), 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"');
+    assert.equal(resolveTokenValue(light, '--font-family-mono'), 'ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace');
     assert.equal(resolveTokenValue(light, '--font-weight-regular'), '400');
     assert.equal(resolveTokenValue(light, '--font-weight-normal'), '400');
     assert.equal(resolveTokenValue(light, '--font-weight-medium'), '500');

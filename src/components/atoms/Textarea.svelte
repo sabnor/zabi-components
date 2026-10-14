@@ -3,7 +3,7 @@
     import type { SemanticVariant, SizeVariant } from '../types/variants.js';
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
-    import { fieldDescribedBy, fieldMessageState } from "../util/field.js";
+    import { fieldDescribedBy, fieldMessageState, type TextareaCount } from "../util/field.js";
     import FieldMessages from "./FieldMessages.svelte";
 
     /**
@@ -34,6 +34,16 @@
         disabled?: boolean;
         loading?: boolean;
         rows?: number;
+        /**
+         * The resize grip. `auto` (default): the browser's vertical grip with a mouse or
+         * trackpad, none on a touch screen, where dragging it scrolls the page. `vertical`
+         * shows it everywhere, `none` never. With `autogrow` there is no grip.
+         */
+        resize?: 'auto' | 'none' | 'vertical';
+        /** The field grows with its content, from `rows` up to `maxRows`, and scrolls after that. */
+        autogrow?: boolean;
+        /** The tallest an `autogrow` field gets, in rows. Without it the field has no limit. */
+        maxRows?: number;
         size?: SizeVariant;
         variant?: SemanticVariant;
         /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
@@ -42,6 +52,16 @@
         hint?: string;
         /** An error under the field. It marks the field invalid and is announced; it wins over `variant` and `message`. */
         error?: string;
+        /**
+         * A character count under the field, at the end of the line the hint is on. It needs
+         * `maxlength`; without one nothing is shown. It is part of the field's description
+         * (`aria-describedby`) and is not a live region, so it is not read out at every key.
+         */
+        count?: boolean;
+        /** The count is shown from this many characters on. `0` (default): always. */
+        countFrom?: number;
+        /** The words of the count, for the page's language. Default: "12 / 2000". */
+        countText?: (count: TextareaCount) => string;
         oninput?: (event: Event) => void;
         /** Ids of other elements that describe the field. The hint and the message are added after them. */
         "aria-describedby"?: string | null;
@@ -59,11 +79,17 @@
         disabled = false,
         loading = false,
         rows = 4,
+        resize = 'auto',
+        autogrow = false,
+        maxRows,
         size = 'md',
         variant = 'default',
         message = '',
         hint = '',
         error = '',
+        count = false,
+        countFrom = 0,
+        countText,
         oninput,
         'aria-describedby': describedBy,
         ...restProps
@@ -86,6 +112,26 @@
 
     const status = $derived(fieldMessageState({ variant, message, hint, error }));
 
+    // The count: only with a `maxlength`, and only once `countFrom` is reached.
+    // The length is the one `maxlength` counts (UTF-16 units).
+    const countMax = $derived(Number(restProps.maxlength));
+    const countLength = $derived((value ?? '').length);
+    const showCount = $derived(
+        count && Number.isFinite(countMax) && countMax > 0 && countLength >= countFrom,
+    );
+    const countLabel = $derived.by(() => {
+        if (!showCount) return '';
+        const state = { length: countLength, max: countMax, remaining: Math.max(0, countMax - countLength) };
+        return countText ? countText(state) : `${state.length} / ${state.max}`;
+    });
+    const countId = $derived(`${textareaId}-count`);
+    // The caller's ids, the hint and the message, then the count.
+    const fieldDescription = $derived(
+        [fieldDescribedBy(textareaId, status, describedBy), showCount ? countId : '']
+            .filter(Boolean)
+            .join(' ') || undefined,
+    );
+
     const variantClass = $derived(() => {
         return status.variant === 'success'
             ? 'border-success focus-visible:border-success'
@@ -96,12 +142,44 @@
                 : 'border-input-border enabled:hover:border-input-border-hover';
     });
 
+    const resizeClass = $derived(
+        autogrow || resize === 'none'
+            ? 'resize-none'
+            : resize === 'vertical'
+              ? 'resize-y'
+              : 'resize-y pointer-coarse:resize-none',
+    );
+
+    // Autogrow: `field-sizing: content` where the browser has it, held between
+    // `rows` and `maxRows` lines (`leading-6`, plus `py-2` and the two borders,
+    // since the box is border-box). Elsewhere the height is measured from the
+    // content after each change; the same two limits clamp it.
+    const linesHeight = (lines: number) => `calc(${lines * 1.5 + 1}rem + 2px)`;
+    const minHeight = $derived(autogrow ? linesHeight(Math.max(1, rows)) : undefined);
+    const maxHeight = $derived(
+        autogrow && maxRows !== undefined ? linesHeight(Math.max(rows, maxRows)) : undefined,
+    );
+
+    let element: HTMLTextAreaElement | undefined = $state();
+
+    $effect(() => {
+        void value;
+        if (!autogrow || !element) return;
+        if (typeof CSS !== 'undefined' && CSS.supports?.('field-sizing', 'content')) return;
+        const field = element;
+        field.style.height = 'auto';
+        field.style.height = `${field.scrollHeight + field.offsetHeight - field.clientHeight}px`;
+        return () => {
+            field.style.height = '';
+        };
+    });
+
     // 16px below `sm`: iOS Safari zooms the page when a focused field is smaller.
     const textareaClasses = $derived(() => {
         const baseClasses =
-            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed resize-y px-3 py-2 text-sm max-sm:text-base leading-6';
+            'focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed px-3 py-2 text-sm max-sm:text-base leading-6';
 
-        return cn(`${baseClasses} ${variantClass()} ${className}`);
+        return cn(`${baseClasses} ${resizeClass} ${variantClass()} ${className}`);
     });
 
     const labelClasses = $derived(
@@ -121,6 +199,7 @@
     {/if}
     <div class="relative">
         <textarea
+            bind:this={element}
             id={textareaId}
             {name}
             bind:value
@@ -129,11 +208,15 @@
             disabled={isDisabled}
             {rows}
             class={textareaClasses()}
+            style:field-sizing={autogrow ? 'content' : undefined}
+            style:min-height={minHeight}
+            style:max-height={maxHeight}
+            style:overflow-y={maxHeight ? 'auto' : undefined}
             oninput={handleInput}
             aria-invalid={status.variant === 'error' ? 'true' : undefined}
             aria-required={required ? 'true' : undefined}
             aria-busy={loading ? 'true' : undefined}
-            aria-describedby={fieldDescribedBy(textareaId, status, describedBy)}
+            aria-describedby={fieldDescription}
             {...restProps}
         ></textarea>
         {#if loading}
@@ -147,5 +230,17 @@
             </span>
         {/if}
     </div>
-    <FieldMessages fieldId={textareaId} {status} {hint} gap="mt-1" />
+    {#if showCount}
+        <!-- The count ends the line the hint starts. Not a live region: it is read with the field. -->
+        <div class="flex items-start gap-3">
+            <div class="min-w-0 flex-1">
+                <FieldMessages fieldId={textareaId} {status} {hint} gap="mt-1" />
+            </div>
+            <p id={countId} class="mt-1 shrink-0 text-sm text-description tabular-nums" data-textarea-count>
+                {countLabel}
+            </p>
+        </div>
+    {:else}
+        <FieldMessages fieldId={textareaId} {status} {hint} gap="mt-1" />
+    {/if}
 </div>

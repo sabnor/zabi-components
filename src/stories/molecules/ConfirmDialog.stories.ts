@@ -133,6 +133,28 @@ export const Loading: Story = {
     }
 };
 
+export const TonalCancel: Story = {
+    args: {
+        variant: 'danger',
+        title: 'Delete this visit?',
+        message: 'The visit and its scores are removed for the group.',
+        confirmLabel: 'Delete',
+        cancelVariant: 'tonal',
+        open: true,
+    },
+    render: (args) => ({
+        Component: ConfirmDialogStory,
+        props: args,
+    }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'cancelVariant gives the cancel button another Button variant, for an app whose quiet action is the tonal pill and that has no outline button. The default stays outline.'
+            }
+        }
+    }
+};
+
 export const Translated: Story = {
     args: {
         variant: 'danger',

@@ -41,6 +41,11 @@
         disabled?: boolean;
         legend?: string;
         label?: string;
+        /**
+         * Draw a ring round the chosen row. Off, the filled radio alone shows
+         * the choice; keyboard focus keeps its ring either way.
+         */
+        chosenRing?: boolean;
     };
 
     let {
@@ -52,6 +57,7 @@
         disabled = false,
         legend = "",
         label = "",
+        chosenRing = true,
         ...restProps
     }: Props = $props();
 
@@ -205,10 +211,18 @@
     {/if}
 
     <div class="space-y-3">
-        {#each options as option (option.value)}
+        {#each options as option, index (option.value)}
             {@const optionDisabled = isOptionDisabled(option)}
-            <label class={optionLabelWrapperClasses}>
-                <span class={radioControlShellClasses}>
+            {@const descriptionId = option.description ? `${fallbackName}-${index}-description` : undefined}
+            <!-- A one-line row is centred in its height; with a description the radio stays at the top, by the label. -->
+            <label
+                class={cn(
+                    optionLabelWrapperClasses,
+                    !option.description && "items-center",
+                    !chosenRing && "selection-control-option-row-quiet",
+                )}
+            >
+                <span class={cn(radioControlShellClasses, !option.description && "mt-0")}>
                     <input
                         type="radio"
                         name={groupName}
@@ -217,6 +231,7 @@
                         bind:group={chosen.value}
                         disabled={optionDisabled}
                         tabindex={tabIndexFor(option)}
+                        aria-describedby={descriptionId}
                         class={SELECTION_CONTROL_INPUT}
                         {@attach registerRadio(option.value)}
                     />
@@ -228,7 +243,8 @@
                         {option.label}
                     </span>
                     {#if option.description}
-                        <span class="text-sm text-description">
+                        <!-- aria-hidden keeps it out of the name; aria-describedby still reads it. -->
+                        <span id={descriptionId} class="text-sm text-description" aria-hidden="true">
                             {option.description}
                         </span>
                     {/if}

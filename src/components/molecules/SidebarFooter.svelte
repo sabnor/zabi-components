@@ -91,7 +91,7 @@
 {#if showFooter}
     <div class="w-full shrink-0" data-sidebar-flyout-root>
         <footer
-            class={cn(`flex w-full shrink-0 flex-col gap-3 border-t border-border pt-3 pb-1 ${className}`)}
+            class={cn(`flex w-full shrink-0 flex-col gap-3 border-t border-border-weak pt-3 pb-1 ${className}`)}
             aria-label={text.accountAndSettings}
         >
             {#if showPanelLauncher}

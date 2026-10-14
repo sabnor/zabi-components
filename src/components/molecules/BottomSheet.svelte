@@ -59,7 +59,10 @@
      * the lowest, closed. It is also a button that moves the sheet a step, so
      * the same is there for a keyboard and a screen reader. A swipe on the
      * content scrolls the content; it moves the sheet only when the content
-     * is at its top and the swipe goes down.
+     * is at its top and the swipe goes down. A box inside the content that
+     * scrolls by itself (a long list, a text area) keeps every swipe that
+     * starts on it, at its top too, and so does anything carrying
+     * `data-sheet-no-drag` (a map, a wheel, a swipeable row) or a range input.
      *
      * From the `md` breakpoint up the sheet is still attached to the bottom
      * edge, centred and no wider than 40rem.
@@ -87,6 +90,19 @@
          * Set it when you open the sheet to start somewhere else.
          */
         snap?: BottomSheetSnap;
+        /**
+         * The sheet is as tall as its content, up to half the screen, instead
+         * of half the screen whatever it holds. It has one resting height, so
+         * `snapPoints` and `snap` are ignored and the grip only drags. Off by
+         * default.
+         */
+        fit?: boolean;
+        /**
+         * With `fit`: the tallest the sheet grows before its content scrolls.
+         * `half` (the default) is half the screen; `full` is down from the
+         * status bar, like the `full` snap point. Ignored without `fit`.
+         */
+        fitMax?: "half" | "full";
         /**
          * Render the overlay in `document.body`, so an ancestor with a
          * transform, filter or clipped overflow cannot trap it; pass `false`
@@ -133,6 +149,8 @@
         description = "",
         snapPoints,
         snap = $bindable(),
+        fit = false,
+        fitMax = "half",
         portal = true,
         dismissible = true,
         onclose,
@@ -164,7 +182,8 @@
     applyDefaults();
     $effect.pre(applyDefaults);
 
-    const SLIDE_MS = 200;
+    // Used only where --duration-slow cannot be read.
+    const SLIDE_MS = 300;
 
     const titleId = generateId("bottom-sheet-title");
     const descriptionId = generateId("bottom-sheet-description");
@@ -188,7 +207,7 @@
     /** Position among the open overlays; lifts a sheet opened later above the earlier ones. */
     let depth = $state(0);
 
-    const points = $derived(normaliseSnapPoints(snapPoints));
+    const points = $derived(fit ? normaliseSnapPoints(["half"]) : normaliseSnapPoints(snapPoints));
     /** The snap point in effect: the one asked for if it is in use, else the lowest. */
     const currentSnap = $derived(snap && points.includes(snap) ? snap : points[0]);
     const stepTo = $derived(nextSnap(points, currentSnap));
@@ -199,14 +218,21 @@
      * that a short screen leaves no room for content, and never above full.
      */
     const FULL = "calc(100% - env(safe-area-inset-top, 0px))";
-    const snapHeight = $derived(
-        currentSnap === "full" ? FULL : `min(max(50%, 18rem), ${FULL})`,
-    );
+    const HALF = `min(max(50%, 18rem), ${FULL})`;
+    const snapHeight = $derived(currentSnap === "full" ? FULL : HALF);
 
     /** While a drag is on: the height and offset it has moved the panel to, in px. */
     let dragging = $state(false);
     let dragHeight = $state<number | null>(null);
     let dragOffset = $state(0);
+    /**
+     * False from opening until the slide-in has ended. The panel's height
+     * transition is for snapping and settling a drag; while the sheet arrives
+     * a late change of height (the overlay shrinking over a keyboard, a snap
+     * set as it opens) would ride the spring and move the content after the
+     * eye has landed on it. Until then the height is applied at once.
+     */
+    let arrived = $state(false);
 
     function close(reason: BottomSheetCloseReason) {
         if (!dismissible) return;
@@ -218,18 +244,42 @@
         onclose?.({ reason });
     }
 
-    /** Slides the panel up from the bottom edge. Skipped where motion is unwanted or unsupported. */
-    function slideIn(container: HTMLElement) {
-        if (typeof container.animate !== "function" || prefersReducedMotion()) return;
-        container.animate(
-            [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }],
-            { duration: SLIDE_MS, easing: "ease-out" },
-        );
+    /**
+     * Slides the panel up from the bottom edge. Skipped where motion is unwanted or unsupported.
+     * Returns how long the slide takes in ms: 0 when there is none.
+     */
+    function slideIn(container: HTMLElement): number {
+        if (typeof container.animate !== "function" || prefersReducedMotion()) return 0;
+        // Arriving is a smooth slide to rest on the standard curve, with no
+        // overshoot (the spring is for snapping and settling a drag). Read
+        // from the element so a theme that overrides the tokens is followed.
+        // Where the tokens cannot be read (no stylesheet) or the engine
+        // rejects the easing, plain ease-out.
+        const style = getComputedStyle(container);
+        const duration = parseDuration(style.getPropertyValue("--duration-slow"));
+        const standard = style.getPropertyValue("--ease-standard").trim();
+        const frames = [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }];
+        try {
+            container.animate(frames, { duration, easing: standard || "ease-out" });
+        } catch {
+            container.animate(frames, { duration, easing: "ease-out" });
+        }
+        return duration;
+    }
+
+    /** `300ms`, `0.3s` or `0s` to milliseconds; the fallback when it is not a time. */
+    function parseDuration(value: string): number {
+        const match = /^\s*(-?\d*\.?\d+)(ms|s)\s*$/.exec(value);
+        if (!match) return SLIDE_MS;
+        const ms = parseFloat(match[1]) * (match[2] === "s" ? 1000 : 1);
+        return ms >= 0 ? ms : SLIDE_MS;
     }
 
     /** The snap points in px, lowest first, for the screen as it is now. */
     function measureSnapHeights(): number[] {
         if (!root) return [];
+        // A fitted sheet rests at the height its content gives it.
+        if (fit && panel) return [panel.getBoundingClientRect().height];
         const available = root.clientHeight - parseFloat(getComputedStyle(root).paddingTop || "0");
         const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
         const half = Math.min(Math.max(root.clientHeight * 0.5, 18 * rem), available);
@@ -280,7 +330,8 @@
             const unlockScroll = lockBodyScroll();
             const overlay = joinOverlayStack(container);
             depth = overlay.depth;
-            slideIn(container);
+            arrived = false;
+            const arrival = setTimeout(() => (arrived = true), slideIn(container));
             const t = setTimeout(() => {
                 // Something inside has taken focus already (a field that
                 // focuses itself as it mounts): leave it there. `initialFocus`
@@ -297,6 +348,8 @@
             });
             return () => {
                 clearTimeout(t);
+                clearTimeout(arrival);
+                arrived = false;
                 stopRecovery();
                 overlay.leave();
                 unlockScroll();
@@ -415,9 +468,14 @@ a background is dropped there, and the grip would be gone. -->
 
 {#if isOpen}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- `overflow-clip`, not `hidden`: a clipped box is a scroll container
+    nobody can scroll. The panel waits below the screen while it slides in, so
+    the root has overflow to scroll, and WebKit scrolls it to bring the
+    focused grip into view: the sheet rose to the top of the screen, and sat
+    32px high (the filler under the panel) once the slide had ended. -->
     <div
         bind:this={root}
-        class="group/overlay fixed inset-0 z-modal overflow-hidden pt-[env(safe-area-inset-top)] {dismissible
+        class="group/overlay fixed inset-0 z-modal overflow-clip pt-[env(safe-area-inset-top)] {dismissible
             ? 'cursor-pointer'
             : 'cursor-default'} bg-overlay"
         style:z-index={depth > 0 ? `calc(var(--z-modal) + ${depth})` : undefined}
@@ -430,20 +488,30 @@ a background is dropped there, and the grip would be gone. -->
         <div
             bind:this={panel}
             class={cn(
-                "absolute inset-x-0 bottom-0 mx-auto flex w-full cursor-default flex-col rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg",
+                // The glass is a layer behind the content (`::before`), not a filter on
+                // the panel: a backdrop-filter would make the panel the containing
+                // block of every fixed-position popover inside it.
+                "material-layer-thick absolute inset-x-0 bottom-0 mx-auto flex w-full cursor-default flex-col rounded-t-overlay",
                 "max-h-[calc(100dvh-env(safe-area-inset-top,0px))] pb-[env(safe-area-inset-bottom)]",
                 // Over the keyboard: no taller than what is left, and the home
                 // indicator it would clear is under the keyboard.
                 "group-data-keyboard-open/overlay:max-h-[calc(100%_-_env(safe-area-inset-top,0px))] group-data-keyboard-open/overlay:pb-0",
                 // Clear of the notch and the rounded corners in landscape.
                 "pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-                "transition-[height,transform] duration-200 ease-out motion-reduce:transition-none",
-                "md:w-[min(100%,40rem)] md:border-x",
+                // Snapping and settling spring; the overshoot may lift the panel a
+                // few px, so the filler continues its fill under the screen edge.
+                // The panel's own background is transparent now (the fill is on its
+                // layer), so the filler paints the material token itself: it follows
+                // the same fallbacks.
+                "transition-[height,transform] duration-(--duration-slow) ease-spring motion-reduce:transition-none",
+                "after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-8 after:content-[''] after:bg-(--color-material-thick)",
+                "md:w-[min(100%,40rem)]",
                 className,
             )}
-            style:height={dragHeight !== null ? `${dragHeight}px` : snapHeight}
+            style:height={dragHeight !== null ? `${dragHeight}px` : fit ? "auto" : snapHeight}
+            style:max-height={fit ? (fitMax === "full" ? FULL : HALF) : undefined}
             style:transform={dragOffset > 0 ? `translateY(${dragOffset}px)` : undefined}
-            style:transition={dragging ? "none" : undefined}
+            style:transition={dragging || !arrived ? "none" : undefined}
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}

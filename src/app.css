@@ -61,14 +61,18 @@
   --zabi-base-925: #101013;
   --zabi-base-950: #09090b;
 
-  /* Typography - Nunito Sans font family */
-  --font-family-sans: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
+  /* Typography - the platform UI face, no font is downloaded */
+  --font-family-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   /* Headings follow the body face until an app sets this to a display font
    * on :root. Applied to h1–h6 in the base layer below and by the Heading
    * component. */
   --font-family-heading: var(--font-family-sans);
-  /* Code. The stack CodeBlock has always used, now a token. */
-  --font-family-mono: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  /* A second face for a display line (Heading variant="display", `font-display`):
+   * a hero, a score, a big number. Follows the heading face until an app sets
+   * it, so a second typeface is one token and not a CSS rule. */
+  --font-family-display: var(--font-family-heading);
+  /* Code. CodeBlock reads it. */
+  --font-family-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   /* Tailwind's own names for the same three faces. Its `font-sans` and
    * `font-mono` utilities read --font-sans and --font-mono, which were its
    * system stacks: `class="font-sans"` on a heading left the brand face, and
@@ -78,6 +82,7 @@
   --font-sans: var(--font-family-sans);
   --font-mono: var(--font-family-mono);
   --font-heading: var(--font-family-heading);
+  --font-display: var(--font-family-display);
 
   /* Font weights. These are the variables Tailwind's `font-normal`,
    * `font-medium`, `font-semibold` and `font-bold` read, so every component
@@ -115,17 +120,17 @@
   --color-brand-950: var(--zabi-brand-950);
 
   /* Citron Color Scale — physical ramp + semantic aliases (same mirror pattern as pine / base) */
-  --zabi-citron-50: #f6f7ef;
-  --zabi-citron-100: #edefdf;
-  --zabi-citron-200: #dcdfbf;
-  --zabi-citron-300: #c5ca95;
-  --zabi-citron-400: #aab063;
-  --zabi-citron-500: #8c9027;
-  --zabi-citron-600: #707400;
-  --zabi-citron-700: #5a5d00;
-  --zabi-citron-800: #454700;
-  --zabi-citron-900: #313200;
-  --zabi-citron-950: #202100;
+  --zabi-citron-50: #f4f8ee;
+  --zabi-citron-100: #e9f0de;
+  --zabi-citron-200: #d4e2bd;
+  --zabi-citron-300: #b9ce92;
+  --zabi-citron-400: #99b55e;
+  --zabi-citron-500: #769619;
+  --zabi-citron-600: #5d7900;
+  --zabi-citron-700: #4a6100;
+  --zabi-citron-800: #384a00;
+  --zabi-citron-900: #273500;
+  --zabi-citron-950: #192300;
 
   --color-citron-50: var(--zabi-citron-50);
   --color-citron-100: var(--zabi-citron-100);
@@ -167,17 +172,17 @@
   --color-accent-950: var(--zabi-accent-950);
 
   /* Pine Color Scale — physical ramp + semantic aliases (mirror pattern matches --zabi-base-* / --color-base-*) */
-  --zabi-pine-50: #f0f8f5;
-  --zabi-pine-100: #e2f1eb;
-  --zabi-pine-200: #c5e4d7;
-  --zabi-pine-300: #9fd1bd;
-  --zabi-pine-400: #70ba9e;
-  --zabi-pine-500: #399c7a;
-  --zabi-pine-600: #00805e;
-  --zabi-pine-700: #00674a;
-  --zabi-pine-800: #004f37;
-  --zabi-pine-900: #003826;
-  --zabi-pine-950: #002518;
+  --zabi-pine-50: #f0f9f3;
+  --zabi-pine-100: #e1f2e8;
+  --zabi-pine-200: #c3e5d0;
+  --zabi-pine-300: #9cd3b2;
+  --zabi-pine-400: #6cbb8e;
+  --zabi-pine-500: #319e67;
+  --zabi-pine-600: #00804b;
+  --zabi-pine-700: #00683b;
+  --zabi-pine-800: #00502b;
+  --zabi-pine-900: #00391c;
+  --zabi-pine-950: #002610;
 
   --color-pine-50: var(--zabi-pine-50);
   --color-pine-100: var(--zabi-pine-100);
@@ -217,17 +222,17 @@
   --color-iris-950: var(--zabi-iris-950);
 
   /* Warning Color Scale — physical ramp + semantic aliases (Tailwind amber) */
-  --zabi-warning-50: #fbf6ed;
-  --zabi-warning-100: #f7ecda;
-  --zabi-warning-200: #f1d9b6;
-  --zabi-warning-300: #e8bf87;
-  --zabi-warning-400: #db9e4c;
-  --zabi-warning-500: #c17b00;
-  --zabi-warning-600: #9e6000;
-  --zabi-warning-700: #824c00;
+  --zabi-warning-50: #fdf5ec;
+  --zabi-warning-100: #fbebda;
+  --zabi-warning-200: #f6d7b4;
+  --zabi-warning-300: #efbc84;
+  --zabi-warning-400: #e49a44;
+  --zabi-warning-500: #c67800;
+  --zabi-warning-600: #a05f00;
+  --zabi-warning-700: #834b00;
   --zabi-warning-800: #663800;
-  --zabi-warning-900: #4b2600;
-  --zabi-warning-950: #341800;
+  --zabi-warning-900: #4b2700;
+  --zabi-warning-950: #331800;
 
   --color-warning-50: var(--zabi-warning-50);
   --color-warning-100: var(--zabi-warning-100);
@@ -296,17 +301,33 @@
    * overlay: modals, sheets, menus, popovers, toasts. Light mode keeps white surfaces + shadows;
    * dark mode (see .dark) steps each level up in OKLCH lightness because shadows don't read on dark.
    *
-   * Light cannot go lighter than white, so its ladder runs the other way below
-   * the card: page (base-150) → elevated (base-100) → raised and overlay (white).
-   * Each grey sits a visible step from its neighbour; the page used to be
-   * base-100 with elevated at base-50, which left 1.04:1 between a card and the
-   * card nested in it. Enforced by scripts/check-surface-elevation.js.
+   * Light cannot go lighter than white, so the page is a near-white (base-50)
+   * and the card, white, is told apart from it by its 1px --color-border edge,
+   * not by lightness or a shadow. Nested surfaces step down from the card:
+   * elevated and inset (base-100). Enforced by scripts/check-surface-elevation.js:
+   * raised and overlay no darker than the page, elevated and inset at least 2
+   * points below raised, and the card edge at least 1.2:1 on the page and the card.
+   * (Until 8.1 the page was base-150 and the card carried a shadow.)
    * Keep this block BELOW the "Background Colors" marker: scripts/sync-theme-tokens.js regenerates
    * everything between the base-scale aliases and that marker. */
-  --color-surface-base: var(--color-base-150);
+  --color-surface-base: var(--color-base-50);
   --color-surface-raised: #ffffff;
   --color-surface-elevated: var(--color-base-100);
   --color-surface-overlay: #ffffff;
+  /* Chrome — the surface of bars and sidebars (AppBar, TopNavbar, BottomTabBar,
+   * the sidebars). One token so a theme can retint all of them at once. Equal to
+   * the page colour in both themes (D108): a bar is flush with the page at
+   * rest and takes the material over it once content scrolls under it. Point it
+   * at --color-surface-raised for a raised bar fill. */
+  --color-surface-chrome: var(--color-surface-base);
+  /* Bars (D124), read by .material-bar. The fill at rest, the hairline shown
+   * once content is under the bar (decorative, not a guarded edge: the same
+   * idea as the material rim), the fill of an on-brand AppBar, and the active
+   * tab's pill in the BottomTabBar. */
+  --color-bar: var(--color-surface-chrome);
+  --color-bar-border: color-mix(in srgb, var(--color-headline) 10%, transparent);
+  --color-bar-brand: var(--color-action-primary);
+  --color-tabbar-active: var(--color-nav-menu-active);
   /* Inset — a recessed area ON a raised surface (a well, a code sample, a stat
    * strip inside a card). It is the ramp step between the page and the raised
    * surface in both themes, so it always reads as cut into the card, never as
@@ -321,20 +342,32 @@
   --color-border-overlay: rgba(9, 9, 11, 0.1);
 
   --color-background: var(--color-surface-base);
-  --color-background-secondary: var(--color-base-50);
+  --color-background-secondary: var(--color-base-100); /* was base-50, which is now the page itself */
   --color-background-tertiary: var(--color-base-150);
 
   /* Page Colors */
-  --color-page: var(--color-base-150);
+  --color-page: var(--color-surface-base);
   --color-page-secondary: var(--color-base-200);
 
   /* Card Colors — aliases of the surface levels (kept for compatibility) */
   --color-card: var(--color-surface-raised);
-  /* Hover stays one step off the white card and is no longer the page colour
-   * (a hovered card used to turn exactly into the page). Active goes one further. */
-  --color-card-hover: var(--color-base-100);
-  --color-card-active: var(--color-base-150);
+  /* Hover must not read as the page: the page is base-50 now, so base-100 was
+   * only ΔE 2.1 from it (the guard wants 2.5). Hover is base-150 (1.18:1 on the
+   * white card, ΔE 4.6 from the page), active one step further. */
+  --color-card-hover: var(--color-base-150);
+  --color-card-active: var(--color-base-200);
   --color-card-elevated: var(--color-surface-overlay);
+  /* Card tint — the brand tint as a surface for content (Card tone="tint"): the
+   * subtle fill's own step (brand-100), as its own token so an app can move one
+   * and not the other. Headline, body, label, description, caption and link
+   * hold 4.5:1 on it, and the ring, the field edge and the outline Button's
+   * edge 3:1 (a form can sit on it): 15.30, 12.87, 9.02, 6.68, 5.29 and 5.84:1;
+   * ring 4.19, field edge 4.17. */
+  --color-card-tint: var(--color-brand-100);
+  /* Card variant="flat": today's flat fill (the card), opaque. Dark restates it as a translucent step. */
+  --color-card-flat: var(--color-card);
+  --color-card-flat-hover: var(--color-card-hover);
+  --color-card-flat-active: var(--color-card-active);
 
   /* Surfaces — numbered aliases (kept for compatibility; prefer surface-base/raised/elevated/overlay) */
   --color-surface-1: var(--color-surface-raised);
@@ -349,10 +382,34 @@
   --color-control-track-hover: var(--color-base-450);
   --color-control-track-active: var(--color-base-500);
 
+  /* Toggle track — the off switch. The shared control track above is a mid
+   * grey (base-400) that reads as disabled, so the switch has its own: a light
+   * tint, with its edge doing the 3:1 work (WCAG 1.4.11), which a fill this
+   * light cannot. The edge is the field edge, 4.63:1 on the page and 4.83:1 on
+   * a card. Slider and Progress keep the shared track. */
+  --color-toggle-track: var(--color-base-200);
+  --color-toggle-track-hover: var(--color-base-250);
+  --color-toggle-track-active: var(--color-base-300);
+  --color-toggle-track-border: var(--color-input-border);
+  /* Toggle knob, by default 3:1 or more on every track fill it sits on (WCAG
+   * 1.4.11). Off, a dark knob on the light track: base-500 is 3.81:1 on the
+   * resting track, 3.53:1 hovered and 3.27:1 pressed. On, the label colour of
+   * the primary fill: 4.86:1 at rest, 6.76:1 hovered and 9.44:1 pressed. The consumer's
+   * own `--color-toggle-thumb` and `--color-toggle-thumb-checked` (declared
+   * nowhere) come first; see `.bg-toggle-thumb`. */
+  --color-toggle-knob: var(--color-base-500);
+  --color-toggle-knob-checked: var(--color-action-primary-text);
+
   /* Progress — the bar of Progress. The fill is the primary action, so it
    * follows a pinned primary; the track is the field fill it always was. */
   --color-progress-fill: var(--color-action-primary);
   --color-progress-track: var(--color-input);
+  /* The edge of the track. The default track is the field fill (white on the
+   * white card), 1.00:1 on the card and 1.04:1 on the page, so its edge is the
+   * field edge, 3:1 on both (the guard holds it). An app whose own track
+   * already reaches 3:1 sets this to `transparent`; createTheme does that when
+   * it overrides the track. */
+  --color-progress-track-border: var(--color-input-border);
 
   /* Interaction fills — surface-relative on purpose.
    * A hard-coded ramp step (e.g. base-100) can coincide exactly with the
@@ -377,19 +434,31 @@
    * border, not by greying the fill; dark keeps its fill step and leaves this
    * equal to the resting border. One step past the resting edge. */
   --color-input-border-hover: var(--color-base-550);
-  /* One step off white. It was base-150, which is now the page itself, and was
-   * already greyer than the disabled fill. */
+  /* One step off white, and the same step the card hover uses. */
   --color-input-hover: var(--color-base-100);
   /* Pressed, for a field that is pressed rather than typed in: the Select
    * trigger. It borrowed the hover step, 1.10:1 against the resting field,
-   * when every other pressed fill is 1.26:1 or more. base-200 is 1.27:1 on the
-   * white field and a visible step past hover (1.15:1); body text is 11.7:1
-   * on it. */
-  --color-input-active: var(--color-base-200);
+   * when every other pressed fill is 1.26:1 or more. Derived from the field,
+   * not a fixed ramp step: an app that sets the card (and so the field) to
+   * another colour through createTheme overrides would otherwise land its
+   * field on top of a fixed step (base-200 was 1.21:1 against a base-50 field
+   * of #f8faff, below the 1.25 the generator holds). 12% of the ink into the
+   * field is the smallest whole percent that keeps the three pairs: 1.25:1
+   * against the field (11% is the floor), body and placeholder 4.5:1 on it.
+   * Default theme: #e3e3e4 (was #e4e4e7); on a #f8faff field with the
+   * ink at 12%: 1.28:1 against it. */
+  --color-input-active: color-mix(in srgb, var(--zabi-base-900) 12%, var(--color-input));
   --color-input-focus: var(--color-surface-raised);
-  /* The page colour: a disabled field stops being a raised surface. Dark does
-   * the same (base-100 is the dark page). */
-  --color-input-disabled: var(--color-surface-base);
+  /* The only grey field. It was the page colour; the page is now near white
+   * (1.04:1 against the white field), so it takes base-150, 1.18:1 on the field
+   * as before. Dark still uses the dark page (base-100). */
+  --color-input-disabled: var(--color-base-150);
+  /* Light fields are opaque already: inside a colour block they stay as they are. The dark
+   * theme restates these as opaque steps (see there). */
+  --color-input-solid: var(--color-input);
+  --color-input-solid-hover: var(--color-input-hover);
+  --color-input-solid-focus: var(--color-input-focus);
+  --color-input-solid-active: var(--color-input-active);
 
   /* Text Colors */
   --color-headline: var(--color-base-900);
@@ -442,6 +511,15 @@
    * lighter for that reason. */
   --color-control-border: var(--color-base-500);
 
+  /* Segmented control thumb (tone neutral): the selected segment, a card-coloured
+   * piece on the tinted track. The edge is what identifies it (WCAG 1.4.11), as
+   * the 1.1:1 fill step alone would not. It is the control boundary, which dark
+   * lifts a step (base-600) because the input edge is only 2.4:1 on this track; it is held to 3:1 against the track
+   * over the page and over a card (scripts/contrast-pairs.js). */
+  --color-segment-thumb: var(--color-surface-raised);
+  --color-segment-thumb-text: var(--color-headline);
+  --color-segment-thumb-border: var(--color-control-border);
+
   /* Focus Colors
    * brand-600, not brand-500: a focus indicator needs 3:1 against what is
    * around it, and brand-500 was 2.99:1 on the page. brand-600 is also the
@@ -489,8 +567,8 @@
    *   <family>-weak     step 700  pressed / emphasis
    *   <family>-medium   step 800  strongest fill
    *   <family>-strong   step 900  darkest
-   *   <family>-subtle   step 200  tinted fill (badges, alerts); .dark pins step 100
-   *   <family>-border   step 300  tinted edge; .dark pins step 200
+   *   <family>-subtle   step 100  tinted fill (badges, alerts); .dark restates step 100
+   *   <family>-border   step 200  tinted edge; .dark restates step 200
    *   <family>-text     step 700  text on a subtle fill or a page surface
    *
    * Warning, error and energetic previously sat at step 500 — the mirror's
@@ -504,32 +582,32 @@
   --color-success-weak: var(--color-pine-700);
   --color-success-medium: var(--color-pine-800);
   --color-success-strong: var(--color-pine-900);
-  --color-success-subtle: var(--color-pine-200);
-  --color-success-border: var(--color-pine-300);
+  --color-success-subtle: var(--color-pine-100);
+  --color-success-border: var(--color-pine-200);
 
   /* Warning Colors */
   --color-warning: var(--color-warning-600);
   --color-warning-weak: var(--color-warning-700);
   --color-warning-medium: var(--color-warning-800);
   --color-warning-strong: var(--color-warning-900);
-  --color-warning-subtle: var(--color-warning-200);
-  --color-warning-border: var(--color-warning-300);
+  --color-warning-subtle: var(--color-warning-100);
+  --color-warning-border: var(--color-warning-200);
 
   /* Error Colors */
   --color-error: var(--color-error-600);
   --color-error-weak: var(--color-error-700);
   --color-error-medium: var(--color-error-800);
   --color-error-strong: var(--color-error-900);
-  --color-error-subtle: var(--color-error-200);
-  --color-error-border: var(--color-error-300);
+  --color-error-subtle: var(--color-error-100);
+  --color-error-border: var(--color-error-200);
 
   /* Energetic Colors (Citron) */
   --color-energetic: var(--color-citron-600);
   --color-energetic-weak: var(--color-citron-700);
   --color-energetic-medium: var(--color-citron-800);
   --color-energetic-strong: var(--color-citron-900);
-  --color-energetic-subtle: var(--color-citron-200);
-  --color-energetic-border: var(--color-citron-300);
+  --color-energetic-subtle: var(--color-citron-100);
+  --color-energetic-border: var(--color-citron-200);
 
   /* Accent Colors — the second brand colour, on --zabi-accent-* (citron by
    * default). The same recipe as the primary action: fill at 600, hover 700,
@@ -539,8 +617,8 @@
   --color-accent: var(--color-accent-600);
   --color-accent-hover: var(--color-accent-700);
   --color-accent-active: var(--color-accent-800);
-  --color-accent-subtle: var(--color-accent-200);
-  --color-accent-border: var(--color-accent-300);
+  --color-accent-subtle: var(--color-accent-100);
+  --color-accent-border: var(--color-accent-200);
   --color-accent-text: var(--color-accent-700);
   /* Label on a solid accent fill — see "on brand" below for the two knobs. */
   --zabi-on-accent: #ffffff;
@@ -557,12 +635,12 @@
   --color-neutral-weak: var(--color-base-600);
   --color-neutral-medium: var(--color-base-700);
   --color-neutral-strong: var(--color-base-900);
-  /* One visible step past the page (base-150) and two past a card. It was
+  /* Visibly past the page (base-50, 1.20:1) and the card (1.27:1). It was
    * base-100 once, which IS the dark page and made a neutral badge measure
-   * 1.00:1 and read as bare text. The border is a step darker than the fill,
-   * like every other family. */
-  --color-neutral-subtle: var(--color-base-250);
-  --color-neutral-border: var(--color-base-300);
+   * 1.00:1 and read as bare text; base-150 is only 1.13:1 on the page. The
+   * border is a step darker than the fill, like every other family. */
+  --color-neutral-subtle: var(--color-base-200);
+  --color-neutral-border: var(--color-base-250);
 
   /* Info Colors */
   --color-info: var(--color-iris-600);
@@ -570,8 +648,8 @@
   --color-info-medium: var(--color-iris-800);
   --color-info-strong: var(--color-iris-900);
   --color-info-active: var(--color-iris-400);
-  --color-info-subtle: var(--color-iris-200);
-  --color-info-border: var(--color-iris-300);
+  --color-info-subtle: var(--color-iris-100);
+  --color-info-border: var(--color-iris-200);
   /* Text alias */
   --color-info-text: var(--color-iris-700);
 
@@ -591,27 +669,32 @@
   --color-action-primary: var(--color-brand-600);
   --color-action-primary-hover: var(--color-brand-700);
   --color-action-primary-active: var(--color-brand-800);
-  --color-action-primary-subtle: var(--color-brand-200);
-  --color-action-primary-subtle-hover: var(--color-brand-300);
+  --color-action-primary-subtle: var(--color-brand-100);
+  --color-action-primary-subtle-hover: var(--color-brand-200);
+  /* Edge of a subtle brand badge when `bordered`; the tint's own darker step. */
+  --color-action-primary-border: var(--color-brand-200);
   /* Held down, on a control whose resting fill is the subtle one: a toggled-on
    * ghost IconButton. It used the hover step, which is 1.24:1 against the
    * resting fill and, with a mouse, is what the button already shows. Half a
    * step past hover is 1.42:1 against resting, and the icon (--color-link)
    * keeps 3.50:1 on it; a whole step would leave the icon at 3.01:1. */
-  --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-400) 50%, var(--color-brand-300));
+  --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
   /* "On brand" — the label on a primary fill.
    * White rather than brand-50: the ramp's lightest tint lands at exactly
    * 4.50:1 on brand-600 — passing, but with no margin. Pure white gives 4.86:1.
-   * Dark uses the dark end of the ramp on the light fill (7.21:1).
+   * Dark has the same fill (step 600, physical) and the same label: white on
+   * it is 4.76:1 on any ramp, since every ramp is on one lightness curve.
    *
    * A light brand (amber, yellow) cannot carry white text, so both values are
    * knobs an app sets once on :root, like the ramps:
    *   --zabi-on-brand        label in light mode
-   *   --zabi-on-brand-dark   label in dark mode
+   *   --zabi-on-brand-dark   label in dark mode: follows the light label (white),
+   *                          since the dark fill is the same step; set it to a dark
+   *                          one for a pale dark primary
    * --color-on-brand is the role, remapped by .dark; components keep using
    * --color-action-primary-text, which follows it. */
   --zabi-on-brand: #ffffff;
-  --zabi-on-brand-dark: var(--zabi-brand-950);
+  --zabi-on-brand-dark: var(--zabi-on-brand);
   --color-on-brand: var(--zabi-on-brand);
   --color-action-primary-text: var(--color-on-brand);
 
@@ -625,6 +708,43 @@
   --color-action-secondary-subtle: var(--color-base-100);
   --color-action-secondary-subtle-hover: var(--color-base-200);
   --color-action-secondary-text: var(--color-headline);
+
+  /* Tonal Actions - Used by bg-action-tonal utility class.
+   * A brand-tinted fill with the brand as its label: the quieter action beside
+   * a primary, and a chosen answer. It is the subtle tint (brand-100) and its
+   * own hover (brand-200) and pressed steps (halfway to brand-300, like the
+   * toggled-on ghost button; 1.30:1 against the resting fill). The label is
+   * brand-800, the lightest step that holds 4.5:1 on all three fills for any
+   * brand, not only the default: step 700 does on the default brand (5.84,
+   * 4.97, 4.48:1) but fails the pressed fill by 0.02, and by more on a
+   * saturated blue (4.39:1 for #0026EA). 800 gives 8.15, 6.94 and 6.25:1. */
+  --color-action-tonal: var(--color-action-primary-subtle);
+  --color-action-tonal-hover: var(--color-action-primary-subtle-hover);
+  --color-action-tonal-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
+  --color-action-tonal-text: var(--color-brand-800);
+
+  /* Chip - the filter and choice pill (Chip). At rest a quiet neutral fill that
+   * shows on the page and on a card without an edge: base-200 is 1.22:1 on the
+   * page and 1.27:1 on the card, hover base-300 and pressed base-350 (1.42 and
+   * 1.85 on the page). The label is the headline, 4.5:1 or more on all three
+   * (13.96, 11.99 and 9.18:1). */
+  --color-chip: var(--color-base-200);
+  --color-chip-hover: var(--color-base-300);
+  --color-chip-active: var(--color-base-350);
+  --color-chip-text: var(--color-headline);
+  /* A selected chip is tonal, in both modes (never solid): its own tokens,
+   * pointing at the tonal role, so an app that themes tonal gets matching chips
+   * and one that wants another selected look sets these. */
+  --color-chip-selected: var(--color-action-tonal);
+  --color-chip-selected-hover: var(--color-action-tonal-hover);
+  --color-chip-selected-active: var(--color-action-tonal-active);
+  --color-chip-selected-text: var(--color-action-tonal-text);
+
+  /* Outline Actions - the edge of an outline Button. The border role was the
+   * card edge, 1.25:1 on the page: a label in a ghost box. This is the field
+   * edge (base-500), already held to 3:1 on the field, the page and a card. */
+  --color-action-outline-border: var(--color-input-border);
+  --color-action-outline-border-hover: var(--color-input-border-hover);
 
   /* Disabled Actions - shared by every variant.
    * Disabled must be the QUIETEST state, never a brighter colour than the
@@ -652,13 +772,132 @@
 
   /* Shadow Colors
    * Light elevation is carried by the shadow, so it is the ramp's own ink
-   * (base-900) at a strength that still reads on the top and side edges. */
+   * (base-900). Every step is two layers: a tight contact shadow
+   * (--shadow-opacity-contact) that grounds the edge and a wider, softer
+   * ambient one (--shadow-opacity) that carries the distance. Until 8.1 both
+   * layers shared one flat 14%; the 8.1 values are in CHANGELOG.md. */
   --shadow-color: 24 24 27;
-  --shadow-opacity: 0.14;
-  --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-opacity: 0.1;
+  --shadow-opacity-contact: 0.06;
+  --shadow-sm: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 2px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-md: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 6px 14px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-lg: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 10px 30px 0 rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-xl: 0 2px 4px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 20px 50px -8px rgb(var(--shadow-color) / var(--shadow-opacity));
+  /* What a material (glass) casts: the lg step. Its own name so a theme can
+   * retune glass without moving every floating surface. */
+  --shadow-material: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 10px 30px 0 rgb(var(--shadow-color) / var(--shadow-opacity));
+
+  /* Motion
+   * Four durations and three curves. Tailwind's default transition reads
+   * --duration-base and --ease-standard, so every `transition-*` class that
+   * sets no duration of its own follows them (150ms, as before; the curve is
+   * new). `ease-standard`, `ease-out` and `ease-spring` are utilities;
+   * durations are used as `duration-(--duration-moderate)`. --ease-out is
+   * Tailwind's own name and value. --ease-spring is a lightly damped spring
+   * (one overshoot of about 5%, settled by the end): the cubic-bezier is the
+   * fallback, and the @supports block after @theme upgrades it to linear().
+   * prefers-reduced-motion re-points all of them (see @motion-reduced). */
+  --duration-fast: 100ms;
+  --duration-base: 150ms;
+  --duration-moderate: 200ms;
+  --duration-slow: 300ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --default-transition-duration: var(--duration-base);
+  --default-transition-timing-function: var(--ease-standard);
+
+  /* Materials — the frosted layer for what floats over content (bars, sheets,
+   * menus). Used through .material-thin|regular|thick (below), never a raw
+   * backdrop-blur. A material is a surface at partial alpha, so it is judged
+   * over the worst backdrop of the mode, not alone: the alpha floors are
+   * enforced by scripts/check-contrast.js (see scripts/contrast-pairs.js,
+   * MATERIALS) and by createTheme for an app's own theme. Each alpha is the
+   * smallest whole 2% that passes every pair its level carries, plus a little
+   * margin (floors against the page-colour chrome: thin 50 / 30, regular 82 / 47,
+   * thick 84 / 68, light / dark; light thick has 4 points because a tinted neutral (neutralChroma 0.08) needs 87; dark is judged on the dimmed backdrop, below):
+   *   thin    headline                 (a control on a bar: an icon, a short label;
+   *                                    its focus ring is drawn outside it)
+   *   regular + body, label, focus ring (bars, the tab bar, a floating sidebar)
+   *   thick   + description, caption   (sheets, menus, modals, toasts, tooltips)
+   * Dark's worst backdrop is near-white, which its surfaces are close to. The
+   * dark filter therefore also dims the backdrop (--material-backdrop-brightness,
+   * 0.6: brightness() multiplies the sRGB channels), so the brightest thing
+   * that can be behind dark glass is near-white times 0.6, and the guard measures
+   * that. It is true to the rendering because the dimming and the translucent
+   * fill are switched together: every fallback below drops the filter and makes
+   * the fill opaque. Light is brightness(1), an identity.
+   * The fallbacks (reduced transparency, more contrast, forced colors, no
+   * backdrop-filter, data-materials="opaque") are below the .dark rule. */
+  --material-alpha-thin: 58%;
+  --material-alpha-regular: 84%;
+  --material-alpha-thick: 88%;
+  --color-material-thin: color-mix(in srgb, var(--color-surface-chrome) var(--material-alpha-thin), transparent);
+  --color-material-regular: color-mix(in srgb, var(--color-surface-chrome) var(--material-alpha-regular), transparent);
+  --color-material-thick: color-mix(in srgb, var(--color-surface-overlay) var(--material-alpha-thick), transparent);
+  --material-blur-thin: 16px;
+  --material-blur-regular: 24px;
+  --material-blur-thick: 32px;
+  --material-saturate: 180%;
+  /* What the filter does to the backdrop's brightness (a number): 1 in light,
+   * where it is an identity; below 1 in dark, which dims what shows through the
+   * glass. The alpha floors are measured on the dimmed backdrop. */
+  --material-backdrop-brightness: 1;
+  --material-filter-thin: blur(var(--material-blur-thin)) saturate(var(--material-saturate)) brightness(var(--material-backdrop-brightness));
+  --material-filter-regular: blur(var(--material-blur-regular)) saturate(var(--material-saturate)) brightness(var(--material-backdrop-brightness));
+  --material-filter-thick: blur(var(--material-blur-thick)) saturate(var(--material-saturate)) brightness(var(--material-backdrop-brightness));
+  /* The light top edge and the 1px outline, from the neutral ramp so a
+   * neutral override tints them. */
+  --color-material-highlight: color-mix(in srgb, var(--zabi-base-50) 60%, transparent);
+  --color-material-rim: color-mix(in srgb, var(--zabi-base-900) 9%, transparent);
+
+  /* Gradients (D99). Contrast is never measured against a gradient: each one
+   * is built from named stops, and scripts/contrast-pairs.js holds the worst
+   * stop of each to the pairs that sit on it. The strengths are the strongest
+   * whole 5% (canvas) and whole percent (control veils) at which every pair
+   * passes, capped at the prototype (canvas 85 / 45, top veil 22, bottom 14).
+   * Light canvas 55 (caption and link on the wash), dark canvas 25 (field edge
+   * on the wash).
+   *
+   * Control veils, light: darken-only. The top is 0%, so the fill at the top
+   * is the control's own colour: the label keeps its full contrast and an
+   * app's brand colour is not altered. Lightening the top of the brand-600
+   * fill took the white label (about 4.6:1) under 4.5:1, which is why it was
+   * 4% before. The bottom is 14% of base-950, the strongest whole percent that
+   * passes every pair (the label only gains from a darker fill); it is the
+   * depth. Dark is the same darken-only veil (the fill is a mid step with a white
+   * label, as in light); only the accent, whose dark fill is light under a dark
+   * label, keeps the lighter top, 22 / 6, in its own strengths.
+   *
+   * Canvas: two soft radial washes from brand 300 and accent 300 for glass to
+   * show something. A background-image only; .bg-canvas adds the page colour.
+   * The library does not paint it on body. */
+  --gradient-canvas-strength: 55%;
+  --color-canvas-wash-brand: color-mix(in srgb, var(--color-brand-300) var(--gradient-canvas-strength), transparent);
+  --color-canvas-wash-accent: color-mix(in srgb, var(--color-accent-300) var(--gradient-canvas-strength), transparent);
+  --gradient-canvas:
+    radial-gradient(90% 46% at 8% 0%, var(--color-canvas-wash-brand), transparent 70%),
+    radial-gradient(80% 40% at 100% 4%, var(--color-canvas-wash-accent), transparent 70%);
+
+  /* Solid controls: a veil laid over the control's own background-color, so
+   * hover and pressed fills keep working. The start and end tokens are the veil
+   * colours (translucent neutral, from the ramp so a neutral override tints
+   * them): a light one on top, a slight dark one at the bottom. It serves the
+   * three solid fills: primary, accent and danger (the veil is neutral, so
+   * `bg-control-gradient` is the danger one too). The accent has strengths of
+   * its own, which follow the shared ones, so an app whose accent carries a
+   * dark label can differ (createTheme does that when the pairs need it). */
+  --gradient-control-top-strength: 0%;
+  --gradient-control-bottom-strength: 14%;
+  --gradient-control-accent-top-strength: var(--gradient-control-top-strength);
+  --gradient-control-accent-bottom-strength: var(--gradient-control-bottom-strength);
+  --color-control-gradient-start: color-mix(in srgb, var(--zabi-base-50) var(--gradient-control-top-strength), transparent);
+  --color-control-gradient-end: color-mix(in srgb, var(--zabi-base-950) var(--gradient-control-bottom-strength), transparent);
+  --gradient-control: linear-gradient(to bottom, var(--color-control-gradient-start), var(--color-control-gradient-end));
+  --color-control-gradient-accent-start: color-mix(in srgb, var(--zabi-base-50) var(--gradient-control-accent-top-strength), transparent);
+  --color-control-gradient-accent-end: color-mix(in srgb, var(--zabi-base-950) var(--gradient-control-accent-bottom-strength), transparent);
+  --gradient-control-accent: linear-gradient(to bottom, var(--color-control-gradient-accent-start), var(--color-control-gradient-accent-end));
+  --shadow-control-highlight: inset 0 1px 0 color-mix(in srgb, var(--zabi-base-50) 40%, transparent);
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -916,28 +1155,37 @@ body {
 
   /* Page Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Surface elevation — shadows don't read on dark, so each level steps up +6 OKLCH lightness
-   * from the page background (L 21 → 27 → 33 → 39).
+  /* Surface elevation — shadows don't read on dark, so the surfaces carry it by tone, in two
+   * steps: page L 21.0, card L 24.1, elevated and overlay L 27.4 (D133/D134).
    *
    * GENERATED by scripts/generate-surfaces.js from tokens/surface-ladder.js — do not hand-edit.
-   * The page is --zabi-base-900. Each level above it is --zabi-base-50 (the same light as the
-   * dark hover tint) washed over the page at 6.4% / 13.1% / 19.7%, so every level is the one
-   * below it with more light on it, and a --zabi-base-* override carries the whole ladder.
-   * Mixing two opaque colours stays opaque, so a modal never lets the page through. With the
-   * default greys these resolve to #18181b / #262629 / #363638 / #454547.
-   * Enforced by scripts/check-surface-elevation.js (strictly increasing, 5–8 points). */
+   * Every role is a plain step of the neutral ramp (--zabi-base-N), so hue and chroma are the
+   * ramp's own, and a --zabi-base-* override or a tinted neutral carries all of them. An overlay
+   * (sheet, menu, modal) is the same tone as elevated: it is told apart by its edge
+   * (--color-material-rim) and its shadow, not by being greyer. The hover on an overlay is one
+   * ramp step lighter; the inset is the page step, told apart by its 3:1 edge.
+   * With the default greys: #18181b / #1f1f22 / #27272a / #27272a, hover #333338, inset #18181b.
+   * Enforced by scripts/check-surface-elevation.js (ramp steps, never lighter downwards, at most
+   * two tone steps of 2–5 points, the overlay edge and the card edge). */
   --color-surface-base: var(--zabi-base-900);
-  --color-surface-raised: color-mix(in srgb, var(--zabi-base-50) 6.4%, var(--zabi-base-900));
-  --color-surface-elevated: color-mix(in srgb, var(--zabi-base-50) 13.1%, var(--zabi-base-900));
-  --color-surface-overlay: color-mix(in srgb, var(--zabi-base-50) 19.7%, var(--zabi-base-900));
-  /* base-400 mirrors to --zabi-base-600 (#52525b), one step lighter than the overlay. */
-  --color-surface-overlay-hover: var(--color-base-400);
-  /* Inset — the step between the page and the raised surface (L 24). The input
-   * field is the library's own inset; see --color-input below. */
-  --color-surface-inset: var(--color-base-150);
+  --color-surface-raised: var(--zabi-base-850);
+  --color-surface-elevated: var(--zabi-base-800);
+  --color-surface-overlay: var(--zabi-base-800);
+  --color-surface-overlay-hover: var(--zabi-base-750);
+  /* Inset — the page step, 3 points below the card (L 24.1). A field on the page is told apart
+   * by its 3:1 edge, as a white field on the near-white light page is. */
+  --color-surface-inset: var(--zabi-base-900);
+  /* Chrome and the bar tokens — restated so a light-only override of the page
+   * or the raised surface does not reach dark. */
+  --color-surface-chrome: var(--color-surface-base);
+  --color-bar: var(--color-surface-chrome);
+  --color-bar-border: color-mix(in srgb, var(--color-headline) 10%, transparent);
+  --color-bar-brand: var(--color-action-primary);
+  --color-tabbar-active: var(--color-nav-menu-active);
 
   /* Distinct from base, raised AND elevated — a neutral chip has no hue to
-   * separate it, so it has to separate on lightness wherever it lands. */
+   * separate it, so it has to separate on lightness wherever it lands:
+   * base-300 is 1.70:1 on the page, 1.57:1 on the card, 1.43:1 on elevated. */
   --color-neutral-subtle: var(--color-base-300);
   --color-neutral-border: var(--color-base-200);
   --color-border-overlay: var(--color-base-450);
@@ -946,25 +1194,37 @@ body {
   --color-background: var(--color-surface-base);
   --color-background-tertiary: var(--color-base-100);
 
-  /* Page Colors — pinned: light moved the page to base-150, dark stays on base-100 */
-  --color-page: var(--color-base-100);
+  /* Page Colors — the dark page (base-100 here is --zabi-base-900, the same value as before) */
+  --color-page: var(--color-surface-base);
 
   /* Card Colors — aliases of the surface levels */
   --color-card: var(--color-surface-raised);
   --color-card-hover: var(--color-surface-elevated);
-  --color-card-active: var(--color-surface-overlay);
+  --color-card-active: var(--color-surface-overlay-hover);
   --color-card-elevated: var(--color-surface-elevated);
+  /* Card tint, dark: the brand at 8% over the card (as the status tints of D136,
+   * which are 16%: here the field edge sets the ceiling, base-500 is 3.07:1 on
+   * this and 2.90:1 at 12%). 8% is #252733: 1.11:1 on the card and 1.20:1 on the
+   * page; headline 13.49, body 11.68, label and description 10.03, caption 7.68,
+   * link 8.81, ring 6.59:1. */
+  --color-card-tint: color-mix(in srgb, var(--zabi-brand-500) 8%, var(--color-surface-raised));
+  /* Card variant="flat", dark: a translucent step of the neutral ramp (base-50 at 7%), so a flat card
+   * is lighter than whatever it sits on, and a flat card inside a flat card is lighter again. Shadows
+   * do not carry layers on a dark page; alpha does. Hover and pressed are the same step at 11% and 15%.
+   * Restore the opaque fill: overrides: { dark: { '--color-card-flat': 'var(--color-card)' } }. */
+  --color-card-flat: color-mix(in srgb, var(--zabi-base-50) 7%, transparent);
+  --color-card-flat-hover: color-mix(in srgb, var(--zabi-base-50) 11%, transparent);
+  --color-card-flat-active: color-mix(in srgb, var(--zabi-base-50) 15%, transparent);
 
   /* Surfaces — numbered aliases of the surface levels */
   --color-surface-1: var(--color-surface-raised);
   --color-surface-2: var(--color-surface-elevated);
   --color-surface-3: var(--color-surface-overlay);
-  --color-surface-4: var(--color-base-400);
+  --color-surface-4: var(--color-surface-overlay-hover);
 
   /*
-   * Secondary text keeps ≥ 4.5:1 on every surface level, including overlays (L39).
-   * Only base-650 and lighter pass on the overlay, so caption takes base-650 and description
-   * moves one step up to base-700 to stay visibly stronger than caption.
+   * Secondary text keeps ≥ 4.5:1 on every surface level, including overlays (L27).
+   * Caption takes base-650 and description base-700 to stay visibly stronger than it.
    */
   --color-description: var(--color-base-700);
   --color-caption: var(--color-base-650);
@@ -979,28 +1239,87 @@ body {
   --color-overlay: rgba(0, 0, 0, 0.7);
 
   /* Input Colors
-   * Dark fields are INSET: one step below the raised surface they sit on,
-   * which is the dark-mode equivalent of a white field on a grey page. */
-  --color-input: var(--color-surface-inset);
+   * Dark fields are a translucent step of the neutral ramp (base-50 at 7%), the
+   * same idea as the flat card: a well one step LIGHTER than whatever it sits on,
+   * without a rule per surface. It was the page step (--color-surface-inset), so
+   * a dark form was told from the page by its 3:1 edge alone. 7% is 1.20:1 on
+   * the page (#28282b), 1.22:1 on a card (#2e2e31) and 1.23:1 on the overlay
+   * (#363639); hover 10% and pressed 15% (1.30:1 against the resting field on
+   * all three). The edge below stays 3:1 against the surface outside it.
+   * Restore the opaque field: overrides: { dark: {
+   *   '--color-input': 'var(--color-surface-inset)', '--color-input-hover': 'var(--color-base-200)',
+   *   '--color-input-focus': 'var(--color-base-150)',
+   *   '--color-input-active': 'color-mix(in srgb, var(--zabi-base-50) 10%, var(--color-surface-inset))' } }. */
+  --color-input: color-mix(in srgb, var(--zabi-base-50) 7%, transparent);
+  /* What a field is inside a colour block (.on-brand, .on-accent, .on-fill): the translucent
+   * well would sit on the block's fill, which the theme's text is not set for, so the field
+   * takes these opaque steps there. */
+  --color-input-solid: var(--color-surface-inset);
+  --color-input-solid-hover: var(--color-base-200);
+  --color-input-solid-focus: var(--color-base-150);
+  --color-input-solid-active: color-mix(in srgb, var(--zabi-base-50) 10%, var(--color-surface-inset));
   /* Restated here: the root value of a var() alias is resolved at :root. */
   --color-progress-fill: var(--color-action-primary);
-  --color-progress-track: var(--color-input);
-  /* base-500 (the mirror's fixed point): 3.40:1 on the dark field, 3.67:1 on
-   * the page and 3.12:1 on the card. base-300 was 1.57, 1.70 and 1.44. */
+  /* The field step is the page now, so the track takes its own: base-75
+   * (#101013), a well just below the page: 1.06:1 on the page, 1.14:1 on the
+   * card, 1.45:1 on the elevated surface. It was base-250 (#333338, 1.41:1 on
+   * the page). The fill is a mid step now (brand-600), and 3:1 on its rail
+   * needs a track this dark: 3.91:1 here with the default brand (2.59:1 on
+   * base-250, 2.94:1 for an amber brand on base-200). */
+  --color-progress-track: var(--color-base-75);
+  /* Restated: the root value of a var() alias is resolved at :root. The field
+   * edge, 3.67:1 on the page and 3.40:1 on the card. */
+  --color-progress-track-border: var(--color-input-border);
+  /* base-500 (the mirror's fixed point): 3.67:1 on the dark field and the page,
+   * 3.40:1 on the card, 3.08:1 on the elevated surface and the overlay.
+   * base-300 was 1.70, 1.57 and 1.43. */
   --color-input-border: var(--color-base-500);
   --color-input-border-hover: var(--color-input-border);
-  --color-input-hover: var(--color-base-200);
-  /* One step past hover, and one short of the border (base-300), so the
-   * pressed field keeps its edge: 1.31:1 against the resting field. */
-  --color-input-active: var(--color-base-250);
-  --color-input-focus: var(--color-base-150);
-  --color-input-disabled: var(--color-base-100);
+  /* The decorative hairline (Card's default variant, list dividers). Quiet, like
+   * light's: base-250 is #333338, 1.41:1 on the page and 1.31:1 on the card
+   * (base-300 was 1.70 and 1.57, base-200 only 1.10 on the card). Restated: the
+   * root value of a var() alias is resolved at :root. -medium (2.29:1) and
+   * -strong (3.67:1) keep their order above it. */
+  --color-border: var(--color-base-250);
+  --color-border-weak: var(--color-base-250);
+  /* Toggle track, off. The thumb is the card (#1f1f22), so the track cannot
+   * be as dark as it. base-300 (#3f3f46) is 1.57:1 against the thumb, and the
+   * field edge gives the 3:1: 3.67:1 on the page, 3.40:1 on the card. */
+  --color-toggle-track: var(--color-base-300);
+  --color-toggle-track-hover: var(--color-base-350);
+  --color-toggle-track-active: var(--color-base-400);
+  --color-toggle-track-border: var(--color-input-border);
+  /* Toggle knob in dark: off, a light knob on the dark track (base-700, #d4d4d8:
+   * 7.07:1 resting, 5.23:1 pressed); on, as in light (the same 4.86:1 and up). */
+  --color-toggle-knob: var(--color-base-700);
+  --color-toggle-knob-checked: var(--color-action-primary-text);
+  /* Hover 10%: 1.10:1 above the resting well on the page, the card and the overlay, body 8.65:1
+   * or more and placeholder 4.68:1 or more on it. Was base-200. */
+  --color-input-hover: color-mix(in srgb, var(--zabi-base-50) 10%, transparent);
+  /* Pressed 15% of the light end of the ramp (unmirrored, --zabi-base-50): 1.30:1 against the
+   * resting well on the page (#3a3a3c), the card (#404042) and the overlay (#474749), 1.18:1
+   * past hover, body 7.34:1 or more, placeholder 4.54:1 on a card and 4.08:1 on the overlay,
+   * short of the border (2.35:1 or less). 14% is 1.254:1 on the default and under 1.25 on a tinted ramp. Was 10% into the page step (#2f2f31). */
+  --color-input-active: color-mix(in srgb, var(--zabi-base-50) 15%, transparent);
+  /* Focus is the resting well: the ring shows focus, and hover still reads on a focused field.
+   * Was base-150. */
+  --color-input-focus: color-mix(in srgb, var(--zabi-base-50) 7%, transparent);
+  /* The field is the page step now, so the disabled field goes one step below
+   * the page (base-75, #101013): 1.07:1 on the page, 1.16:1 on the card. */
+  --color-input-disabled: var(--color-base-75);
   /* base-500 is the mirror's fixed point, the same grey as it was in light,
    * and a dark field is a far lighter ground for it than a white one is dark:
    * 3.40:1 at rest, 3.08:1 on hover, 2.60:1 pressed. base-600 mirrors to
    * --zabi-base-400 (#a1a1aa): 6.41, 5.81 and 4.90. base-550 would be 4.74
-   * at rest but under 4.5 on hover. The value text is 2.0:1 stronger. */
-  --color-input-placeholder: var(--color-base-600);
+   * at rest but under 4.5 on hover. The value text is 2.0:1 stronger.
+   * The well is lighter now (a translucent step over the surface), and the
+   * pressed one over a card held base-400 to 4.04:1: so 40% of the next step
+   * toward the value (base-350, #babac1) is mixed in, #ababb3: 6.46, 5.89 and
+   * 4.98:1 at rest, hover and pressed on the page, 5.91, 5.37 and 4.54:1 on a
+   * card, 5.30, 4.82 and 4.08:1 on the overlay (pressed there is held to 4:1,
+   * see contrast-pairs.js), and 1.80:1 under the value (1.75 is the floor; 50%
+   * would be 1.75). Was base-600 (#a1a1aa). */
+  --color-input-placeholder: color-mix(in srgb, var(--zabi-base-350) 40%, var(--zabi-base-400));
 
   /* Text Colors - No dark mode overrides needed, base colors are already inverted */
 
@@ -1011,6 +1330,15 @@ body {
    * mirrors to --zabi-base-400 (#a1a1aa): 3.73:1 on the overlay, the lightest
    * surface, and more on every level below it. base-550 is 2.76:1 there. */
   --color-control-border: var(--color-base-600);
+
+  /* Segmented control thumb — restated: the aliases resolve at :root, so without
+   * these dark would keep the light card colour. The track is a light tint over
+   * the page or a card (#2c2c2f / #333335), which the overlay tone now sits
+   * below, so the thumb takes base-400 (#52525b): 1.80:1 over the page track,
+   * 1.63:1 over the card track, headline text 7.03:1. */
+  --color-segment-thumb: var(--color-base-400);
+  --color-segment-thumb-text: var(--color-headline);
+  --color-segment-thumb-border: var(--color-control-border);
 
   /* Focus Colors — the same steps as light, through the mirror: brand-600 is
    * --zabi-brand-400 here, which is also the dark primary fill, so on a
@@ -1032,25 +1360,28 @@ body {
 
   /* Secondary Colors - No dark mode overrides needed, base colors are already inverted */
 
-  /* Tinted fills and edges — pinned at steps 100 and 200.
-   * The solid, weak, medium, strong and text steps need no override: they
-   * resolve through the mirrored ramps. The tints do, because light moved them
-   * to steps 200 and 300 to read on a white card, and the mirror of those is
-   * too heavy on a dark surface. */
-  --color-success-subtle: var(--color-pine-100);
-  --color-success-border: var(--color-pine-200);
-  --color-warning-subtle: var(--color-warning-100);
-  --color-warning-border: var(--color-warning-200);
-  --color-error-subtle: var(--color-error-100);
-  --color-error-border: var(--color-error-200);
-  --color-energetic-subtle: var(--color-citron-100);
-  --color-energetic-border: var(--color-citron-200);
-  --color-accent-subtle: var(--color-accent-100);
-  --color-accent-border: var(--color-accent-200);
+  /* Tinted fills and edges — the hue thinned into the card surface, not the
+   * mirrored step 100 / 200 (physical 900 / 800: deep, saturated, the loudest
+   * area on a dark screen). A tint here is a low-chroma tint of the card, and
+   * the hue is carried by the icon and the text. The mid step (500) is where
+   * the ramp's chroma peaks and the mirror's fixed point. The base is the card
+   * surface, so a badge or alert on a card is never darker than the card, and
+   * an app's override of the card surface carries through. The edge is the
+   * same mix, stronger. */
+  --color-success-subtle: color-mix(in srgb, var(--zabi-pine-500) 16%, var(--color-surface-raised));
+  --color-success-border: color-mix(in srgb, var(--zabi-pine-500) 36%, var(--color-surface-raised));
+  --color-warning-subtle: color-mix(in srgb, var(--zabi-warning-500) 16%, var(--color-surface-raised));
+  --color-warning-border: color-mix(in srgb, var(--zabi-warning-500) 36%, var(--color-surface-raised));
+  --color-error-subtle: color-mix(in srgb, var(--zabi-error-500) 16%, var(--color-surface-raised));
+  --color-error-border: color-mix(in srgb, var(--zabi-error-500) 36%, var(--color-surface-raised));
+  --color-energetic-subtle: color-mix(in srgb, var(--zabi-citron-500) 16%, var(--color-surface-raised));
+  --color-energetic-border: color-mix(in srgb, var(--zabi-citron-500) 36%, var(--color-surface-raised));
+  --color-accent-subtle: color-mix(in srgb, var(--zabi-accent-500) 16%, var(--color-surface-raised));
+  --color-accent-border: color-mix(in srgb, var(--zabi-accent-500) 36%, var(--color-surface-raised));
   /* Label on a solid accent fill: the dark end of the ramp on its light end. */
   --color-on-accent: var(--zabi-on-accent-dark);
-  --color-info-subtle: var(--color-iris-100);
-  --color-info-border: var(--color-iris-200);
+  --color-info-subtle: color-mix(in srgb, var(--zabi-iris-500) 16%, var(--color-surface-raised));
+  --color-info-border: color-mix(in srgb, var(--zabi-iris-500) 36%, var(--color-surface-raised));
 
   /* Neutral Colors — base-550 mirrors to L* 57, which is only 4.35:1 on a
    * raised surface. One step lighter clears AA on every dark surface level. */
@@ -1062,18 +1393,28 @@ body {
      ACTION COLORS - Dark Mode Overrides
      ======================================== */
   
-  /* Primary Actions - Background adapts automatically via brand color inversion */
-  /* 🎯 TO CHANGE bg-action-primary IN DARK MODE: Edit the --zabi-brand-* physical ramp in @theme (semantic --color-brand-* follows the mirror) */
-  /* "On brand" in dark: --zabi-on-brand-dark, by default the physical dark end
-   * of the brand ramp on the physical light end used as the dark-mode primary
-   * fill (7.21:1). --color-action-primary-text is restated, as it always
-   * was here, so that an app's light-only override of it does not carry a
-   * white label onto the light dark-mode fill. */
+  /* Primary Actions - the brand hue in dark too: the same physical steps as
+   * light (600 / 700 / 800), not the mirrored ones, which would be the pale
+   * 400 / 300 / 200. White on step 600 is 4.76 to 4.86:1 (every ramp is on one
+   * lightness curve); with the default brand the fill is 3.65:1 on the page,
+   * 3.39:1 on the card and 3.07:1 on the overlay (3:1 holds on all three, WCAG
+   * 1.4.11). Hover and pressed go darker, as in light.
+   * createTheme({ darkPrimary: 'mirror' }) writes the mirrored fills instead.
+   * 🎯 TO CHANGE bg-action-primary IN DARK MODE: override --color-action-primary under `dark`. */
+  --color-action-primary: var(--zabi-brand-600);
+  --color-action-primary-hover: var(--zabi-brand-700);
+  --color-action-primary-active: var(--zabi-brand-800);
+  /* "On brand" in dark: --zabi-on-brand-dark, which follows the light label (white). If an app
+   * moves the dark primary to a pale step, it sets the knob to a dark one.
+   * --color-action-primary-text is restated, as it always was here, so that an
+   * app's light-only override of it does not carry a different label onto the
+   * dark fill. */
   --color-on-brand: var(--zabi-on-brand-dark);
   --color-action-primary-text: var(--color-on-brand);
   /* Pinned like the other tints: light moved these a step darker. */
   --color-action-primary-subtle: var(--color-brand-100);
   --color-action-primary-subtle-hover: var(--color-brand-200);
+  --color-action-primary-border: var(--color-brand-200);
   /* Half a step past the dark hover fill, as in light. */
   --color-action-primary-subtle-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
 
@@ -1082,32 +1423,91 @@ body {
   --color-action-secondary-hover: rgba(250, 250, 250, 0.15);
   --color-action-secondary-active: rgba(250, 250, 250, 0.21);
 
-  /* Disabled Actions - base-200 in dark is #27272a, still the quietest fill.
+  /* Tonal Actions - the deep brand tint (brand-100 in dark is the deep end of
+   * the mirrored ramp) with a light brand label. Restated: the root values are
+   * var() aliases of roles that move in dark. Brand-800 is the light end of the
+   * mirrored ramp here: 9.48, 6.94 and 5.86:1 on the three fills. */
+  --color-action-tonal: var(--color-action-primary-subtle);
+  --color-action-tonal-hover: var(--color-action-primary-subtle-hover);
+  --color-action-tonal-active: color-mix(in srgb, var(--color-brand-300) 50%, var(--color-brand-200));
+  --color-action-tonal-text: var(--color-brand-800);
+
+  /* Chip, dark - its own steps, not the mirror of light. The ladder rises from
+   * the page (base-900, card base-850): rest base-750 is 1.41:1 on the page and
+   * 1.31:1 on the card, hover base-700 and pressed base-650 lighter again (1.70
+   * and 1.96 on the page). Headline is 11.43, 9.50 and 8.24:1 on the three.
+   * Restated, with the selected chip, because the root values are var() aliases. */
+  --color-chip: var(--zabi-base-750);
+  --color-chip-hover: var(--zabi-base-700);
+  --color-chip-active: var(--zabi-base-650);
+  --color-chip-text: var(--color-headline);
+  --color-chip-selected: var(--color-action-tonal);
+  --color-chip-selected-hover: var(--color-action-tonal-hover);
+  --color-chip-selected-active: var(--color-action-tonal-active);
+  --color-chip-selected-text: var(--color-action-tonal-text);
+
+  /* Outline Actions - the field edge, restated for the same reason. */
+  --color-action-outline-border: var(--color-input-border);
+  --color-action-outline-border-hover: var(--color-input-border-hover);
+
+  /* Disabled Actions - base-200 in dark is #27272a (the elevated tone), still
+   * the quietest fill, and the one the disabled label (base-500) reads on at 3.08:1.
    * Pinned: light moved a step darker to stay visible on its darker page. */
   --color-action-disabled: var(--color-base-200);
   --color-action-disabled-border: var(--color-base-250);
 
-  /* Danger Actions — restated as aliases, not re-pointed.
-   * These resolve through the mirrored --color-error-* scale, so dark danger
-   * is the same step of the same ramp as light danger. They are repeated here
-   * only because `zabi-components/theme-dark-only` has to stand alone as a
-   * complete import (validate-theme.js enforces that). The raw hex this
-   * replaced pinned dark danger brighter than light, which is why the
-   * destructive action was the loudest element on a dark page. */
-  --color-action-danger: var(--color-error-600);
-  --color-action-danger-hover: var(--color-error-700);
-  --color-action-danger-active: var(--color-error-800);
-  --color-action-danger-subtle: var(--color-error-100);
-  --color-action-danger-subtle-hover: var(--color-error-200);
-  --color-action-danger-text: var(--color-error-50);
+  /* Danger Actions — the same physical steps as light danger (600 / 700 / 800
+   * of --zabi-error-*) with the same label (step 50), so a destructive button
+   * is one red in both modes and shares the primary's veil. Physical, not
+   * through the mirror, which would be the pale 400 / 300 / 200. Restated
+   * because `zabi-components/theme-dark-only` has to stand alone as a complete
+   * import (validate-theme.js enforces that). The subtle tints are the thin mix below. */
+  --color-action-danger: var(--zabi-error-600);
+  --color-action-danger-hover: var(--zabi-error-700);
+  --color-action-danger-active: var(--zabi-error-800);
+  --color-action-danger-subtle: var(--color-error-subtle);
+  --color-action-danger-subtle-hover: color-mix(in srgb, var(--zabi-error-500) 20%, var(--color-surface-raised));
+  --color-action-danger-subtle-active: color-mix(in srgb, var(--zabi-error-500) 32%, var(--color-surface-raised));
+  --color-action-danger-text: var(--zabi-error-50);
 
-  /* Shadow Colors — black, not the light theme's ink tint */
+  /* Shadow Colors — black, not the light theme's ink tint. Much stronger than
+   * light (0.1 / 0.06): an overlay is the same tone as the elevated surface
+   * now, so a sheet (L 27.4) floats over a card (L 24.1) by its shadow and its
+   * edge, and the shadow has to carry it. */
   --shadow-color: 0 0 0;
-  --shadow-opacity: 0.3;
-  --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity)), 0 1px 2px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 2px 4px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 4px 6px -4px rgb(var(--shadow-color) / var(--shadow-opacity));
-  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / var(--shadow-opacity)), 0 8px 10px -6px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-opacity: 0.5;
+  --shadow-opacity-contact: 0.4;
+  --shadow-sm: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 2px 6px -1px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-md: 0 1px 3px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 6px 14px -2px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-lg: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 10px 30px 0 rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-xl: 0 2px 4px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 20px 50px -8px rgb(var(--shadow-color) / var(--shadow-opacity));
+  --shadow-material: 0 1px 2px 0 rgb(var(--shadow-color) / var(--shadow-opacity-contact)), 0 10px 30px 0 rgb(var(--shadow-color) / var(--shadow-opacity));
+
+  /* Materials — the alphas and the backdrop brightness differ (see @theme).
+   * The fills are not restated: they follow the surface tokens above. The
+   * filters are restated, because they hold a var() that resolves where it is
+   * declared; the fallbacks below are one class more specific than this rule
+   * and set them to none, so they still win in dark. */
+  --material-backdrop-brightness: 0.6;
+  --material-alpha-thin: 60%;
+  --material-alpha-regular: 68%;
+  --material-alpha-thick: 72%;
+  --material-filter-thin: blur(var(--material-blur-thin)) saturate(var(--material-saturate)) brightness(var(--material-backdrop-brightness));
+  --material-filter-regular: blur(var(--material-blur-regular)) saturate(var(--material-saturate)) brightness(var(--material-backdrop-brightness));
+  --material-filter-thick: blur(var(--material-blur-thick)) saturate(var(--material-saturate)) brightness(var(--material-backdrop-brightness));
+  --color-material-highlight: color-mix(in srgb, var(--zabi-base-50) 14%, transparent);
+  --color-material-rim: color-mix(in srgb, var(--zabi-base-50) 14%, transparent);
+
+  /* Gradients: the wash is quieter in dark (see @theme). The stops follow. */
+  --gradient-canvas-strength: 25%;
+  --gradient-control-top-strength: 0%;
+  --gradient-control-bottom-strength: 14%;
+  /* The accent's own strengths, no longer the shared ones: in dark its fill is
+   * the light step with a dark label, which a darkening veil would fail, so it
+   * keeps the lighter top and slight dark bottom it had (22 / 6). */
+  --gradient-control-accent-top-strength: 22%;
+  --gradient-control-accent-bottom-strength: 6%;
+  --shadow-control-highlight: inset 0 1px 0 color-mix(in srgb, var(--zabi-base-50) 25%, transparent);
 
   /* Not a token: tells the browser the page is dark, so what it draws itself
    * (date and time pickers, scrollbars, autofill, the caret of a native
@@ -1117,6 +1517,338 @@ body {
    * the dark media query, [data-theme="auto"], and every one of them carries
    * it. Until 8.1 only the attributes set it and the class did not. */
   color-scheme: dark;
+}
+
+/* ========================================
+   MATERIALS — fallbacks and classes
+   ======================================== */
+
+/* @materials-fallback-start
+ * Materials are on by default and become the opaque surface they are made from
+ * (blur off) when the user or the platform asks for it: reduced transparency,
+ * more contrast, forced colors, no backdrop-filter, or data-materials="opaque"
+ * on the root or any ancestor (an app's own switch, for a slow phone). The
+ * fallback re-points the TOKENS, so everything that reads a material gets it.
+ * `:root:root` and the doubled attribute are one class more specific than the
+ * `.dark` rule and than an app's generated theme file, so the fallback wins in
+ * both modes and over an app's own fill. Tokens only: the one thing that is
+ * not a token (the rim under forced colors) is below. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
+  :root:root {
+    --color-material-thin: var(--color-surface-chrome);
+    --color-material-regular: var(--color-surface-chrome);
+    --color-material-thick: var(--color-surface-overlay);
+    --material-filter-thin: none;
+    --material-filter-regular: none;
+    --material-filter-thick: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root:root {
+    --color-material-thin: var(--color-surface-chrome);
+    --color-material-regular: var(--color-surface-chrome);
+    --color-material-thick: var(--color-surface-overlay);
+    --material-filter-thin: none;
+    --material-filter-regular: none;
+    --material-filter-thick: none;
+  }
+}
+
+[data-materials="opaque"][data-materials="opaque"] {
+  --color-material-thin: var(--color-surface-chrome);
+  --color-material-regular: var(--color-surface-chrome);
+  --color-material-thick: var(--color-surface-overlay);
+  --material-filter-thin: none;
+  --material-filter-regular: none;
+  --material-filter-thick: none;
+}
+/* @materials-fallback-end */
+
+/* @motion-reduced-start
+ * The spring's true curve where the browser can draw it. Plain :root, so an
+ * app's own --ease-spring (set after the library's CSS) still wins. */
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --ease-spring: linear(0, 0.14, 0.409, 0.668, 0.859, 0.974, 1.029, 1.046, 1.041, 1.03, 1.017, 1.008, 1.002, 0.999, 0.998, 0.998, 1);
+  }
+}
+
+/* Reduced motion re-points the TOKENS, so everything that reads them follows,
+ * in both modes and over an app's own values (:root:root is one class more
+ * specific than the .dark rule and an app's generated theme file). Nothing in the library waits on
+ * a transitionend or animationend, so the durations can be a true zero.
+ * The spring becomes the standard curve: no overshoot. */
+@media (prefers-reduced-motion: reduce) {
+  :root:root {
+    --duration-fast: 0s;
+    --duration-base: 0s;
+    --duration-moderate: 0s;
+    --duration-slow: 0s;
+    --ease-spring: var(--ease-standard);
+  }
+}
+/* @motion-reduced-end */
+
+/* Fill, backdrop filter, edge and shadow, together. They set no position,
+ * radius or overflow: `rounded-*` and the component's own layout still apply,
+ * and the highlight and rim follow the radius. The shadow goes through
+ * Tailwind's own variable and its box-shadow list, so a `focus-ring` on the
+ * same element still draws its ring. */
+.material-thin,
+.material-regular,
+.material-thick {
+  --tw-shadow:
+    inset 0 1px 0 var(--color-material-highlight),
+    inset 0 0 0 1px var(--color-material-rim),
+    var(--shadow-material);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+}
+
+.material-thin {
+  background-color: var(--color-material-thin);
+  -webkit-backdrop-filter: var(--material-filter-thin);
+  backdrop-filter: var(--material-filter-thin);
+}
+
+.material-regular {
+  background-color: var(--color-material-regular);
+  -webkit-backdrop-filter: var(--material-filter-regular);
+  backdrop-filter: var(--material-filter-regular);
+}
+
+.material-thick {
+  background-color: var(--color-material-thick);
+  -webkit-backdrop-filter: var(--material-filter-thick);
+  backdrop-filter: var(--material-filter-thick);
+}
+
+/* Forced colors drops box-shadow, and with it the rim: the edge is an outline
+ * in a system colour instead. Inset, so it never grows the box. */
+@media (forced-colors: active) {
+  .material-thin,
+  .material-regular,
+  .material-thick {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+}
+
+/* The layer form of the thick material, for a container that holds fixed
+ * position content: a Modal, a Drawer, a BottomSheet. `backdrop-filter` makes
+ * an element the containing block of its `position: fixed` descendants, so a
+ * popover inside the panel would be placed against the panel and clipped by it,
+ * but only while the material is on (the fallbacks turn the filter off): a bug
+ * that comes and goes. Here the filter sits on a `::before` behind the content,
+ * which is not their ancestor. The element itself carries only the outer
+ * shadow (a box-shadow makes no containing block) and an isolated stacking
+ * context so the layer's z-index -1 stays inside it. The fill, filter,
+ * highlight and rim are on the layer, read from the SAME tokens as
+ * .material-thick, so every fallback above applies unchanged. The element has
+ * to be positioned (`relative`, `absolute` or `fixed`, set by the component:
+ * a class here would beat Tailwind's utilities) and must not scroll its own
+ * content: an absolute layer would scroll away with it. A panel that scrolls puts the
+ * layer on a wrapper around it. */
+.material-layer-thick {
+  isolation: isolate;
+  background-color: transparent;
+  --tw-shadow: var(--shadow-material);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+}
+
+.material-layer-thick::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background-color: var(--color-material-thick);
+  -webkit-backdrop-filter: var(--material-filter-thick);
+  backdrop-filter: var(--material-filter-thick);
+  box-shadow:
+    inset 0 1px 0 var(--color-material-highlight),
+    inset 0 0 0 1px var(--color-material-rim);
+}
+
+@media (forced-colors: active) {
+  .material-layer-thick {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+}
+
+/* The same layer form for the regular material: a floating bar (the floating
+ * tab bar, UnsavedChangesBar) that holds popovers or focusable controls. Same
+ * rules as above, reading --color-material-regular and --material-filter-regular. */
+.material-layer-regular {
+  isolation: isolate;
+  background-color: transparent;
+  --tw-shadow: var(--shadow-material);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+}
+
+.material-layer-regular::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background-color: var(--color-material-regular);
+  -webkit-backdrop-filter: var(--material-filter-regular);
+  backdrop-filter: var(--material-filter-regular);
+  box-shadow:
+    inset 0 1px 0 var(--color-material-highlight),
+    inset 0 0 0 1px var(--color-material-rim);
+}
+
+@media (forced-colors: active) {
+  .material-layer-regular {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+}
+
+/* The surface of a bar (AppBar, BottomTabBar, StickyActionBar, TopNavbar), D124.
+ * Flush with the page at rest; the regular material and a hairline on the side
+ * the content comes from once content has scrolled under it. The component
+ * writes data-scrolled-under="true|false" (no attribute is the same as false)
+ * and, for a bar at the bottom of the screen, data-bar-edge="bottom"; the
+ * hairline is on the bottom edge otherwise.
+ *
+ * Like the layer form above, the glass is on a `::before`, never on the
+ * element: a bar holds Dropdowns and Tooltips, and `backdrop-filter` on it
+ * would become their containing block. The element is positioned by the
+ * component (sticky, fixed or relative: a class here would beat Tailwind's
+ * utilities) and is never a scroller. The hairline is a border on the layer
+ * (border-box, so the bar's own box does not change, and a border survives
+ * forced colors where a box-shadow would not). The fill reads --color-bar, so a
+ * component scopes it on the element (`transparent`, or `var(--color-bar-brand)`)
+ * and the layer follows. Scrolled, the fill is --color-material-regular, so
+ * every fallback above applies unchanged: page coloured, no blur, hairline kept.
+ * The fill and the line change over the moderate duration, which the
+ * reduced-motion block zeroes. */
+.material-bar {
+  isolation: isolate;
+  background-color: transparent;
+}
+
+.material-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  box-sizing: border-box;
+  pointer-events: none;
+  background-color: var(--color-bar);
+  border: 0 solid transparent;
+  border-bottom-width: 1px;
+  transition-property: background-color, border-color;
+  transition-duration: var(--duration-moderate);
+  transition-timing-function: var(--ease-standard);
+}
+
+.material-bar[data-bar-edge="bottom"]::before {
+  border-bottom-width: 0;
+  border-top-width: 1px;
+}
+
+.material-bar[data-scrolled-under="true"]::before {
+  background-color: var(--color-material-regular);
+  -webkit-backdrop-filter: var(--material-filter-regular);
+  backdrop-filter: var(--material-filter-regular);
+  border-color: var(--color-bar-border);
+}
+
+@media (forced-colors: active) {
+  .material-bar[data-scrolled-under="true"]::before {
+    border-color: CanvasText;
+  }
+}
+
+/* Gradients (D99). Utilities only; nothing in the library applies them yet.
+ *
+ * .bg-canvas: the page colour with the wash over it. The wash is in the
+ * element's own box (background-attachment: scroll), so on a scroll container
+ * it stays put while the content moves, and on a plain block it scrolls with
+ * the page. Put it on a fixed-height shell or scroller, not on body. */
+.bg-canvas {
+  background-color: var(--color-surface-base);
+  background-image: var(--gradient-canvas);
+  background-repeat: no-repeat;
+}
+
+/* A veil over the control's own background-color: hover and pressed fills
+ * (hover:bg-action-primary-hover, active:...) show through it. The highlight
+ * goes through Tailwind's INSET shadow variable and its box-shadow list, so a
+ * `focus-ring` on the same element still draws, and so does a `shadow-*` class
+ * (the FloatingActionButton has `shadow-lg`): those write --tw-shadow, which
+ * the highlight used to occupy and a drop shadow overwrote. The class serves
+ * danger as well as primary; the veil is neutral. */
+.bg-control-gradient,
+.bg-control-gradient-accent {
+  --tw-inset-shadow: var(--shadow-control-highlight);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow, 0 0 #0000);
+}
+
+.bg-control-gradient {
+  background-image: var(--gradient-control);
+}
+
+.bg-control-gradient-accent {
+  background-image: var(--gradient-control-accent);
+}
+
+/* The edge of the off Toggle, drawn inside the box so the switch keeps its
+ * size. Composed through Tailwind's inset-ring variable and the same
+ * box-shadow list as the gradient, so `focus-ring` and `shadow-*` still draw. */
+.ring-toggle-track {
+  --tw-inset-ring-shadow: inset 0 0 0 1px var(--color-toggle-track-border);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow, 0 0 #0000);
+}
+
+/* Button corner and label weight, settable apart from fields. Read through a
+ * fallback and declared nowhere, so an app (or any ancestor) can set
+ * `--zabi-button-radius` or `--zabi-button-font-weight`, and a scoped
+ * `--radius-control` still flows into the default. The defaults are what a
+ * Button looked like before: the control corner, a medium label (semibold for
+ * the text variant). */
+.rounded-button {
+  border-radius: var(--zabi-button-radius, var(--radius-control));
+}
+
+.font-button {
+  font-weight: var(--zabi-button-font-weight, 500);
+}
+
+.font-button-strong {
+  font-weight: var(--zabi-button-font-weight, 600);
 }
 
 /* ========================================
@@ -1306,9 +2038,30 @@ body {
   background-color: var(--color-card);
 }
 
+/* The Toggle's knob. `--color-toggle-thumb` and `--color-toggle-thumb-checked` are declared
+ * nowhere, so any ancestor or the theme can set them. Off: the thumb token, else the default
+ * knob. On: the checked token, else the thumb token (which an app that set one colour for both
+ * states keeps getting), else the default knob. Above the forced-colours block on purpose:
+ * that block's `.toggle-switch-thumb` rule has to come later to win. */
+.bg-toggle-thumb {
+  background-color: var(--color-toggle-thumb, var(--color-toggle-knob));
+}
+
+.bg-toggle-thumb-checked {
+  background-color: var(--color-toggle-thumb-checked, var(--color-toggle-thumb, var(--color-toggle-knob-checked)));
+}
+
+.bg-card-flat {
+  background-color: var(--color-card-flat);
+}
+
 @media (hover: hover) {
 .hover\:bg-card-hover:hover {
   background-color: var(--color-card-hover);
+}
+
+.hover\:bg-card-flat-hover:hover {
+  background-color: var(--color-card-flat-hover);
 }
 }
 
@@ -1372,6 +2125,10 @@ body {
 /* `.bg-card` is unlayered, so the generated `active:bg-card-active` would lose to it. */
 .active\:bg-card-active:active {
   background-color: var(--color-card-active);
+}
+
+.active\:bg-card-flat-active:active {
+  background-color: var(--color-card-flat-active);
 }
 
 .disabled\:bg-input-disabled:disabled {
@@ -1578,6 +2335,18 @@ body {
 
 .bg-nav-menu-item-active {
   background-color: var(--color-nav-menu-item-active);
+}
+
+.bg-tabbar-active {
+  background-color: var(--color-tabbar-active);
+}
+
+.bg-bar-brand {
+  background-color: var(--color-bar-brand);
+}
+
+.border-bar {
+  border-color: var(--color-bar-border);
 }
 
 .text-success {
@@ -1823,8 +2592,22 @@ body {
    *
    * These selectors add no specificity (`:where`), so a block inside a
    * surface inside a block is a block again.
+   *
+   * `on-fill` is the same scope for a fill the app chooses: put it on the
+   * block and set the label colour beside the fill,
+   * `<div class="on-fill">` with a background and `--zabi-on-fill` set to `#fff`.
+   * Everything above applies with `--zabi-on-fill` as the label colour (the
+   * text roles, links, edges and rings inside; a surface inside gets the
+   * theme's back). Without the property the label is `currentColor`, so the
+   * block's own text colour carries, and the ring's 2px gap is transparent
+   * (the library does not know the fill, so the block shows through). The
+   * library cannot hold a colour the app picks at run time: unlike `on-brand`
+   * and `on-accent`, whose fills and labels scripts/check-contrast.js measure,
+   * the 4.5:1 of the label on the fill (3:1 for edges and rings) is the app's
+   * to check. The guard only checks that the rule re-points and restores the
+   * same roles as the other two.
    */
-  :where(:has(> .on-brand, > .on-accent):not(.on-brand, .on-accent, .on-brand *, .on-accent *)) {
+  :where(:has(> .on-brand, > .on-accent, > .on-fill):not(.on-brand, .on-accent, .on-fill, .on-brand *, .on-accent *, .on-fill *)) {
     --zabi-theme-headline: var(--color-headline);
     --zabi-theme-body: var(--color-body);
     --zabi-theme-label: var(--color-label);
@@ -1836,6 +2619,8 @@ body {
     --zabi-theme-border-medium: var(--color-border-medium);
     --zabi-theme-border-strong: var(--color-border-strong);
     --zabi-theme-control-border: var(--color-control-border);
+    --zabi-theme-action-outline-border: var(--color-action-outline-border);
+    --zabi-theme-action-outline-border-hover: var(--color-action-outline-border-hover);
     --zabi-theme-focus-ring: var(--color-focus-ring);
     --zabi-theme-focus-ring-muted: var(--color-focus-ring-muted);
     --zabi-theme-nav-menu-focus: var(--color-nav-menu-focus);
@@ -1861,6 +2646,8 @@ body {
     --color-border-medium: var(--color-on-brand);
     --color-border-strong: var(--color-on-brand);
     --color-control-border: var(--color-on-brand);
+    --color-action-outline-border: var(--color-on-brand);
+    --color-action-outline-border-hover: var(--color-on-brand);
   }
 
   .on-accent {
@@ -1881,17 +2668,126 @@ body {
     --color-border-medium: var(--color-on-accent);
     --color-border-strong: var(--color-on-accent);
     --color-control-border: var(--color-on-accent);
+    --color-action-outline-border: var(--color-on-accent);
+    --color-action-outline-border-hover: var(--color-on-accent);
+  }
+
+  /* A fill the app chooses: the label is --zabi-on-fill, the block's own colour without it. */
+  .on-fill {
+    color: var(--zabi-on-fill, currentColor);
+    --color-focus-ring: var(--zabi-on-fill, currentColor);
+    --color-focus-ring-muted: var(--zabi-on-fill, currentColor);
+    --color-nav-menu-focus: var(--zabi-on-fill, currentColor);
+    --color-focus-ring-offset: transparent;
+    --color-focus-ring-danger: var(--zabi-on-fill, currentColor);
+    --color-headline: var(--zabi-on-fill, currentColor);
+    --color-body: var(--zabi-on-fill, currentColor);
+    --color-label: var(--zabi-on-fill, currentColor);
+    --color-description: var(--zabi-on-fill, currentColor);
+    --color-caption: var(--zabi-on-fill, currentColor);
+    --color-link: var(--zabi-on-fill, currentColor);
+    --color-link-hover: var(--zabi-on-fill, currentColor);
+    --color-border: var(--zabi-on-fill, currentColor);
+    --color-border-medium: var(--zabi-on-fill, currentColor);
+    --color-border-strong: var(--zabi-on-fill, currentColor);
+    --color-control-border: var(--zabi-on-fill, currentColor);
+    --color-action-outline-border: var(--zabi-on-fill, currentColor);
+    --color-action-outline-border-hover: var(--zabi-on-fill, currentColor);
+  }
+
+  /**
+   * A solid fill inside a block that is the block's own colour would be a
+   * button-shaped hole: a primary Button (or a solid brand Badge) inside a
+   * brand block is the same colour as what it sits on. So inside a block the
+   * solid fill of the block's own family is inverted: the label colour is its
+   * fill and the block's colour is its text, hover and pressed steps mixed
+   * from the two. A filled Rating star takes the label colour too: its
+   * empty outline is the label colour already, so a star in the block colour
+   * only differed from an empty one by its centre.
+   *
+   * Written as the `--zabi-inv-*` values on the block, taken by the elements
+   * below. A surface inside the block (the rule that restores the theme's
+   * text, further down) sets them back to the theme's own, so a primary
+   * Button on a Card in a brand block is a primary Button. Not in the rules
+   * above: those are the roles the guard measures, and these are not roles.
+   * A fill the app chooses inverts the primary family only, its text is
+   * `--zabi-fill` (the card colour without it).
+   */
+  :where(.on-brand, .on-accent, .on-fill) {
+    --zabi-inv-primary: var(--color-action-primary);
+    --zabi-inv-primary-hover: var(--color-action-primary-hover);
+    --zabi-inv-primary-active: var(--color-action-primary-active);
+    --zabi-inv-primary-text: var(--color-action-primary-text);
+    --zabi-inv-accent: var(--color-accent);
+    --zabi-inv-accent-hover: var(--color-accent-hover);
+    --zabi-inv-accent-active: var(--color-accent-active);
+    --zabi-inv-accent-text: var(--color-on-accent);
+    --zabi-inv-secondary: var(--color-action-secondary);
+    --zabi-inv-secondary-hover: var(--color-action-secondary-hover);
+    --zabi-inv-secondary-active: var(--color-action-secondary-active);
+  }
+  /* The secondary wash on a brand block is the dark one in dark mode too. The dark theme's
+   * wash is white, and the brand block keeps its hue in dark under a white label: a white
+   * wash under it left that label at 4.1:1. */
+  :where(.on-brand) {
+    --zabi-inv-secondary: rgba(9, 9, 11, 0.1);
+    --zabi-inv-secondary-hover: rgba(9, 9, 11, 0.15);
+    --zabi-inv-secondary-active: rgba(9, 9, 11, 0.2);
+  }
+  :where(.on-brand) {
+    --zabi-inv-primary: var(--color-on-brand);
+    --zabi-inv-primary-hover: color-mix(in srgb, var(--color-on-brand) 88%, var(--color-action-primary));
+    --zabi-inv-primary-active: color-mix(in srgb, var(--color-on-brand) 76%, var(--color-action-primary));
+    --zabi-inv-primary-text: var(--color-action-primary);
+    --zabi-inv-star: var(--color-on-brand);
+  }
+  :where(.on-accent) {
+    --zabi-inv-accent: var(--color-on-accent);
+    --zabi-inv-accent-hover: color-mix(in srgb, var(--color-on-accent) 88%, var(--color-accent));
+    --zabi-inv-accent-active: color-mix(in srgb, var(--color-on-accent) 76%, var(--color-accent));
+    --zabi-inv-accent-text: var(--color-accent);
+    --zabi-inv-star: var(--color-on-accent);
+  }
+  :where(.on-fill) {
+    --zabi-inv-primary: var(--zabi-on-fill, currentColor);
+    --zabi-inv-primary-hover: color-mix(in srgb, var(--zabi-on-fill, currentColor) 88%, var(--zabi-fill, var(--color-card)));
+    --zabi-inv-primary-active: color-mix(in srgb, var(--zabi-on-fill, currentColor) 76%, var(--zabi-fill, var(--color-card)));
+    --zabi-inv-primary-text: var(--zabi-fill, var(--color-card));
+    --zabi-inv-star: var(--zabi-on-fill, currentColor);
+  }
+  /* Not a block itself: a brand block inside an accent block is a block again, and would take
+   * its own label colour as its fill. */
+  :where(.bg-action-primary:not(.on-brand, .on-accent, .on-fill)):where(.on-brand *, .on-accent *, .on-fill *) {
+    --color-action-primary: var(--zabi-inv-primary);
+    --color-action-primary-hover: var(--zabi-inv-primary-hover);
+    --color-action-primary-active: var(--zabi-inv-primary-active);
+    --color-action-primary-text: var(--zabi-inv-primary-text);
+  }
+  :where(.bg-action-secondary, .bg-action-secondary-active):where(.on-brand *, .on-accent *, .on-fill *) {
+    --color-action-secondary: var(--zabi-inv-secondary);
+    --color-action-secondary-hover: var(--zabi-inv-secondary-hover);
+    --color-action-secondary-active: var(--zabi-inv-secondary-active);
+  }
+  :where(.bg-accent:not(.on-brand, .on-accent, .on-fill)):where(.on-brand *, .on-accent *, .on-fill *) {
+    --color-accent: var(--zabi-inv-accent);
+    --color-accent-hover: var(--zabi-inv-accent-hover);
+    --color-accent-active: var(--zabi-inv-accent-active);
+    --color-on-accent: var(--zabi-inv-accent-text);
+  }
+  :where(.rating):where(.on-brand *, .on-accent *, .on-fill *) {
+    --zabi-rating-on: var(--zabi-inv-star);
   }
 
   /* A surface inside a block: its text and edges are the theme's again. */
-  :where(.on-brand, .on-accent)
+  :where(.on-brand, .on-accent, .on-fill)
     :where(
-      .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
+      .bg-card, .bg-card-flat, .bg-card-elevated, .bg-background, .bg-surface-base,
       .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
-      .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
+      .bg-surface-chrome, .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
-      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-energetic-subtle, .bg-error-subtle,
-      .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
+      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
+      .bg-energetic-subtle, .bg-error-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-toggle-thumb, .bg-toggle-thumb-checked, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     ) {
     color: var(--zabi-theme-body);
@@ -1906,17 +2802,50 @@ body {
     --color-border-medium: var(--zabi-theme-border-medium);
     --color-border-strong: var(--zabi-theme-border-strong);
     --color-control-border: var(--zabi-theme-control-border);
+    --color-action-outline-border: var(--zabi-theme-action-outline-border);
+    --color-action-outline-border-hover: var(--zabi-theme-action-outline-border-hover);
+    --zabi-inv-primary: var(--color-action-primary);
+    --zabi-inv-primary-hover: var(--color-action-primary-hover);
+    --zabi-inv-primary-active: var(--color-action-primary-active);
+    --zabi-inv-primary-text: var(--color-action-primary-text);
+    --zabi-inv-accent: var(--color-accent);
+    --zabi-inv-accent-hover: var(--color-accent-hover);
+    --zabi-inv-accent-active: var(--color-accent-active);
+    --zabi-inv-accent-text: var(--color-on-accent);
+    --zabi-inv-secondary: var(--color-action-secondary);
+    --zabi-inv-secondary-hover: var(--color-action-secondary-hover);
+    --zabi-inv-secondary-active: var(--color-action-secondary-active);
+    --zabi-inv-star: initial;
+  }
+
+  /* A flat card inside a block is the opaque card, in dark too: its dark fill is a translucent
+   * step, which over the block's fill would carry the theme's text (restored above) at 2.3:1. */
+  :where(.on-brand, .on-accent, .on-fill) :where(.bg-card-flat) {
+    --color-card-flat: var(--color-card);
+    --color-card-flat-hover: var(--color-card-hover);
+    --color-card-flat-active: var(--color-card-active);
+  }
+
+  /* A field inside a block is the opaque field, in dark too: its dark fill is a translucent
+   * step of the ramp, which over the block's fill would carry the theme's text on a ground it
+   * was not set for. In light the hooks are the field's own values, so nothing moves. */
+  :where(.on-brand, .on-accent, .on-fill) :where(.bg-input) {
+    --color-input: var(--color-input-solid);
+    --color-input-hover: var(--color-input-solid-hover);
+    --color-input-focus: var(--color-input-solid-focus);
+    --color-input-active: var(--color-input-solid-active);
   }
 
   /* And what is inside that surface is ringed in the theme's ring again. */
-  :where(.on-brand, .on-accent)
+  :where(.on-brand, .on-accent, .on-fill)
     :where(
-      .bg-card, .bg-card-elevated, .bg-background, .bg-surface-base,
+      .bg-card, .bg-card-flat, .bg-card-elevated, .bg-background, .bg-surface-base,
       .bg-surface-raised, .bg-surface-elevated, .bg-surface-overlay, .bg-surface-overlay-hover,
-      .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
+      .bg-surface-chrome, .bg-surface-inset, .bg-surface-1, .bg-surface-2, .bg-surface-3,
       .bg-surface-4, .bg-input, .bg-input-disabled, .bg-accent-subtle,
-      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-energetic-subtle, .bg-error-subtle,
-      .bg-info-subtle, .bg-neutral-subtle, .bg-success-subtle, .bg-warning-subtle,
+      .bg-action-danger-subtle, .bg-action-primary-subtle, .bg-action-tonal, .bg-card-tint, .bg-chip, .bg-chip-selected,
+      .bg-energetic-subtle, .bg-error-subtle,
+      .bg-info-subtle, .bg-neutral-subtle, .bg-badge-neutral, .bg-toggle-thumb, .bg-toggle-thumb-checked, .bg-success-subtle, .bg-warning-subtle,
       .bg-nav-menu-active, .bg-action-disabled, .list-group, .on-surface
     )
     > :where(*) {
@@ -1928,8 +2857,40 @@ body {
   }
 
   /**
-   * Bordered surface shell for a block of list rows (iOS-style “list group”).
+   * A hairline between list rows, none above the first or below the last.
+   * It is drawn in the 4px gap `space-y-1` leaves between the `li`s, not on
+   * the row, so a row's rounded hover, pressed or selected fill never covers
+   * it and the list is no taller than it was. The line is inset by a row's
+   * padding, and next to a selected row (which has its own edge) it is
+   * hidden. `<List />` has this class; a manual `<ul role="list">` gets it
+   * from `.list-group` or by adding `list-dividers` itself.
+   * `--zabi-list-divider-color` recolours it (`transparent` removes it).
+   */
+  .list-dividers > li + li,
+  .list-group > li + li {
+    position: relative;
+  }
+  .list-dividers > li + li::before,
+  .list-group > li + li::before {
+    content: "";
+    position: absolute;
+    inset-inline: 1rem;
+    top: calc(-0.125rem - 0.5px);
+    height: 1px;
+    background-color: var(--zabi-list-divider-color, var(--color-border));
+    pointer-events: none;
+  }
+  :is(.list-dividers, .list-group) > li:has(> [data-selected="true"])::before,
+  :is(.list-dividers, .list-group) > li:has(> [data-selected="true"]) + li::before {
+    display: none;
+  }
+
+  /**
+   * Surface shell for a block of list rows (iOS-style “list group”): one
+   * outer border, rows told apart by dividers, not by a border each.
    * Use on a wrapper around `<List />` or on a manual `<ul role="list">`.
+   * `--zabi-list-row-border-color: var(--color-border)` with
+   * `--zabi-list-divider-color: transparent` gives the 8.1 boxed rows.
    */
   .list-group {
     @apply space-y-1 overflow-hidden rounded-xl border border-border p-1;
@@ -2002,6 +2963,15 @@ body {
       0 0 0 4px var(--color-focus-ring);
   }
 
+  /**
+   * A Select never outgrows its container: a width class (`w-48`) is a wish
+   * and the column is the limit. In `@layer components`, so a caller's own
+   * `max-w-*` utility wins.
+   */
+  .select-container {
+    max-width: 100%;
+  }
+
   /** Stacked radio options: same ring when the row’s control is `:checked`. */
   .selection-control-option-row {
     box-shadow: none;
@@ -2011,6 +2981,11 @@ body {
     box-shadow:
       0 0 0 2px var(--color-focus-ring-offset),
       0 0 0 4px var(--color-focus-ring);
+  }
+
+  /** `chosenRing={false}` on RadioGroup: the chosen row has no ring of its own; keyboard focus keeps its ring. */
+  .selection-control-option-row-quiet:has(:checked):not(:has(:focus-visible)) {
+    box-shadow: none;
   }
 }
 
@@ -2036,6 +3011,85 @@ body {
   .selection-control-label-row-interaction:has(:focus-visible) {
     outline: 2px solid Highlight;
     outline-offset: 2px;
+  }
+}
+
+/* ========================================
+   SWITCH AND TICK BOXES IN FORCED COLOURS
+   ========================================
+   Forced colours drop every background and box-shadow, so a state shown by a
+   fill alone is shown by nothing: the Toggle's track and thumb were both the
+   canvas, and a ticked box (its tick too) was the canvas on the canvas.
+   System colours are kept there, so each state is a pair of them: on and
+   ticked are `Highlight` with a `HighlightText` thumb, tick or dot; off and
+   unticked are `Canvas` with a `ButtonText` edge; disabled is `GrayText`.
+   Outside the layers, like the focus rules above, so they also beat the
+   hover and pressed fills (which forced colours turn to the canvas, and
+   would hide the tick under a pointer). The focus outline is not touched. */
+@media (forced-colors: active) {
+  .toggle-switch {
+    border: 1px solid ButtonText;
+    background-color: Canvas;
+    background-image: none;
+  }
+  /* The thumb sits 2px in from the outer edge, as it does outside forced colours (the border is 1px of it). */
+  .toggle-switch-thumb {
+    top: 1px;
+    left: 1px;
+    background-color: ButtonText;
+  }
+  .toggle-switch[aria-checked="true"] {
+    border-color: Highlight;
+    background-color: Highlight;
+  }
+  .toggle-switch[aria-checked="true"] .toggle-switch-thumb {
+    background-color: HighlightText;
+  }
+  .toggle-switch:disabled {
+    border-color: GrayText;
+    opacity: 1;
+  }
+  .toggle-switch:disabled[aria-checked="true"] {
+    background-color: GrayText;
+  }
+  .toggle-switch:disabled .toggle-switch-thumb {
+    background-color: GrayText;
+  }
+  .toggle-switch:disabled[aria-checked="true"] .toggle-switch-thumb,
+  .toggle-switch:disabled[aria-busy="true"] .toggle-switch-thumb {
+    background-color: Canvas;
+  }
+
+  .selection-control-shell {
+    border-color: ButtonText;
+  }
+  .selection-control-shell:has(:checked) {
+    border-color: Highlight;
+    background-color: Highlight;
+  }
+  .selection-control-shell:has(:checked) > svg {
+    color: HighlightText;
+  }
+  .selection-control-shell:has(:checked) > .selection-control-dot {
+    background-color: HighlightText;
+  }
+  .selection-control-shell:has(:disabled) {
+    border-color: GrayText;
+    opacity: 1;
+  }
+  .selection-control-shell:has(:checked):has(:disabled) {
+    background-color: GrayText;
+  }
+  .selection-control-shell:has(:checked):has(:disabled) > svg {
+    color: Canvas;
+  }
+  .selection-control-shell:has(:checked):has(:disabled) > .selection-control-dot {
+    background-color: Canvas;
+  }
+  /* The row dims a disabled control with opacity; GrayText says it already. */
+  .selection-control-label-row-interaction:has(:disabled) {
+    opacity: 1;
+    color: GrayText;
   }
 }
 
@@ -2106,6 +3160,153 @@ body {
 @media (hover: hover) {
 .bg-action-secondary-subtle:hover {
   background-color: var(--color-action-secondary-subtle-hover);
+}
+}
+
+/* Tonal Actions */
+.bg-action-tonal {
+  background-color: var(--color-action-tonal);
+}
+
+@media (hover: hover) {
+.bg-action-tonal:hover {
+  background-color: var(--color-action-tonal-hover);
+}
+}
+
+.bg-action-tonal:active {
+  background-color: var(--color-action-tonal-active);
+}
+
+/* After the states above: `:active` still matches a disabled button. */
+.bg-action-tonal:disabled {
+  background-color: var(--color-action-disabled);
+  color: var(--color-action-disabled-text);
+}
+
+.text-action-tonal {
+  color: var(--color-action-tonal-text);
+}
+
+/* Badge, neutral subtle: its fill and text, with a property of their own in front of the
+ * neutral tokens (`--zabi-badge-neutral-fill`, `--zabi-badge-neutral-text`), declared nowhere
+ * so any ancestor or the theme can set them. In `@layer utilities` like the generated
+ * `bg-neutral-subtle` and `text-neutral-text` they replace, so a colour block's restore of
+ * the text (unlayered) and a call-site utility behave as they did. The fill class is in the
+ * block lists above by name. `Alert`, `Skeleton`, `AvatarGroup` and `Header` keep reading the
+ * neutral tokens and do not move. */
+@layer utilities {
+  .bg-badge-neutral {
+    background-color: var(--zabi-badge-neutral-fill, var(--color-neutral-subtle));
+  }
+  .text-badge-neutral {
+    color: var(--zabi-badge-neutral-text, var(--color-neutral-text));
+  }
+}
+
+/* Skeleton, tone "on-color": the label colour of the surface it sits on at 24%, so it reads on
+ * a brand, accent or fill block (`.on-brand`, `.on-accent`, `.on-fill`, a `Card` with `tone`) in
+ * light and dark: `currentColor` there is the block's label colour. Deliberately not in the block
+ * lists above: those restore the theme's text on a surface, and a skeleton must keep the block's.
+ * `--zabi-skeleton-fill`, declared nowhere, replaces the fill (set it on any ancestor). Unset, a
+ * neutral Skeleton is `bg-neutral-subtle` as before. */
+@layer utilities {
+  .bg-skeleton-on-color {
+    background-color: var(--zabi-skeleton-fill, color-mix(in srgb, currentColor 24%, transparent));
+  }
+}
+
+/* Chip: the quiet neutral fill and the tonal selected fill, each with its label.
+ * Hand-written with their states, like the tonal fill, so a `hover:` or
+ * `active:` variant of one cannot lose to the base class. The plain
+ * `-hover` and `-active` classes are the fills themselves. */
+.bg-chip {
+  background-color: var(--color-chip);
+}
+
+.bg-chip-hover {
+  background-color: var(--color-chip-hover);
+}
+
+.bg-chip-active {
+  background-color: var(--color-chip-active);
+}
+
+@media (hover: hover) {
+.hover\:bg-chip-hover:hover {
+  background-color: var(--color-chip-hover);
+}
+}
+
+.active\:bg-chip-active:active {
+  background-color: var(--color-chip-active);
+}
+
+.text-chip-text {
+  color: var(--color-chip-text);
+}
+
+.bg-chip-selected {
+  background-color: var(--color-chip-selected);
+}
+
+.bg-chip-selected-hover {
+  background-color: var(--color-chip-selected-hover);
+}
+
+.bg-chip-selected-active {
+  background-color: var(--color-chip-selected-active);
+}
+
+@media (hover: hover) {
+.hover\:bg-chip-selected-hover:hover {
+  background-color: var(--color-chip-selected-hover);
+}
+}
+
+.active\:bg-chip-selected-active:active {
+  background-color: var(--color-chip-selected-active);
+}
+
+.text-chip-selected-text {
+  color: var(--color-chip-selected-text);
+}
+
+/* Card tint: the brand tint as a surface for content. */
+.bg-card-tint {
+  background-color: var(--color-card-tint);
+}
+
+/* The edge of the Progress track. */
+.border-progress-track-border {
+  border-color: var(--color-progress-track-border);
+}
+
+/* Toggle track, off. Hand-written with its states, so `hover:` and `active:`
+ * variants of it cannot lose to the base class. */
+.bg-toggle-track {
+  background-color: var(--color-toggle-track);
+}
+
+@media (hover: hover) {
+.bg-toggle-track:hover {
+  background-color: var(--color-toggle-track-hover);
+}
+}
+
+.bg-toggle-track:active {
+  background-color: var(--color-toggle-track-active);
+}
+
+/* Outline Actions */
+.border-action-outline {
+  border-color: var(--color-action-outline-border);
+}
+
+@media (hover: hover) {
+.border-action-outline:hover,
+.hover\:border-action-outline-hover:hover {
+  border-color: var(--color-action-outline-border-hover);
 }
 }
 
@@ -2308,6 +3509,10 @@ body {
 /* Z-index utilities */
 .z-sticky {
   z-index: var(--z-sticky);
+}
+
+.z-fixed {
+  z-index: var(--z-fixed);
 }
 
 .z-dropdown {

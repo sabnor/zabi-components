@@ -9,6 +9,8 @@
         type Accent,
     } from "./brand-accents";
     import { brand, isAccent } from "./brand-state.svelte";
+    import { getTopNavbarPlace } from "../../components/util/top-navbar.js";
+    import { generateId } from "../../components/util/ssr-safe.js";
 
     /**
      * Site-wide accent switcher for the marketing header.
@@ -25,6 +27,15 @@
      * is what a first-time visitor sees, unless the address says otherwise:
      * `?brand=amber` opens any page in that brand.
      */
+
+    /**
+     * In the phone sheet of the top bar there is the full width and a
+     * finger: the choice is drawn out as a labelled group of large rows
+     * instead of a small button that opens a menu. Set by TopNavbar, so
+     * `{#snippet actions()}<BrandSwitcher />{/snippet}` needs no argument.
+     */
+    const place = getTopNavbarPlace();
+    const legendId = generateId("brand-accent");
 
     let isDark = $state(false);
     let isOpen = $state(false);
@@ -77,6 +88,38 @@
     }
 </script>
 
+{#if place === "menu"}
+    <!-- Radios, so the arrow keys and the group semantics are the browser's.
+    Choosing the selected one again changes nothing: a single selection never clears. -->
+    <fieldset class="m-0 min-w-0 border-0 p-0">
+        <legend id={legendId} class="mb-2 p-0 text-sm font-medium text-headline">Brand accent</legend>
+        <div class="grid grid-cols-2 gap-2">
+            {#each ACCENTS as item (item.id)}
+                <label
+                    class="relative flex min-h-11 cursor-pointer items-center gap-3 rounded-control border border-border px-3 py-2 text-sm text-body transition-colors has-[:checked]:border-action-primary has-[:checked]:bg-surface-hover has-[:checked]:font-semibold has-[:checked]:text-headline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring hover:bg-surface-hover"
+                >
+                    <input
+                        type="radio"
+                        name={legendId}
+                        class="sr-only"
+                        value={item.id}
+                        checked={item.id === accent}
+                        onchange={() => selectAccent(item.id)}
+                    />
+                    <span
+                        class="size-6 shrink-0 rounded-pill border border-border"
+                        style="background: {item.swatch}"
+                        aria-hidden="true"
+                    ></span>
+                    <span class="min-w-0 flex-1 truncate">{item.label}</span>
+                    {#if item.id === accent}
+                        <Check size={16} aria-hidden="true" class="shrink-0 text-action-primary" />
+                    {/if}
+                </label>
+            {/each}
+        </div>
+    </fieldset>
+{:else}
 <Dropdown
     bind:isOpen
     ariaLabel="Brand accent"
@@ -125,3 +168,4 @@
         {/each}
     {/snippet}
 </Dropdown>
+{/if}

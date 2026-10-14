@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Alert from '../../components/molecules/Alert.svelte';
+import AlertStack from './AlertStack.svelte';
 
 const meta = {
     title: 'Design System/Molecules/Alert',
@@ -17,7 +18,7 @@ const meta = {
     argTypes: {
         variant: {
             control: 'select',
-            options: ['info', 'success', 'warning', 'error', 'neutral', 'energetic']
+            options: ['info', 'success', 'warning', 'error', 'neutral', 'energetic', 'brand']
         }
     }
 } satisfies Meta<typeof Alert>;
@@ -80,4 +81,30 @@ export const Closable: Story = {
         message: 'This alert can be dismissed.',
         closable: true
     }
+};
+
+export const Brand: Story = {
+    args: {
+        variant: 'brand',
+        title: 'Brand',
+        message: "The theme's brand tint, with the link colour for the icon."
+    }
+};
+
+export const WithoutAnEdge: Story = {
+    parameters: { layout: 'padded' },
+    render: () => ({ Component: AlertStack, props: { bordered: false } })
+};
+
+export const BorderWidthFromAParent: Story = {
+    name: 'Border width from a parent',
+    parameters: {
+        layout: 'padded',
+        docs: {
+            description: {
+                story: 'A parent sets `--zabi-alert-border-width: 0px`; no alert below it has an edge and none needs a prop.'
+            }
+        }
+    },
+    render: () => ({ Component: AlertStack, props: { bordered: true, wrapper: true } })
 };

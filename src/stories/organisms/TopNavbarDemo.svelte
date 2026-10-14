@@ -9,6 +9,8 @@
         showThemeToggle?: boolean;
         customActions?: boolean;
         collapseAt?: "sm" | "md" | "lg" | "xl";
+        /** `inline`: the phone menu is a panel under the bar, not a sheet. */
+        menu?: "sheet" | "inline";
         /** Eight links instead of four, to show a row that needs a later switch. */
         manyItems?: boolean;
         /** `three`: the toggle steps through system, light and dark. */
@@ -22,6 +24,7 @@
         showThemeToggle = true,
         customActions = false,
         collapseAt,
+        menu,
         manyItems = false,
         themeModes,
         swedish = false,
@@ -31,6 +34,8 @@
     const swedishStrings: TopNavbarStrings = {
         openMenu: "Öppna menyn",
         closeMenu: "Stäng menyn",
+        menuTitle: "Meny",
+        themeHeading: "Tema",
         opensInNewTab: "(öppnas i ny flik)",
     };
     /** And what its theme toggle says. */
@@ -84,6 +89,7 @@
     items={navItems}
     currentPath="/"
     {collapseAt}
+    {menu}
     {themeModes}
     themeStorageKey={themeModes === "three" ? null : undefined}
     strings={swedish ? swedishStrings : undefined}

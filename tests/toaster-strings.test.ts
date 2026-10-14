@@ -40,12 +40,22 @@ afterEach(() => {
     vi.useRealTimers();
 });
 
+/** A mouse moving over an element: a toast is held by a pointer that moves onto it, not by one that is already there. */
+function mouseMove() {
+    const event = new MouseEvent("pointermove", { bubbles: true });
+    Object.defineProperty(event, "pointerType", { value: "mouse" });
+    Object.defineProperty(event, "movementX", { value: 3 });
+    return event;
+}
+
 const toast = () => document.querySelector<HTMLElement>("[data-toast-id]")!;
 /** True when the element is in the page for the eye too: nothing above it is visually hidden. */
 const seen = (element: Element) => element.closest(".sr-only") === null;
 
 async function shown() {
     await waitFor(() => expect(toast()).not.toBeNull());
+    // The words are put in a moment after the toast is mounted (see `spoken` in ToasterToast).
+    await waitFor(() => expect(toast().querySelector("h4, p")?.textContent?.trim()).not.toBe(""));
     return toast();
 }
 
@@ -178,7 +188,7 @@ describe("the time a toast has left", () => {
         pushToast({ message: "Sparat", duration: 3000 });
         await vi.advanceTimersByTimeAsync(50);
         const card = toast();
-        card.dispatchEvent(new MouseEvent("mouseenter"));
+        card.dispatchEvent(mouseMove());
         await vi.advanceTimersByTimeAsync(10_000);
         expect(toast(), "Held by the pointer").not.toBeNull();
         expect(card.querySelector("[data-toast-countdown]")?.textContent).toContain("Paused");
@@ -235,7 +245,7 @@ describe("the pause state", () => {
         expect(card.getAttribute("data-paused")).toBe("false");
         expect(onpausechange, "Nothing is reported until it changes").not.toHaveBeenCalled();
 
-        card.dispatchEvent(new MouseEvent("mouseenter"));
+        card.dispatchEvent(mouseMove());
         await waitFor(() => expect(card.getAttribute("data-paused")).toBe("true"));
         expect(onpausechange).toHaveBeenLastCalledWith({ id, paused: true });
 
@@ -311,8 +321,9 @@ describe("no English an app cannot replace", () => {
         await waitFor(() => expect(document.querySelectorAll("[data-toast-countdown]").length).toBeGreaterThan(0));
         for (const expand of screen.getAllByRole("button", { name: "¤expand" })) await fireEvent.click(expand);
         // One of them paused, so that sentence is said too.
-        document.querySelector("[data-toast-id]")!.dispatchEvent(new MouseEvent("mouseenter"));
+        document.querySelector("[data-toast-id]")!.dispatchEvent(mouseMove());
         await waitFor(() => expect(document.body.textContent).toContain("¤paused"));
+        await waitFor(() => expect(document.body.textContent).toContain("¤has Ångra"));
 
         const said = everythingSaid(document.body);
         for (const word of ENGLISH) expect(said, `"${word}" is still said`).not.toContain(word);

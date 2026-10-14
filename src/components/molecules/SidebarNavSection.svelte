@@ -41,7 +41,7 @@
 <div class={cn(`flex w-full flex-col gap-2 ${className}`)}>
     {#if showHeading && headingId}
         <h2
-            class="px-0 text-xs font-semibold uppercase tracking-wider text-description"
+            class="px-0 text-xs font-medium text-description"
             id={headingId}
         >
             {trimmedTitle}

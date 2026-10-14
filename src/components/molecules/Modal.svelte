@@ -345,7 +345,11 @@
             class={cn(
                 // With the keyboard up the root is what is left of the screen: never taller than that.
                 "group-data-keyboard-open/overlay:max-h-full",
-                "flex max-h-[90dvh] min-w-[320px] cursor-default flex-col overflow-y-auto rounded-t-overlay border border-border-overlay bg-surface-overlay p-0 shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none md:animate-none md:rounded-overlay",
+                // The glass is a layer behind the content, not a filter on the panel: a
+                // backdrop-filter would make the panel the containing block of every
+                // fixed-position popover inside it. For the same reason the panel does
+                // not scroll (a scrolled layer would move with the content): the Card does.
+                "material-layer-thick relative flex max-h-[90dvh] min-w-[320px] cursor-default flex-col rounded-t-overlay p-0 animate-[slideUp_var(--duration-slow)_var(--ease-out)] motion-reduce:animate-none md:animate-none md:rounded-overlay",
                 sizeClasses,
                 full('panel'),
                 className,
@@ -361,15 +365,16 @@
             {...restProps}
         >
             <!-- The panel owns padding: Card's own p-6 would stack with the header's px-6/pt-6 and indent the title 24px past the body. -->
-            <!-- And the corners: the Card sits 1px inside the panel (its
-            border), so its radius is the panel's less that pixel, not a
-            Card's own 12px. Below `md` the panel is a sheet with square
-            bottom corners, and so is the Card. -->
+            <!-- And the corners: the Card fills the panel (the material's rim is
+            drawn inside the panel, not as a border), so it takes the panel's
+            radius, not a Card's own 12px. Below `md` the panel is a sheet with
+            square bottom corners, and so is the Card. The Card is also what
+            scrolls when the panel is capped, so the glass layer behind it stays put. -->
             <Card
                 variant="flat"
                 fullWidth={false}
                 className={cn(
-                    "bg-transparent! p-0! rounded-b-none rounded-t-[calc(var(--radius-overlay)-1px)] md:rounded-[calc(var(--radius-overlay)-1px)]",
+                    "bg-transparent! p-0! min-h-0 overflow-y-auto rounded-b-none rounded-t-overlay md:rounded-overlay",
                     full('card'),
                 )}
             >

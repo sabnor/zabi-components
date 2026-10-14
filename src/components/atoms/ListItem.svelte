@@ -13,6 +13,12 @@
         avatar?: string;
         /** `avatar` alt text; `""` if decorative. */
         avatarAlt?: string;
+        /**
+         * Leading picture drawn in the round, in place of an address: an
+         * inline SVG. Wins over `avatar` and `icon`. Decorative unless
+         * `avatarAlt` is set, which then names it.
+         */
+        avatarPicture?: Snippet;
         target?: "_self" | "_blank" | "_parent" | "_top";
         rel?: string;
         disabled?: boolean;
@@ -52,9 +58,14 @@
         const baseClasses =
             // The container radius, or the one a `.list-group` shell around the list
         // hands down so the row is concentric with it (see app.css).
-        "group flex w-full items-center gap-3 rounded-[var(--zabi-list-row-radius,var(--radius-container))] border px-4 py-3 pr-5 text-left transition-all duration-150";
+        // The 1px border is kept so the row's height and text do not move, but
+        // it is transparent: rows are told apart by the divider between them
+        // (app.css), and a bordered row inside a bordered shell was two
+        // outlines. `--zabi-list-row-border-color` puts the 8.1 edge back.
+        "group flex w-full items-center gap-3 rounded-[var(--zabi-list-row-radius,var(--radius-container))] border px-4 py-3 pr-5 text-left transition-colors duration-(--duration-base)";
+        const edge = "border-[color:var(--zabi-list-row-border-color,transparent)]";
         if (!interactive) {
-            const tone = selected ? "bg-action-primary-subtle border-action-primary" : "border-border";
+            const tone = selected ? "bg-action-primary-subtle border-action-primary" : edge;
             return `${baseClasses} ${tone} ${item.disabled ? "opacity-50" : ""}`.trim();
         }
         const cursorClasses = item.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer";
@@ -69,8 +80,8 @@
         const stateClasses = selected
             ? "bg-action-primary-subtle border-action-primary active:bg-action-primary-subtle-active"
             : item.disabled
-              ? "border-border"
-              : "border-border hover:bg-surface-hover focus-visible:bg-surface-hover active:bg-surface-active";
+              ? edge
+              : `${edge} hover:bg-surface-hover focus-visible:bg-surface-hover active:bg-surface-active`;
         return `focus-ring ${baseClasses} ${cursorClasses} ${stateClasses}`.trim();
     });
 
@@ -96,7 +107,18 @@
 </script>
 
 {#snippet rowContent()}
-    {#if item.avatar}
+    {#if item.avatarPicture}
+        <ListItemLeading class="rounded-full">
+            <span
+                class="flex size-full items-center justify-center"
+                role={item.avatarAlt ? "img" : undefined}
+                aria-label={item.avatarAlt || undefined}
+                aria-hidden={item.avatarAlt ? undefined : "true"}
+            >
+                {@render item.avatarPicture()}
+            </span>
+        </ListItemLeading>
+    {:else if item.avatar}
         <ListItemLeading class="rounded-full">
             <img
                 src={item.avatar}
@@ -130,7 +152,7 @@
     {#if showArrow && interactive}
         <ArrowRight
             size={16}
-            class="shrink-0 text-description transition-transform duration-150 group-hover:translate-x-1 group-focus-visible:translate-x-1"
+            class="shrink-0 text-description transition-transform duration-(--duration-base) group-hover:translate-x-1 group-focus-visible:translate-x-1"
             aria-hidden="true"
         />
     {/if}
@@ -145,6 +167,7 @@
         aria-disabled={item.disabled ? "true" : undefined}
         tabindex={item.disabled ? -1 : undefined}
         class={itemClasses}
+        data-selected={selected ? "true" : undefined}
         onclick={handleItemClick}
         {...restProps}
     >
@@ -154,6 +177,7 @@
     <button
         type="button"
         class={itemClasses}
+        data-selected={selected ? "true" : undefined}
         disabled={item.disabled}
         onclick={handleItemClick}
         {...restProps}
@@ -164,7 +188,7 @@
     <!-- A plain row has no role, so `aria-disabled` on it would say nothing
     to anyone: a disabled one is only drawn dimmed. There is nothing in it to
     press, enabled or not. -->
-    <div class={itemClasses} {...restProps}>
+    <div class={itemClasses} data-selected={selected ? "true" : undefined} {...restProps}>
         {@render rowContent()}
     </div>
 {/if}

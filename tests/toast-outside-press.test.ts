@@ -40,7 +40,8 @@ async function toastOnScreen() {
     pushToast({ message: "Draft saved.", duration: 0 });
     await waitFor(() => expect(document.querySelector("[data-toast-id]")).not.toBeNull());
     const card = document.querySelector<HTMLElement>("[data-toast-id]")!;
-    return { card, text: within(card).getByText("Draft saved.") };
+    // The words come a moment after the toast is mounted.
+    return { card, text: await within(card).findByText("Draft saved.") };
 }
 
 describe("isInsideToastRegion", () => {

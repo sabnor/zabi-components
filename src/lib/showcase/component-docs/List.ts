@@ -88,7 +88,7 @@ export const doc: ComponentDoc = makeDoc({
         {
             title: "Leading avatars",
             description:
-                "avatar is an image URL. Set avatarAlt for meaningful photos; use \"\" when decorative. Avatar wins over icon if both are set.",
+                "avatar is an image URL. Set avatarAlt for meaningful photos; use \"\" when decorative. Avatar wins over icon if both are set. For an inline SVG that reads the page's tokens, pass avatarPicture (a snippet) instead of an address; it wins over avatar.",
             demoId: demoId("List", "leadingAvatar"),
             code: `<script lang="ts">
   const items = [

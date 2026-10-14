@@ -710,6 +710,20 @@ Every word the toaster says by itself is in `strings`, and the region's name
 is `aria-label` or `strings.regionLabel`. `data-paused` on a toast and
 `onpausechange` on the Toaster say when its timer is held.
 
+The words of a toast reach a screen reader after the toast is mounted: the
+`role="status"` (or `alert`) element is in the page empty, and the words are put
+in a moment later (about 100 ms, while the toast is still coming in), because a
+live region that is inserted already filled is the pattern screen readers are
+least dependable on. A mouse holds the timer once it has moved over the toast,
+not when the toast comes up under a pointer that is at rest. A touch or a pen
+drags a toast away sideways (and down, in `mode="snackbar"`), which is a
+shortcut: the dismiss button is the way for a keyboard and a screen reader, and
+a toast with an action keeps it. A toast pushed with `closable: false` has no
+control at all, takes no taps and is only for a short timed confirmation; it is
+ignored (the button is shown) for an error, a toast with an action or details,
+one that stays, and under `showCountdown`. `max` limits how many show; the
+oldest timed toast leaves, never one that has to stay.
+
 **SwipeableListItem:** Tab reaches the button at the end of the row (named
 "Actions", `aria-expanded`). Enter or Space opens the row and moves focus to
 its first action; the actions are buttons, reached with Tab. Enter or Space on
@@ -1187,16 +1201,39 @@ The tablist is still one Tab stop: the box that scrolls is not focusable.
 The links are a list in a `<nav>`, not a menubar: there are no arrow keys. The
 link for the current page has `aria-current="page"`.
 
-**TopNavbar's phone menu** is a disclosure, not a dialog: the menu button has
-`aria-expanded`, and `aria-controls` while the menu is open; focus is not
-trapped and the page behind is not locked.
+**TopNavbar's phone menu** (below `collapseAt`) is a bottom sheet, a modal
+dialog: the menu button has `aria-haspopup="dialog"`, `aria-expanded`, and
+`aria-controls` while the sheet is open. Focus moves into the sheet and is
+trapped there, the page behind is out of reach (`aria-modal`) and does not scroll, and focus returns
+to the menu button when it closes.
+- ✅ **Enter / Space** on the menu button: Open the sheet
+- ✅ **Tab / Shift+Tab**: Through the close button, the links and the controls in the sheet, and round again
+- ✅ **Escape**: Close the sheet (a menu open inside it, a Dropdown say, closes first)
+- ✅ **Enter** on a link: Follow it; the sheet closes
+- ✅ The backdrop, the close button and a swipe down on the grip close it too
+
+Below the links the sheet has a section of its own at the full width: the
+`actions` snippet, then the theme choice. The built-in theme toggle is a
+segmented control there (light and dark, or system, light and dark with
+`themeModes="three"`; the words are `themeLabels`, the heading is
+`strings.themeHeading`); the bar's own `ThemeToggle` is unchanged. A control
+in `actions` can call `getTopNavbarPlace()` (`"bar"` or `"menu"`) while it
+initialises to draw itself large in the sheet and compact in the bar; the
+snippet takes no argument, so existing `{#snippet actions()}` blocks work.
+
+It also closes when `currentPath` changes and when the screen becomes wide
+enough for the row (`collapseAt`, `md` by default).
+
+With `menu="inline"` the menu is the panel under the bar of 8.1: a disclosure,
+not a dialog. The menu button has `aria-expanded`, and `aria-controls` while
+the menu is open; focus is not trapped and the page behind is not locked.
 - ✅ **Enter / Space** on the menu button: Open or close the menu
 - ✅ **Tab**: Through the links and controls in the menu, then on into the page; the menu closes when focus leaves the bar
 - ✅ **Escape**: Close the menu. If focus was in it, focus returns to the menu button
 - ✅ **Enter** on a link: Follow it; the menu closes
 
 It also closes on a press outside the bar, when `currentPath` changes, and
-when the screen becomes wide enough for the row (`collapseAt`, `md` by default).
+when the screen becomes wide enough for the row.
 
 **NavigationMenu** (a list of links and of triggers, each with a panel of links;
 the disclosure pattern, not a menu bar, so there are no arrow keys between the items):
@@ -1226,6 +1263,7 @@ See [NAVIGATION_MENU.md](./NAVIGATION_MENU.md).
 - Give each `<nav>` on a page its own `ariaLabel`
 - Pass `currentPath` so the current page is marked
 - Set `collapseAt` to the first width at which every link fits in the row
+- Keep the links of the phone menu few enough to read in half a screen; a longer list scrolls inside the sheet. `menu="inline"` keeps the panel under the bar
 
 ---
 

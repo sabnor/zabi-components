@@ -190,7 +190,8 @@ export type SemanticVariant = 'default' | 'success' | 'warning' | 'error' | 'inf
 export type ExtendedSemanticVariant = SemanticVariant | 'neutral' | 'energetic';
 
 // Style variants
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link' | 'accent' | 'tonal' | 'text';
+export type ButtonSize = SizeVariant | 'xl'; // Button only
 export type CardVariant = 'default' | 'elevated' | 'outlined' | 'flat';
 
 // Size variants
@@ -282,6 +283,7 @@ export type SizeVariant = 'sm' | 'md' | 'lg';
 
 ### TopNavbar
 - Collapse point: `collapseAt` is `sm`, `md` (default), `lg` or `xl`, the width from which the links are a row
+- Phone menu: `menu` is `sheet` (default, a bottom sheet) or `inline` (a panel under the bar)
 
 AppBar, AppShell and StickyActionBar have no variants or sizes.
 

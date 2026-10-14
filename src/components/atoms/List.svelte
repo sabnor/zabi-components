@@ -34,8 +34,9 @@
     const listClasses = $derived(
         // The same radius as its rows. Not `overflow-hidden`: the rows fill
         // the list edge to edge, so clipping here cut a row's focus ring off
-        // on every side but the gap to the next row.
-        cn(`space-y-1 rounded-[var(--zabi-list-row-radius,var(--radius-container))] ${className}`),
+        // on every side but the gap to the next row. `list-dividers` draws the
+        // hairline in the gap between rows (app.css).
+        cn(`list-dividers space-y-1 rounded-[var(--zabi-list-row-radius,var(--radius-container))] ${className}`),
     );
 </script>
 

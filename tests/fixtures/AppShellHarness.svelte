@@ -10,6 +10,8 @@
         withHeader?: boolean;
         withFooter?: boolean;
         collapseOnScroll?: boolean;
+        largeTitle?: boolean;
+        flushTop?: boolean;
         active?: string;
         contentElement?: "main" | "div";
         class?: string;
@@ -20,6 +22,8 @@
         withHeader = true,
         withFooter = true,
         collapseOnScroll = false,
+        largeTitle = false,
+        flushTop = undefined,
         active = "/quiz",
         contentElement,
         class: className,
@@ -34,7 +38,7 @@
 </script>
 
 {#snippet header()}
-    <AppBar title="Quiz" backHref="/" {collapseOnScroll} data-testid="bar" />
+    <AppBar title="Quiz" backHref="/" {collapseOnScroll} {largeTitle} data-testid="bar" />
 {/snippet}
 
 {#snippet footer()}
@@ -45,6 +49,7 @@
     class={className}
     {style}
     {contentElement}
+    {flushTop}
     data-testid="shell"
     header={withHeader ? header : undefined}
     footer={withFooter ? footer : undefined}

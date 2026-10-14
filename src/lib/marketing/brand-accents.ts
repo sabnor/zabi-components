@@ -67,7 +67,8 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
         "--color-action-primary-hover": "var(--color-brand-700)",
         "--color-action-primary-active": "var(--color-brand-800)",
         "--color-action-primary-text": "var(--color-on-brand)",
-        "--color-action-primary-subtle": "var(--color-brand-200)",
+        "--color-progress-fill": "var(--color-action-primary)",
+        "--color-action-primary-subtle": "var(--color-brand-100)",
         "--color-action-secondary": "rgba(9, 9, 11, 0.1)",
         "--color-action-secondary-hover": "rgba(9, 9, 11, 0.15)",
         "--color-brand-100": "var(--zabi-brand-100)",
@@ -81,7 +82,12 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
     // Only what `.dark` actually restates; the rest resolves through
     // `--color-brand-*`, which is why the light entries above hold in dark too.
     dark: {
+        // The primary keeps its hue in dark: the physical steps, not the mirrored ones.
+        "--color-action-primary": "var(--zabi-brand-600)",
+        "--color-action-primary-hover": "var(--zabi-brand-700)",
+        "--color-action-primary-active": "var(--zabi-brand-800)",
         "--color-action-primary-text": "var(--color-on-brand)",
+        "--color-progress-fill": "var(--color-action-primary)",
         "--color-action-primary-subtle": "var(--color-brand-100)",
         "--color-action-secondary": "rgba(250, 250, 250, 0.09)",
         "--color-action-secondary-hover": "rgba(250, 250, 250, 0.15)",
@@ -93,6 +99,13 @@ export const IRIS: { light: TokenMap; dark: TokenMap } = {
 };
 
 /**
+ * A role the stylesheet derives from another (`--color-progress-fill:
+ * var(--color-action-primary)`) is resolved where it is declared, on the
+ * root, so an element scoped to an accent inherits the root's result and does
+ * not follow. Each map therefore restates such a role with the same `var()`;
+ * that is why `--color-progress-fill` is listed although its value never
+ * differs.
+ *
  * Dark entries layer on top of light ones, exactly like a `.dark .brand` rule.
  *
  * The light entries are the Iris recipe on another ramp: fill at step 600 with
@@ -111,6 +124,7 @@ export const ACCENT_OVERRIDES: Record<
             "--color-action-primary-hover": "var(--zabi-pine-700)",
             "--color-action-primary-active": "var(--zabi-pine-800)",
             "--color-action-primary-text": "#ffffff",
+            "--color-progress-fill": "var(--color-action-primary)",
             "--color-action-primary-subtle": "var(--zabi-pine-200)",
             "--color-action-secondary":
                 "color-mix(in srgb, var(--zabi-pine-600) 14%, transparent)",
@@ -129,6 +143,7 @@ export const ACCENT_OVERRIDES: Record<
             "--color-action-primary-hover": "var(--zabi-pine-100)",
             "--color-action-primary-active": "var(--zabi-pine-300)",
             "--color-action-primary-text": "var(--zabi-pine-950)",
+            "--color-progress-fill": "var(--color-action-primary)",
             "--color-action-primary-subtle": "var(--zabi-pine-900)",
             "--color-action-secondary":
                 "color-mix(in srgb, var(--zabi-pine-300) 16%, transparent)",
@@ -148,6 +163,7 @@ export const ACCENT_OVERRIDES: Record<
             "--color-action-primary-hover": "var(--zabi-citron-700)",
             "--color-action-primary-active": "var(--zabi-citron-800)",
             "--color-action-primary-text": "#ffffff",
+            "--color-progress-fill": "var(--color-action-primary)",
             "--color-action-primary-subtle": "var(--zabi-citron-200)",
             "--color-action-secondary":
                 "color-mix(in srgb, var(--zabi-citron-700) 14%, transparent)",
@@ -166,6 +182,7 @@ export const ACCENT_OVERRIDES: Record<
             "--color-action-primary-hover": "var(--zabi-citron-200)",
             "--color-action-primary-active": "var(--zabi-citron-400)",
             "--color-action-primary-text": "var(--zabi-citron-950)",
+            "--color-progress-fill": "var(--color-action-primary)",
             "--color-action-primary-subtle": "var(--zabi-citron-900)",
             "--color-action-secondary":
                 "color-mix(in srgb, var(--zabi-citron-300) 16%, transparent)",

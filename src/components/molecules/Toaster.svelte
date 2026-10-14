@@ -8,7 +8,10 @@
     import { topOverlayFooter, topOverlayHeader, watchOverlayFooters } from "../util/overlay.js";
     import {
         DEFAULT_TOASTER_STRINGS,
+        toastsReplaced,
+        toastStays,
         type ToastDuration,
+        type ToasterMode,
         type ToasterStrings,
         type ToastPauseChange,
     } from "../util/toaster.js";
@@ -28,7 +31,7 @@
      * `--toaster-bottom-offset` on the Toaster or any ancestor:
      *
      * ```svelte
-     * <Toaster style="--toaster-bottom-offset: 65px" />
+     * <Toaster style="--toaster-bottom-offset: 64px" />
      * ```
      *
      * A `FloatingActionButton` is 56px with 16px under it: `72px` puts the
@@ -63,6 +66,29 @@
      * own time (WCAG 2.2.1). A finger that lifts leaves it at least three
      * seconds, so holding a short toast starts it again.
      * `data-paused` on the toast says so, and `onpausechange` is called.
+     * A mouse holds the timer once it has moved over the toast, not when the
+     * toast comes up under a pointer that is at rest. A touch or a pen drags
+     * a toast away sideways (`swipeToDismiss`, on by default), and the close
+     * button stays as the way for a keyboard and a screen reader. A toast
+     * pushed with the id of one that is showing replaces it in place, and
+     * `max` limits how many show at once: the oldest toast that is timed
+     * (not an error, not one with an action) is the one that leaves.
+     *
+     * For a phone, `mode="auto"` makes the toast a snackbar below 640px: one
+     * row (two lines at most), one at a time, with its action beside its text
+     * and no stack. It sits directly above what is docked at the bottom, which
+     * it finds by itself: a `BottomTabBar`, a `StickyActionBar`, a
+     * `FloatingActionButton` and an `UnsavedChangesBar` that lie under it, and
+     * anything you name in `avoid` (the button a screen ends in). It comes out
+     * from behind that edge and goes back into it, on `--ease-standard`, with
+     * no movement under reduced motion, and lies over the page without moving
+     * it. Push a short confirmation with `closable: false` and it has no
+     * control and takes no taps.
+     *
+     * ```svelte
+     * <Toaster mode="auto" avoid="[data-primary-action]" />
+     * ```
+     *
      * Every word the toaster says by itself is in `strings`:
      *
      * ```svelte
@@ -101,6 +127,41 @@
          */
         defaultDuration?: ToastDuration;
         /**
+         * `"stack"` (default): the stack of toasts. `"snackbar"`: the compact
+         * form for a phone, at every width. `"auto"`: the snackbar below
+         * 640px, the stack from there up.
+         */
+        mode?: ToasterMode;
+        /**
+         * How many toasts show at once. The oldest one that is timed leaves
+         * when a newer one arrives; a toast that has to stay (an error, one
+         * with an action, `"persistent"`) is not dropped, so there can be more
+         * than this while they are showing. Default: no limit, and 1 in the
+         * snackbar.
+         */
+        max?: number;
+        /**
+         * A CSS selector for elements the stack must not lie on, in addition
+         * to the docked bars it finds by itself: the button a screen ends in.
+         * When one lies under the stack, the stack sits above it.
+         */
+        avoid?: string;
+        /**
+         * Draws the thin bar along the bottom of a toast that empties over its
+         * time. Unset: drawn, except under a confirmation in the snackbar that
+         * has nothing to press (pushed with `closable: false`), where it is
+         * left out. `false` leaves it out everywhere, `true` draws it
+         * everywhere; a toast's own `timeLine` wins. The sentence for a screen
+         * reader about the time left stays.
+         */
+        timeLine?: boolean;
+        /**
+         * Touch and pen drag a toast away sideways (and down, in the
+         * snackbar). Default `true`. A mouse does not drag; the close button
+         * is the way for a keyboard and a screen reader.
+         */
+        swipeToDismiss?: boolean;
+        /**
          * Called when a pointer, a finger or focus starts or stops holding a
          * toast's timer, with the toast's id. The same state is `data-paused`
          * on the toast.
@@ -114,6 +175,11 @@
         "aria-label": ariaLabel,
         showCountdown = false,
         defaultDuration,
+        mode = "stack",
+        max,
+        avoid,
+        swipeToDismiss = true,
+        timeLine,
         onpausechange,
         class: className = '',
         ...restProps
@@ -143,8 +209,77 @@
 
     let region = $state<HTMLDivElement>();
 
+    /** Below 640px (`sm`), for `mode="auto"`. */
+    let narrow = $state(false);
+    $effect(() => {
+        if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+        const query = window.matchMedia("(max-width: 39.999rem)");
+        const update = () => (narrow = query.matches);
+        update();
+        query.addEventListener?.("change", update);
+        return () => query.removeEventListener?.("change", update);
+    });
+    const snackbar = $derived(mode === "snackbar" || (mode === "auto" && narrow));
+
+    /**
+     * Cuts at the edge the toast is docked on, so it comes out from behind it (sides and top stay open).
+     * Each class is written out whole: Tailwind only generates what it finds as text in the source, so a
+     * class put together from a prefix and a value at run time is in no stylesheet.
+     */
+    const clipClass = $derived(
+        mode === "snackbar"
+            ? "[clip-path:inset(-100vh_-100vw_0_-100vw)]"
+            : mode === "auto"
+              ? "max-sm:[clip-path:inset(-100vh_-100vw_0_-100vw)]"
+              : "",
+    );
+
+    /** The oldest toast that is timed leaves for a newer one; one that has to stay is never dropped. */
+    const limit = $derived(max ?? (snackbar ? 1 : Infinity));
+    $effect(() => {
+        const list = $toastStore;
+        const allowed = Math.floor(limit);
+        let over = list.length - allowed;
+        if (!(allowed >= 1) || over <= 0) return;
+        for (const toast of list.slice(0, -1)) {
+            if (over <= 0) break;
+            if (toastStays(toast, defaultDuration)) continue;
+            toastsReplaced.add(toast.id);
+            toastStore.dismiss(toast.id);
+            over -= 1;
+        }
+    });
+
     /** The highest the stack may reach: below the status bar or an AppShell's top bar. */
     const TOP = "calc(max(var(--app-shell-top-inset, 0px), env(safe-area-inset-top, 0px)) + var(--toaster-edge))";
+    /** What is docked at the bottom, and so may lie under the stack. */
+    const DOCKED = '[data-bar-edge="bottom"], [data-toast-clear]';
+
+    /**
+     * The top edge of the highest docked element (or one named in `avoid`)
+     * that the stack at rest would lie on, or null when it lies on none.
+     */
+    function dockedTop(rest: DOMRect): number | null {
+        let nodes: NodeListOf<HTMLElement>;
+        try {
+            nodes = document.querySelectorAll<HTMLElement>(avoid ? `${DOCKED}, ${avoid}` : DOCKED);
+        } catch {
+            // A selector that does not parse is not a reason to lose the toast.
+            return null;
+        }
+        let top: number | null = null;
+        for (const node of nodes) {
+            if (node.closest("[data-zabi-toaster]")) continue;
+            const box = node.getBoundingClientRect();
+            if (box.width === 0 || box.height === 0) continue;
+            // Only what is in the same columns, and under the stack at rest.
+            if (box.left >= rest.right || box.right <= rest.left) continue;
+            if (box.top >= rest.bottom || box.bottom <= rest.top) continue;
+            top = top === null ? box.top : Math.min(top, box.top);
+        }
+        return top;
+    }
+
     /**
      * Places the stack for what is on screen now. At rest it is where the
      * classes put it, raised above the on-screen keyboard where that covers
@@ -175,9 +310,16 @@
         const keyboard = readKeyboardInset();
         const raise = (px: number) => stack.style.setProperty("--toaster-overlay-inset", `${px}px`);
         if (keyboard > 0) raise(keyboard);
-        const rest = stack.getBoundingClientRect();
+        let rest = stack.getBoundingClientRect();
         // No layout (a test DOM): nothing to place.
         if (rest.width === 0 && rest.height === 0) return;
+
+        // Docked bars and named elements that lie under the stack: it sits above the highest.
+        const dockTop = dockedTop(rest);
+        if (dockTop !== null) {
+            raise(Math.max(keyboard, Math.ceil(viewportHeight - dockTop)));
+            rest = stack.getBoundingClientRect();
+        }
 
         stack.style.top = TOP;
         stack.style.bottom = "auto";
@@ -256,10 +398,22 @@
             for (const child of stack.children) observer?.observe(child);
         });
         children.observe(stack, { childList: true });
+        // A named element moves with the page: follow it, once a frame.
+        let frame = 0;
+        const onScroll = () => {
+            if (frame || stack.childElementCount === 0) return;
+            frame = requestAnimationFrame(() => {
+                frame = 0;
+                layout();
+            });
+        };
+        document.addEventListener("scroll", onScroll, { capture: true, passive: true });
         window.addEventListener("resize", again);
         window.visualViewport?.addEventListener("resize", again);
         window.visualViewport?.addEventListener("scroll", again);
         return () => {
+            document.removeEventListener("scroll", onScroll, { capture: true });
+            if (frame) cancelAnimationFrame(frame);
             window.visualViewport?.removeEventListener("scroll", again);
             stopFooters();
             observer?.disconnect();
@@ -352,7 +506,7 @@
 
 <div
     {...restProps}
-    class={cn("pointer-events-none fixed z-toast flex min-w-0 flex-col gap-2 overscroll-contain", placement, className)}
+    class={cn("pointer-events-none fixed z-toast flex min-w-0 flex-col gap-2 overscroll-contain", placement, clipClass, className)}
     role="region"
     aria-label={ariaLabel ?? words.regionLabel}
     data-zabi-toaster
@@ -362,6 +516,6 @@
 >
     <!-- Each toast owns its role="status"/"alert"; a region-level aria-live would announce twice. -->
     {#each $toastStore as toast (toast.id)}
-        <ToasterToast {toast} strings={words} {showCountdown} {defaultDuration} {onpausechange} />
+        <ToasterToast {toast} strings={words} {showCountdown} {defaultDuration} {onpausechange} {snackbar} {swipeToDismiss} {timeLine} />
     {/each}
 </div>

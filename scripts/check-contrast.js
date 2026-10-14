@@ -18,8 +18,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { resolveTokenColor, resolveTokenValue } from './resolve-tokens.js';
-import { BLOCKS, BLOCK_ROLES, SURFACE_CLASS, buildPairs } from './contrast-pairs.js';
+import { resolveTokenColor, resolveTokenValue, resolveTokenPaint, compositeOver, dimBackdrop, backdropBrightness } from './resolve-tokens.js';
+import { BLOCKS, BLOCK_ROLES, SURFACE_CLASS, behindToken, buildPairs } from './contrast-pairs.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Optional path, so the guard can be run against another revision of the stylesheet.
@@ -104,9 +104,9 @@ function parseTheme(css) {
 
 /**
  * A token as one flat colour, or null. `var()` chains are followed and an
- * opaque `color-mix()` is evaluated — the dark surface levels are mixes of two
- * neutral steps, and returning null for them would skip every pair measured
- * against a dark card instead of checking it.
+ * opaque `color-mix()` is evaluated — the pressed field and the control fills are
+ * mixes of two neutral steps, and returning null for them would skip every pair
+ * measured against them instead of checking it.
  */
 function resolve(map, token) {
     return resolveTokenColor(map, token); // null: rgba() or a mix with transparent; see resolveOver()
@@ -363,6 +363,13 @@ function checkFocusRingSources(css, themes, pairs) {
 }
 
 /**
+ * `.on-fill`: the block for a fill the app chooses. Its label is
+ * `--zabi-on-fill`, set on the block, so no pair of its own can be held;
+ * the rule is only checked for re-pointing and restoring the same roles.
+ */
+const ON_FILL = { name: 'custom fill', selector: '.on-fill', runtime: true, on: 'var(--zabi-on-fill, currentColor)' };
+
+/**
  * Controls inside a brand or accent block.
  *
  * `.on-brand` and `.on-accent` re-point the roles a control writes with when
@@ -400,7 +407,7 @@ function checkBlocks(css, themes, componentsDir) {
         return { failures: ['the rule that keeps the theme values (--zabi-theme-*) on the parent of a block was not found'], checked };
     }
     const copies = declarations(kept[2]);
-    for (const block of BLOCKS) {
+    for (const block of [...BLOCKS, ON_FILL]) {
         // Written on a block, or inside one, a kept value would be the block's own colour.
         for (const selector of [`> ${block.selector}`, `${block.selector} *`, `${block.selector},`]) {
             if (!kept[1].includes(selector)) {
@@ -410,7 +417,7 @@ function checkBlocks(css, themes, componentsDir) {
     }
 
     // The two rules that give them back: on a surface inside a block, and on what is inside that surface.
-    const resets = [...css.matchAll(/:where\(\.on-brand, \.on-accent\)\s*:where\(([^)]*)\)(\s*>\s*:where\(\*\))?\s*\{([^}]*)\}/g)];
+    const resets = [...css.matchAll(/:where\(\.on-brand, \.on-accent, \.on-fill\)\s*:where\(([^)]*)\)(\s*>\s*:where\(\*\))?\s*\{([^}]*)\}/g)];
     const restored = {};
     const surfaces = new Set();
     for (const reset of resets) {
@@ -419,7 +426,7 @@ function checkBlocks(css, themes, componentsDir) {
     }
     if (resets.length < 2) failures.push('the rules that restore the theme values on a surface inside a block were not found');
 
-    for (const block of BLOCKS) {
+    for (const block of [...BLOCKS, ON_FILL]) {
         const own = ruleBody(block.selector);
         if (!own) {
             failures.push(`${block.selector} was not found in the stylesheet`);
@@ -427,6 +434,14 @@ function checkBlocks(css, themes, componentsDir) {
         }
         for (const [role, min] of BLOCK_ROLES) {
             const value = own[role];
+            if (block.runtime) {
+                // The label is a colour the app sets at run time, so there is no ratio to measure here:
+                // only that every role is re-pointed at it, like the two blocks above.
+                if (value !== block.on) {
+                    failures.push(`${block.selector} must re-point ${role} at ${block.on}: on the block it is the page's colour`);
+                }
+                continue;
+            }
             const token = value?.match(/^var\(\s*(--[\w-]+)\s*\)$/)?.[1];
             if (!token) {
                 failures.push(`${block.selector} does not re-point ${role} at a token: on the block it is the page's colour`);
@@ -501,14 +516,38 @@ function main() {
     for (const themeName of ['light', 'dark']) {
         const map = themes[themeName];
         for (const pair of pairs) {
-            const bg = resolve(map, pair.bg);
-            const fg = resolve(map, pair.fg);
+            // `only`: a pair about one theme (the dark field is a translucent step; light's is opaque).
+            if (pair.only && pair.only !== themeName) continue;
+            const behind = behindToken(pair, themeName);
             // A token that is not declared at all is a renamed or deleted role,
             // not an alpha value: skipping it would drop its pairs silently.
-            const undeclared = [pair.bg, pair.fg, ...(pair.orFg ? [pair.orFg] : [])].find((token) => !(token in map));
+            const undeclared = [pair.bg, pair.fg, ...(pair.orFg ? [pair.orFg] : []), ...(behind ? [behind] : [])].find((token) => !(token in map));
             if (undeclared) {
                 failures.push(`${themeName} · ${pair.name}: ${undeclared} is not declared, so the pair cannot be checked`);
                 continue;
+            }
+            let bg = resolve(map, pair.bg);
+            if (behind) {
+                // A material is a paint with an alpha: what the text sits on is the paint over its backdrop.
+                const paint = resolveTokenPaint(map, pair.bg);
+                const flat = resolve(map, behind);
+                // A material's filter dims what is behind it (D137); other `behind` pairs are not filtered.
+                const backdrop = flat && pair.material ? dimBackdrop(flat, backdropBrightness(map)) : flat;
+                if (!paint || !backdrop) {
+                    failures.push(`${themeName} · ${pair.name}: ${!paint ? pair.bg : behind} cannot be resolved to a colour, so the material cannot be composited`);
+                    continue;
+                }
+                bg = backdrop;
+                // `layers`: the same paint stacked, each laid over the last (nested translucent cards).
+                for (let layer = 0; layer < (pair.layers ?? 1); layer += 1) bg = compositeOver(paint, bg);
+            }
+            let fg = resolve(map, pair.fg);
+            if (behind && pair.fgPaint) {
+                // `fgPaint`: the foreground is a fill too (a pressed field against the resting one), laid over the same backdrop.
+                const fgPaint = resolveTokenPaint(map, pair.fg);
+                let under = resolve(map, behind);
+                for (let layer = 0; layer < (pair.layers ?? 1) && under && fgPaint; layer += 1) under = compositeOver(fgPaint, under);
+                fg = fgPaint ? under : null;
             }
             if (!bg || !fg) {
                 skipped.push(`${themeName} · ${pair.name} (${!bg ? pair.bg : pair.fg} is not a flat colour)`);

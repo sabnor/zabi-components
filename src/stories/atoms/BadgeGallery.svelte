@@ -1,6 +1,6 @@
 <script lang="ts">
     import Badge from '../../components/atoms/Badge.svelte';
-    import type { ExtendedSemanticVariant, SizeVariant } from '../../components/types/variants.js';
+    import type { BadgeVariant, SizeVariant } from '../../components/types/variants.js';
 
     interface Props {
         showIcon?: boolean;
@@ -8,7 +8,7 @@
 
     let { showIcon = true }: Props = $props();
 
-    const variants: ExtendedSemanticVariant[] = [
+    const variants: BadgeVariant[] = [
         'default',
         'success',
         'warning',
@@ -16,6 +16,8 @@
         'info',
         'neutral',
         'energetic',
+        'accent',
+        'brand',
     ];
     const sizes: SizeVariant[] = ['sm', 'md', 'lg'];
 </script>

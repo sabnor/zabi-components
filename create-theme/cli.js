@@ -18,7 +18,7 @@ const HELP = `zabi-theme: generate brand tokens for zabi-components
 
 Usage
   zabi-theme --brand <hex> [--pin] [--accent <hex>] [--pin-accent] [--neutral <hex>]
-             [--neutral-chroma <n>]
+             [--neutral-chroma <n>] [--dark-primary brand|mirror]
              [--out <file>] [--strict] [--set <token>=<value> ...]
              [--set-light <token>=<value> ...] [--set-dark <token>=<value> ...]
 
@@ -34,6 +34,9 @@ Options
                     tinted neutral. Needs --neutral. With it, the ink roles (secondary
                     button, hover and pressed tints, overlay edge, shadow colour)
                     follow the neutral ramp instead of staying grey.
+  --dark-primary <brand|mirror>
+                    Dark primary and danger fills. brand (default): the same steps as
+                    light, with a white label. mirror: the 8.1 pale mirrored steps.
   --out <file>      Write the CSS here. Without it the CSS goes to stdout.
   --strict          Exit 1 when any role pair is below WCAG AA.
   --set <t>=<v>     Also write this declaration, e.g. --set "--color-link=var(--color-brand-800)".
@@ -63,7 +66,7 @@ Import the file after the theme:
   @import "./brand.generated.css";
 `;
 
-const VALUE_OPTIONS = ['brand', 'accent', 'neutral', 'neutral-chroma', 'out'];
+const VALUE_OPTIONS = ['brand', 'accent', 'neutral', 'neutral-chroma', 'dark-primary', 'out'];
 const FLAG_OPTIONS = ['strict', 'help', 'pin', 'pin-accent'];
 
 function usageError(message) {
@@ -124,6 +127,7 @@ try {
         neutral: options.neutral,
         // Left out when not asked for, so the options are what they always were.
         ...(options['neutral-chroma'] !== undefined ? { neutralChroma: parseChroma(options['neutral-chroma']) } : {}),
+        ...(options['dark-primary'] !== undefined ? { darkPrimary: options['dark-primary'] } : {}),
         // `--set` alone is the flat map, as it always was; a mode flag makes it { light, dark, both }.
         overrides: options.modes && (options.modes.light || options.modes.dark) ? options.modes : options.modes?.both,
         // Left out when not asked for, so the options are what they always were.

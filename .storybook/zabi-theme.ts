@@ -18,7 +18,7 @@ const shared = {
     // landing page.
     brandUrl: '../',
     brandTarget: '_self' as const,
-    fontBase: '"Nunito Sans", ui-sans-serif, system-ui, sans-serif',
+    fontBase: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     fontCode: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
     appBorderRadius: 8,
     inputBorderRadius: 8
@@ -31,9 +31,9 @@ export const light = create({
     colorPrimary: '#4f68da', // brand-600, --color-action-primary
     colorSecondary: '#4f68da',
 
-    appBg: '#ececee', // base-150, --color-surface-base
+    appBg: '#fafafa', // base-50, --color-surface-base
     appContentBg: '#ffffff', // --color-surface-raised
-    appPreviewBg: '#ececee', // --color-surface-base
+    appPreviewBg: '#fafafa', // --color-surface-base
     appBorderColor: '#d4d4d8', // base-300, --color-border
 
     textColor: '#18181b', // base-900, --color-headline
@@ -59,13 +59,12 @@ export const dark = create({
     base: 'dark',
     ...shared,
 
-    colorPrimary: '#92a9ff', // brand-400, the dark --color-action-primary
-    // Selected rows put white text on this, so it stays at brand-600 (4.9:1)
-    // instead of following the lighter dark-mode action colour.
+    colorPrimary: '#4f68da', // brand-600, the dark --color-action-primary (it keeps its hue in dark)
+    // Selected rows put white text on this: the same step (4.9:1).
     colorSecondary: '#4f68da',
 
     appBg: '#18181b', // dark --color-surface-base
-    appContentBg: '#262629', // dark --color-surface-raised
+    appContentBg: '#1f1f22', // dark --color-surface-raised
     appPreviewBg: '#18181b', // dark --color-surface-base
     appBorderColor: '#3f3f46', // base-700
 
@@ -78,14 +77,14 @@ export const dark = create({
     barHoverColor: '#b5c6ff', // brand-300
     barSelectedColor: '#92a9ff',
 
-    inputBg: '#262629',
+    inputBg: '#1f1f22',
     inputBorder: '#52525b', // base-600
     inputTextColor: '#f4f4f5',
 
-    buttonBg: '#262629',
+    buttonBg: '#1f1f22',
     buttonBorder: '#3f3f46',
     booleanBg: '#18181b',
-    booleanSelectedBg: '#363638' // dark --color-surface-elevated
+    booleanSelectedBg: '#27272a' // dark --color-surface-elevated
 });
 
 /** Follows the operating system, as the site does before anyone uses its toggle. */

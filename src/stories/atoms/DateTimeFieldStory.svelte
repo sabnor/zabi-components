@@ -1,6 +1,7 @@
 <script lang="ts">
     import DateField from '../../components/atoms/DateField.svelte';
     import TimeField from '../../components/atoms/TimeField.svelte';
+    import { onMount } from 'svelte';
     import FormField from '../../components/molecules/FormField.svelte';
     import { formatDate, formatTime } from '../../components/util/date.js';
 
@@ -23,6 +24,15 @@
         inFormField?: boolean;
         /** Language of the line of text under the field. */
         locale?: string;
+        /** The field's own `locale`: the library's display and picker instead of the browser's. */
+        fieldLocale?: string;
+        format?: Intl.DateTimeFormatOptions;
+        placeholder?: string;
+        picker?: 'library' | 'native';
+        /** Presses the field's button once the story has mounted, so its picker is open. */
+        openOnMount?: boolean;
+        /** Time only: where an empty field's picker opens, as HH:mm. */
+        openAt?: string;
     }
 
     let {
@@ -40,22 +50,36 @@
         size = 'md',
         inFormField = false,
         locale = 'sv',
+        fieldLocale,
+        format,
+        placeholder,
+        picker,
+        openOnMount = false,
+        openAt,
     }: Props = $props();
+
+    let wrapper: HTMLDivElement | undefined = $state();
+    onMount(() => {
+        if (!openOnMount) return;
+        const timer = setTimeout(() => wrapper?.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]')?.click(), 100);
+        return () => clearTimeout(timer);
+    });
 
     // svelte-ignore state_referenced_locally
     let value = $state(startValue ?? (kind === 'date' ? '2026-10-06' : '19:00'));
     const Field = $derived(kind === 'date' ? DateField : TimeField);
+    const timeOnly = $derived(kind === 'time' && openAt !== undefined ? { openAt } : {});
     const fieldLabel = $derived(label ?? (kind === 'date' ? 'Quiz date' : 'Starts'));
     const asText = $derived(kind === 'date' ? formatDate(value, locale) : formatTime(value, locale));
 </script>
 
 <!-- A phone-width column. The field shows the browser's own format; the line
 under it is the same value as text in the story's locale. -->
-<div class="w-80 space-y-3">
+<div bind:this={wrapper} class="w-80 space-y-3" lang={fieldLocale}>
     {#if inFormField}
         <FormField label={fieldLabel} description={hint} {error} {required} {disabled}>
             {#snippet control(props)}
-                <Field hideLabel bind:value {min} {max} {step} {size} {...props} />
+                <Field hideLabel bind:value {min} {max} {step} {size} locale={fieldLocale} {format} {placeholder} {picker} {...timeOnly} {...props} />
             {/snippet}
         </FormField>
     {:else}
@@ -71,6 +95,11 @@ under it is the same value as text in the story's locale. -->
             {disabled}
             {readonly}
             {size}
+            locale={fieldLocale}
+            {format}
+            {placeholder}
+            {picker}
+            {...timeOnly}
         />
     {/if}
     <p class="text-sm text-description">

@@ -146,12 +146,16 @@ have your own ramps.
 | `--zabi-accent-50` … `--zabi-accent-950` | the same 11 | `--color-accent` and its roles: `bg-accent`, `text-accent`, `border-accent`. Defaults to the citron ramp. |
 | `--zabi-base-50` … `--zabi-base-950` | 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 925, 950 | Text, borders, inputs, the page, cards and the four dark surface levels |
 | `--zabi-on-brand` | | Label on a primary fill in light. Default `#ffffff`. |
-| `--zabi-on-brand-dark` | | The same in dark. Default `var(--zabi-brand-950)`. |
+| `--zabi-on-brand-dark` | | The same in dark. Default `var(--zabi-on-brand)` (white): the dark primary is the same step as light. Set a dark label here if the dark primary is a pale step. |
 | `--zabi-on-accent` | | Label on a solid accent fill in light. Default `#ffffff`. |
 | `--zabi-on-accent-dark` | | The same in dark. Default `var(--zabi-accent-950)`. |
 
 Each ramp runs light (50) to dark (950). Light mode puts fills on step 600;
-dark mode mirrors the ramp, so the fill is step 400.
+the primary and danger fills stay on step 600 in dark too (the physical
+`--zabi-*` steps, with a white label), so the main action keeps its colour. The
+other roles mirror the ramp in dark (the ring, links and tints are the light
+steps there). `createTheme({ darkPrimary: "mirror" })` restores the 8.1 pale
+dark fills.
 
 A ramp you write by hand should keep the library's lightness per step, or the
 contrast the roles were designed with is gone. Run it through
@@ -161,21 +165,28 @@ contrast the roles were designed with is gone. Run it through
 
 | Token | Default | What follows |
 |---|---|---|
-| `--font-family-sans` | `'Nunito Sans', ui-sans-serif, system-ui, sans-serif` | Body text and every component |
+| `--font-family-sans` | the platform UI face: `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"` | Body text and every component |
 | `--font-family-heading` | `var(--font-family-sans)` | `h1` to `h6` and the Heading component |
-| `--font-family-mono` | `"Monaco", "Menlo", "Ubuntu Mono", monospace` | CodeBlock |
+| `--font-family-display` | `var(--font-family-heading)` | `Heading variant="display"` and `font-display`: a second face, so it is a token and not a CSS rule |
+| `--font-family-mono` | `ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace` | CodeBlock |
 | `--font-weight-regular` | `400` | `font-normal` |
 | `--font-weight-medium` | `500` | `font-medium` |
 | `--font-weight-semibold` | `600` | `font-semibold` |
 | `--font-weight-bold` | `700` | `font-bold` |
 
-Loading the font files is up to the app. The heading face is applied in the
+The default is the platform's own face (San Francisco on Apple devices, Segoe
+UI on Windows, Roboto on Android), so a default install downloads no font. It
+differs by platform, and text widths differ from 8.1's Nunito Sans. Loading any
+other font files is up to the app. To get the 8.1 face back, load Nunito Sans
+yourself and set
+`--font-family-sans: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif`
+on `:root` after the imports. The heading face is applied in the
 base layer, so a `font-*` utility on a heading still wins.
 
 Tailwind's own font utilities follow these tokens: `font-sans` is
 `--font-family-sans`, `font-mono` is `--font-family-mono`, and `font-heading`
-is `--font-family-heading`. The theme maps Tailwind's `--font-sans` and
-`--font-mono` (and a `--font-heading` of its own) onto them. Before 8.1
+is `--font-family-heading`, `font-display` is `--font-family-display`. The theme maps Tailwind's `--font-sans` and
+`--font-mono` (and a `--font-heading` and `--font-display` of its own) onto them. Before 8.1
 `font-sans` was Tailwind's system stack, so `class="font-sans"` on a heading
 dropped it out of the brand face. Set the `--font-family-*` tokens, not the
 short names: the short ones follow.
@@ -189,13 +200,30 @@ short names: the short ones follow.
 | `--radius-overlay` | `1rem` | Modals, sheets, menus, popovers, toasts |
 | `--radius-pill` | `9999px` | Badges, avatars, status dots |
 | `--shadow-color` | `24 24 27` (dark: `0 0 0`) | The colour of `shadow-sm` and `shadow-lg`, as three space-separated RGB channels |
-| `--shadow-opacity` | `0.14` (dark: `0.3`) | Their strength |
-| `--z-dropdown`, `--z-sticky`, `--z-fixed`, `--z-modal-backdrop`, `--z-modal`, `--z-popover`, `--z-tooltip`, `--z-toast` | 1000 to 1080 | The layer of each floating component, when the app has its own stacking order to fit into |
+| `--shadow-opacity` | `0.10` (dark: `0.24`) | The strength of the wide, soft layer of each shadow |
+| `--shadow-opacity-contact` | `0.06` (dark: `0.3`) | The strength of the tight contact layer |
+| `--z-dropdown`, `--z-sticky`, `--z-fixed`, `--z-modal-backdrop`, `--z-modal`, `--z-popover`, `--z-tooltip`, `--z-toast` | 1000 to 1080 | The layer of each floating component, when the app has its own stacking order to fit into. Each has a class of the same name (`z-sticky`, `z-fixed`, `z-modal`, …) that sets `z-index` from it |
 
-The two shadow tokens are the only ones here with a separate dark value. A
+The shadow tokens are the only ones here with a separate dark value. A
 `:root` override after the imports replaces both; to keep two values, declare
 the dark one under the dark selectors (see
 [One role in dark only](#one-role-in-dark-only)).
+
+### Motion
+
+| Token | Default | What follows |
+|---|---|---|
+| `--duration-fast`, `--duration-base`, `--duration-moderate`, `--duration-slow` | 100, 150, 200, 300ms | `--duration-base` is Tailwind's default transition duration; use the others as `duration-(--duration-moderate)` |
+| `--ease-standard` | `cubic-bezier(0.2, 0, 0, 1)` | Tailwind's default transition curve, and the `ease-standard` utility |
+| `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` | The `ease-out` utility (Tailwind's own name and value) |
+| `--ease-spring` | a `linear()` spring, one small overshoot | The `ease-spring` utility; browsers without `linear()` get a cubic-bezier with a similar overshoot |
+
+Under `prefers-reduced-motion: reduce` the durations are `0s` and
+`--ease-spring` is the standard curve. This re-points the tokens with
+`:root:root`, so it also wins over an app's own value: to keep motion for
+reduced-motion users, set the token inside your own
+`@media (prefers-reduced-motion: reduce) { :root:root:root { … } }`. To get
+Tailwind's old curve back, set `--default-transition-timing-function`.
 
 ### Not on the list
 
@@ -485,6 +513,17 @@ them, the danger ring included. They were, on a brand block in the default
 theme: labels 2.15 (light) and 1.52 (dark), `outline` and `ghost` 3.65 and
 2.05, `link` 1.39 and 1.34, the danger ring 1.06 and 1.04.
 
+**A fill you choose.** `on-fill` is the same scope for a colour the library
+does not know: `<div class="on-fill" style="background: #123; --zabi-on-fill: #fff">`.
+Everything above applies with `--zabi-on-fill` as the label colour (without it
+the label is `currentColor`, and the ring's gap is transparent, so the block
+shows through). A surface inside (`bg-card`, `bg-card-tint`, `bg-chip`, `on-surface`
+and the rest of the list) gets the theme's roles back. The library cannot hold
+a colour the app picks at run time: the 4.5:1 of the label on your fill (3:1 for
+edges and rings) is yours to check. A primary Button, a solid Badge and a
+Rating keep their own fills and labels inside any of the three blocks; only the
+text roles, the edges and the rings follow the block.
+
 The Button variants, on a brand block (`bg-action-primary`). "Label" is
 against the button's own fill, or against the block where the button has
 none; "fill" is the button's fill against the block (3:1 for the button to be
@@ -590,6 +629,26 @@ anything around it; they inherit.
 | `Rating` | `--zabi-rating-on-hover`, `--zabi-rating-on-active` | the same under the pointer and while pressed | `--zabi-rating-on` if you set it, else the tone's hover and pressed roles |
 | `Rating` | `--zabi-rating-on-edge` | the outline of a filled star | the fill; `--color-accent-text` with `tone="accent"` |
 | `Rating` | `--zabi-rating-off` | the outline of an empty star | `--color-control-border` |
+| `Rating` | `--zabi-rating-off-fill` | an empty star with `empty="soft"` (below 3:1 on the page; pair it with a visible label and value) | `--color-control-track` |
+| `SpeechBubble` | `--zabi-bubble-fill` | the bubble and its tail; wins over `tone` | the headline colour; the page colour with `tone="paper"` |
+| `SpeechBubble` | `--zabi-bubble-text` | the quoted text; wins over `tone` (4.5:1 on your fill is yours to check) | the page colour; the headline colour with `tone="paper"` |
+| `SpeechBubble` | `--zabi-bubble-radius` | not a colour: the bubble's corners, any `border-radius` value, the eight-value form included | `1.5rem` |
+| `SpeechBubble` | `--zabi-bubble-tilt` | not a colour: turns the fill and the tail, never the text | `0deg` |
+| `LineChart`, `BarChart`, `PieChart`, `Sparkline` | `--zabi-chart-1` | the first series: a line, the bars, the first slice (3:1 on the surface under it is yours to check) | `--color-action-primary`: the blue a `Progress` fills with |
+| `LineChart`, `PieChart` | `--zabi-chart-2` | the second series | `--color-accent-500`: the accent at its middle step |
+| `LineChart`, `PieChart` | `--zabi-chart-3` | the third series | `--color-brand-900`: the brand at its deepest step (its palest in dark) |
+| `LineChart`, `PieChart` | `--zabi-chart-4` | the fourth series | `--color-accent-700`: the accent, deep (pale in dark) |
+| `LineChart`, `PieChart` | `--zabi-chart-5` | the fifth series | `--color-base-500`: the neutral grey |
+| `LineChart`, `PieChart` | `--zabi-chart-6` | the sixth series; a seventh starts again at the first | plum: `--color-brand-700` and `--color-error-700` mixed half and half in OKLCH, the one colour from outside the three ramps |
+| `LineChart` | `--zabi-chart-surface` | paints the ring around each marker. Without it the ring is cut out of the lines, so it shows whatever the chart stands on (a card, a tint, glass) and there is nothing to set | none: the ring is see-through |
+
+The series colours are the library's own: the brand, the accent and the neutral ramp, each at a solid step and a deep one, so a chart sits beside a `Progress` or a `Badge` without a colour of its own. They are categories, not states: none is `--color-success`, `--color-warning`, `--color-error` or `--color-info`. Because they are steps of your ramps they follow light and dark and a brand of your own; they were measured on the default theme only (each 3:1 or more on a card in both modes; any two apart for a reader who does not see red and green). When a series means a state (right, wrong, skipped) give it `color: 'success'`, `'error'`, `'neutral'`; a series without a `color` in the same chart then steps past the series colour nearest to a named one.
+
+The rest of a chart is borrowed too, so it follows what you set for those: a `BarChart` with a `yMax` stands each bar in a track drawn with `--color-progress-track` and `--color-progress-track-border`; grid lines are `--color-border`; the rows of the `PieChart` key and of the narrow `LineChart` key are parted by the divider of a `List`; `showTable` shows a `Table`.
+
+The slices of a `PieChart` and the bars of a `BarChart` are drawn as glass. An SVG shape takes no backdrop blur, so each keeps its series colour, opaque, and the depth is a soft gradient and a barely-there edge: the veil of a solid control (`--color-control-gradient-accent-start` to `--color-control-gradient-accent-end`: darken-only in light, light at the top in dark), one pixel of light on the top of the rim (the lightest neutral at 30%, the same in both modes), a blurred sheen under it at about a third of that, and a soft shadow under the drawing (the two shadows of `--shadow-md`; the contact shadow only under a bar). Retune the veil and shadow tokens and the charts follow. They are the flat fills wherever the materials are opaque: reduced transparency, more contrast, forced colours, and inside `data-materials="opaque"`, which is also how an app turns the look off for one chart or for all of them. On the default theme every fill stays 3:1 or more on a card under the veil in both modes. The key marks, line markers and the `Sparkline` dot stay flat: at 6 to 10px there is no room for it. The gaps of a full pie narrow to a point at the centre, so every slice runs to the middle; in a ring they have parallel sides.
+
+The glass under a chart, as distinct from the marks, is the library's thick material and nothing of its own, so the material tokens and every fallback apply to it: reduced transparency, more contrast, forced colours, a browser without `backdrop-filter` and `data-materials="opaque"` all give the opaque surface. The pane of values that comes up over a `LineChart` when it is pointed at is always that material, as a `Tooltip` is. The `glass` prop on `LineChart`, `BarChart` and `PieChart` stands the whole chart on a panel of it; that is for a chart over the canvas wash, a tint card or a picture. On a plain card it shows only an edge and a shadow. Measured on the default theme, every series colour is 3:1 or more on the glass over the wash and over a tint card in both modes; over a solid brand or accent fill the second series falls to 2.9:1 in light and the first and fifth to 2.3:1 and 1.8:1 in dark, so put the chart on a `Card` there instead.
 
 ```svelte
 <Rating label="Betyg" tone="accent" bind:value />
@@ -710,8 +769,9 @@ What it decides, and how:
   neither, so both stay on the ramp. The header lists which followed.
 - **Dark is not pinned unless the colour passes there.** `#0026EA` is 2.08:1
   against a dark page and 1.77:1 against a dark card, where a fill needs 3:1:
-  no label makes that a button. Dark keeps the
-  mirrored step 400, exactly as without `--pin`, and the header says so. A
+  no label makes that a button. Dark keeps
+  step 600 (the mirrored step 400 with `darkPrimary: "mirror"`), exactly as
+  without `--pin`, and the header says so. A
   colour that does pass in dark (the amber, the yellow) is pinned there too,
   with lighter states.
 
@@ -738,9 +798,24 @@ modes; with `--set-light` or `--set-dark`, only in that mode.
 - **Neutral ramp.** It keeps the base scale's own 21 lightness steps and takes
   only the hue, at low chroma (0.03 at most). A saturated colour gives a tinted
   grey, not a coloured page. `neutralChroma` lifts that cap.
+  The chroma tapers towards the light end of the ramp, so the lightest steps
+  are paler than the mid steps. To match an owner's page colour exactly, do not
+  raise `neutralChroma` (that tints the mid steps and muted text too); set the
+  page per mode instead: `overrides: { light: { '--color-surface-base': '#e3edff' } }`.
+- **Links follow an overridden primary.** If `overrides` set `--color-action-primary` (and not `--color-link`), links take that colour in each mode the override applies to, and `--color-link-hover` the primary hover if you set one, as long as no guarded pair fails that did not before; otherwise the ramp's link stays in that mode. An explicit `--color-link` always wins. To put the library's link back: `overrides: { '--color-link': 'var(--color-brand-700)', '--color-link-hover': 'var(--color-brand-800)' }`.
 - **"On" colours.** It sets `--zabi-on-brand` and `--zabi-on-brand-dark` (and
   the accent pair when `--accent` is given) to white or the ramp's 950 step,
-  whichever reaches 4.5:1 on the fill, its hover and its active step.
+  whichever reaches 4.5:1 on the fill, its hover and its active step. In dark
+  the brand label tries white first (the dark primary is step 600), and falls
+  back to the 950 step when an app has moved the dark primary to a pale step.
+- **`darkPrimary`.** `"brand"` (default) writes nothing: the library's dark
+  primary and danger are step 600 with a white label. `"mirror"` writes the 8.1
+  fills under the dark selectors: primary and danger on the mirrored 600, 700
+  and 800 (pale in dark), danger's label as it was, the label chosen by the
+  contrast check, and the control veil at 22% / 6%. An override of those roles
+  in `dark` or `both` always wins. CLI: `--dark-primary brand|mirror`. A
+  `--set --color-action-primary=...` that applies to both modes keeps its dark
+  value; move it under `--set-light` to take the dark default.
 - **Contrast check.** Every pair the library holds itself to is resolved in
   light and dark with the new ramps in place: 4.5:1 for text and
   3:1 for focus rings and UI parts.
@@ -842,6 +917,7 @@ const { css, tokens, warnings, closest } = createTheme({
   neutralChroma: 0.05, // optional, 0 to 0.1, needs neutral: a clearly tinted neutral; the ink roles follow it
   overrides: { "--color-link": "var(--color-brand-800)" }, // optional; both modes. Or { light, dark, both }
   pin: true, // optional: the exact brand on the primary action; or { brand: true, accent: true }
+  darkPrimary: "brand", // optional: "brand" (default, step 600 in dark too) or "mirror" (the 8.1 pale dark fills)
 });
 
 for (const warning of warnings) console.warn(warning.message);
@@ -853,9 +929,9 @@ writeFileSync("src/lib/brand.generated.css", css);
 
 | Returned | |
 |---|---|
-| `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin`, `neutralChroma` or `light` / `dark` overrides, two dark rules follow it. |
+| `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin`, `neutralChroma`, `darkPrimary: "mirror"` or `light` / `dark` overrides, two dark rules follow it. |
 | `tokens` | Every declaration of the `:root` rule, name to value. |
-| `darkTokens` | Only with `pin`, `neutralChroma` or `light` / `dark` overrides: every declaration of the dark rules. |
+| `darkTokens` | Only with `pin`, `neutralChroma`, `darkPrimary: "mirror"` or `light` / `dark` overrides: every declaration of the dark rules. |
 | `pinned` | Only with `pin`: `{ brand?, accent? }`, each `{ hex, light: { followed, onRamp, states }, dark: { pinned, followed, onRamp, states?, failed? } }`. |
 | `warnings` | `{ type: "contrast", pair, mode, ratio, required, foreground, background, message }` for each role pair below AA, and `{ type: "input", option, message }` notes about the colours given. Empty when everything passes. |
 | `closest` | `{ brand, accent?, neutral? }`, each `{ step, hex, deltaE, exact }`: where the input landed in its ramp. |
@@ -883,7 +959,7 @@ rule (`both`, then `light`); `darkTokens` holds what the dark rules say: the
 
 It throws a `TypeError` when `brand` is missing, a colour is not hex,
 `pin.accent` is set without `accent`, `neutralChroma` is not a number from 0
-to 0.1 or is given without `neutral`, or an override is not a custom property
+to 0.1 or is given without `neutral`, `darkPrimary` is not `"brand"` or `"mirror"`, or an override is not a custom property
 name with a non-empty string value (the message names the key path, for example
 `overrides.light["--color-link"]`). Without these options the result and the
 file are exactly what they were before the option existed.
@@ -1006,8 +1082,8 @@ Each family exposes the same roles, built from the same steps:
 | `--color-<family>-weak` | 700 | pressed / emphasis |
 | `--color-<family>-medium` | 800 | strongest fill |
 | `--color-<family>-strong` | 900 | darkest |
-| `--color-<family>-subtle` | 200 (dark: 100) | tinted fill — badges, alerts |
-| `--color-<family>-border` | 300 (dark: 200) | tinted edge |
+| `--color-<family>-subtle` | 200 (dark: 16% of step 500 over the card surface) | tinted fill — badges, alerts |
+| `--color-<family>-border` | 300 (dark: 36% of step 500 over the card surface) | tinted edge |
 | `--color-<family>-text` | 700 | text on a subtle fill or a page surface |
 
 Families: `success`, `warning`, `error`, `info`, `energetic`, `neutral`.
@@ -1016,11 +1092,11 @@ Families: `success`, `warning`, `error`, `info`, `energetic`, `neutral`.
 and `-active` (800) instead of `-weak` / `-medium` / `-strong`.
 
 The tints are the one role that does not simply mirror. A step-100 fill is
-1.16:1 on a white card, too pale to read as a fill, so light uses steps 200 and
-300 (1.36:1 and about 1.7:1). Mirrored, those would be too heavy on a dark
-surface, so `.dark` pins 100 and 200. `neutral` follows the same shape on the
-base ramp: `base-250` fill and `base-300` edge in light, `base-300` and
-`base-200` in dark.
+1.16:1 on a white card, which is enough on the near-white 9.0 page once the
+tint has its edge, so light uses steps 100 and 200 for the fill and the edge.
+`.dark` restates 100 and 200 too (the mirror of those would be too heavy on a
+dark surface). `neutral` follows the same shape on the base ramp: `base-200`
+fill and `base-250` edge in light, `base-300` and `base-200` in dark.
 
 Prefer the **subtle** trio (`-subtle` fill + `-border` edge + `-text` label) for
 anything informational. Solid fills are for the one element on a screen that has
@@ -1033,20 +1109,47 @@ Every surface uses one of four semantic levels. Use these tokens instead of raw 
 | Level | Token / utility | Use for | Light (OKLCH L) | Dark (OKLCH L) |
 |---|---|---|---|---|
 | Base | `--color-surface-base` · `bg-surface-base` | Page / app shell (the darkest level in both themes) | `base-150` · 94 | `--zabi-base-900` `#18181b` · 21 |
-| Raised | `--color-surface-raised` · `bg-surface-raised` | Cards, panels, sidebars | `#ffffff` · 100 | 6.4% wash `#262629` · 27 |
-| Elevated | `--color-surface-elevated` · `bg-surface-elevated` | Nested cards, hover and active fills | `base-100` · 97 | 13.1% wash `#363638` · 33 |
-| Overlay | `--color-surface-overlay` · `bg-surface-overlay` | Modals, sheets, dropdown/select menus, navigation panels, toasts | `#ffffff` · 100 | 19.7% wash `#454547` · 39 |
-| Inset | `--color-surface-inset` · `bg-surface-inset` | A recessed area on a raised surface: a well, a stat strip, a code sample inside a card | `base-100` · 97 | `base-150` `#1f1f22` · 24 |
+| Raised | `--color-surface-raised` · `bg-surface-raised` | Cards, panels, sidebars | `#ffffff` · 100 | `--zabi-base-850` `#1f1f22` · 24 |
+| Elevated | `--color-surface-elevated` · `bg-surface-elevated` | Nested cards, hover and active fills | `base-100` · 97 | `--zabi-base-800` `#27272a` · 27 |
+| Overlay | `--color-surface-overlay` · `bg-surface-overlay` | Modals, sheets, dropdown/select menus, navigation panels, toasts | `#ffffff` · 100 | `--zabi-base-800` `#27272a` · 27 (same tone as elevated; set apart by rim and shadow) |
+| Inset | `--color-surface-inset` · `bg-surface-inset` | A recessed area on a raised surface: a well, a stat strip, a code sample inside a card | `base-100` · 97 | `--zabi-base-900` `#18181b` · 21 (the page step) |
 
 **Inset is not a fifth rung.** The four levels say how far a surface is lifted;
-inset says it is cut into the card it sits on. It is the ramp step between the
-page and the raised surface in both themes, about 3 lightness points below
-`raised`, and every text token passes AA on it. In dark it is the step the input
-field has always used, and `--color-input` now points at it. In light it shares
-`base-100` with `elevated`: under a white card the only direction left is down,
-so a nested card and a well are the same colour there and differ only in dark.
+inset says it is cut into the card it sits on. In light it is the ramp step
+below the raised surface, about 3 lightness points under it, and every text token
+passes AA on it. In dark it is the page step (3 points below the card). In
+light it shares `base-100` with `elevated`: under a white card the only
+direction left is down, so a nested card and a well are the same colour there.
+In dark the inset and the page are the same colour, so an inset area on the page
+needs an edge. `--color-input` no longer points at it in dark (it did up to
+9.0.0-alpha.5): a dark field is a translucent step of the neutral ramp, below.
 Do not use `--color-input` for a well. It is white in light mode, because a
 light field is a raised surface.
+
+**The dark field fill.** `--color-input` is base-50 at 7% over transparent in dark,
+`-hover` 10%, `-focus` 7%, `-active` 15%: a well lighter than whatever it sits on,
+with no rule per surface, as the dark flat card is a lighter layer. Measured on the
+default theme: the resting well is 1.20:1 off the page (#28282b), 1.22:1 off a card
+(#2e2e31) and 1.23:1 off the overlay (#363639); the pressed fill is 1.30:1 past
+the resting one on all three, the value text 7.34:1 or more and the placeholder
+4.08:1 or more on every fill (4.5:1 except pressed over the overlay, held to 4:1).
+`--color-input-placeholder` is 40% of base-350 into base-400 in dark (#ababb3, was
+base-600, #a1a1aa), because a lifted fill took the old one to 4.04:1 pressed on a
+card. The well is held at 1.15:1 or more off the page, a card and the overlay in
+dark, the hover step 1.08:1 and the pressed step 1.25:1 past rest, as pairs
+laid over what is behind the field (`behind`, `only: 'dark'`, `fgPaint`), also in
+`createTheme`'s check. The edge stays 3:1 against the surface outside the field
+(`--color-input-border`, unchanged); against the lifted fill it is 3.05:1 on the
+page, 2.79:1 on a card and 2.50:1 on the overlay (guarded at 3, 2.7 and 2.4).
+Inside a colour block (`.on-brand`, `.on-accent`, `.on-fill`) a field takes the
+opaque `--color-input-solid`, `-hover`, `-focus`, `-active` (in light the field's
+own values, in dark the old opaque field), as the flat card takes the opaque card.
+The progress track is unchanged (`--color-base-75` in dark). Restore the 9.0.0-alpha.5
+field: `overrides: { dark: { '--color-input': 'var(--color-surface-inset)',
+'--color-input-hover': 'var(--color-base-200)', '--color-input-focus':
+'var(--color-base-150)', '--color-input-active': 'color-mix(in srgb,
+var(--zabi-base-50) 10%, var(--color-surface-inset))', '--color-input-placeholder':
+'var(--color-base-600)' } }`.
 
 Supporting tokens:
 - `--color-surface-overlay-hover` (`bg-surface-overlay-hover`): row and icon-button hover **inside** an overlay. It is lighter than the overlay in dark mode.
@@ -1058,39 +1161,47 @@ raised and separated from it by `shadow-lg` and the overlay edge. The page is
 `base-150`, not `base-100`: at `base-100` a card was 1.10:1 on the page and a
 nested card 1.04:1 on its parent.
 
-**The dark levels are generated, not hand-picked.** The page is
-`--zabi-base-900`, and each level above it is `--zabi-base-50` — the same light
-as the dark hover tint `--color-surface-hover` — washed over the page at
-6.4% / 13.1% / 19.7%, so every level is literally the level below it with more
-light on it. The ladder lives in `tokens/surface-ladder.js`; edit the alphas
+**The dark levels are steps of the neutral ramp** (9.0, decisions D133/D134).
+The page is `--zabi-base-900`, the card `--zabi-base-850`, elevated and overlay
+`--zabi-base-800` (default `#18181b` / `#1f1f22` / `#27272a`, OKLCH L 21.0 /
+24.1 / 27.4): two tone steps in all. The overlay hover is one step lighter
+(`--zabi-base-750`, `#333338`) and the inset (a field, a well) is the page step.
+The ladder lives in `tokens/surface-ladder.js` (`SURFACE_STEP`); edit the steps
 there and run `npm run sync:tokens`, never the values in `app.css`.
 
-The levels ship as `color-mix()` over the neutral ramp, not as baked hex:
+Each role is a plain alias of its step and nothing else:
 
 ```css
 --color-surface-base: var(--zabi-base-900);
---color-surface-raised: color-mix(in srgb, var(--zabi-base-50) 6.4%, var(--zabi-base-900));
+--color-surface-raised: var(--zabi-base-850);
+--color-surface-overlay: var(--zabi-base-800);
 ```
 
-That is how the ladder follows an app's `--zabi-base-*` override: a warm grey
-gets four warm dark levels, with no surface tokens of its own. Mixing two
-opaque colours in sRGB is the same arithmetic as the old build-time composite,
-so the default theme resolves to exactly the hex in the table, and an overlay
-is still opaque. The static checks evaluate the mix themselves
-(`scripts/resolve-tokens.js`), so `check-contrast.js` still resolves every AA
-pair against a dark surface and `check-surface-elevation.js` still measures the
-steps. The trade is unchanged: nesting past the four levels is not automatic. A
-card inside a card does not self-lighten, it names the next level up.
+That keeps the ramp's own hue and chroma. Until 8.1 the levels were a white
+wash mixed into the darkest neutral, which lost chroma at every level on a
+tinted neutral (`createTheme({ neutral, neutralChroma })`): the higher the
+surface, the greyer. Now `neutral: '#607296', neutralChroma: 0.08` gives a
+`#111828` page, `#18202f` card and `#202837` overlay, and a `--zabi-base-*`
+override carries all of them.
 
-Two things to know. The step size depends on the app's neutrals: the alphas are
-solved for the default greys, and a ramp whose 900 or 50 step is far from
-`#18181b` / `#fafafa` can land outside the 5–8 point window the guard holds the
-default to. And wherever Tailwind compiles the dark file (the
-`zabi-components/css` bundle, or an app's own build) it adds a static fallback,
-the default hex, before each mix for browsers without `color-mix()`; those get
-the default dark surfaces whatever the app overrides.
+**An overlay is told apart by its edge and its shadow, not by being greyer.**
+Its tone equals elevated. `--color-material-rim` (14% of `--zabi-base-50`) laid
+over the overlay is 1.85:1 on the page, 1.72:1 on the card and 1.56:1 on the
+overlay itself, and the dark `--shadow-opacity` / `--shadow-opacity-contact`
+(0.5 / 0.4) are much stronger than light's. The decorative hairline
+`--color-border` is `--color-base-250` (`#333338`) in dark: 1.41:1 on the page
+and 1.31:1 on the card. A field on the page is told apart by its 3:1 edge
+(`--color-input-border`), which is guarded on the field, page, card, elevated
+and overlay surfaces in both themes.
 
-**Why dark mode steps lightness instead of using shadows:** a drop shadow simulates light blocked by a raised object, which reads on a light page. On a dark page the shadow is as dark as the background, so the signal disappears. In dark mode each level is therefore **lighter** than the one below it, by +6 OKLCH lightness points on the neutral base hue. Light mode keeps white surfaces and uses shadows for elevation.
+Two things to know. The step distances depend on the app's neutrals: a ramp
+whose 900, 850 and 800 steps are far from the defaults can land outside the
+2 to 5 point window the guard holds. And wherever Tailwind compiles the dark
+file (the `zabi-components/css` bundle, or an app's own build) it may add a
+static fallback, the default hex, before an alias for browsers without
+`var()`-in-colour support.
+
+**Why dark mode steps lightness, and so little of it:** a drop shadow simulates light blocked by a raised object, which reads on a light page. On a dark page the shadow is as dark as the background, so the signal comes from tone: each level is **lighter** than the one below it, by about 3 OKLCH lightness points, with the overlay at the elevated tone and set apart by its rim and a stronger shadow. Light mode keeps white surfaces and uses shadows for elevation.
 
 **Rules:**
 - Anything that floats above content must use a lighter level than what it floats over. Floating components (Modal, SlideUp, Dropdown/Select menu, NavigationMenu panel, Toaster/Toast) use `bg-surface-overlay`.
@@ -1098,15 +1209,17 @@ the default dark surfaces whatever the app overrides.
 - Existing tokens remain as aliases: `background` → base, `card` / `surface-1` → raised, `surface-2` / `card-hover` → elevated, `surface-3` → overlay (dark), `card-elevated` → overlay (light) / elevated (dark).
 
 **Enforced by** `scripts/check-surface-elevation.js`, which `validate-theme.js` runs during `npm run build:css`. It fails when:
-- dark levels aren't strictly increasing;
-- any dark step is outside 5–8 OKLCH L points;
+- a dark level, the overlay hover or the inset is not declared as one step of the ramp (`var(--zabi-base-N)` or `var(--color-base-N)`), for example a `color-mix()` with a wash;
+- dark lightness decreases base to raised to elevated to overlay, or raised is not lighter than the page;
+- raised, elevated and overlay use more than two distinct tones above the page, a tone step is outside 2 to 5 OKLCH L points, or the top is more than 8 points above the page;
+- the rim over the overlay is under 1.5:1 on the page or the card, or under 1.3:1 on the overlay; or the dark `--color-border` is under 1.2:1 on the page or the card;
 - the light levels are not ordered base < elevated < raised, either step is under 2 points, or the overlay is darker than raised;
 - the inset surface is less than 2 points below raised, or darker than the page, in either theme;
 - a text token falls below AA on any level or on the inset surface;
 - overlay hover or tooltip fills are darker than the overlay;
 - a floating component paints a surface class below overlay.
 
-To retune the dark levels, edit `SURFACE_ALPHA` in `tokens/surface-ladder.js`, run `npm run sync:tokens`, and then `node scripts/check-surface-elevation.js`.
+To retune the dark levels, edit `SURFACE_STEP` in `tokens/surface-ladder.js`, run `npm run sync:tokens`, and then `node scripts/check-surface-elevation.js`.
 
 > The light surface tokens must stay **below** the `/* Background Colors */` marker in `@theme`. `scripts/sync-theme-tokens.js` regenerates everything between the base-scale aliases and that marker.
 
@@ -1159,7 +1272,7 @@ all five surfaces: page, card, inset, elevated and overlay. The colour a focus-r
 uses must be a token in that list (`scripts/contrast-pairs.js`), so a ring
 cannot read a raw ramp step.
 `--color-input-border`, the edge of a form field, is held to 3:1 on the field
-fill (`--color-input`), the page and the card (WCAG 1.4.11). The same pairs are
+fill (`--color-input`; over the page, a card and the overlay in dark, where the fill is translucent), the page and the card (WCAG 1.4.11). The same pairs are
 in the list `createTheme` checks, so a generated theme that lets a field's edge
 fall below 3:1 is reported. Run it after
 re-pointing any token:
@@ -1201,6 +1314,110 @@ it separately.
 
 Enforced by `scripts/check-control-geometry.js`.
 
+### Materials
+
+Frosted glass is the default for the layer that **floats over content**: bars,
+sheets, menus. It is never for cards, lists, inputs or the page. A material is
+a surface at partial alpha with a backdrop blur, a light top edge, a 1px rim
+and a soft shadow, applied together by one class.
+
+| Class | Fill | Use for | Text it may carry |
+|---|---|---|---|
+| `material-thin` | `--color-material-thin` (from `--color-surface-chrome`) | A single control floating on a bar | headline |
+| `material-regular` | `--color-material-regular` (from `--color-surface-chrome`) | Bars, the tab bar, a floating sidebar | headline, body, label |
+| `material-thick` | `--color-material-thick` (from `--color-surface-overlay`) | Sheets, menus, modals, toasts, tooltips | all five text roles |
+
+Supporting tokens: `--material-alpha-thin|regular|thick`, `--material-backdrop-brightness`, `--material-blur-thin|regular|thick`
+(16, 24 and 32px), `--material-saturate`, `--color-material-highlight`,
+`--color-material-rim` and `--shadow-material`. The highlight and rim are mixes
+of the neutral ramp (`--zabi-base-50` and `--zabi-base-900`) and the shadow is
+built on `--shadow-color`, so a neutral override tints all of them. A class
+sets no position, radius or overflow: add `rounded-*` yourself. A component
+never writes `backdrop-blur-*` or `backdrop-filter` (`scripts/check-token-violations.js`
+fails it).
+
+**The floor.** A material is judged over the worst backdrop of the mode, not
+alone: the fill is composited over `--zabi-base-950` (light) or `--zabi-base-50`
+(dark), the far ends of the neutral ramp, because a photo can be that dark or
+that bright. In dark that backdrop is first dimmed: the filters are
+`blur() saturate() brightness(var(--material-backdrop-brightness))`, the token is
+`1` in light (an identity) and `0.6` in dark, and `brightness()` multiplies the
+sRGB channels, so the brightest thing behind dark glass is step 50 times 0.6.
+This is what a browser paints, because every fallback below removes the filter
+and makes the fill opaque in the same breath. Only material pairs are dimmed. On
+that result the roles above need 4.5:1, and regular and thick need the focus ring
+at 3:1 (a thin control's ring is drawn around it, outside the material); the same
+roles are also held over the mode's own page. `npm run check:contrast` and
+`createTheme` both compute this, with the mode's own value of the token, so an
+app that sets `--material-backdrop-brightness` back to 1 in dark is warned if its
+alphas then fail. The alphas for thin, regular and thick are light 58, 84, 88
+and dark 60, 68, 72: each is the smallest whole percent that passes plus a
+margin (against the page-colour chrome the floors are thin 50 / 30, regular
+82 / 47 and thick 84 / 68, light / dark).
+
+**Fallbacks.** The three fills become the opaque surface they are made from and
+the blur is removed under `prefers-reduced-transparency: reduce`,
+`prefers-contrast: more`, `forced-colors: active`, where `backdrop-filter` is
+unsupported, and wherever the app sets `data-materials="opaque"` on the root or
+any ancestor (a way out for a slow phone). The fallback re-points the tokens,
+so every use of them follows, in both modes and over an app's own fill. Under
+forced colors the rim is a 1px `CanvasText` outline. To set a fill per mode:
+`overrides: { light: { '--color-material-regular': … }, dark: { … } }`.
+
+**Layers.** `backdrop-filter` makes an element the containing block of its fixed
+descendants, so a container that holds a Dropdown or a Tooltip puts the glass on
+a `::before` instead. `material-layer-thick` and `material-layer-regular` are the
+layer forms of thick and regular (same tokens, so every fallback applies): the
+element is positioned by you, never scrolls its own content, and keeps only the
+outer shadow.
+
+**Bars.** `--color-surface-chrome` is the page colour in both modes, so a bar is
+flush with the page. `material-bar` is the bar surface: put it on a positioned
+element (never a scroller). At rest its `::before` layer is `--color-bar`, with
+no line and no blur; with `data-scrolled-under="true"` it is the regular material
+and a 1px `--color-bar-border` hairline on the content side (the bottom edge, or
+the top edge with `data-bar-edge="bottom"`). The fill and line fade over
+`--duration-moderate`. Under the fallbacks a scrolled bar is page coloured with the
+hairline (`CanvasText` in forced colors). Scope `--color-bar` on the element
+(`transparent`, `var(--color-bar-brand)`) and the layer follows. Tokens, each
+settable per mode:
+
+| Token | Default | Use |
+|---|---|---|
+| `--color-bar` (read by `material-bar`) | `var(--color-surface-chrome)` | A bar's fill at rest |
+| `--color-bar-border` (`border-bar`) | headline at 10% | The hairline once content is under the bar; decorative |
+| `--color-bar-brand` (`bg-bar-brand`) | `var(--color-action-primary)` | An on-brand AppBar; `--color-on-brand` is held at 4.5:1 on it |
+| `--color-tabbar-active` (`bg-tabbar-active`) | `var(--color-nav-menu-active)` | The active tab's pill; `--color-nav-menu-item-active` is held at 4.5:1 on it |
+
+`--color-bar` and headline are held at 4.5:1 as well. To get the raised bar fill
+back: `--color-surface-chrome: var(--color-surface-raised)`.
+
+### Gradients
+
+Two gradients, as tokens, so a rebrand carries through. Contrast is never measured against a gradient; the guard checks the worst stop of each.
+
+- **Canvas.** `--gradient-canvas` is two soft radial washes from `--color-brand-300` and `--color-accent-300` (stops `--color-canvas-wash-brand|accent`, strength `--gradient-canvas-strength`, light 55%, dark 25%). Glass over a flat page shows nothing; put `bg-canvas` (page colour plus the wash) on a fixed-height shell or a scroll container, where the wash stays put as content moves. The library never applies it to `body`. Text roles, link, focus ring and field edge are held on each stop over the page.
+- **Solid controls.** `bg-control-gradient` (primary and danger; the veil is neutral) and `bg-control-gradient-accent` lay a veil over the control's own `background-color`: a light neutral at the top, a slight dark one at the bottom (`--color-control-gradient-start|end`, `--color-control-gradient-accent-start|end`), plus an inset top edge (`--shadow-control-highlight`). Hover and pressed fills still show through. The label is held at 4.5:1 on both ends over rest, hover and pressed, for primary, accent and danger. Progress does not take a gradient.
+  - Light is darken-only: `--gradient-control-top-strength: 0%` (the top is the control's own colour, so the label keeps its full contrast and your brand colour is not altered) and `--gradient-control-bottom-strength: 14%`. Dark is 22% / 6%. The accent has strengths of its own, `--gradient-control-accent-top-strength` and `-bottom-strength`, which follow the shared ones.
+  - The highlight is written to Tailwind's inset-shadow variable, so a `shadow-*` class and `focus-ring` on the same element still draw.
+  - `createTheme` does not hand you a veil that fails: where the darkened bottom takes a dark label under 4.5:1 (a light accent), it flips that veil to lighten-only in that mode (top up to 14%, bottom 0); if no strength passes it writes both as 0%. A strength you set yourself is never moved, only reported.
+- Override per mode with `createTheme` `overrides` and restate dark; a strength too high is reported as a contrast warning.
+
+### Buttons and the Toggle
+
+Tokens and classes the 9.0 Button, Toggle and FloatingActionButton read. All settable like any role; dark is restated.
+
+- **Tonal** (`bg-action-tonal`, `text-action-tonal`): `--color-action-tonal` (the brand tint), `-hover`, `-active`, and `--color-action-tonal-text` (brand step 800, 4.5:1 or more on all three fills in both modes; step 700 fails the pressed fill on a saturated brand).
+- **Outline edge** (`border-action-outline`): `--color-action-outline-border` and `-hover`, the field edge by default (3:1 on the page and a card in both modes). Inside `.on-brand` and `.on-accent` it is the block's label colour.
+- **Button corner and label weight**, apart from fields: `rounded-button` reads `--zabi-button-radius` and falls back to `--radius-control`; `font-button` (500) and `font-button-strong` (600) read `--zabi-button-font-weight`. Declared nowhere, so set them on any ancestor (or in `createTheme` `overrides`).
+- **Off Toggle** (`bg-toggle-track`, `ring-toggle-track`): `--color-toggle-track`, `-hover`, `-active` and `--color-toggle-track-border`. The track is a light tint; its edge is what holds 3:1 on the page and a card (WCAG 1.4.11). `--color-control-track*` is unchanged and still the Slider's. **Toggle knob** (`bg-toggle-thumb`, `bg-toggle-thumb-checked`): the default knob is `--color-toggle-knob` off (light base-500, dark base-700) and `--color-toggle-knob-checked` on (the primary fill's label colour), each 3:1 or more on every track fill it sits on, at rest, hovered and pressed (WCAG 1.4.11; guarded, 3.27:1 at the least in light off, 4.86:1 on). A theme sets those two, light and dark each in their own block, and `scripts/check-contrast.js` holds the pairs. `--color-toggle-thumb` and `--color-toggle-thumb-checked` are declared nowhere, so any ancestor can set them and they win: the first is the knob in both states (the checked state reads it when its own is unset), the second the knob when on only. Contrast of an override is yours to check. In forced colours the knob is a system colour and none of the tokens is read.
+- **Neutral subtle Badge** (`bg-badge-neutral`, `text-badge-neutral`): `--zabi-badge-neutral-fill` and `--zabi-badge-neutral-text`, declared nowhere, read in front of `--color-neutral-subtle` and `--color-neutral-text`. Set them on any ancestor or in the theme (light and dark each in their own block) and the neutral subtle `Badge` moves; `Alert variant="neutral"`, `Skeleton`, `AvatarGroup`, `Header` and the other badge variants do not. Unset, the badge is as it was. Inside `.on-brand`, `.on-accent` and `.on-fill` the text is the theme's body colour again, as for any neutral surface; the fill follows the property. Contrast of the pair is yours to check (the default is 8.2:1 in light).
+- **Skeleton on a colour block** (`tone="on-color"`, `bg-skeleton-on-color`): the fill is the surface's label colour at 24% (`color-mix(in srgb, currentColor 24%, transparent)`), so inside `.on-brand`, `.on-accent`, `.on-fill` or a `Card` with `tone` it follows the block's label colour in light and dark. `--zabi-skeleton-fill`, declared nowhere, replaces it on any ancestor. The class is not in the lists that restore the theme's text on a surface inside a block, on purpose. The default `tone="neutral"` is `bg-neutral-subtle`, unchanged.
+- **Chip** (`bg-chip`, `text-chip-text`): `--color-chip`, `-hover`, `-active` (light base-200, 300, 350; dark base-750, 700, 650) and `--color-chip-text` (the headline, 4.5:1 on all three). Seen on the page and a card without an edge, 1.2:1 or more, guarded. **Selected chip** (`bg-chip-selected`, `text-chip-selected-text`): `--color-chip-selected`, `-hover`, `-active`, `-text`, the tonal role by default, as tokens of their own, with the label held on all three fills.
+- **Tint card** (`bg-card-tint`): `--color-card-tint`, brand-100 in light and the brand at 8% over the card in dark. Headline, body, label, description, caption and link are held to 4.5:1 on it, and the ring, the field edge and the outline Button's edge to 3:1, in both modes.
+- **Flat card** (`bg-card-flat`): `--color-card-flat`, `-hover`, `-active`. Light is the card, hover and pressed fills, opaque, as before. Dark is the neutral ramp's base-50 at 7%, 11% and 15% over transparent, so a flat card is a lighter layer of whatever is behind it: on the page (#18181b) one layer is #282829, on a card (#1f1f22) #2e2e31, on the overlay (#27272a) #363638, and each nested layer is another 1.2:1 to 1.25:1 step. It is derived from the ramp, so `neutralChroma` tints it. Restore the opaque fill with `overrides: { dark: { '--color-card-flat': 'var(--color-card)' } }` (and `-hover`, `-active` for an interactive flat card). Held in dark: the five text roles, the link and the ring on three layers over the card, two over the overlay and one over the page (the caption is 4.1:1 on three over the overlay, so that stack is not held), and the field edge and the outline Button's edge at 3:1 on one layer over the page (3.03:1; on a layer over a card or an overlay they are 2.8:1 or less, so a field there keeps its own fill). Inside a `tone` card (`.on-brand`, `.on-accent`, `.on-fill`) a flat card is the opaque card with the theme's text, in dark too, as `bg-card` was: a translucent step over the block's fill would carry the theme's text at about 2.3:1, and the label colour at 4.4:1.
+- **Progress track edge** (`border-progress-track-border`): `--color-progress-track-border`, the field edge by default (3:1 on the page and a card in both modes, because the default track is the field fill and does not reach it). `transparent` skips the guard. `createTheme` writes `transparent` for a mode in which you override `--color-progress-track` with a colour that itself reaches 3:1 on the page and the card, unless you set the edge; an edge you set, `transparent` included, is never moved.
+
 ### Shadow scale
 
 Elevation in light mode is **two steps**, not a ramp. A shadow says "this is
@@ -1225,8 +1442,10 @@ Rules:
   `app.css` never defines, so no token controls it.
 - Shadows carry elevation in **light mode only**. In dark mode the surface
   levels above do the work — see [Surface elevation levels](#surface-elevation-levels).
-- The light shadow is the ramp's own ink (`--shadow-color: 24 24 27`) at
-  `--shadow-opacity: 0.14`. Dark keeps black at 0.3.
+- The light shadow is the ramp's own ink (`--shadow-color: 24 24 27`). Every
+  step is two layers: a tight contact shadow at `--shadow-opacity-contact`
+  (0.06; dark 0.3) and a wider, softer one at `--shadow-opacity` (0.10; dark
+  0.24). Until 8.1 both layers shared one flat 0.14 (dark 0.3).
 
 Enforced by `scripts/check-token-violations.js`.
 
@@ -1315,7 +1534,7 @@ Parts of `src/app.css` are generated too, so edit the source instead:
 |---|---|---|
 | A chromatic ramp (`brand`, `citron`, `pine`, `iris`, `warning`, `error`) | `hue` / `peakChroma` in `tokens/chromatic-scales.js` | `npm run sync:tokens` |
 | The neutral ramp | `tokens/base-scale.js` | `npm run sync:tokens` |
-| The dark surface levels | `SURFACE_ALPHA` in `tokens/surface-ladder.js` | `npm run sync:tokens` |
+| The dark surface levels | `SURFACE_STEP` in `tokens/surface-ladder.js` | `npm run sync:tokens` |
 | A role, a font, a radius | `src/app.css` | nothing in development |
 
 Before a release, `npm run build:css` regenerates the `dist/` files and
@@ -1355,18 +1574,33 @@ three, or if the `auto` copy differs from `.dark`.
 
 ### Dark mode action colours
 
-- **Primary.** No dark override: `--color-brand-*` mirrors, so `brand-800` in
-  light is `brand-200` in dark. The label is `--color-on-brand`, which `.dark`
-  points at `--zabi-on-brand-dark`.
+- **Primary.** The same physical steps as light: `.dark` points
+  `--color-action-primary`, `-hover` and `-active` at `--zabi-brand-600`, `700`
+  and `800` (not the mirrored `--color-brand-*`, which are the pale 400, 300
+  and 200). The label is `--color-on-brand`, which `.dark` points at
+  `--zabi-on-brand-dark` (white). The fill is 3.72:1 on the dark page, 3.43:1
+  on a card and 3.10:1 on the overlay, held by guarded pairs. The ring, links,
+  the tonal roles and the nav-active roles stay on the mirrored steps (they are
+  text, rings and tints on a dark surface).
+  `--color-primary*` is unchanged (still mirrored; no component reads it).
+- **Status tints.** In dark, `--color-<success|warning|error|info|energetic|accent>-subtle`
+  is the hue thinned into the card surface: `color-mix(in srgb, var(--zabi-<ramp>-500) 16%, var(--color-surface-raised))`;
+  `-border` is the same mix at 36%. A badge or alert is a low-chroma tint of its
+  card (never darker than it) and the hue is carried by the icon and the text,
+  which are unchanged. Because the base is a `var()`, an app's override of the
+  card surface (or `neutralChroma`) carries through. `neutral` and the brand
+  tints are unchanged.
 - **Secondary.** No dark override: `--color-base-*` mirrors the same way.
-- **Danger.** Resolves through `--color-error-*`, which mirrors like every
-  other ramp. The `.dark` block restates the aliases only so that
+- **Danger.** The same physical steps as light danger (`--zabi-error-600`,
+  `700`, `800`, label `--zabi-error-50`), so a destructive button is one red in
+  both modes. Its `-subtle` tint is the error tint (`--color-error-subtle`), with
+  `-subtle-hover` (20%) and `-subtle-active` (32%) stronger mixes. Restated in `.dark` so that
   `zabi-components/theme-dark-only` remains a complete standalone import
   (`validate-theme.js` enforces that).
 
-Hover and active always move toward the dark end in light mode, and the mirror
-flips that, so "more pressed" means "more contrast against the page" in both
-themes. Never point `-active` at a step on the far side of the ramp; that is
+Hover and active move toward the dark end for the primary and danger fills in
+both modes (one recipe). For the mirrored roles the mirror flips that, so "more
+pressed" means "more contrast against the page" in both themes. Never point `-active` at a step on the far side of the ramp; that is
 how the pressed primary label once ended up at 1.66:1.
 
 ### Building the generator

@@ -43,6 +43,13 @@
          * did. A mouse and a keyboard are not affected.
          */
         touchDuration?: number;
+        /**
+         * `material` (default): the bubble is the thick glass overlay material
+         * with body text and no arrow. `inverted`: the 8.1 bubble, a dark fill
+         * with light text (`--color-tooltip-bg` / `--color-tooltip-fg`) and an
+         * arrow.
+         */
+        tone?: "material" | "inverted";
         class?: string;
         children?: Snippet;
     };
@@ -67,6 +74,7 @@
         block = false,
         fixed = false,
         touchDuration = 0,
+        tone = "material",
         class: className = "",
         children,
         ...restProps
@@ -596,9 +604,13 @@
         <div
             bind:this={bubbleElement}
             id={tooltipId}
-            class="tooltip pointer-events-none invisible absolute z-tooltip whitespace-normal wrap-break-word rounded-control bg-tooltip-bg px-3 py-2 text-sm leading-5 text-tooltip-fg opacity-0 transition-[opacity,visibility,transform] duration-200 ease-in-out"
+            class={cn(
+                "tooltip pointer-events-none invisible absolute z-tooltip whitespace-normal wrap-break-word rounded-control px-3 py-2 text-sm leading-5 opacity-0 transition-[opacity,visibility,transform] duration-(--duration-moderate) ease-standard",
+                tone === "inverted" ? "bg-tooltip-bg text-tooltip-fg" : "material-thick text-body",
+            )}
             role="tooltip"
             aria-hidden={!isVisible}
+            data-tone={tone}
             data-visible={isVisible}
             data-parked={parked}
             data-placement={side}
@@ -744,6 +756,13 @@
     .tooltip-container[data-strategy="fixed"][data-placement="right"] .tooltip::after {
         right: 100%;
         left: auto;
+    }
+
+    /* The arrow is a second shape on a translucent fill: its blur edge would
+       show a seam where it meets the bubble, and HIG tooltips have none. Only
+       the inverted bubble, which is opaque, keeps it. */
+    .tooltip[data-tone="material"]::before {
+        display: none;
     }
 
     .tooltip::before {

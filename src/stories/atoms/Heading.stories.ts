@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
 import Heading from '../../components/atoms/Heading.svelte';
+import HeadingDisplayStory from './HeadingDisplayStory.svelte';
 
 const meta = {
     title: 'Design System/Atoms/Heading',
@@ -71,18 +72,7 @@ export const AllLevels: Story = {
         level: 1,
         text: 'Heading'
     },
-    render: () => ({
-        Component: 'div' as any,
-        props: { style: 'display: flex; flex-direction: column; gap: 1rem;' },
-        children: [
-            { Component: Heading, props: { level: 1, text: 'Heading 1 - Bold' } },
-            { Component: Heading, props: { level: 2, text: 'Heading 2 - Bold' } },
-            { Component: Heading, props: { level: 3, text: 'Heading 3 - Medium' } },
-            { Component: Heading, props: { level: 4, text: 'Heading 4 - Medium' } },
-            { Component: Heading, props: { level: 5, text: 'Heading 5 - Medium' } },
-            { Component: Heading, props: { level: 6, text: 'Heading 6 - Medium' } }
-        ]
-    } as any)
+    render: () => ({ Component: HeadingDisplayStory, props: { mode: 'levels' } }) as any
 };
 
 export const WithSlot: Story = {
@@ -95,4 +85,28 @@ export const WithSlot: Story = {
         props: args,
         children: ['Slot Content']
     })
+};
+
+export const Display: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'The display face (`--font-family-display`) with its own, larger steps: 60px for level 1 (48px on a phone) down to 20px for level 6. Weight and tracking are `--zabi-display-weight` and `--zabi-display-tracking`.'
+            }
+        }
+    },
+    render: () => ({ Component: HeadingDisplayStory, props: { mode: 'display' } }) as any
+};
+
+export const DisplayWithOwnFace: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    'A second typeface is a token, not a CSS rule: set `--font-family-display` (and, if the face wants it, `--zabi-display-weight`) on any ancestor.'
+            }
+        }
+    },
+    render: () => ({ Component: HeadingDisplayStory, props: { mode: 'ownFace' } }) as any
 };

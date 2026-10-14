@@ -8,10 +8,12 @@
     import type { ExtendedSemanticVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
     import { TOUCH_HIT_AREA } from "../util/touch-target.js";
-    type AlertVisualVariant = Exclude<ExtendedSemanticVariant, "default">;
+    /** The shared variants plus the theme's brand tint, which only an alert has. */
+    type AlertVariant = ExtendedSemanticVariant | "brand";
+    type AlertVisualVariant = Exclude<AlertVariant, "default">;
 
     interface Props {
-        variant?: ExtendedSemanticVariant;
+        variant?: AlertVariant;
         title?: string;
         message?: string;
         closable?: boolean;
@@ -21,6 +23,15 @@
         open?: boolean;
         /** Shrink to content instead of filling the container. */
         inline?: boolean;
+        /**
+         * Draws the tinted edge. `false` makes it transparent and keeps the
+         * 1px, so the box is the same size either way. The width itself
+         * follows `--zabi-alert-border-width`, which is read through a
+         * fallback and declared nowhere: an app (or any ancestor) sets it to
+         * `0px` once and every alert under it has no edge, with no prop on
+         * each. Default `true`, the edge an alert always had.
+         */
+        bordered?: boolean;
         class?: string;
         /** @deprecated use `class` — kept so 7.x call sites keep working. */
         className?: string;
@@ -35,6 +46,7 @@
         closeLabel: closeLabelGiven,
         open = $bindable<Exclude<Props["open"], undefined>>(),
         inline = false,
+        bordered = true,
         class: classProp = "",
         className = "",
         onclick,
@@ -82,35 +94,42 @@
         neutral: "bg-neutral-subtle border-neutral-border text-neutral-text",
         energetic:
             "bg-energetic-subtle border-energetic-border text-energetic-text",
+        // The primary brand tint. The accent is the link role, guarded on
+        // this fill (as Badge's brand label is); read from the token, not
+        // `text-link`, which darkens on hover and an alert is not a link.
+        brand: "bg-action-primary-subtle border-action-primary-border text-(color:--color-link)",
     });
 
     let alertRole = $derived(
-        variant === "success" || variant === "info" ? "status" : "alert",
+        variant === "success" || variant === "info" || variant === "brand"
+            ? "status"
+            : "alert",
     );
 </script>
 
 {#snippet icon()}
     {#if visualVariant === "info"}
-        <Info size={20} aria-hidden="true" />
+        <Info size={20} strokeWidth={2.5} aria-hidden="true" />
     {:else if visualVariant === "success"}
-        <Check size={20} aria-hidden="true" />
+        <Check size={20} strokeWidth={2.5} aria-hidden="true" />
     {:else if visualVariant === "warning"}
-        <TriangleAlert size={20} aria-hidden="true" />
+        <TriangleAlert size={20} strokeWidth={2.5} aria-hidden="true" />
     {:else if visualVariant === "error"}
-        <X size={20} aria-hidden="true" />
-    {:else if visualVariant === "neutral"}
-        <Info size={20} aria-hidden="true" />
+        <X size={20} strokeWidth={2.5} aria-hidden="true" />
+    {:else if visualVariant === "neutral" || visualVariant === "brand"}
+        <Info size={20} strokeWidth={2.5} aria-hidden="true" />
     {:else}
-        <Zap size={20} aria-hidden="true" />
+        <Zap size={20} strokeWidth={2.5} aria-hidden="true" />
     {/if}
 {/snippet}
 
 {#if open}
 <div
     class={cn(
-        'relative rounded-container p-4 border',
+        'relative rounded-container p-4 border-[length:var(--zabi-alert-border-width,1px)]',
         inline ? 'inline-block' : 'block w-full',
         alertClasses[visualVariant],
+        !bordered && 'border-transparent',
         'transition-colors duration-150 motion-reduce:transition-none',
         classProp,
         className,
@@ -126,7 +145,7 @@
         the alert's corner, so the radius is the alert's less that gap. -->
         <button
             onclick={handleDismiss}
-            class="absolute end-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[calc(var(--radius-container)-0.5rem-1px)] text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring focus-ring--muted {TOUCH_HIT_AREA}"
+            class="absolute end-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[calc(var(--radius-container)-0.5rem-var(--zabi-alert-border-width,1px))] text-description transition-colors duration-150 hover:bg-surface-hover hover:text-body active:bg-surface-active motion-reduce:transition-none focus-ring focus-ring--muted {TOUCH_HIT_AREA}"
             aria-label={closeLabel}
             type="button"
         >

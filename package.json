@@ -1,6 +1,6 @@
 {
   "name": "zabi-components",
-  "version": "8.1.0",
+  "version": "9.0.0",
   "description": "Svelte 5 UI component library: accessible components with TypeScript types, Tailwind CSS v4 design tokens, light and dark themes, and SSR support for SvelteKit.",
   "type": "module",
   "main": "dist/index.js",
@@ -26,6 +26,11 @@
       "types": "./dist/organisms/index.d.ts",
       "import": "./dist/organisms/index.js",
       "svelte": "./dist/organisms/index.js"
+    },
+    "./map": {
+      "types": "./dist/map.d.ts",
+      "import": "./dist/map.js",
+      "svelte": "./dist/map.js"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
@@ -150,6 +155,7 @@
     "@types/node": "^24.5.2",
     "autoprefixer": "^10.4.17",
     "jsdom": "^29.0.2",
+    "maplibre-gl": "^6.14.0",
     "postcss": "^8.4.35",
     "storybook": "^10.2.19",
     "svelte": "^5.43.8",
@@ -166,9 +172,13 @@
   },
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
+    "maplibre-gl": ">=5.0.0",
     "svelte": "^5.43.8"
   },
   "peerDependenciesMeta": {
+    "maplibre-gl": {
+      "optional": true
+    },
     "svelte": {
       "optional": false
     },

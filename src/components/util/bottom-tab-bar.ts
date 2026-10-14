@@ -3,7 +3,7 @@
 import type { Component } from "svelte";
 
 /** An icon component, as `@lucide/svelte` icons are. */
-export type BottomTabBarIcon = Component<{ size?: number; class?: string }>;
+export type BottomTabBarIcon = Component<{ size?: number; class?: string; strokeWidth?: number }>;
 
 /** One destination in the bar. */
 export interface BottomTabBarItem {
@@ -13,6 +13,11 @@ export interface BottomTabBarItem {
     label: string;
     /** Rendered above the label, at 24px. Decorative: the label names the tab. */
     icon: BottomTabBarIcon;
+    /**
+     * Drawn instead of `icon` on the active tab, typically the filled form.
+     * Left out, `icon` is drawn with a heavier stroke (2.5) when active.
+     */
+    activeIcon?: BottomTabBarIcon;
     /** A count shown on the icon. Nothing is shown for 0 or when it is left out. */
     badge?: number;
 }

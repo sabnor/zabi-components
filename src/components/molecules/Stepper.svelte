@@ -6,6 +6,7 @@
     import type { HTMLAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
+    import { inSkeletonGroup } from "../util/skeleton.js";
     import {
         STEPPER_STRINGS,
         clampStep,
@@ -99,6 +100,9 @@
         await tick();
         bodies[index]?.focus();
     }
+
+    /** Inside a `SkeletonGroup` the group is the one status; a second one in it would be a live region in a live region. */
+    const inGroup = inSkeletonGroup();
 
     /** Read out once when the current step changes, and never for the first render. */
     let announced = $state("");
@@ -202,7 +206,9 @@
                 {/if}
             </div>
         </div>
-        <span class="sr-only" role="status" data-stepper-status>{announced}</span>
+        {#if !inGroup}
+            <span class="sr-only" role="status" data-stepper-status>{announced}</span>
+        {/if}
     </nav>
 {/if}
 
@@ -375,8 +381,8 @@
     }
 
     /*
-     * Completed and current are filled, upcoming is an outline: a difference
-     * of shape. Completed has a check where the others have their number, and
+     * Completed and current are filled in the brand colour, upcoming is the
+     * lighter track: a difference of shape too. Completed has a check where the others have their number, and
      * the current one stands inside a ring of its own.
      */
     .stepper-marker {
@@ -419,11 +425,19 @@
         background-clip: content-box;
     }
 
-    /* The edge is all there is of an upcoming marker, so it is the control
-       boundary: 3:1 or better on every surface level of both themes. */
+    /*
+     * An upcoming marker is the progress track: a filled pill in the bar
+     * layout, with the track's own edge. An app that themes the progress
+     * track (an edgeless one that reaches 3:1 on its own) gets the same here.
+     * `--zabi-stepper-upcoming-fill` and `--zabi-stepper-upcoming-edge` are
+     * declared nowhere, so any ancestor can set them. The 8.1 look, a hollow
+     * outline, is
+     * `--zabi-stepper-upcoming-fill: transparent;
+     *  --zabi-stepper-upcoming-edge: var(--color-control-border);`
+     */
     .stepper-step[data-state="upcoming"] .stepper-marker {
-        border-color: var(--color-control-border);
-        background-color: transparent;
+        border-color: var(--zabi-stepper-upcoming-edge, var(--color-progress-track-border));
+        background-color: var(--zabi-stepper-upcoming-fill, var(--color-progress-track));
         color: var(--color-description);
     }
 

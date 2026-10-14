@@ -19,6 +19,10 @@ const meta = {
         size: {
             control: 'inline-radio',
             options: ['sm', 'md', 'lg']
+        },
+        tone: {
+            control: 'inline-radio',
+            options: ['neutral', 'primary']
         }
     },
     tags: ['autodocs']
@@ -41,7 +45,23 @@ export const Default: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Two segments of equal width. The selected one carries the primary action fill.'
+                story: 'Two segments of equal width. The selected one is a card-coloured thumb with a soft shadow and an edge, which slides to the segment that is chosen.'
+            }
+        }
+    }
+};
+
+export const PrimaryTone: Story = {
+    args: {
+        label: 'View',
+        options: views,
+        value: 'list',
+        tone: 'primary'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'tone="primary": the selected segment is the solid primary fill, as in 8.1. Neutral is the default so the control does not compete with the screen\'s main button.'
             }
         }
     }

@@ -5,15 +5,8 @@
     import type { SidebarNavigationItem } from "../../components/organisms/SidebarNavigation.svelte";
     import type { ComponentMetadata } from "../../types/page.types";
     import { componentsCatalog as components } from "$lib/showcase/components-catalog";
+    import SiteFooter from "$lib/marketing/SiteFooter.svelte";
     import { categories } from "$lib/showcase/components-showcase-constants";
-    import {
-        getDocsCategoryIcon,
-        getDocsComponentIcon,
-    } from "$lib/showcase/docs-sidebar-helpers";
-
-    interface PageDataShape {
-        component?: ComponentMetadata;
-    }
 
     type ShowcaseCatalog = ComponentMetadata["category"] | "all";
 
@@ -26,18 +19,20 @@
     let sidebarOpen = $state(false);
     let componentsNavSearch = $state("");
 
+    /**
+     * Every component is listed unless the address names one category
+     * (`?catalog=molecules`). So a component opened from anywhere shows the
+     * whole catalog, with All marked.
+     */
     const selectedCategory = $derived.by((): ShowcaseCatalog => {
-        if ($page.url.searchParams.get("catalog") === "all") {
-            return "all";
-        }
-        return (
-            ($page.data as PageDataShape | undefined)?.component
-                ?.category ?? "atoms"
-        );
+        const named = $page.url.searchParams.get("catalog");
+        return named === "atoms" || named === "molecules" || named === "organisms"
+            ? named
+            : "all";
     });
 
     const catalogQuerySuffix = $derived(
-        $page.url.searchParams.get("catalog") === "all" ? "?catalog=all" : "",
+        selectedCategory === "all" ? "" : `?catalog=${selectedCategory}`,
     );
 
     const currentComponents = $derived.by(() => {
@@ -57,7 +52,7 @@
 
     /**
      * Where a category row leads: the first component of the category, with
-     * `?catalog=all` for the row that lists every one. A real address, so
+     * `?catalog=` naming it; the row that lists every one has none. A real address, so
      * the row works as a link does: in a new tab, copied, and before the
      * page has hydrated. (It was `category:molecules`, a scheme that does
      * not exist, caught by a click handler.)
@@ -69,7 +64,7 @@
      */
     function categoryHref(categoryId: string): string {
         const first = firstInCategory(categoryId);
-        const suffix = categoryId === "all" ? "?catalog=all" : "";
+        const suffix = categoryId === "all" ? "" : `?catalog=${categoryId}`;
         return `/components/${first?.name ?? ""}${suffix}#catalog-${categoryId}`;
     }
 
@@ -79,7 +74,6 @@
                 id: `category-${category.id}`,
                 label: category.label,
                 href: categoryHref(category.id),
-                icon: getDocsCategoryIcon(category.id),
                 badgeText:
                     category.id === "all"
                         ? components.atoms.length +
@@ -95,7 +89,6 @@
                 id: `component-${component.name.toLowerCase()}`,
                 label: component.name,
                 href: `/components/${component.name}${catalogQuerySuffix}`,
-                icon: getDocsComponentIcon(component.name, component.category),
                 group: "secondary",
             }),
         );
@@ -121,7 +114,7 @@
 </script>
 
 <div class="bg-background">
-    <main
+    <div
         class="flex h-[calc(100dvh-var(--site-header-height))] min-h-0 w-full max-w-screen"
     >
         <!-- From `lg` up the catalog is a rail beside the page. Below that
@@ -155,8 +148,9 @@
             content is not clipped by this scroller, and it stretches the
             document itself: blank space to scroll through under the page. -->
             <div
-                class="relative min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-8 pb-[calc(2rem+env(safe-area-inset-bottom,0px))]"
+                class="relative flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain"
             >
+                <main class="flex-1 p-8">
                 <div class="mb-6 flex items-center gap-3 lg:hidden">
                     <button
                         type="button"
@@ -175,7 +169,11 @@
                 </div>
 
                 {@render children()}
+                </main>
+                <!-- The end of the scroll area, so it shows once a page is read to the
+                bottom. It sits outside <main>, which keeps it the page's contentinfo. -->
+                <SiteFooter />
             </div>
         </div>
-    </main>
+    </div>
 </div>

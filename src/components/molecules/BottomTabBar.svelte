@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { HTMLAttributes } from "svelte/elements";
     import Badge from "../atoms/Badge.svelte";
-    import { isDevBuild, isInsideAppShell } from "../util/app-shell.js";
+    import { getAppShell, isDevBuild } from "../util/app-shell.js";
     import {
         activeTabHref,
         badgeText,
@@ -9,6 +9,7 @@
         type BottomTabBarItem,
     } from "../util/bottom-tab-bar.js";
     import { cn } from "../util/cn.js";
+    import { resolveScrolledUnder, watchScrollEdge, type ScrollEdgeMode } from "../util/scroll-edge.js";
 
     /**
      * The navigation bar at the bottom of a phone screen: three to five
@@ -19,17 +20,25 @@
      *
      * On its own the bar is fixed over the page and reserves no room. Give the
      * page `padding-bottom` and `scroll-padding-bottom` of the bar's height
-     * (`calc(65px + env(safe-area-inset-bottom))`), or the end of the
+     * (`calc(64px + env(safe-area-inset-bottom))`), or the end of the
      * content, and a focused control there, sits under it. `AppShell` does
      * this for you.
      *
-     * The bar is one row, 65px tall, at every width and text size. It is
+     * The bar is one row, 64px tall, at every width and text size. It is
      * chrome: when the reader enlarges text, the room belongs to the page.
      * So its sizes are in px; a label is one line, grows with the text only
      * up to 1.3 times its size and no further than its tab has room for, and
      * is cut with an ellipsis, never inside a word, when it still does not
      * fit. Where a tab is narrower than 52px (five tabs below 260px) the bar
      * shows icons only. The link is always named by its full label.
+     *
+     * The bar is flush with the page and page-coloured at rest; once content
+     * is under it (not at the end of what scrolls) it turns to frosted glass
+     * with a hairline above it. Inside an `AppShell` the shell says when; on
+     * its own the bar watches the window.
+     *
+     * With `floating` the bar is a glass capsule inset from the screen edges
+     * instead: always glass, since content is always under it.
      *
      * ```svelte
      * <BottomTabBar
@@ -52,6 +61,15 @@
          * SvelteKit pass `page.url.pathname`, so the server marks it too.
          */
         active?: string;
+        /**
+         * The href or path of the tab a person has just pressed, while its
+         * page is still on its way. It takes the mark (the pill, the heavier
+         * icon, the semibold label) at once, but `aria-current="page"` stays
+         * on the tab for `active` until `active` changes, and the pending link
+         * has `aria-busy`. Left out, or when it matches no tab, the mark and
+         * `aria-current` are on the same tab, as before.
+         */
+        pending?: string;
         /** Accessible name of the navigation landmark. */
         label?: string;
         /**
@@ -67,22 +85,53 @@
          * an `AppShell`, which places the bar itself.
          */
         position?: "fixed" | "static";
+        /**
+         * When the bar shows the glass and the hairline. `auto` follows the
+         * scroll position: flush at the end of the content, glass while
+         * content is under it. `always` is glass all the time, `never` flush
+         * all the time.
+         */
+        scrollEdge?: ScrollEdgeMode;
+        /**
+         * Draws the bar as a rounded capsule of glass, inset 12px from the
+         * screen edges (and from the home indicator), instead of edge to edge.
+         * Always the regular material, because content is always under it, so
+         * `scrollEdge` has no effect. The height a shell measures includes
+         * the 12px. The landmark, the safe-area insets and the position stay
+         * on the `<nav>`.
+         */
+        floating?: boolean;
         class?: string;
     };
 
     let {
         items,
         active,
+        pending,
         label = "Main",
         badgeLabel = defaultBadgeLabel,
         badgeMax = 99,
         position,
+        scrollEdge = "auto",
+        floating = false,
         class: className = "",
         ...restProps
     }: Props = $props();
 
-    const inShell = isInsideAppShell();
+    const shell = getAppShell();
+    const inShell = shell !== undefined;
     const resolvedPosition = $derived(position ?? (inShell ? "static" : "fixed"));
+
+    let host: HTMLElement | undefined = $state();
+    /** Content is under the bar: from the shell if there is one, else from the window. */
+    let ownScrolled = $state(false);
+    $effect(() => {
+        if (shell || scrollEdge !== "auto" || !host) return;
+        return watchScrollEdge(null, (edge) => (ownScrolled = edge.bottom));
+    });
+    const scrolledUnder = $derived(
+        resolveScrolledUnder(scrollEdge, shell ? shell.scrolledBottom : ownScrolled),
+    );
 
     /**
      * The page's own path, used while `active` is not given. Empty on the
@@ -110,6 +159,11 @@
     });
 
     const activeHref = $derived(activeTabHref(items, active ?? locationPath));
+    const pendingHref = $derived(
+        pending !== undefined && pending !== "" ? activeTabHref(items, pending) : undefined,
+    );
+    /** The tab that wears the mark: the pending one, else the current one. */
+    const markHref = $derived(pendingHref ?? activeHref);
 
     $effect(() => {
         if (!isDevBuild()) return;
@@ -135,7 +189,7 @@
         // the 4px. No gap between pill and label: 32px and a 16px line in a
         // 56px box leave the same 4px above and below as at the sides.
         const base =
-            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-0 rounded-[20px] px-[4px] text-center no-underline transition-colors duration-150 motion-reduce:transition-none";
+            "focus-ring focus-ring--nav flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-0 rounded-[20px] px-[4px] text-center no-underline transition-colors duration-(--duration-base) motion-reduce:transition-none";
         return isActive
             ? cn(base, "font-semibold text-nav-menu-item-active")
             : cn(
@@ -146,13 +200,22 @@
 </script>
 
 <nav
+    bind:this={host}
     aria-label={label}
     data-position={resolvedPosition}
+    data-bar-edge="bottom"
+    data-scrolled-under={String(scrolledUnder)}
+    data-floating={floating ? "true" : undefined}
     class={cn(
-        "tabbar border-t border-border-weak bg-surface-elevated [--spacing:4px]",
-        // Clear of the home indicator, and of the rounded corners in landscape.
-        "pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-        resolvedPosition === "fixed" && "fixed inset-x-0 bottom-0 z-sticky",
+        "tabbar [--spacing:4px]",
+        floating
+            ? // Transparent: the capsule inside carries the glass. The gaps around
+              // it let clicks through to the page.
+              "pointer-events-none pb-[calc(env(safe-area-inset-bottom)+12px)] pl-[calc(env(safe-area-inset-left)+12px)] pr-[calc(env(safe-area-inset-right)+12px)]"
+            : // Clear of the home indicator, and of the rounded corners in landscape.
+              "material-bar pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
+        // The layer of the material is placed against the bar, so it is always positioned.
+        resolvedPosition === "fixed" ? "fixed inset-x-0 bottom-0 z-sticky" : "relative",
         className,
     )}
     style:--tabbar-count={items.length}
@@ -161,10 +224,26 @@
     <!-- 8px between the tabs and at the sides while every tab can be 52px
     wide; less as the bar narrows, down to none, so the tabs keep the width a
     label needs for as long as there is any. See the style block. -->
+    {#if floating}
+        <!-- Radius: the tab's box is 20px and sits the list's gap (8px, less
+        in a narrow bar) inside the capsule on all four sides, so the capsule
+        is 20px plus that gap: outer radius = inner radius + padding. See
+        `.tabbar-capsule` in the style block. -->
+        <div class="tabbar-capsule material-layer-regular pointer-events-auto relative">
+            {@render tabs()}
+        </div>
+    {:else}
+        {@render tabs()}
+    {/if}
+</nav>
+
+{#snippet tabs()}
     <ul class="tabbar-list m-0 flex list-none items-stretch py-1">
         {#each items as item (item.href)}
-            {@const isActive = item.href === activeHref}
-            {@const Icon = item.icon}
+            {@const isActive = item.href === markHref}
+            {@const isCurrent = item.href === activeHref}
+            {@const isPending = pendingHref !== undefined && item.href === pendingHref && !isCurrent}
+            {@const Icon = isActive && item.activeIcon ? item.activeIcon : item.icon}
             {@const count = item.badge ?? 0}
             <li class="tabbar-tab flex">
                 <!-- The name is spelled out when there is a count: built from
@@ -174,25 +253,28 @@
                 <a
                     href={item.href}
                     class={linkClasses(isActive)}
-                    aria-current={isActive ? "page" : undefined}
+                    aria-current={isCurrent ? "page" : undefined}
+                    aria-busy={isPending ? "true" : undefined}
                     aria-label={count > 0 ? `${item.label}, ${badgeLabel(count, item)}` : undefined}
                 >
-                    <!-- The pill is the active mark. Its fill is within a shade of
-                    the bar (1.24:1 in light, 1.07:1 in dark), so by itself it
-                    marks nothing for an eye that needs contrast: the 2px
-                    outline inside it, in the action colour, is what reaches
-                    3:1 against the bar in both themes, with the labels and
-                    in the icon-only bar alike. The icon takes the same
-                    colour. In forced-colors mode the fill is dropped and the
-                    outline is drawn in a system colour, so the active tab
-                    keeps a shape there too. Decorative with all it holds:
-                    the label names the tab. -->
+                    <!-- The pill is the active mark, with no outline: a pill with a
+                    ring is what keyboard focus looks like, and the bar would
+                    seem to hold focus. Selection is not by colour alone. The
+                    set of marks tells the active tab apart: the pill, the
+                    icon (the filled `activeIcon`, or the same icon drawn
+                    heavier), the semibold label and the active colour (4.5:1
+                    for the label on the pill). WCAG 1.4.11 is met by the set,
+                    not by the fill, which is within a shade of the bar. In
+                    forced-colors mode the fill is dropped, so the pill gets
+                    an outline in a system colour there only and the active
+                    tab keeps a shape. Decorative with all it holds: the label
+                    names the tab. -->
                     <span
                         aria-hidden="true"
                         class={cn(
-                            "flex h-8 w-[min(56px,100%)] shrink-0 items-center justify-center rounded-pill transition-colors duration-150 motion-reduce:transition-none",
+                            "flex h-8 w-[min(56px,100%)] shrink-0 items-center justify-center rounded-pill transition-colors duration-(--duration-base) motion-reduce:transition-none",
                             isActive &&
-                                "bg-nav-menu-active text-(color:--color-action-primary) outline-2 -outline-offset-2 outline-(color:--color-action-primary)",
+                                "bg-tabbar-active text-nav-menu-item-active forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[color:Highlight]",
                         )}
                     >
                         <!-- The badge is placed against the icon's own 24px
@@ -200,12 +282,17 @@
                         covers that corner by 8px and no more, whatever the
                         text size and however narrow the pill is. -->
                         <span class="relative flex size-6 shrink-0 items-center justify-center">
-                            <Icon size={24} class="shrink-0" />
+                            <Icon
+                                size={24}
+                                class="shrink-0"
+                                strokeWidth={isActive && !item.activeIcon ? 2.5 : undefined}
+                            />
                             {#if count > 0}
                                 <Badge
                                     size="sm"
                                     emphasis="solid"
-                                    class="tabbar-badge absolute start-4 bottom-4 h-[18px] min-h-[18px] min-w-[18px] px-[5px] py-0 text-[11px] leading-[18px] whitespace-nowrap"
+                                    variant="error"
+                                    class="tabbar-badge ring-2 ring-(color:--color-bar) absolute start-4 bottom-4 h-[18px] min-h-[18px] min-w-[18px] px-[5px] py-0 text-[11px] leading-[18px] whitespace-nowrap"
                                 >
                                     {badgeText(count, badgeMax)}
                                 </Badge>
@@ -219,7 +306,7 @@
             </li>
         {/each}
     </ul>
-</nav>
+{/snippet}
 
 <style>
     /*
@@ -238,14 +325,33 @@
      * 8px apart from 308px up (a 320px phone included), closer below that,
      * and touch at 260px.
      */
-    .tabbar-list {
+    .tabbar-list,
+    .tabbar-capsule {
         --tabbar-gap: clamp(
             0px,
             calc((100cqi - var(--tabbar-count) * 52px) / (var(--tabbar-count) + 1)),
             8px
         );
+    }
+
+    .tabbar-list {
         gap: var(--tabbar-gap);
         padding-inline: var(--tabbar-gap);
+    }
+
+    /*
+     * The floating capsule and the tabs inside it are nested rounded shapes,
+     * so they are concentric: the tabs sit the same distance inside the
+     * capsule above and below as at its two ends (the gap, in place of the
+     * edge-to-edge bar's 4px), and the capsule's radius is the tab's 20px
+     * plus that distance. At 8px the capsule is 72px tall with a 28px corner.
+     */
+    .tabbar-capsule {
+        border-radius: calc(20px + var(--tabbar-gap));
+    }
+
+    .tabbar-capsule .tabbar-list {
+        padding-block: var(--tabbar-gap);
     }
 
     /*

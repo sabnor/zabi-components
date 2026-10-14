@@ -672,7 +672,8 @@ describe("Toaster live regions", () => {
 
         // The toast says what it was pushed with: the message, and no default heading over it.
         const status = screen.getByRole("status");
-        expect(status.textContent).toContain("Profile updated");
+        // The words are put in a moment after the toast is mounted.
+        await waitFor(() => expect(status.textContent).toContain("Profile updated"));
         expect(status.textContent).not.toContain("Changes saved");
     });
 
@@ -682,7 +683,8 @@ describe("Toaster live regions", () => {
         pushToast({ message: "Hold on", type: "info", duration: 3000 });
 
         const toast = await screen.findByRole("group", { name: "Hold on" });
-        await fireEvent.mouseEnter(toast);
+        // Held by a pointer that moves onto it, not by an enter alone.
+        await fireEvent.pointerMove(toast, { movementX: 3 });
         vi.advanceTimersByTime(5000);
         await waitFor(() => expect(toast.textContent).toContain("3 seconds"));
         expect(screen.queryByRole("group", { name: "Hold on" })).toBeTruthy();
@@ -732,7 +734,7 @@ describe("Toaster action", () => {
         });
 
         const status = await screen.findByRole("status");
-        expect(status.textContent).toContain("Project archived");
+        await waitFor(() => expect(status.textContent).toContain("Project archived"));
         expect(status.textContent).toContain("Undo available.");
     });
 
