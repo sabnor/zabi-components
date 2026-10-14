@@ -39,7 +39,11 @@ const controls: { name: string; locate: (page: Page) => ReturnType<Page["locator
     { name: "EmptyState (a section)", locate: (page) => page.getByTestId("in-empty-state") },
     { name: "EmptyState, compact (a div)", locate: (page) => page.getByTestId("in-empty-state-compact") },
     { name: "Container", locate: (page) => page.getByTestId("in-container") },
-    { name: "Collapsible's heading", locate: (page) => page.getByRole("button", { name: "Delivery notes" }) },
+    {
+        name: "Collapsible's heading",
+        // A native <summary> since 9.0 (D143), not a button.
+        locate: (page) => page.locator("summary[data-collapsible-trigger]").filter({ hasText: "Delivery notes" }),
+    },
     { name: "AppShell's content", locate: (page) => page.getByTestId("in-app-shell") },
     { name: "Text (a p): a link", locate: (page) => page.getByTestId("in-text") },
     { name: "Text (a div): a field", locate: (page) => page.getByTestId("in-text-div") },
@@ -109,7 +113,7 @@ test("the markup is what it was: the same elements, in the same order", async ({
             emptyState: document.querySelector('[data-testid="in-empty-state"]')?.closest("section")?.getAttribute("aria-labelledby") ? "section" : null,
             emptyStateCompact: document.querySelector('[data-testid="in-empty-state-compact"]')?.closest("section") ? "section" : "div",
             container: tagOf('[data-testid="in-container"]', 1),
-            collapsibleHeading: document.querySelector("h3 > button[aria-expanded]") ? "h3" : null,
+            collapsibleHeading: document.querySelector("summary[data-collapsible-trigger] > h3") ? "h3" : null,
             appShellContent: tagOf("[data-app-shell-content]"),
             text: tagOf('[data-testid="in-text"]', 1),
             textDiv: tagOf('[data-testid="in-text-div"]', 2),

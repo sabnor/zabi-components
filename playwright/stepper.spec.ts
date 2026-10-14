@@ -537,10 +537,19 @@ for (const width of [375, 320]) {
                 // One line.
                 expect(line.height).toBeLessThanOrEqual(21);
 
-                // Filled up to the current step, an outline after it.
+                // Filled up to the current step; after it, the progress track (9.0, D147).
                 const fills = await markers(host).evaluateAll((nodes) => nodes.map((node) => getComputedStyle(node).backgroundColor));
                 expect(fills[0]).toBe(fills[1]);
-                expect(fills[2]).toBe("rgba(0, 0, 0, 0)");
+                expect(fills[2]).not.toBe(fills[1]);
+                const track = await markers(host).nth(2).evaluate((node) => {
+                    const probe = document.createElement("span");
+                    probe.style.backgroundColor = "var(--color-progress-track)";
+                    node.parentElement!.append(probe);
+                    const colour = getComputedStyle(probe).backgroundColor;
+                    probe.remove();
+                    return colour;
+                });
+                expect(fills[2]).toBe(track);
                 // No check or number in a segment.
                 await expect(markers(host).nth(0).locator("svg")).toBeHidden();
                 await expect(markers(host).nth(1).locator(".stepper-number")).toBeHidden();

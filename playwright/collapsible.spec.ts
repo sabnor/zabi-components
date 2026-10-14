@@ -10,13 +10,33 @@ import { waitForHydration } from "./helpers/hydration";
  * where `hidden` really takes closed content out of the tab order.
  */
 
+/**
+ * Whether a trigger's panel is open. The default trigger is a native `<summary>` since 9.0
+ * (D143): its state is the `open` of its `<details>`, with no `aria-expanded`. A trigger of the
+ * app's own (a Button) still says it with `aria-expanded`.
+ */
+const isOpen = (trigger: Locator) =>
+    trigger.evaluate((el) =>
+        el.tagName === "SUMMARY"
+            ? (el.parentElement as HTMLDetailsElement).open
+            : el.getAttribute("aria-expanded") === "true",
+    );
+
+async function expectOpen(trigger: Locator, open: boolean): Promise<void> {
+    await expect.poll(() => isOpen(trigger)).toBe(open);
+}
+
+/** The default trigger, by its words. */
+const summary = (page: Page, name: string) =>
+    page.locator("summary[data-collapsible-trigger]").filter({ hasText: name });
+
 /** The page is usable before it hydrates; a click that lands early is lost. */
 async function setOpen(trigger: Locator, open: boolean): Promise<void> {
     await waitForHydration(trigger);
-    if ((await trigger.getAttribute("aria-expanded")) !== String(open)) {
+    if ((await isOpen(trigger)) !== open) {
         await trigger.click();
     }
-    await expect(trigger).toHaveAttribute("aria-expanded", String(open));
+    await expectOpen(trigger, open);
 }
 
 async function panelOf(page: Page, trigger: Locator): Promise<Locator> {
@@ -31,7 +51,7 @@ test.describe("Collapsible — hydrated wiring and focus", () => {
     });
 
     test("trigger and panel point at each other after hydration", async ({ page }) => {
-        const trigger = page.getByRole("button", { name: "Delivery notes" });
+        const trigger = summary(page, "Delivery notes");
         await setOpen(trigger, true);
 
         const panel = await panelOf(page, trigger);
@@ -46,7 +66,7 @@ test.describe("Collapsible — hydrated wiring and focus", () => {
         ).toBeVisible();
 
         await trigger.press("Enter");
-        await expect(trigger).toHaveAttribute("aria-expanded", "false");
+        await expectOpen(trigger, false);
         await expect(panel).toBeHidden();
         await trigger.press("Space");
         await expect(panel).toBeVisible();
@@ -93,14 +113,14 @@ test.describe("Collapsible — hydrated wiring and focus", () => {
             await save.focus();
             await page.keyboard.press("Enter");
         }
-        await expect(trigger).toHaveAttribute("aria-expanded", "false");
+        await expectOpen(trigger, false);
 
         await expect(save).toBeHidden();
         await expect(trigger).toBeFocused();
     });
 
     test("the default trigger's text follows the writing direction", async ({ page }) => {
-        const trigger = page.getByRole("button", { name: "Delivery notes" });
+        const trigger = summary(page, "Delivery notes");
         await expect(trigger).toHaveCSS("text-align", "start");
     });
 
@@ -133,7 +153,7 @@ test.describe("CollapsibleGroup — accordion", () => {
 
         await setOpen(headers.nth(0), true);
         await setOpen(headers.nth(1), true);
-        await expect(headers.nth(0)).toHaveAttribute("aria-expanded", "false");
+        await expectOpen(headers.nth(0), false);
         await expect(group.getByRole("region")).toHaveCount(1);
 
         await headers.nth(1).focus();
@@ -146,7 +166,7 @@ test.describe("CollapsibleGroup — accordion", () => {
         await page.keyboard.press("Home");
         await expect(headers.nth(0)).toBeFocused();
         // Moving focus opened nothing.
-        await expect(headers.nth(1)).toHaveAttribute("aria-expanded", "true");
+        await expectOpen(headers.nth(1), true);
 
         // Tab still walks every header; the open panel has no focusable content.
         await page.keyboard.press("Tab");
@@ -159,12 +179,12 @@ test.describe("CollapsibleGroup — accordion", () => {
         const group = page.locator("[data-collapsible-group][data-multiple]");
         const headers = group.locator("[data-collapsible-trigger]");
         await expect(headers).toHaveCount(3);
-        await expect(headers.nth(0)).toHaveAttribute("aria-expanded", "true");
-        await expect(headers.nth(1)).toHaveAttribute("aria-expanded", "true");
+        await expectOpen(headers.nth(0), true);
+        await expectOpen(headers.nth(1), true);
 
         await setOpen(headers.nth(2), true);
-        await expect(headers.nth(0)).toHaveAttribute("aria-expanded", "true");
-        await expect(headers.nth(1)).toHaveAttribute("aria-expanded", "true");
+        await expectOpen(headers.nth(0), true);
+        await expectOpen(headers.nth(1), true);
         // Several panels can be open at once here, so none is a landmark.
         await expect(group.getByRole("region")).toHaveCount(0);
     });
