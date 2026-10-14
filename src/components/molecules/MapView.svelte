@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="T extends MapPoint">
     import { onMount, tick, untrack, type Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import Check from "@lucide/svelte/icons/check";
@@ -7,6 +7,7 @@
         attributionText,
         boundsOf,
         clusterMarkers,
+        fitPadding,
         insetOffset,
         MAP_FIT_MAX_ZOOM,
         MAP_MARKER_TAP,
@@ -49,21 +50,51 @@
      * It shows no text of its own and no error: read `status` and put your
      * own skeleton or empty state in its place.
      *
+     * MapLibre 6 keeps its worker in a file of its own, which a bundler does
+     * not move with the module, so the default `load` finds no worker in a
+     * built app (`status` is then `library-error`). With Vite, pass a `load`
+     * that hands the library the worker's address:
+     *
+     * ```ts
+     * const load = async () => {
+     *     const [library, worker] = await Promise.all([
+     *         import("maplibre-gl"),
+     *         import("maplibre-gl/dist/maplibre-gl-worker.mjs?url"),
+     *     ]);
+     *     library.setWorkerUrl(worker.default);
+     *     return library;
+     * };
+     * ```
+     *
+     * A `marker` snippet draws the app's own picture inside a point's mark:
+     * zabi draws the frame, the snippet only a 20px box in its middle, which
+     * is decoration (the button's name is still `label`). `--map-marker-fill`
+     * on the host or above sets the fill of those marks' discs.
+     *
      * Other attributes (`id`, `data-*`, ...) land on the host `<div>`.
      */
     type Props = Omit<HTMLAttributes<HTMLDivElement>, "class" | "aria-label"> & {
         /** The markers, in the order they take in the tab order. */
-        points: MapPoint[];
+        points: T[];
         /** The style drawn in the light theme: a URL or a style object. Nothing about the tile host is fixed here. */
         styleLight: string | object;
         /** The style drawn while the page is dark (`data-theme` on `<html>`, which may follow the system). Without it, `styleLight`. */
         styleDark?: string | object;
         /** Called with the point when its marker is pressed. */
-        onpointpress?: (point: MapPoint, index: number) => void;
+        onpointpress?: (point: T, index: number) => void;
         /** Called with the points a count marker holds when it is pressed. */
-        onclusterpress?: (points: MapPoint[]) => void;
+        onclusterpress?: (points: T[]) => void;
         /** Names a count marker from its points. Without it, `strings.cluster` with the count. */
-        clusterLabel?: (points: MapPoint[]) => string;
+        clusterLabel?: (points: T[]) => string;
+        /**
+         * The app's own picture inside a point's mark, called with the point
+         * from `points`. It fills a 20px box in a 32px disc that zabi draws;
+         * the box is `aria-hidden` and takes no press of its own. Never called
+         * for a count marker. Without it, every mark is drawn as before.
+         */
+        marker?: Snippet<[point: T]>;
+        /** Which points get `marker`. Without it, every single point does; one it answers false for is drawn as before. */
+        hasMarker?: (point: T) => boolean;
         /** The closest the fit to the markers zooms in. */
         fitMaxZoom?: number;
         /**
@@ -90,7 +121,10 @@
          * of the attribution the style's sources carry, as plain text.
          */
         attribution?: string | Snippet;
-        /** Loads the map library. Default: `() => import("maplibre-gl")`. */
+        /**
+         * Loads the map library. Default: `() => import("maplibre-gl")`, which
+         * in a built app finds no MapLibre 6 worker: see above for one that does.
+         */
         load?: () => Promise<unknown>;
         /** Overrides for the built-in strings. */
         strings?: Partial<MapViewStrings>;
@@ -107,6 +141,8 @@
         onpointpress,
         onclusterpress,
         clusterLabel,
+        marker: markerContent,
+        hasMarker,
         fitMaxZoom = MAP_FIT_MAX_ZOOM,
         center = $bindable<Props["center"]>(),
         zoom = $bindable<Props["zoom"]>(),
@@ -141,7 +177,8 @@
     /** The map has drawn once: it can be fitted and moved. */
     let loaded = $state(false);
     let dark = $state(false);
-    let markers = $state.raw<MapMarker<MapPoint>[]>([]);
+    let markers = $state.raw<MapMarker<T>[]>([]);
+    let creditPlate = $state<HTMLParagraphElement>();
     let viewerPixel = $state.raw<MapPixel | null>(null);
     let styleCredit = $state("");
 
@@ -163,14 +200,21 @@
      */
     let tilesArrived = 0;
     let tileErrors = 0;
+    /** No worker, no map: the library did not start, whatever the tiles do after it. */
+    let workerFailed = false;
 
-    function handleError(event: { tile?: unknown; sourceId?: unknown }) {
+    function handleError(event: { tile?: unknown; sourceId?: unknown; error?: { message?: unknown } }) {
+        if (/worker/i.test(String(event?.error?.message ?? ""))) {
+            workerFailed = true;
+            setStatus("library-error");
+            return;
+        }
         if (event?.tile || event?.sourceId) {
             tileErrors += 1;
             return;
         }
         // Not a tile: before the first draw it is the style that did not come.
-        if (!loaded && tilesArrived === 0) setStatus("tiles-error");
+        if (!loaded && tilesArrived === 0 && !workerFailed) setStatus("tiles-error");
     }
 
     function handleData(event: { dataType?: string; tile?: unknown }) {
@@ -180,7 +224,7 @@
     }
 
     function handleIdle() {
-        if (tileErrors > 0 && tilesArrived === 0) setStatus("tiles-error");
+        if (tileErrors > 0 && tilesArrived === 0 && !workerFailed) setStatus("tiles-error");
     }
 
     // --- Markers -------------------------------------------------------------
@@ -221,7 +265,7 @@
     }
 
     /** A marker reached with Tab may be outside what is shown: the map jumps so that it is in view. */
-    function handleMarkerFocus(marker: MapMarker<MapPoint>) {
+    function handleMarkerFocus(marker: MapMarker<T>) {
         focusedKey = marker.key;
         const map = instance;
         if (!map || !host) return;
@@ -235,7 +279,7 @@
         if (event.relatedTarget) focusedKey = null;
     }
 
-    function press(marker: MapMarker<MapPoint>) {
+    function press(marker: MapMarker<T>) {
         if (marker.points.length > 1) {
             onclusterpress?.(marker.points);
             return;
@@ -244,12 +288,23 @@
         onpointpress?.(point, points.indexOf(point));
     }
 
-    function nameOf(marker: MapMarker<MapPoint>): string {
+    function nameOf(marker: MapMarker<T>): string {
         if (marker.points.length === 1) return marker.points[0].label;
         return clusterLabel ? clusterLabel(marker.points) : text.cluster(marker.points.length);
     }
 
+    /** Whether a single point is drawn with the app's picture in it. */
+    function pictured(point: T): boolean {
+        return !!markerContent && (hasMarker ? hasMarker(point) : true);
+    }
+
     // --- Moving ----------------------------------------------------------------
+
+    /** How far the credit reaches up from the bottom edge, its 4px gap included; 0 while it is not drawn. */
+    function creditReach(): number {
+        const height = creditPlate?.offsetHeight ?? 0;
+        return height > 0 ? height + 4 : 0;
+    }
 
     /** Fits the map to the markers, no closer than `fitMaxZoom`. A jump. */
     export function fit() {
@@ -260,20 +315,22 @@
             map.jumpTo({ center: box[0], zoom: fitMaxZoom });
             return;
         }
-        // Room for half a marker at each edge, so none is cut by it.
-        const camera = map.cameraForBounds(box, { padding: MAP_MARKER_TAP, maxZoom: fitMaxZoom });
+        // Room for a marker at each edge, so none is cut by it, and none under the credit.
+        const camera = map.cameraForBounds(box, { padding: fitPadding(creditReach()), maxZoom: fitMaxZoom });
         if (camera) map.jumpTo(camera as { center?: MapLngLat; zoom?: number });
     }
 
     /**
      * Puts a place in the middle of what `inset` leaves clear: a sheet over
-     * the lower part of the map is `{ bottom: its height }`. A jump.
+     * the lower part of the map is `{ bottom: its height }`. The credit is
+     * always kept clear at the bottom. A jump.
      */
     export function showPlace(place: MapLngLat, options: { inset?: MapInset; zoom?: number } = {}) {
         const map = instance;
         if (!map) return;
         map.jumpTo({ center: [place.lng, place.lat], zoom: options.zoom });
-        const offset = insetOffset(options.inset);
+        const bottom = Math.max(options.inset?.bottom ?? 0, creditReach());
+        const offset = insetOffset({ ...options.inset, bottom });
         if (offset.x === 0 && offset.y === 0) return;
         const middle = map.project([place.lng, place.lat]);
         map.jumpTo({ center: map.unproject([middle.x - offset.x, middle.y - offset.y]) });
@@ -435,7 +492,7 @@
                 if (gone) return;
                 if (restored) fitted = pointsSignature(points);
                 loaded = true;
-                if (tilesArrived > 0 || tileErrors === 0) setStatus("ready");
+                if (!workerFailed && (tilesArrived > 0 || tileErrors === 0)) setStatus("ready");
                 readCredit();
                 reproject();
             });
@@ -491,10 +548,36 @@
                 <!-- Each mark has a ring in the surface colour around it, so
                      its edge shows on any tile in either style. -->
                 {#if count > 1}
+                    <!-- Beside pictured marks the count is as tall as their discs. -->
                     <span
-                        class="flex h-[28px] min-w-[28px] items-center justify-center rounded-full border-2 border-action-primary bg-surface-overlay px-[6px] text-[13px] leading-none font-semibold text-headline tabular-nums ring-2 ring-(--color-surface-overlay)"
+                        class={markerContent
+                            ? "map-marker-frame flex h-[32px] min-w-[32px] items-center justify-center rounded-full border-2 border-action-primary bg-surface-overlay px-[7px] text-[13px] leading-none font-semibold text-headline tabular-nums ring-2 ring-(--color-surface-overlay)"
+                            : "flex h-[28px] min-w-[28px] items-center justify-center rounded-full border-2 border-action-primary bg-surface-overlay px-[6px] text-[13px] leading-none font-semibold text-headline tabular-nums ring-2 ring-(--color-surface-overlay)"}
                     >
                         {count}
+                    </span>
+                {:else if markerContent && pictured(point)}
+                    <!-- zabi's frame, the app's picture: a 32px disc, its 2px line
+                         included, and the 20px box in its middle. The check is a
+                         badge whose centre is 12px right of and above the pin's. -->
+                    <span
+                        class="map-marker-frame relative flex size-[32px] items-center justify-center rounded-full border-2 border-action-primary bg-(--map-marker-fill,var(--color-surface-overlay)) ring-2 ring-(--color-surface-overlay)"
+                    >
+                        <span
+                            class="pointer-events-none flex size-[20px] items-center justify-center overflow-hidden"
+                            aria-hidden="true"
+                            data-map-marker-content
+                        >
+                            {@render markerContent(point)}
+                        </span>
+                        {#if point.checked}
+                            <span
+                                class="map-marker-badge absolute top-[-6px] left-[18px] flex size-[16px] items-center justify-center rounded-full bg-action-primary text-action-primary ring-2 ring-(--color-surface-overlay)"
+                                data-map-marker-badge
+                            >
+                                <Check size={10} strokeWidth={3} aria-hidden="true" />
+                            </span>
+                        {/if}
                     </span>
                 {:else if point.checked}
                     <span
@@ -523,6 +606,7 @@
     <!-- Always open, never behind a button: the licence of the map data asks for it. -->
     {#if attribution || styleCredit}
         <p
+            bind:this={creditPlate}
             class="pointer-events-auto absolute start-[4px] bottom-[4px] m-0 [max-inline-size:calc(100%-8px)] rounded-control bg-surface-overlay px-[6px] py-[2px] text-xs text-description"
             data-map-attribution
         >
@@ -559,5 +643,20 @@
     /* No control is asked for; the holders the library still makes take no room. */
     .map-surface :global(.maplibregl-control-container) {
         display: none;
+    }
+
+    /* A pictured mark keeps its shape in forced colours; its picture follows
+       the app's own rule for drawings. */
+    @media (forced-colors: active) {
+        .map-marker-frame {
+            border-color: CanvasText;
+            background-color: Canvas;
+        }
+
+        .map-marker-badge {
+            border: 1px solid CanvasText;
+            background-color: Canvas;
+            color: CanvasText;
+        }
     }
 </style>

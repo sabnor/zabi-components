@@ -279,6 +279,8 @@ export interface CheckboxProps
     leading?: Snippet;
     /** A line under the label, inside it, tied to the box with `aria-describedby`; not part of the name. */
     description?: string;
+    /** What a screen reader says for the description, in its place in `aria-describedby`; not drawn. */
+    descriptionSpoken?: string;
     /** Where the box sits in the row: `end` puts it last, at the far edge. */
     controlPosition?: 'start' | 'end';
     variant?: SemanticVariant;
@@ -717,6 +719,8 @@ export interface ToggleProps
     leading?: Snippet;
     /** A line under the label, inside it, tied to the switch with `aria-describedby`; not part of the name. */
     description?: string;
+    /** What a screen reader says for the description, in its place in `aria-describedby`; not drawn. */
+    descriptionSpoken?: string;
     /** Ids of other elements that describe the switch. The description is added after them. */
     'aria-describedby'?: string | null;
     /** The switch's accessible name when there is no visible `label`. */

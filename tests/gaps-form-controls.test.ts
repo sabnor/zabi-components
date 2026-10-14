@@ -8,6 +8,7 @@ import Radio from "../src/components/atoms/Radio.svelte";
 import Textarea from "../src/components/atoms/Textarea.svelte";
 import Toggle from "../src/components/atoms/Toggle.svelte";
 import ImageUpload from "../src/components/molecules/ImageUpload.svelte";
+import RadioGroup from "../src/components/molecules/RadioGroup.svelte";
 import { SELECTION_CONTROL_INPUT } from "../src/components/atoms/selection-control.styles";
 
 afterEach(cleanup);
@@ -170,5 +171,52 @@ describe("ImageUpload: several files (Z-130)", () => {
             ["big.png", "size"],
             ["c.png", "count"],
         ]);
+    });
+});
+
+describe("descriptionSpoken: a description read out in other words than it is drawn in (Z-138)", () => {
+    const drawn = "tis, ons · 6 pubar";
+    const spoken = "tisdagar och onsdagar, 6 pubar";
+
+    it("Radio and Checkbox: the spoken words describe the control once, the drawn line is shown and not referenced", () => {
+        for (const Control of [Radio, Checkbox]) {
+            const { container, unmount } = render(Control, {
+                props: { label: "Söderrundan", description: drawn, descriptionSpoken: spoken },
+            });
+            const input = container.querySelector("input")!;
+            expect(ids(input).map(textOf)).toEqual([spoken]);
+            const line = Array.from(container.querySelectorAll("span")).find((el) => el.textContent?.trim() === drawn)!;
+            expect(line.id).toBe("");
+            expect(line.getAttribute("aria-hidden")).toBe("true");
+            expect(document.getElementById(ids(input)[0])!.hidden).toBe(true);
+            unmount();
+        }
+    });
+
+    it("Toggle: the same, after the ids passed in", () => {
+        render(Toggle, {
+            props: { label: "Söderrundan", description: drawn, descriptionSpoken: spoken, "aria-describedby": "own" },
+        });
+        const toggle = screen.getByRole("switch");
+        expect(ids(toggle)[0]).toBe("own");
+        expect(ids(toggle).slice(1).map(textOf)).toEqual([spoken]);
+    });
+
+    it("RadioGroup: an option's spoken words describe its radio", () => {
+        const { container } = render(RadioGroup, {
+            props: {
+                name: "theme",
+                label: "Theme",
+                options: [{ value: "s", label: "Söderrundan", description: drawn, descriptionSpoken: spoken }],
+            },
+        });
+        const input = container.querySelector("input")!;
+        expect(ids(input).map(textOf)).toEqual([spoken]);
+    });
+
+    it("without it the drawn line is the description, as before", () => {
+        const { container } = render(Radio, { props: { label: "Söderrundan", description: drawn } });
+        expect(ids(container.querySelector("input")!).map(textOf)).toEqual([drawn]);
+        expect(container.querySelector("[hidden]")).toBeNull();
     });
 });

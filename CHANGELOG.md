@@ -12,6 +12,47 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.0] - 2026-10-14
+
+A local preview build of 9.1, not published to npm, on top of 9.0.0. No token, prop, variant, string key, export
+or data attribute of 9.0.0 is removed or renamed. Nothing in it has been rendered in a browser: type and design
+checks, unit tests in jsdom, the package build.
+
+### Added
+
+- `Radio`, `Checkbox`, `Toggle` and a `RadioGroup` option: `descriptionSpoken`, what a screen reader says for the
+  description when the drawn line is in short forms ("tis, ons · 6 pubar" read as "tisdagar och onsdagar, 6
+  pubar"). It takes the drawn line's place in `aria-describedby`, in a `hidden` element; the drawn line is still
+  shown and no longer referenced (Z-138, D264).
+- `MapView`: `marker`, a snippet called with the point, which draws the app's own picture inside a point's mark,
+  and `hasMarker(point)`, which picks the points that get it (all, without it). zabi draws the frame: a 32px disc
+  with a 2px `--color-action-primary` line and a 2px halo, its fill `--map-marker-fill` (default
+  `--color-surface-overlay`), and a 20px box in its middle that is `aria-hidden`, takes no press and carries
+  `data-map-marker-content`. A checked pictured point gets a 16px check badge whose centre is 12px right of and
+  above the pin's; the picture is left as it is. With `marker` the count marker is 32px tall and the snippet is
+  never called for it. A point `hasMarker` refuses, and every point of a map without `marker`, is drawn as in
+  9.0.0. The tap area (44px), the grouping, the name (`label`), the tab order and the moves are unchanged, and no
+  part of a mark is animated. In forced colours the disc and the badge are `Canvas` with a `CanvasText` edge.
+  `MapView` is generic over its points (`MapView<T extends MapPoint>`), so `onpointpress` and `marker` get the
+  app's own point type (Z-143, D267).
+
+### Fixed
+
+- `MapView`: a MapLibre worker that does not load is `library-error`, not `tiles-error`, and no later tile, idle
+  or draw takes it back. The doc comment says what the default `load` cannot do in a built app with MapLibre 6
+  (the bundler leaves the worker file behind) and gives the `load` to pass with Vite:
+  `import("maplibre-gl/dist/maplibre-gl-worker.mjs?url")` beside the library, then `setWorkerUrl` (Z-139, D265).
+- `MapView`: the fit pads the bottom so that a marker's tap area ends above the credit, however many lines the
+  credit takes, and `showPoint` / `showPlace` keep the credit clear as an inset of at least its height (Z-140,
+  D266).
+
+### Not verified
+
+Not rendered in a browser: no WebGL, no tiles, no screen reader. The contrast of the pictured mark's line against
+the tiles is the same token pair as 9.0.0's ring, and the badge's check is 9.0.0's check pair; neither was
+measured on a map. That a MapLibre 6 worker failure reaches the map's `error` event with "Worker failed to load"
+is read from the library's source, not seen.
+
 ## [9.0.0] - 2026-10-14
 
 9.0.0 is a new look and a larger set. Bars, sheets, menus and toasts are glass materials, the light page is

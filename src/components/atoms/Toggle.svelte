@@ -33,6 +33,12 @@
          * the name. It needs a `label`.
          */
         description?: string;
+        /**
+         * What a screen reader says for the description, when the drawn line
+         * is in short forms. It takes the drawn line's place in
+         * `aria-describedby`; it is not drawn.
+         */
+        descriptionSpoken?: string;
         /** Ids of other elements that describe the switch. The description is added after them. */
         "aria-describedby"?: string | null;
         /**
@@ -57,6 +63,7 @@
         label = "",
         leading,
         description = "",
+        descriptionSpoken = "",
         "aria-describedby": describedBy,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledby,
@@ -175,10 +182,14 @@
             {#if showDescription}
                 <span class="flex flex-col gap-1">
                     <span>{label}</span>
-                    <!-- aria-hidden keeps it out of the name; aria-describedby still reads it. -->
-                    <span id={descriptionId} class="font-normal text-description" aria-hidden="true">
+                    <!-- aria-hidden keeps it out of the name; aria-describedby still reads it,
+                         or reads the spoken words in its place. -->
+                    <span id={descriptionSpoken ? undefined : descriptionId} class="font-normal text-description" aria-hidden="true">
                         {description}
                     </span>
+                    {#if descriptionSpoken}
+                        <span id={descriptionId} hidden>{descriptionSpoken}</span>
+                    {/if}
                 </span>
             {:else}
                 {label}

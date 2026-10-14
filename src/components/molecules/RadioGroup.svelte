@@ -17,6 +17,8 @@
         label: string;
         disabled?: boolean;
         description?: string;
+        /** What a screen reader says for the description, in its place; it is not drawn. */
+        descriptionSpoken?: string;
     };
 
     /** Other attributes (`id`, `data-*`, `aria-*`, ...) land on the `<fieldset>`. */
@@ -243,10 +245,18 @@
                         {option.label}
                     </span>
                     {#if option.description}
-                        <!-- aria-hidden keeps it out of the name; aria-describedby still reads it. -->
-                        <span id={descriptionId} class="text-sm text-description" aria-hidden="true">
+                        <!-- aria-hidden keeps it out of the name; aria-describedby still reads it,
+                             or reads the spoken words in its place. -->
+                        <span
+                            id={option.descriptionSpoken ? undefined : descriptionId}
+                            class="text-sm text-description"
+                            aria-hidden="true"
+                        >
                             {option.description}
                         </span>
+                        {#if option.descriptionSpoken}
+                            <span id={descriptionId} hidden>{option.descriptionSpoken}</span>
+                        {/if}
                     {/if}
                 </span>
             </label>

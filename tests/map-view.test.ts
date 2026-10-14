@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
+import { createRawSnippet } from "svelte";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import MapView from "../src/components/molecules/MapView.svelte";
@@ -9,6 +10,7 @@ import {
     attributionText,
     boundsOf,
     clusterMarkers,
+    fitPadding,
     insetOffset,
     mapViewSupported,
     type MapPoint,
@@ -358,6 +360,139 @@ describe("MapView", () => {
         expect(onmove.mock.calls.at(-1)![0]).toMatchObject({ zoom: 12 });
         unmount();
         expect(map.removed).toBe(true);
+    });
+});
+
+describe("MapView: no worker is library-error (Z-139)", () => {
+    it("tells library-error when MapLibre's worker does not load, and no later tile or draw takes it back", async () => {
+        const { map } = await mount();
+        map.fire("error", { error: new Error("Worker failed to load. Check that the worker URL is correct.") });
+        await waitFor(() => expect(host().getAttribute("data-status")).toBe("library-error"));
+        map.fire("error", { error: new Error("Failed to fetch") });
+        map.fire("error", { tile: {}, sourceId: "tiles" });
+        map.fire("idle");
+        map.fire("load");
+        await Promise.resolve();
+        expect(host().getAttribute("data-status")).toBe("library-error");
+    });
+
+    it("says in the doc comment what a built app passes as load", () => {
+        const source = readFileSync(join(__dirname, "../src/components/molecules/MapView.svelte"), "utf8");
+        expect(source).toContain('import("maplibre-gl/dist/maplibre-gl-worker.mjs?url")');
+        expect(source).toContain("setWorkerUrl(worker.default)");
+    });
+});
+
+describe("MapView: the fit keeps markers clear of the credit (Z-140)", () => {
+    it("pads the bottom so a tap area ends above the credit", () => {
+        expect(fitPadding(0)).toEqual({ top: 44, right: 44, bottom: 44, left: 44 });
+        expect(fitPadding(40)).toEqual({ top: 44, right: 44, bottom: 62, left: 44 });
+    });
+
+    it("fits with that padding, and keeps the credit clear in showPoint", async () => {
+        const height = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "offsetHeight");
+        Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
+            configurable: true,
+            get(this: HTMLElement) {
+                return this.hasAttribute("data-map-attribution") ? 36 : 0;
+            },
+        });
+        try {
+            const { map, component } = await mount({ attribution: "OpenFreeMap © OpenMapTiles Data from OpenStreetMap" });
+            const camera = vi.spyOn(map, "cameraForBounds");
+            map.fire("load");
+            await waitFor(() => expect(camera).toHaveBeenCalled());
+            expect(camera.mock.calls[0][1]).toMatchObject({ padding: { top: 44, bottom: 62 } });
+
+            (component as unknown as { showPoint: (id: string, options?: object) => void }).showPoint("kaja");
+            // 20px above the middle: the middle of what the 40px of credit leaves clear.
+            expect(map.project([18.0, 59.3]).y).toBeCloseTo(130);
+            (component as unknown as { showPoint: (id: string, options?: object) => void }).showPoint("kaja", {
+                inset: { bottom: 100 },
+            });
+            // A sheet taller than the credit is the inset alone, as before.
+            expect(map.project([18.0, 59.3]).y).toBeCloseTo(100);
+        } finally {
+            if (height) Object.defineProperty(HTMLElement.prototype, "offsetHeight", height);
+        }
+    });
+});
+
+describe("MapView: the app's picture in a point's mark (Z-143)", () => {
+    const picture = vi.fn();
+    const marker = createRawSnippet((point: () => MapPoint) => {
+        picture(point().id);
+        return { render: () => `<svg data-picture="${point().id}"><title>Pub</title></svg>` };
+    });
+
+    const content = (button: Element) => button.querySelector("[data-map-marker-content]");
+
+    it("draws the picture in a 20px box inside a 32px disc, as decoration of the named button", async () => {
+        picture.mockClear();
+        const { map } = await mount({ marker });
+        map.fire("load");
+        await waitFor(() => expect(markers()).toHaveLength(2));
+        const [kaja, pair] = markers();
+        expect(kaja.getAttribute("aria-label")).toBe("Bar Kaja");
+        expect(kaja.getAttribute("data-map-marker")).toBe("point");
+        expect(kaja.className).toContain("size-[44px]");
+        const box = content(kaja)!;
+        expect(box.getAttribute("aria-hidden")).toBe("true");
+        expect(box.className).toContain("size-[20px]");
+        expect(box.className).toContain("pointer-events-none");
+        expect(box.querySelector('svg[data-picture="kaja"]')).not.toBeNull();
+        expect(box.parentElement!.className).toContain("size-[32px]");
+        expect(box.parentElement!.className).toContain("border-2");
+        expect(box.parentElement!.className).toContain("bg-(--map-marker-fill,var(--color-surface-overlay))");
+        // The count pin is as tall as the discs, and the snippet is never called for it.
+        expect(content(pair)).toBeNull();
+        expect(pair.querySelector("span")!.className).toContain("h-[32px]");
+        expect(picture.mock.calls.map(([id]) => id)).not.toContain("akkurat");
+    });
+
+    it("draws a checked pictured point's check as a 16px corner badge, the picture left as it is", async () => {
+        const { map } = await mount({ marker, points: [points[1]] });
+        map.fire("load");
+        await waitFor(() => expect(markers()).toHaveLength(1));
+        const [akkurat] = markers();
+        expect(akkurat.getAttribute("data-map-marker")).toBe("checked");
+        expect(content(akkurat)!.querySelector("svg")).not.toBeNull();
+        const badge = akkurat.querySelector("[data-map-marker-badge]")!;
+        expect(badge.className).toContain("size-[16px]");
+        expect(badge.className).toContain("top-[-6px]");
+        expect(badge.className).toContain("left-[18px]");
+        expect(badge.querySelector("svg")).not.toBeNull();
+    });
+
+    it("draws a point hasMarker refuses, and every point without marker, as before", async () => {
+        const { map, unmount } = await mount({ marker, hasMarker: (point: MapPoint) => point.id !== "kaja" });
+        map.fire("load");
+        await waitFor(() => expect(markers()).toHaveLength(2));
+        expect(content(markers()[0])).toBeNull();
+        expect(markers()[0].querySelector("span")!.className).toContain("size-[20px] rounded-full border-[3px]");
+        unmount();
+
+        const second = await mount();
+        second.map.fire("load");
+        await waitFor(() => expect(markers()).toHaveLength(2));
+        expect(host().querySelector("[data-map-marker-content]")).toBeNull();
+        expect(markers()[1].querySelector("span")!.className).toContain("h-[28px]");
+    });
+
+    it("keeps the picture's element through a pan", async () => {
+        const { map } = await mount({ marker });
+        map.fire("load");
+        await waitFor(() => expect(markers()).toHaveLength(2));
+        const before = content(markers()[0])!.firstElementChild;
+        map.jumpTo({ center: [18.01, 59.3] });
+        await Promise.resolve();
+        expect(content(markers()[0])!.firstElementChild).toBe(before);
+    });
+
+    it("has no animation or transition on any part of a mark", () => {
+        const source = readFileSync(join(__dirname, "../src/components/molecules/MapView.svelte"), "utf8");
+        const markup = source.slice(source.indexOf("{#each markers"), source.indexOf("{/each}"));
+        expect(markup).not.toMatch(/\b(transition|animate|duration)-/);
     });
 });
 

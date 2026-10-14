@@ -1357,6 +1357,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                             "A line under the label, inside it, so a tap on it ticks the box. Tied to the box with aria-describedby; not part of the name.",
                     },
                     {
+                        name: "descriptionSpoken",
+                        type: "string",
+                        required: false,
+                        description:
+                            "What a screen reader says for the description when the drawn line is in short forms. It takes the drawn line's place in aria-describedby and is not drawn.",
+                    },
+                    {
                         name: "controlPosition",
                         type: "'start' | 'end'",
                         required: false,
@@ -1428,6 +1435,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         defaultValue: "undefined",
                         description:
                             "A line under the label, tied to the radio with aria-describedby. The label names the radio; the description does not join the name.",
+                    },
+                    {
+                        name: "descriptionSpoken",
+                        type: "string",
+                        required: false,
+                        description:
+                            "What a screen reader says for the description when the drawn line is in short forms. It takes the drawn line's place in aria-describedby and is not drawn.",
                     },
                     {
                         name: "variant",
@@ -2908,6 +2922,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         description:
                             "A line under the label, inside it, so a tap on it toggles. Tied to the switch with aria-describedby, after any ids passed in; not part of the name. It needs a label.",
+                    },
+                    {
+                        name: "descriptionSpoken",
+                        type: "string",
+                        required: false,
+                        description:
+                            "What a screen reader says for the description when the drawn line is in short forms. It takes the drawn line's place in aria-describedby and is not drawn.",
                     },
                 ],
                 variants: [],

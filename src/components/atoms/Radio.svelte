@@ -34,6 +34,12 @@
          */
         description?: string;
         /**
+         * What a screen reader says for the description, when the drawn line
+         * is in short forms. It takes the drawn line's place in
+         * `aria-describedby`; it is not drawn.
+         */
+        descriptionSpoken?: string;
+        /**
          * Where the radio sits in the row. `end` puts it after the leading,
          * the label and the description, at the far edge; the row is still
          * one label and fills the width it is given.
@@ -61,6 +67,7 @@
         onchange,
         leading,
         description,
+        descriptionSpoken,
         controlPosition = "start",
         ...restProps
     }: Props = $props();
@@ -96,6 +103,7 @@
     {mark}
     {leading}
     {description}
+    {descriptionSpoken}
     {controlPosition}
     class={className}
     {...restProps}

@@ -54,6 +54,12 @@
          */
         description?: string;
         /**
+         * What a screen reader says for the description, when the drawn line
+         * is in short forms ("tis, ons" for "tisdagar och onsdagar"). It
+         * takes the drawn line's place in `aria-describedby`; it is not drawn.
+         */
+        descriptionSpoken?: string;
+        /**
          * Where the control sits in the row. `end` puts it after the leading,
          * the label and the description, at the far edge; the row is still
          * one label and fills the width it is given.
@@ -85,6 +91,7 @@
         mark,
         leading,
         description,
+        descriptionSpoken,
         controlPosition = "start",
         variant = "default",
         message = "",
@@ -242,10 +249,14 @@
                 <span class="text-sm font-medium text-label">
                     {label}
                 </span>
-                <!-- aria-hidden keeps it out of the name; aria-describedby still reads it. -->
-                <span id={descriptionId} class="text-sm text-description" aria-hidden="true">
+                <!-- aria-hidden keeps it out of the name; aria-describedby still reads it,
+                     or reads the spoken words in its place. -->
+                <span id={descriptionSpoken ? undefined : descriptionId} class="text-sm text-description" aria-hidden="true">
                     {description}
                 </span>
+                {#if descriptionSpoken}
+                    <span id={descriptionId} hidden>{descriptionSpoken}</span>
+                {/if}
             </span>
         {:else if label}
             <span class={cn("text-sm font-medium text-label", labelTextClasses)}>

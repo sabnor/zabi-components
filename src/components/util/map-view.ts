@@ -192,6 +192,20 @@ export function insetOffset(inset: MapInset | undefined): MapPixel {
     };
 }
 
+/**
+ * The fit's room at each edge: a tap area, and at the bottom enough that a
+ * marker's tap area ends above the credit. `credit` is how far the credit
+ * reaches up from the bottom edge, in px (0 when there is none).
+ */
+export function fitPadding(credit: number): Required<MapInset> {
+    return {
+        top: MAP_MARKER_TAP,
+        right: MAP_MARKER_TAP,
+        bottom: Math.max(MAP_MARKER_TAP, credit + MAP_MARKER_TAP / 2),
+        left: MAP_MARKER_TAP,
+    };
+}
+
 /** The words of an attribution the style carries as HTML, as plain text. */
 export function attributionText(html: string): string {
     return html
@@ -215,7 +229,7 @@ export interface MapLibreMapLike {
     jumpTo(options: { center?: [number, number] | MapLngLat; zoom?: number }): unknown;
     cameraForBounds(
         bounds: [[number, number], [number, number]],
-        options?: { padding?: number; maxZoom?: number },
+        options?: { padding?: number | Required<MapInset>; maxZoom?: number },
     ): { center?: unknown; zoom?: number } | undefined;
     project(lngLat: [number, number]): MapPixel;
     unproject(point: [number, number]): MapLngLat;
