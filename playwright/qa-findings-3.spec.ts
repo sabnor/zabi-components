@@ -131,9 +131,33 @@ test.describe("SidebarNavigation search: the placeholder under the pointer", () 
                 field.evaluate((input, toRgb) => {
                     const rgb = new Function(`return ${toRgb}`)() as (colour: string) => number[];
                     const style = getComputedStyle(input);
+                    // The hover fill is a tint since 9.0 (white at 10% in dark): what is seen is the
+                    // tint over the first opaque fill behind it, drawn in that order on a canvas.
+                    const canvas = document.createElement("canvas");
+                    canvas.width = canvas.height = 1;
+                    const context = canvas.getContext("2d", { willReadFrequently: true })!;
+                    const alpha = (colour: string) => {
+                        context.clearRect(0, 0, 1, 1);
+                        context.fillStyle = colour;
+                        context.fillRect(0, 0, 1, 1);
+                        return context.getImageData(0, 0, 1, 1).data[3];
+                    };
+                    let behind = "rgb(255, 255, 255)";
+                    for (let up = input.parentElement; up; up = up.parentElement) {
+                        const colour = getComputedStyle(up).backgroundColor;
+                        if (alpha(colour) === 255) {
+                            behind = colour;
+                            break;
+                        }
+                    }
+                    context.clearRect(0, 0, 1, 1);
+                    for (const fill of [behind, style.backgroundColor]) {
+                        context.fillStyle = fill;
+                        context.fillRect(0, 0, 1, 1);
+                    }
                     return {
                         fill: style.backgroundColor,
-                        fillRgb: rgb(style.backgroundColor),
+                        fillRgb: [...context.getImageData(0, 0, 1, 1).data].slice(0, 3),
                         placeholder: rgb(getComputedStyle(input, "::placeholder").color),
                     };
                 }, TO_RGB);
@@ -142,9 +166,9 @@ test.describe("SidebarNavigation search: the placeholder under the pointer", () 
             // The fill changes over 150ms.
             await page.waitForTimeout(400);
             const hovered = await read();
-            // There is a hover fill, and it is opaque: the contrast below is against it alone.
+            // There is a hover fill, and it shows: not fully transparent.
             expect(hovered.fill).not.toBe(resting.fill);
-            expect(hovered.fill).not.toMatch(/rgba\([^)]*,\s*0(\.\d+)?\)|transparent|\/\s*0(\.\d+)?\)/);
+            expect(hovered.fill).not.toMatch(/rgba\([^)]*,\s*0\)|transparent|\/\s*0\)/);
             expect(contrast(hovered.placeholder, hovered.fillRgb)).toBeGreaterThanOrEqual(4.5);
         });
     }

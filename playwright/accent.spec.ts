@@ -292,10 +292,14 @@ for (const dark of [false, true]) {
             // The muted ring follows too, or a ghost control would be ringed in page grey on the brand.
             expect((await ringOf("brand-ghost")).ring).toBe(await token(page, "--color-on-brand"));
 
-            // Outside a block nothing moved; and there the default ring would not show on the brand: it is the brand.
+            // Outside a block nothing moved; and there, in light, the default ring would not show on the
+            // brand: it is the brand. In dark (D135) the primary is the mid step and the ring stays on the
+            // mirrored ramp, so they are no longer the same colour there.
             const outside = await ringOf("page-button");
             expect(outside.ring).toBe(await token(page, "--color-focus-ring"));
-            expect(await contrast(page, outside.ring, await token(page, "--color-action-primary"))).toBeLessThan(1.1);
+            if (!dark) {
+                expect(await contrast(page, outside.ring, await token(page, "--color-action-primary"))).toBeLessThan(1.1);
+            }
         });
 
         test("font-sans, font-mono and font-heading follow the theme's font tokens", async ({ page }) => {

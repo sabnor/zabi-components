@@ -520,7 +520,9 @@ test.describe("Calendar — display modes", () => {
         expect(light.dot).toBe(light.success);
 
         await page.evaluate(() => document.documentElement.classList.add("dark"));
-        await expect.poll(async () => (await read()).primary).not.toBe(light.primary);
+        // Since 9.0 (D135) dark keeps the light primary step, so the primary may not change;
+        // the success tone does, which says the dark tokens are in.
+        await expect.poll(async () => (await read()).success).not.toBe(light.success);
         const dark = await settled();
         expect(dark.text).toBe(dark.onPrimary);
         expect(dark.dot).toBe(dark.success);

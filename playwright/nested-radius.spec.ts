@@ -333,6 +333,8 @@ test.describe("nested corner radii", () => {
         // The segments of a SegmentedControl sit 3px inside its 8px corner.
         await openPage(page, "SegmentedControl");
         expect(report(await page.evaluate(scan))).toEqual([]);
+        // The faces fade their fill since 9.0: the grey below must be there when the scan reads it.
+        await page.addStyleTag({ content: "*, *::before, *::after { transition: none !important; }" });
         const squared = await page.evaluate(() => {
             const segments = [...document.querySelectorAll<HTMLElement>("main [role='radiogroup'] .segment-face")];
             for (const segment of segments) {
