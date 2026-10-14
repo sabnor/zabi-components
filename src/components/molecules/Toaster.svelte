@@ -364,11 +364,20 @@
             // over the header after all.
             const padding = parseFloat(getComputedStyle(stack).paddingTop) || 0;
             if (room < 2 * padding + 44) stack.style.paddingBlock = "0px";
-            // Where it was, or at its end when it has only now begun to scroll:
-            // the newest toast is the last one.
-            stack.scrollTop = scrolledTo ?? stack.scrollHeight;
+            // Where it was, or at its end when it has only now begun to scroll or was at its
+            // end before: the newest toast is the last one.
+            const atEnd = scrolledTo !== null && scrolledTo >= endAt - 1;
+            stack.scrollTop = scrolledTo === null || atEnd ? stack.scrollHeight : scrolledTo;
+            endAt = stack.scrollHeight - stack.clientHeight;
         }
     }
+
+    /**
+     * Where the end of a stack that scrolls was, at the last layout. A toast's words arrive a
+     * moment after it does and make it taller: a stack that was at its end stays there, so the
+     * newest toast stays in view. One the reader has scrolled back stays where they put it.
+     */
+    let endAt = 0;
 
     /** How many toasts were shown at the last layout: a new one is scrolled to. */
     let shownCount = 0;
@@ -380,6 +389,7 @@
         // The newest is at the end: in a stack that scrolls, that is what to show.
         if (stack && count > shownCount && stack.style.overflowY === "auto") {
             stack.scrollTop = stack.scrollHeight;
+            endAt = stack.scrollHeight - stack.clientHeight;
         }
         shownCount = count;
     });
