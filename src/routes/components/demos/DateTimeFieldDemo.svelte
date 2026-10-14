@@ -48,6 +48,22 @@
         <p class="text-sm text-description" data-testid="{kind}-field-demo-sent">{submitted}</p>
     </form>
 {:else if exampleIndex === 1}
+    <div class="w-full space-y-4" data-testid="{kind}-field-demo-locale">
+        {#if kind === "date"}
+            <DateField label="Datum" name="date" locale="sv" bind:value={date} placeholder="Välj datum" />
+            <DateField
+                label="Datum, kort"
+                locale="sv"
+                format={{ weekday: "short", day: "numeric", month: "short" }}
+                bind:value={date}
+            />
+            <DateField label="Datum, enhetens väljare" locale="sv" picker="native" bind:value={date} />
+        {:else}
+            <TimeField label="Tid" name="time" locale="sv" bind:value={time} placeholder="Välj tid" />
+            <TimeField label="Tid, kvartar" locale="sv" step={900} min="17:00" max="21:30" bind:value={time} />
+        {/if}
+    </div>
+{:else if exampleIndex === 2}
     <div class="w-full space-y-6">
         {#if kind === "date"}
             <DateField
