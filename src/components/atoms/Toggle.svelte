@@ -120,7 +120,7 @@
 
     const toggleThumbClasses = $derived(() => {
         const base =
-            "toggle-switch-thumb pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full shadow-sm transition-transform duration-(--duration-moderate) ease-spring flex items-center justify-center";
+            "toggle-switch-thumb pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full shadow-sm transition-transform duration-(--zabi-toggle-duration,var(--duration-moderate)) ease-(--zabi-toggle-ease,var(--ease-standard)) motion-reduce:transition-none flex items-center justify-center";
         const positionClasses = checked ? "bg-toggle-thumb-checked translate-x-4" : "bg-toggle-thumb translate-x-0";
         return `${base} ${positionClasses}`;
     });

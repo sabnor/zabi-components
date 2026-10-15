@@ -1,7 +1,9 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
+import { createRawSnippet } from "svelte";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import BottomSheet from "../src/components/molecules/BottomSheet.svelte";
 import BottomSheetHarness from "./fixtures/BottomSheetHarness.svelte";
 import { nextSnap, normaliseSnapPoints, settleSnap } from "../src/components/util/bottom-sheet";
 
@@ -180,8 +182,10 @@ describe("BottomSheet motion", () => {
     it("uses the motion tokens for snapping, with a filler under the bottom edge", async () => {
         await openSheet();
         const cls = sheet().getAttribute("class")!;
-        expect(cls).toContain("duration-(--duration-slow)");
-        expect(cls).toContain("ease-spring");
+        // Its own tokens first, then the slow duration and the standard curve: no overshoot (Z-146).
+        expect(cls).toContain("duration-(--zabi-sheet-duration,var(--duration-slow))");
+        expect(cls).toContain("ease-(--zabi-sheet-ease,var(--ease-standard))");
+        expect(cls).not.toContain("ease-spring");
         expect(cls).not.toMatch(/duration-(150|200|300)\b/);
         expect(cls).toContain("after:top-full");
         expect(cls).toContain("after:pointer-events-none");
@@ -934,5 +938,31 @@ describe("BottomSheet overlay root", () => {
         // the sheet rose to the top of the screen (Z-088).
         expect(root.classList.contains("overflow-clip")).toBe(true);
         expect(root.classList.contains("overflow-hidden")).toBe(false);
+    });
+});
+
+describe("BottomSheet: a picture before the title (Z-142)", () => {
+    const picture = createRawSnippet(() => ({
+        render: () => '<svg width="40" height="40" data-testid="portrait"></svg>',
+    }));
+
+    it("draws titlePicture before the title, aria-hidden, and the title alone names the sheet", async () => {
+        render(BottomSheet, { props: { isOpen: true, title: "Kvarnen", titlePicture: picture } });
+        const dialog = await screen.findByRole("dialog", { name: "Kvarnen" });
+        const box = dialog.querySelector<HTMLElement>("[data-sheet-title-picture]")!;
+        expect(box).not.toBeNull();
+        expect(box.getAttribute("aria-hidden")).toBe("true");
+        expect(box.className).toContain("h-[1lh]");
+        expect(box.querySelector("[data-testid='portrait']")).not.toBeNull();
+        expect(box.firstElementChild!.className).toContain("[max-inline-size:40px]");
+        const heading = within(dialog).getByRole("heading", { name: "Kvarnen" });
+        expect(box.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(box.parentElement).toBe(heading.parentElement);
+    });
+
+    it("draws no picture box without it", async () => {
+        render(BottomSheet, { props: { isOpen: true, title: "Kvarnen" } });
+        const dialog = await screen.findByRole("dialog", { name: "Kvarnen" });
+        expect(dialog.querySelector("[data-sheet-title-picture]")).toBeNull();
     });
 });

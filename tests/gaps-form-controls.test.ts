@@ -220,3 +220,14 @@ describe("descriptionSpoken: a description read out in other words than it is dr
         expect(container.querySelector("[hidden]")).toBeNull();
     });
 });
+
+describe("Toggle: the knob slides with no overshoot, on tokens of its own (Z-146)", () => {
+    it("reads --zabi-toggle-ease and --zabi-toggle-duration, else the standard curve over the moderate duration", () => {
+        const { container } = render(Toggle, { props: { label: "Notify me" } });
+        const knob = container.querySelector(".toggle-switch-thumb")!;
+        expect(knob.className).toContain("ease-(--zabi-toggle-ease,var(--ease-standard))");
+        expect(knob.className).toContain("duration-(--zabi-toggle-duration,var(--duration-moderate))");
+        expect(knob.className).toContain("motion-reduce:transition-none");
+        expect(knob.className).not.toContain("ease-spring");
+    });
+});

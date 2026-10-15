@@ -12,6 +12,56 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.1] - 2026-10-15
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.0. No token, prop, variant, string key,
+export or data attribute is removed or renamed. Nothing in it has been rendered in a browser: type and design
+checks, unit tests in jsdom, the package build.
+
+### Added
+
+- `MapView`: `retry()`, which starts the map again from the library on, for a "Try again" after `library-error`
+  or `tiles-error`; `load` is now called with the attempt's number (1, then 2 after a `retry()`, ...). A browser
+  keeps a failed `import()` for the life of the page, so the doc comment says that a `load` that should work on a
+  later attempt must ask at an address the page has not asked before, and that with the default `load` the page
+  must be reloaded (Z-141, D268).
+- A new entry, `zabi-components/map/support`: `mapViewSupported`, the constants, `clusterMarkers` and the types of
+  `zabi-components/map`, with no component and nothing of MapLibre, so asking whether a map can be drawn does not
+  bring `MapView`'s chunk. `zabi-components/map` still exports all of them (Z-141, D268).
+- `MapView`: `onpainted`, called once the opening view has drawn with every tile in it (the first `idle` after
+  `ready`), once per start (Z-147, D272).
+- `BottomSheet`: `titlePicture`, a snippet drawn before the title in the header row, up to 40 × 40px, centred on
+  the title's first line, `aria-hidden` and marked `data-sheet-title-picture`; the title wraps beside it and alone
+  names the sheet (Z-142, D269).
+- `SegmentedControl`, `BottomSheet` and `Toggle` read motion tokens of their own, on the element or above:
+  `--zabi-segment-ease` / `--zabi-segment-duration`, `--zabi-sheet-ease` / `--zabi-sheet-duration` (snapping and
+  the settle after a drag) and `--zabi-toggle-ease` / `--zabi-toggle-duration` (Z-145, Z-146, D271).
+- `MapView`: `--map-viewer-fill`, on the host or above, sets the fill of the viewer's dot (Z-144, D270).
+
+### Changed
+
+- `MapView`: with no `center` and `zoom` from the page, the map is made at the fit to its markers (`bounds` and
+  `fitBoundsOptions` with the fit's padding and `fitMaxZoom`; one place at `fitMaxZoom`), not at the whole world
+  and fitted after it, so `ready` is the view that is seen and the world's tiles and glyphs are not fetched. It is
+  still fitted again once it has drawn, with the credit measured (Z-147, D272).
+- `MapView`: the viewer's dot is 20px (was 16px): a 3px halo in `--color-surface-overlay`, a 1px
+  `--color-border-strong` edge and a small shadow outside it, its fill `--color-action-primary` (was `--color-info`).
+  No pulse (Z-144, D270).
+
+### Fixed
+
+- The thumb of `SegmentedControl`, the snap and the settle of `BottomSheet`, the knob of `Toggle` and the pill of
+  `Tabs` slide on `--ease-standard`, not `--ease-spring`: they no longer pass their place and come back. Durations
+  are unchanged. `--ease-spring` itself is unchanged and no component reads it now; an app that re-pointed it to
+  calm these needs that line no more (Z-145, Z-146, D271).
+
+### Not verified
+
+Not rendered in a browser: no WebGL, no tiles, no screen reader, no motion seen. The dot's fill against the land of
+either map style is computed, not measured on tiles: the default fill (#4f68da) is 4.3:1 on #f2f2f2, 4.0:1 on
+#e8e8e8 and 3.6:1 on #1a1a1a, but under 3:1 on a dark ground as light as #2a2a2a; `--map-viewer-fill` is there for
+that. That MapLibre takes `bounds` and `fitBoundsOptions` in its constructor is read from its options, not seen.
+
 ## [9.1.0-alpha.0] - 2026-10-14
 
 A local preview build of 9.1, not published to npm, on top of 9.0.0. No token, prop, variant, string key, export

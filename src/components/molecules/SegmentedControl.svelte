@@ -375,12 +375,14 @@ one changes nothing, and the value goes with a form. -->
         box-shadow: none;
     }
 
-    /* Only once the first placement is on screen: the thumb then slides and resizes. */
+    /* Only once the first placement is on screen: the thumb then slides and
+       resizes, with no overshoot. `--zabi-segment-ease` and
+       `--zabi-segment-duration`, on the host or above, change the slide alone. */
     .segmented[data-indicator-motion] .segment-indicator {
         transition:
-            transform var(--duration-moderate) var(--ease-spring),
-            width var(--duration-moderate) var(--ease-spring),
-            height var(--duration-moderate) var(--ease-spring);
+            transform var(--zabi-segment-duration, var(--duration-moderate)) var(--zabi-segment-ease, var(--ease-standard)),
+            width var(--zabi-segment-duration, var(--duration-moderate)) var(--zabi-segment-ease, var(--ease-standard)),
+            height var(--zabi-segment-duration, var(--duration-moderate)) var(--zabi-segment-ease, var(--ease-standard));
     }
 
     /* Forced colours keep the segment's own Highlight look below. */

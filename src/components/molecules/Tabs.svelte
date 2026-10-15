@@ -328,10 +328,9 @@
                 class={cn(
                     "pointer-events-none absolute top-0 left-0 forced-colors:hidden",
                     variant === "pills" ? "bg-action-primary-subtle border-b-2 border-brand-500" : "bg-brand-500",
-                    // The underline must not overshoot; the pill may spring.
+                    // Neither the underline nor the pill overshoots.
                     indicatorMotion &&
-                        "transition-[transform,width,height] duration-(--duration-moderate) motion-reduce:transition-none",
-                    indicatorMotion && (variant === "pills" ? "ease-spring" : "ease-standard"),
+                        "transition-[transform,width,height] duration-(--duration-moderate) ease-standard motion-reduce:transition-none",
                 )}
                 aria-hidden="true"
                 data-indicator={variant}

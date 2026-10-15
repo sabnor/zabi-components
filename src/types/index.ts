@@ -1021,6 +1021,8 @@ export interface BottomSheetProps
     isOpen?: boolean;
     /** Heading of the sheet, and its accessible name. */
     title: string;
+    /** A picture before the title, up to 40 × 40px, centred on its first line; `aria-hidden`. */
+    titlePicture?: Snippet;
     description?: string;
     /** The heights the sheet can rest at. */
     snapPoints?: BottomSheetSnap[];

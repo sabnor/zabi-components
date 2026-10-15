@@ -32,6 +32,10 @@
       "import": "./dist/map.js",
       "svelte": "./dist/map.js"
     },
+    "./map/support": {
+      "types": "./dist/map-support.d.ts",
+      "import": "./dist/map-support.js"
+    },
     "./types": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.js"

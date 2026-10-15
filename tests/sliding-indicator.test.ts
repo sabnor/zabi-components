@@ -89,7 +89,10 @@ describe("SegmentedControl indicator", () => {
         const source = readSource("src/components/molecules/SegmentedControl.svelte");
         expect(source).toMatch(/prefers-reduced-motion: reduce[\s\S]*segment-indicator/);
         expect(source).not.toMatch(/\d+ms/);
-        expect(source).toContain("var(--ease-spring)");
+        // Its own tokens first, then the standard curve: a slide with no overshoot (Z-145).
+        expect(source).toContain("var(--zabi-segment-ease, var(--ease-standard))");
+        expect(source).toContain("var(--zabi-segment-duration, var(--duration-moderate))");
+        expect(source).not.toContain("var(--ease-spring)");
     });
 
     it("works where ResizeObserver does not exist", async () => {
@@ -125,14 +128,15 @@ describe("Tabs indicator", () => {
         await waitFor(() => expect(indicator(list)!.style.transform).toBe("translate(200px, 28px)"));
     });
 
-    it("the pill covers the whole tab, springs, and the underline does not", async () => {
+    it("the pill covers the whole tab, and neither it nor the underline springs", async () => {
         mockBoxes();
         const { unmount } = render(Tabs, { props: { tabs, activeTab: "a", variant: "pills" } });
         const list = screen.getByRole("tablist");
         await waitFor(() => expect(indicator(list)).not.toBeNull());
         expect(indicator(list)!.style.height).toBe("30px");
         expect(indicator(list)!.className).toContain("bg-action-primary-subtle");
-        await waitFor(() => expect(indicator(list)!.className).toContain("ease-spring"));
+        await waitFor(() => expect(indicator(list)!.className).toContain("ease-standard"));
+        expect(indicator(list)!.className).not.toContain("ease-spring");
         expect(indicator(list)!.className).toContain("motion-reduce:transition-none");
         unmount();
 

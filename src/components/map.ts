@@ -4,6 +4,8 @@
  * `MapView` needs `maplibre-gl` (the app's own dependency) and loads it when
  * it is mounted. It is in no other entry of the package, so importing a
  * component from `zabi-components` brings none of the map, script or CSS.
+ * The helpers below, without the component, are also in
+ * `zabi-components/map/support`.
  */
 export { default as MapView } from './molecules/MapView.svelte';
 export {

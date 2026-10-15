@@ -528,3 +528,109 @@ describe("the map stays out of every other entry", () => {
         expect(read("src/components/util/map-view.ts")).not.toMatch(/from ["']maplibre-gl/);
     });
 });
+
+describe("MapView: a load can be asked again, and support comes alone (Z-141)", () => {
+    it("starts again on retry(), calling load with the next attempt's number", async () => {
+        let fail = true;
+        const load = vi.fn(async (_attempt: number) => {
+            if (fail) throw new Error("chunk");
+            return { Map: FakeMap };
+        });
+        const { component } = render(MapView, {
+            props: { points, styleLight: "light.json", load, "data-testid": "map" },
+        });
+        await waitFor(() => expect(host().getAttribute("data-status")).toBe("library-error"));
+        expect(load).toHaveBeenLastCalledWith(1);
+        fail = false;
+        (component as unknown as { retry: () => void }).retry();
+        await waitFor(() => expect(host().getAttribute("data-status")).toBe("loading"));
+        await waitFor(() => expect(load).toHaveBeenLastCalledWith(2));
+        await waitFor(() => expect(FakeMap.last?.listeners.has("load")).toBe(true));
+        FakeMap.last.fire("load");
+        await waitFor(() => expect(host().getAttribute("data-status")).toBe("ready"));
+    });
+
+    it("takes the old map away on a retry after tiles-error", async () => {
+        const { map, component } = await mount();
+        map.fire("error", {});
+        await waitFor(() => expect(host().getAttribute("data-status")).toBe("tiles-error"));
+        (component as unknown as { retry: () => void }).retry();
+        expect(map.removed).toBe(true);
+        await waitFor(() => expect(FakeMap.last).not.toBe(map));
+        FakeMap.last.fire("load");
+        await waitFor(() => expect(host().getAttribute("data-status")).toBe("ready"));
+    });
+
+    it("has mapViewSupported on an entry that brings no component", () => {
+        const root = join(__dirname, "..");
+        const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+        expect(pkg.exports["./map/support"]).toEqual({
+            types: "./dist/map-support.d.ts",
+            import: "./dist/map-support.js",
+        });
+        const entry = readFileSync(join(root, "src/components/map-support.ts"), "utf8");
+        expect(entry).toContain("mapViewSupported");
+        expect(entry).not.toMatch(/\.svelte|maplibre-gl['"]/);
+    });
+});
+
+describe("MapView: the viewer's dot is found at a glance (Z-144)", () => {
+    it("is a 20px filled dot with a halo and an edge, its fill set by --map-viewer-fill", async () => {
+        const { map, rerender } = await mount();
+        map.fire("load");
+        await rerender({ viewer: { lng: 18.05, lat: 59.31 } });
+        await waitFor(() => expect(host().querySelector("[data-map-viewer]")).not.toBeNull());
+        const dot = host().querySelector<HTMLElement>("[data-map-viewer]")!;
+        expect(dot.className).toContain("size-[20px]");
+        expect(dot.className).toContain("border-[3px]");
+        expect(dot.className).toContain("ring-1");
+        expect(dot.className).toContain("bg-(--map-viewer-fill,var(--color-action-primary))");
+        expect(dot.className).not.toMatch(/animate-|transition/);
+        // Centred on the position: the map has jumped there, the middle of its 400 by 300 box.
+        expect(dot.style.transform).toBe("translate(190px, 140px)");
+    });
+});
+
+describe("MapView: the first view drawn is the fit, and onpainted says when it is in (Z-147)", () => {
+    it("is made at the fit to the markers when the page gives no centre", async () => {
+        const { map } = await mount({ fitMaxZoom: 9 });
+        expect(map.options.bounds).toEqual([
+            [18.0, 59.3],
+            [18.201, 59.301],
+        ]);
+        expect(map.options.fitBoundsOptions).toMatchObject({ maxZoom: 9, padding: { top: 44, bottom: 44 } });
+        expect(map.options.center).toBeUndefined();
+    });
+
+    it("is made at the one place, at the fit's zoom, for one marker; and where the page says, with a centre", async () => {
+        const { map, unmount } = await mount({ points: [points[0]] });
+        expect(map.options).toMatchObject({ center: [18.0, 59.3], zoom: 16 });
+        expect(map.options.bounds).toBeUndefined();
+        unmount();
+        const restored = await mount({ center: { lng: 11, lat: 57 }, zoom: 10 });
+        expect(restored.map.options).toMatchObject({ center: [11, 57], zoom: 10 });
+        expect(restored.map.options.bounds).toBeUndefined();
+    });
+
+    it("tells onpainted once, at the first idle after ready", async () => {
+        const onpainted = vi.fn();
+        const { map } = await mount({ onpainted });
+        map.fire("idle");
+        expect(onpainted).not.toHaveBeenCalled();
+        map.fire("load");
+        await waitFor(() => expect(host().getAttribute("data-status")).toBe("ready"));
+        map.fire("idle");
+        map.fire("idle");
+        expect(onpainted).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not tell onpainted when tiles failed", async () => {
+        const onpainted = vi.fn();
+        const { map } = await mount({ onpainted });
+        map.fire("load");
+        map.fire("error", { tile: {}, sourceId: "tiles" });
+        map.fire("idle");
+        await waitFor(() => expect(host().getAttribute("data-status")).toBe("tiles-error"));
+        expect(onpainted).not.toHaveBeenCalled();
+    });
+});

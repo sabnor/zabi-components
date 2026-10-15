@@ -7614,6 +7614,13 @@ pushToast({
                             "Heading of the sheet, and its accessible name. It wraps; with the text enlarged, a long word is hyphenated by the page's lang before it is cut. It grows with the reader's text size up to 1.3 times (26px); the gutters and the close button of the header stay as they are.",
                     },
                     {
+                        name: "titlePicture",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "A picture before the title in the header row, such as a portrait sticker: an inline drawing, up to 40 × 40px, centred on the title's first line, with the title wrapping beside it. It is aria-hidden; the title alone names the sheet.",
+                    },
+                    {
                         name: "description",
                         type: "string",
                         required: false,

@@ -40,7 +40,8 @@
      * It comes from its own entry, `zabi-components/map`, and loads the map
      * library (`maplibre-gl`, the app's own dependency) only when it is
      * mounted in a browser: nothing else in the package brings any of it.
-     * Ask `mapViewSupported()` before offering a map at all.
+     * Ask `mapViewSupported()` before offering a map at all; it also comes
+     * from `zabi-components/map/support`, which brings no component.
      *
      * The markers are the map for a keyboard and a screen reader: each is a
      * named button, in the order of `points`. Markers whose tap areas overlap
@@ -48,7 +49,16 @@
      * jump; the finger's own pan and pinch are the only motion.
      *
      * It shows no text of its own and no error: read `status` and put your
-     * own skeleton or empty state in its place.
+     * own skeleton or empty state in its place. `ready` is the opening view
+     * drawn, without its tiles maybe; `onpainted` is told once they are in.
+     * After an error, `retry()` starts it again.
+     *
+     * A browser keeps a failed `import()` for the life of the page: asking
+     * the same address again fails at once, also once the net is back. So a
+     * `retry()` after `library-error` can only load the library if `load`
+     * asks at an address the page has not asked before on a later attempt
+     * (it is called with the attempt's number, 1 first); with the default
+     * `load`, the page must be reloaded instead.
      *
      * MapLibre 6 keeps its worker in a file of its own, which a bundler does
      * not move with the module, so the default `load` finds no worker in a
@@ -117,15 +127,23 @@
         status?: MapViewStatus;
         onstatus?: (status: MapViewStatus) => void;
         /**
+         * Called once the opening view has drawn with every tile in it, after
+         * `ready`: the first time the map is still with nothing left to load.
+         * Once per start (`retry()` starts again); not after a theme change.
+         */
+        onpainted?: () => void;
+        /**
          * The credit that is always shown, bottom left. Without it, the words
          * of the attribution the style's sources carry, as plain text.
          */
         attribution?: string | Snippet;
         /**
-         * Loads the map library. Default: `() => import("maplibre-gl")`, which
-         * in a built app finds no MapLibre 6 worker: see above for one that does.
+         * Loads the map library, called with the attempt's number (1, then 2
+         * after a `retry()`, ...). Default: `() => import("maplibre-gl")`, which
+         * in a built app finds no MapLibre 6 worker, and which a `retry()`
+         * cannot load again after it failed: see above.
          */
-        load?: () => Promise<unknown>;
+        load?: (attempt: number) => Promise<unknown>;
         /** Overrides for the built-in strings. */
         strings?: Partial<MapViewStrings>;
         /** Extra classes for the host element. */
@@ -150,6 +168,7 @@
         viewer = null,
         status = $bindable<Exclude<Props["status"], undefined>>(),
         onstatus,
+        onpainted,
         attribution,
         load,
         strings,
@@ -223,8 +242,16 @@
         if (loaded && status === "tiles-error") setStatus("ready");
     }
 
+    /** `onpainted` has been told for this start. */
+    let painted = false;
+
     function handleIdle() {
         if (tileErrors > 0 && tilesArrived === 0 && !workerFailed) setStatus("tiles-error");
+        // Still, and everything in view loaded: the view the page uncovers is drawn.
+        if (loaded && !painted && status === "ready") {
+            painted = true;
+            onpainted?.();
+        }
     }
 
     // --- Markers -------------------------------------------------------------
@@ -428,8 +455,108 @@
 
     // --- The map itself ----------------------------------------------------------
 
+    /** The component is gone: nothing that comes back late may touch it. */
+    let gone = false;
+    /** The number of the start under way; one that is not the newest gives up. */
+    let attempt = 0;
+
+    /** Loads the library and makes the map. */
+    async function start() {
+        attempt += 1;
+        const mine = attempt;
+        let library: MapLibreLike | undefined;
+        try {
+            const module = (await (load ? load(mine) : import("maplibre-gl"))) as
+                | (Partial<MapLibreLike> & { default?: MapLibreLike })
+                | undefined;
+            library = module?.Map ? (module as MapLibreLike) : module?.default;
+            if (!library?.Map) throw new Error("no Map in the map library");
+        } catch {
+            if (!gone && mine === attempt) setStatus("library-error");
+            return;
+        }
+        if (gone || mine !== attempt || !surface) return;
+        // Opened where the page says, if it says both. Else made at the fit
+        // to the markers, so that the first view drawn is the one that is
+        // seen, and fitted again once it has drawn, with the credit measured.
+        const restored = !!center && zoom !== undefined;
+        try {
+            appliedStyle = style;
+            instance = new library.Map({
+                container: surface,
+                style,
+                // No control on the surface: the credit is drawn below, always open.
+                attributionControl: false,
+                maplibreLogo: false,
+                // The finger's pan and pinch only: no turning, no tilting, no zoom that eases on a double tap.
+                dragRotate: false,
+                pitchWithRotate: false,
+                touchPitch: false,
+                doubleClickZoom: false,
+                boxZoom: false,
+                keyboard: false,
+                ...(restored && center ? { center: [center.lng, center.lat], zoom } : openingFit()),
+            });
+        } catch {
+            setStatus("library-error");
+            return;
+        }
+        const map = instance;
+        map.touchZoomRotate?.disableRotation();
+        // The markers are the map for a keyboard: the canvas is not a stop of its own.
+        map.getCanvas().tabIndex = -1;
+        map.on("error", handleError);
+        map.on("data", handleData);
+        map.on("idle", handleIdle);
+        map.on("styledata", readCredit);
+        map.on("sourcedata", readCredit);
+        map.on("move", reproject);
+        map.on("resize", reproject);
+        map.on("moveend", reportPosition);
+        map.on("load", () => {
+            if (gone || map !== instance) return;
+            if (restored) fitted = pointsSignature(points);
+            loaded = true;
+            if (!workerFailed && (tilesArrived > 0 || tileErrors === 0)) setStatus("ready");
+            readCredit();
+            reproject();
+        });
+    }
+
+    /** The map's opening view as options of its constructor: the fit, as `fit()` makes it. None with no markers. */
+    function openingFit(): Record<string, unknown> {
+        const box = boundsOf(points);
+        if (!box) return {};
+        if (box[0][0] === box[1][0] && box[0][1] === box[1][1]) return { center: box[0], zoom: fitMaxZoom };
+        return { bounds: box, fitBoundsOptions: { padding: fitPadding(creditReach()), maxZoom: fitMaxZoom } };
+    }
+
+    /**
+     * Starts the map again from the library on: for a "Try again" after
+     * `library-error` or `tiles-error`. `load` is called with the next
+     * attempt's number; see above for what it must do after a failed load.
+     */
+    export function retry() {
+        if (gone) return;
+        instance?.remove();
+        instance = undefined;
+        loaded = false;
+        markers = [];
+        viewerPixel = null;
+        styleCredit = "";
+        tilesArrived = 0;
+        tileErrors = 0;
+        workerFailed = false;
+        painted = false;
+        fitted = null;
+        viewerShown = "";
+        reported = null;
+        setStatus("loading");
+        void start();
+    }
+
     onMount(() => {
-        let gone = false;
+        gone = false;
         dark = isThemeDark();
         const readTheme = () => (dark = isThemeDark());
         const themeObserver = new MutationObserver(readTheme);
@@ -440,63 +567,7 @@
         const system = window.matchMedia?.("(prefers-color-scheme: dark)");
         system?.addEventListener?.("change", readTheme);
 
-        void (async () => {
-            let library: MapLibreLike | undefined;
-            try {
-                const module = (await (load ? load() : import("maplibre-gl"))) as
-                    | (Partial<MapLibreLike> & { default?: MapLibreLike })
-                    | undefined;
-                library = module?.Map ? (module as MapLibreLike) : module?.default;
-                if (!library?.Map) throw new Error("no Map in the map library");
-            } catch {
-                if (!gone) setStatus("library-error");
-                return;
-            }
-            if (gone || !surface) return;
-            // Opened where the page says, if it says both; else fitted to the markers once it has drawn.
-            const restored = !!center && zoom !== undefined;
-            try {
-                appliedStyle = style;
-                instance = new library.Map({
-                    container: surface,
-                    style,
-                    // No control on the surface: the credit is drawn below, always open.
-                    attributionControl: false,
-                    maplibreLogo: false,
-                    // The finger's pan and pinch only: no turning, no tilting, no zoom that eases on a double tap.
-                    dragRotate: false,
-                    pitchWithRotate: false,
-                    touchPitch: false,
-                    doubleClickZoom: false,
-                    boxZoom: false,
-                    keyboard: false,
-                    ...(restored && center ? { center: [center.lng, center.lat], zoom } : {}),
-                });
-            } catch {
-                setStatus("library-error");
-                return;
-            }
-            const map = instance;
-            map.touchZoomRotate?.disableRotation();
-            // The markers are the map for a keyboard: the canvas is not a stop of its own.
-            map.getCanvas().tabIndex = -1;
-            map.on("error", handleError);
-            map.on("data", handleData);
-            map.on("idle", handleIdle);
-            map.on("styledata", readCredit);
-            map.on("sourcedata", readCredit);
-            map.on("move", reproject);
-            map.on("resize", reproject);
-            map.on("moveend", reportPosition);
-            map.on("load", () => {
-                if (gone) return;
-                if (restored) fitted = pointsSignature(points);
-                loaded = true;
-                if (!workerFailed && (tilesArrived > 0 || tileErrors === 0)) setStatus("ready");
-                readCredit();
-                reproject();
-            });
-        })();
+        void start();
 
         return () => {
             gone = true;
@@ -593,9 +664,13 @@
             </button>
         {/each}
         {#if viewerPixel}
+            <!-- Found at a glance and still not a pin: a filled 20px dot, its
+                 3px halo in the surface colour and a 1px edge outside that,
+                 which keeps the halo apart from a pale ground. No pulse.
+                 `--map-viewer-fill` on the host or above sets the fill. -->
             <span
-                class="absolute top-0 left-0 size-[16px] rounded-full border-[3px] border-(--color-surface-overlay) bg-info"
-                style:transform="translate({Math.round(viewerPixel.x - 8)}px, {Math.round(viewerPixel.y - 8)}px)"
+                class="absolute top-0 left-0 size-[20px] rounded-full border-[3px] border-(--color-surface-overlay) bg-(--map-viewer-fill,var(--color-action-primary)) shadow-sm ring-1 ring-border-strong"
+                style:transform="translate({Math.round(viewerPixel.x - 10)}px, {Math.round(viewerPixel.y - 10)}px)"
                 role="img"
                 aria-label={text.viewer}
                 data-map-viewer

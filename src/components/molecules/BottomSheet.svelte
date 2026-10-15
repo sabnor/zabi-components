@@ -77,6 +77,12 @@
         isOpen?: boolean;
         /** Heading of the sheet, and its accessible name. */
         title: string;
+        /**
+         * A picture before the title, in the header row: an inline drawing,
+         * up to 40 × 40px, centred on the title's first line. It is
+         * `aria-hidden`: the title alone still names the sheet.
+         */
+        titlePicture?: Snippet;
         description?: string;
         /**
          * The heights the sheet can rest at: `half` of the screen, `full`
@@ -146,6 +152,7 @@
     let {
         isOpen = $bindable<Exclude<Props["isOpen"], undefined>>(),
         title,
+        titlePicture,
         description = "",
         snapPoints,
         snap = $bindable(),
@@ -229,7 +236,7 @@
      * False from opening until the slide-in has ended. The panel's height
      * transition is for snapping and settling a drag; while the sheet arrives
      * a late change of height (the overlay shrinking over a keyboard, a snap
-     * set as it opens) would ride the spring and move the content after the
+     * set as it opens) would ride the transition and move the content after the
      * eye has landed on it. Until then the height is applied at once.
      */
     let arrived = $state(false);
@@ -251,7 +258,7 @@
     function slideIn(container: HTMLElement): number {
         if (typeof container.animate !== "function" || prefersReducedMotion()) return 0;
         // Arriving is a smooth slide to rest on the standard curve, with no
-        // overshoot (the spring is for snapping and settling a drag). Read
+        // overshoot, as snapping and settling a drag land. Read
         // from the element so a theme that overrides the tokens is followed.
         // Where the tokens cannot be read (no stylesheet) or the engine
         // rejects the easing, plain ease-out.
@@ -498,12 +505,14 @@ a background is dropped there, and the grip would be gone. -->
                 "group-data-keyboard-open/overlay:max-h-[calc(100%_-_env(safe-area-inset-top,0px))] group-data-keyboard-open/overlay:pb-0",
                 // Clear of the notch and the rounded corners in landscape.
                 "pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
-                // Snapping and settling spring; the overshoot may lift the panel a
-                // few px, so the filler continues its fill under the screen edge.
+                // Snapping and settling land with no overshoot; `--zabi-sheet-ease`
+                // and `--zabi-sheet-duration`, on the panel or above, change them
+                // alone. A theme's own curve may still lift the panel a few px, so
+                // the filler continues its fill under the screen edge.
                 // The panel's own background is transparent now (the fill is on its
                 // layer), so the filler paints the material token itself: it follows
                 // the same fallbacks.
-                "transition-[height,transform] duration-(--duration-slow) ease-spring motion-reduce:transition-none",
+                "transition-[height,transform] duration-(--zabi-sheet-duration,var(--duration-slow)) ease-(--zabi-sheet-ease,var(--ease-standard)) motion-reduce:transition-none",
                 "after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-8 after:content-[''] after:bg-(--color-material-thick)",
                 "md:w-[min(100%,40rem)]",
                 className,
@@ -544,10 +553,24 @@ a background is dropped there, and the grip would be gone. -->
                     </div>
                 {/if}
                 <div class="flex items-start justify-between gap-[8px]">
-                    <div class="min-w-0 flex-1">
+                    <div class="flex min-w-0 flex-1 items-start gap-[12px]">
+                        {#if titlePicture}
+                            <!-- One title line tall, at the title's size, so the
+                            picture is centred on its first line; up to 40px, it
+                            may reach past that line into the header's padding. -->
+                            <div
+                                class="flex h-[1lh] shrink-0 items-center {OVERLAY_TITLE_XL}"
+                                aria-hidden="true"
+                                data-sheet-title-picture
+                            >
+                                <div class="flex [max-block-size:40px] [max-inline-size:40px] items-center justify-center overflow-hidden">
+                                    {@render titlePicture()}
+                                </div>
+                            </div>
+                        {/if}
                         <h2
                             id={titleId}
-                            class="{OVERLAY_TITLE_XL} font-semibold text-headline {OVERLAY_TITLE_WRAP} {enlargedText ? OVERLAY_TITLE_HYPHENS : ''}"
+                            class="min-w-0 flex-1 {OVERLAY_TITLE_XL} font-semibold text-headline {OVERLAY_TITLE_WRAP} {enlargedText ? OVERLAY_TITLE_HYPHENS : ''}"
                         >
                             {title}
                         </h2>
