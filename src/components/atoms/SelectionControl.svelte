@@ -135,15 +135,17 @@
     // With a description the row is two lines: the box sits at the top, as in RadioGroup.
     // At the end the control is moved by `order`, so the markup and what a
     // screen reader meets first are the same in both positions.
+    // `min-w-0` in every position: a flex item does not shrink below its longest
+    // word, so a long label pushed the row past its host instead of wrapping.
     const controlAtEnd = $derived(controlPosition === "end");
     const labelWrapperClasses = $derived(
-        cn(SELECTION_CONTROL_LABEL_ROW, description && "items-start", controlAtEnd && "min-w-0 flex-1"),
+        cn(SELECTION_CONTROL_LABEL_ROW, "min-w-0", description && "items-start", controlAtEnd && "flex-1"),
     );
 
     const controlContainerClasses = $derived(
         cn(selectionControlShellClasses(shape), description && "mt-0.5", controlAtEnd && "order-last"),
     );
-    const labelTextClasses = $derived(controlAtEnd ? "min-w-0 flex-1" : "");
+    const labelTextClasses = $derived(cn("min-w-0 wrap-break-word", controlAtEnd && "flex-1"));
 
     const controlRingClasses = $derived(selectionControlRingOverlayClasses(shape));
 

@@ -6,6 +6,7 @@ import {
     chartMarker,
     chartScale,
     labelEvery,
+    labelShown,
     linePath,
     niceStep,
     barPath,
@@ -128,6 +129,34 @@ describe("labelEvery", () => {
         expect(labelEvery(["a", "b", "c"], 300)).toBe(1);
         expect(labelEvery(Array.from({ length: 30 }, (_, index) => `${index + 1} okt`), 300)).toBeGreaterThan(1);
         expect(labelEvery([], 300)).toBe(1);
+    });
+});
+
+describe("labelShown", () => {
+    const shown = (count: number, every: number) =>
+        Array.from({ length: count }, (_, index) => index).filter((index) => labelShown(index, count, every));
+
+    it("always keeps the first and the last, and thins the ones between back from the last", () => {
+        expect(shown(12, 3)).toEqual([0, 5, 8, 11]);
+        expect(shown(6, 2)).toEqual([0, 3, 5]);
+        expect(shown(13, 3)).toEqual([0, 3, 6, 9, 12]);
+        expect(shown(5, 1)).toEqual([0, 1, 2, 3, 4]);
+    });
+
+    it("keeps every drawn label at least `every` apart", () => {
+        for (let count = 2; count <= 40; count++) {
+            for (let every = 1; every <= 8; every++) {
+                const kept = shown(count, every);
+                expect(kept.at(-1)).toBe(count - 1);
+                for (let at = 1; at < kept.length; at++) expect(kept[at] - kept[at - 1]).toBeGreaterThanOrEqual(every);
+            }
+        }
+    });
+
+    it("keeps only the last when two would not fit", () => {
+        expect(shown(3, 4)).toEqual([2]);
+        expect(shown(1, 3)).toEqual([0]);
+        expect(labelShown(5, 5, 1)).toBe(false);
     });
 });
 

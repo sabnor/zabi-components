@@ -176,6 +176,62 @@ describe("LineChart", () => {
         expect(host(container).id).toBe("stats");
         expect(host(container).className).toContain("mt-4");
     });
+
+    it("names the value of a one-series chart with valueTitle, in the table and in the pane (Z-149)", async () => {
+        const one = { ...props, series: [series[0]], valueTitle: "Rätt" };
+        const { container } = render(LineChart, { props: one });
+        expect(cells(container.querySelector("table thead tr")!)).toEqual(["Vecka", "Rätt"]);
+        const plot = container.querySelector("svg.plot") as SVGSVGElement;
+        plot.getBoundingClientRect = () => ({ left: 0, top: 0, width: 600, height: 240, right: 600, bottom: 240, x: 0, y: 0, toJSON: () => ({}) });
+        await fireEvent.pointerDown(plot, { clientX: 590, pointerType: "touch" });
+        expect(container.querySelector(".readout .name")!.textContent).toBe("Rätt");
+        cleanup();
+        const two = render(LineChart, { props: { ...props, valueTitle: "Rätt" } });
+        expect(cells(two.container.querySelector("table thead tr")!)).toEqual(["Vecka", "Vårt lag", "Snitt"]);
+    });
+
+    it("draws only the last `visible` points and keeps every one in the table (Z-151)", () => {
+        const labels = Array.from({ length: 13 }, (_, index) => `${index + 1} okt`);
+        const points = labels.map((_, index) => index * 5);
+        const { container } = render(LineChart, {
+            props: { label: "Lag ni slog", xLabels: labels, series: [{ name: "Lag", points }], visible: 12, markers: true },
+        });
+        expect(container.querySelectorAll("table tbody tr")).toHaveLength(13);
+        expect(container.querySelector("table tbody tr th")!.textContent).toBe("1 okt");
+        const drawn = Array.from(container.querySelectorAll("svg.plot text.tick")).map((text) => text.textContent?.trim());
+        expect(drawn).not.toContain("1 okt");
+        expect(drawn).toContain("13 okt");
+        expect(container.querySelectorAll("svg.plot g.marks path.marker")).toHaveLength(12);
+        cleanup();
+        const all = render(LineChart, { props: { label: "Lag", xLabels: labels, series: [{ name: "Lag", points }], visible: 20 } });
+        expect(all.container.querySelectorAll("svg.plot g.marks path.marker")).toHaveLength(13);
+    });
+
+    it("always draws the first and the last x label when they are thinned (Z-150)", () => {
+        const labels = Array.from({ length: 30 }, (_, index) => `${index + 1} sep`);
+        const { container } = render(LineChart, { props: { label: "Lag", xLabels: labels, series: [{ name: "Lag", points: labels.map(() => 1) }] } });
+        const drawn = Array.from(container.querySelectorAll("svg.plot text.tick")).map((text) => text.textContent?.trim());
+        expect(drawn).toContain("1 sep");
+        expect(drawn).toContain("30 sep");
+        expect(drawn.filter((text) => text?.endsWith(" sep")).length).toBeLessThan(30);
+    });
+
+    it("draws the pane of values under the plot when it would be taller than the plot (Z-148)", async () => {
+        const height = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "offsetHeight")!;
+        Object.defineProperty(HTMLElement.prototype, "offsetHeight", { configurable: true, get: () => 500 });
+        try {
+            const { container } = render(LineChart, { props });
+            const plot = container.querySelector("svg.plot") as SVGSVGElement;
+            plot.getBoundingClientRect = () => ({ left: 0, top: 0, width: 600, height: 240, right: 600, bottom: 240, x: 0, y: 0, toJSON: () => ({}) });
+            await fireEvent.pointerDown(plot, { clientX: 590, pointerType: "touch" });
+            const readout = container.querySelector<HTMLElement>(".readout")!;
+            expect(readout.classList.contains("under")).toBe(true);
+            expect(readout.style.top).toBe("");
+            expect(readout.style.right).toBe("");
+        } finally {
+            Object.defineProperty(HTMLElement.prototype, "offsetHeight", height);
+        }
+    });
 });
 
 describe("BarChart", () => {

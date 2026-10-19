@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import GalleryHarness from "./fixtures/GalleryHarness.svelte";
+import PhotoGrid from "../src/components/molecules/PhotoGrid.svelte";
 import type { Photo, PhotoViewerAction } from "../src/components/util/photo";
 
 afterEach(() => {
@@ -180,5 +181,35 @@ describe("PhotoViewer: an action that goes with its photo does not take the focu
         await waitFor(() =>
             expect(document.activeElement).toBe(within(viewer()).getByRole("button", { name: "Close" })),
         );
+    });
+});
+
+describe("PhotoGrid: one tile marked, such as the cover (Z-154)", () => {
+    it("draws the word on a plate on the marked tile, adds it to the name, and leaves the press alone", async () => {
+        const onopen = vi.fn();
+        const photos = [photo(1), photo(2, { status: "uploading" }), photo(3)];
+        const { container } = render(PhotoGrid, { props: { photos, marked: "p2", onopen, strings: { marked: "Omslag" } } });
+        const names = [...container.querySelectorAll("[data-photo-key]")].map((tile) => tile.getAttribute("aria-label"));
+        expect(names).toEqual(["Photo 1", "Photo 2, Omslag, Uploading", "Photo 3"]);
+        const plates = container.querySelectorAll("[data-photo-grid-marked]");
+        expect(plates).toHaveLength(1);
+        expect(plates[0].textContent?.trim()).toBe("Omslag");
+        expect(plates[0].getAttribute("aria-hidden")).toBe("true");
+        expect(plates[0].closest("[data-photo-key]")!.getAttribute("data-photo-key")).toBe("p2");
+        await fireEvent.click(container.querySelector("[data-photo-key='p2']")!);
+        expect(onopen).toHaveBeenCalledWith(1);
+    });
+
+    it("is off by default", () => {
+        const photos = [photo(1), photo(2), photo(3)];
+        const plain = render(GalleryHarness, { props: { withViewer: false, initialPhotos: photos } });
+        expect(plain.container.querySelector("[data-photo-grid-marked]")).toBeNull();
+    });
+
+    it("is not drawn on the '+N' tile", () => {
+        const photos = [photo(1), photo(2), photo(3), photo(4)];
+        const { container } = render(PhotoGrid, { props: { photos, max: 2, marked: "p2" } });
+        expect(container.querySelector("[data-photo-grid-marked]")).toBeNull();
+        expect(container.querySelector("[data-photo-key='p2']")!.getAttribute("aria-label")).toBe("Photo 2, 2 more photos");
     });
 });

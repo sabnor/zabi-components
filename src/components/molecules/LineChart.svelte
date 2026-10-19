@@ -10,6 +10,8 @@
         chartScale,
         chartTextScale,
         labelEvery,
+        labelShown,
+        measureHeight,
         measureWidth,
         widestText,
         linePath,
@@ -60,6 +62,10 @@
         showTable?: boolean;
         /** The heading of the table's first column (what the x labels are: "Week"). */
         xTitle?: string;
+        /** What the number is ("Correct"), for a chart of one series: the heading of the table's value column and the label in the pane of values. Without it, the series `name`. With more than one series, unused. */
+        valueTitle?: string;
+        /** Draws only the last this many points; the table still holds every one. Without it, all of them are drawn. */
+        visible?: number;
         /** The language of the built-in number formats. Without it, the runtime's. */
         locale?: string;
         /** Stands the chart on a panel of the thick material (frosted glass), for a chart that floats over a wash, a tint or a picture. On a plain card it shows nothing: leave it off there. */
@@ -80,6 +86,8 @@
         markers = true,
         showTable = false,
         xTitle = "",
+        valueTitle,
+        visible,
         locale,
         glass = false,
         class: className = "",
@@ -99,6 +107,9 @@
     let measured = $state(0);
     let tickWidth = $state(0);
     let active = $state<number | null>(null);
+    let paneHeight = $state(0);
+    /** The size at which the pane of values was found taller than the plot; at that size it is drawn under the plot. */
+    let underAt = $state("");
 
     const width = $derived(measured > 0 ? measured : FALLBACK_WIDTH);
     /** Chart text is set in rem; the room for it grows with the reader's text size. */
@@ -106,15 +117,21 @@
     const plotHeight = $derived(Math.max(height, 80));
     const bottom = $derived(Math.round(28 * rem));
     const format = $derived(chartFormatter(yFormat, locale));
-    const count = $derived(Math.max(xLabels.length, ...series.map((line) => line.points.length), 0));
-    const scale = $derived(chartScale(series.flatMap((line) => line.points), { min: yMin, max: yMax }));
+    /** Every point there is: the table holds them all. */
+    const total = $derived(Math.max(xLabels.length, ...series.map((line) => line.points.length), 0));
+    /** With `visible`, the drawing starts that many points from the end. */
+    const start = $derived(visible !== undefined && visible >= 1 && visible < total ? total - Math.floor(visible) : 0);
+    const drawnLabels = $derived(start > 0 ? xLabels.slice(start) : xLabels);
+    const drawnSeries = $derived(start > 0 ? series.map((line) => ({ ...line, points: line.points.slice(start) })) : series);
+    const count = $derived(Math.max(drawnLabels.length, ...drawnSeries.map((line) => line.points.length), 0));
+    const scale = $derived(chartScale(drawnSeries.flatMap((line) => line.points), { min: yMin, max: yMax }));
     const tickLabels = $derived(scale.ticks.map((tick) => format(tick)));
     /** The value axis takes the width of its widest label as drawn; until that is known, an estimate. */
     const left = $derived((tickWidth || Math.max(...tickLabels.map((label) => label.length), 1) * 7 * rem) + 12);
     const innerWidth = $derived(Math.max(width - left, 10));
     const innerHeight = $derived(Math.max(plotHeight - TOP - bottom, 10));
     const span = $derived(Math.max(innerWidth - INSET * 2, 1));
-    const every = $derived(labelEvery(xLabels, span, 7 * rem));
+    const every = $derived(labelEvery(drawnLabels, span, 7 * rem));
     const showLegend = $derived(legend ?? series.length > 1);
     /** A marker on every point only while the points stand apart; closer than that they would run into a band. */
     const roomForMarkers = $derived(count <= 1 || span / (count - 1) >= MARKER * 3);
@@ -123,9 +140,9 @@
     const y = (value: number) => TOP + innerHeight - ((value - scale.min) / (scale.max - scale.min)) * innerHeight;
     const isValue = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 
-    const colors = $derived(chartColors(series.map((line) => line.color)));
+    const colors = $derived(chartColors(drawnSeries.map((line) => line.color)));
     const lines = $derived(
-        series.map((line, index) => {
+        drawnSeries.map((line, index) => {
             const points = Array.from({ length: count }, (_, at) => {
                 const value = line.points[at];
                 return isValue(value) ? { x: x(at), y: y(value) } : null;
@@ -139,6 +156,16 @@
             };
         }),
     );
+
+    /** The word for the number: `valueTitle` on a chart of one series, otherwise each series' name. */
+    const valueName = (name: string) => (series.length === 1 && valueTitle ? valueTitle : name);
+
+    const fit = $derived(`${width}:${rem}:${plotHeight}`);
+    const under = $derived(underAt === fit);
+    /** A pane taller than the plot would cover the chart and what is under it: it goes under the plot instead, until the size changes. */
+    $effect(() => {
+        if (!under && active !== null && paneHeight > plotHeight - TOP) underAt = fit;
+    });
 
     function nearest(event: PointerEvent) {
         if (count === 0) return;
@@ -181,8 +208,8 @@
                 {/each}
             </g>
 
-            {#each xLabels as text, index (index)}
-                {#if index % every === 0 && index < count}
+            {#each drawnLabels as text, index (index)}
+                {#if labelShown(index, drawnLabels.length, every) && index < count}
                     <text
                         class="tick"
                         class:on={index === active}
@@ -236,29 +263,34 @@
         </svg>
 
         <!-- The values at the x label pointed at: a pane of the same material as a Tooltip, over the
-             plot and beside the guide, on the side with more room. The table says the same to
+             plot and beside the guide, on the side with more room; under the plot when it would be
+             taller than the plot (large text on a narrow screen). The table says the same to
              assistive technology. -->
         {#if active !== null}
             {@const before = x(active) > left + innerWidth / 2}
             <div
                 class="readout material-thick text-body rounded-control px-3 py-2 text-sm leading-5"
-                style:top="{TOP}px"
-                style:left={before ? undefined : `${((x(active) + 12) / width) * 100}%`}
-                style:right={before ? `${((width - x(active) + 12) / width) * 100}%` : undefined}
+                class:under
+                style:top={under ? undefined : `${TOP}px`}
+                style:left={under || before ? undefined : `${((x(active) + 12) / width) * 100}%`}
+                style:right={!under && before ? `${((width - x(active) + 12) / width) * 100}%` : undefined}
                 aria-hidden="true"
+                use:measureHeight={(value) => (paneHeight = value)}
             >
-                {#if xLabels[active] !== undefined}
-                    <div class="text-label font-medium">{xLabels[active]}</div>
+                {#if drawnLabels[active] !== undefined}
+                    <div class="text-label font-medium">{drawnLabels[active]}</div>
                 {/if}
                 {#each lines as line, index (index)}
-                    {@const value = series[index].points[active]}
+                    {@const value = drawnSeries[index].points[active]}
                     {#if isValue(value)}
                         <div class="row">
-                            <svg class="swatch" viewBox="0 0 12 12" width="12" height="12" style:--_c={line.color}>
-                                <path class="marker" d={markerPath(line.marker, 6, 6, 4)} />
-                            </svg>
-                            <span class="name text-description">{line.name}</span>
-                            <span class="text-headline font-medium tabular-nums">{format(value)}</span>
+                            <span class="series-name">
+                                <svg class="swatch" viewBox="0 0 12 12" width="12" height="12" style:--_c={line.color}>
+                                    <path class="marker" d={markerPath(line.marker, 6, 6, 4)} />
+                                </svg>
+                                <span class="name text-description">{valueName(line.name)}</span>
+                            </span>
+                            <span class="value text-headline font-medium tabular-nums">{format(value)}</span>
                         </div>
                     {/if}
                 {/each}
@@ -287,12 +319,12 @@
             <tr>
                 {#if xTitle}<th class="text-headline px-4 py-3 text-start font-medium" scope="col">{xTitle}</th>{:else}<td></td>{/if}
                 {#each series as line, column (column)}
-                    <th class="text-headline px-4 py-3 text-end font-medium" scope="col">{line.name}</th>
+                    <th class="text-headline px-4 py-3 text-end font-medium" scope="col">{valueName(line.name)}</th>
                 {/each}
             </tr>
         </thead>
         <tbody class="divide-border divide-y">
-            {#each { length: count } as _, index (index)}
+            {#each { length: total } as _, index (index)}
                 <tr>
                     <th class="text-body px-4 py-3 text-start font-normal" scope="row">{xLabels[index] ?? index + 1}</th>
                     {#each series as line, column (column)}
@@ -401,27 +433,47 @@
     .readout {
         position: absolute;
         z-index: 1;
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto;
-        gap: 0.125rem 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
         max-inline-size: min(16rem, 70%);
         pointer-events: none;
     }
 
-    .readout > :first-child:not(.row) {
-        grid-column: 1 / -1;
+    /* Taller than the plot: in the flow under it, the width of the chart, so it covers nothing. */
+    .readout.under {
+        position: relative;
+        max-inline-size: none;
+        margin-block-start: 0.5rem;
     }
 
+    /* A name wraps between its words, never inside one unless the word is wider than the
+       pane; when the name and the value do not fit on one row, the value goes under it. */
     .row {
-        display: grid;
-        grid-column: 1 / -1;
-        grid-template-columns: subgrid;
-        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 0 1rem;
+    }
+
+    .series-name {
+        display: flex;
+        flex: 1 1 auto;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .series-name .swatch {
+        margin-block-start: calc((1lh - 12px) / 2);
     }
 
     .row .name {
-        padding-inline-end: 0.5rem;
-        overflow-wrap: anywhere;
+        min-inline-size: 0;
+        overflow-wrap: break-word;
+    }
+
+    .row .value {
+        margin-inline-start: auto;
     }
 
     .swatch {

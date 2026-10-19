@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { untrack } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
@@ -8,7 +9,7 @@
     import { generateId } from "../util/ssr-safe.js";
     import {
         afterFrame,
-        measureIndicator,
+        nextIndicator,
         observeSizes,
         type IndicatorBox,
     } from "../util/sliding-indicator.js";
@@ -107,7 +108,7 @@
 
     function measure() {
         const face = value === undefined ? undefined : faceOf(inputs[value]);
-        indicator = host && face ? measureIndicator(host, face) : null;
+        indicator = host && face ? nextIndicator(host, face, untrack(() => indicator)) : null;
     }
 
     // After the DOM has followed a change of selection, options, size or look.

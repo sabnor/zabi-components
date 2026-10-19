@@ -35,3 +35,26 @@ describe("the edge of an unticked box (Z-114)", () => {
         }
     });
 });
+
+/** A flex item does not shrink below its longest word unless it may (Z-153). */
+describe("a long label wraps inside its host (Z-153)", () => {
+    it("the label row and the label text may shrink, with the box at the start or the end, with or without a description", () => {
+        const label = "Alex Långnamnsson-Testperson";
+        for (const props of [
+            { label },
+            { label, controlPosition: "end" as const },
+            { label, description: "Kom med" },
+            { label, description: "Kom med", controlPosition: "end" as const },
+        ]) {
+            for (const component of [Checkbox, Radio]) {
+                const { container } = render(component, { props: { ...props, name: "n", value: "v" } });
+                const row = container.querySelector("label")!;
+                expect(row.className.split(/\s+/)).toContain("min-w-0");
+                const text = Array.from(row.children).at(-1) as HTMLElement;
+                expect(text.className.split(/\s+/)).toContain("min-w-0");
+                expect(text.className.split(/\s+/)).toContain("wrap-break-word");
+                cleanup();
+            }
+        }
+    });
+});

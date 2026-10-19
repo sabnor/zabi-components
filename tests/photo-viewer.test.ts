@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import GalleryHarness from "./fixtures/GalleryHarness.svelte";
 import type { PhotoViewerAction } from "../src/components/util/photo";
+import { topOverlayFooter, topOverlayHeader } from "../src/components/util/overlay";
 
 afterEach(() => {
     cleanup();
@@ -1064,5 +1065,19 @@ describe("PhotoViewer when the photos change under it", () => {
     it("holds an index outside the list to the list", async () => {
         await open({ initialOpen: true, initialIndex: 40, withGrid: false });
         expect(status()).toBe("Team by the door, 6 of 6");
+    });
+});
+
+describe("PhotoViewer and the toast stack (Z-155)", () => {
+    it("registers its top row as the overlay's header and its caption and actions as its footer, while open", async () => {
+        const user = await open();
+        await waitFor(() => expect(topOverlayFooter()).not.toBeNull());
+        expect(topOverlayFooter()!.querySelector("[data-photo-viewer-caption]")).not.toBeNull();
+        expect(topOverlayHeader()!.querySelector("[data-photo-viewer-counter]")).not.toBeNull();
+        expect(within(topOverlayHeader()!).getByRole("button", { name: "Close" })).toBeTruthy();
+        await user.click(button("Close"));
+        await waitFor(() => expect(maybeViewer()).toBeNull());
+        expect(topOverlayFooter()).toBeNull();
+        expect(topOverlayHeader()).toBeNull();
     });
 });

@@ -75,6 +75,12 @@
         /** Called when a photo is selected or, in `multiple`, its selection is cleared. */
         onselect?: (detail: PhotoGridSelectDetail) => void;
         /**
+         * Key of one photo to mark, such as the cover: its tile shows
+         * `strings.marked` ("Cover") on a plate in the top corner, and its
+         * name ends with it. A mark only; a press still opens or selects.
+         */
+        marked?: PhotoKey | null;
+        /**
          * Puts an "Add photo" tile first and is called when it is pressed.
          * Open your own file picker or an ImageUpload from it.
          */
@@ -107,6 +113,7 @@
         selected = $bindable<Exclude<Props["selected"], undefined>>(),
         selectedKeys = $bindable<Exclude<Props["selectedKeys"], undefined>>(),
         onselect,
+        marked = null,
         onadd,
         onloaderror,
         onretry,
@@ -200,6 +207,7 @@
     }
 
     function nameWithStatus(photo: Photo, name: string): string {
+        if (marked !== null && photoKey(photo) === marked) name = `${name}, ${text.marked}`;
         if (photo.status === "uploading") return `${name}, ${text.uploading}`;
         if (photo.status === "error") return `${name}, ${text.uploadFailed}`;
         return name;
@@ -452,6 +460,22 @@
                                     ></span>
                                 {/if}
                             </span>
+                        </span>
+                    {/if}
+                    {#if marked !== null && key === marked && !more}
+                        <!-- In the top corner the check mark does not use, on an
+                        opaque plate as the open button is, so it reads on any
+                        photo in either theme. The name says it in words; a word
+                        too long for the tile is cut short here only. -->
+                        <span
+                            class={cn(
+                                cornerMark,
+                                "end-[4px] top-[4px] h-6 [max-inline-size:calc(100%-8px)] border border-control-border bg-surface-overlay px-2 text-xs font-semibold text-headline",
+                            )}
+                            aria-hidden="true"
+                            data-photo-grid-marked
+                        >
+                            <span class="truncate">{text.marked}</span>
                         </span>
                     {/if}
                     {#if more}

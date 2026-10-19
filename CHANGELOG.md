@@ -12,6 +12,37 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.2] - 2026-10-19
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.1. No token, prop, variant, string key,
+export or data attribute is removed or renamed. Nothing in it has been rendered in a browser: type and design
+checks, unit tests in jsdom, the package build.
+
+### Added
+
+- `LineChart`: `valueTitle`, for a chart of one series the heading of the table's value column and the label in
+  the pane of values; without it, the series `name` as before, and unused with more than one series (Z-149, D274).
+- `LineChart`: `visible`, which draws only the last that many points while the table keeps every one; the y axis
+  is fitted to the points drawn (Z-151, D274).
+- `PhotoGrid`: `marked`, the key of one photo to mark (a cover): its tile shows `strings.marked` (new key, default
+  "Cover") on a plate in the top end corner, marked `data-photo-grid-marked` and `aria-hidden`, and its name ends
+  with the word ("Photo 2, Cover"). Never on the "+N" tile; a press still opens or selects (Z-154, D278).
+
+### Fixed
+
+- `LineChart`: when the x labels are thinned, the first and the last (the newest point) are always drawn, the ones
+  between counted back from the last (Z-150, D275).
+- `LineChart`: the pane of values wraps a series name between its words only, puts the value under the name when
+  the two do not fit on one row, and is drawn under the plot instead of over it when it would be taller than the
+  plot, as at 200 % text on a phone (Z-148, D273).
+- `SegmentedControl` and `Tabs`: while the host has no layout (a `hidden` ancestor) the sliding indicator keeps
+  its last box instead of being dropped and put back, with `data-indicator="ready"` (Z-152, D276).
+- `Checkbox` and `Radio`: the label row and its text may shrink in every control position, and a word wider than
+  the host breaks, so a long label wraps inside its host instead of pushing the row past it (Z-153, D277).
+- `PhotoViewer`: while open it registers its top row (counter, close) as the overlay's header and its caption and
+  action bar as its footer, so a `Toaster` starts below the close button, sits above the caption, and goes back
+  to its place when the viewer closes, with no `avoid` selector (Z-155, D279).
+
 ## [9.1.0-alpha.1] - 2026-10-15
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.0. No token, prop, variant, string key,

@@ -22,10 +22,14 @@ const tabs = [
     { id: "c", label: "Gamma" },
 ];
 
+/** Set to give every element an empty box, as a `hidden` ancestor does. */
+let noLayout = false;
+
 function mockBoxes() {
     return vi
         .spyOn(HTMLElement.prototype, "getBoundingClientRect")
         .mockImplementation(function (this: HTMLElement) {
+            if (noLayout) return { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, x: 0, y: 0, toJSON() {} } as DOMRect;
             const item = this.matches(".segment-face, [role='tab']");
             const index = item ? Array.from(this.parentElement!.parentElement!.querySelectorAll(this.matches("[role='tab']") ? "[role='tab']" : ".segment-face")).indexOf(this) : 0;
             const left = item ? (this.matches("[role='tab']") ? index * 100 : this.closest("label") ? Array.from(this.closest(".segmented")!.querySelectorAll("label")).indexOf(this.closest("label")!) * 100 : 0) : 0;
@@ -36,6 +40,7 @@ function mockBoxes() {
 }
 
 afterEach(() => {
+    noLayout = false;
     cleanup();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -101,6 +106,32 @@ describe("SegmentedControl indicator", () => {
         render(SegmentedControl, { props: { options, value: "list", label: "View" } });
         const host = screen.getByRole("radiogroup");
         await waitFor(() => expect(host.getAttribute("data-indicator")).toBe("ready"));
+    });
+});
+
+describe("an indicator under a hidden ancestor (Z-152)", () => {
+    it("SegmentedControl keeps its last box while it has no layout, and measures again when shown", async () => {
+        mockBoxes();
+        const { rerender } = render(SegmentedControl, { props: { options, value: "month", label: "View" } });
+        const host = screen.getByRole("radiogroup");
+        await waitFor(() => expect(host.getAttribute("data-indicator")).toBe("ready"));
+        noLayout = true;
+        await rerender({ options, value: "month", label: "View", size: "sm" });
+        expect(host.getAttribute("data-indicator")).toBe("ready");
+        expect(indicator(host)!.style.transform).toBe("translate(100px, 0px)");
+        noLayout = false;
+        await rerender({ options, value: "year", label: "View", size: "sm" });
+        await waitFor(() => expect(indicator(host)!.style.transform).toBe("translate(200px, 0px)"));
+    });
+
+    it("Tabs keeps its last box while it has no layout", async () => {
+        mockBoxes();
+        const { rerender } = render(Tabs, { props: { tabs, activeTab: "b" } });
+        const list = screen.getByRole("tablist");
+        await waitFor(() => expect(indicator(list)).not.toBeNull());
+        noLayout = true;
+        await rerender({ tabs, activeTab: "b", fullWidth: true });
+        expect(indicator(list)!.style.transform).toBe("translate(100px, 28px)");
     });
 });
 

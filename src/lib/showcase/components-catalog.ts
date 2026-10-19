@@ -8120,11 +8120,19 @@ pushToast({
                             "Runs when a photo is selected or, in multiple, its selection is cleared.",
                     },
                     {
+                        name: "marked",
+                        type: "string | number | null",
+                        required: false,
+                        defaultValue: "null",
+                        description:
+                            "Key of one photo to mark, such as the cover: its tile shows strings.marked (\"Cover\") on a plate in the top corner and its name ends with it. A press still opens or selects.",
+                    },
+                    {
                         name: "strings",
                         type: "Partial<PhotoGridStrings>",
                         required: false,
                         description:
-                            "The built-in words: addPhoto, photoName (for a photo without alt), morePhotos, openPhoto and keyboardHint.",
+                            "The built-in words: addPhoto, photoName (for a photo without alt), morePhotos, openPhoto, keyboardHint, uploading, uploadFailed, retryUpload and marked.",
                     },
                     {
                         name: "class",
@@ -8712,6 +8720,22 @@ pushToast({
                         defaultValue: "",
                         description:
                             "The heading of the table's first column: what the x labels are.",
+                    },
+                    {
+                        name: "valueTitle",
+                        type: "string",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "What the number is, for a chart of one series: the heading of the table's value column and the label in the pane of values. Without it, the series name; unused with more than one series.",
+                    },
+                    {
+                        name: "visible",
+                        type: "number",
+                        required: false,
+                        defaultValue: "\u2014",
+                        description:
+                            "Draws only the last this many points; the table still holds every one. Without it, all are drawn.",
                     },
                     {
                         name: "glass",

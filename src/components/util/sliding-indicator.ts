@@ -31,6 +31,19 @@ export function measureIndicator(container: HTMLElement, item: HTMLElement): Ind
     };
 }
 
+/**
+ * The box for the indicator now: the one measured, or, while the container
+ * has no layout at all (a `hidden` ancestor, as a screen kept for coming
+ * back to is), the `last` one, so the indicator is not dropped and put back
+ * each time. Null when nothing has been measured or the item is not shown.
+ */
+export function nextIndicator(container: HTMLElement, item: HTMLElement, last: IndicatorBox | null): IndicatorBox | null {
+    const box = measureIndicator(container, item);
+    if (box || !last) return box;
+    const outer = container.getBoundingClientRect();
+    return outer.width === 0 && outer.height === 0 ? last : null;
+}
+
 /** Calls `onChange` when any of the `targets` changes size; a no-op without ResizeObserver. */
 export function observeSizes(targets: Array<Element | null | undefined>, onChange: () => void): () => void {
     if (typeof ResizeObserver === "undefined") return () => {};

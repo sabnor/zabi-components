@@ -23,7 +23,12 @@
         returnFocus,
         saveFocus,
     } from "../util/focus-utils.js";
-    import { lockBodyScroll, trapTabKey } from "../util/overlay.js";
+    import {
+        lockBodyScroll,
+        registerOverlayFooter,
+        registerOverlayHeader,
+        trapTabKey,
+    } from "../util/overlay.js";
     import {
         clampIndex,
         doubleTapTransform,
@@ -187,6 +192,9 @@
     let panel = $state<HTMLDivElement>();
     let stage = $state<HTMLDivElement>();
     let captionText = $state<HTMLParagraphElement>();
+    /** The top row (counter, close) and the bottom one (caption, actions), for the toast stack. */
+    let topRow = $state<HTMLDivElement>();
+    let bottomRow = $state<HTMLDivElement>();
     let focusActive = false;
     /** Position among the open overlays; lifts a viewer opened later above the earlier ones. */
     let depth = $state(0);
@@ -587,6 +595,22 @@
         )?.focus();
     }
 
+    // The toast stack starts below the top row, which holds the close button,
+    // and stays above the caption and the action bar, as it does for a sheet.
+    // Placed again as they come, change size (a turn to a photo with another
+    // caption) and go with the viewer.
+    $effect(() => {
+        const top = topRow;
+        if (!isOpen || !top) return;
+        return registerOverlayHeader(top);
+    });
+
+    $effect(() => {
+        const bottom = bottomRow;
+        if (!isOpen || !bottom) return;
+        return registerOverlayFooter(bottom);
+    });
+
     function close(reason: PhotoViewerCloseReason) {
         isOpen = false;
         giveFocusBack();
@@ -976,6 +1000,7 @@
             <!-- Top: where you are, and the way out. Close is the first
             control, so it takes the focus when the viewer opens. -->
             <div
+                bind:this={topRow}
                 class={cn(
                     "pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-[8px] pt-[max(8px,env(safe-area-inset-top))]",
                     sides,
@@ -1034,6 +1059,7 @@
             <!-- Bottom: the caption, then what can be done with the photo. -->
             {#if photo.caption || photo.credit || actions.length > 0}
                 <div
+                    bind:this={bottomRow}
                     class={cn(
                         "pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center gap-[8px] pb-[max(8px,env(safe-area-inset-bottom))]",
                         sides,

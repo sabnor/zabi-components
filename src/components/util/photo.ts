@@ -75,6 +75,8 @@ export interface PhotoGridStrings {
     uploadFailed: string;
     /** Name of the button on a failed photo that tries again. */
     retryUpload: (name: string) => string;
+    /** Shown on the `marked` photo's tile and added to its name: what the mark means. */
+    marked: string;
 }
 
 export const PHOTO_GRID_STRINGS: PhotoGridStrings = {
@@ -86,6 +88,7 @@ export const PHOTO_GRID_STRINGS: PhotoGridStrings = {
     uploading: "Uploading",
     uploadFailed: "Not uploaded",
     retryUpload: (name) => `Try again: ${name}`,
+    marked: "Cover",
 };
 
 /** What the user did to close the viewer. `swipe` is a swipe down on the photo. */

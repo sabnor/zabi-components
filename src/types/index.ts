@@ -1195,6 +1195,8 @@ export interface PhotoGridProps
     selectedKeys?: PhotoKey[];
     /** Called when a photo is selected or, in `multiple`, its selection is cleared. */
     onselect?: (detail: PhotoGridSelectDetail) => void;
+    /** Key of one photo to mark, such as the cover: `strings.marked` on a plate on its tile, and at the end of its name. */
+    marked?: PhotoKey | null;
     /** Puts an "Add photo" tile first and is called when it is pressed. */
     onadd?: () => void;
     /** Called once when a thumbnail cannot be loaded, so the page can answer with a new address. */
@@ -1316,6 +1318,10 @@ export interface LineChartProps extends Omit<HTMLAttributes<HTMLElement>, 'class
     showTable?: boolean;
     /** The heading of the table's first column. */
     xTitle?: string;
+    /** With one series, the heading of the table's value column and the label in the pane of values. */
+    valueTitle?: string;
+    /** Draws only the last this many points; the table holds every one. */
+    visible?: number;
     locale?: string;
     class?: string;
     /** Stands the chart on a panel of the thick material (frosted glass). Off by default. */

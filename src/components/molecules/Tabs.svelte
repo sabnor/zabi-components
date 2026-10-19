@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
+    import { untrack, type Snippet } from "svelte";
     import { generateId } from "../util/ssr-safe.js";
     import { cn } from "../util/cn.js";
     import {
         afterFrame,
-        measureIndicator,
+        nextIndicator,
         observeSizes,
         type IndicatorBox,
     } from "../util/sliding-indicator.js";
@@ -160,7 +160,7 @@
 
     function measure() {
         const tab = tabElements[activeTab];
-        indicator = listElement && tab ? measureIndicator(listElement, tab) : null;
+        indicator = listElement && tab ? nextIndicator(listElement, tab, untrack(() => indicator)) : null;
     }
 
     $effect(() => {

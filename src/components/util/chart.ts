@@ -210,6 +210,21 @@ export function labelEvery(labels: string[], available: number, charWidth = 7): 
     return Math.max(1, Math.ceil((widest * labels.length) / available));
 }
 
+/**
+ * Whether the x label at `index` of `count` is drawn when only every
+ * `every`-th fits. Counted back from the last, so the newest is always
+ * there; the first is there too, in place of the one that would stand too
+ * close to it. With room for one label only, the last.
+ */
+export function labelShown(index: number, count: number, every: number): boolean {
+    const last = count - 1;
+    if (index < 0 || index > last) return false;
+    if (every <= 1 || index === last) return true;
+    if (last < every) return false;
+    if (index === 0) return true;
+    return (last - index) % every === 0 && index >= every;
+}
+
 const round = (value: number) => Math.round(value * 100) / 100;
 
 /** A line through the points, broken where one is missing. */
@@ -352,6 +367,15 @@ export function measureWidth(node: HTMLElement, onwidth: (width: number) => void
     onwidth(node.clientWidth);
     if (typeof ResizeObserver === "undefined") return {};
     const observer = new ResizeObserver(() => onwidth(node.clientWidth));
+    observer.observe(node);
+    return { destroy: () => observer.disconnect() };
+}
+
+/** Reports the element's height (its border box) now and whenever it changes, as `measureWidth` does the width. */
+export function measureHeight(node: HTMLElement, onheight: (height: number) => void) {
+    onheight(node.offsetHeight);
+    if (typeof ResizeObserver === "undefined") return {};
+    const observer = new ResizeObserver(() => onheight(node.offsetHeight));
     observer.observe(node);
     return { destroy: () => observer.disconnect() };
 }
