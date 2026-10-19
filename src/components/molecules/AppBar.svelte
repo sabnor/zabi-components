@@ -38,6 +38,12 @@
     type Props = Omit<HTMLAttributes<HTMLElement>, "class" | "title"> & {
         /** The name of the screen, as a heading. */
         title?: string;
+        /**
+         * Drawn in place of the title text, for markup of your own: a
+         * name in `<bdi translate=no>`, say. With `largeTitle` it
+         * is drawn in both titles, so give what is in it no `id`.
+         */
+        titleContent?: Snippet;
         /** Heading level of the title. 1 when the bar names the page. */
         headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
         /** Shows the back control as a link to this address. */
@@ -135,6 +141,7 @@
 
     let {
         title = "",
+        titleContent,
         headingLevel = 1,
         backHref,
         onback,
@@ -168,8 +175,9 @@
         classStatic ? className.replace(/(?:^|\s)static(?=\s|$)/g, " ").trim() : className,
     );
 
+    const hasTitle = $derived(!!title || !!titleContent);
     /** A large title needs a title to be large. */
-    const large = $derived(largeTitle && !!title);
+    const large = $derived(largeTitle && hasTitle);
     /** The two scroll behaviours fight: with a large title, `collapseOnScroll` is ignored. */
     const collapses = $derived(collapseOnScroll && !large && !inFlow);
 
@@ -397,6 +405,7 @@
         if (!bar || typeof ResizeObserver === "undefined") return;
         // Read here so that a new title or line count measures again.
         void title;
+        void titleContent;
         void titleLines;
 
         // `offsetWidth` is rounded: actions 62.016px wide read as 62, the row came out
@@ -435,7 +444,7 @@
 
             const left = inner - beside - gap * parts;
             // A bar with no title has nothing to put on a row of its own.
-            const next = title && left < TITLE_MIN ? "own" : "inline";
+            const next = hasTitle && left < TITLE_MIN ? "own" : "inline";
             if (next !== titleRow) titleRow = next;
             const fixedParts = bar.querySelectorAll(
                 ":scope > [data-appbar-part='back'], :scope > [data-appbar-part='actions']",
@@ -465,6 +474,14 @@
     });
 </script>
 
+{#snippet titleText()}
+    {#if titleContent}
+        {@render titleContent()}
+    {:else}
+        {title}
+    {/if}
+{/snippet}
+
 {#snippet barRow()}
     <!-- `--spacing: 4px`: Tailwind sizes everything from `--spacing`, which
     is 0.25rem, so a 48px button was 96px with the text at 200% and the bar
@@ -478,7 +495,7 @@
     <div
         bind:this={row}
         data-title-row={titleRow ?? undefined}
-        data-title-empty={title ? undefined : ""}
+        data-title-empty={hasTitle ? undefined : ""}
         style:--appbar-leading-max={leadingMax !== null ? `${leadingMax}px` : undefined}
         class={cn(
             "appbar-row flex min-h-14 items-center gap-2 px-2 py-1 [--spacing:4px]",
@@ -496,7 +513,7 @@
             </button>
         {/if}
         {@render leading?.()}
-        {#if title}
+        {#if hasTitle}
             <!-- One line, cut with an ellipsis; two before it is cut with
             `titleLines={2}`. 1.125rem, and no more than 1.3 times that
             (23.4px) however large the text is set.
@@ -515,19 +532,19 @@
                     class={cn(titleClasses, "transition-opacity duration-(--duration-base)", condensed ? "opacity-100" : "opacity-0")}
                     data-appbar-part="title"
                     aria-hidden="true"
-                >{title}</p>
+                >{@render titleText()}</p>
             {:else if headingLevel === 1}
-                <h1 class={titleClasses} data-appbar-part="title">{title}</h1>
+                <h1 class={titleClasses} data-appbar-part="title">{@render titleText()}</h1>
             {:else if headingLevel === 2}
-                <h2 class={titleClasses} data-appbar-part="title">{title}</h2>
+                <h2 class={titleClasses} data-appbar-part="title">{@render titleText()}</h2>
             {:else if headingLevel === 3}
-                <h3 class={titleClasses} data-appbar-part="title">{title}</h3>
+                <h3 class={titleClasses} data-appbar-part="title">{@render titleText()}</h3>
             {:else if headingLevel === 4}
-                <h4 class={titleClasses} data-appbar-part="title">{title}</h4>
+                <h4 class={titleClasses} data-appbar-part="title">{@render titleText()}</h4>
             {:else if headingLevel === 5}
-                <h5 class={titleClasses} data-appbar-part="title">{title}</h5>
+                <h5 class={titleClasses} data-appbar-part="title">{@render titleText()}</h5>
             {:else}
-                <h6 class={titleClasses} data-appbar-part="title">{title}</h6>
+                <h6 class={titleClasses} data-appbar-part="title">{@render titleText()}</h6>
             {/if}
         {:else}
             <!-- Nothing to show: no width, so no 72px to find room for. -->
@@ -578,17 +595,17 @@
             class={cn("px-[16px] pt-[4px] pb-[8px]", tone === "brand" && "bg-bar-brand")}
         >
             {#if headingLevel === 1}
-                <h1 class={largeClasses}>{title}</h1>
+                <h1 class={largeClasses}>{@render titleText()}</h1>
             {:else if headingLevel === 2}
-                <h2 class={largeClasses}>{title}</h2>
+                <h2 class={largeClasses}>{@render titleText()}</h2>
             {:else if headingLevel === 3}
-                <h3 class={largeClasses}>{title}</h3>
+                <h3 class={largeClasses}>{@render titleText()}</h3>
             {:else if headingLevel === 4}
-                <h4 class={largeClasses}>{title}</h4>
+                <h4 class={largeClasses}>{@render titleText()}</h4>
             {:else if headingLevel === 5}
-                <h5 class={largeClasses}>{title}</h5>
+                <h5 class={largeClasses}>{@render titleText()}</h5>
             {:else}
-                <h6 class={largeClasses}>{title}</h6>
+                <h6 class={largeClasses}>{@render titleText()}</h6>
             {/if}
         </div>
     {:else}

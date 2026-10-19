@@ -230,3 +230,27 @@ describe("a picture that is not an address (Z-087)", () => {
         expect(screen.getByRole("img", { name: "Pub sign" })).toBeTruthy();
     });
 });
+
+describe("scale (Z-158)", () => {
+    it("keeps the sizes in px by default", () => {
+        render(Avatar, { props: { name: "Ada Lovelace", size: "lg" } });
+        const avatar = screen.getByRole("img", { name: "Ada Lovelace" });
+        expect(avatar.className).toContain("size-[48px]");
+        expect(avatar.getAttribute("data-scale")).toBe("fixed");
+    });
+
+    it("scale=\"text\" sets the circle and the initials in rem", () => {
+        render(Avatar, { props: { name: "Ada Lovelace", size: "lg", scale: "text" } });
+        const avatar = screen.getByRole("img", { name: "Ada Lovelace" });
+        expect(avatar.className).toContain("size-[3rem]");
+        expect(avatar.className).toContain("text-[1rem]");
+        expect(avatar.className).not.toContain("size-[48px]");
+    });
+
+    it("an AvatarGroup passes it on, and its overlap and +N follow", () => {
+        const { container } = render(AvatarGroup, { props: { people, max: 2, size: "md", scale: "text" } });
+        for (const avatar of container.querySelectorAll("[data-avatar]")) expect(avatar.className).toContain("size-[2rem]");
+        expect(container.querySelector("[data-avatar-more]")!.className).toContain("size-[2rem]");
+        expect(container.querySelectorAll("li")[1].className).toContain("-ms-[0.5rem]");
+    });
+});

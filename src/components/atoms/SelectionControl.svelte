@@ -35,6 +35,12 @@
         name?: string;
         value?: string;
         label?: string;
+        /**
+         * Drawn in place of the label text, for markup of your own: a
+         * name in `<bdi translate=no>`, say. It is still the
+         * control's name; give `label` too, with the same words.
+         */
+        labelContent?: Snippet;
         disabled?: boolean;
         loading?: boolean;
         defaultChecked?: boolean;
@@ -82,6 +88,7 @@
         name = "",
         value = "",
         label = "",
+        labelContent,
         disabled = false,
         loading = false,
         defaultChecked = false,
@@ -200,6 +207,14 @@
     }
 </script>
 
+{#snippet labelText()}
+    {#if labelContent}
+        {@render labelContent()}
+    {:else}
+        {label}
+    {/if}
+{/snippet}
+
 {#snippet row()}
     <label for={controlId} class={labelWrapperClasses}>
         <span class={controlContainerClasses}>
@@ -249,7 +264,7 @@
         {#if description}
             <span class={cn("flex flex-col gap-1", labelTextClasses)}>
                 <span class="text-sm font-medium text-label">
-                    {label}
+                    {@render labelText()}
                 </span>
                 <!-- aria-hidden keeps it out of the name; aria-describedby still reads it,
                      or reads the spoken words in its place. -->
@@ -260,9 +275,9 @@
                     <span id={descriptionId} hidden>{descriptionSpoken}</span>
                 {/if}
             </span>
-        {:else if label}
+        {:else if label || labelContent}
             <span class={cn("text-sm font-medium text-label", labelTextClasses)}>
-                {label}
+                {@render labelText()}
             </span>
         {/if}
     </label>

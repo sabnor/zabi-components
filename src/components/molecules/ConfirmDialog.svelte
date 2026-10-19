@@ -20,8 +20,16 @@
         open?: boolean;
         /** The question, as the dialog's heading and accessible name. */
         title: string;
+        /**
+         * Drawn in place of the title text, for markup of your own: a
+         * name in `<bdi translate=no>`, say. Give `title` too,
+         * with the same words.
+         */
+        titleContent?: Snippet;
         /** What will happen. It is the dialog's accessible description. */
         message?: string;
+        /** Drawn in place of the message text, as `titleContent` is for the title. */
+        messageContent?: Snippet;
         /** `danger` makes the confirm button the danger button. Each variant has its own icon. */
         variant?: ConfirmDialogVariant;
         confirmLabel?: string;
@@ -70,6 +78,8 @@
         open = $bindable<Exclude<Props["open"], undefined>>(),
         title,
         message = "",
+        messageContent,
+        titleContent,
         variant = "info",
         confirmLabel: confirmLabelGiven,
         cancelLabel: cancelLabelGiven,
@@ -203,6 +213,7 @@
 <Modal
     bind:isOpen={open}
     {title}
+    {titleContent}
     role="alertdialog"
     size="sm"
     showClose={false}
@@ -221,10 +232,12 @@
         <!-- The message alone is the description; richer content is read
         in place. With no message, the content is all there is to describe. -->
         <div
-            id={message ? undefined : messageId}
+            id={message || messageContent ? undefined : messageId}
             class="min-w-0 flex-1 space-y-2 text-sm text-body"
         >
-            {#if message}
+            {#if messageContent}
+                <p id={messageId}>{@render messageContent()}</p>
+            {:else if message}
                 <p id={messageId}>{message}</p>
             {/if}
             {@render children?.()}

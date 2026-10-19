@@ -86,9 +86,12 @@
      *
      * It does not take the browser's Back. A history entry made by a
      * component conflicts with the app's router (SvelteKit warns against
-     * `history.pushState` outside `$app/navigation`), so open the viewer from
-     * the router's own state: push a state on open, read `isOpen` from it,
-     * and go back to close (Z-131).
+     * `history.pushState` outside `$app/navigation`), so make the history
+     * entry with the router's `pushState` on open, keep `isOpen` in the
+     * page's own state, clear it on `popstate`, and go back to close
+     * (Z-131). Do not read `isOpen` from the router's state: SvelteKit's
+     * `invalidate()` empties `page.state` while the entry stays, and the
+     * viewer would close when the page's data is read again.
      *
      * Other attributes (`id`, `data-*`, ...) land on the `role="dialog"` panel.
      */
@@ -389,6 +392,11 @@
     function handlePointerDown(event: PointerEvent) {
         if (event.pointerType === "mouse" && event.button !== 0) return;
         if (pointers.size >= 2) return;
+        // A press on a control inside the stage ("Try again" on the error
+        // plate) is that control's: captured by the stage, a mouse click
+        // never reached it in Chromium (Z-160).
+        const target = event.target as Element | null;
+        if (target && target !== stage && target.closest?.("button, a[href], input, select, textarea, [role='button']")) return;
         try {
             stage?.setPointerCapture(event.pointerId);
         } catch {
@@ -1105,7 +1113,11 @@
                                     class="min-w-0 basis-full text-description [overflow-wrap:anywhere]"
                                     data-photo-viewer-credit
                                 >
-                                    {photo.credit}
+                                    {#if photo.creditContent}
+                                        {@render photo.creditContent()}
+                                    {:else}
+                                        {photo.credit}
+                                    {/if}
                                 </p>
                             {/if}
                         </div>

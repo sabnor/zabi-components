@@ -12,6 +12,40 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.4] - 2026-10-19
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.3, for the Quizrundan gaps Z-156 to
+Z-160. Every new prop is optional and nothing is removed or renamed; the one change without a new prop is
+`PickerField`'s value, which now wraps (Z-156). Nothing in it has been rendered in a browser: type and design checks,
+unit tests in jsdom, the package build. Finished by an interactive session after the scheduled run was cut off.
+
+### Added
+
+- `Checkbox` and `Radio` `labelContent`, `AppBar` `titleContent`, `Modal` `titleContent`, `ConfirmDialog`
+  `titleContent` and `messageContent`, `Photo.creditContent` (drawn in `PhotoViewer`) and a toast's
+  `messageContent` (`pushToast`, `ToastItem`): a snippet drawn in place of the string, so an app can mark a
+  person's name in it with `<bdi translate=no>`. The string props stay as they are and still name, describe and
+  time what they did; give the same words in both (Z-157, D285).
+- `Avatar` and `AvatarGroup` `scale`: `"fixed"` (default) keeps the px sizes; `"text"` sets the circle, the
+  initials, the overlap and the "+N" in rem (1.5, 2 and 3rem), so they grow with the text. `data-scale` on the
+  host (Z-158, D286).
+- `Alert` `live`: `false` leaves `role` and `aria-atomic` off, for a page that speaks the same words from a live
+  region it already has, so they are not said twice. Default `true` (Z-159, D287).
+- `PickerField` `lines`: `"all"` (default), `2` or `1` (Z-156, D284).
+
+### Fixed
+
+- `PickerField`: the value wraps, between words and inside a word too long for the field, and the field grows
+  with it, the chevron centred; it used to be cut to one line with an ellipsis, so a long name could not be read at
+  200 % text. `lines={1}` cuts it as before (Z-156, D284).
+- `PhotoViewer`: a mouse click on a control inside the stage ("Try again" on the error plate) reaches it; the stage
+  no longer captures a press that starts on a button, link or field (Z-160).
+
+### Changed
+
+- `PhotoViewer`'s doc comment on Back: keep `isOpen` in the page's own state and clear it on `popstate`; reading
+  it from the router's `page.state` closes the viewer when `invalidate()` runs (asked for by the app team, T-393).
+
 ## [9.1.0-alpha.3] - 2026-10-19
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.2, for the gaps the Körväder app found

@@ -47,6 +47,12 @@
     > & {
         isOpen?: boolean;
         title?: string;
+        /**
+         * Drawn in place of the title text, for markup of your own: a
+         * name in `<bdi translate=no>`, say. It is still the
+         * dialog's name.
+         */
+        titleContent?: Snippet;
         description?: string;
         size?: Size;
         /**
@@ -105,6 +111,7 @@
     let {
         isOpen = $bindable<Exclude<Props["isOpen"], undefined>>(),
         title = '',
+        titleContent,
         description = '',
         size = 'md',
         role = 'dialog',
@@ -140,6 +147,7 @@
     $effect.pre(applyDefaults);
 
     const modalTitleId = generateId('modal-title');
+    const hasTitle = $derived(!!title || !!titleContent);
     const modalDescriptionId = generateId('modal-description');
 
     let modalContainer = $state<HTMLDivElement>();
@@ -356,7 +364,7 @@
             )}
             {role}
             aria-modal="true"
-            aria-labelledby={title ? modalTitleId : undefined}
+            aria-labelledby={hasTitle ? modalTitleId : undefined}
             aria-describedby={description ? modalDescriptionId : undefined}
             tabindex="-1"
             data-testid={dataTestId}
@@ -378,7 +386,7 @@
                     full('card'),
                 )}
             >
-                {#if title || description || showClose}
+                {#if hasTitle || description || showClose}
                     <!-- Chrome: laid out in px, with a title that stops at 1.3
                     times its size (util/overlay-chrome.ts). The padding of the
                     content and the footer is px with it, so they stay in line. -->
@@ -388,13 +396,17 @@
                         className={cn("px-6 pt-6 pb-4", OVERLAY_CHROME, full('header'))}
                     >
                         <!-- 12px between a long title and the button: the title wraps, the button keeps its size. -->
-                        <div class="flex items-center gap-[12px] {title ? 'justify-between' : 'justify-end'}">
-                            {#if title}
+                        <div class="flex items-center gap-[12px] {hasTitle ? 'justify-between' : 'justify-end'}">
+                            {#if hasTitle}
                                 <h2
                                     id={modalTitleId}
                                     class="min-w-0 {OVERLAY_TITLE_2XL} font-normal tracking-normal text-headline {OVERLAY_TITLE_WRAP} {enlargedText ? OVERLAY_TITLE_HYPHENS : ''}"
                                 >
-                                    {title}
+                                    {#if titleContent}
+                                        {@render titleContent()}
+                                    {:else}
+                                        {title}
+                                    {/if}
                                 </h2>
                             {/if}
                             {#if showClose}
@@ -424,21 +436,21 @@
                             data-modal-content
                             class={cn(
                                 full('scroller'),
-                                full(title || description || showClose ? 'scrollerBelowHeader' : 'scrollerAtTop'),
+                                full(hasTitle || description || showClose ? 'scrollerBelowHeader' : 'scrollerAtTop'),
                                 full(footer ? 'scrollerAboveFooter' : 'scrollerAtBottom'),
                                 scrollerNeedsFocus &&
                                     "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus-ring",
                             )}
                             tabindex={scrollerNeedsFocus ? 0 : undefined}
-                            role={scrollerNeedsFocus && title ? "group" : undefined}
-                            aria-labelledby={scrollerNeedsFocus && title ? modalTitleId : undefined}
+                            role={scrollerNeedsFocus && hasTitle ? "group" : undefined}
+                            aria-labelledby={scrollerNeedsFocus && hasTitle ? modalTitleId : undefined}
                         >
                             {@render children?.()}
                         </div>
                     </CardContent>
                 {:else if children}
                     <CardContent
-                        className="flex-1 px-[24px] {title || description || showClose ? '' : 'pt-[24px]'} {footer ? '' : 'pb-[24px]'}"
+                        className="flex-1 px-[24px] {hasTitle || description || showClose ? '' : 'pt-[24px]'} {footer ? '' : 'pb-[24px]'}"
                     >
                         {@render children?.()}
                     </CardContent>

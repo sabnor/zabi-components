@@ -32,7 +32,7 @@ describe("overlay chrome on the server", () => {
         expect(typeof document).toBe("undefined");
         const body = decode(renderOnServer(OverlayChromeHarness, { props: { kind } }).body);
 
-        const heading = /<h2[^>]*class="([^"]*)"[^>]*>\s*Lägg till på hemskärmen/.exec(body);
+        const heading = /<h2[^>]*class="([^"]*)"[^>]*>\s*(?:<!--[^>]*-->\s*)*Lägg till på hemskärmen/.exec(body);
         expect(heading, "The title is rendered").toBeTruthy();
         for (const name of [...step.split(" "), ...OVERLAY_TITLE_WRAP.split(" ")]) {
             expect(heading![1].split(/\s+/)).toContain(name);

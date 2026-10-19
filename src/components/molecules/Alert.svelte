@@ -31,6 +31,15 @@
         /** Shrink to content instead of filling the container. */
         inline?: boolean;
         /**
+         * Whether the alert is a live region of its own: `role` (`status`
+         * for info, success and brand, else `alert`) and `aria-atomic`.
+         * `false` leaves both off, for a page that already speaks the same
+         * words from a region of its own that was there before the alert
+         * (a region added with its text is often not read), so they are not
+         * said twice. A `role` given here still wins. Default `true`.
+         */
+        live?: boolean;
+        /**
          * Draws the tinted edge. `false` makes it transparent and keeps the
          * 1px, so the box is the same size either way. The width itself
          * follows `--zabi-alert-border-width`, which is read through a
@@ -53,6 +62,7 @@
         closeLabel: closeLabelGiven,
         open = $bindable<Exclude<Props["open"], undefined>>(),
         inline = false,
+        live = true,
         bordered = true,
         class: classProp = "",
         className = "",
@@ -141,8 +151,8 @@
         classProp,
         className,
     )}
-    role={alertRole}
-    aria-atomic="true"
+    role={live ? alertRole : undefined}
+    aria-atomic={live ? "true" : undefined}
     {...restProps}
 >
     {#if closable}

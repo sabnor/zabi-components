@@ -29,11 +29,20 @@ describe("PickerField as a button", () => {
         expect(classes(button.querySelector("span[id$='-value']")!)).toContain("text-input-placeholder");
     });
 
-    it("shows the value in the body colour, truncated on one line", () => {
+    it("shows the value in the body colour, wrapping by default so a long name can be read (Z-156)", () => {
         render(PickerField, { props: { label: "Pub", value: "Bishops", placeholder: "Choose" } });
         const text = screen.getByText("Bishops");
         expect(classes(text)).not.toContain("text-input-placeholder");
-        expect(classes(text)).toEqual(expect.arrayContaining(["min-w-0", "truncate"]));
+        expect(classes(text)).toEqual(expect.arrayContaining(["min-w-0", "wrap-break-word"]));
+        expect(classes(text)).not.toContain("truncate");
+    });
+
+    it("cuts the value after one line with lines={1}, and after two with lines={2}", () => {
+        render(PickerField, { props: { label: "Pub", value: "Bishops", lines: 1 } });
+        expect(classes(screen.getByText("Bishops"))).toContain("truncate");
+        cleanup();
+        render(PickerField, { props: { label: "Pub", value: "Bishops", lines: 2 } });
+        expect(classes(screen.getByText("Bishops"))).toEqual(expect.arrayContaining(["line-clamp-2", "wrap-break-word"]));
     });
 
     it("takes haspopup, expanded and controls", () => {

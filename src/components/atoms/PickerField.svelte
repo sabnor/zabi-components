@@ -48,6 +48,14 @@
         trailing?: Snippet;
         /** Replaces the value text, for rich content. The control is still named by `value`, so give that too. */
         children?: Snippet;
+        /**
+         * How many lines the value may take. `"all"` wraps it, between words
+         * and inside a word too long for the field, and the control grows
+         * with it, the chevron centred: a pub's name stays readable at 200 %
+         * text. `2` cuts it after two lines, `1` after one, with "…".
+         * Default `"all"`.
+         */
+        lines?: 1 | 2 | "all";
         size?: "sm" | "md" | "lg";
         disabled?: boolean;
         /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
@@ -93,6 +101,7 @@
         leading,
         trailing,
         children,
+        lines = "all",
         size = "md",
         disabled = false,
         variant = "default",
@@ -161,7 +170,12 @@
     (a colour class here beat the disabled one in Select). -->
     <span
         id={valueId}
-        class={cn("min-w-0 flex-1 truncate text-start", isEmpty && !disabled && !children && "text-input-placeholder")}
+        class={cn(
+            "min-w-0 flex-1 text-start",
+            // The placeholder stays one line with "…" (Z-124); only a value wraps.
+            lines === 1 || (isEmpty && !children) ? "truncate" : lines === 2 ? "line-clamp-2 wrap-break-word" : "wrap-break-word",
+            isEmpty && !disabled && !children && "text-input-placeholder",
+        )}
     >
         {#if children}
             {@render children()}

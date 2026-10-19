@@ -46,3 +46,19 @@ describe("Alert host attributes (G4)", () => {
         expect(el.getAttribute("aria-live")).toBe("assertive");
     });
 });
+
+describe("Alert live (Z-159)", () => {
+    it("is its own live region by default", () => {
+        render(Alert, { props: { variant: "info", message: "Someone logged this pub tonight" } });
+        expect(screen.getByRole("status").getAttribute("aria-atomic")).toBe("true");
+    });
+
+    it("live={false} leaves the role and aria-atomic off, so a page's own region speaks alone", () => {
+        const { container } = render(Alert, { props: { variant: "info", live: false, message: "Someone logged this pub tonight" } });
+        expect(screen.queryByRole("status")).toBeNull();
+        const host = container.querySelector("div")!;
+        expect(host.hasAttribute("role")).toBe(false);
+        expect(host.hasAttribute("aria-atomic")).toBe(false);
+        expect(host.textContent).toContain("Someone logged this pub tonight");
+    });
+});

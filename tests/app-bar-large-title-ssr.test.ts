@@ -15,7 +15,7 @@ describe("AppBar largeTitle on the server", () => {
         expect(header).toContain('data-large-title');
         expect(header).not.toContain("style=");
         expect(header).toContain("top-0");
-        expect(body).toMatch(/<h1[^>]*>\s*Round 3(?:<!---->)?\s*<\/h1>/);
+        expect(body).toMatch(/<h1[^>]*>\s*(?:<!--\[-?\d*-->)?Round 3(?:<!--\]-->)?(?:<!---->)?\s*<\/h1>/);
         expect(body).toMatch(/<p[^>]*class="[^"]*opacity-0[^"]*"[^>]*data-appbar-part="title"[^>]*aria-hidden="true"|<p[^>]*aria-hidden="true"[^>]*>/);
         expect(body.match(/<h1/g)).toHaveLength(1);
         expect(body).toContain('data-condensed="false"');

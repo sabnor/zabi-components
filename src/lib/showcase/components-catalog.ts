@@ -1003,7 +1003,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 props: [
                     {
                         name: "label",
-                        type: "string | Snippet",
+                        type: "string",
                         required: false,
                         description: "The caption that names the quotation, rendered as the figcaption and read before it.",
                     },
@@ -1268,6 +1268,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         description: "Checkbox label",
                     },
                     {
+                        name: "labelContent",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Drawn in place of the label text, for markup of your own such as a name in bdi translate=no. Give label too, with the same words.",
+                    },
+                    {
                         name: "leading",
                         type: "Snippet",
                         required: false,
@@ -1419,6 +1426,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "",
                         description: "Visible label text",
+                    },
+                    {
+                        name: "labelContent",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Drawn in place of the label text, for markup of your own such as a name in bdi translate=no. Give label too, with the same words.",
                     },
                     {
                         name: "leading",
@@ -1681,6 +1695,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         description:
                             "Shown in the placeholder colour while there is no value.",
+                    },
+                    {
+                        name: "lines",
+                        type: "1 | 2 | 'all'",
+                        required: false,
+                        defaultValue: "all",
+                        description:
+                            "How many lines the value may take. all wraps it and the field grows with it, so a long name stays readable at 200 % text; 2 or 1 cut it with an ellipsis.",
                     },
                     {
                         name: "leading",
@@ -4141,7 +4163,15 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "md",
                         description:
-                            "Diameter: 24, 32 and 48px. It does not grow with the text size.",
+                            "Diameter: 24, 32 and 48px at the default text size; with scale text it grows with the text.",
+                    },
+                    {
+                        name: "scale",
+                        type: "'fixed' | 'text'",
+                        required: false,
+                        defaultValue: "fixed",
+                        description:
+                            "fixed keeps the circle and the initials in px; text sets them in rem (1.5, 2 and 3rem), so the avatar grows with the text.",
                     },
                     {
                         name: "alt",
@@ -4242,6 +4272,14 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "Dismiss alert",
                         description: "Accessible name of the close button a closable alert has, for translation.",
+                    },
+                    {
+                        name: "live",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "true",
+                        description:
+                            "Whether the alert is a live region of its own (role and aria-atomic). false leaves both off, for a page that speaks the same words from a region it already has.",
                     },
                     {
                         name: "bordered",
@@ -5079,6 +5117,13 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         description:
                             "Dialog title. It wraps; with the text enlarged, a long word is hyphenated by the page's lang before it is cut. It grows with the reader's text size up to 1.3 times (31.2px); the gutters and the close button of the header stay as they are.",
+                    },
+                    {
+                        name: "titleContent",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Drawn in place of the title text, for markup of your own such as a name in bdi translate=no. It is still the dialog's name.",
                     },
                     {
                         name: "description",
@@ -6865,11 +6910,25 @@ pushToast({
                             "The question, as the dialog's heading and accessible name.",
                     },
                     {
+                        name: "titleContent",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Drawn in place of the title text, for markup of your own such as a name in bdi translate=no. Give title too.",
+                    },
+                    {
                         name: "message",
                         type: "string",
                         required: false,
                         description:
                             "What will happen. It is the dialog's accessible description. Use children for richer content below it.",
+                    },
+                    {
+                        name: "messageContent",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Drawn in place of the message text, as titleContent is for the title.",
                     },
                     {
                         name: "variant",
@@ -7359,6 +7418,13 @@ pushToast({
                         defaultValue: '""',
                         description:
                             "The name of the screen, rendered as a heading on one line. Too long for the row, it is cut with an ellipsis; the heading keeps its full text for a screen reader, so put what names the screen first. It grows with the reader's text size up to 1.3 times (23.4px). It never has less than 72px: where the back control, leading and the actions leave less, it is drawn on a second row of its own, as wide as the bar, and they stay on the first; the order in the document does not change.",
+                    },
+                    {
+                        name: "titleContent",
+                        type: "Snippet",
+                        required: false,
+                        description:
+                            "Drawn in place of the title text, for markup of your own such as a name in bdi translate=no. With largeTitle it is drawn in both titles.",
                     },
                     {
                         name: "titleLines",
@@ -8568,6 +8634,14 @@ pushToast({
                         defaultValue: "md",
                         description:
                             "Diameter of each avatar: 24, 32 and 48px.",
+                    },
+                    {
+                        name: "scale",
+                        type: "'fixed' | 'text'",
+                        required: false,
+                        defaultValue: "fixed",
+                        description:
+                            "fixed keeps the avatars, their overlap and the +N in px; text sets them in rem, so the row grows with the text.",
                     },
                     {
                         name: "label",

@@ -55,7 +55,7 @@ describe("Modal fullScreen on the server", () => {
         expect(panel).toContain("h-dvh");
         expect(panel).toContain("rounded-none");
         const titleId = /aria-labelledby="([^"]+)"/.exec(panel)?.[1];
-        expect(body).toMatch(new RegExp(`<h2[^>]*id="${titleId}"[^>]*>\\s*New quiz round`));
+        expect(body).toMatch(new RegExp(`<h2[^>]*id="${titleId}"[^>]*>\\s*(?:<!--[^>]*-->\\s*)*New quiz round`));
         expect(body).toContain('aria-label="Close"');
         // The content box is there, and not a Tab stop: that is decided once it can be measured.
         const content = /<div[^>]*data-modal-content[^>]*>/.exec(body)?.[0] ?? "";

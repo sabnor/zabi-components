@@ -540,12 +540,20 @@
                     </h4>
                 {:else}
                     <p class="text-base font-medium text-headline [overflow-wrap:anywhere]" data-toast-message>
-                        {spoken ? headerTitle : "\u00a0"}
+                        {#if spoken && toast.messageContent}
+                            {@render toast.messageContent()}
+                        {:else}
+                            {spoken ? headerTitle : "\u00a0"}
+                        {/if}
                     </p>
                 {/if}
                 {#if secondLine}
                     <p class="mt-1 text-sm text-description [overflow-wrap:anywhere]" data-toast-message>
-                        {spoken ? secondLine : "\u00a0"}
+                        {#if spoken && toast.messageContent}
+                            {@render toast.messageContent()}
+                        {:else}
+                            {spoken ? secondLine : "\u00a0"}
+                        {/if}
                     </p>
                 {/if}
                 {#if toast.action && spoken}

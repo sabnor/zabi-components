@@ -128,6 +128,16 @@ describe("PhotoViewer: Try again asks the page first (Z-132)", () => {
         await waitFor(() => expect(viewer().querySelector("[data-photo-viewer-image]")).not.toBeNull());
     });
 
+    it("leaves a mouse press on Try again to the button: the stage does not capture it (Z-160)", async () => {
+        const viewerRetry = vi.fn(() => Promise.resolve());
+        await openBroken({ viewerRetry });
+        const button = within(viewer()).getByRole("button", { name: "Try again" });
+        const capture = vi.fn();
+        for (const element of viewer().querySelectorAll<HTMLElement>("*")) element.setPointerCapture = capture;
+        await fireEvent.pointerDown(button, { pointerId: 1, pointerType: "mouse", button: 0, clientX: 5, clientY: 5 });
+        expect(capture).not.toHaveBeenCalled();
+    });
+
     it("asks for the image again all the same when onretry fails", async () => {
         const viewerRetry = vi.fn(() => Promise.reject(new Error("no address")));
         await openBroken({ viewerRetry });

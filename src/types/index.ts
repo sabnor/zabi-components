@@ -272,6 +272,8 @@ export interface CheckboxProps
     disabled?: boolean;
     loading?: boolean;
     label?: string;
+    /** Drawn in place of the label text: a name in `<bdi translate=no>`, say. Give `label` too. */
+    labelContent?: Snippet;
     /**
      * Drawn inside the one label, between the box and the label text. A
      * leading image should have an empty alt: the label names the row.
@@ -383,6 +385,8 @@ export interface PickerFieldProps
     value?: string;
     /** Shown in the placeholder colour while there is no `value`. */
     placeholder?: string;
+    /** How many lines the value may take: `"all"` wraps it (default), `2` or `1` cut it with "…". */
+    lines?: 1 | 2 | 'all';
     /** An icon or an avatar before the text. */
     leading?: Snippet;
     /** Replaces the chevron at the end: a calendar or a clock, say. It is decoration, so it should be `aria-hidden`. */
@@ -493,6 +497,8 @@ export interface ModalProps
     /** Open state. Bindable. */
     isOpen?: boolean;
     title?: string;
+    /** Drawn in place of the title text: a name in `<bdi translate=no>`, say. */
+    titleContent?: Snippet;
     description?: string;
     size?: 'sm' | 'md' | 'lg';
     role?: 'dialog' | 'alertdialog';
@@ -536,6 +542,8 @@ export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
     open?: boolean;
     /** Shrink to content instead of filling the container. */
     inline?: boolean;
+    /** `false` leaves `role` and `aria-atomic` off, for a page that speaks the words from a region of its own. Default `true`. */
+    live?: boolean;
     /** Draws the tinted edge (default `true`). `false` keeps the 1px and makes it transparent; `--zabi-alert-border-width: 0px` on any ancestor removes it for every alert under it. */
     bordered?: boolean;
     onclick?: (event: Event) => void;
@@ -787,6 +795,8 @@ export interface BottomTabBarProps extends Omit<HTMLAttributes<HTMLElement>, 'cl
 export interface AppBarProps extends Omit<HTMLAttributes<HTMLElement>, 'class' | 'title'> {
     /** The name of the screen, as a heading. */
     title?: string;
+    /** Drawn in place of the title text: a name in `<bdi translate=no>`, say. Drawn in both titles with `largeTitle`. */
+    titleContent?: Snippet;
     headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
     /** Shows the back control as a link to this address. */
     backHref?: string;
@@ -1265,8 +1275,10 @@ export interface AvatarProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'clas
     name: string;
     /** Address of the picture. Without it, or when it fails to load, the initials show. */
     src?: string;
-    /** Diameter: 24, 32 and 48px. */
+    /** Diameter: 24, 32 and 48px at the default text size. */
     size?: AvatarSize;
+    /** `fixed` (default) keeps the sizes in px; `text` sets them in rem, so the avatar grows with the text. */
+    scale?: 'fixed' | 'text';
     /** Accessible name, when it should differ from `name`. `alt=""` makes the avatar decorative. */
     alt?: string;
     /** Language the initials are upper-cased in. The page's own by default. */
@@ -1282,8 +1294,10 @@ export interface AvatarGroupProps extends Omit<HTMLAttributes<HTMLUListElement>,
     people: AvatarPerson[];
     /** How many are shown before the rest become "+N". */
     max?: number;
-    /** Diameter of each avatar: 24, 32 and 48px. */
+    /** Diameter of each avatar: 24, 32 and 48px at the default text size. */
     size?: AvatarSize;
+    /** `fixed` (default) keeps the avatars, overlap and "+N" in px; `text` sets them in rem. */
+    scale?: 'fixed' | 'text';
     /** Accessible name of the list. */
     label?: string;
     /** Overrides for the built-in strings. */

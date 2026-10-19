@@ -7,7 +7,7 @@
  * arithmetic can be tested without a browser.
  */
 
-import type { Component } from "svelte";
+import type { Component, Snippet } from "svelte";
 
 export type PhotoKey = string | number;
 
@@ -32,6 +32,12 @@ export interface Photo {
      * photo, when. It is never folded away with a long caption.
      */
     credit?: string;
+    /**
+     * Drawn in the credit's place, for markup of your own: a person's name
+     * in `<bdi translate=no>`, say. Give `credit` too, with the same
+     * words: it is what says there is a credit line.
+     */
+    creditContent?: Snippet;
     /**
      * Where a photo that is being added stands, drawn on its tile in the grid:
      * `uploading` (on its way) or `error` (it did not arrive). Left out: saved.

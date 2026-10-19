@@ -19,7 +19,7 @@ describe("AppBar on the server", () => {
             props: { backHref: "/quiz", withActions: true },
         });
         expect(body).toMatch(/<header[^>]*data-testid="bar"/);
-        expect(body).toMatch(/<h1[^>]*>\s*Round 3(?:<!---->)?\s*<\/h1>/);
+        expect(body).toMatch(/<h1[^>]*>\s*(?:<!--\[-?\d*-->)?Round 3(?:<!--\]-->)?(?:<!---->)?\s*<\/h1>/);
         expect(body).toMatch(/<a[^>]*href="\/quiz"[^>]*aria-label="Back"/);
         expect(body).toContain('aria-label="Search"');
         expect(body).toContain('aria-label="Share"');

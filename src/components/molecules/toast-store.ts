@@ -1,3 +1,4 @@
+import type { Snippet } from 'svelte';
 import { writable } from 'svelte/store';
 import type { ToastDuration } from '../util/toaster.js';
 
@@ -27,6 +28,12 @@ export interface ToastItem {
      * when it has one.
      */
     message: string;
+    /**
+     * Drawn in the message's place, for markup of your own: a person's name
+     * in `<bdi translate=no>`, say. `message` is still required, with the
+     * same words: the toast's time is worked out from it.
+     */
+    messageContent?: Snippet;
     type: ToastLevel;
     /** A heading over the message. Without it the message stands alone. */
     title?: string;
@@ -82,6 +89,8 @@ function createToastStore() {
         subscribe,
         push(options: {
             message: string;
+            /** Drawn in the message's place. See {@link ToastItem.messageContent}. */
+            messageContent?: Snippet;
             type?: ToastLevel;
             /** Same semantics as {@link ToastItem.duration}. */
             duration?: ToastDuration;
@@ -97,6 +106,7 @@ function createToastStore() {
             const item: ToastItem = {
                 id,
                 message: options.message,
+                messageContent: options.messageContent,
                 type: options.type ?? 'info',
                 duration: options.duration,
                 title: options.title,
@@ -122,6 +132,8 @@ export const toastStore = createToastStore();
 
 export function pushToast(options: {
     message: string;
+    /** Drawn in the message's place. See {@link ToastItem.messageContent}. */
+    messageContent?: Snippet;
     /**
      * Gives the toast a name of your own. Pushing with the id of a toast that
      * is showing replaces it in place, with its time started again, so

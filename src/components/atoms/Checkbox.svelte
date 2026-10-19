@@ -18,6 +18,12 @@
         disabled?: boolean;
         loading?: boolean;
         label?: string;
+        /**
+         * Drawn in place of the label text, for markup of your own: a
+         * name in `<bdi translate=no>`, say. It is still the
+         * control's name; give `label` too, with the same words.
+         */
+        labelContent?: Snippet;
         defaultChecked?: boolean;
         checked?: boolean;
         onChange?: (event: Event) => void;
@@ -63,6 +69,7 @@
         disabled = false,
         loading = false,
         label = "",
+        labelContent,
         defaultChecked = false,
         checked = $bindable<Exclude<Props["checked"], undefined>>(),
         onChange,
@@ -125,6 +132,7 @@
     {name}
     {value}
     {label}
+    {labelContent}
     {disabled}
     {loading}
     bind:checked
