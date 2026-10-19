@@ -5998,6 +5998,216 @@ pushToast({
                 ],
             },
             {
+                name: "Combobox",
+                category: "molecules",
+                description:
+                    "A text field that suggests matches from a search you provide; free text stays as typed, and an option is chosen with the arrow keys and Enter or a press.",
+                props: [
+                    {
+                        name: "search",
+                        type: "(query: string, signal: AbortSignal) => T[] | Promise<T[]>",
+                        required: true,
+                        description:
+                            "Looks up suggestions for the text. Called debounce ms after the last key, once the text has minLength characters. The signal is aborted when a newer search starts or the field closes; an older answer is dropped either way. A rejected promise shows the empty state.",
+                    },
+                    {
+                        name: "value",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "The text in the field. Bindable. Free text is allowed: it stays as typed when nothing is chosen.",
+                    },
+                    {
+                        name: "selected",
+                        type: "T | null",
+                        required: false,
+                        defaultValue: "null",
+                        description:
+                            "The chosen suggestion. Bindable. Null again once the text is edited.",
+                    },
+                    {
+                        name: "onselect",
+                        type: "(item: T) => void",
+                        required: false,
+                        description:
+                            "Called with the suggestion the user chooses.",
+                    },
+                    {
+                        name: "oninput",
+                        type: "(text: string) => void",
+                        required: false,
+                        description:
+                            "Called with the new text each time the user types.",
+                    },
+                    {
+                        name: "item",
+                        type: "Snippet<[T]>",
+                        required: false,
+                        description:
+                            "Draws the inside of one option. The default is the label, with the description under it.",
+                    },
+                    {
+                        name: "debounce",
+                        type: "number",
+                        required: false,
+                        defaultValue: "250",
+                        description:
+                            "Milliseconds to wait after the last key before searching.",
+                    },
+                    {
+                        name: "minLength",
+                        type: "number",
+                        required: false,
+                        defaultValue: "1",
+                        description:
+                            "Fewest characters that start a search.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Label above the field. Also names the list.",
+                    },
+                    {
+                        name: "placeholder",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Placeholder text.",
+                    },
+                    {
+                        name: "id",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Id of the input. Generated when omitted; the list and options derive their ids from it.",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Name the text is submitted under in a form.",
+                    },
+                    {
+                        name: "disabled",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Disables the field.",
+                    },
+                    {
+                        name: "required",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description: "Marks the field as required.",
+                    },
+                    {
+                        name: "aria-label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Accessible name of the field when there is no visible label.",
+                    },
+                    {
+                        name: "aria-describedby",
+                        type: "string | null",
+                        required: false,
+                        description:
+                            "Id of an element that describes the field, in addition to the hint, message and error.",
+                    },
+                    {
+                        name: "size",
+                        type: "'sm' | 'md' | 'lg'",
+                        required: false,
+                        defaultValue: "md",
+                        description: "Height, as Input.",
+                    },
+                    {
+                        name: "variant",
+                        type: "'default' | 'success' | 'warning' | 'error' | 'info'",
+                        required: false,
+                        defaultValue: "default",
+                        description: "Semantic state of the field, as Input.",
+                    },
+                    {
+                        name: "message",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Message under the field, in the variant colour.",
+                    },
+                    {
+                        name: "hint",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description: "Help text under the field.",
+                    },
+                    {
+                        name: "error",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Error text under the field. Sets the error state.",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<ComboboxStrings>",
+                        required: false,
+                        description:
+                            "Every word the component says by itself: loading, empty and results(count). Set once for the app with ZabiStringsProvider under the key combobox.",
+                    },
+                ],
+                variants: ["sm", "md", "lg", "error", "disabled"],
+                examples: [
+                    {
+                        title: "Place search",
+                        description:
+                            "An async search with a short delay, so the searching and no-matches rows show; pick with the arrow keys and Enter",
+                        code: `<script lang="ts">
+    import { Combobox, type ComboboxItem } from "zabi-components";
+
+    let place = $state("");
+    let chosen = $state<ComboboxItem | null>(null);
+
+    async function search(query: string, signal: AbortSignal) {
+        const response = await fetch(\`/api/places?q=\${encodeURIComponent(query)}\`, { signal });
+        return (await response.json()) as ComboboxItem[];
+    }
+</script>
+
+<Combobox
+    label="Place"
+    placeholder="Search a city"
+    {search}
+    bind:value={place}
+    bind:selected={chosen}
+/>`,
+                    },
+                    {
+                        title: "Swedish strings",
+                        description:
+                            "The loading, empty and result-count words in another language",
+                        code: `<Combobox
+    label="Ort"
+    placeholder="Sök ort"
+    {search}
+    strings={{
+        loading: "Söker…",
+        empty: "Inga träffar",
+        results: (count) => (count === 1 ? "1 träff" : \`\${count} träffar\`),
+    }}
+/>`,
+                    },
+                ],
+            },
+            {
                 name: "EmptyState",
                 category: "molecules",
                 description:

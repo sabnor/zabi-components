@@ -44,6 +44,11 @@ tests, the package build.
   unchanged. Zabi's own `Tabs` selected tab now gets the transparent edge its classes ask for; the indicator draws
   the same line (G8, D292).
 
+### Docs
+
+- `Combobox` in the docs site: catalog entry with its props, a live demo (a place search with loading and empty
+  states, and Swedish `strings`) and a keyboard section in `docs/KEYBOARD_NAVIGATION.md`.
+
 ## [9.1.0-alpha.4] - 2026-10-19
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.3, for the Quizrundan gaps Z-156 to

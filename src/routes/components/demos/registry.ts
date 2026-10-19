@@ -7,6 +7,7 @@ import RadioDemo from "./RadioDemo.svelte";
 import SliderDemo from "./SliderDemo.svelte";
 import RatingDemo from "./RatingDemo.svelte";
 import SegmentedControlDemo from "./SegmentedControlDemo.svelte";
+import ComboboxDemo from "./ComboboxDemo.svelte";
 import SidebarNavigationDemo from "./SidebarNavigationDemo.svelte";
 import SkeletonDemo from "./SkeletonDemo.svelte";
 import SpinnerDemo from "./SpinnerDemo.svelte";
@@ -51,6 +52,7 @@ const registry: Record<string, Component<DemoRendererProps>> = {
     Slider: SliderDemo,
     Rating: RatingDemo,
     SegmentedControl: SegmentedControlDemo,
+    Combobox: ComboboxDemo,
     Skeleton: SkeletonDemo,
     Spinner: SpinnerDemo,
     Modal: ModalDemo,

@@ -34,6 +34,7 @@ listed is implemented; there is no "planned" behaviour in this file.
 - [Calendar](#calendar)
 - [Card](#card)
 - [Collapsible and CollapsibleGroup](#collapsible-and-collapsiblegroup)
+- [Combobox](#combobox)
 - [ConfirmDialog](#confirmdialog)
 - [DateField and TimeField](#datefield-and-timefield)
 - [Drawer](#drawer)
@@ -351,6 +352,38 @@ range drawn by its track, which shows the ring for it. A hex value can always
 be typed in the field instead.
 
 With a pointer, press or drag anywhere on the map: a mouse, a finger or a pen.
+
+---
+
+### Combobox
+
+**Keyboard support** (an `<input role="combobox">`; focus stays in the field and the highlighted option is named by `aria-activedescendant`):
+- ✅ **Typing**: Starts a search after `debounce` ms, once the text has `minLength` characters. The list opens with a searching row, then the results or a no-matches row
+- ✅ **Arrow Down**: Open the list when it is closed and has results, and highlight the first option that can be chosen; with the list open, the next option. Wraps
+- ✅ **Arrow Up**: The same from the other end: the last option when nothing is highlighted, then the previous. Wraps
+- ✅ **Enter**: Choose the highlighted option: its label goes in the field and the list closes. With nothing highlighted, or the list closed, it does nothing here and a form around the field submits as usual
+- ✅ **Escape**: Close the list and clear the highlight; the text stays. With the list closed it is left to whatever is around, so a Modal still closes
+- ✅ **Tab**: Close the list and move on. It does not choose the highlighted option
+
+The arrow keys skip a disabled option, and do nothing while there are no
+results. Home and End stay with the text caret. Leaving the field closes the
+list and cancels a search still running. After Escape the results are kept: an
+arrow key opens the list again, and typing searches again.
+
+**Usage:**
+```svelte
+<Combobox
+    label="Place"
+    {search}
+    bind:value={place}
+    bind:selected={chosen}
+/>
+```
+
+**Best Practices:**
+- Keep `search` fast or cancel its work with the `signal`; an older answer is dropped either way
+- Free text is allowed. Read `selected` for the chosen suggestion, `value` for what is typed
+- The count of results, the searching state and the empty state are read out in a live region; translate them with `strings`
 
 ---
 
