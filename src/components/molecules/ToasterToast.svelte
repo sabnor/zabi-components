@@ -428,7 +428,8 @@
     const motion = (duration: number) => (reducedMotion ? 0 : duration);
 
     const toastEnter = { y: 18, duration: motion(260), opacity: 0, easing: cubicOut };
-    const toastLeave = { y: 14, duration: motion(300), opacity: 0, easing: cubicOut };
+    // Out a little quicker than in, as the snackbar goes (D295).
+    const toastLeave = { y: 14, duration: motion(200), opacity: 0, easing: cubicOut };
 
     /**
      * The snackbar comes out from behind the edge it is docked on and goes
@@ -666,8 +667,8 @@
             aria-hidden="true"
         >
             <div
-                class="h-full {progressFillClass} forced-colors:bg-[color:Highlight]! transition-all duration-1000 ease-linear"
-                style="width: {(count / maxSeconds) * 100}%"
+                class="h-full origin-left rtl:origin-right {progressFillClass} forced-colors:bg-[color:Highlight]! transition-transform duration-1000 ease-linear"
+                style="transform: scaleX({count / maxSeconds})"
             ></div>
         </div>
     {/if}

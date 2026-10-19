@@ -170,7 +170,8 @@
 
     const cardClasses = $derived(
         cn(
-            "rounded-container transition-all duration-150",
+            // Colour, shadow and transform only: a change of size is not animated.
+            "rounded-container transition duration-150",
             variantClasses,
             interactiveClasses,
             linkClasses,

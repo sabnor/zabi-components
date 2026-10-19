@@ -243,7 +243,7 @@
             bind:this={slideUpContainer}
             class={cn(
                 "group-data-keyboard-open/overlay:max-h-full",
-                "absolute bottom-0 left-0 right-0 z-modal flex max-h-[90dvh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_0.3s_ease-out] motion-reduce:animate-none",
+                "absolute bottom-0 left-0 right-0 z-modal flex max-h-[90dvh] cursor-default flex-col overflow-y-auto rounded-t-overlay border-t border-border-overlay bg-surface-overlay shadow-lg animate-[slideUp_var(--duration-slow)_var(--ease-out)] motion-reduce:animate-none",
                 // With a footer the content scrolls between the header and it.
                 footer && "overflow-y-hidden",
                 // Back to rest after a swipe that did not close it.

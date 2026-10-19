@@ -47,7 +47,7 @@ export const RADIO_GROUP_OPTION_LABEL_ROW =
  * hover is undone by a rule with one more `has-` in it, which outweighs it.
  */
 export const SELECTION_CONTROL_SHELL_STATE =
-    "selection-control-shell group/control relative inline-flex shrink-0 items-center justify-center w-5 h-5 transition-all duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-control-border bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-action-primary has-[:checked]:bg-action-primary has-[:checked]:group-hover:bg-action-primary-hover has-[:checked]:group-hover:border-action-primary-hover has-[:disabled]:has-[:checked]:group-hover:bg-action-primary has-[:disabled]:has-[:checked]:group-hover:border-action-primary has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
+    "selection-control-shell group/control relative inline-flex shrink-0 items-center justify-center w-5 h-5 transition duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-control-border bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-action-primary has-[:checked]:bg-action-primary has-[:checked]:group-hover:bg-action-primary-hover has-[:checked]:group-hover:border-action-primary-hover has-[:disabled]:has-[:checked]:group-hover:bg-action-primary has-[:disabled]:has-[:checked]:group-hover:border-action-primary has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
 
 export type SelectionControlShape = "square" | "circle";
 

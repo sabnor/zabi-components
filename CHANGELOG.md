@@ -12,6 +12,19 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Fixed
+
+- Smooth motion, nothing that overshoots or jumps. `--ease-spring` keeps its name but no longer overshoots: it is now
+  `cubic-bezier(0.22, 1, 0.36, 1)`, a quick start that settles softly, and the `linear()` version draws the same curve
+  (it peaked at 1.046). Only apps using the `ease-spring` utility or the token see it; no zabi component reads it.
+  Reduced motion is unchanged (D293).
+- `Card` and the checkbox and radio box transition colour, shadow and transform only (`transition` instead of
+  `transition-all`), so a change of size is no longer animated. The toast's countdown bar shrinks with
+  `transform: scaleX()` instead of animating its width (D294).
+- A floating toast leaves over 200ms instead of 300ms, quicker than it arrives, as the snackbar does (D295).
+- `SlideUp` opens on `--duration-slow` and `--ease-out`, as `Modal`'s sheet does, so a theme's motion tokens reach it
+  (D296).
+
 ## [9.1.0-alpha.5] - 2026-10-19
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.4, for the Körväder gaps G5 to G8. Every new

@@ -21,7 +21,7 @@ describe("Card tone", () => {
         const { container } = render(Card, { children: undefined });
         const card = container.firstElementChild!;
         expect(card.getAttribute("class")).toBe(
-            "rounded-container transition-all duration-150 bg-card border border-border shadow-none w-full p-6",
+            "rounded-container transition duration-150 bg-card border border-border shadow-none w-full p-6",
         );
         expect(card.getAttribute("style")).toBeNull();
         expect(card.getAttribute("role")).toBeNull();
