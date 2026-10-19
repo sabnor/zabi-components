@@ -13,7 +13,11 @@
         MAP_MARKER_TAP,
         MAP_VIEW_STRINGS,
         pointsSignature,
+        lineColor,
+        MAP_LINE_CASING_PREFIX,
+        MAP_LINE_PREFIX,
         type MapInset,
+        type MapLine,
         type MapLibreLike,
         type MapLibreMapLike,
         type MapLngLat,
@@ -27,6 +31,9 @@
     } from "../util/map-view.js";
     import { mergeStrings } from "../util/ready-made-strings.js";
     import { isThemeDark } from "../util/theme-mode.js";
+
+    /** MapLibre's own map type; a type only, so nothing of the library is imported here. */
+    type MapLibreMap = import("maplibre-gl").Map;
 
     /**
      * A map with markers from a list, on MapLibre GL JS. It fills the box it
@@ -123,6 +130,23 @@
          * asks the browser for it.
          */
         viewer?: MapLngLat | null;
+        /**
+         * Lines drawn above every layer of the base style, in the order of
+         * the list (a later one on top), under the markers. Each has its
+         * colour (one per theme if it likes), width, dash and optional
+         * casing; every casing is drawn under every line. They are the
+         * component's own layers, so they survive a change of theme and cost
+         * no reload of the style: give a line the same `id` and only its
+         * data and paint change. Without it, no line.
+         */
+        lines?: MapLine[];
+        /**
+         * Called with the MapLibre map each time a new one has loaded (a
+         * `retry()` makes a new one). Layers you add yourself are lost when
+         * the theme swaps the style: listen for `style.load` to add them
+         * again, or use `lines`.
+         */
+        onready?: (map: MapLibreMap) => void;
         /** Where the map stands; supports `bind:status`. */
         status?: MapViewStatus;
         onstatus?: (status: MapViewStatus) => void;
@@ -169,6 +193,8 @@
         status = $bindable<Exclude<Props["status"], undefined>>(),
         onstatus,
         onpainted,
+        lines = [],
+        onready,
         attribution,
         load,
         strings,
@@ -437,8 +463,135 @@
             if (!instance || next === appliedStyle) return;
             appliedStyle = next;
             // The position and the markers stay: the markers are this component's own elements.
-            instance.setStyle(next);
+            if (drawnLines.length > 0 || lines.length > 0) {
+                // The new style takes our layers with it. `diff: false` makes a
+                // full swap, which always ends in `style.load`; there they are
+                // added again (see `handleStyleLoad`).
+                drawnLines = [];
+                styleReady = false;
+                instance.setStyle(next, { diff: false });
+            } else {
+                instance.setStyle(next);
+            }
         });
+    });
+
+    // --- Lines ---------------------------------------------------------------
+
+    /** What this map's current style has of ours: id and whether it has a casing, in order. */
+    let drawnLines: string[] = [];
+    /** The current style has loaded, so layers can be added to it. */
+    let styleReady = false;
+
+    const lineKey = (line: MapLine) => `${line.id}${line.casing ? "+" : ""}`;
+
+    function paintLine(map: MapLibreMapLike, line: MapLine) {
+        map.setPaintProperty?.(MAP_LINE_PREFIX + line.id, "line-color", lineColor(line.color, dark));
+        map.setPaintProperty?.(MAP_LINE_PREFIX + line.id, "line-width", line.width ?? 4);
+        map.setPaintProperty?.(MAP_LINE_PREFIX + line.id, "line-opacity", line.opacity ?? 1);
+        map.setPaintProperty?.(MAP_LINE_PREFIX + line.id, "line-dasharray", line.dash);
+        map.setLayoutProperty?.(MAP_LINE_PREFIX + line.id, "line-cap", line.cap ?? "round");
+        if (line.casing) {
+            const id = MAP_LINE_CASING_PREFIX + line.id;
+            map.setPaintProperty?.(id, "line-color", lineColor(line.casing.color, dark));
+            map.setPaintProperty?.(id, "line-width", line.casing.width);
+            map.setPaintProperty?.(id, "line-opacity", line.opacity ?? 1);
+            map.setPaintProperty?.(id, "line-dasharray", undefined);
+            map.setLayoutProperty?.(id, "line-cap", line.cap ?? "round");
+        }
+    }
+
+    const lineData = (line: MapLine) => ({
+        type: "Feature",
+        properties: {},
+        geometry: { type: "LineString", coordinates: line.coordinates },
+    });
+
+    function removeLines(map: MapLibreMapLike) {
+        for (const key of drawnLines) {
+            const id = key.replace(/\+$/, "");
+            for (const name of [MAP_LINE_PREFIX + id, MAP_LINE_CASING_PREFIX + id]) {
+                if (map.getLayer?.(name)) map.removeLayer?.(name);
+                if (map.getSource?.(name)) map.removeSource?.(name);
+            }
+        }
+        drawnLines = [];
+    }
+
+    /** Brings the map's lines to `lines` and the theme: updated in place if the same are there, else drawn again. */
+    function syncLines() {
+        const map = instance;
+        if (!map || !styleReady || !map.addLayer) return;
+        const want = lines;
+        const keys = want.map(lineKey);
+        try {
+            if (keys.length === drawnLines.length && keys.every((key, at) => key === drawnLines[at])) {
+                for (const line of want) {
+                    map.getSource?.(MAP_LINE_PREFIX + line.id)?.setData?.(lineData(line));
+                    if (line.casing) map.getSource?.(MAP_LINE_CASING_PREFIX + line.id)?.setData?.(lineData(line));
+                    paintLine(map, line);
+                }
+                return;
+            }
+            removeLines(map);
+            // Every casing first, so that it lies under every line.
+            for (const line of want) {
+                if (!line.casing) continue;
+                const id = MAP_LINE_CASING_PREFIX + line.id;
+                map.addSource?.(id, { type: "geojson", data: lineData(line) });
+                map.addLayer({
+                    id,
+                    type: "line",
+                    source: id,
+                    layout: { "line-cap": line.cap ?? "round", "line-join": "round" },
+                    paint: {
+                        "line-color": lineColor(line.casing.color, dark),
+                        "line-width": line.casing.width,
+                        "line-opacity": line.opacity ?? 1,
+                    },
+                });
+            }
+            for (const line of want) {
+                const id = MAP_LINE_PREFIX + line.id;
+                map.addSource?.(id, { type: "geojson", data: lineData(line) });
+                map.addLayer({
+                    id,
+                    type: "line",
+                    source: id,
+                    layout: { "line-cap": line.cap ?? "round", "line-join": "round" },
+                    paint: {
+                        "line-color": lineColor(line.color, dark),
+                        "line-width": line.width ?? 4,
+                        "line-opacity": line.opacity ?? 1,
+                        ...(line.dash ? { "line-dasharray": line.dash } : {}),
+                    },
+                });
+            }
+            drawnLines = keys;
+        } catch {
+            // A style that refuses a layer leaves the map without lines; the next change tries again.
+            drawnLines = [];
+        }
+    }
+
+    /**
+     * `style.load` rather than `setStyle(next, { transformStyle })`: the
+     * layers are added to the style the map really has, whether the style is
+     * a URL (not ours to read) or an object, and nothing is changed in the
+     * app's style before it is drawn.
+     */
+    function handleStyleLoad() {
+        styleReady = true;
+        drawnLines = [];
+        syncLines();
+    }
+
+    $effect(() => {
+        // Read here: a change of the lines or of the theme repaints them.
+        void lines;
+        void dark;
+        if (!loaded) return;
+        untrack(syncLines);
     });
 
     function readCredit() {
@@ -508,6 +661,7 @@
         map.on("error", handleError);
         map.on("data", handleData);
         map.on("idle", handleIdle);
+        map.on("style.load", handleStyleLoad);
         map.on("styledata", readCredit);
         map.on("sourcedata", readCredit);
         map.on("move", reproject);
@@ -515,11 +669,14 @@
         map.on("moveend", reportPosition);
         map.on("load", () => {
             if (gone || map !== instance) return;
+            // Also here: a map that fired no `style.load` before `load`.
+            if (!styleReady) handleStyleLoad();
             if (restored) fitted = pointsSignature(points);
             loaded = true;
             if (!workerFailed && (tilesArrived > 0 || tileErrors === 0)) setStatus("ready");
             readCredit();
             reproject();
+            onready?.(map as unknown as MapLibreMap);
         });
     }
 
@@ -540,6 +697,8 @@
         if (gone) return;
         instance?.remove();
         instance = undefined;
+        drawnLines = [];
+        styleReady = false;
         loaded = false;
         markers = [];
         viewerPixel = null;

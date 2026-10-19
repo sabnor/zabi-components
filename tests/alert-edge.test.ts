@@ -35,3 +35,14 @@ describe("Alert edge", () => {
         expect(screen.getByRole("alert")).toBeTruthy();
     });
 });
+
+describe("Alert host attributes (G4)", () => {
+    it("puts data-*, id and aria-* on the host, over its own", async () => {
+        const { default: Harness } = await import("./fixtures/HostAttrsHarness.svelte");
+        render(Harness);
+        const el = screen.getByTestId("offline");
+        expect(el.getAttribute("role")).toBe("alert");
+        expect(el.id).toBe("offline-alert");
+        expect(el.getAttribute("aria-live")).toBe("assertive");
+    });
+});

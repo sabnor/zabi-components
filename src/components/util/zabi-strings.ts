@@ -25,6 +25,7 @@ import { getContext, setContext } from "svelte";
 
 import type { AvatarGroupStrings } from "./avatar.js";
 import type { CalendarStrings } from "./calendar.js";
+import type { ComboboxStrings } from "./combobox.js";
 import type { DateFieldStrings, TimeFieldStrings } from "./temporal-field.js";
 import type { MediaGridStrings } from "./media-grid.js";
 import type { CodeFieldStrings } from "./code-field.js";
@@ -162,6 +163,7 @@ export interface ZabiStrings {
     codeBlock?: Partial<CodeBlockTexts>;
     codeField?: Partial<CodeFieldStrings>;
     colorPicker?: Partial<ColorPickerStrings>;
+    combobox?: Partial<ComboboxStrings>;
     dateField?: Partial<DateFieldStrings>;
     componentDemo?: Partial<ComponentDemoStrings>;
     contactForm?: Partial<ContactFormStrings>;

@@ -3,6 +3,8 @@ import { resolve } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/svelte";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { DEFAULT_COMBOBOX_STRINGS } from "../src/components/util/combobox";
+
 import {
     DEFAULT_COLOR_PICKER_STRINGS,
     DEFAULT_COMPONENT_DEMO_STRINGS,
@@ -471,6 +473,7 @@ const ENTRY_DEFAULTS: Record<keyof ZabiStrings, Words> = {
     unsavedChangesBar: DEFAULT_UNSAVED_CHANGES_BAR_TEXTS as unknown as Words,
     calendar: DEFAULT_CALENDAR_STRINGS as unknown as Words,
     colorPicker: DEFAULT_COLOR_PICKER_STRINGS as unknown as Words,
+    combobox: DEFAULT_COMBOBOX_STRINGS as unknown as Words,
     componentDemo: DEFAULT_COMPONENT_DEMO_STRINGS as unknown as Words,
     contactForm: DEFAULT_CONTACT_FORM_STRINGS as unknown as Words,
     mediaGrid: MEDIA_GRID_STRINGS as unknown as Words,

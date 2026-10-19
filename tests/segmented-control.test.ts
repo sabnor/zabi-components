@@ -306,3 +306,35 @@ describe("SegmentedControl", () => {
         expect(segments()).toHaveLength(5);
     });
 });
+
+describe("SegmentedControl option attrs (G3)", () => {
+    it("puts an option's attrs on its radio, and keeps the control's own", async () => {
+        const { default: Harness } = await import("./fixtures/HostAttrsHarness.svelte");
+        render(Harness);
+        const light = screen.getByTestId("theme-light") as HTMLInputElement;
+        expect(light).toBe(segment("Light"));
+        expect(light.id).toBe("theme-light");
+        expect(light.checked).toBe(true);
+        const dark = screen.getByTestId("theme-dark") as HTMLInputElement;
+        expect(dark.getAttribute("aria-describedby")).toBe("theme-hint");
+        expect(dark.type).toBe("radio");
+        expect(dark.value).toBe("dark");
+    });
+
+    it("an attr the control owns does not win", () => {
+        render(SegmentedControl, {
+            props: {
+                label: "Plan",
+                value: "a",
+                options: [
+                    { value: "a", label: "A", attrs: { type: "checkbox", value: "x", tabindex: 5 } as never },
+                    { value: "b", label: "B" },
+                ],
+            },
+        });
+        const a = segment("A");
+        expect(a.type).toBe("radio");
+        expect(a.value).toBe("a");
+        expect(a.tabIndex).toBe(0);
+    });
+});

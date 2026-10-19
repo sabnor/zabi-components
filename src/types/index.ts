@@ -524,8 +524,8 @@ export interface ModalEvents {
     // Modal now uses onclick prop instead of dispatching close events
 }
 
-// Alert component props
-export interface AlertProps {
+// Alert component props. Other attributes (`data-*`, `id`, `aria-*`) land on the host.
+export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'class' | 'onclick' | 'children'> {
     variant?: ExtendedSemanticVariant | 'brand';
     title?: string;
     message?: string;

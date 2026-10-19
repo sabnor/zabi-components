@@ -17,6 +17,8 @@ export {
 } from './util/map-view.js';
 export type {
     MapInset,
+    MapLine,
+    MapLineColor,
     MapLngLat,
     MapMarker,
     MapPixel,

@@ -12,6 +12,36 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.3] - 2026-10-19
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.2, for the gaps the Körväder app found
+against 9.0.0 (G1 to G4). Every new prop is optional and nothing is removed or renamed; without the new props each
+component behaves as before. Nothing in it has been rendered in a browser or with a real MapLibre map: type and
+design checks, unit tests in jsdom, the package build.
+
+### Added
+
+- `MapView` (`zabi-components/map`): `lines`, a list of `MapLine` (`id`, `coordinates` as `[lng, lat]`, `color` as
+  one colour or `{ light, dark }`, `width`, `dash`, `cap`, `opacity`, an optional `casing`), drawn above the base
+  style in list order with every casing under every line. A new list with the same ids updates the data and paint
+  in place, with no style reload; a theme swap draws them again on the new style in its colours. New types
+  `MapLine`, `MapLineColor` (G1, D280).
+- `MapView`: `onready(map)`, called with the MapLibre map each time a new one has loaded. Layers an app adds itself
+  are lost when the theme swaps the style; listen for `style.load`, or use `lines` (G1, D280).
+- `Combobox`: a text field with suggestions from an async `search(query, signal)`, debounced (`debounce`,
+  `minLength`), with `onselect(item)`, `bind:value` (free text stays as typed), `bind:selected`, an `item` snippet,
+  and `strings` (`loading`, `empty`, `results(count)`, also through `ZabiStringsProvider` as `combobox`). Built on
+  `Input`, so it looks like one; an ARIA combobox with a listbox (arrows, Enter, Escape, Tab). New exports
+  `ComboboxItem`, `ComboboxStrings`, `DEFAULT_COMBOBOX_STRINGS` (G2, D281).
+- `SegmentedControl`: `attrs` on an option, put on that segment's radio input (`data-testid`, `id`,
+  `aria-describedby`, ...); the control's own attributes win. New type `SegmentedControlOptionAttrs` (G3, D282).
+
+### Fixed
+
+- `Alert`: its props type now takes the host's HTML attributes, so `data-testid`, `id` and `aria-*` pass the type
+  check; they were already spread onto the host at run time. `AlertProps` in `zabi-components/types` matches
+  (G4, D283).
+
 ## [9.1.0-alpha.2] - 2026-10-19
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.1. No token, prop, variant, string key,

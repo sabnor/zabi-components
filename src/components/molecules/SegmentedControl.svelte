@@ -206,6 +206,7 @@ one changes nothing, and the value goes with a form. -->
         {@const Icon = option.icon}
         <label class="segment">
             <input
+                {...option.attrs}
                 bind:this={inputs[option.value]}
                 type="radio"
                 class="sr-only"

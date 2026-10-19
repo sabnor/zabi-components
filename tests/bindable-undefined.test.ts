@@ -10,6 +10,7 @@ import Input from "../src/components/atoms/Input.svelte";
 import Radio from "../src/components/atoms/Radio.svelte";
 import Rating from "../src/components/atoms/Rating.svelte";
 import Select from "../src/components/atoms/Select.svelte";
+import Combobox from "../src/components/molecules/Combobox.svelte";
 import Slider from "../src/components/atoms/Slider.svelte";
 import Textarea from "../src/components/atoms/Textarea.svelte";
 import TimeField from "../src/components/atoms/TimeField.svelte";
@@ -98,6 +99,8 @@ const cases: Case[] = [
     { name: "Slider", component: Slider, prop: "value", becomes: 10, props: { label: "Volume", min: 10, max: 50 } },
     { name: "Rating", component: Rating, prop: "value", becomes: null, props: { label: "Quiz" } },
     { name: "Select", component: Select, prop: "value", becomes: undefined, props: { label: "Team", options } },
+    { name: "Combobox", component: Combobox, prop: "value", becomes: "", props: { label: "Place", search: () => [] } },
+    { name: "Combobox", component: Combobox, prop: "selected", becomes: null, props: { label: "Place", search: () => [] } },
     { name: "SegmentedControl", component: SegmentedControl, prop: "value", becomes: undefined, props: { label: "Size", options } },
     { name: "RadioGroup", component: RadioGroup, prop: "value", becomes: undefined, props: { legend: "Answer", options } },
     { name: "RadioGroup with defaultValue", component: RadioGroup, prop: "value", becomes: "b", props: { legend: "Answer", options, defaultValue: "b" } },

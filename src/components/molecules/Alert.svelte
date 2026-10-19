@@ -5,6 +5,7 @@
     import X from "@lucide/svelte/icons/x";
     import Info from "@lucide/svelte/icons/info";
     import Zap from "@lucide/svelte/icons/zap";
+    import type { HTMLAttributes } from "svelte/elements";
     import type { ExtendedSemanticVariant } from "../types/variants.js";
     import { cn } from "../util/cn.js";
     import { TOUCH_HIT_AREA } from "../util/touch-target.js";
@@ -12,7 +13,13 @@
     type AlertVariant = ExtendedSemanticVariant | "brand";
     type AlertVisualVariant = Exclude<AlertVariant, "default">;
 
-    interface Props {
+    /**
+     * Other attributes (`data-*`, `id`, `aria-*`, ...) land on the host
+     * element, after the alert's own, so an `aria-live` or a `role` given
+     * here wins. `title` is the heading and `onclick` the dismiss handler,
+     * not the HTML attributes of those names.
+     */
+    type Props = Omit<HTMLAttributes<HTMLDivElement>, "title" | "class" | "onclick" | "children"> & {
         variant?: AlertVariant;
         title?: string;
         message?: string;
@@ -36,7 +43,7 @@
         /** @deprecated use `class` — kept so 7.x call sites keep working. */
         className?: string;
         onclick?: (event: Event) => void;
-    }
+    };
 
     let {
         variant = "info",

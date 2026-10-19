@@ -217,6 +217,36 @@ export function attributionText(html: string): string {
         .trim();
 }
 
+/** A colour, or one per theme. */
+export type MapLineColor = string | { light: string; dark: string };
+
+/** A line drawn on the map, above the base style. */
+export interface MapLine {
+    /** Unique among the lines; keep it the same across updates. */
+    id: string;
+    coordinates: [lng: number, lat: number][];
+    color: MapLineColor;
+    /** In px. Default 4. */
+    width?: number;
+    /** MapLibre's `line-dasharray`, in line widths. Without it, solid. */
+    dash?: number[];
+    /** The line's ends. Default `round`. */
+    cap?: "round" | "butt";
+    /** Default 1. */
+    opacity?: number;
+    /** An edge drawn under the line (and under every other line): its colour and its total width in px. */
+    casing?: { color: MapLineColor; width: number };
+}
+
+/** The ids of the lines' own sources and layers start with these, so they never meet the app's. */
+export const MAP_LINE_PREFIX = "zabi-line-";
+export const MAP_LINE_CASING_PREFIX = "zabi-line-casing-";
+
+/** The colour a line has in a theme. */
+export function lineColor(color: MapLineColor, dark: boolean): string {
+    return typeof color === "string" ? color : dark ? color.dark : color.light;
+}
+
 /**
  * The part of MapLibre GL JS that MapView uses, written out here so that the
  * package's types do not need the library's.
@@ -235,10 +265,17 @@ export interface MapLibreMapLike {
     unproject(point: [number, number]): MapLngLat;
     getCenter(): MapLngLat;
     getZoom(): number;
-    setStyle(style: string | object): unknown;
+    setStyle(style: string | object, options?: { diff?: boolean }): unknown;
     getStyle(): { sources?: Record<string, { attribution?: string }> } | undefined;
-    getSource?(id: string): { attribution?: string } | undefined;
+    getSource?(id: string): { attribution?: string; setData?(data: object): unknown } | undefined;
     getCanvas(): HTMLCanvasElement;
+    addSource?(id: string, source: object): unknown;
+    removeSource?(id: string): unknown;
+    addLayer?(layer: object): unknown;
+    removeLayer?(id: string): unknown;
+    getLayer?(id: string): unknown;
+    setPaintProperty?(layer: string, name: string, value: unknown): unknown;
+    setLayoutProperty?(layer: string, name: string, value: unknown): unknown;
     touchZoomRotate?: { disableRotation(): void };
 }
 
