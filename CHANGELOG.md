@@ -12,6 +12,12 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.6] - 2026-10-19
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.5: smooth motion, no overshoot. Nothing
+removed or renamed. Nothing in it has been rendered in a browser: type and design checks, unit tests in jsdom, theme
+output tests, the package build.
+
 ### Fixed
 
 - Smooth motion, nothing that overshoots or jumps. `--ease-spring` keeps its name but no longer overshoots: it is now
