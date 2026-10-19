@@ -15,6 +15,19 @@ export interface MapLngLat {
     lat: number;
 }
 
+/** The outline a mark is drawn in. */
+export type MapMarkShape = "circle" | "triangle" | "diamond" | "hexagon";
+
+/** How one point's mark looks. Left out, the mark is round with the brand colour's edge. */
+export interface MapMark {
+    /** The outline; `circle` when left out. */
+    shape?: MapMarkShape;
+    /** CSS colour of the edge. Left out, the brand colour. */
+    line?: string;
+    /** CSS colour of the inside. Left out, the surface colour. */
+    fill?: string;
+}
+
 /** One marker. */
 export interface MapPoint extends MapLngLat {
     /** Stable identity. */
@@ -23,6 +36,8 @@ export interface MapPoint extends MapLngLat {
     label: string;
     /** Drawn filled, with a check mark; left out or false, round and outlined. */
     checked?: boolean;
+    /** The look of its mark: shape, edge and inside. Left out, the mark is drawn as before. */
+    mark?: MapMark;
 }
 
 /** Room kept clear at the edges of the map, in px: a sheet over its lower part is a `bottom`. */

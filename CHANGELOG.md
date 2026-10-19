@@ -12,6 +12,38 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.5] - 2026-10-19
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.4, for the Körväder gaps G5 to G8. Every new
+prop is optional; two defaults change as fixes (tabular figures in date and time fields, the theme bundles' cascade
+layer). Nothing in it has been rendered in a browser: type and design checks, unit tests in jsdom, theme output
+tests, the package build.
+
+### Added
+
+- `MapPoint.mark` (`zabi-components/map`): `{ shape?: "circle" | "triangle" | "diamond" | "hexagon"; line?: string;
+  fill?: string }`, CSS colours for the pin's edge and inside, so points of different kinds look different. A point
+  without it is drawn as before; the 44px tap area, the `marker` picture and clustering are unchanged. `checked` on a
+  marked point adds the check badge. New types `MapMark`, `MapMarkShape` (G5, D289).
+- `MapView` `clusterPoint(points)`: the count marker draws the point it returns (its mark and picture), with the count
+  in a badge; without it the count marker is as before (G5, D289).
+- `Badge`: a subtle badge reads `--zabi-badge-fill`, `--zabi-badge-text`, `--zabi-badge-border` (where `bordered`
+  draws an edge) and `--zabi-badge-icon` (the built-in icon) in front of its variant's tokens, set from `style` or
+  any ancestor; unset, the colours are the variant's. A neutral surface is `variant="neutral" bordered` with
+  `--zabi-badge-fill: var(--color-surface-raised)` and friends. Solid badges are unchanged (G6, D290).
+
+### Changed
+
+- `DateField` and `TimeField`: the input uses tabular figures, so a date or time keeps its width as the digits
+  change. `class="proportional-nums"` turns it off (G7, D291).
+- `zabi-components/theme` and `zabi-components/theme-only`: zabi's hand-written classes at rest (`.border-border`,
+  `.bg-card`, `.text-headline`, ...) are now in `@layer components`, so an app's own Tailwind utilities win over
+  them: `border-border border-s-(--x)` gets its coloured start edge without `!`. State rules, `@media` blocks and
+  twelve classes whose Tailwind twin differs (`text-success` etc.) stay unlayered. An app that relied on a zabi class
+  beating its own utility on the same element should drop that utility. The prebuilt `zabi-components/css` is
+  unchanged. Zabi's own `Tabs` selected tab now gets the transparent edge its classes ask for; the indicator draws
+  the same line (G8, D292).
+
 ## [9.1.0-alpha.4] - 2026-10-19
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.3, for the Quizrundan gaps Z-156 to

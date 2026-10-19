@@ -2,6 +2,7 @@
     import type { HTMLInputAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
     import type { DateFieldStrings } from "../util/temporal-field.js";
+    import { cn } from "../util/cn.js";
     import TemporalField from "./TemporalField.svelte";
 
     /**
@@ -32,6 +33,8 @@
      * ```svelte
      * <DateField label="Datum" locale="sv" bind:value format={{ weekday: "short", day: "numeric", month: "short" }} />
      * ```
+     *
+     * The figures are tabular (`tabular-nums`) so a column of dates lines up; `class="proportional-nums"` turns that off.
      *
      * Other attributes (`autocomplete`, `data-*`, `onchange`, ...) land on the
      * `<input>`.
@@ -135,7 +138,7 @@
     {disabled}
     {readonly}
     {size}
-    class={className}
+    class={cn("tabular-nums", className)}
     {locale}
     {format}
     {placeholder}

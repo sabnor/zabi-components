@@ -28,6 +28,8 @@ Use short package exports by default. Legacy deep `dist` imports remain supporte
 2. The `@theme` block with every token.
 3. The hand-written component rules that Tailwind cannot generate from the tokens: `.focus-ring`, `.text-action-primary`, the action hover, active and disabled states, the semantic colour classes and the `z-*` scale.
 
+The hand-written class rules (`.border-border`, `.bg-card`, `.text-headline`, `.z-modal`, `.material-bar` and the rest) are in `@layer components`, below Tailwind's `utilities`, so your own utilities win over them: `class="border border-border border-s-8 border-s-red-500"` gives a red start edge. An app that relied on a zabi class beating its own utility (before 9.1.0 these rules were unlayered) should drop the utility. Two kinds of rule stay outside the layer on purpose. State rules (`hover:`, `active:`, `disabled:`, the forced-colours blocks) must beat the utility that sets the same property at rest. And the `.text-success`, `.text-error`, `.text-action-primary` family and a few more point at the `-text` token where Tailwind would generate the fill colour, so they must beat the generated class of the same name. `zabi-components/css`, the compiled stylesheet, is unchanged: its classes are still unlayered.
+
 `theme-dark` and `theme-dark-only` hold the dark overrides, under three selectors:
 
 ```css

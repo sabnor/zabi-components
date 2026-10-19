@@ -69,8 +69,15 @@ describe('Badge variant="accent"', () => {
         render(Badge, { variant: "accent", emphasis: "solid", text: "Solid" });
         const subtle = classesOf(screen.getByText("Nytt"));
         const solid = classesOf(screen.getByText("Solid"));
-        expect(subtle).toEqual(expect.arrayContaining(["bg-accent-subtle", "text-accent-text", "border-transparent"]));
-        expect(subtle).not.toContain("border-accent-border");
+        // The tokens behind per-instance custom properties (D290).
+        expect(subtle).toEqual(
+            expect.arrayContaining([
+                "bg-[color:var(--zabi-badge-fill,var(--color-accent-subtle))]",
+                "text-[color:var(--zabi-badge-text,var(--color-accent-text))]",
+                "border-transparent",
+            ]),
+        );
+        expect(subtle.some((name) => name.includes("--color-accent-border"))).toBe(false);
         expect(solid).toEqual(expect.arrayContaining(["bg-accent", "text-on-accent", "border-transparent"]));
         // A status badge puts the card colour on its fill; an accent may be a yellow, where that is white on yellow.
         expect(solid).not.toContain("text-card");
@@ -79,7 +86,7 @@ describe('Badge variant="accent"', () => {
     it("leaves energetic on its own family", () => {
         render(Badge, { variant: "energetic", text: "Energetic" });
         const classes = classesOf(screen.getByText("Energetic"));
-        expect(classes).toContain("bg-energetic-subtle");
+        expect(classes).toContain("bg-[color:var(--zabi-badge-fill,var(--color-energetic-subtle))]");
         expect(classes.some((name) => name.includes("accent"))).toBe(false);
     });
 });

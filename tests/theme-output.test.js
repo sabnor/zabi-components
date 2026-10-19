@@ -554,6 +554,109 @@ test('the theme files apply the heading family to headings, below utilities', ()
 });
 
 /**
+ * The hand-written classes sit below an app's utilities.
+ *
+ * `.border-border` used to ship unlayered, so it beat every utility in the app,
+ * `border-s-8 border-s-red-500` included. Now the class rules are in
+ * `@layer components`, and an app's Tailwind (in `utilities`) wins. What stays
+ * outside the layer is on purpose: a state rule has to beat the utility that sets
+ * the same property at rest, and a few classes have a generated utility of the
+ * same name with another value.
+ */
+const layerOf = (rule) => {
+  for (let node = rule.parent; node && node.type !== 'root'; node = node.parent) {
+    if (node.type === 'atrule' && node.name === 'layer') return node.params;
+  }
+  return null;
+};
+const rulesFor = (file, selector) => {
+  const found = [];
+  postcss.parse(read(file)).walkRules((rule) => {
+    if ((rule.selectors ?? [rule.selector]).map((s) => s.trim()).includes(selector)) found.push(rule);
+  });
+  return found;
+};
+
+test('the hand-written class rules are in @layer components in the Tailwind bundles', () => {
+  for (const file of ['dist/zabi-components-theme.css', 'dist/zabi-components-theme-only.css']) {
+    for (const selector of ['.border-border', '.bg-card', '.text-headline', '.z-modal', '.rounded-button', '.material-bar']) {
+      const rules = rulesFor(file, selector).filter((rule) => rule.parent.type === 'atrule' || rule.parent.type === 'root');
+      assert.ok(rules.length > 0, `${file}: ${selector} missing`);
+      for (const rule of rules) assert.equal(layerOf(rule), 'components', `${file}: ${selector} must be in @layer components`);
+    }
+  }
+});
+
+test('state rules and the forced-colours rules stay outside the layers', () => {
+  for (const file of ['dist/zabi-components-theme.css', 'dist/zabi-components-theme-only.css']) {
+    for (const selector of ['.active\\:bg-card-active:active', '.disabled\\:bg-input-disabled:disabled', '.toggle-switch']) {
+      const rules = rulesFor(file, selector);
+      assert.ok(rules.length > 0, `${file}: ${selector} missing`);
+      for (const rule of rules) assert.equal(layerOf(rule), null, `${file}: ${selector} must beat the utility it is the state of`);
+    }
+  }
+});
+
+test('the dark and colour bundles carry no class rules', () => {
+  for (const file of ['dist/zabi-components-theme-dark.css', 'dist/zabi-components-theme-dark-only.css', 'dist/zabi-components-colors.css']) {
+    postcss.parse(read(file)).walkRules((rule) => {
+      const selectors = (rule.selectors ?? [rule.selector]).map((s) => s.trim());
+      assert.ok(
+        selectors.every((selector) => !/^\.(?!dark\b)/.test(selector)),
+        `${file}: class rule ${selectors.join(', ')}`,
+      );
+    });
+  }
+});
+
+/**
+ * A hand-written class that is layered must not lose to a generated one.
+ *
+ * Tailwind makes `.text-success` from `--color-success` (the fill); the library's
+ * rule points at `--color-success-text`. Unlayered the rule wins. In
+ * `@layer components` the generated utility would, and every success label would
+ * turn into the fill colour. This compiles each bundle with Tailwind, asks for
+ * every layered class, and fails where the two disagree: the class belongs in
+ * UNLAYERED_CLASSES in scripts/build-css.js.
+ */
+test('no layered hand-written class is overridden by a different generated utility', async () => {
+  const { default: tailwindcss } = await import('@tailwindcss/postcss');
+  for (const file of ['dist/zabi-components-theme.css', 'dist/zabi-components-theme-only.css']) {
+    const names = new Set();
+    postcss.parse(read(file)).walkAtRules('layer', (layer) => {
+      if (layer.params !== 'components') return;
+      layer.each((rule) => {
+        if (rule.type !== 'rule') return;
+        for (const selector of rule.selectors) {
+          const [, name] = selector.trim().match(/^\.([\w-]+)$/) ?? [];
+          if (name) names.add(name);
+        }
+      });
+    });
+    const source = path.join(projectRoot, file);
+    const input = `@import "tailwindcss" source(none);\n@source inline("${[...names].join(' ')}");\n@import "${source}";\n`;
+    const out = await postcss([tailwindcss()]).process(input, { from: path.join(projectRoot, 'dist/__layer-check.css') });
+    const by = {};
+    postcss.parse(out.css).walkRules((rule) => {
+      const layer = layerOf(rule);
+      if (layer !== 'components' && layer !== 'utilities') return;
+      for (const selector of rule.selectors.map((s) => s.trim())) {
+        if (!/^\.[\w-]+$/.test(selector)) continue;
+        (by[selector] ??= {})[layer] = rule.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => `${node.prop}:${node.value.replace(/\s+/g, ' ')}`)
+          .join(';');
+      }
+    });
+    const differ = Object.entries(by)
+      .filter(([, v]) => v.components && v.utilities && v.components !== v.utilities)
+      .map(([selector]) => selector);
+    assert.deepEqual(differ, [], `${file}: layered classes beaten by a generated utility with another value`);
+    assert.ok(Object.values(by).some((v) => v.components && v.utilities), `${file}: the check compared nothing`);
+  }
+});
+
+/**
  * The focus ring composes with Tailwind's shadow and ring utilities.
  *
  * As a plain box-shadow in `@layer components` it lost to any `shadow-*` or

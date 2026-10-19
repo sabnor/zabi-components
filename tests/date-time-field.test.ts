@@ -203,3 +203,18 @@ describe.each(cases)("$piece field", ({ piece, type, label, value, other, min, m
         });
     });
 });
+
+describe.each(cases)("$piece field figures", ({ piece, label, value }) => {
+    it("is tabular by default and keeps the app's class", () => {
+        render(DateHarness, { props: { piece, initialValue: value, fieldClass: "w-40" } });
+        const input = screen.getByLabelText(label);
+        expect(input.className.split(/\s+/)).toEqual(expect.arrayContaining(["tabular-nums", "w-40"]));
+    });
+
+    it("lets the app's proportional-nums win", () => {
+        render(DateHarness, { props: { piece, initialValue: value, fieldClass: "proportional-nums" } });
+        const names = screen.getByLabelText(label).className.split(/\s+/);
+        expect(names).toContain("proportional-nums");
+        expect(names).not.toContain("tabular-nums");
+    });
+});

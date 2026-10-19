@@ -85,6 +85,19 @@
      * `--zabi-badge-neutral-text` (src/app.css) in front of the neutral
      * tokens: set on any ancestor or in the theme, they move this badge and
      * no other reader of `--color-neutral-subtle` or `--color-neutral-text`.
+     *
+     * Every variant's subtle badge also reads four per-instance custom
+     * properties in front of its own tokens, so an app can give one badge its
+     * own colours without a new variant: `--zabi-badge-fill`,
+     * `--zabi-badge-text`, `--zabi-badge-border` (only where `bordered` draws
+     * an edge; an unbordered badge stays transparent) and `--zabi-badge-icon`
+     * (the built-in `showIcon` icon only; unset, it follows the text). Set them
+     * from `style` or any ancestor. Unset, the colours are exactly the
+     * variant's. Solid badges ignore all four. A neutral surface, for instance:
+     *
+     * ```svelte
+     * <Badge variant="neutral" bordered style="--zabi-badge-fill: var(--color-surface-raised); --zabi-badge-border: var(--color-border-strong); --zabi-badge-text: var(--color-headline)" />
+     * ```
      */
     const variantClass = $derived.by(() => {
         const solid = emphasis === "solid";
@@ -93,30 +106,30 @@
             case "success":
                 return solid
                     ? "bg-success text-card border-transparent"
-                    : `bg-success-subtle text-success-text ${edge("border-success-border")}`;
+                    : `bg-[color:var(--zabi-badge-fill,var(--color-success-subtle))] text-[color:var(--zabi-badge-text,var(--color-success-text))] ${edge("border-[color:var(--zabi-badge-border,var(--color-success-border))]")}`;
             case "warning":
                 return solid
                     ? "bg-warning text-card border-transparent"
-                    : `bg-warning-subtle text-warning-text ${edge("border-warning-border")}`;
+                    : `bg-[color:var(--zabi-badge-fill,var(--color-warning-subtle))] text-[color:var(--zabi-badge-text,var(--color-warning-text))] ${edge("border-[color:var(--zabi-badge-border,var(--color-warning-border))]")}`;
             case "error":
                 return solid
                     ? "bg-error text-card border-transparent"
-                    : `bg-error-subtle text-error-text ${edge("border-error-border")}`;
+                    : `bg-[color:var(--zabi-badge-fill,var(--color-error-subtle))] text-[color:var(--zabi-badge-text,var(--color-error-text))] ${edge("border-[color:var(--zabi-badge-border,var(--color-error-border))]")}`;
             case "info":
                 return solid
                     ? "bg-info text-card border-transparent"
-                    : `bg-info-subtle text-info-text ${edge("border-info-border")}`;
+                    : `bg-[color:var(--zabi-badge-fill,var(--color-info-subtle))] text-[color:var(--zabi-badge-text,var(--color-info-text))] ${edge("border-[color:var(--zabi-badge-border,var(--color-info-border))]")}`;
             case "energetic":
                 return solid
                     ? "bg-energetic text-card border-transparent"
-                    : `bg-energetic-subtle text-energetic-text ${edge("border-energetic-border")}`;
+                    : `bg-[color:var(--zabi-badge-fill,var(--color-energetic-subtle))] text-[color:var(--zabi-badge-text,var(--color-energetic-text))] ${edge("border-[color:var(--zabi-badge-border,var(--color-energetic-border))]")}`;
             // The app's second brand colour. Its solid label is the "on accent"
             // role, not the card surface: an app with a light accent (a
             // yellow) sets a dark label there, and white would be unreadable.
             case "accent":
                 return solid
                     ? "bg-accent text-on-accent border-transparent"
-                    : `bg-accent-subtle text-accent-text ${edge("border-accent-border")}`;
+                    : `bg-[color:var(--zabi-badge-fill,var(--color-accent-subtle))] text-[color:var(--zabi-badge-text,var(--color-accent-text))] ${edge("border-[color:var(--zabi-badge-border,var(--color-accent-border))]")}`;
             // The primary brand colour, for the neutral-but-branded label
             // ("Member"). Subtle text is the link role, guarded on this fill
             // as the label of a selected pill tab; solid carries the label
@@ -126,21 +139,25 @@
             case "brand":
                 return solid
                     ? "bg-action-primary text-action-primary border-transparent"
-                    : `bg-action-primary-subtle text-(color:--color-link) ${edge("border-action-primary-border")}`;
+                    : `bg-[color:var(--zabi-badge-fill,var(--color-action-primary-subtle))] text-[color:var(--zabi-badge-text,var(--color-link))] ${edge("border-[color:var(--zabi-badge-border,var(--color-action-primary-border))]")}`;
             case "neutral":
             case "default":
             default:
                 return solid
                     ? "bg-neutral text-card border-transparent"
-                    : `bg-badge-neutral text-badge-neutral ${edge("border-neutral-border")}`;
+                    : `bg-[color:var(--zabi-badge-fill,var(--zabi-badge-neutral-fill,var(--color-neutral-subtle)))] text-[color:var(--zabi-badge-text,var(--zabi-badge-neutral-text,var(--color-neutral-text)))] ${edge("border-[color:var(--zabi-badge-border,var(--color-neutral-border))]")}`;
         }
     });
 
+    // `on-surface`: inside a brand, accent or fill block (src/app.css) a
+    // subtle badge is a surface, so its text tokens are the theme's again.
+    // The `bg-*-subtle` class names used to say so; the custom-property
+    // classes (D290) do not.
     const badgeClasses = $derived(
         // Never wider than what it is in, and its words break onto the next
         // line before they push anything out; a word longer than the line
         // breaks inside. The icon stays centred beside the lines.
-        cn(`inline-flex [max-inline-size:100%] min-w-0 items-center justify-center border font-medium [overflow-wrap:anywhere] ${sizeClass.box} ${variantClass} ${className}`),
+        cn(`inline-flex [max-inline-size:100%] min-w-0 items-center justify-center border font-medium [overflow-wrap:anywhere] ${sizeClass.box} ${variantClass} ${emphasis === "solid" ? "" : "on-surface"} ${className}`),
     );
 
     /** One outline icon family, so the variants don't look like a rummage. */
@@ -159,6 +176,12 @@
         }
     });
 
+    // `--zabi-badge-icon` colours the built-in icon only; unset, it is the
+    // text colour, as before. Solid badges leave it alone.
+    const iconClass = $derived(
+        emphasis === "solid" ? "shrink-0" : "shrink-0 text-[color:var(--zabi-badge-icon,currentColor)]",
+    );
+
     const hasLabel = $derived(Boolean(children) || Boolean(text));
 </script>
 
@@ -166,7 +189,7 @@
     <span class={badgeClasses} {...restProps}>
         {#if showIcon}
             {@const BadgeIcon = Icon}
-            <BadgeIcon size={sizeClass.icon} class="shrink-0" aria-hidden="true" />
+            <BadgeIcon size={sizeClass.icon} class={iconClass} aria-hidden="true" />
         {/if}
         {#if children}
             {@render children()}

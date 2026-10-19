@@ -99,9 +99,79 @@ function extractComponentStyles(css, fromPath) {
       if (selectors.includes('.dark')) return;
       if (selectors.every((selector) => selector.startsWith('*'))) return;
     }
-    kept.push(node.toString().trim());
+    kept.push(node);
   });
-  return kept.join('\n\n');
+
+  // Consecutive class rules share one `@layer components` block, in source order.
+  const out = [];
+  let run = null;
+  for (const node of kept) {
+    if (isUtilityClassRule(node)) {
+      if (!run) out.push((run = []));
+      run.push(node.toString().trim());
+    } else {
+      run = null;
+      out.push(node.toString().trim());
+    }
+  }
+  return out
+    .map((part) => (Array.isArray(part) ? `@layer components {\n${part.join('\n\n')}\n}` : part))
+    .join('\n\n');
+}
+
+/**
+ * Classes that stay unlayered because Tailwind generates a utility of the same
+ * name from the token of that name, with a different value. `text-success`
+ * would be `color: var(--color-success)`, the fill, where the library's rule
+ * points at `--color-success-text`, the label colour that passes contrast on
+ * the page. Both go in the consumer's CSS; in `@layer utilities` the generated
+ * one would beat a hand-written rule in `@layer components` and every such
+ * label would turn into the fill colour. Unlayered, the hand-written rule keeps
+ * winning, as it always has. tests/theme-output.test.js compiles the bundle
+ * with Tailwind and fails on any layered class that this list is missing.
+ */
+const UNLAYERED_CLASSES = new Set([
+  'border-bar',
+  'border-primary',
+  'ring-toggle-track',
+  'text-accent',
+  'text-action-primary',
+  'text-action-tonal',
+  'text-energetic',
+  'text-error',
+  'text-info',
+  'text-neutral',
+  'text-success',
+  'text-warning',
+]);
+
+/**
+ * A top-level rule that is a class of its own at rest: `.border-border`,
+ * `.bg-card`, `.z-modal`, `.material-bar::before`. These are what an app's own
+ * utility has to be able to beat, and they go in `@layer components`.
+ *
+ * Not these, which stay where they are:
+ *   - a rule with a state pseudo-class (`.active\:bg-card-active:active`). It is
+ *     the state of a class that an app or a component also sets at rest with a
+ *     utility, and it has to beat that utility; layered below it, it would not;
+ *   - anything inside an at-rule: the `@media (hover: hover)` state rules, the
+ *     forced-colours and reduced-motion blocks, `@supports`. Their comments say
+ *     why they sit outside the layers (they must beat `focus-visible:outline-none`
+ *     and the hover fills). `@keyframes`, `@layer base|components|utilities` are
+ *     left alone for the same reason or because they already have their layer;
+ *   - rules not made of classes (`:root`, `body`, `[data-materials]`): the token
+ *     declarations and the page reset.
+ */
+function isUtilityClassRule(node) {
+  if (node.type !== 'rule') return false;
+  const selectors = (node.selectors ?? [node.selector]).map((s) => s.trim());
+  return selectors.every(
+    (selector) =>
+      selector.startsWith('.') &&
+      !UNLAYERED_CLASSES.has(selector.match(/^\.([\w-]+)/)?.[1]) &&
+      // A single colon is a pseudo-class; `::before` and the escaped colon in a variant name are not.
+      !/(^|[^:\\]):(?!:)/.test(selector),
+  );
 }
 
 /**

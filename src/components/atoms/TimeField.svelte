@@ -2,6 +2,7 @@
     import type { HTMLInputAttributes } from "svelte/elements";
     import type { SizeVariant } from "../types/variants.js";
     import type { TimeFieldStrings } from "../util/temporal-field.js";
+    import { cn } from "../util/cn.js";
     import TemporalField from "./TemporalField.svelte";
 
     /**
@@ -30,6 +31,8 @@
      * `"any"`, uses the platform's picker instead, as does `picker="native"`.
      * Until the page has run, and without scripts, it is the native input
      * as above and submits as before.
+     *
+     * The figures are tabular (`tabular-nums`) so a column of times lines up; `class="proportional-nums"` turns that off.
      *
      * Other attributes (`autocomplete`, `data-*`, `onchange`, ...) land on the
      * `<input>`.
@@ -140,7 +143,7 @@
     {disabled}
     {readonly}
     {size}
-    class={className}
+    class={cn("tabular-nums", className)}
     {locale}
     {format}
     {placeholder}

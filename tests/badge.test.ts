@@ -63,13 +63,14 @@ describe("Badge", () => {
         const own = classes("Bokat");
         expect(own).toContain("border");
         expect(own).toContain("border-transparent");
-        expect(own).not.toContain("border-info-border");
+        expect(own).not.toContain("--color-info-border");
     });
 
     it.each(["success", "warning", "error", "info", "energetic", "accent", "brand", "default"] as const)(
         "bordered puts the %s family edge back, and a solid badge never has one",
         (variant) => {
-            const edge = variant === "brand" ? "border-action-primary-border" : `border-${variant === "default" ? "neutral" : variant}-border`;
+            const token = `--color-${variant === "brand" ? "action-primary" : variant === "default" ? "neutral" : variant}-border`;
+            const edge = `border-[color:var(--zabi-badge-border,var(${token}))]`;
             render(Badge, { props: { text: "S", variant, bordered: true } });
             render(Badge, { props: { text: "F", variant, emphasis: "solid", bordered: true } });
             expect(classes("S")).toContain(edge);
@@ -82,7 +83,7 @@ describe("Badge", () => {
     it('variant="brand": the brand tint with the link text, or the primary fill with its label', () => {
         render(Badge, { props: { text: "Medlem", variant: "brand", showIcon: true } });
         render(Badge, { props: { text: "Solid", variant: "brand", emphasis: "solid" } });
-        expect(classes("Medlem")).toEqual(expect.arrayContaining(["bg-action-primary-subtle", "text-(color:--color-link)"]));
+        expect(classes("Medlem")).toEqual(expect.arrayContaining(["bg-[color:var(--zabi-badge-fill,var(--color-action-primary-subtle))]", "text-[color:var(--zabi-badge-text,var(--color-link))]"]));
         expect(classes("Solid")).toEqual(expect.arrayContaining(["bg-action-primary", "text-action-primary"]));
         expect(screen.getByText("Medlem").querySelector("svg")).not.toBeNull();
     });
@@ -91,10 +92,15 @@ describe("Badge", () => {
 describe("Badge, neutral subtle: its own properties (Z-081)", () => {
     const css = readFileSync("src/app.css", "utf8");
 
-    it.each(["neutral", "default"] as const)("%s subtle reads the badge classes, not the shared neutral ones", (variant) => {
+    it.each(["neutral", "default"] as const)("%s subtle reads the badge properties, not the shared neutral ones", (variant) => {
         render(Badge, { props: { text: "Bokat", variant } });
         const own = classes("Bokat");
-        expect(own).toEqual(expect.arrayContaining(["bg-badge-neutral", "text-badge-neutral"]));
+        expect(own).toEqual(
+            expect.arrayContaining([
+                "bg-[color:var(--zabi-badge-fill,var(--zabi-badge-neutral-fill,var(--color-neutral-subtle)))]",
+                "text-[color:var(--zabi-badge-text,var(--zabi-badge-neutral-text,var(--color-neutral-text)))]",
+            ]),
+        );
         expect(own).not.toContain("bg-neutral-subtle");
         expect(own).not.toContain("text-neutral-text");
     });
@@ -118,7 +124,7 @@ describe("Badge, neutral subtle: its own properties (Z-081)", () => {
     it("every other variant and emphasis is as it was", () => {
         render(Badge, { props: { text: "A", variant: "success" } });
         render(Badge, { props: { text: "B", variant: "neutral", emphasis: "solid" } });
-        expect(classes("A")).toEqual(expect.arrayContaining(["bg-success-subtle", "text-success-text"]));
+        expect(classes("A")).toEqual(expect.arrayContaining(["bg-[color:var(--zabi-badge-fill,var(--color-success-subtle))]", "text-[color:var(--zabi-badge-text,var(--color-success-text))]"]));
         expect(classes("B")).toEqual(expect.arrayContaining(["bg-neutral", "text-card"]));
         expect(classes("B")).not.toContain("bg-badge-neutral");
     });
@@ -127,5 +133,62 @@ describe("Badge, neutral subtle: its own properties (Z-081)", () => {
         render(Badge, { props: { text: "C", class: "bg-card" } });
         expect(classes("C")).toContain("bg-card");
         expect(classes("C")).not.toContain("bg-badge-neutral");
+    });
+});
+
+describe("Badge custom properties", () => {
+    const variants = ["success", "warning", "error", "info", "energetic", "accent", "brand", "neutral", "default"] as const;
+    const familyOf = (v: string) => (v === "default" ? "neutral" : v);
+
+    it.each(variants)("%s subtle: fill, text and border read their custom property in front of the family's token", (variant) => {
+        render(Badge, { props: { text: "X", variant, bordered: true } });
+        const own = screen.getByText("X").className;
+        expect(own).toContain("bg-[color:var(--zabi-badge-fill,var(");
+        expect(own).toContain("text-[color:var(--zabi-badge-text,var(");
+        expect(own).toContain("border-[color:var(--zabi-badge-border,var(");
+        if (variant !== "brand") expect(own).toContain(`--color-${familyOf(variant)}-subtle`);
+        expect(own).toContain(`--color-${variant === "brand" ? "action-primary" : familyOf(variant)}-border`);
+    });
+
+    it("neutral keeps the badge-neutral properties as the next fallback", () => {
+        render(Badge, { props: { text: "N", variant: "neutral" } });
+        expect(screen.getByText("N").className).toContain(
+            "var(--zabi-badge-fill,var(--zabi-badge-neutral-fill,var(--color-neutral-subtle)))",
+        );
+        expect(screen.getByText("N").className).toContain(
+            "var(--zabi-badge-text,var(--zabi-badge-neutral-text,var(--color-neutral-text)))",
+        );
+    });
+
+    it("the border property is read only when bordered", () => {
+        render(Badge, { props: { text: "U", variant: "success" } });
+        expect(screen.getByText("U").className).toContain("border-transparent");
+        expect(screen.getByText("U").className).not.toContain("--zabi-badge-border");
+    });
+
+    it("solid reads none of them", () => {
+        render(Badge, { props: { text: "S", variant: "success", emphasis: "solid", bordered: true, showIcon: true } });
+        const el = screen.getByText("S");
+        expect(el.className).not.toContain("--zabi-badge");
+        expect(el.querySelector("svg")!.getAttribute("class")).not.toContain("--zabi-badge-icon");
+    });
+
+    it("the built-in icon reads --zabi-badge-icon, falling back to currentColor", () => {
+        render(Badge, { props: { text: "I", showIcon: true } });
+        expect(screen.getByText("I").querySelector("svg")!.getAttribute("class")).toContain(
+            "text-[color:var(--zabi-badge-icon,currentColor)]",
+        );
+    });
+});
+
+describe("Badge inside a colour block", () => {
+    it("marks a subtle badge as a surface, so a brand block hands its text tokens back; a solid one is not", () => {
+        for (const variant of ["brand", "neutral", "success"] as const) {
+            const { container, unmount } = render(Badge, { props: { variant, text: "Label" } });
+            expect(container.querySelector("span")!.classList.contains("on-surface")).toBe(true);
+            unmount();
+        }
+        const { container } = render(Badge, { props: { variant: "brand", emphasis: "solid", text: "Label" } });
+        expect(container.querySelector("span")!.classList.contains("on-surface")).toBe(false);
     });
 });

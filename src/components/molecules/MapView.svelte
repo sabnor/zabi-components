@@ -21,6 +21,8 @@
         type MapLibreLike,
         type MapLibreMapLike,
         type MapLngLat,
+        type MapMark,
+        type MapMarkShape,
         type MapMarker,
         type MapPixel,
         type MapPoint,
@@ -112,6 +114,14 @@
         marker?: Snippet<[point: T]>;
         /** Which points get `marker`. Without it, every single point does; one it answers false for is drawn as before. */
         hasMarker?: (point: T) => boolean;
+        /**
+         * Picks the point a count marker looks like: called with the points it
+         * holds, it answers one of them (the most severe, say) and the count
+         * marker is drawn with that point's mark, at the size of a pictured
+         * mark, with the count in a small badge. Without it, or when it
+         * answers nothing, the count marker is a plain count.
+         */
+        clusterPoint?: (points: T[]) => T | undefined;
         /** The closest the fit to the markers zooms in. */
         fitMaxZoom?: number;
         /**
@@ -185,6 +195,7 @@
         clusterLabel,
         marker: markerContent,
         hasMarker,
+        clusterPoint,
         fitMaxZoom = MAP_FIT_MAX_ZOOM,
         center = $bindable<Props["center"]>(),
         zoom = $bindable<Props["zoom"]>(),
@@ -349,6 +360,39 @@
     /** Whether a single point is drawn with the app's picture in it. */
     function pictured(point: T): boolean {
         return !!markerContent && (hasMarker ? hasMarker(point) : true);
+    }
+
+    /**
+     * The corners of a non-round mark inside a `size` box whose edge is `edge`
+     * px wide. The edge sits on the box's outline, as a circle's border does.
+     * The triangle and the diamond reach a little past it so that all of them
+     * weigh about as much as the circle; the box is `overflow-visible`.
+     */
+    function markCorners(shape: MapMarkShape, size: number, edge: number): string {
+        const c = size / 2;
+        const r = c - edge / 2;
+        const f = (n: number) => Math.round(n * 100) / 100;
+        if (shape === "triangle") {
+            const reach = r * 1.3;
+            const half = reach * 0.75;
+            const wide = reach * 0.866;
+            return `${f(c)},${f(c - half)} ${f(c + wide)},${f(c + half)} ${f(c - wide)},${f(c + half)}`;
+        }
+        if (shape === "diamond") {
+            const reach = r * 1.15;
+            return `${f(c)},${f(c - reach)} ${f(c + reach)},${f(c)} ${f(c)},${f(c + reach)} ${f(c - reach)},${f(c)}`;
+        }
+        const wide = r * 0.866;
+        return [
+            [c, c - r],
+            [c + wide, c - r / 2],
+            [c + wide, c + r / 2],
+            [c, c + r],
+            [c - wide, c + r / 2],
+            [c - wide, c - r / 2],
+        ]
+            .map(([x, y]) => `${f(x)},${f(y)}`)
+            .join(" ");
     }
 
     // --- Moving ----------------------------------------------------------------
@@ -756,12 +800,91 @@
         <div bind:this={surface} class="map-surface relative size-full"></div>
     </div>
 
+    {#snippet markShape(point: T, size: 20 | 32, badge: "check" | "count" | "none", count: number)}
+        {@const mark = point.mark}
+        {@const shape = mark?.shape ?? "circle"}
+        {@const picture = size === 32 && pictured(point)}
+        {@const edge = size === 32 ? 2 : 3}
+        <!-- The mark's own colours reach the shape as custom properties; left
+             out, they fall back to what an unmarked point has. -->
+        <span
+            class={shape !== "circle"
+                ? size === 32
+                    ? "relative flex size-[32px] items-center justify-center"
+                    : "relative flex size-[20px] items-center justify-center"
+                : size === 32
+                  ? "map-marker-frame relative flex size-[32px] items-center justify-center rounded-full border-2 border-(--map-mark-line,var(--color-action-primary)) bg-(--map-mark-fill,var(--map-marker-fill,var(--color-surface-overlay))) ring-2 ring-(--color-surface-overlay)"
+                  : "map-marker-frame relative flex size-[20px] items-center justify-center rounded-full border-[3px] border-(--map-mark-line,var(--color-action-primary)) bg-(--map-mark-fill,var(--color-surface-overlay)) ring-2 ring-(--color-surface-overlay)"}
+            style:--map-mark-line={mark?.line}
+            style:--map-mark-fill={mark?.fill}
+            data-map-mark-shape={mark ? shape : undefined}
+        >
+            {#if shape !== "circle"}
+                {@const corners = markCorners(shape, size, edge)}
+                <svg
+                    class="pointer-events-none absolute inset-0 overflow-visible"
+                    width={size}
+                    height={size}
+                    viewBox="0 0 {size} {size}"
+                    aria-hidden="true"
+                    focusable="false"
+                >
+                    <polygon
+                        class="map-mark-halo"
+                        points={corners}
+                        fill="none"
+                        stroke-linejoin="round"
+                        stroke-width={edge + 4}
+                        style="stroke: var(--color-surface-overlay)"
+                    />
+                    <polygon
+                        class="map-mark-edge"
+                        points={corners}
+                        stroke-linejoin="round"
+                        stroke-width={edge}
+                        style="fill: var(--map-mark-fill, {picture
+                            ? 'var(--map-marker-fill, var(--color-surface-overlay))'
+                            : 'var(--color-surface-overlay)'}); stroke: var(--map-mark-line, var(--color-action-primary))"
+                    />
+                </svg>
+            {/if}
+            {#if picture && markerContent}
+                <span
+                    class="pointer-events-none relative flex size-[20px] items-center justify-center overflow-hidden"
+                    style:transform={shape === "triangle" ? "translateY(3px)" : undefined}
+                    aria-hidden="true"
+                    data-map-marker-content
+                >
+                    {@render markerContent(point)}
+                </span>
+            {/if}
+            {#if badge === "check"}
+                <span
+                    class={size === 32
+                        ? "map-marker-badge absolute top-[-6px] left-[18px] flex size-[16px] items-center justify-center rounded-full bg-action-primary text-action-primary ring-2 ring-(--color-surface-overlay)"
+                        : "map-marker-badge absolute top-0 left-[12px] flex size-[16px] items-center justify-center rounded-full bg-action-primary text-action-primary ring-2 ring-(--color-surface-overlay)"}
+                    data-map-marker-badge
+                >
+                    <Check size={10} strokeWidth={3} aria-hidden="true" />
+                </span>
+            {:else if badge === "count"}
+                <span
+                    class="map-marker-badge absolute top-[-6px] left-[18px] flex h-[16px] min-w-[16px] items-center justify-center rounded-full border border-action-primary bg-surface-overlay px-[3px] text-[11px] leading-none font-semibold text-headline tabular-nums ring-2 ring-(--color-surface-overlay)"
+                    data-map-marker-count
+                >
+                    {count}
+                </span>
+            {/if}
+        </span>
+    {/snippet}
+
     <!-- In px throughout: a marker does not grow with the text size. In the
          order of the list, which is the tab order. -->
     <div class="pointer-events-none absolute inset-0" data-map-markers>
         {#each markers as marker (marker.key)}
             {@const count = marker.points.length}
             {@const point = marker.points[0]}
+            {@const lookAlike = count > 1 ? clusterPoint?.(marker.points) : undefined}
             <button
                 type="button"
                 class="focus-ring pointer-events-auto absolute top-0 left-0 flex size-[44px] cursor-pointer items-center justify-center rounded-full bg-transparent"
@@ -777,7 +900,9 @@
             >
                 <!-- Each mark has a ring in the surface colour around it, so
                      its edge shows on any tile in either style. -->
-                {#if count > 1}
+                {#if lookAlike}
+                    {@render markShape(lookAlike, 32, "count", count)}
+                {:else if count > 1}
                     <!-- Beside pictured marks the count is as tall as their discs. -->
                     <span
                         class={markerContent
@@ -786,6 +911,8 @@
                     >
                         {count}
                     </span>
+                {:else if point.mark}
+                    {@render markShape(point, pictured(point) ? 32 : 20, point.checked ? "check" : "none", 1)}
                 {:else if markerContent && pictured(point)}
                     <!-- zabi's frame, the app's picture: a 32px disc, its 2px line
                          included, and the 20px box in its middle. The check is a
@@ -885,6 +1012,15 @@
         .map-marker-frame {
             border-color: CanvasText;
             background-color: Canvas;
+        }
+
+        .map-mark-halo {
+            stroke: Canvas !important;
+        }
+
+        .map-mark-edge {
+            fill: Canvas !important;
+            stroke: CanvasText !important;
         }
 
         .map-marker-badge {

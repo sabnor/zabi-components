@@ -20,6 +20,8 @@ export type {
     MapLine,
     MapLineColor,
     MapLngLat,
+    MapMark,
+    MapMarkShape,
     MapMarker,
     MapPixel,
     MapPoint,
