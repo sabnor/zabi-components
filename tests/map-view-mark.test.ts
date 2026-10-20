@@ -167,4 +167,32 @@ describe("MapView marks", () => {
         expect(buttons()[0].querySelector("span")!.className.startsWith(plain)).toBe(true);
         expect(buttons()[0].textContent!.trim()).toBe("2");
     });
+
+    it("draws a point's text under its mark, hidden from the name and off the tap", async () => {
+        await mount([at("a", 100, { text: "Hög risk", mark: { shape: "hexagon" } }), at("b", 300)]);
+        const [withText, without] = buttons();
+        const word = withText.querySelector<HTMLElement>("[data-map-marker-text]")!;
+        expect(word.textContent!.trim()).toBe("Hög risk");
+        expect(word.getAttribute("aria-hidden")).toBe("true");
+        expect(word.className).toContain("pointer-events-none");
+        expect(word.className).toContain("top-[40px]");
+        expect(word.className).toContain("text-sm");
+        expect(withText.getAttribute("aria-label")).toBe("Point a");
+        expect(without.querySelector("[data-map-marker-text]")).toBeNull();
+    });
+
+    it("gives a count marker the text of the point clusterPoint picks, and none without it", async () => {
+        const words = () => [
+            at("a", 100, { text: "Måttlig risk", mark: { shape: "triangle" } }),
+            at("b", 110, { text: "Hög risk", mark: { shape: "hexagon" } }),
+        ];
+        await mount(words(), { clusterPoint: (points: MapPoint[]) => points[1] });
+        expect(buttons()).toHaveLength(1);
+        const all = buttons()[0].querySelectorAll("[data-map-marker-text]");
+        expect(all).toHaveLength(1);
+        expect(all[0].textContent!.trim()).toBe("Hög risk");
+        cleanup();
+        await mount(words());
+        expect(buttons()[0].querySelector("[data-map-marker-text]")).toBeNull();
+    });
 });

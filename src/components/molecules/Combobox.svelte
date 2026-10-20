@@ -14,7 +14,8 @@
      */
     type Props = Omit<
         HTMLInputAttributes,
-        "class" | "size" | "value" | "type" | "id" | "name" | "placeholder" | "disabled" | "required" | "oninput" | "children" | "aria-describedby" | "aria-label"
+        // `onselect` is also a native event (text selection); ours replaces it.
+        "class" | "size" | "value" | "type" | "id" | "name" | "placeholder" | "disabled" | "required" | "oninput" | "onselect" | "children" | "aria-describedby" | "aria-label"
     > & {
         /**
          * Looks up suggestions for the text. Called `debounce` ms after the last

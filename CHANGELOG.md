@@ -12,6 +12,24 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.7] - 2026-10-20
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.6, for the Körväder gaps G9 and G10. The
+new field is optional; nothing removed or renamed. Nothing in it has been rendered in a browser: type and design
+checks, unit tests in jsdom, the package build.
+
+### Added
+
+- `MapPoint.text`: a short word drawn under a point's mark, on a plate in the surface colour, in rem so it grows with
+  the text size. It is part of the marker's own markup, so it is always above the map's `lines`, and it moves and
+  groups with the markers. A count marker shows the text of the point `clusterPoint` picks, and none without it. The
+  word is `aria-hidden` and takes no press: say it in `label` too (G10, D299).
+
+### Fixed
+
+- `Combobox`'s `onselect` is no longer typed together with the input's native `select` event, so a handler that
+  takes the chosen item type-checks. The native event never reached the input (G9, D298).
+
 ## [9.1.0-alpha.6] - 2026-10-19
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.5: smooth motion, no overshoot. Nothing

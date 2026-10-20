@@ -885,6 +885,7 @@
             {@const count = marker.points.length}
             {@const point = marker.points[0]}
             {@const lookAlike = count > 1 ? clusterPoint?.(marker.points) : undefined}
+            {@const word = count > 1 ? lookAlike?.text : point.text}
             <button
                 type="button"
                 class="focus-ring pointer-events-auto absolute top-0 left-0 flex size-[44px] cursor-pointer items-center justify-center rounded-full bg-transparent"
@@ -946,6 +947,17 @@
                     <span
                         class="size-[20px] rounded-full border-[3px] border-action-primary bg-surface-overlay ring-2 ring-(--color-surface-overlay)"
                     ></span>
+                {/if}
+                <!-- Under the mark, in rem so it grows with the text; a press on
+                     it is the map's, not the marker's. -->
+                {#if word}
+                    <span
+                        class="map-marker-text pointer-events-none absolute top-[40px] left-1/2 -translate-x-1/2 rounded-control bg-surface-overlay px-[4px] text-sm leading-tight font-semibold whitespace-nowrap text-headline shadow-sm"
+                        aria-hidden="true"
+                        data-map-marker-text
+                    >
+                        {word}
+                    </span>
                 {/if}
             </button>
         {/each}
@@ -1023,7 +1035,8 @@
             stroke: CanvasText !important;
         }
 
-        .map-marker-badge {
+        .map-marker-badge,
+        .map-marker-text {
             border: 1px solid CanvasText;
             background-color: Canvas;
             color: CanvasText;

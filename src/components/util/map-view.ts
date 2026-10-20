@@ -38,6 +38,12 @@ export interface MapPoint extends MapLngLat {
     checked?: boolean;
     /** The look of its mark: shape, edge and inside. Left out, the mark is drawn as before. */
     mark?: MapMark;
+    /**
+     * A short word drawn under the mark, on a plate in the surface colour,
+     * above the map's lines. Decoration: say it in `label` too. A count
+     * marker shows the one of the point `clusterPoint` picks.
+     */
+    text?: string;
 }
 
 /** Room kept clear at the edges of the map, in px: a sheet over its lower part is a `bottom`. */
