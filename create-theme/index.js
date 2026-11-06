@@ -32,21 +32,25 @@
  * writes it next to this file in dist/, from src/app.css and the pair list, on
  * every build. It is the default theme's token map and cannot go stale.
  *
+ * The ramp, the contrast ratio and the label rule are also exported on their
+ * own (./color.js, `zabi-components/color`), so an app can store and preview
+ * exactly what this writes. `brandRamp` hands createTheme a stored ramp; `check:
+ * false` skips the full pair check for per-request use.
+ *
+ * The ramp, the contrast ratio and the label rule are also exported on their
+ * own (./color.js, `zabi-components/color`), so an app can store and preview
+ * exactly what this writes. `brandRamp` hands createTheme a stored ramp;
+ * `check: false` skips the full pair check for per-request use.
+ *
  * Plain ESM, no build step. Runtime dependency: culori.
  */
 
 import data from './theme-data.js';
-import {
-    RAMP_STEPS,
-    TARGET_LIGHTNESS,
-    CHROMA_ENVELOPE,
-    generateRampFromSeed,
-    hexAt,
-    cieL,
-    toOklch,
-    toLab,
-} from './lib/ramp-math.js';
+import { RAMP_STEPS, TARGET_LIGHTNESS, hexAt, cieL, toOklch } from './lib/ramp-math.js';
 import { resolveTokenColor, resolveTokenPaint, compositeOver, dimBackdrop, backdropBrightness } from './lib/resolve.js';
+import { luminance, contrast } from './lib/wcag.js';
+import { parseHex, describe, MIN_USEFUL_CHROMA } from './lib/brand-ramp.js';
+import { generateBrandRamp, closestStep } from './color.js';
 
 /** The neutral ramp's 21 steps. */
 export const BASE_STEPS = [
@@ -55,16 +59,11 @@ export const BASE_STEPS = [
 ];
 
 export { RAMP_STEPS };
+export { generateBrandRamp, closestStep, getContrastRatio, readableOn, meetsAA } from './color.js';
 
 const TOOL = 'zabi-theme';
 const WHITE = '#ffffff';
 
-/** Below this OKLCH chroma a colour has no hue worth building a ramp from. */
-const MIN_USEFUL_CHROMA = 0.02;
-/** A ramp never asks for more chroma than this; sRGB cannot show it anyway. */
-const MAX_PEAK_CHROMA = 0.4;
-/** The envelope is not trusted below this when dividing a pale input by it. */
-const MIN_ENVELOPE = 0.2;
 /** A neutral stays a neutral: this is the most chroma any of its steps gets. */
 const MAX_NEUTRAL_CHROMA = 0.03;
 /** `neutralChroma` may lift the cap, but not past this: beyond it the steps stop being neutrals. */
@@ -75,22 +74,6 @@ const MIN_NEUTRAL_PROFILE = 0.25;
 const FAR_FROM_RAMP = 10;
 
 /* ---------- input ---------- */
-
-function parseHex(value, option) {
-    const shown = typeof value === 'string' ? `"${value}"` : String(value);
-    const fail = () =>
-        new TypeError(`${TOOL}: ${option} must be a hex colour such as "#0026EA" or "#06e" (got ${shown})`);
-    if (typeof value !== 'string') throw fail();
-    const text = value.trim().replace(/^#/, '');
-    if (!/^(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(text)) throw fail();
-    const full = text.length === 3 ? text.split('').map((c) => c + c).join('') : text;
-    return `#${full.toLowerCase()}`;
-}
-
-function describe(hex) {
-    const { c, h } = toOklch(hex);
-    return { hex, lightness: cieL(hex), chroma: c ?? 0, hue: Number.isFinite(h) ? h : 0 };
-}
 
 /** Notes about an input that will not give the ramp its author expects. */
 function inputWarnings(option, colour) {
@@ -175,32 +158,6 @@ function overrideMaps({ light, dark, both }, tokens, darkTokens) {
     return { root, dark: out, skip };
 }
 
-/* ---------- chromatic ramps ---------- */
-
-/** The chroma envelope at any L*, by linear interpolation between the steps. */
-function envelopeAt(lightness) {
-    const points = RAMP_STEPS.map((step) => [TARGET_LIGHTNESS[step], CHROMA_ENVELOPE[step]]).sort((a, b) => a[0] - b[0]);
-    if (lightness <= points[0][0]) return points[0][1];
-    if (lightness >= points[points.length - 1][0]) return points[points.length - 1][1];
-    for (let i = 0; i < points.length - 1; i += 1) {
-        const [l0, e0] = points[i];
-        const [l1, e1] = points[i + 1];
-        if (lightness >= l0 && lightness <= l1) return e0 + ((lightness - l0) / (l1 - l0)) * (e1 - e0);
-    }
-    return 1;
-}
-
-/**
- * The input's own chroma, read back through the envelope: a colour at the
- * lightness of step 500 is taken to be 92% of the ramp's peak, and so on. That
- * is what lets the step nearest the input come out close to the input.
- */
-function chromaticRamp(colour) {
-    const envelope = Math.max(envelopeAt(colour.lightness), MIN_ENVELOPE);
-    const peakChroma = Math.min(colour.chroma / envelope, MAX_PEAK_CHROMA);
-    return generateRampFromSeed({ hue: colour.hue, peakChroma, hueShift: 0 });
-}
-
 /* ---------- neutral ramp ---------- */
 
 function neutralRamp(colour, chromaOption) {
@@ -277,39 +234,7 @@ function inkTokens(ramp, modes) {
     return { light, dark };
 }
 
-/* ---------- closest step ---------- */
-
-function deltaE(a, b) {
-    const [x, y] = [toLab(a), toLab(b)];
-    return Math.hypot(x.l - y.l, x.a - y.a, x.b - y.b);
-}
-
-function closestStep(hex, ramp) {
-    let best = null;
-    for (const [step, value] of Object.entries(ramp)) {
-        const distance = deltaE(hex, value);
-        if (!best || distance < best.deltaE) best = { step: Number(step), hex: value, deltaE: distance };
-    }
-    return { ...best, deltaE: Math.round(best.deltaE * 10) / 10, exact: best.hex === hex };
-}
-
 /* ---------- contrast ---------- */
-
-function channel(c) {
-    const v = c / 255;
-    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-}
-
-function luminance(hex) {
-    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-    return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
-}
-
-/** WCAG contrast ratio, rounded to two decimals as the library's guard does. */
-function contrast(a, b) {
-    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-    return Math.round(((hi + 0.05) / (lo + 0.05)) * 100) / 100;
-}
 
 /**
  * What the page computes once the generated file is imported after the theme
@@ -538,17 +463,31 @@ const PIN_ROLES = {
     },
 };
 
-/** Which of the two colours `pin` asks for. */
+const PIN_DARK_POLICIES = ['auto', 'force', 'ramp'];
+
+/**
+ * Which of the two colours `pin` asks for, and what dark does with them:
+ * `auto` (the default) takes the colour when no guarded pair fails because of
+ * it, `force` takes it whatever fails, `ramp` never takes it.
+ */
 function readPin(pin) {
-    if (pin === undefined || pin === null || pin === false) return { brand: false, accent: false };
-    if (pin === true) return { brand: true, accent: false };
-    if (typeof pin !== 'object') {
+    if (pin === undefined || pin === null || pin === false) return { brand: false, accent: false, dark: 'auto' };
+    if (pin === true) return { brand: true, accent: false, dark: 'auto' };
+    if (typeof pin !== 'object' || Array.isArray(pin)) {
         throw new TypeError(`${TOOL}: pin must be true, false or { brand, accent } (got ${JSON.stringify(pin)})`);
     }
     for (const key of Object.keys(pin)) {
-        if (key !== 'brand' && key !== 'accent') throw new TypeError(`${TOOL}: pin has no "${key}"; it takes brand and accent`);
+        if (key !== 'brand' && key !== 'accent' && key !== 'dark') {
+            throw new TypeError(`${TOOL}: pin has no "${key}"; it takes brand, accent and dark`);
+        }
     }
-    return { brand: pin.brand === true, accent: pin.accent === true };
+    const dark = pin.dark ?? 'auto';
+    if (!PIN_DARK_POLICIES.includes(dark)) {
+        throw new TypeError(
+            `${TOOL}: pin.dark must be "auto", "force" or "ramp" (got ${typeof dark === 'string' ? `"${dark}"` : JSON.stringify(dark)})`,
+        );
+    }
+    return { brand: pin.brand === true, accent: pin.accent === true, dark };
 }
 
 const failing = (warnings, mode) => new Set(warnings.filter((w) => w.mode === mode).map((w) => w.pair));
@@ -564,8 +503,12 @@ const failing = (warnings, mode) => new Set(warnings.filter((w) => w.mode === mo
  * text on a white page is about 2:1 against a dark page, where a fill needs
  * 3:1, and no label makes that a button. So dark takes the colour only when nothing guarded fails with it,
  * and otherwise keeps what it has without `pin`: the mirrored ramp step.
+ * `darkPolicy` changes that: 'force' takes the colour in dark all the same, and
+ * lists what fails with it in `report.dark.failed` (the pairs are warnings too);
+ * 'ramp' never takes it. The roles that follow the fill keep their rule in
+ * every policy: only where light followed, and only if no worse than the fill.
  */
-function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs, skip, darkPrimary = 'brand') {
+function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs, skip, darkPrimary = 'brand', darkPolicy = 'auto') {
     const roles = PIN_ROLES[name];
     const keep = (group) => Object.fromEntries(Object.entries(group).filter(([role]) => !skip.has(role)));
     // What dark has for a role without the pin: what the file already says for
@@ -635,7 +578,7 @@ function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs,
     const darkBest = bestFill('dark', (group) => attempt('dark', light, { ...restated(), ...group }));
     const darkFill = keep(roles.fill(colour.hex, darkBest.states));
     let darkCurrent = darkBest.result;
-    if (noWorse(darkCurrent.failures, unpinned.failures)) {
+    if (darkPolicy !== 'ramp' && (darkPolicy === 'force' || noWorse(darkCurrent.failures, unpinned.failures))) {
         Object.assign(dark, darkFill);
         report.dark.pinned = true;
         report.dark.states = darkBest.direction;
@@ -652,10 +595,16 @@ function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs,
                 report.dark.onRamp.push(label);
             }
         }
+        if (darkPolicy === 'force') {
+            const failed = [...darkCurrent.failures].filter((pair) => !unpinned.failures.has(pair));
+            report.dark.policy = 'force';
+            if (failed.length) report.dark.failed = failed;
+        }
     } else {
         darkCurrent = unpinned;
         report.dark.onRamp.push(...Object.keys(roles.follow));
-        report.dark.failed = [...darkBest.result.failures].filter((pair) => !unpinned.failures.has(pair));
+        if (darkPolicy === 'ramp') report.dark.policy = 'ramp';
+        else report.dark.failed = [...darkBest.result.failures].filter((pair) => !unpinned.failures.has(pair));
     }
     knobs[darkCurrent.knob] = darkCurrent.value;
 
@@ -806,7 +755,7 @@ function rampTokens(name, ramp, steps) {
     return Object.fromEntries(steps.map((step) => [`--zabi-${name}-${step}`, ramp[step]]));
 }
 
-function render({ inputs, closest, tokens, darkTokens, pinned, neutralChroma, darkPrimary, contrastWarnings, checked }) {
+function render({ inputs, closest, tokens, darkTokens, pinned, neutralChroma, darkPrimary, contrastWarnings, checked, skippedCheck, givenRamp }) {
     const describeInput = (name) =>
         inputs[name]
             ? `${inputs[name]}  closest step ${closest[name].step} (${closest[name].hex}, ` +
@@ -821,6 +770,7 @@ function render({ inputs, closest, tokens, darkTokens, pinned, neutralChroma, da
         ` *   brand    ${describeInput('brand')}`,
         ` *   accent   ${describeInput('accent')}`,
         ` *   neutral  ${describeInput('neutral')}`,
+        ...(givenRamp ? [' *   brand ramp: the one you gave, used as it is (not built from the colour).'] : []),
         ...(darkPrimary === 'mirror'
             ? [
                   ' *   dark primary: mirror. The primary and danger fills use the mirrored (pale) steps in',
@@ -843,7 +793,9 @@ function render({ inputs, closest, tokens, darkTokens, pinned, neutralChroma, da
         ' * Import after zabi-components/theme-only and zabi-components/theme-dark-only.',
         ' * One file covers light and dark.',
         ' *',
-        contrastWarnings.length === 0
+        skippedCheck
+            ? ' * Contrast: the full role-pair check was skipped (check: false). Run it where it can take the time.'
+            : contrastWarnings.length === 0
             ? ` * Contrast: all ${checked} role pairs pass WCAG AA in light and dark.`
             : ` * Contrast: ${contrastWarnings.length} of ${checked} role pairs are below WCAG AA:`,
         ...contrastWarnings.map((w) => ` *   ${w.message}`),
@@ -881,9 +833,19 @@ function pinnedNotes(pinned) {
             lines.push(` *   light, left on the ramp because the colour fails a guarded pair there: ${list(report.light.onRamp)}`);
         }
         if (report.dark.pinned) {
-            lines.push(` *   dark: the same colour, since no guarded pair fails because of it; hover and pressed go ${report.dark.states}`);
+            lines.push(
+                report.dark.policy === 'force'
+                    ? ` *   dark: the same colour, forced (pin dark: "force"); hover and pressed go ${report.dark.states}`
+                    : ` *   dark: the same colour, since no guarded pair fails because of it; hover and pressed go ${report.dark.states}`,
+            );
+            if (report.dark.policy === 'force' && report.dark.failed) {
+                lines.push(' *   dark, these fail with it and are reported below:');
+                for (const pair of report.dark.failed) lines.push(` *     - ${pair}`);
+            }
             if (report.dark.followed.length) lines.push(` *   dark, also this colour: ${list(report.dark.followed)}`);
             if (report.dark.onRamp.length) lines.push(` *   dark, left on the ramp: ${list(report.dark.onRamp)}`);
+        } else if (report.dark.policy === 'ramp') {
+            lines.push(' *   dark: NOT pinned (pin dark: "ramp"). Dark keeps the ramp step it has without pin.');
         } else {
             lines.push(' *   dark: NOT pinned. The colour fails there, so dark keeps the ramp step it has');
             lines.push(' *   without pin. With the colour, these would fail:');
@@ -895,17 +857,55 @@ function pinnedNotes(pinned) {
 }
 
 /**
- * @param {{ brand: string, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string> | { light?: Record<string, string>, dark?: Record<string, string>, both?: Record<string, string> } & Record<string, unknown>, pin?: boolean | { brand?: boolean, accent?: boolean }, darkPrimary?: 'brand' | 'mirror' }} options
+ * A stored brand ramp: every step 50 … 950 as a hex colour, returned as
+ * lowercase `#rrggbb`. A missing step or an unknown key is an error.
+ */
+function readBrandRamp(ramp) {
+    if (ramp === null || typeof ramp !== 'object' || Array.isArray(ramp)) {
+        throw new TypeError(`${TOOL}: brandRamp must be an object of steps (50 … 950) to hex colours`);
+    }
+    for (const key of Object.keys(ramp)) {
+        if (!RAMP_STEPS.includes(Number(key))) throw new TypeError(`${TOOL}: brandRamp has no step "${key}"; it takes ${RAMP_STEPS.join(', ')}`);
+    }
+    const out = {};
+    for (const step of RAMP_STEPS) {
+        if (ramp[step] === undefined || ramp[step] === null) {
+            throw new TypeError(`${TOOL}: brandRamp needs every step from 50 to 950; step ${step} is missing`);
+        }
+        out[step] = parseHex(ramp[step], `brandRamp[${step}]`);
+    }
+    return out;
+}
+
+/**
+ * `brandRamp` is used as given for `--zabi-brand-*`; `brand` is then optional
+ * and, left out, is the ramp's step 600 (what `pin` pins and what `closest`
+ * measures). Label choice, pinning and the pair check all run against the ramp.
+ *
+ * `check: false` skips only the final check of every guarded pair (about a
+ * fifth of a plain brand's time; memoising saves the rest). The checks the generator needs to decide something,
+ * the label colours, the pin and the control veils, still run, so a pinned or
+ * overridden theme costs more than a plain one. `warnings` then holds input
+ * notes only, and the header says the check was skipped. Everything else is
+ * what it is with the check on.
+ *
+ * @param {{ brand?: string, brandRamp?: Record<number, string>, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string> | { light?: Record<string, string>, dark?: Record<string, string>, both?: Record<string, string> } & Record<string, unknown>, pin?: boolean | { brand?: boolean, accent?: boolean, dark?: 'auto' | 'force' | 'ramp' }, darkPrimary?: 'brand' | 'mirror', check?: boolean }} options
  */
 export function createTheme(options) {
     if (options === null || typeof options !== 'object') {
         throw new TypeError(`${TOOL}: createTheme needs an options object with at least { brand }`);
     }
-    if (options.brand === undefined || options.brand === null) {
+    const hasRamp = options.brandRamp !== undefined && options.brandRamp !== null;
+    if ((options.brand === undefined || options.brand === null) && !hasRamp) {
         throw new TypeError(`${TOOL}: brand is required, for example { brand: "#0026EA" }`);
     }
+    if (options.check !== undefined && typeof options.check !== 'boolean') {
+        throw new TypeError(`${TOOL}: check must be true or false (got ${JSON.stringify(options.check)})`);
+    }
+    const checkPairsAtEnd = options.check !== false;
     const modes = readOverrides(options.overrides ?? {});
-    const inputs = { brand: parseHex(options.brand, 'brand') };
+    const brandRamp = hasRamp ? readBrandRamp(options.brandRamp) : null;
+    const inputs = { brand: options.brand === undefined || options.brand === null ? brandRamp[600] : parseHex(options.brand, 'brand') };
     if (options.accent !== undefined && options.accent !== null) inputs.accent = parseHex(options.accent, 'accent');
     if (options.neutral !== undefined && options.neutral !== null) inputs.neutral = parseHex(options.neutral, 'neutral');
 
@@ -938,10 +938,13 @@ export function createTheme(options) {
         if (!inputs[name]) continue;
         const colour = describe(inputs[name]);
         described[name] = colour;
-        warnings.push(...inputWarnings(name, colour));
-        const ramp = chromaticRamp(colour);
+        const given = name === 'brand' && brandRamp !== null;
+        // A ramp the app gave is not built from the colour, so notes about what
+        // the colour would build do not apply.
+        if (!given) warnings.push(...inputWarnings(name, colour));
+        const ramp = given ? brandRamp : generateBrandRamp(inputs[name]);
         closest[name] = closestStep(inputs[name], ramp);
-        if (colour.chroma >= MIN_USEFUL_CHROMA && closest[name].deltaE > FAR_FROM_RAMP) {
+        if (!given && colour.chroma >= MIN_USEFUL_CHROMA && closest[name].deltaE > FAR_FROM_RAMP) {
             // Typically a very bright colour: the curve fixes each step's
             // lightness, and sRGB has no such chroma at that lightness.
             warnings.push({
@@ -1002,7 +1005,7 @@ export function createTheme(options) {
     for (const name of ['brand', 'accent']) {
         if (!pin[name]) continue;
         const own = overrideMaps(modes, tokens, darkTokens);
-        const result = pinColour(name, described[name], tokens, { ...darkTokens, ...own.dark }, own.root, extraPairs, own.skip, darkPrimary);
+        const result = pinColour(name, described[name], tokens, { ...darkTokens, ...own.dark }, own.root, extraPairs, own.skip, darkPrimary, pin.dark);
         tokens = { ...tokens, ...result.knobs, ...result.light };
         darkTokens = { ...darkTokens, ...result.dark };
         pinned[name] = result.report;
@@ -1016,10 +1019,22 @@ export function createTheme(options) {
     ({ tokens, darkTokens } = settleProgressTrackEdge(tokens, darkTokens, modes));
     ({ tokens, darkTokens } = settleControlGradients(tokens, darkTokens, modes));
 
-    const { warnings: contrastWarnings, checked } = checkPairs(tokens, darkTokens, extraPairs);
+    const { warnings: contrastWarnings, checked } = checkPairsAtEnd ? checkPairs(tokens, darkTokens, extraPairs) : { warnings: [], checked: 0 };
     warnings.push(...contrastWarnings);
 
-    const css = render({ inputs, closest, tokens, darkTokens, pinned: pinning ? pinned : null, neutralChroma, darkPrimary, contrastWarnings, checked });
+    const css = render({
+        inputs,
+        closest,
+        tokens,
+        darkTokens,
+        pinned: pinning ? pinned : null,
+        neutralChroma,
+        darkPrimary,
+        contrastWarnings,
+        checked,
+        skippedCheck: !checkPairsAtEnd,
+        givenRamp: brandRamp !== null,
+    });
     const hasDark = pinning || neutralChroma !== undefined || Object.keys(darkTokens).length > 0;
     return {
         css,

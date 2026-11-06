@@ -31,6 +31,8 @@ const { createTheme, default: defaultExport, RAMP_STEPS, BASE_STEPS } = await im
   pathToFileURL(path.join(distDir, 'index.js')).href
 );
 
+const color = await import(pathToFileURL(path.join(distDir, 'color.js')).href);
+
 /** The default theme, straight from the stylesheet (not from the generator's copy). */
 const defaults = readThemeMaps(fs.readFileSync(path.join(projectRoot, 'src', 'app.css'), 'utf8'));
 
@@ -1535,4 +1537,182 @@ test('in dark the filters carry the brightness and every fallback gives none and
     assert.match(block, /--color-material-thin: var\(--color-surface-chrome\);/);
     assert.match(block, /--color-material-thick: var\(--color-surface-overlay\);/);
   }
+});
+
+/* ---------- 9.1.0-alpha.9: colour helpers, check, brandRamp, pin.dark ---------- */
+
+const brandTokens = (tokens) => Object.fromEntries(RAMP_STEPS.map((step) => [step, tokens[`--zabi-brand-${step}`]]));
+
+test('the colour helpers are a subpath and are also exported by name from create-theme', () => {
+  const names = ['generateBrandRamp', 'closestStep', 'getContrastRatio', 'readableOn', 'meetsAA'];
+  assert.deepEqual(Object.keys(color).sort(), [...names].sort());
+  const index = { generateBrandRamp: null, closestStep: null, getContrastRatio: null, readableOn: null, meetsAA: null };
+  return import(pathToFileURL(path.join(distDir, 'index.js')).href).then((mod) => {
+    for (const name of Object.keys(index)) assert.equal(mod[name], color[name], `${name} is not the same function`);
+  });
+});
+
+test('generateBrandRamp is the ramp createTheme writes for the brand', () => {
+  for (const brand of ['#0026EA', '#C17B00', '#128978', '#06e']) {
+    const ramp = color.generateBrandRamp(brand);
+    assert.deepEqual(ramp, brandTokens(createTheme({ brand }).tokens), brand);
+    assert.deepEqual(Object.keys(ramp).map(Number), RAMP_STEPS);
+    for (const hex of Object.values(ramp)) assert.match(hex, /^#[0-9a-f]{6}$/);
+  }
+  assert.throws(() => color.generateBrandRamp('blue'), TypeError);
+});
+
+test('closestStep is what createTheme reports as closest', () => {
+  for (const brand of BRANDS) {
+    assert.deepEqual(color.closestStep(brand.toLowerCase(), color.generateBrandRamp(brand)), createTheme({ brand }).closest.brand);
+  }
+});
+
+test('getContrastRatio is WCAG 2.x to two decimals', () => {
+  assert.equal(color.getContrastRatio('#ffffff', '#000000'), 21);
+  assert.equal(color.getContrastRatio('#000', '#fff'), 21);
+  assert.equal(color.getContrastRatio('#777777', '#777777'), 1);
+  assert.equal(color.getContrastRatio('#ffffff', '#128978'), 4.31);
+  assert.throws(() => color.getContrastRatio('#fff', 'nope'), TypeError);
+});
+
+test('readableOn gives white when it reaches 4.5:1, otherwise the dark end', () => {
+  assert.equal(color.readableOn('#0026ea'), '#ffffff');
+  assert.equal(color.readableOn('#128978'), '#09090b'); // white is 4.31:1 here
+  assert.equal(color.readableOn('#f5c400'), '#09090b');
+  assert.equal(color.readableOn('#f5c400', '#222222'), '#222222');
+  // The same choice createTheme makes for a plain brand fill.
+  for (const brand of ['#0026EA', '#C17B00']) {
+    const { tokens } = createTheme({ brand });
+    const fill = tokens['--zabi-brand-600'];
+    const label = color.readableOn(fill, tokens['--zabi-brand-950']);
+    assert.equal(label === '#ffffff', tokens['--zabi-on-brand'] === '#ffffff', brand);
+  }
+});
+
+test('meetsAA: 4.5 for text, 3 for ui', () => {
+  assert.equal(color.meetsAA(4.5, 'text'), true);
+  assert.equal(color.meetsAA(4.49, 'text'), false);
+  assert.equal(color.meetsAA(3, 'ui'), true);
+  assert.equal(color.meetsAA(2.99, 'ui'), false);
+  assert.throws(() => color.meetsAA(4.5, 'large'), TypeError);
+});
+
+test('the new options change nothing when they are not given: output is byte-identical to 9.1.0-alpha.8', () => {
+  // Hashes of JSON.stringify(createTheme(options)) taken before the options existed.
+  const sha = (value) => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
+  const cases = [
+    [{ brand: '#0026EA' }, 'ce23fc44c70f97be'],
+    [{ brand: '#C17B00', accent: '#0a8f6a', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true, accent: true } }, '84c3146fa8685e0b'],
+    [{ brand: '#128978', pin: true }, '3fa1116b7dbd083c'],
+    [{ brand: '#0026EA', darkPrimary: 'mirror', overrides: { light: { '--color-link': '#123456' } } }, '572d71d65ad2cfa5'],
+  ];
+  for (const [options, expected] of cases) assert.equal(sha(createTheme(options)), expected, JSON.stringify(options));
+  // Spelling the defaults out is the same as leaving them out.
+  assert.deepEqual(createTheme({ brand: '#128978', pin: { brand: true, dark: 'auto' }, check: true }), createTheme({ brand: '#128978', pin: true }));
+});
+
+test('check: false gives the same tokens and css body, with input warnings only', () => {
+  const weak = { ...color.generateBrandRamp('#0026EA'), 600: '#d9e4ff' };
+  for (const options of [{ brand: '#0026EA' }, { brand: '#C17B00', accent: '#0a8f6a' }, { brand: '#ffffff' }, { brandRamp: weak }]) {
+    const on = createTheme(options);
+    const off = createTheme({ ...options, check: false });
+    assert.deepEqual(off.tokens, on.tokens);
+    assert.deepEqual(off.closest, on.closest);
+    assert.deepEqual(off.warnings, on.warnings.filter((w) => w.type === 'input'));
+    const body = (css) => css.slice(css.indexOf(':root {'));
+    assert.equal(body(off.css), body(on.css));
+    assert.match(off.css, /Contrast: the full role-pair check was skipped \(check: false\)/);
+    assert.doesNotMatch(on.css, /skipped/);
+  }
+  assert.ok(contrastWarnings(createTheme({ brandRamp: weak })).length > 0, 'the control needs a theme that does warn');
+  assert.ok(createTheme({ brand: '#ffffff' }).warnings.some((w) => w.type === 'input'), 'and one that has an input note');
+  assert.throws(() => createTheme({ brand: '#0026EA', check: 'no' }), TypeError);
+});
+
+test('brandRamp is written as given, and brand becomes optional', () => {
+  const ramp = color.generateBrandRamp('#128978');
+  const stored = { ...ramp, 600: '#0b6b5d' };
+  const result = createTheme({ brandRamp: stored });
+  assert.deepEqual(brandTokens(result.tokens), stored);
+  assert.equal(result.closest.brand.step, 600);
+  assert.equal(result.closest.brand.exact, true);
+  assert.equal(result.warnings.filter((w) => w.type === 'input').length, 0);
+  // The generated ramp handed back in is the theme brand alone gives.
+  assert.deepEqual(createTheme({ brandRamp: ramp, brand: '#128978' }).tokens, createTheme({ brand: '#128978' }).tokens);
+  // Hex forms are normalised.
+  assert.equal(createTheme({ brandRamp: { ...ramp, 50: '#ABC' } }).tokens['--zabi-brand-50'], '#aabbcc');
+});
+
+test('brandRamp: the label, the pin and the check run against it', () => {
+  // A pale ramp: white fails on step 600, so the label is the dark end and the check agrees.
+  const pale = { ...color.generateBrandRamp('#f5c400'), 600: '#f5c400' };
+  const result = createTheme({ brandRamp: pale });
+  assert.equal(result.tokens['--zabi-on-brand'], 'var(--zabi-brand-950)');
+  // A ramp whose 600 fails against the page: reported, not hidden.
+  const weak = { ...color.generateBrandRamp('#0026EA'), 600: '#d9e4ff' };
+  assert.ok(contrastWarnings(createTheme({ brandRamp: weak })).length > 0);
+  // Pin defaults to the ramp's step 600; an explicit brand is pinned instead.
+  const ramp = color.generateBrandRamp('#0026EA');
+  assert.equal(createTheme({ brandRamp: ramp, pin: true }).pinned.brand.hex, ramp[600]);
+  const pinned = createTheme({ brandRamp: ramp, brand: '#1a3fd0', pin: true });
+  assert.equal(pinned.pinned.brand.hex, '#1a3fd0');
+  assert.equal(pinned.tokens['--color-action-primary'], '#1a3fd0');
+});
+
+test('brandRamp needs every step', () => {
+  const ramp = color.generateBrandRamp('#0026EA');
+  for (const step of RAMP_STEPS) {
+    const { [step]: _omitted, ...rest } = ramp;
+    assert.throws(() => createTheme({ brandRamp: rest }), new RegExp(`step ${step} is missing`));
+  }
+  assert.throws(() => createTheme({ brandRamp: { ...ramp, 700: 'blue' } }), /brandRamp\[700\] must be a hex colour/);
+  assert.throws(() => createTheme({ brandRamp: { ...ramp, 775: '#000000' } }), /no step "775"/);
+  assert.throws(() => createTheme({ brandRamp: [] }), TypeError);
+  assert.throws(() => createTheme({}), /brand is required/);
+});
+
+test('pin.dark: auto leaves a near-miss brand unpinned in dark and says why', () => {
+  const { pinned, darkTokens } = createTheme({ brand: '#128978', pin: { brand: true } });
+  assert.equal(pinned.brand.dark.pinned, false);
+  assert.ok(pinned.brand.dark.failed.length > 0);
+  assert.equal(darkTokens['--color-action-primary'], 'var(--zabi-brand-600)');
+});
+
+test("pin.dark: 'force' pins dark and reports the failures", () => {
+  const result = createTheme({ brand: '#128978', pin: { brand: true, dark: 'force' } });
+  const { dark } = result.pinned.brand;
+  assert.equal(dark.pinned, true);
+  assert.equal(dark.policy, 'force');
+  assert.ok(dark.failed.length > 0);
+  assert.equal(result.darkTokens['--color-action-primary'], '#128978');
+  const inDark = new Set(result.warnings.filter((w) => w.mode === 'dark').map((w) => w.pair));
+  for (const pair of dark.failed) assert.ok(inDark.has(pair), `${pair} is not in warnings`);
+  assert.match(result.css, /forced \(pin dark: "force"\)/);
+  // A brand that passes in dark is pinned the same under auto and force, with nothing to report.
+  const clean = createTheme({ brand: '#C17B00', pin: { brand: true, dark: 'force' } }).pinned.brand.dark;
+  assert.equal(clean.pinned, createTheme({ brand: '#C17B00', pin: true }).pinned.brand.dark.pinned);
+});
+
+test("pin.dark: 'ramp' never takes the pinned colour in dark", () => {
+  const result = createTheme({ brand: '#0026EA', pin: { brand: true, dark: 'ramp' } });
+  assert.equal(result.pinned.brand.dark.pinned, false);
+  assert.equal(result.pinned.brand.dark.policy, 'ramp');
+  assert.notEqual(result.darkTokens['--color-action-primary'], '#0026ea');
+  assert.equal(result.tokens['--color-action-primary'], '#0026ea');
+  assert.match(result.css, /pin dark: "ramp"/);
+});
+
+test('pin takes dark as a key and still rejects unknown keys and values', () => {
+  assert.throws(() => createTheme({ brand: '#0026EA', pin: { brand: true, darkk: 'force' } }), /pin has no "darkk"/);
+  assert.throws(() => createTheme({ brand: '#0026EA', pin: { brand: true, dark: 'always' } }), /pin\.dark must be "auto", "force" or "ramp"/);
+});
+
+test('the bin takes --pin-dark', () => {
+  const forced = run('--brand', '#128978', '--pin', '--pin-dark', 'force');
+  assert.equal(forced.status, 0);
+  assert.match(forced.stdout, /forced \(pin dark: "force"\)/);
+  assert.match(forced.stderr, /forced, in dark/);
+  assert.equal(run('--brand', '#128978', '--pin-dark', 'force').status, 2);
+  assert.equal(run('--brand', '#128978', '--pin', '--pin-dark', 'sometimes').status, 2);
 });

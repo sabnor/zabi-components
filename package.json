@@ -52,6 +52,10 @@
       "types": "./dist/create-theme/index.d.ts",
       "import": "./dist/create-theme/index.js"
     },
+    "./color": {
+      "types": "./dist/create-theme/color.d.ts",
+      "import": "./dist/create-theme/color.js"
+    },
     "./dist/zabi-components.css": "./dist/zabi-components.css",
     "./dist/zabi-components-colors.css": "./dist/zabi-components-colors.css",
     "./dist/zabi-components-theme.css": "./dist/zabi-components-theme.css",
@@ -171,7 +175,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@lucide/svelte": "^0.544.0",
+    "@lucide/svelte": ">=0.544.0 <1.0.0",
     "culori": "^4.0.2",
     "tailwind-merge": "^3.7.0"
   },

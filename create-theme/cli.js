@@ -17,7 +17,7 @@ import { createTheme } from './index.js';
 const HELP = `zabi-theme: generate brand tokens for zabi-components
 
 Usage
-  zabi-theme --brand <hex> [--pin] [--accent <hex>] [--pin-accent] [--neutral <hex>]
+  zabi-theme --brand <hex> [--pin] [--pin-dark auto|force|ramp] [--accent <hex>] [--pin-accent] [--neutral <hex>]
              [--neutral-chroma <n>] [--dark-primary brand|mirror]
              [--out <file>] [--strict] [--set <token>=<value> ...]
              [--set-light <token>=<value> ...] [--set-dark <token>=<value> ...]
@@ -26,6 +26,11 @@ Options
   --brand <hex>     Brand colour (required). Builds --zabi-brand-50 … 950.
   --pin             Put the exact brand colour on primary buttons (see below).
   --accent <hex>    Second brand colour. Builds --zabi-accent-50 … 950.
+  --pin-dark <auto|force|ramp>
+                    What dark does with a pinned colour. auto (default): takes it when
+                    no guarded pair fails because of it. force: takes it whatever fails;
+                    the failures are reported. ramp: never takes it. Needs --pin or
+                    --pin-accent.
   --pin-accent      The same for the solid accent fill. Needs --accent.
   --neutral <hex>   Tints the 21-step neutral ramp, --zabi-base-50 … 950.
   --neutral-chroma <n>
@@ -66,7 +71,7 @@ Import the file after the theme:
   @import "./brand.generated.css";
 `;
 
-const VALUE_OPTIONS = ['brand', 'accent', 'neutral', 'neutral-chroma', 'dark-primary', 'out'];
+const VALUE_OPTIONS = ['brand', 'accent', 'neutral', 'neutral-chroma', 'dark-primary', 'pin-dark', 'out'];
 const FLAG_OPTIONS = ['strict', 'help', 'pin', 'pin-accent'];
 
 function usageError(message) {
@@ -118,6 +123,7 @@ if (options.help) {
     process.exit(0);
 }
 if (!options.brand) usageError('--brand is required, for example --brand "#0026EA"');
+if (options['pin-dark'] !== undefined && !options.pin && !options['pin-accent']) usageError('--pin-dark needs --pin or --pin-accent');
 
 let result;
 try {
@@ -131,7 +137,9 @@ try {
         // `--set` alone is the flat map, as it always was; a mode flag makes it { light, dark, both }.
         overrides: options.modes && (options.modes.light || options.modes.dark) ? options.modes : options.modes?.both,
         // Left out when not asked for, so the options are what they always were.
-        ...(options.pin || options['pin-accent'] ? { pin: { brand: !!options.pin, accent: !!options['pin-accent'] } } : {}),
+        ...(options.pin || options['pin-accent']
+            ? { pin: { brand: !!options.pin, accent: !!options['pin-accent'], ...(options['pin-dark'] !== undefined ? { dark: options['pin-dark'] } : {}) } }
+            : {}),
     });
 } catch (error) {
     if (error instanceof TypeError) usageError(error.message.replace(/^zabi-theme: /, ''));
@@ -160,7 +168,13 @@ const closest = Object.entries(result.closest)
 for (const [name, report] of Object.entries(result.pinned ?? {})) {
     process.stderr.write(
         `zabi-theme: ${name} ${report.hex} is pinned in light` +
-            (report.dark.pinned ? ' and in dark.\n' : '; dark keeps the ramp, because the colour fails there.\n'),
+            (report.dark.pinned
+                ? report.dark.failed?.length
+                    ? ' and, forced, in dark; these fail there: ' + report.dark.failed.join(', ') + '.\n'
+                    : ' and in dark.\n'
+                : report.dark.policy === 'ramp'
+                  ? '; dark keeps the ramp (--pin-dark ramp).\n'
+                  : '; dark keeps the ramp, because the colour fails there.\n'),
     );
 }
 process.stderr.write(

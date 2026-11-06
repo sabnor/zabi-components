@@ -10,12 +10,24 @@ export type TokenMap = Record<string, string>;
  */
 export type Overrides = TokenMap | ({ light?: TokenMap; dark?: TokenMap; both?: TokenMap } & { [token: `--${string}`]: string });
 
-export interface CreateThemeOptions {
+/** A brand ramp: every step as a hex colour. All eleven are required. */
+export type BrandRampInput = Record<50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950, HexColor>;
+
+/** The options besides the brand: see CreateThemeOptions. */
+export interface CreateThemeBaseOptions {
     /**
-     * The brand colour. Supplies hue and chroma for `--zabi-brand-50 … 950`:
-     * primary actions, focus rings, links and brand tints.
+     * The check of every guarded role pair at the end. `true` (the default) runs
+     * it and fills `warnings` and the header's contrast line. `false` skips only
+     * that final check of every pair (a fifth or so of a plain brand's time,
+     * measured at 16 ms against 13 ms): `warnings` then holds input notes only and
+     * the header says the check was skipped. The checks the generator needs to
+     * decide something still run (the label colours, the pin, the control
+     * veils), so a pinned or overridden theme costs more than a plain one. The
+     * tokens and the CSS body are the same either way. For per-request use,
+     * memoise on the options (the saving is the whole call) and run the check
+     * in CI.
      */
-    brand: HexColor;
+    check?: boolean;
     /** Second brand colour, for `--zabi-accent-50 … 950`. Omitted: the library's citron. */
     accent?: HexColor;
     /**
@@ -88,7 +100,11 @@ export interface CreateThemeOptions {
      * and so every tint and border, is unchanged.
      *
      * Dark takes the colour only if nothing guarded fails with it; otherwise
-     * dark keeps the mirrored ramp step, as it does without `pin`.
+     * dark keeps the mirrored ramp step, as it does without `pin`. `dark`
+     * changes that: `'auto'` (the default) is that rule, `'force'` takes the
+     * colour in dark whatever fails (the failures are in `warnings` and in
+     * `pinned.<name>.dark.failed`), `'ramp'` never takes it. Read
+     * `pinned.<name>.dark.pinned` and `.failed` to see what happened.
      *
      * A pair that fails with the pinned colour is reported in `warnings`. The
      * colour is never moved to make it pass.
@@ -96,8 +112,37 @@ export interface CreateThemeOptions {
      * `{ accent: true }` does the same for `--color-accent` and needs `accent`.
      * Omitted or `false`: the output is exactly what it is without the option.
      */
-    pin?: boolean | { brand?: boolean; accent?: boolean };
+    pin?: boolean | { brand?: boolean; accent?: boolean; dark?: 'auto' | 'force' | 'ramp' };
 }
+
+/**
+ * The brand is given as a colour, as a ramp, or as both. With `brandRamp` the
+ * colour is optional (it defaults to the ramp's step 600).
+ */
+export type CreateThemeOptions = CreateThemeBaseOptions &
+    (
+        | {
+              /**
+               * The brand colour. Supplies hue and chroma for `--zabi-brand-50 … 950`:
+               * primary actions, focus rings, links and brand tints. Required unless
+               * `brandRamp` is given.
+               */
+              brand: HexColor;
+              /** A ramp to use as given, instead of building one from `brand`. */
+              brandRamp?: BrandRampInput;
+          }
+        | {
+              /** With `brandRamp`: what `pin` pins and `closest` measures. Defaults to the ramp's step 600. */
+              brand?: HexColor;
+              /**
+               * A stored brand ramp, all eleven steps, written as `--zabi-brand-50 … 950`
+               * exactly as given (any hex form; written as lowercase `#rrggbb`). The label
+               * colour, `pin` and the contrast check run against it. A missing step is a
+               * TypeError. Get the library's own ramp for a colour from `generateBrandRamp`.
+               */
+              brandRamp: BrandRampInput;
+          }
+    );
 
 /** A role pair below WCAG AA with the generated ramps in place. */
 export interface ContrastWarning {
@@ -128,12 +173,20 @@ export interface PinReport {
         states: 'darker' | 'lighter';
     };
     dark: {
-        /** False when the colour fails in dark and dark keeps the ramp. */
+        /**
+         * False when dark keeps the ramp: the colour fails there (`pin.dark: 'auto'`) or
+         * `pin.dark` is `'ramp'`. With `'force'` it is true even when pairs fail.
+         */
         pinned: boolean;
+        /** Set for `pin.dark: 'force'` and `'ramp'`; absent for `'auto'`. */
+        policy?: 'force' | 'ramp';
         followed: string[];
         onRamp: string[];
         states?: 'darker' | 'lighter';
-        /** When not pinned: the pairs that would fail with the colour. */
+        /**
+         * Not pinned: the pairs that would fail with the colour (act on this).
+         * `'force'`: the pairs that fail in dark because of the colour; absent when none.
+         */
         failed?: string[];
     };
 }
@@ -179,7 +232,7 @@ export interface CreateThemeResult {
  * every guarded role pair in light and dark. Deterministic: the same options
  * give the same bytes.
  *
- * @throws {TypeError} when `brand` is missing, a colour is not a hex value, `neutralChroma` is not a number from 0 to 0.1 or is given without `neutral`, or `darkPrimary` is not `'brand'` or `'mirror'`.
+ * @throws {TypeError} when neither `brand` nor `brandRamp` is given, `brandRamp` lacks a step, `pin.dark` is not `'auto'`, `'force'` or `'ramp'`, a colour is not a hex value, `neutralChroma` is not a number from 0 to 0.1 or is given without `neutral`, or `darkPrimary` is not `'brand'` or `'mirror'`.
  */
 export function createTheme(options: CreateThemeOptions): CreateThemeResult;
 export default createTheme;
@@ -188,3 +241,6 @@ export default createTheme;
 export const RAMP_STEPS: number[];
 /** The 21 steps of the neutral ramp, half steps included. */
 export const BASE_STEPS: number[];
+
+export { generateBrandRamp, closestStep, getContrastRatio, readableOn, meetsAA } from './color.js';
+export type { BrandRamp, RampStep } from './color.js';

@@ -802,6 +802,7 @@ npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out sr
 | `--brand <hex>` | Required. Builds `--zabi-brand-50 … 950`. |
 | `--pin` | The primary action is the exact brand colour in light. See [`--pin`](#--pin-the-exact-brand-colour-on-buttons). |
 | `--accent <hex>` | Builds `--zabi-accent-50 … 950`. Omitted: the library's citron. |
+| `--pin-dark <auto\|force\|ramp>` | What dark does with a pinned colour: `auto` (default) takes it if nothing guarded fails, `force` takes it whatever fails (reported), `ramp` never. Needs `--pin` or `--pin-accent`. See [`--pin`](#--pin-the-exact-brand-colour-on-buttons). |
 | `--pin-accent` | The same for the solid accent fill. Needs `--accent`. |
 | `--neutral <hex>` | Tints the 21-step `--zabi-base-50 … 950`. Omitted: the library's greys. Takes the hue only, at no more than 0.03 chroma. |
 | `--neutral-chroma <n>` | OKLCH chroma at the neutral ramp's peak, 0 to 0.1; needs `--neutral`. Lifts the 0.03 cap (0.04 to 0.06 gives a clearly tinted neutral such as a blue-slate), and makes the ink roles follow the neutral ramp. See [`--neutral-chroma`](#neutral-chroma-a-strongly-tinted-neutral). |
@@ -870,13 +871,29 @@ What it decides, and how:
 - **Focus ring and links follow only if they pass.** The ring needs 3:1 on
   every surface and a link 4.5:1 on the page and on a card. A yellow passes
   neither, so both stay on the ramp. The header lists which followed.
-- **Dark is not pinned unless the colour passes there.** `#0026EA` is 2.08:1
+- **Dark is not pinned unless the colour passes there (the default, `auto`).** `#0026EA` is 2.08:1
   against a dark page and 1.77:1 against a dark card, where a fill needs 3:1:
   no label makes that a button. Dark keeps
   step 600 (the mirrored step 400 with `darkPrimary: "mirror"`), exactly as
   without `--pin`, and the header says so. A
   colour that does pass in dark (the amber, the yellow) is pinned there too,
   with lighter states.
+
+  A colour that just misses is the case to watch. `#128978` with white is 4.31:1
+  (4.5:1 needed), so dark is not pinned and a dark site gets step 600, not its
+  brand. The signal is in the result: `pinned.brand.dark.pinned` is `false` and
+  `pinned.brand.dark.failed` lists the pairs that would fail. Act on it, or
+  choose the policy up front with `pin.dark` (CLI: `--pin-dark`):
+
+  | `pin.dark` | Dark |
+  |---|---|
+  | `"auto"` (default) | The rule above: pinned only if no guarded pair fails because of it. |
+  | `"force"` | Pinned whatever fails. The fill, its states and the roles that followed in light (under the same no-worse rule) take the colour; `dark.pinned` is `true`, the failures are in `dark.failed` (the pairs the fill and its label settle) and as `warnings`, and `--strict` exits 1. |
+  | `"ramp"` | Never pinned. Dark keeps the ramp step; `dark.pinned` is `false` and `dark.failed` is absent. |
+
+  ```js
+  createTheme({ brand: "#128978", pin: { brand: true, dark: "force" } });
+  ```
 
 The trade-off: a ramp step is guaranteed to pass, in both modes, for any
 colour. A pinned colour is exact and passes only if the colour can. Unpinned,
@@ -1019,7 +1036,8 @@ const { css, tokens, warnings, closest } = createTheme({
   neutral: "#78716c", // optional
   neutralChroma: 0.05, // optional, 0 to 0.1, needs neutral: a clearly tinted neutral; the ink roles follow it
   overrides: { "--color-link": "var(--color-brand-800)" }, // optional; both modes. Or { light, dark, both }
-  pin: true, // optional: the exact brand on the primary action; or { brand: true, accent: true }
+  pin: true, // optional: the exact brand on the primary action; or { brand: true, accent: true, dark: "auto" | "force" | "ramp" }
+  check: true, // optional: false skips the final check of every role pair (see "Per request")
   darkPrimary: "brand", // optional: "brand" (default, step 600 in dark too) or "mirror" (the 8.1 pale dark fills)
 });
 
@@ -1035,7 +1053,7 @@ writeFileSync("src/lib/brand.generated.css", css);
 | `css` | The stylesheet: a header comment and one `:root { … }` rule. With `pin`, `neutralChroma`, `darkPrimary: "mirror"` or `light` / `dark` overrides, two dark rules follow it. |
 | `tokens` | Every declaration of the `:root` rule, name to value. |
 | `darkTokens` | Only with `pin`, `neutralChroma`, `darkPrimary: "mirror"` or `light` / `dark` overrides: every declaration of the dark rules. |
-| `pinned` | Only with `pin`: `{ brand?, accent? }`, each `{ hex, light: { followed, onRamp, states }, dark: { pinned, followed, onRamp, states?, failed? } }`. |
+| `pinned` | Only with `pin`: `{ brand?, accent? }`, each `{ hex, light: { followed, onRamp, states }, dark: { pinned, followed, onRamp, states?, failed?, policy? } }`. Where `dark.pinned` is `false`, `failed` lists what would fail with the colour. |
 | `warnings` | `{ type: "contrast", pair, mode, ratio, required, foreground, background, message }` for each role pair below AA, and `{ type: "input", option, message }` notes about the colours given. Empty when everything passes. |
 | `closest` | `{ brand, accent?, neutral? }`, each `{ step, hex, deltaE, exact }`: where the input landed in its ramp. |
 
@@ -1060,12 +1078,81 @@ rule (`both`, then `light`); `darkTokens` holds what the dark rules say: the
 (or the `both` value), so `:root` does not reach dark. See
 [One mode only](#one-mode-only---set-light-and---set-dark).
 
-It throws a `TypeError` when `brand` is missing, a colour is not hex,
+#### A stored ramp: `brandRamp`
+
+An app that keeps its brand ramp (50 to 950) hands it over instead of a colour:
+
+```js
+import { generateBrandRamp } from "zabi-components/color";
+import { createTheme } from "zabi-components/create-theme";
+
+const stored = generateBrandRamp("#0026EA"); // or any ramp you saved
+const { css } = createTheme({ brandRamp: stored, pin: true });
+```
+
+All eleven steps are required (a missing one is a `TypeError` that names it).
+They are written as `--zabi-brand-50 … 950` exactly as given, as lowercase
+`#rrggbb`. `brand` becomes optional: left out it is the ramp's step 600, which
+is what `pin` pins and `closest` measures; give it to pin another colour. The
+label colour, the pin and the contrast check run against the ramp, so a ramp
+whose step 600 cannot carry a label is reported, not corrected. Input notes
+about the colour (grey, nearly white) do not apply, since no ramp is built
+from it. The accent and the neutral are built as before.
+
+#### Per request: `check` and memoising
+
+`createTheme()` costs about 25 ms on its first call and 16 ms after, for a
+plain brand; a pinned theme or one with overrides costs more. Do not run it on
+every request. Memoise on the options:
+
+```js
+const themes = new Map();
+export function themeFor(options) {
+  const key = JSON.stringify(options);
+  if (!themes.has(key)) themes.set(key, createTheme({ ...options, check: false }));
+  return themes.get(key);
+}
+```
+
+(Bound the Map if the options come from users.) `check: false` skips the final
+check of every guarded role pair, about a fifth of a plain brand's time: the
+result has the same `css` body, `tokens` and `closest`, `warnings` holds input
+notes only, and the header says the check was skipped. The checks the generator
+needs to decide something still run: the label colours, `pin`, and the control
+veils. Run the full check where time is cheap, in CI (the `--strict` line
+above, or `createTheme()` without `check: false`), and do not read an empty
+`warnings` from a `check: false` result as a pass.
+
+It throws a `TypeError` when neither `brand` nor `brandRamp` is given, a colour is not hex,
+`pin.dark` is not `"auto"`, `"force"` or `"ramp"`,
 `pin.accent` is set without `accent`, `neutralChroma` is not a number from 0
 to 0.1 or is given without `neutral`, `darkPrimary` is not `"brand"` or `"mirror"`, or an override is not a custom property
 name with a non-empty string value (the message names the key path, for example
 `overrides.light["--color-link"]`). Without these options the result and the
 file are exactly what they were before the option existed.
+
+### Colour helpers
+
+The ramp, the contrast ratio and the label rule are also exported on their own,
+so an app can store and preview exactly what the theme writes instead of
+copying the maths. They live at `zabi-components/color` and by name from
+`zabi-components/create-theme`; they do not load the theme data.
+
+| Function | |
+|---|---|
+| `generateBrandRamp(hex)` | `{ 50 … 950 }` as lowercase `#rrggbb`: the ramp `createTheme({ brand: hex })` writes as `--zabi-brand-*`. |
+| `closestStep(hex, ramp)` | `{ step, hex, deltaE, exact }`: what `createTheme` reports as `closest`. |
+| `getContrastRatio(a, b)` | WCAG 2.x, 1 to 21, to two decimals, as the library's guard computes it. |
+| `readableOn(fill, darkEnd?)` | `#ffffff` if it reaches 4.5:1 on `fill`, otherwise `darkEnd` (default `#09090b`, the library's near-black; pass a ramp's 950 to match a theme), and if neither reaches it, the one with more contrast. The rule the theme applies to a fill; the theme applies it to the fill and its hover and pressed states together. |
+| `meetsAA(ratio, kind)` | `kind` is `"text"` (4.5) or `"ui"` (3). |
+
+```js
+import { generateBrandRamp, getContrastRatio, meetsAA, readableOn } from "zabi-components/color";
+
+const ramp = generateBrandRamp("#128978");
+const label = readableOn(ramp[600], ramp[950]);
+meetsAA(getContrastRatio(label, ramp[600]), "text"); // true
+```
 
 ## What does not follow an override
 

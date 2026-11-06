@@ -35,7 +35,17 @@ const sourceDir = path.join(root, 'create-theme');
 const outDir = path.join(root, 'dist', 'create-theme');
 
 /** Everything the published generator consists of, besides theme-data.js. */
-export const GENERATOR_FILES = ['index.js', 'index.d.ts', 'cli.js', 'lib/ramp-math.js', 'lib/resolve.js'];
+export const GENERATOR_FILES = [
+    'index.js',
+    'index.d.ts',
+    'color.js',
+    'color.d.ts',
+    'cli.js',
+    'lib/ramp-math.js',
+    'lib/brand-ramp.js',
+    'lib/wcag.js',
+    'lib/resolve.js',
+];
 export const THEME_DATA_FILE = 'theme-data.js';
 
 // The control veils' strengths, the material backdrop brightness and the material alphas are numbers, not colours, but the veil stops are

@@ -25,8 +25,22 @@ Whenever token or CSS import API surface changes, include:
   page. Generated from the theme's own token maps; the light half ships in `theme`, `theme-only`, `colors` and `css`,
   the dark half in the dark files, `colors` and `css`. A role the app (or a `createTheme` file) sets as a plain value
   on `:root` is replaced inside the scope; set it on the scope (cms-admin 13, D310).
+- `zabi-components/color` (also named exports of `zabi-components/create-theme`): `generateBrandRamp(hex)`, the exact
+  50-950 ramp `createTheme` writes for `brand`; `closestStep(hex, ramp)`; `getContrastRatio(a, b)`; `readableOn(fill)`,
+  the label rule the theme uses (white at 4.5:1, else near-black); `meetsAA(ratio, 'text' | 'ui')`. No theme data in
+  it (cms-admin 14, 31, D311).
+- `createTheme` options, all optional, output unchanged without them: `check: false` skips the final contrast pass
+  (about a fifth of the time; memoise on the options for per-request use, documented) (cms-admin 18, D315);
+  `brandRamp`, all 11 steps used as given, `brand` then optional (defaults to step 600) (cms-admin 19, D316);
+  `pin: { brand: true, dark: 'auto' | 'force' | 'ramp' }`, and the CLI's `--pin-dark`: `force` pins dark even where
+  pairs fail and lists them in `warnings` and `pinned.brand.dark.failed` (cms-admin 20, D317).
 - `on-fill-invert`, beside `on-fill`, inverts the primary family in the block as 9.0.0 did; `--zabi-fill` (the
   block's fill, the inverted button's label) is documented (cms-admin 24, D320).
+
+### Changed
+
+- `@lucide/svelte` dependency range widened from `^0.544.0` to `>=0.544.0 <1.0.0`, so an app on a later 0.x (0.575)
+  gets one copy instead of two (cms-admin 23, D319).
 
 ### Fixed
 

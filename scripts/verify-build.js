@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { findLucideBarrelImports } from './lucide-barrel.js';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { spawnSync } from 'child_process';
 import { findDeadPackageLinks } from './check-package-links.js';
 import {
@@ -154,7 +154,9 @@ function verifyThemeGenerator() {
     fail(`package.json bin "zabi-theme" must point at ./dist/create-theme/cli.js (found ${bin})`);
   }
   if (!fs.readFileSync(cli, 'utf8').startsWith('#!/usr/bin/env node')) fail('create-theme/cli.js has no node shebang');
-  if (!packageJson.exports?.['./create-theme']) fail('Missing export in package.json: ./create-theme');
+  for (const subpath of ['./create-theme', './color']) {
+    if (!packageJson.exports?.[subpath]) fail(`Missing export in package.json: ${subpath}`);
+  }
   if (!packageJson.dependencies?.culori) {
     fail('culori must be a dependency, not a devDependency: the published theme generator imports it at runtime');
   }
@@ -170,6 +172,24 @@ function verifyThemeGenerator() {
   } else if (!/--zabi-brand-600:\s*#[0-9a-f]{6};/.test(run.stdout)) {
     fail('zabi-theme ran but printed no --zabi-brand-600 declaration');
   }
+
+  // The colour helpers are their own subpath and are imported by name from the
+  // generator too: both must load from dist, and give the same ramp.
+  const colour = spawnSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '-e',
+      `import * as c from ${JSON.stringify(pathToFileURL(path.join(dir, 'color.js')).href)};` +
+        `import { createTheme, generateBrandRamp } from ${JSON.stringify(pathToFileURL(path.join(dir, 'index.js')).href)};` +
+        "const names = ['generateBrandRamp', 'closestStep', 'getContrastRatio', 'readableOn', 'meetsAA'];" +
+        "if (names.some((n) => typeof c[n] !== 'function')) throw new Error('color.js is missing an export');" +
+        "if (generateBrandRamp !== c.generateBrandRamp) throw new Error('index.js does not re-export color.js');" +
+        "if (c.generateBrandRamp('#0026EA')[600] !== createTheme({ brand: '#0026EA' }).tokens['--zabi-brand-600']) throw new Error('generateBrandRamp differs from createTheme');",
+    ],
+    { encoding: 'utf8' },
+  );
+  if (colour.status !== 0) fail(`create-theme/color.js did not load or disagrees with createTheme:\n${colour.stderr}`);
 
   if (ok) console.log('✓ Theme generator verified (files, bin, fresh theme data, runs from dist)');
   return ok;
