@@ -12,6 +12,18 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- `zabi-components/color` (also named exports of `zabi-components/create-theme`): `brandContrast(hex, { ramp? })` reports
+  what `createTheme({ brand: hex, pin: true })` does with a colour in light and dark (the label, the hover and pressed
+  states and their direction, the ratios of the label on fill, hover and pressed and of the fill on page and card,
+  pass or fail, and whether dark takes the colour), and `accessibleBrand(hex, { ramp?, modes? })` returns the nearest
+  fill of the same OKLCH hue that passes, with the same report. `#128978` gives `#088574`. Both run the same state and
+  label code as `pin` (cms-admin 32, D321, D323).
+- `createTheme({ pin: { brand: 'nearest-aa' } })` pins `accessibleBrand(brand).hex`; `pinned.brand` then carries
+  `requested` and `adjusted`. CLI: `--pin-nearest-aa` (implies `--pin`); no existing flag changed. Output for every
+  existing input is byte-identical (cms-admin 32, D322).
+
 ## [9.1.0-alpha.9] - 2026-11-06
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.8, for cms-admin's rows 13-24 (per-project

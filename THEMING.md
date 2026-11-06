@@ -1036,7 +1036,7 @@ const { css, tokens, warnings, closest } = createTheme({
   neutral: "#78716c", // optional
   neutralChroma: 0.05, // optional, 0 to 0.1, needs neutral: a clearly tinted neutral; the ink roles follow it
   overrides: { "--color-link": "var(--color-brand-800)" }, // optional; both modes. Or { light, dark, both }
-  pin: true, // optional: the exact brand on the primary action; or { brand: true, accent: true, dark: "auto" | "force" | "ramp" }
+  pin: true, // optional: the exact brand on the primary action; or { brand: true | "nearest-aa", accent: true, dark: "auto" | "force" | "ramp" }
   check: true, // optional: false skips the final check of every role pair (see "Per request")
   darkPrimary: "brand", // optional: "brand" (default, step 600 in dark too) or "mirror" (the 8.1 pale dark fills)
 });
@@ -1145,6 +1145,8 @@ copying the maths. They live at `zabi-components/color` and by name from
 | `getContrastRatio(a, b)` | WCAG 2.x, 1 to 21, to two decimals, as the library's guard computes it. |
 | `readableOn(fill, darkEnd?)` | `#ffffff` if it reaches 4.5:1 on `fill`, otherwise `darkEnd` (default `#09090b`, the library's near-black; pass a ramp's 950 to match a theme), and if neither reaches it, the one with more contrast. The rule the theme applies to a fill; the theme applies it to the fill and its hover and pressed states together. |
 | `meetsAA(ratio, kind)` | `kind` is `"text"` (4.5) or `"ui"` (3). |
+| `brandContrast(hex, { ramp? })` | What `createTheme({ brand: hex, pin: true })` does with `hex`, per mode: the label, the hover and pressed states and which way they go, the ratios, pass or fail, and whether dark takes the colour. |
+| `accessibleBrand(hex, { ramp?, modes? })` | The nearest fill that passes, with the same report. |
 
 ```js
 import { generateBrandRamp, getContrastRatio, meetsAA, readableOn } from "zabi-components/color";
@@ -1153,6 +1155,61 @@ const ramp = generateBrandRamp("#128978");
 const label = readableOn(ramp[600], ramp[950]);
 meetsAA(getContrastRatio(label, ramp[600]), "text"); // true
 ```
+
+#### A brand colour that fails contrast
+
+An admin who picks any brand colour will pick mid-tones that fail. `#128978`
+with a white label is 4.31:1 on its own fill, and the label has to be read on
+the hover and pressed states too. `brandContrast` reports the colour as
+`pin: true` writes it; `accessibleBrand` finds the nearest colour that passes:
+
+```js
+import { accessibleBrand, brandContrast } from "zabi-components/color";
+
+const report = brandContrast("#128978");
+report.passes; // false
+report.light.label; // "#ffffff"
+report.light.states; // { hover: "#007062", active: "#00584d" }, darker
+report.light.ratios.label; // { fill: 4.31, hover: 6.01, active: 8.39 }
+report.light.passes; // { text: false, ui: true }
+report.dark.pinned; // false: dark would not take it
+
+const fix = accessibleBrand("#128978");
+fix.hex; // "#088574"
+fix.changed; // true
+fix.light.ratios.label.fill; // 4.55
+fix.light.ratios.page; // 4.36 (a fill needs 3 on the page and on a card)
+```
+
+A mode passes when the label reaches 4.5:1 on the fill, the hover and the
+pressed state (`passes.text`) and the fill reaches 3:1 on the page and on a
+card (`passes.ui`). The top-level `passes` also needs dark to take the colour
+(`dark.pinned`), because a colour that dark replaces with a ramp step is not
+the colour the site shows. `accessibleBrand` keeps the OKLCH hue, moves
+lightness the least it can (the darker colour on a tie) and lowers chroma only
+as far as sRGB needs. It returns the input unchanged (`changed: false`) when it
+already passes, and `found: false` with the best effort when nothing in range
+does. Pass `ramp` if you store the brand ramp, and `modes: ["light"]` to
+ignore dark.
+
+The same colour is what the theme pins with `pin: { brand: "nearest-aa" }`
+(CLI: `--pin-nearest-aa`, which implies `--pin`), so a public site and an admin
+that both call it agree exactly:
+
+```js
+const { tokens, pinned } = createTheme({ brand: "#128978", pin: { brand: "nearest-aa" } });
+tokens["--color-action-primary"]; // "#088574"
+pinned.brand; // { hex: "#088574", requested: "#128978", adjusted: true, … }
+```
+
+The ramp is still built from the colour that was asked for; only the pinned
+fill moves, and the CSS header says it was adjusted from the requested colour.
+`pin: true` is unchanged: it pins the colour as given and reports what fails.
+
+`readableOn(fill)` is for one fill; for a pinned brand read
+`brandContrast(hex).light.label` and `.states`, which is what the theme writes
+(hover and pressed go darker, so the label that reads on the fill alone can fail
+on them).
 
 ## What does not follow an override
 

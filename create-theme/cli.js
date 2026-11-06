@@ -17,7 +17,7 @@ import { createTheme } from './index.js';
 const HELP = `zabi-theme: generate brand tokens for zabi-components
 
 Usage
-  zabi-theme --brand <hex> [--pin] [--pin-dark auto|force|ramp] [--accent <hex>] [--pin-accent] [--neutral <hex>]
+  zabi-theme --brand <hex> [--pin | --pin-nearest-aa] [--pin-dark auto|force|ramp] [--accent <hex>] [--pin-accent] [--neutral <hex>]
              [--neutral-chroma <n>] [--dark-primary brand|mirror]
              [--out <file>] [--strict] [--set <token>=<value> ...]
              [--set-light <token>=<value> ...] [--set-dark <token>=<value> ...]
@@ -25,6 +25,9 @@ Usage
 Options
   --brand <hex>     Brand colour (required). Builds --zabi-brand-50 … 950.
   --pin             Put the exact brand colour on primary buttons (see below).
+  --pin-nearest-aa  Like --pin, but moves the brand to the nearest colour of the same hue
+                    that passes WCAG AA in light and dark (zabi-components/color:
+                    accessibleBrand). A colour that passes is pinned as given.
   --accent <hex>    Second brand colour. Builds --zabi-accent-50 … 950.
   --pin-dark <auto|force|ramp>
                     What dark does with a pinned colour. auto (default): takes it when
@@ -72,7 +75,7 @@ Import the file after the theme:
 `;
 
 const VALUE_OPTIONS = ['brand', 'accent', 'neutral', 'neutral-chroma', 'dark-primary', 'pin-dark', 'out'];
-const FLAG_OPTIONS = ['strict', 'help', 'pin', 'pin-accent'];
+const FLAG_OPTIONS = ['strict', 'help', 'pin', 'pin-accent', 'pin-nearest-aa'];
 
 function usageError(message) {
     process.stderr.write(`zabi-theme: ${message}\nRun "zabi-theme --help" for usage.\n`);
@@ -123,7 +126,7 @@ if (options.help) {
     process.exit(0);
 }
 if (!options.brand) usageError('--brand is required, for example --brand "#0026EA"');
-if (options['pin-dark'] !== undefined && !options.pin && !options['pin-accent']) usageError('--pin-dark needs --pin or --pin-accent');
+if (options['pin-dark'] !== undefined && !options.pin && !options['pin-nearest-aa'] && !options['pin-accent']) usageError('--pin-dark needs --pin or --pin-accent');
 
 let result;
 try {
@@ -137,8 +140,8 @@ try {
         // `--set` alone is the flat map, as it always was; a mode flag makes it { light, dark, both }.
         overrides: options.modes && (options.modes.light || options.modes.dark) ? options.modes : options.modes?.both,
         // Left out when not asked for, so the options are what they always were.
-        ...(options.pin || options['pin-accent']
-            ? { pin: { brand: !!options.pin, accent: !!options['pin-accent'], ...(options['pin-dark'] !== undefined ? { dark: options['pin-dark'] } : {}) } }
+        ...(options.pin || options['pin-nearest-aa'] || options['pin-accent']
+            ? { pin: { brand: options['pin-nearest-aa'] ? 'nearest-aa' : !!options.pin, accent: !!options['pin-accent'], ...(options['pin-dark'] !== undefined ? { dark: options['pin-dark'] } : {}) } }
             : {}),
     });
 } catch (error) {

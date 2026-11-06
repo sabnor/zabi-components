@@ -45,6 +45,9 @@ export const GENERATOR_FILES = [
     'lib/brand-ramp.js',
     'lib/wcag.js',
     'lib/resolve.js',
+    'lib/pin-maths.js',
+    'lib/pinned-fill.js',
+    'lib/default-surfaces.js',
 ];
 export const THEME_DATA_FILE = 'theme-data.js';
 

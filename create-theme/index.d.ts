@@ -107,12 +107,16 @@ export interface CreateThemeBaseOptions {
      * `pinned.<name>.dark.pinned` and `.failed` to see what happened.
      *
      * A pair that fails with the pinned colour is reported in `warnings`. The
-     * colour is never moved to make it pass.
+     * colour is never moved to make it pass, unless you ask: `{ brand: 'nearest-aa' }`
+     * pins `accessibleBrand(brand).hex` instead, the nearest fill (same hue) whose
+     * label reaches 4.5:1 and which reaches 3:1 on the page and a card, in light and
+     * in dark. A colour that already passes is pinned as given. The ramp is still
+     * built from `brand`. `pinned.brand.requested` and `.adjusted` say what happened.
      *
      * `{ accent: true }` does the same for `--color-accent` and needs `accent`.
      * Omitted or `false`: the output is exactly what it is without the option.
      */
-    pin?: boolean | { brand?: boolean; accent?: boolean; dark?: 'auto' | 'force' | 'ramp' };
+    pin?: boolean | { brand?: boolean | 'nearest-aa'; accent?: boolean; dark?: 'auto' | 'force' | 'ramp' };
 }
 
 /**
@@ -162,8 +166,12 @@ export interface ContrastWarning {
 /** An input that will not give the ramp its author probably expects. */
 /** What `pin` did with one colour. */
 export interface PinReport {
-    /** The pinned colour, as `#rrggbb`. */
+    /** The pinned colour, as `#rrggbb`: the colour used, which is `requested` unless `adjusted`. */
     hex: string;
+    /** Only with `pin.brand: 'nearest-aa'`: the colour that was asked for. */
+    requested?: string;
+    /** Only with `pin.brand: 'nearest-aa'`: whether `hex` is a different colour from `requested`. */
+    adjusted?: boolean;
     light: {
         /** Role groups that took the colour besides the fill: `"focus ring"`, `"link"`, `"accent text"`. */
         followed: string[];
@@ -232,7 +240,7 @@ export interface CreateThemeResult {
  * every guarded role pair in light and dark. Deterministic: the same options
  * give the same bytes.
  *
- * @throws {TypeError} when neither `brand` nor `brandRamp` is given, `brandRamp` lacks a step, `pin.dark` is not `'auto'`, `'force'` or `'ramp'`, a colour is not a hex value, `neutralChroma` is not a number from 0 to 0.1 or is given without `neutral`, or `darkPrimary` is not `'brand'` or `'mirror'`.
+ * @throws {TypeError} when neither `brand` nor `brandRamp` is given, `brandRamp` lacks a step, `pin.dark` is not `'auto'`, `'force'` or `'ramp'`, `pin.brand` is not a boolean or `'nearest-aa'`, a colour is not a hex value, `neutralChroma` is not a number from 0 to 0.1 or is given without `neutral`, or `darkPrimary` is not `'brand'` or `'mirror'`.
  */
 export function createTheme(options: CreateThemeOptions): CreateThemeResult;
 export default createTheme;
@@ -242,5 +250,5 @@ export const RAMP_STEPS: number[];
 /** The 21 steps of the neutral ramp, half steps included. */
 export const BASE_STEPS: number[];
 
-export { generateBrandRamp, closestStep, getContrastRatio, readableOn, meetsAA } from './color.js';
-export type { BrandRamp, RampStep } from './color.js';
+export { generateBrandRamp, closestStep, getContrastRatio, readableOn, meetsAA, brandContrast, accessibleBrand } from './color.js';
+export type { BrandRamp, RampStep, BrandContrast, ModeReport, AccessibleBrand } from './color.js';

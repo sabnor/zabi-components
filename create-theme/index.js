@@ -46,11 +46,12 @@
  */
 
 import data from './theme-data.js';
-import { RAMP_STEPS, TARGET_LIGHTNESS, hexAt, cieL, toOklch } from './lib/ramp-math.js';
+import { RAMP_STEPS, hexAt, cieL, toOklch } from './lib/ramp-math.js';
 import { resolveTokenColor, resolveTokenPaint, compositeOver, dimBackdrop, backdropBrightness } from './lib/resolve.js';
 import { luminance, contrast } from './lib/wcag.js';
 import { parseHex, describe, MIN_USEFUL_CHROMA } from './lib/brand-ramp.js';
-import { generateBrandRamp, closestStep } from './color.js';
+import { generateBrandRamp, closestStep, accessibleBrand } from './color.js';
+import { WHITE, shades, SHADE_DIRECTIONS, shadeRecipe, labelCandidates, pickLabel } from './lib/pin-maths.js';
 
 /** The neutral ramp's 21 steps. */
 export const BASE_STEPS = [
@@ -59,10 +60,9 @@ export const BASE_STEPS = [
 ];
 
 export { RAMP_STEPS };
-export { generateBrandRamp, closestStep, getContrastRatio, readableOn, meetsAA } from './color.js';
+export { generateBrandRamp, closestStep, getContrastRatio, readableOn, meetsAA, brandContrast, accessibleBrand } from './color.js';
 
 const TOOL = 'zabi-theme';
-const WHITE = '#ffffff';
 
 /** A neutral stays a neutral: this is the most chroma any of its steps gets. */
 const MAX_NEUTRAL_CHROMA = 0.03;
@@ -325,24 +325,17 @@ function chooseOn(name, mode, tokens, darkTokens = {}) {
     const { role, fills } = ON_ROLES[name];
     const knob = mode === 'dark' ? `--zabi-on-${name}-dark` : `--zabi-on-${name}`;
     const darkEnd = `var(--zabi-${name}-950)`;
-    // White first for the brand in both modes: the library's dark primary is the
-    // same mid step as light. A pale dark primary (an app's own override, or
-    // darkPrimary: 'mirror') fails white and keeps the ramp's dark end. The
-    // accent's dark fill is the light step, so its dark end still goes first.
-    const candidates = mode === 'dark' && name === 'accent' ? [darkEnd, WHITE] : [WHITE, darkEnd];
-    let best = null;
-    for (const value of candidates) {
-        const map = themeMaps({ ...tokens, [knob]: value }, darkTokens)[mode];
+    // The candidates and the rule for choosing among them are lib/pin-maths.js,
+    // which brandContrast (color.js) runs too.
+    const value = pickLabel(labelCandidates(name, mode, darkEnd), (candidate) => {
+        const map = themeMaps({ ...tokens, [knob]: candidate }, darkTokens)[mode];
         const label = resolveTokenColor(map, role);
-        const ratios = fills.map((fill) => {
+        return fills.map((fill) => {
             const colour = resolveTokenColor(map, fill);
             return label && colour ? contrast(label, colour) : 0;
         });
-        const worst = Math.min(...ratios);
-        if (worst >= 4.5) return [knob, value];
-        if (!best || worst > best.worst) best = { value, worst };
-    }
-    return [knob, best.value];
+    });
+    return [knob, value];
 }
 
 /* ---------- dark primary ---------- */
@@ -376,38 +369,6 @@ function readDarkPrimary(value) {
 }
 
 /* ---------- pinning ---------- */
-
-/**
- * A pinned colour is the fill; its hover and pressed states and one deeper
- * step are the same hue and chroma moved along L* by the distances the curve
- * puts between steps 600, 700, 800 and 900 in light (darker), and between
- * 400, 300, 200 and 100 in dark (lighter).
- */
-const SHADE_STEPS = {
-    light: [700, 800, 900].map((step) => TARGET_LIGHTNESS[step] - TARGET_LIGHTNESS[600]),
-    dark: [300, 200, 100].map((step) => TARGET_LIGHTNESS[step] - TARGET_LIGHTNESS[400]),
-};
-/** No shade is asked to go past these: there is nothing darker or lighter to show. */
-const MIN_SHADE_L = 4;
-const MAX_SHADE_L = 98;
-
-/**
- * [hover, pressed, deeper] for a pinned fill, going `darker` or `lighter`, or
- * null when the pressed step would leave the range: a colour that near black
- * has nothing darker to show.
- */
-function shades(colour, mode, direction) {
-    const sign = direction === 'darker' ? -1 : 1;
-    const steps = SHADE_STEPS[mode].map((step) => sign * Math.abs(step));
-    const pressed = colour.lightness + steps[1];
-    if (pressed < MIN_SHADE_L || pressed > MAX_SHADE_L) return null;
-    return steps.map((step) =>
-        hexAt(Math.min(MAX_SHADE_L, Math.max(MIN_SHADE_L, colour.lightness + step)), colour.chroma, colour.hue),
-    );
-}
-
-/** The library's own direction first: darker in light, lighter in dark. */
-const SHADE_DIRECTIONS = { light: ['darker', 'lighter'], dark: ['lighter', 'darker'] };
 
 /**
  * The roles a pinned colour can take over. `fill` always follows, since that
@@ -468,7 +429,8 @@ const PIN_DARK_POLICIES = ['auto', 'force', 'ramp'];
 /**
  * Which of the two colours `pin` asks for, and what dark does with them:
  * `auto` (the default) takes the colour when no guarded pair fails because of
- * it, `force` takes it whatever fails, `ramp` never takes it.
+ * it, `force` takes it whatever fails, `ramp` never takes it. `brand` can also
+ * be "nearest-aa": the colour pinned is accessibleBrand's nearest passing fill.
  */
 function readPin(pin) {
     if (pin === undefined || pin === null || pin === false) return { brand: false, accent: false, dark: 'auto' };
@@ -487,7 +449,12 @@ function readPin(pin) {
             `${TOOL}: pin.dark must be "auto", "force" or "ramp" (got ${typeof dark === 'string' ? `"${dark}"` : JSON.stringify(dark)})`,
         );
     }
-    return { brand: pin.brand === true, accent: pin.accent === true, dark };
+    // A string is the new policy word, so a misspelt one says so. Anything
+    // else that is not true stays "not pinned", as before "nearest-aa".
+    if (typeof pin.brand === 'string' && pin.brand !== 'nearest-aa') {
+        throw new TypeError(`${TOOL}: pin.brand must be true, false or "nearest-aa" (got "${pin.brand}")`);
+    }
+    return { brand: pin.brand === 'nearest-aa' ? 'nearest-aa' : pin.brand === true, accent: pin.accent === true, dark };
 }
 
 const failing = (warnings, mode) => new Set(warnings.filter((w) => w.mode === mode).map((w) => w.pair));
@@ -516,7 +483,7 @@ function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs,
     const libraryDark = (role) => earlierDark[role] ?? data.darkOnly[role] ?? data.light[role];
     // The brand's dark fill is the light recipe (the same steps, darker states)
     // unless it is mirrored; the accent's dark fill is still the pale step.
-    const recipe = (mode) => (mode === 'dark' && name === 'brand' && darkPrimary === 'brand' ? 'light' : mode);
+    const recipe = (mode) => shadeRecipe(name, mode, darkPrimary);
     const light = {};
     const dark = {};
     const knobs = {};
@@ -828,6 +795,8 @@ function pinnedNotes(pinned) {
         lines.push(` * PINNED ${name} ${report.hex}: in light, ${what} is exactly this colour. Hover and`);
         lines.push(` * pressed are the same hue and chroma, ${report.light.states} by the distance the curve puts`);
         lines.push(' * between steps 600, 700 and 800.');
+        if (report.adjusted) lines.push(` *   adjusted from ${report.requested}: the nearest fill of the same hue that passes (pin.brand "nearest-aa").`);
+        else if (report.requested) lines.push(` *   ${report.requested} was not moved (pin.brand "nearest-aa").`);
         if (report.light.followed.length) lines.push(` *   light, also this colour: ${list(report.light.followed)}`);
         if (report.light.onRamp.length) {
             lines.push(` *   light, left on the ramp because the colour fails a guarded pair there: ${list(report.light.onRamp)}`);
@@ -889,7 +858,7 @@ function readBrandRamp(ramp) {
  * notes only, and the header says the check was skipped. Everything else is
  * what it is with the check on.
  *
- * @param {{ brand?: string, brandRamp?: Record<number, string>, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string> | { light?: Record<string, string>, dark?: Record<string, string>, both?: Record<string, string> } & Record<string, unknown>, pin?: boolean | { brand?: boolean, accent?: boolean, dark?: 'auto' | 'force' | 'ramp' }, darkPrimary?: 'brand' | 'mirror', check?: boolean }} options
+ * @param {{ brand?: string, brandRamp?: Record<number, string>, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string> | { light?: Record<string, string>, dark?: Record<string, string>, both?: Record<string, string> } & Record<string, unknown>, pin?: boolean | { brand?: boolean | 'nearest-aa', accent?: boolean, dark?: 'auto' | 'force' | 'ramp' }, darkPrimary?: 'brand' | 'mirror', check?: boolean }} options
  */
 export function createTheme(options) {
     if (options === null || typeof options !== 'object') {
@@ -931,6 +900,7 @@ export function createTheme(options) {
     const warnings = [];
     const closest = {};
     const described = {};
+    const rampOf = {};
     let tokens = {};
     let darkTokens = {};
 
@@ -943,6 +913,7 @@ export function createTheme(options) {
         // the colour would build do not apply.
         if (!given) warnings.push(...inputWarnings(name, colour));
         const ramp = given ? brandRamp : generateBrandRamp(inputs[name]);
+        rampOf[name] = ramp;
         closest[name] = closestStep(inputs[name], ramp);
         if (!given && colour.chroma >= MIN_USEFUL_CHROMA && closest[name].deltaE > FAR_FROM_RAMP) {
             // Typically a very bright colour: the curve fixes each step's
@@ -1005,10 +976,20 @@ export function createTheme(options) {
     for (const name of ['brand', 'accent']) {
         if (!pin[name]) continue;
         const own = overrideMaps(modes, tokens, darkTokens);
-        const result = pinColour(name, described[name], tokens, { ...darkTokens, ...own.dark }, own.root, extraPairs, own.skip, darkPrimary, pin.dark);
+        // "nearest-aa": the same hue at the nearest lightness that passes, found
+        // by the helper an app calls (color.js), over this theme's own ramp.
+        const adjustedTo = pin[name] === 'nearest-aa' ? accessibleBrand(inputs[name], { ramp: rampOf[name] }) : null;
+        if (adjustedTo && !adjustedTo.found) {
+            warnings.push({
+                type: 'input',
+                option: name,
+                message: `pin.brand "nearest-aa": no fill near ${inputs[name]} passes in both modes; ${adjustedTo.hex} is the nearest to passing and is pinned. The pairs it fails are below.`,
+            });
+        }
+        const result = pinColour(name, adjustedTo ? describe(adjustedTo.hex) : described[name], tokens, { ...darkTokens, ...own.dark }, own.root, extraPairs, own.skip, darkPrimary, pin.dark);
         tokens = { ...tokens, ...result.knobs, ...result.light };
         darkTokens = { ...darkTokens, ...result.dark };
-        pinned[name] = result.report;
+        pinned[name] = adjustedTo ? { ...result.report, requested: inputs[name], adjusted: adjustedTo.changed } : result.report;
     }
     const own = overrideMaps(modes, tokens, darkTokens);
     tokens = { ...tokens, ...own.root };

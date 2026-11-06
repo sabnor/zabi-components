@@ -1544,9 +1544,9 @@ test('in dark the filters carry the brightness and every fallback gives none and
 const brandTokens = (tokens) => Object.fromEntries(RAMP_STEPS.map((step) => [step, tokens[`--zabi-brand-${step}`]]));
 
 test('the colour helpers are a subpath and are also exported by name from create-theme', () => {
-  const names = ['generateBrandRamp', 'closestStep', 'getContrastRatio', 'readableOn', 'meetsAA'];
+  const names = ['generateBrandRamp', 'closestStep', 'getContrastRatio', 'readableOn', 'meetsAA', 'brandContrast', 'accessibleBrand'];
   assert.deepEqual(Object.keys(color).sort(), [...names].sort());
-  const index = { generateBrandRamp: null, closestStep: null, getContrastRatio: null, readableOn: null, meetsAA: null };
+  const index = Object.fromEntries(names.map((name) => [name, null]));
   return import(pathToFileURL(path.join(distDir, 'index.js')).href).then((mod) => {
     for (const name of Object.keys(index)) assert.equal(mod[name], color[name], `${name} is not the same function`);
   });
@@ -1715,4 +1715,213 @@ test('the bin takes --pin-dark', () => {
   assert.match(forced.stderr, /forced, in dark/);
   assert.equal(run('--brand', '#128978', '--pin-dark', 'force').status, 2);
   assert.equal(run('--brand', '#128978', '--pin', '--pin-dark', 'sometimes').status, 2);
+});
+
+/* ---------- brandContrast, accessibleBrand and pin.brand: 'nearest-aa' (cms-admin 32) ---------- */
+
+const { DEFAULT_SURFACES, PINNED_FILL_PAIRS } = await import(pathToFileURL(path.join(distDir, 'lib', 'default-surfaces.js')).href);
+const themeData = buildThemeData();
+const modeMaps = { light: defaults.light, dark: { ...defaults.light, ...defaults.darkOnly } };
+
+/** The roles a pinned fill reaches, by following var() from the fill, its states and the label knobs. */
+function fillClosure(map) {
+  const roots = [
+    '--color-action-primary', '--color-action-primary-hover', '--color-action-primary-active',
+    '--color-primary', '--color-primary-weak', '--color-primary-medium', '--color-primary-strong',
+    '--zabi-on-brand', '--zabi-on-brand-dark', '--color-on-brand',
+  ];
+  const reached = new Set(roots);
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const [role, value] of Object.entries(map)) {
+      if (!reached.has(role) && [...reached].some((root) => String(value).includes(`var(${root})`))) {
+        reached.add(role);
+        grew = true;
+      }
+    }
+  }
+  return reached;
+}
+
+test('the helper\'s constants are what the built theme data resolves to, so a token change fails here', () => {
+  for (const mode of ['light', 'dark']) {
+    const map = modeMaps[mode];
+    const resolved = {
+      page: resolveTokenColor(map, '--color-surface-base'),
+      card: resolveTokenColor(map, '--color-surface-raised'),
+      track: resolveTokenColor(map, '--color-progress-track'),
+    };
+    assert.deepEqual(DEFAULT_SURFACES[mode], resolved, mode);
+    assert.equal(resolveTokenColor(map, '--color-focus-ring-offset'), resolved.card, `${mode} focus offset gap is the card`);
+  }
+  // The pairs: every guarded pair a pinned fill reaches (the control gradients are settled apart),
+  // in both modes, is in the helper's list with its minimum, and nothing else is.
+  const known = new Map(PINNED_FILL_PAIRS.map(([name, , , min]) => [name, min]));
+  const reachedPairs = new Map();
+  for (const mode of ['light', 'dark']) {
+    const reached = fillClosure(modeMaps[mode]);
+    for (const pair of themeData.pairs) {
+      if (pair.gradient || (pair.only && pair.only !== mode)) continue;
+      if ([pair.bg, pair.fg, pair.orFg].some((token) => token && reached.has(token))) reachedPairs.set(pair.name, pair.min);
+    }
+  }
+  // createTheme adds these two when the brand is pinned.
+  reachedPairs.set('pinned primary fill against the page', 3);
+  reachedPairs.set('pinned primary fill against a card', 3);
+  // Held to the sides too: which of fill, hover, active, label or a surface each pair measures.
+  const side = {
+    '--color-action-primary': 'fill', '--color-action-primary-hover': 'hover', '--color-action-primary-active': 'active',
+    '--color-bar-brand': 'fill', '--color-progress-fill': 'fill',
+    '--color-on-brand': 'label', '--color-action-primary-text': 'label', '--color-toggle-knob-checked': 'label',
+    '--color-surface-base': 'page', '--color-surface-raised': 'card', '--color-focus-ring-offset': 'card', '--color-progress-track': 'track',
+  };
+  for (const pair of themeData.pairs) {
+    if (!known.has(pair.name) || pair.gradient) continue;
+    const entry = PINNED_FILL_PAIRS.find(([name]) => name === pair.name);
+    assert.deepEqual([side[pair.bg], side[pair.fg]].sort(), [entry[1], entry[2]].sort(), pair.name);
+  }
+  assert.deepEqual([...reachedPairs].sort(), [...known].sort());
+});
+
+/** A fixed pseudo-random sequence, so a failure names a colour that can be run again. */
+function randomHex(count, seed) {
+  let state = seed;
+  const next = () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return Array.from({ length: count }, () => `#${Math.floor(next() * 0x1000000).toString(16).padStart(6, '0')}`);
+}
+
+const NAMED = ['#128978', '#0b3d91', '#e11d48', '#2563eb', '#16a34a', '#7c3aed', '#64748b', '#06b6d4', '#d97706', '#f5c400', '#f97316', '#ffffff', '#000000', '#777777'];
+const SAMPLE = [...NAMED, ...randomHex(100, 20261106)];
+
+/** The warnings on the pairs a pinned fill is in, by mode. */
+const pinnedFillWarnings = (result, mode) => {
+  const names = new Set(PINNED_FILL_PAIRS.map(([name]) => name));
+  return result.warnings.filter((w) => w.type === 'contrast' && w.mode === mode && names.has(w.pair));
+};
+const labelOf = (value, ramp) => (value === 'var(--zabi-brand-950)' ? ramp[950] : value);
+
+test('brandContrast agrees with createTheme({ brand, pin: true }): label, states, direction, pinned and pass', () => {
+  for (const brand of SAMPLE) {
+    const theme = createTheme({ brand, pin: true });
+    const report = color.brandContrast(brand);
+    const ramp = color.generateBrandRamp(brand);
+    assert.equal(report.hex, brand);
+    const light = report.light;
+    assert.equal(labelOf(theme.tokens['--zabi-on-brand'], ramp), light.label, `${brand} light label`);
+    assert.equal(theme.tokens['--color-action-primary'], brand, `${brand} light fill`);
+    assert.equal(theme.tokens['--color-action-primary-hover'], light.states.hover, `${brand} light hover`);
+    assert.equal(theme.tokens['--color-action-primary-active'], light.states.active, `${brand} light active`);
+    assert.equal(theme.pinned.brand.light.states, light.direction, `${brand} light direction`);
+    assert.equal(light.pinned, true);
+    assert.equal(pinnedFillWarnings(theme, 'light').length === 0, light.passes.text && light.passes.ui, `${brand} light pass`);
+
+    const dark = report.dark;
+    assert.equal(theme.pinned.brand.dark.pinned, dark.pinned, `${brand} dark pinned`);
+    if (dark.pinned) {
+      assert.equal(labelOf(theme.tokens['--zabi-on-brand-dark'], ramp), dark.label, `${brand} dark label`);
+      assert.equal(theme.darkTokens['--color-action-primary'], brand, `${brand} dark fill`);
+      assert.equal(theme.darkTokens['--color-action-primary-hover'], dark.states.hover, `${brand} dark hover`);
+      assert.equal(theme.darkTokens['--color-action-primary-active'], dark.states.active, `${brand} dark active`);
+      assert.equal(theme.pinned.brand.dark.states, dark.direction, `${brand} dark direction`);
+      assert.equal(pinnedFillWarnings(theme, 'dark').length === 0, dark.passes.text && dark.passes.ui, `${brand} dark pass`);
+    }
+    assert.equal(report.passes, light.passes.text && light.passes.ui && dark.passes.text && dark.passes.ui && dark.pinned);
+  }
+});
+
+test('brandContrast reports the ratios as getContrastRatio computes them', () => {
+  const report = color.brandContrast('#128978');
+  assert.deepEqual(report.light.ratios.label, {
+    fill: color.getContrastRatio('#ffffff', '#128978'),
+    hover: color.getContrastRatio('#ffffff', report.light.states.hover),
+    active: color.getContrastRatio('#ffffff', report.light.states.active),
+  });
+  assert.equal(report.light.ratios.label.fill, 4.31);
+  assert.equal(report.light.ratios.page, color.getContrastRatio('#128978', DEFAULT_SURFACES.light.page));
+  assert.equal(report.light.ratios.card, color.getContrastRatio('#128978', DEFAULT_SURFACES.light.card));
+  assert.deepEqual(report.light.passes, { text: false, ui: true });
+  assert.equal(report.passes, false);
+  // The second consumer note: the states go darker, and readableOn(fill) alone is the wrong label for the set.
+  assert.deepEqual(report.light.states, { hover: '#007062', active: '#00584d' });
+  assert.equal(report.light.direction, 'darker');
+  assert.equal(report.light.label, '#ffffff');
+  assert.equal(color.readableOn('#128978'), '#09090b');
+  // A stored ramp is used for the label's dark end and for what dark keeps.
+  const ramp = color.generateBrandRamp('#f5c400');
+  assert.deepEqual(color.brandContrast('#f5c400', { ramp }), color.brandContrast('#f5c400'));
+  assert.throws(() => color.brandContrast('nope'), TypeError);
+  assert.throws(() => color.brandContrast('#128978', { ramp: { 50: '#ffffff' } }), /step 100 is missing/);
+});
+
+const hueOf = (hex) => toOklch(hex).h;
+const hueGap = (a, b) => Math.abs(((hueOf(a) - hueOf(b) + 540) % 360) - 180);
+
+test('accessibleBrand returns a passing colour that createTheme pins and agrees with', () => {
+  for (const brand of SAMPLE) {
+    const nearest = color.accessibleBrand(brand);
+    assert.equal(nearest.requested, brand);
+    assert.equal(nearest.changed, nearest.hex !== brand, brand);
+    assert.deepEqual({ ...nearest, requested: undefined, changed: undefined, found: undefined }, { ...color.brandContrast(nearest.hex, { ramp: color.generateBrandRamp(brand) }), requested: undefined, changed: undefined, found: undefined });
+
+    const theme = createTheme({ brand, pin: { brand: 'nearest-aa' } });
+    assert.equal(theme.pinned.brand.hex, nearest.hex, `${brand} pinned hex`);
+    assert.equal(theme.pinned.brand.requested, brand);
+    assert.equal(theme.pinned.brand.adjusted, nearest.changed);
+    // The ramp is still the one built from the colour asked for.
+    assert.deepEqual(brandTokens(theme.tokens), color.generateBrandRamp(brand));
+    if (!nearest.found) {
+      assert.equal(nearest.passes, false, `${brand} not found`);
+      continue;
+    }
+    assert.equal(nearest.passes, true, brand);
+    assert.equal(theme.pinned.brand.dark.pinned, true, `${brand} dark takes ${nearest.hex}`);
+    for (const mode of ['light', 'dark']) assert.deepEqual(pinnedFillWarnings(theme, mode), [], `${brand} ${mode}: ${nearest.hex}`);
+    if (!nearest.changed) assert.equal(nearest.hex, brand);
+    // Same hue, for a colour that has one.
+    if (toOklch(brand).c >= 0.04) assert.ok(hueGap(brand, nearest.hex) <= 2, `${brand} -> ${nearest.hex}: hue moved ${hueGap(brand, nearest.hex).toFixed(2)} degrees`);
+  }
+});
+
+test('accessibleBrand: #128978 becomes #088574, and a passing colour is left alone', () => {
+  const result = color.accessibleBrand('#128978');
+  assert.equal(result.hex, '#088574');
+  assert.deepEqual([result.changed, result.found, result.passes], [true, true, true]);
+  assert.equal(result.light.ratios.label.fill, 4.55);
+  assert.deepEqual(color.accessibleBrand('#0F7A6B'.toLowerCase()).changed, false);
+  assert.equal(color.accessibleBrand('#0F7A6B').hex, '#0f7a6b');
+  // pin: true is unchanged: the colour is pinned as given, and the failure is reported.
+  const plain = createTheme({ brand: '#128978', pin: true });
+  assert.equal(plain.pinned.brand.hex, '#128978');
+  assert.equal('adjusted' in plain.pinned.brand, false);
+  assert.ok(plain.warnings.some((w) => w.type === 'contrast' && w.pair === 'button primary'));
+  const nearest = createTheme({ brand: '#128978', pin: { brand: 'nearest-aa' } });
+  assert.equal(nearest.tokens['--color-action-primary'], '#088574');
+  assert.match(nearest.css, /adjusted from #128978/);
+  assert.deepEqual(contrastWarnings(nearest), []);
+  // Asking for one mode only.
+  const lightOnly = color.accessibleBrand('#128978', { modes: ['light'] });
+  assert.equal(lightOnly.light.passes.text, true);
+  assert.throws(() => color.accessibleBrand('#128978', { modes: ['dim'] }), TypeError);
+});
+
+test('pin.brand: a misspelt policy word throws; any other value that is not true is "not pinned", as before', () => {
+  assert.deepEqual(createTheme({ brand: '#0026EA', pin: { brand: false } }), createTheme({ brand: '#0026EA' }));
+  assert.throws(() => createTheme({ brand: '#0026EA', pin: { brand: 'closest' } }), /pin\.brand must be true, false or "nearest-aa" \(got "closest"\)/);
+  assert.deepEqual(createTheme({ brand: '#0026EA', pin: { brand: 1 } }), createTheme({ brand: '#0026EA' }));
+});
+
+test('the bin takes --pin-nearest-aa, which implies --pin and keeps every other flag', () => {
+  const result = run('--brand', '#128978', '--pin-nearest-aa');
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /--color-action-primary: #088574;/);
+  assert.match(result.stderr, /brand #088574 is pinned in light and in dark/);
+  assert.equal(result.stdout, createTheme({ brand: '#128978', pin: { brand: 'nearest-aa' } }).css);
+  assert.match(run('--help').stdout, /--pin-nearest-aa/);
+  assert.equal(run('--brand', '#128978', '--pin-nearest-aa', '--pin-dark', 'force').status, 0);
+  assert.equal(run('--brand', '#128978', '--pin').stdout, createTheme({ brand: '#128978', pin: true }).css);
 });

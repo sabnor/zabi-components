@@ -47,6 +47,7 @@ const NOT_TOKENS = new Set([
     "--pin",
     "--pin-accent",
     "--pin-dark",
+    "--pin-nearest-aa",
     // placeholders the docs use for a token of your own
     "--my-gap",
     "--token",
