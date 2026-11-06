@@ -26,8 +26,8 @@ CSS size of this build, raw / gzip -9 (`npm run size:css`): unchanged from alpha
 
 ### Added
 
-- `Button` `backgroundClass` (classes on the box that holds `background`, the button's direct child: `mix-blend-overlay`
-  blends with the fill, `[:hover>&]:` reveals work) and `backgroundWhileLoading` (keep the layer while `loading`; never
+- `Button` `backgroundClass` (classes on the box that holds `background`, the button's direct child, so a
+  blend mode blends with the fill and a hover reveal written against the button works) and `backgroundWhileLoading` (keep the layer while `loading`; never
   while `disabled`). Default output unchanged (projectsunshine on cms-admin 27; D335).
 
 - `createTheme` returns `labels`: `{ light: { brand, accent? }, dark: { brand, accent? } }`, the resolved `--color-on-brand`

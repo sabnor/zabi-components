@@ -54,8 +54,8 @@
         background?: Snippet;
         /**
          * Classes for the layer box that holds `background` (it is the
-         * button's direct child): for example `mix-blend-overlay` to blend
-         * with the fill, or `opacity-0 [:hover>&]:opacity-100` for a reveal.
+         * button's direct child): a blend mode to blend with the fill, or a
+         * hover reveal written against the button as the parent.
          */
         backgroundClass?: string;
         /** Keep drawing `background` while `loading` (not while `disabled`). Default false. */

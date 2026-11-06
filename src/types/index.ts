@@ -111,7 +111,7 @@ export interface ButtonProps extends Omit<HTMLButtonAttributes, 'class'> {
      * over it.
      */
     background?: Snippet;
-    /** Classes for the box that holds `background`, the button's direct child (`mix-blend-overlay`, a hover reveal). */
+    /** Classes for the box that holds `background`, the button's direct child (a blend mode, a hover reveal). */
     backgroundClass?: string;
     /** Keep drawing `background` while `loading` (not while `disabled`). Default false. */
     backgroundWhileLoading?: boolean;

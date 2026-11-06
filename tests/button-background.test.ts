@@ -53,9 +53,9 @@ describe("Button background", () => {
     });
 
     it("takes classes on the layer box, its direct child", () => {
-        render(Button, { text: "Go", background, backgroundClass: "mix-blend-overlay" });
+        render(Button, { text: "Go", background, backgroundClass: "app-texture-blend" });
         const layer = layerOf()!;
-        expect(layer.className.split(/\s+/)).toEqual(expect.arrayContaining(["mix-blend-overlay", "absolute", "-z-10"]));
+        expect(layer.className.split(/\s+/)).toEqual(expect.arrayContaining(["app-texture-blend", "absolute", "-z-10"]));
         expect(layer.parentElement).toBe(screen.getByRole("button"));
     });
 
