@@ -1,9 +1,14 @@
 <script lang="ts">
     import Bell from '@lucide/svelte/icons/bell';
     import House from '@lucide/svelte/icons/house';
+    import Settings from '@lucide/svelte/icons/settings';
     import Search from '@lucide/svelte/icons/search';
     import Trophy from '@lucide/svelte/icons/trophy';
     import User from '@lucide/svelte/icons/user';
+    import Users from '@lucide/svelte/icons/users';
+    import Calendar from '@lucide/svelte/icons/calendar';
+    import Wallet from '@lucide/svelte/icons/wallet';
+    import ChartColumn from '@lucide/svelte/icons/chart-column';
     import FloatingActionButton from '../../components/atoms/FloatingActionButton.svelte';
     import IconButton from '../../components/atoms/IconButton.svelte';
     import List from '../../components/atoms/List.svelte';
@@ -26,6 +31,10 @@
         brandBar?: boolean;
         /** No frame: the shell fills the window, so resizing it moves between the three placements. */
         fullscreen?: boolean;
+        /** Eight destinations, as an admin has: on a phone the last four sit behind More. */
+        many?: boolean;
+        /** The sidebar is drawn as the rail, as an app's own collapse button does. */
+        collapsed?: boolean;
     }
 
     let {
@@ -35,14 +44,24 @@
         floating = false,
         brandBar = false,
         fullscreen = false,
+        many = false,
+        collapsed = false,
     }: Props = $props();
 
-    const items: BottomTabBarItem[] = [
+    const baseItems: BottomTabBarItem[] = [
         { href: '/home', label: 'Home', icon: House },
         { href: '/quiz', label: 'Quiz', icon: Trophy },
         { href: '/inbox', label: 'Inbox', icon: Bell, badge: 3 },
         { href: '/me', label: 'Me', icon: User },
     ];
+    const moreItems: BottomTabBarItem[] = [
+        { href: '/teams', label: 'Teams', icon: Users, badge: 2 },
+        { href: '/schedule', label: 'Schedule', icon: Calendar },
+        { href: '/payments', label: 'Payments', icon: Wallet },
+        { href: '/reports', label: 'Reports', icon: ChartColumn },
+        { href: '/settings', label: 'Settings', icon: Settings },
+    ];
+    const items = $derived(many ? [...baseItems, ...moreItems].slice(0, 8) : baseItems);
 
     let active = $state('/quiz');
     const title = $derived(items.find((item) => item.href === active)?.label ?? '');
@@ -76,7 +95,7 @@
 {/snippet}
 
 {#snippet navigation()}
-    <AppNavigation {items} {active} {floating} onclick={select} />
+    <AppNavigation {items} {active} {floating} {collapsed} onclick={select} />
 {/snippet}
 
 {#snippet shell()}

@@ -12,6 +12,7 @@
         withFooter?: boolean;
         withHeader?: boolean;
         active?: string;
+        collapsed?: boolean;
         class?: string;
     }
 
@@ -20,6 +21,7 @@
         withFooter = false,
         withHeader = true,
         active = "/quiz",
+        collapsed = false,
         class: className,
     }: Props = $props();
 
@@ -40,7 +42,7 @@
 
 {#snippet navigation({ placement }: { placement: string })}
     <i hidden data-testid="placement-arg">{placement}</i>
-    <AppNavigation {items} {active} data-testid="appnav">
+    <AppNavigation {items} {active} {collapsed} data-testid="appnav">
         {#snippet header({ placement })}
             <p data-testid="nav-header">Header {placement}</p>
         {/snippet}

@@ -22,6 +22,36 @@ export interface BottomTabBarItem {
     badge?: number;
 }
 
+/**
+ * A trailing tab that is a button, not a link: `BottomTabBar`'s `more`.
+ * `AppNavigation` uses it for the overflow of destinations that do not fit.
+ */
+export interface BottomTabBarMore {
+    /** Shown under the icon, like an item's label. */
+    label: string;
+    /** Rendered above the label, at 24px. */
+    icon: BottomTabBarIcon;
+    /** Draws the tab with the active mark (the pill, the heavier icon, the semibold label). It is never `aria-current`. */
+    active?: boolean;
+    /** A count shown on the icon. Nothing is shown for 0 or when it is left out. */
+    badge?: number;
+    /** The button's accessible name when it differs from the label (a count spelled out). */
+    name?: string;
+    /** Whether what the button opens is open: `aria-expanded`. */
+    expanded?: boolean;
+    /** What the button opens: `aria-haspopup`. */
+    haspopup?: "dialog" | "menu";
+    onclick: (event: MouseEvent) => void;
+}
+
+/** The words of `AppNavigation`. Pass a partial object to `strings` to translate. */
+export interface AppNavigationStrings {
+    /** The overflow tab's label, and the name of the sheet it opens. */
+    more: string;
+}
+
+export const APP_NAVIGATION_STRINGS: AppNavigationStrings = { more: "More" };
+
 /** The path of an href: no query, no hash, no trailing slash (except the root). */
 function pathOf(href: string): string {
     const path = href.split(/[?#]/)[0];

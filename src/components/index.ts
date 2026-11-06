@@ -148,6 +148,8 @@ export { default as BottomTabBar } from './molecules/BottomTabBar.svelte';
 export type {
     BottomTabBarIcon,
     BottomTabBarItem,
+    BottomTabBarMore,
+    AppNavigationStrings,
 } from './util/bottom-tab-bar.js';
 export { default as BottomSheet } from './molecules/BottomSheet.svelte';
 export type {

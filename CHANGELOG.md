@@ -14,6 +14,14 @@ Whenever token or CSS import API surface changes, include:
 
 ### Added
 
+- `AppNavigation` `maxTabs` (default 5): with more destinations, the phone's tab bar shows the first four and a
+  "More" tab that opens the rest as links in a bottom sheet. "More" is marked while the page is one of the rest and
+  carries the sum of their counts; the rail and the sidebar list every destination. With five or fewer the output
+  is unchanged. The word comes from `strings` or `ZabiStringsProvider` (`appNavigation.more`). `BottomTabBar` takes
+  the trailing button as `more` (cms-admin 4, D303).
+- `AppNavigation` `collapsed`, bindable: the desktop sidebar is drawn as the rail, at once, with no width
+  animation; `header` and `footer` are told `placement: "rail"`. The app owns the toggle (cms-admin 8, D304).
+
 - `PickerField` `appearance`: `"field"` (default, unchanged) or `"row"`, the same control drawn as a navigation row
   for a sidebar's project or account switcher: no edge, fill or shadow at rest, the hover and pressed fills, full
   width, the chevron kept. A status still colours its edge and shows its message (cms-admin 11, D308).

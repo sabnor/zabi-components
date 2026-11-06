@@ -23,6 +23,7 @@
  */
 import { getContext, setContext } from "svelte";
 
+import type { AppNavigationStrings } from "./bottom-tab-bar.js";
 import type { AvatarGroupStrings } from "./avatar.js";
 import type { CalendarStrings } from "./calendar.js";
 import type { ComboboxStrings } from "./combobox.js";
@@ -158,6 +159,7 @@ export const DEFAULT_UNSAVED_CHANGES_BAR_TEXTS: UnsavedChangesBarTexts = {
 export interface ZabiStrings {
     common?: Partial<ZabiCommonStrings>;
     alert?: Partial<AlertTexts>;
+    appNavigation?: Partial<AppNavigationStrings>;
     avatarGroup?: Partial<AvatarGroupStrings>;
     calendar?: Partial<CalendarStrings>;
     codeBlock?: Partial<CodeBlockTexts>;

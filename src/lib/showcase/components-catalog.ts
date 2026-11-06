@@ -10328,6 +10328,28 @@ pushToast({
                             "Draws the tab bar form as a floating capsule of glass (see BottomTabBar). The rail and the sidebar are unaffected.",
                     },
                     {
+                        name: "maxTabs",
+                        type: "number",
+                        required: false,
+                        defaultValue: "5",
+                        description:
+                            "The most tabs the tab bar shows, More included. With more items it shows the first maxTabs - 1 and a More button that opens the rest as links in a bottom sheet. The rail and the sidebar list every item.",
+                    },
+                    {
+                        name: "collapsed",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "Bindable. Draws the desktop sidebar as the rail; no effect in the tab bar or a rail shell. The app owns the toggle button (aria-expanded, aria-controls).",
+                    },
+                    {
+                        name: "strings",
+                        type: "Partial<AppNavigationStrings>",
+                        required: false,
+                        description: "Overrides for the built-in words: more, the overflow tab's label and the sheet's title.",
+                    },
+                    {
                         name: "header",
                         type: "Snippet<[{ placement: 'rail' | 'sidebar' }]>",
                         required: false,

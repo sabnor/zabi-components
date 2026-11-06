@@ -1,14 +1,20 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import type { HTMLAttributes } from "svelte/elements";
+    import Ellipsis from "@lucide/svelte/icons/ellipsis";
     import Badge from "../atoms/Badge.svelte";
+    import BottomSheet from "../molecules/BottomSheet.svelte";
     import BottomTabBar from "../molecules/BottomTabBar.svelte";
     import {
         activeTabHref,
+        APP_NAVIGATION_STRINGS,
         badgeText,
         defaultBadgeLabel,
+        type AppNavigationStrings,
         type BottomTabBarItem,
     } from "../util/bottom-tab-bar.js";
+    import { mergeStrings } from "../util/ready-made-strings.js";
+    import { zabiStringsFor } from "../util/zabi-strings.js";
     import { getAppShell } from "../util/app-shell.js";
     import { cn } from "../util/cn.js";
 
@@ -30,6 +36,23 @@
      * - Sidebar (a desktop, or `"sidebar"`): a 256px column of 36px rows with
      *   the icon before the label and the count at the end of the row. The
      *   active row is the tinted fill alone.
+     *
+     * - Collapsed (`bind:collapsed`): on a desktop the sidebar is drawn as the
+     *   rail, the same markup restyled and nothing mounted again. It changes
+     *   nothing in the tab bar or in a shell that is a rail already, and the
+     *   `header` and `footer` are told `placement: "rail"`. The component has
+     *   no button of its own: the app owns the control, so bind it to one
+     *   with `aria-expanded={!collapsed}` and `aria-controls` the id given to
+     *   this component. The column changes width at once, with no transition.
+     *
+     * More than `maxTabs` destinations do not fit a phone: the tab bar then
+     * shows the first `maxTabs - 1` and a last "More" button that opens the
+     * rest as links in a bottom sheet (a modal dialog: Escape, the backdrop
+     * or pressing a link closes it, and focus returns to the button). The
+     * "More" tab wears the active mark while the current page is one of the
+     * rest (the link in the sheet carries `aria-current`), and its badge is
+     * the sum of the rest's counts. The rail and the sidebar always list every
+     * destination.
      *
      * Both side forms are the page colour with one hairline on the content
      * side, as tall as the shell, and clear of the safe areas. The list
@@ -64,6 +87,27 @@
         /** Draws the tab bar form as a floating capsule of glass (see `BottomTabBar`). */
         floating?: boolean;
         /**
+         * The most tabs the tab bar shows, the "More" tab included. With more
+         * `items` than this it shows the first `maxTabs - 1` and "More". Five
+         * is what a phone holds; below 2 it is taken as 2. Only the tab bar
+         * is affected.
+         */
+        maxTabs?: number;
+        /**
+         * The sidebar is drawn as the rail (80px, icon over a one-line label).
+         * Bindable, default false. Only the sidebar form changes: it has no
+         * effect in the tab bar or when the shell already is a rail. The app
+         * owns the toggle:
+         *
+         * ```svelte
+         * <button aria-expanded={!collapsed} aria-controls="nav" onclick={() => (collapsed = !collapsed)}>…</button>
+         * <AppNavigation id="nav" bind:collapsed {items} />
+         * ```
+         */
+        collapsed?: boolean;
+        /** Overrides for the built-in words: the "More" tab's label. */
+        strings?: Partial<AppNavigationStrings>;
+        /**
          * Above the list in the rail and the sidebar: a logo, a workspace
          * switcher. Not shown as tabs. `placement` is the form the shell
          * says it is in; before the shell has measured the viewport (the
@@ -82,6 +126,9 @@
         badgeLabel = defaultBadgeLabel,
         badgeMax = 99,
         floating = false,
+        maxTabs = 5,
+        collapsed = $bindable(false),
+        strings,
         header,
         footer,
         class: className = "",
@@ -90,8 +137,12 @@
 
     const shell = getAppShell();
     const sidePlacement = $derived<"rail" | "sidebar">(
-        shell?.navigationPlacement === "rail" ? "rail" : "sidebar",
+        shell?.navigationPlacement === "rail" || collapsed ? "rail" : "sidebar",
     );
+
+    /** The app-wide words for this component, from a `ZabiStringsProvider` above it, if there is one. */
+    const provided = zabiStringsFor("appNavigation");
+    const text = $derived(mergeStrings(APP_NAVIGATION_STRINGS, provided(), strings));
 
     /**
      * The page's own path, used while `active` is not given: empty on the
@@ -113,6 +164,21 @@
         };
     });
     const activeHref = $derived(activeTabHref(items, active ?? locationPath));
+
+    /**
+     * The tab bar's share: with more than `maxTabs` items, the first
+     * `maxTabs - 1` and the rest behind "More". Computed over all the items,
+     * so a page under an overflow destination never marks a shorter match.
+     */
+    const tabLimit = $derived(Math.max(2, Math.floor(maxTabs)));
+    const overflows = $derived(items.length > tabLimit);
+    const tabItems = $derived(overflows ? items.slice(0, tabLimit - 1) : items);
+    const moreItems = $derived(overflows ? items.slice(tabLimit - 1) : []);
+    const moreActive = $derived(moreItems.some((item) => item.href === activeHref));
+    const moreCount = $derived(moreItems.reduce((sum, item) => sum + (item.badge ?? 0), 0));
+    /** In the tab bar: the current tab, or nothing when the page is under "More". */
+    const tabActive = $derived(overflows ? (moreActive ? "" : activeHref) : active);
+    let moreOpen = $state(false);
 
     /**
      * Colours are chosen here, not by an `aria-[current=page]:` variant: the
@@ -138,12 +204,87 @@
 <!-- The wrapper is what the stylesheet shows or hides: one form per placement. -->
 <div class={cn("an", className)} {...restProps}>
     <div class="an-tabs">
-        <BottomTabBar {items} {active} {label} {badgeLabel} {badgeMax} {floating} />
+        <BottomTabBar
+            items={tabItems}
+            active={tabActive}
+            {label}
+            {badgeLabel}
+            {badgeMax}
+            {floating}
+            more={overflows
+                ? {
+                      label: text.more,
+                      icon: Ellipsis,
+                      active: moreActive,
+                      badge: moreCount,
+                      name:
+                          moreCount > 0
+                              ? `${text.more}, ${badgeLabel(moreCount, moreItems[0])}`
+                              : undefined,
+                      expanded: moreOpen,
+                      haspopup: "dialog",
+                      onclick: () => (moreOpen = true),
+                  }
+                : undefined}
+        />
     </div>
+
+    <!-- Portalled to the body and rendered only while open, so it is not a second
+    landmark and costs nothing when the items fit. It is a dialog: the page behind
+    is inert, Escape and the backdrop close it, and focus returns to the "More" tab. -->
+    {#if overflows}
+        <BottomSheet bind:isOpen={moreOpen} fit fitMax="full" title={text.more} data-an-more="">
+            <ul class="m-0 flex list-none flex-col gap-1 p-0">
+                {#each moreItems as item (item.href)}
+                    {@const isActive = item.href === activeHref}
+                    {@const Icon = isActive && item.activeIcon ? item.activeIcon : item.icon}
+                    {@const count = item.badge ?? 0}
+                    <li class="flex">
+                        <a
+                            href={item.href}
+                            class={cn(
+                                linkClasses(isActive),
+                                "relative flex min-h-11 w-full items-center gap-3 rounded-control px-2 text-sm",
+                            )}
+                            aria-current={isActive ? "page" : undefined}
+                            aria-label={count > 0 ? `${item.label}, ${badgeLabel(count, item)}` : undefined}
+                            onclick={() => (moreOpen = false)}
+                        >
+                            {#if isActive}
+                                <span
+                                    aria-hidden="true"
+                                    class={cn("pointer-events-none absolute inset-0 rounded-control bg-nav-menu-active", FORCED)}
+                                ></span>
+                            {/if}
+                            <Icon
+                                size={20}
+                                class="relative shrink-0"
+                                strokeWidth={isActive && !item.activeIcon ? 2.5 : undefined}
+                            />
+                            <span class="relative min-w-0 flex-1 truncate">{item.label}</span>
+                            {#if count > 0}
+                                <span aria-hidden="true" class="flex flex-none">
+                                    <Badge
+                                        size="sm"
+                                        emphasis="solid"
+                                        variant="error"
+                                        class="h-[18px] min-h-[18px] min-w-[18px] px-[5px] py-0 text-[11px] leading-[18px] whitespace-nowrap"
+                                    >
+                                        {badgeText(count, badgeMax)}
+                                    </Badge>
+                                </span>
+                            {/if}
+                        </a>
+                    </li>
+                {/each}
+            </ul>
+        </BottomSheet>
+    {/if}
 
     <nav
         aria-label={label}
         data-an-side
+        data-collapsed={collapsed ? "true" : undefined}
         class="an-side bg-surface-chrome border-e border-border-weak"
     >
         {#if header}
@@ -328,6 +469,38 @@
             --an-badge-ms: auto;
             --an-badge-ring: transparent;
         }
+    }
+
+    /*
+     * Collapsed: the rail's values over the sidebar's (more specific, so
+     * written after them). In a rail already there is nothing to override.
+     * No transition on the width: it changes at once.
+     */
+    :global([data-navigation-placement="sidebar"]) .an-side[data-collapsed],
+    :global([data-navigation-placement="auto"]) .an-side[data-collapsed] {
+        --an-width: 80px;
+        --an-pad-x: 4px;
+        --an-list-gap: 8px;
+        --an-dir: column;
+        --an-justify: center;
+        --an-gap: 0px;
+        --an-link-pad-x: 4px;
+        --an-min-h: 56px;
+        --an-min-h-coarse: 56px;
+        --an-radius: 20px;
+        --an-icon-w: 56px;
+        --an-icon-h: 32px;
+        --an-icon-size: 24px;
+        --an-label-size: clamp(11px, 0.75rem, 15.6px);
+        --an-label-lh: 16px;
+        --an-label-align: center;
+        --an-label-flex: none;
+        --an-label-width: 100%;
+        --an-fill-rail-display: block;
+        --an-fill-side-display: none;
+        --an-badge-position: absolute;
+        --an-badge-ms: 0px;
+        --an-badge-ring: var(--color-surface-chrome);
     }
 
     .an-header,

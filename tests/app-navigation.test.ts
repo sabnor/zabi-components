@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/svelte";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/svelte";
 import { afterEach, describe, expect, it } from "vitest";
 
 import NavigationHarness from "./fixtures/AppShellNavigationHarness.svelte";
@@ -126,5 +126,75 @@ describe("AppNavigation", () => {
         const root = screen.getByTestId("an");
         expect(root.className).toContain("extra");
         expect(root.className).toContain("an");
+    });
+
+    describe("more than maxTabs destinations", () => {
+        const moreButton = () => within(tabs()).queryByRole("button", { hidden: true });
+
+        it("shows the first four and a More button with eight items", () => {
+            render(AppNavigationHarness, { props: { count: 8 } });
+            const links = within(tabs()).getAllByRole("link", { hidden: true });
+            expect(links).toHaveLength(4);
+            expect(moreButton()?.textContent).toContain("More");
+            expect(moreButton()!.getAttribute("aria-haspopup")).toBe("dialog");
+            expect(moreButton()!.getAttribute("aria-expanded")).toBe("false");
+            // The side form lists every destination.
+            expect(within(side()).getAllByRole("link", { hidden: true })).toHaveLength(8);
+        });
+
+        it("has no More button when the items fit", () => {
+            render(AppNavigationHarness, { props: { count: 5 } });
+            expect(moreButton()).toBeNull();
+            expect(within(tabs()).getAllByRole("link", { hidden: true })).toHaveLength(5);
+        });
+
+        it("takes maxTabs", () => {
+            render(AppNavigationHarness, { props: { count: 5, maxTabs: 4 } });
+            expect(within(tabs()).getAllByRole("link", { hidden: true })).toHaveLength(3);
+            expect(moreButton()).toBeTruthy();
+        });
+
+        it("opens the other four as links and closes when one is pressed", async () => {
+            render(AppNavigationHarness, { props: { count: 8, active: "/more-3" } });
+            await fireEvent.click(moreButton()!);
+            expect(moreButton()!.getAttribute("aria-expanded")).toBe("true");
+            const sheet = await screen.findByRole("dialog");
+            const links = within(sheet).getAllByRole("link");
+            expect(links.map((l) => l.getAttribute("href"))).toEqual(["/more-2", "/more-3", "/more-4", "/more-5"]);
+            expect(sheet.querySelector('[aria-current="page"]')?.getAttribute("href")).toBe("/more-3");
+            links[0].addEventListener("click", (e) => e.preventDefault());
+            await fireEvent.click(links[0]);
+            expect(moreButton()!.getAttribute("aria-expanded")).toBe("false");
+        });
+
+        it("marks More active, without aria-current, while the page is an overflow item", () => {
+            render(AppNavigationHarness, { props: { count: 8, active: "/more-3" } });
+            expect(tabs().querySelector('[aria-current="page"]')).toBeNull();
+            expect(moreButton()!.className).toContain("font-semibold");
+            cleanup();
+            render(AppNavigationHarness, { props: { count: 8, active: "/quiz" } });
+            expect(moreButton()!.className).not.toContain("font-semibold");
+            expect(tabs().querySelector('[aria-current="page"]')?.getAttribute("href")).toBe("/quiz");
+        });
+
+        it("shows the summed count of the overflow on More and in its name", () => {
+            render(AppNavigationHarness, { props: { count: 8 } });
+            expect(moreButton()!.getAttribute("aria-label")).toBe("More, 2 new");
+        });
+    });
+
+    describe("collapsed", () => {
+        it("applies the rail form to the sidebar and tells the header rail", () => {
+            render(NavigationHarness, { props: { navigationPlacement: "sidebar", collapsed: true } });
+            expect(side().getAttribute("data-collapsed")).toBe("true");
+            expect(screen.getByTestId("nav-header").textContent).toBe("Header rail");
+            expect(screen.getByTestId("nav-footer").textContent).toBe("Footer rail");
+        });
+
+        it("is off by default", () => {
+            render(NavigationHarness, { props: { navigationPlacement: "sidebar" } });
+            expect(side().getAttribute("data-collapsed")).toBeNull();
+            expect(screen.getByTestId("nav-header").textContent).toBe("Header sidebar");
+        });
     });
 });

@@ -7,6 +7,7 @@
         badgeText,
         defaultBadgeLabel,
         type BottomTabBarItem,
+        type BottomTabBarMore,
     } from "../util/bottom-tab-bar.js";
     import { cn } from "../util/cn.js";
     import { resolveScrolledUnder, watchScrollEdge, type ScrollEdgeMode } from "../util/scroll-edge.js";
@@ -101,6 +102,12 @@
          * on the `<nav>`.
          */
         floating?: boolean;
+        /**
+         * A last tab that is a button, not a link: for what opens the rest of
+         * the destinations (`AppNavigation`'s "More"). It counts as one of the
+         * five and looks like the other tabs. Left out, the bar is as it was.
+         */
+        more?: BottomTabBarMore;
         class?: string;
     };
 
@@ -114,6 +121,7 @@
         position,
         scrollEdge = "auto",
         floating = false,
+        more,
         class: className = "",
         ...restProps
     }: Props = $props();
@@ -167,9 +175,10 @@
 
     $effect(() => {
         if (!isDevBuild()) return;
-        if (items.length < 3 || items.length > 5) {
+        const total = items.length + (more ? 1 : 0);
+        if (total < 3 || total > 5) {
             console.warn(
-                `[zabi-components] BottomTabBar is made for 3 to 5 items and got ${items.length}. ` +
+                `[zabi-components] BottomTabBar is made for 3 to 5 items and got ${total}. ` +
                     "With fewer, use links in the page; with more, move the rest into a menu.",
             );
         }
@@ -218,7 +227,7 @@
         resolvedPosition === "fixed" ? "fixed inset-x-0 bottom-0 z-sticky" : "relative",
         className,
     )}
-    style:--tabbar-count={items.length}
+    style:--tabbar-count={items.length + (more ? 1 : 0)}
     {...restProps}
 >
     <!-- 8px between the tabs and at the sides while every tab can be 52px
@@ -305,6 +314,46 @@
                 </a>
             </li>
         {/each}
+        {#if more}
+            {@const MoreIcon = more.icon}
+            {@const moreCount = more.badge ?? 0}
+            <li class="tabbar-tab flex">
+                <button
+                    type="button"
+                    class={cn(linkClasses(more.active === true), "cursor-pointer border-0 bg-transparent")}
+                    aria-label={more.name}
+                    aria-haspopup={more.haspopup}
+                    aria-expanded={more.expanded === undefined ? undefined : more.expanded ? "true" : "false"}
+                    onclick={more.onclick}
+                >
+                    <span
+                        aria-hidden="true"
+                        class={cn(
+                            "flex h-8 w-[min(56px,100%)] shrink-0 items-center justify-center rounded-pill transition-colors duration-(--duration-base) motion-reduce:transition-none",
+                            more.active &&
+                                "bg-tabbar-active text-nav-menu-item-active forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[color:Highlight]",
+                        )}
+                    >
+                        <span class="relative flex size-6 shrink-0 items-center justify-center">
+                            <MoreIcon size={24} class="shrink-0" strokeWidth={more.active ? 2.5 : undefined} />
+                            {#if moreCount > 0}
+                                <Badge
+                                    size="sm"
+                                    emphasis="solid"
+                                    variant="error"
+                                    class="tabbar-badge ring-2 ring-(color:--color-bar) absolute start-4 bottom-4 h-[18px] min-h-[18px] min-w-[18px] px-[5px] py-0 text-[11px] leading-[18px] whitespace-nowrap"
+                                >
+                                    {badgeText(moreCount, badgeMax)}
+                                </Badge>
+                            {/if}
+                        </span>
+                    </span>
+                    <span class="tabbar-label">
+                        {more.label}
+                    </span>
+                </button>
+            </li>
+        {/if}
     </ul>
 {/snippet}
 

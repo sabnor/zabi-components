@@ -86,6 +86,30 @@ export const Adaptive: Story = {
     }
 };
 
+export const ManyDestinations: Story = {
+    args: { placement: 'tabs', frameWidth: 390, frameHeight: 780, many: true },
+    render: (args) => ({ Component: AppShellGlassStory, props: args }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Eight destinations. A phone holds five tabs, so the bar shows four and a More tab that opens the rest in a bottom sheet; More wears the active mark while the page is one of them. The rail and the sidebar list all eight.'
+            }
+        }
+    }
+};
+
+export const CollapsedSidebar: Story = {
+    args: { placement: 'sidebar', frameWidth: 1280, frameHeight: 780, many: true, collapsed: true },
+    render: (args) => ({ Component: AppShellGlassStory, props: args }),
+    parameters: {
+        docs: {
+            description: {
+                story: 'collapsed draws the desktop sidebar as the 80px rail. The app owns the toggle and binds it; the column follows the width at once, without a transition.'
+            }
+        }
+    }
+};
+
 export const BrandBar: Story = {
     args: { placement: 'tabs', frameWidth: 390, frameHeight: 780, brandBar: true },
     render: (args) => ({ Component: AppShellGlassStory, props: args }),
