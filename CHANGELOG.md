@@ -12,6 +12,17 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.10] - 2026-11-06
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.9, for cms-admin's rows 25-30 and 32 and
+projectsunshine's note on #128978 states. Every new prop, option and export is optional; nothing removed or renamed;
+`createTheme` output for every existing input is byte-identical. One visible change: a required `Input` or `Textarea`
+with its own label shows an asterisk. Run: `npm run check`, the whole vitest suite in six shards, the theme output
+tests, `npm run build:lib`, `npm pack`. Not run: Playwright, a QA pass; nothing in it has been rendered in a browser.
+
+CSS size of this build, raw / gzip -9 (`npm run size:css`): `zabi-components.css` 355,074 / 40,265 bytes,
+`theme-only` 109,912 / 22,560, `theme-dark-only` 98,146 / 12,292, `colors` 101,547 / 7,098.
+
 ### Added
 
 - `zabi-components/color` (also named exports of `zabi-components/create-theme`): `brandContrast(hex, { ramp? })` reports
