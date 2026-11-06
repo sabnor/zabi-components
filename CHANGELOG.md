@@ -12,6 +12,19 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.8] - 2026-11-06
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.7, for cms-admin's gaps from its move off
+8.0.0. Every new prop is optional; nothing removed or renamed. Two behaviour changes as fixes: the prebuilt
+`zabi-components/css` lowers its plain utilities and its zabi-only tokens to specificity 0, and `AppNavigation` with
+more than five destinations shows "More" on a phone. Run: `npm run check`, the whole vitest suite in six shards, the
+theme output tests, `npm run build:lib`, `npm pack`. Not run: Playwright, a QA pass; nothing in it has been rendered
+in a browser.
+
+CSS size of this build, raw / gzip -9 (`npm run size:css`): `zabi-components.css` 292,825 / 35,044 bytes,
+`theme-only` 90,932 / 19,860, `theme-dark-only` 58,011 / 9,860, `colors` 47,542 / 5,540. 9.0.0 for comparison:
+277,117 / 33,987, 90,171 / 19,803, 58,011 / 9,903, 47,551 / 5,551.
+
 ### Added
 
 - `AppNavigation` `maxTabs` (default 5): with more destinations, the phone's tab bar shows the first four and a
