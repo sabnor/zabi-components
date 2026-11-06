@@ -5631,6 +5631,21 @@ pushToast({
                         description:
                             "Draw a ring round the chosen row. false leaves the filled radio to show the choice; keyboard focus keeps its ring either way.",
                     },
+                    {
+                        name: "appearance",
+                        type: '"list" | "tile"',
+                        required: false,
+                        defaultValue: '"list"',
+                        description:
+                            'tile lays the options out as a wrapping grid of tiles (5 or more is fine); the chosen tile has a 2px edge. Same radios and keys as the list.',
+                    },
+                    {
+                        name: "optionVisual",
+                        type: "Snippet<[RadioGroupOption, { checked: boolean; disabled: boolean }]>",
+                        required: false,
+                        description:
+                            "A picture of the option: above the label in a tile, between the radio and the label in a list. Hidden from assistive technology; the label stays the name.",
+                    },
                 ],
                 variants: [],
                 examples: [

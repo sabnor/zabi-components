@@ -6,6 +6,7 @@
         RADIO_GROUP_RING_OVERLAY,
         SELECTION_CONTROL_INPUT,
     } from "../atoms/selection-control.styles";
+    import type { Snippet } from "svelte";
     import type { HTMLFieldsetAttributes } from "svelte/elements";
     import { generateId } from "../util/ssr-safe.js";
     import { SvelteMap } from "svelte/reactivity";
@@ -20,6 +21,9 @@
         /** What a screen reader says for the description, in its place; it is not drawn. */
         descriptionSpoken?: string;
     };
+
+    /** What `optionVisual` is told about its option. */
+    export type RadioGroupOptionState = { checked: boolean; disabled: boolean };
 
     /** Other attributes (`id`, `data-*`, `aria-*`, ...) land on the `<fieldset>`. */
     type Props = Omit<HTMLFieldsetAttributes, "class" | "name" | "disabled"> & {
@@ -48,6 +52,20 @@
          * the choice; keyboard focus keeps its ring either way.
          */
         chosenRing?: boolean;
+        /**
+         * How the options are laid out. `"list"` is a column of rows.
+         * `"tile"` is a wrapping grid of tiles, for a choice that is easier
+         * to see than to read; the chosen tile has a 2px edge and
+         * `chosenRing` does not apply.
+         */
+        appearance?: "list" | "tile";
+        /**
+         * A picture of the option. In a tile it is drawn above the label; in
+         * a list, between the radio and the label. It is decoration and is
+         * hidden from assistive technology: the option's `label` stays its
+         * name and `description` still describes it.
+         */
+        optionVisual?: Snippet<[RadioGroupOption, RadioGroupOptionState]>;
     };
 
     let {
@@ -60,6 +78,8 @@
         legend = "",
         label = "",
         chosenRing = true,
+        appearance = "list",
+        optionVisual,
         ...restProps
     }: Props = $props();
 
@@ -198,6 +218,15 @@
     const radioControlShellClasses = RADIO_GROUP_CONTROL_SHELL;
 
     const radioRingOverlayClasses = RADIO_GROUP_RING_OVERLAY;
+
+    const tile = $derived(appearance === "tile");
+
+    // The tile's edge is a 1px border plus a 2px inset outline when chosen (no
+    // layout shift); keyboard focus is the library ring, a box-shadow.
+    const tileClasses =
+        "relative flex flex-col items-center justify-center gap-2 p-3 text-center rounded-control border border-control-border bg-card cursor-pointer transition-colors duration-150 not-has-[:disabled]:hover:bg-surface-hover not-has-[:disabled]:active:bg-surface-active has-[:checked]:border-action-primary has-[:checked]:outline-2 has-[:checked]:-outline-offset-1 has-[:checked]:outline-action-primary forced-colors:has-[:checked]:border-[Highlight] forced-colors:has-[:checked]:outline-[Highlight] has-[:focus-visible]:shadow-[0_0_0_2px_var(--color-focus-ring-offset),0_0_0_4px_var(--color-focus-ring)] has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
+    const tileGridClasses =
+        "grid grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] gap-3";
 </script>
 
 <fieldset
@@ -212,19 +241,22 @@
         </legend>
     {/if}
 
-    <div class="space-y-3">
+    <div class={tile ? tileGridClasses : "space-y-3"}>
         {#each options as option, index (option.value)}
             {@const optionDisabled = isOptionDisabled(option)}
             {@const descriptionId = option.description ? `${fallbackName}-${index}-description` : undefined}
+            {@const state = { checked: value === option.value, disabled: optionDisabled }}
             <!-- A one-line row is centred in its height; with a description the radio stays at the top, by the label. -->
             <label
-                class={cn(
-                    optionLabelWrapperClasses,
-                    !option.description && "items-center",
-                    !chosenRing && "selection-control-option-row-quiet",
-                )}
+                class={tile
+                    ? tileClasses
+                    : cn(
+                          optionLabelWrapperClasses,
+                          !option.description && "items-center",
+                          !chosenRing && "selection-control-option-row-quiet",
+                      )}
             >
-                <span class={cn(radioControlShellClasses, !option.description && "mt-0")}>
+                {#if tile}
                     <input
                         type="radio"
                         name={groupName}
@@ -234,13 +266,38 @@
                         disabled={optionDisabled}
                         tabindex={tabIndexFor(option)}
                         aria-describedby={descriptionId}
-                        class={SELECTION_CONTROL_INPUT}
+                        class="sr-only"
                         {@attach registerRadio(option.value)}
                     />
-                    <span class={radioRingOverlayClasses}></span>
-                    <span class={RADIO_CHECKED_DOT_CLASSES} aria-hidden="true"></span>
-                </span>
-                <span class="flex flex-col gap-1">
+                    {#if optionVisual}
+                        <span class="flex items-center justify-center" aria-hidden="true">
+                            {@render optionVisual(option, state)}
+                        </span>
+                    {/if}
+                {:else}
+                    <span class={cn(radioControlShellClasses, !option.description && "mt-0")}>
+                        <input
+                            type="radio"
+                            name={groupName}
+                            form={nameProp ? undefined : groupName}
+                            value={option.value}
+                            bind:group={chosen.value}
+                            disabled={optionDisabled}
+                            tabindex={tabIndexFor(option)}
+                            aria-describedby={descriptionId}
+                            class={SELECTION_CONTROL_INPUT}
+                            {@attach registerRadio(option.value)}
+                        />
+                        <span class={radioRingOverlayClasses}></span>
+                        <span class={RADIO_CHECKED_DOT_CLASSES} aria-hidden="true"></span>
+                    </span>
+                    {#if optionVisual}
+                        <span class="flex shrink-0 items-center justify-center" aria-hidden="true">
+                            {@render optionVisual(option, state)}
+                        </span>
+                    {/if}
+                {/if}
+                <span class={cn("flex flex-col gap-1", tile && "items-center")}>
                     <span class="text-sm font-medium text-label">
                         {option.label}
                     </span>

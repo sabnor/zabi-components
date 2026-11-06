@@ -12,6 +12,14 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- `RadioGroup` `appearance="tile"` and `optionVisual`: the options as a wrapping grid of tiles, each with a picture
+  above its label, for a choice that is easier to see than to read (five button shapes, say). The same native
+  radios, name, arrow keys and roving focus as the list; the picture is `aria-hidden` and the label stays the name.
+  The chosen tile has a 2px edge with no change in size; `chosenRing` does not apply to tiles. `optionVisual` also
+  works in the list, between the radio and the label. Default `"list"`, unchanged (cms-admin 16, D313).
+
 ## [9.1.0-alpha.8] - 2026-11-06
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.7, for cms-admin's gaps from its move off

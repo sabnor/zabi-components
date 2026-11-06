@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/sveltekit';
+import { createRawSnippet } from 'svelte';
 import RadioGroup from '../../components/molecules/RadioGroup.svelte';
 
 const options = [
@@ -46,6 +47,45 @@ export const DescriptionAndCentredRows: Story = {
         docs: {
             description: {
                 story: 'An option description is tied to its radio with aria-describedby and is not part of its name ("Follow system"). A one-line option is centred in its row; with a description the radio stays at the top, level with the label.'
+            }
+        }
+    }
+};
+
+const radii: Record<string, string> = {
+    none: '0',
+    sm: '0.25rem',
+    md: '0.5rem',
+    lg: '0.75rem',
+    full: '9999px'
+};
+
+const shapeOptions = [
+    { value: 'none', label: 'None' },
+    { value: 'sm', label: 'Small' },
+    { value: 'md', label: 'Medium' },
+    { value: 'lg', label: 'Large' },
+    { value: 'full', label: 'Full' }
+];
+
+const shapePreview = createRawSnippet((option: () => { value: string }) => ({
+    render: () =>
+        `<span style="display:block;width:3rem;height:1.75rem;background:var(--color-action-primary);border-radius:${radii[option().value]}"></span>`
+}));
+
+export const Tiles: Story = {
+    args: {
+        legend: 'Button shape',
+        options: shapeOptions,
+        appearance: 'tile',
+        optionVisual: shapePreview,
+        defaultValue: 'md'
+    },
+    parameters: {
+        layout: 'padded',
+        docs: {
+            description: {
+                story: 'appearance="tile" with optionVisual: a wrapping grid of tiles, each a picture over its label. Five options fit and wrap on a phone. The picture is hidden from assistive technology; the label is the name. Same radios and arrow keys as the list.'
             }
         }
     }

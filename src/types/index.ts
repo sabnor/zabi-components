@@ -361,6 +361,39 @@ export interface SelectProps
     className?: string;
 }
 
+// RadioGroup component props
+export interface RadioGroupOption {
+    value: string;
+    label: string;
+    disabled?: boolean;
+    description?: string;
+    /** What a screen reader says for the description, in its place; it is not drawn. */
+    descriptionSpoken?: string;
+}
+
+/** What `RadioGroupProps.optionVisual` is told about its option. */
+export interface RadioGroupOptionState {
+    checked: boolean;
+    disabled: boolean;
+}
+
+export interface RadioGroupProps extends Omit<HTMLAttributes<HTMLFieldSetElement>, 'class'> {
+    class?: string;
+    options: RadioGroupOption[];
+    /** Selected value; `bind:value`. Use `undefined` for no selection. */
+    value?: string | undefined;
+    defaultValue?: string | undefined;
+    name?: string;
+    disabled?: boolean;
+    legend?: string;
+    label?: string;
+    chosenRing?: boolean;
+    /** `"list"` (default) is a column of rows; `"tile"` a wrapping grid of tiles. */
+    appearance?: 'list' | 'tile';
+    /** A picture of the option, hidden from assistive technology; the label stays the name. */
+    optionVisual?: Snippet<[RadioGroupOption, RadioGroupOptionState]>;
+}
+
 // PickerField component props
 export interface PickerFieldProps
     extends Omit<
@@ -1429,6 +1462,7 @@ export type Input = ZabiComponent<InputProps, InputEvents>;
 export type Checkbox = ZabiComponent<CheckboxProps, CheckboxEvents>;
 export type Select = ZabiComponent<SelectProps, SelectEvents>;
 export type PickerField = ZabiComponent<PickerFieldProps>;
+export type RadioGroup = ZabiComponent<RadioGroupProps>;
 export type Textarea = ZabiComponent<TextareaProps, TextareaEvents>;
 export type Modal = ZabiComponent<ModalProps, ModalEvents>;
 export type Alert = ZabiComponent<AlertProps>;
