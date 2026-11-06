@@ -127,13 +127,24 @@
         badgeMax = 99,
         floating = false,
         maxTabs = 5,
-        collapsed = $bindable(false),
+        collapsed = $bindable(),
         strings,
         header,
         footer,
         class: className = "",
         ...restProps
     }: Props = $props();
+
+    /*
+     * The default is applied here, not as a `$bindable` fallback: an app may
+     * write `bind:collapsed={state.collapsed}` with nothing in it yet, and
+     * Svelte refuses `undefined` for a bindable prop that has a fallback.
+     */
+    const applyDefaults = () => {
+        if (collapsed === undefined) collapsed = false;
+    };
+    applyDefaults();
+    $effect.pre(applyDefaults);
 
     const shell = getAppShell();
     const sidePlacement = $derived<"rail" | "sidebar">(

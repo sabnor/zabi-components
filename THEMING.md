@@ -1436,7 +1436,7 @@ settable per mode:
 back: `--color-surface-chrome: var(--color-surface-raised)`.
 
 **Tinting one bar.** `material-bar` reads two properties in front of the tokens,
-declared nowhere (the same pattern as `--zabi-badge-*`): `--zabi-bar-fill`, the
+declared nowhere (the same pattern as the Badge's `--zabi-badge-neutral-fill`): `--zabi-bar-fill`, the
 fill at rest, and `--zabi-bar-edge`, the hairline. Set them on the bar or on any
 ancestor. Setting the edge shows the hairline at rest too, not only once content
 scrolls under; the scrolled-under bar keeps the regular material and takes only

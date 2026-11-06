@@ -16,7 +16,7 @@ import type {
     HTMLTextareaAttributes,
     SVGAttributes,
 } from 'svelte/elements';
-import type { BottomTabBarItem } from '../components/util/bottom-tab-bar.js';
+import type { AppNavigationStrings, BottomTabBarItem, BottomTabBarMore } from '../components/util/bottom-tab-bar.js';
 import type {
     AppShellNavigationContext,
     AppShellNavigationMode,
@@ -387,6 +387,8 @@ export interface PickerFieldProps
     placeholder?: string;
     /** How many lines the value may take: `"all"` wraps it (default), `2` or `1` cut it with "…". */
     lines?: 1 | 2 | 'all';
+    /** `"field"` (default) is the boxed field; `"row"` has no edge or fill at rest and fills on hover, as a navigation row. */
+    appearance?: 'field' | 'row';
     /** An icon or an avatar before the text. */
     leading?: Snippet;
     /** Replaces the chevron at the end: a calendar or a clock, say. It is decoration, so it should be `aria-hidden`. */
@@ -788,6 +790,8 @@ export interface BottomTabBarProps extends Omit<HTMLAttributes<HTMLElement>, 'cl
     scrollEdge?: 'auto' | 'always' | 'never';
     /** Draws the bar as a rounded glass capsule inset from the screen edges. Default false. */
     floating?: boolean;
+    /** A last tab that is a button, not a link: what opens the rest of the destinations. */
+    more?: BottomTabBarMore;
     class?: string;
 }
 
@@ -872,6 +876,12 @@ export interface AppNavigationProps extends Omit<HTMLAttributes<HTMLDivElement>,
     badgeMax?: number;
     /** Draws the tab bar form as a floating capsule of glass. */
     floating?: boolean;
+    /** The most tabs the tab bar shows, "More" included; the rest open from "More". Default 5. */
+    maxTabs?: number;
+    /** Bindable: the desktop sidebar is drawn as the rail. Default false. */
+    collapsed?: boolean;
+    /** Overrides for the built-in words. */
+    strings?: Partial<AppNavigationStrings>;
     /** Above the list in the rail and the sidebar. */
     header?: Snippet<[{ placement: 'rail' | 'sidebar' }]>;
     /** Below the list in the rail and the sidebar. */

@@ -11,6 +11,8 @@ import Radio from "../src/components/atoms/Radio.svelte";
 import Rating from "../src/components/atoms/Rating.svelte";
 import Select from "../src/components/atoms/Select.svelte";
 import Combobox from "../src/components/molecules/Combobox.svelte";
+import AppNavigation from "../src/components/organisms/AppNavigation.svelte";
+import House from "@lucide/svelte/icons/house";
 import Slider from "../src/components/atoms/Slider.svelte";
 import Textarea from "../src/components/atoms/Textarea.svelte";
 import TimeField from "../src/components/atoms/TimeField.svelte";
@@ -104,6 +106,13 @@ const cases: Case[] = [
     { name: "SegmentedControl", component: SegmentedControl, prop: "value", becomes: undefined, props: { label: "Size", options } },
     { name: "RadioGroup", component: RadioGroup, prop: "value", becomes: undefined, props: { legend: "Answer", options } },
     { name: "RadioGroup with defaultValue", component: RadioGroup, prop: "value", becomes: "b", props: { legend: "Answer", options, defaultValue: "b" } },
+    {
+        name: "AppNavigation",
+        component: AppNavigation,
+        prop: "collapsed",
+        becomes: false,
+        props: { items: [{ href: "/", label: "Home", icon: House }, { href: "/a", label: "A", icon: House }, { href: "/b", label: "B", icon: House }] },
+    },
     { name: "Alert", component: Alert, prop: "open", becomes: true, props: { message: "Saved" } },
     { name: "Collapsible", component: Collapsible, prop: "open", becomes: false, props: { title: "More" } },
     { name: "ConfirmDialog", component: ConfirmDialog, prop: "open", becomes: false, props: { title: "Delete?" } },

@@ -32,6 +32,7 @@ import { DEFAULT_CODE_FIELD_STRINGS } from "../src/components/util/code-field";
 import { DEFAULT_SKELETON_STRINGS } from "../src/components/util/skeleton";
 import { STEPPER_STRINGS } from "../src/components/util/stepper";
 import { DEFAULT_AVATAR_GROUP_STRINGS } from "../src/components/util/avatar";
+import { APP_NAVIGATION_STRINGS } from "../src/components/util/bottom-tab-bar";
 import { DEFAULT_PULL_TO_REFRESH_STRINGS } from "../src/components/util/pull-to-refresh";
 import { DEFAULT_SWIPEABLE_LIST_ITEM_STRINGS } from "../src/components/util/swipeable-list-item";
 import {
@@ -462,6 +463,7 @@ const THEME_TOGGLE_DEFAULTS: Words = {
 const ENTRY_DEFAULTS: Record<keyof ZabiStrings, Words> = {
     common: DEFAULT_ZABI_COMMON_STRINGS as unknown as Words,
     alert: DEFAULT_ALERT_TEXTS as unknown as Words,
+    appNavigation: APP_NAVIGATION_STRINGS as unknown as Words,
     avatarGroup: DEFAULT_AVATAR_GROUP_STRINGS as unknown as Words,
     codeBlock: DEFAULT_CODE_BLOCK_TEXTS as unknown as Words,
     codeField: DEFAULT_CODE_FIELD_STRINGS as unknown as Words,

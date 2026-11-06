@@ -61,6 +61,8 @@ const NOT_TOKENS = new Set([
     "--quiet",
     // THEME.md's example of a token an app adds for itself
     "--color-quiz-gold",
+    // a Tailwind default-theme name docs/theme-imports.md quotes, not one of ours
+    "--color-red-500",
 ]);
 
 /**
@@ -99,6 +101,9 @@ const COMPONENT_PROPERTIES: Record<string, string> = {
     // Button reads these through `rounded-button` and `font-button`, which are in the stylesheet.
     "--zabi-button-radius": "src/app.css",
     "--zabi-button-font-weight": "src/app.css",
+    // One bar's fill and hairline, read by `.material-bar`.
+    "--zabi-bar-fill": "src/app.css",
+    "--zabi-bar-edge": "src/app.css",
 };
 
 function mentioned(text: string): string[] {
