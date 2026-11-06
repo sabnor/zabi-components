@@ -17,6 +17,13 @@
      * Other attributes (`data-*`, `aria-*`, `onfocus`, ...) land on that
      * element. The component does not open anything: `onclick` does, and the
      * app sets `expanded` while its sheet is open.
+     *
+     * `appearance="row"` is the same control as a row, for a sidebar's project
+     * or account switcher: no box, so it sits flush with the navigation rows
+     * around it (same radius, hover and pressed fills), full width, chevron
+     * kept. Name it with `label` or, without a visible one, `aria-label`.
+     * A `success`, `warning` or `error` status keeps its edge colour on the
+     * row, which reads as a ring around it, and its message below.
      */
     type Props = Omit<
         HTMLButtonAttributes,
@@ -57,6 +64,8 @@
          */
         lines?: 1 | 2 | "all";
         size?: "sm" | "md" | "lg";
+        /** `"field"` is the boxed field; `"row"` has no edge, fill or shadow at rest and fills on hover and press, as a navigation row. Default `"field"`. */
+        appearance?: "field" | "row";
         disabled?: boolean;
         /** Status text under the field. Shown with a `success`, `warning` or `error` variant; for neutral help, use `hint`. */
         message?: string;
@@ -103,6 +112,7 @@
         children,
         lines = "all",
         size = "md",
+        appearance = "field",
         disabled = false,
         variant = "default",
         message = "",
@@ -132,15 +142,29 @@
     const isEmpty = $derived(value === "");
     const sizeClass = $derived(fieldControlSize(size));
 
+    const isRow = $derived(appearance === "row");
+
+    /** A row has no field surface: the edge is transparent unless a status colours it, and the fills are a navigation row's. */
+    const ROW_TRIGGER =
+        "focus-ring flex w-full min-w-0 cursor-pointer items-center justify-between gap-2 rounded-control border bg-transparent text-body transition-colors duration-(--duration-base) hover:bg-surface-hover active:bg-surface-active focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-transparent disabled:text-action-disabled-text";
+
     const controlClasses = $derived(
-        cn(
-            FIELD_CONTROL_TRIGGER,
-            sizeClass.box,
-            sizeClass.text,
-            fieldControlEdge(status.variant),
-            // `disabled:` does not match an `<a>`: a disabled link wears the pair itself.
-            isLink && disabled && "cursor-not-allowed border-input-border bg-input-disabled text-action-disabled-text hover:bg-input-disabled active:bg-input-disabled",
-        ),
+        isRow
+            ? cn(
+                  ROW_TRIGGER,
+                  sizeClass.box,
+                  sizeClass.text,
+                  status.variant === "default" ? "border-transparent" : fieldControlEdge(status.variant),
+                  isLink && disabled && "cursor-not-allowed text-action-disabled-text hover:bg-transparent active:bg-transparent",
+              )
+            : cn(
+                  FIELD_CONTROL_TRIGGER,
+                  sizeClass.box,
+                  sizeClass.text,
+                  fieldControlEdge(status.variant),
+                  // `disabled:` does not match an `<a>`: a disabled link wears the pair itself.
+                  isLink && disabled && "cursor-not-allowed border-input-border bg-input-disabled text-action-disabled-text hover:bg-input-disabled active:bg-input-disabled",
+              ),
     );
 
     /**

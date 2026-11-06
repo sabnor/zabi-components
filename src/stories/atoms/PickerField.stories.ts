@@ -44,6 +44,11 @@ export const WithError: Story = {
     parameters: story('The error edge colour and a message that is announced and read with the field. A button has no aria-invalid, so those two carry it.')
 };
 
+export const Row: Story = {
+    args: { scenario: 'row' },
+    parameters: story('appearance="row": no box at rest, a hover and pressed fill like a navigation row, the chevron kept. For a project switcher in a sidebar, named with aria-label.')
+};
+
 export const Disabled: Story = {
     args: { scenario: 'disabled' },
     parameters: story('Not pressable, with and without a value.')

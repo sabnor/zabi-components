@@ -12,6 +12,17 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- `PickerField` `appearance`: `"field"` (default, unchanged) or `"row"`, the same control drawn as a navigation row
+  for a sidebar's project or account switcher: no edge, fill or shadow at rest, the hover and pressed fills, full
+  width, the chevron kept. A status still colours its edge and shows its message (cms-admin 11, D308).
+
+### Docs
+
+- `CodeField` says what it is for: one-time and verification codes, a box per character; for a slug, an identifier
+  or source code use `Input` (cms-admin 12, D309).
+
 ## [9.1.0-alpha.7] - 2026-10-20
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.6, for the Körväder gaps G9 and G10. The

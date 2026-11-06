@@ -355,7 +355,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "CodeField",
                 category: "atoms",
                 description:
-                    "A field for a verification code: one real input under drawn boxes, so autofill, paste and the numeric keyboard work and the form posts by name.",
+                    "For one-time and verification codes, a box per character. For a slug, identifier or source code use Input. One real input, so autofill and paste work.",
                 props: [
                     {
                         name: "value",
@@ -1673,8 +1673,16 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 name: "PickerField",
                 category: "atoms",
                 description:
-                    "A field that looks like a Select and opens whatever the app gives it, such as its own sheet. One button named by its label and value.",
+                    "A Select-like field that opens whatever the app gives it, such as a sheet. One button named by its label and value. Set appearance row for a sidebar row.",
                 props: [
+                    {
+                        name: "appearance",
+                        type: "'field' | 'row'",
+                        required: false,
+                        defaultValue: "field",
+                        description:
+                            "field is the boxed field. row has no edge, fill or shadow at rest and fills on hover and press like a navigation row; the chevron stays. Without a visible label, name it with aria-label.",
+                    },
                     {
                         name: "label",
                         type: "string",

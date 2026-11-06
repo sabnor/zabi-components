@@ -2,11 +2,12 @@
     import MapPin from '@lucide/svelte/icons/map-pin';
     import { tick } from 'svelte';
     import PickerField from '../../components/atoms/PickerField.svelte';
+    import Avatar from '../../components/atoms/Avatar.svelte';
     import BottomSheet from '../../components/molecules/BottomSheet.svelte';
 
     interface Props {
         /** Which arrangement to show. */
-        scenario?: 'empty' | 'value' | 'leading' | 'error' | 'disabled' | 'sizes' | 'interactive' | 'link';
+        scenario?: 'empty' | 'value' | 'leading' | 'error' | 'disabled' | 'sizes' | 'interactive' | 'link' | 'row';
         size?: 'sm' | 'md' | 'lg';
     }
 
@@ -29,6 +30,10 @@
     <MapPin size={18} aria-hidden="true" />
 {/snippet}
 
+{#snippet avatar()}
+    <Avatar name="Quizrundan" size="sm" />
+{/snippet}
+
 <div class="flex w-80 flex-col gap-4">
     {#if scenario === 'empty'}
         <PickerField label="Pub" placeholder="Choose a pub" hint="Where you had it" {size} />
@@ -45,6 +50,8 @@
         <PickerField label="Small" value="The Bishops Arms" size="sm" />
         <PickerField label="Medium" value="The Bishops Arms" size="md" />
         <PickerField label="Large" value="The Bishops Arms" size="lg" />
+    {:else if scenario === 'row'}
+        <PickerField appearance="row" aria-label="Project" value="Quizrundan" leading={avatar} {size} />
     {:else if scenario === 'link'}
         <PickerField label="Pub" placeholder="Choose a pub" href="#choose-a-pub" {size} />
     {:else}

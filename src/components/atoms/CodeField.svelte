@@ -27,7 +27,9 @@
     import FieldMessages from "./FieldMessages.svelte";
 
     /**
-     * A field for a one-time or verification code. One real `<input>` holds
+     * A field for a one-time or verification code, with a separate box for
+     * each character. For a slug, an identifier or source code use `Input`
+     * (or `Textarea` or `CodeBlock`, as fits). One real `<input>` holds
      * the code, so autofill from a message, paste, the numeric keyboard, form
      * posting by `name` and a single accessible name all work as on `Input`;
      * the boxes are drawn under it and hidden from assistive technology.

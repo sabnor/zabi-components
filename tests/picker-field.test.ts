@@ -175,3 +175,35 @@ describe("Select's trigger is unchanged by the shared field classes", () => {
         );
     });
 });
+
+describe("PickerField appearance", () => {
+    it("is the boxed field by default", () => {
+        render(PickerField, { props: { label: "Pub", value: "Bishops" } });
+        expect(classes(screen.getByRole("button"))).toEqual(expect.arrayContaining(["border", "bg-input", "border-input-border"]));
+    });
+
+    it("drops the field edge and fill as a row, with a hover and pressed fill", () => {
+        render(PickerField, { props: { appearance: "row", "aria-label": "Project", value: "Quizrundan" } });
+        const button = screen.getByRole("button", { name: "Project" });
+        const list = classes(button);
+        expect(list).toEqual(expect.arrayContaining(["border-transparent", "hover:bg-surface-hover", "active:bg-surface-active", "w-full"]));
+        expect(list).not.toContain("bg-input");
+        expect(list).not.toContain("border-input-border");
+        expect(list).not.toContain("hover:bg-input-hover");
+        expect(button.querySelector("svg")).not.toBeNull();
+    });
+
+    it("keeps the error text and edge as a row", () => {
+        render(PickerField, { props: { appearance: "row", "aria-label": "Project", error: "Choose a project" } });
+        expect(classes(screen.getByRole("button"))).toContain("border-error");
+        expect(screen.getByRole("alert").textContent).toContain("Choose a project");
+    });
+
+    it("is a link as a row with href", () => {
+        render(PickerField, { props: { appearance: "row", "aria-label": "Project", href: "/projects" } });
+        const link = screen.getByRole("link", { name: "Project" });
+        expect(link.tagName).toBe("A");
+        expect(classes(link)).toEqual(expect.arrayContaining(["border-transparent", "hover:bg-surface-hover"]));
+        expect(classes(link)).not.toContain("bg-input");
+    });
+});
