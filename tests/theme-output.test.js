@@ -217,7 +217,13 @@ test('dark is published under .dark, [data-theme="dark"] and an opt-in [data-the
         if (!rule.some((node) => node.type === 'decl' && node.prop.startsWith('--color-'))) return;
         // Tailwind's nested `& { … }` inside the auto rule is the auto rule.
         if (rule.selector.trim() === '&' && rule.parent?.parent?.selector?.trim() === '[data-theme="auto"]') return;
-        assert.deepEqual(rule.selectors.map((s) => s.trim()), ['[data-theme="auto"]'], `${file}: ${rule.selector} follows the OS without opting in`);
+        // `.zabi-theme-scope` follows the OS only where asked: its own `data-theme="auto"`, or a
+        // `data-theme="auto"` ancestor. A plain scope selector in here would not wait for that.
+        const selectors = rule.selectors.map((s) => s.trim());
+        const optsIn = (selector) =>
+          selector === '[data-theme="auto"]' ||
+          (selector.includes('.zabi-theme-scope') && selector.includes('[data-theme="auto"]'));
+        assert.ok(selectors.every(optsIn), `${file}: ${rule.selector} follows the OS without opting in`);
       });
     });
 
@@ -237,6 +243,8 @@ test('dark is published under .dark, [data-theme="dark"] and an opt-in [data-the
     // that on `class="dark" data-theme="light"` the rule with the tokens wins.
     const order = [];
     root.walkRules((rule) => {
+      // The page's rules; what a `.zabi-theme-scope` sets is checked in tests/theme-scope.test.ts.
+      if (rule.selector.includes('.zabi-theme-scope')) return;
       if (rule.some((node) => node.type === 'decl' && node.prop === 'color-scheme')) {
         order.push(`${rule.selectors.map((s) => s.trim()).join(', ')} = ${schemeOf(rule).join('/')}`);
       }
@@ -602,7 +610,8 @@ test('the dark and colour bundles carry no class rules', () => {
     postcss.parse(read(file)).walkRules((rule) => {
       const selectors = (rule.selectors ?? [rule.selector]).map((s) => s.trim());
       assert.ok(
-        selectors.every((selector) => !/^\.(?!dark\b)/.test(selector)),
+        // Only `.zabi-theme-scope` (and its states) is a class of ours in these files.
+        selectors.every((selector) => !/^\.(?!dark\b|zabi-theme-scope\b)/.test(selector)),
         `${file}: class rule ${selectors.join(', ')}`,
       );
     });

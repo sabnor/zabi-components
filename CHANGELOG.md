@@ -19,6 +19,30 @@ Whenever token or CSS import API surface changes, include:
   radios, name, arrow keys and roving focus as the list; the picture is `aria-hidden` and the label stays the name.
   The chosen tile has a 2px edge with no change in size; `chosenRing` does not apply to tiles. `optionVisual` also
   works in the list, between the radio and the label. Default `"list"`, unchanged (cms-admin 16, D313).
+- `.zabi-theme-scope`: a class that re-declares every theme role holding a `var()` on its element, so a subtree
+  takes the brand set on it (`--zabi-brand-50` … `950` inline) and, with `data-theme="dark" | "light" | "auto"` (or
+  `.dark`) on the same element, its own mode inside a page of the other one. Without an attribute it follows the
+  page. Generated from the theme's own token maps; the light half ships in `theme`, `theme-only`, `colors` and `css`,
+  the dark half in the dark files, `colors` and `css`. A role the app (or a `createTheme` file) sets as a plain value
+  on `:root` is replaced inside the scope; set it on the scope (cms-admin 13, D310).
+- `on-fill-invert`, beside `on-fill`, inverts the primary family in the block as 9.0.0 did; `--zabi-fill` (the
+  block's fill, the inverted button's label) is documented (cms-admin 24, D320).
+
+### Fixed
+
+- Inside `.on-fill` a primary Button and a solid brand Badge keep their own fill and label again, as THEMING.md
+  said; since 9.0.0 they were inverted to the block's label colour. A Rating star there keeps its own colour too.
+  `class="on-fill on-fill-invert"` gives the 9.0.0 look. `.on-brand` and `.on-accent` are unchanged. The guide's
+  tables on what each block does to the primary, accent and star are corrected (cms-admin 24, D320).
+
+### Docs
+
+- THEMING.md: a recommended button-shape scale for `--zabi-button-radius` (0, 0.25rem, 0.5rem, 0.75rem, 9999px) and
+  `--zabi-button-font-weight`, settable per project on any ancestor (cms-admin 15, D312).
+- THEME.md pitfalls: an app's own Tailwind `brand-*` palette collides with zabi's semantic `--color-brand-*` steps,
+  which mirror in dark; name it differently and set `--zabi-brand-*` at run time (cms-admin 17, D314). `.font-button`,
+  `.font-button-strong` and `.rounded-button` are zabi's and set only weight and radius through custom properties
+  (cms-admin 22, D318).
 
 ## [9.1.0-alpha.8] - 2026-11-06
 

@@ -46,6 +46,7 @@ const NOT_TOKENS = new Set([
     "--help",
     "--pin",
     "--pin-accent",
+    "--pin-dark",
     // placeholders the docs use for a token of your own
     "--my-gap",
     "--token",
@@ -98,6 +99,8 @@ const COMPONENT_PROPERTIES: Record<string, string> = {
     "--zabi-chart-surface": "src/components/molecules/LineChart.svelte",
     // The label colour of a block an app fills itself, read by the `on-fill` scope.
     "--zabi-on-fill": "src/app.css",
+    // The block's own fill, read as the label of the inverted button (`on-fill on-fill-invert`).
+    "--zabi-fill": "src/app.css",
     // Button reads these through `rounded-button` and `font-button`, which are in the stylesheet.
     "--zabi-button-radius": "src/app.css",
     "--zabi-button-font-weight": "src/app.css",

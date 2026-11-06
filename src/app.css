@@ -2719,7 +2719,8 @@ body {
    * Button on a Card in a brand block is a primary Button. Not in the rules
    * above: those are the roles the guard measures, and these are not roles.
    * A fill the app chooses inverts the primary family only, its text is
-   * `--zabi-fill` (the card colour without it).
+   * `--zabi-fill` (the card colour without it), and only with `on-fill-invert`:
+   * without it the block keeps the primary family's own fill.
    */
   :where(.on-brand, .on-accent, .on-fill) {
     --zabi-inv-primary: var(--color-action-primary);
@@ -2756,7 +2757,17 @@ body {
     --zabi-inv-accent-text: var(--color-accent);
     --zabi-inv-star: var(--color-on-accent);
   }
+  /* A fill the app chooses keeps the primary family's own fill and label, and the star its
+   * own colour, unless the block says `on-fill-invert` as well. The app marks every section it
+   * colours `on-fill` so that outlines, fields and text read on the fill; a primary Button on a
+   * brand hero is still the brand button. (A star inherited from an outer brand block is reset
+   * here too: this block is not that one.) */
   :where(.on-fill) {
+    --zabi-inv-star: initial;
+  }
+  /* `class="on-fill on-fill-invert"`: the primary family is the label colour, its text is
+   * `--zabi-fill` (the card colour without it). */
+  :where(.on-fill.on-fill-invert) {
     --zabi-inv-primary: var(--zabi-on-fill, currentColor);
     --zabi-inv-primary-hover: color-mix(in srgb, var(--zabi-on-fill, currentColor) 88%, var(--zabi-fill, var(--color-card)));
     --zabi-inv-primary-active: color-mix(in srgb, var(--zabi-on-fill, currentColor) 76%, var(--zabi-fill, var(--color-card)));

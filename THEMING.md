@@ -140,6 +140,12 @@ the built theme files.
 `zabi-theme` writes every token in this table. Write them by hand only if you
 have your own ramps.
 
+Set `--zabi-brand-*`, never `--color-brand-*`, at run time or in your own
+theme: the `--color-brand-*` steps are semantic (they mirror in dark) and are
+the library's own. If your app has a Tailwind `brand-*` palette of its own, it
+collides with them; name yours differently (`site-*`). See
+Pitfall 6 in THEME.md. A separate prefix is planned for 10.0, not 9.x.
+
 | Token | Steps | What follows |
 |---|---|---|
 | `--zabi-brand-50` … `--zabi-brand-950` | 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950 | Primary actions, focus rings, links, brand tints, `--color-primary*` |
@@ -203,6 +209,25 @@ short names: the short ones follow.
 | `--shadow-opacity` | `0.10` (dark: `0.24`) | The strength of the wide, soft layer of each shadow |
 | `--shadow-opacity-contact` | `0.06` (dark: `0.3`) | The strength of the tight contact layer |
 | `--z-dropdown`, `--z-sticky`, `--z-fixed`, `--z-modal-backdrop`, `--z-modal`, `--z-popover`, `--z-tooltip`, `--z-toast` | 1000 to 1080 | The layer of each floating component, when the app has its own stacking order to fit into. Each has a class of the same name (`z-sticky`, `z-fixed`, `z-modal`, …) that sets `z-index` from it |
+
+**Rounding buttons apart from fields.** `--zabi-button-radius` is the
+supported way. `Button` reads it (through `rounded-button`) and falls back to
+`--radius-control`, so inputs, selects and toggles keep theirs. It is declared
+nowhere: set it on `:root` or on any ancestor, so one project in a scope can
+differ from the next. Use this scale:
+
+| Button corner | `--zabi-button-radius` |
+|---|---|
+| none | `0` |
+| sm | `0.25rem` |
+| md | `0.5rem` (the default control corner) |
+| lg | `0.75rem` |
+| full | `9999px` |
+
+`--zabi-button-font-weight` does the same for the label: `font-button` (500)
+and `font-button-strong` (600, the text variant) both read it, so setting it
+gives every Button one weight. A `rounded-*` class on a Button at the call
+site still wins. There is no preset attribute and no further token.
 
 The shadow tokens are the only ones here with a separate dark value. A
 `:root` override after the imports replaces both; to keep two values, declare
@@ -308,10 +333,13 @@ The mode is chosen on the `<html>` element, by an attribute or a class:
 - **Following the system is opt-in.** A page with no attribute and no class
   stays light on a dark system, as it always has. `data-theme="auto"` needs no
   script.
-- **`<html>` only.** A `.dark` or `data-theme` on an element further down is
-  not supported. It re-themes the roles the dark file restates (the card
-  surface, the label on a primary button) and leaves the rest (text, borders,
-  the primary fill) light, so the subtree comes out half dark.
+- **`<html>` is where the page's mode goes.** A `.dark` or `data-theme` on a
+  plain element further down is not supported on its own: it re-themes the
+  roles the dark file restates (the card surface, the label on a primary
+  button) and leaves the rest (text, borders, the primary fill) as the page
+  has them, so the subtree comes out half dark. A subtree takes its own mode
+  or its own brand only with `class="zabi-theme-scope"` (plus `data-theme`),
+  see [A themed subtree](#a-themed-subtree).
 - `color-scheme` comes with the theme, so what the browser draws itself (date
   and time pickers, scrollbars, autofill) matches: dark under `.dark`,
   `data-theme="dark"` and `data-theme="auto"` on a dark system, and light
@@ -324,6 +352,61 @@ The mode is chosen on the `<html>` element, by an attribute or a class:
   roles onto ramps the light theme declares.
 - Tailwind's own `dark:` variant follows the system unless you redefine it, and
   does not read `data-theme`.
+
+### A themed subtree
+
+A semantic role such as `--color-action-primary: var(--color-brand-600)` is a
+custom property that points at another one, and the browser resolves it where
+it is declared. So `--zabi-brand-*` set on a wrapper never reaches a Button
+inside it: the roles were resolved on `:root`, against the page's brand.
+`zabi-theme-scope` re-declares, on the element, every theme declaration that
+holds a `var()` (the action fills and their states, the focus ring, links,
+`on-brand`, the tints, the surfaces), so they resolve against what is set on
+or above that element. It is a class, not a component.
+
+```html
+<!-- An admin previewing the site's brand, in the site's dark theme, inside its own light page. -->
+<div
+  class="zabi-theme-scope"
+  data-theme="dark"
+  style="--zabi-brand-50: #eef2ff; --zabi-brand-100: #e0e7ff; /* … */ --zabi-brand-600: #4f46e5; /* … */ --zabi-brand-950: #1e1b4b"
+>
+  <Button>Primary</Button>
+</div>
+```
+
+Take the 11 steps from a ramp (for example the one `zabi-theme` writes for the
+site's colour), not a single colour: the roles read step 600, 700, 800, the
+tints 50 to 200, and dark mirrors them (`--color-brand-600` is
+`--zabi-brand-400` there).
+
+Which mode the scope is in:
+
+| On the scope | Result |
+|---|---|
+| nothing | follows the page: dark under `.dark` or `data-theme="dark"` on an ancestor (normally `<html>`), and under `data-theme="auto"` while the system is dark |
+| `data-theme="dark"` or `class="dark"` | dark, in a light page |
+| `data-theme="light"` | light, in a dark page |
+| `data-theme="auto"` | follows the system |
+
+The scope's own attribute wins over the page's mode. Each of them also sets
+`color-scheme` and `color: var(--color-body)`, so text inherited into the
+subtree matches. A scope inside another scope declares on its own element and
+wins over the outer one.
+
+- The rules are generated from the same token maps as the theme, and ship in
+  every file that carries the tokens: the light half with `theme`,
+  `theme-only`, `colors` and `css`, the dark half with the dark files (and
+  `css`, `colors`). The dark half needs the dark file, as `.dark` does.
+- Tokens `createTheme` writes on `:root` are not re-resolved. With `pin`, the
+  roles that are the brand colour are plain values there, and inside a scope
+  they are replaced by the roles resolving from `--zabi-brand-*` again. So set
+  the `--zabi-brand-*` steps (or the role tokens themselves, which win on the
+  element) on the scope, not only on `:root`.
+- Only declarations with a `var()` are restated, plus the tokens the dark theme
+  replaces. A plain value nobody replaces inherits correctly.
+- The scope does not change anything else about the element; give it a
+  background (`bg-background`) if the preview needs one.
 
 ### A theme control: system, light, dark
 
@@ -517,12 +600,29 @@ theme: labels 2.15 (light) and 1.52 (dark), `outline` and `ghost` 3.65 and
 does not know: `<div class="on-fill" style="background: #123; --zabi-on-fill: #fff">`.
 Everything above applies with `--zabi-on-fill` as the label colour (without it
 the label is `currentColor`, and the ring's gap is transparent, so the block
-shows through). A surface inside (`bg-card`, `bg-card-tint`, `bg-chip`, `on-surface`
-and the rest of the list) gets the theme's roles back. The library cannot hold
-a colour the app picks at run time: the 4.5:1 of the label on your fill (3:1 for
-edges and rings) is yours to check. A primary Button, a solid Badge and a
-Rating keep their own fills and labels inside any of the three blocks; only the
-text roles, the edges and the rings follow the block.
+shows through). A primary Button and a solid Badge inside keep their own fill
+and label, and a Rating star its own colour (a brand hero's call to action is
+still the brand button). To invert them as in a brand block, add
+`on-fill-invert` to the same element: `class="on-fill on-fill-invert"` makes
+the primary family's fill the label colour (`--zabi-on-fill`) and its text
+`--zabi-fill`, and the filled star the label colour. `--zabi-fill` is the
+block's own fill colour, read only as that inverted button's label; set it
+beside `--zabi-on-fill`, to the same colour as the block's background (without
+it the label is the card colour). It is declared nowhere. A surface inside (`bg-card`, `bg-card-tint`, `bg-chip`, `on-surface`
+and the rest of the list) gets the theme's roles back. The library has no
+way to measure a colour the app picks at run time: the 4.5:1 of the label on
+your fill (3:1 for edges and rings) is yours to check, and so is the primary
+fill against your block. What each block does to the solid fills inside it:
+
+| Block | Primary Button, solid brand Badge | Accent Button | Rating star |
+|---|---|---|---|
+| `on-brand` | inverted: the label colour is the fill, the brand colour its text | keeps its fill | the label colour |
+| `on-accent` | keeps its fill | inverted, the same way | the label colour |
+| `on-fill` | keeps its fill | keeps its fill | keeps its colour |
+| `on-fill on-fill-invert` | inverted, with `--zabi-on-fill` and `--zabi-fill` | keeps its fill | the label colour |
+
+A surface inside any of them gets the theme's own fills back. The text roles,
+the edges and the rings follow the block in all three.
 
 The Button variants, on a brand block (`bg-action-primary`). "Label" is
 against the button's own fill, or against the block where the button has
@@ -535,7 +635,7 @@ seen as a shape):
 | `secondary` | label 5.65 | label 7.75 | label 9.58 | label 7.63 |
 | `accent` | label 5.02, fill 1.03 | label 7.11, fill 1.03 | label 11.66, fill 6.05 | label 11.66, fill 1.60 |
 | `danger` | label 4.78, fill 1.06 | label 7.10, fill 1.04 | label 4.78, fill 1.65 | label 7.10, fill 1.03 |
-| `primary` | the block's own colour: invisible | invisible | invisible | invisible |
+| `primary` | inverted: label 4.86, fill 4.86 | label 7.21, fill 7.21 | label 8.52, fill 8.52 | label 7.07, fill 7.07 |
 
 On an accent block (`bg-accent`):
 
@@ -545,10 +645,13 @@ On an accent block (`bg-accent`):
 | `secondary` | label 5.86 | label 7.73 | label 9.43 | label 11.92 |
 | `primary` | label 4.86, fill 1.03 | label 7.21, fill 1.03 | label 8.52, fill 6.05 | label 7.07, fill 1.60 |
 | `danger` | label 4.78, fill 1.03 | label 7.10, fill 1.01 | label 4.78, fill 3.66 | label 7.10, fill 1.65 |
-| `accent` | invisible | invisible | invisible | invisible |
+| `accent` | inverted: label 5.02, fill 5.02 | label 7.11, fill 7.11 | label 11.66, fill 11.66 | label 11.66, fill 11.66 |
 
 So the quiet variants (`outline`, `ghost`, `link`, `secondary`) are legible on
-either block in any theme. A solid one keeps its own label; whether it also
+either block in any theme. The block's own family (`primary` on a brand block,
+`accent` on an accent block) is inverted, so it is a button in the label
+colour (its hover and pressed fills are mixes of the two and are not
+measured). Another solid one keeps its own label; whether it also
 stands out as a shape depends on how far apart the two brand colours are: an
 ultramarine and a yellow are 6:1 apart in light, the library's own blue and
 citron 1.03:1. Where they are close, use a quiet variant for a second action,
@@ -562,7 +665,7 @@ Against the block:
 | Part | On a brand block (default light, dark; pinned light, dark) | On an accent block |
 |---|---|---|
 | Checkbox or Radio box, and the Toggle track, empty | 1.89, 3.44; 3.32, 3.43 | 1.96, 3.35; 1.82, 5.49 |
-| the same, ticked or on, and a filled Rating star (the primary fill) | 1.00 in all four | 1.03, 1.03; 6.05, 1.60 |
+| the same, ticked or on (the primary fill) | 1.00 in all four | 1.03, 1.03; 6.05, 1.60 |
 | the text of an error or other status message | 1.47, 1.31; 1.19, 1.31 | 1.42, 1.34; 5.07, 1.22 |
 | the fill of a field (Input, Select, Textarea) | 4.86, 7.31; 8.52, 7.30 | 5.02, 7.12; 1.41, 11.67 |
 

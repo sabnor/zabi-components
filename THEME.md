@@ -272,6 +272,36 @@ Use the variable, which is resolved in the browser:
 }
 ```
 
+### Pitfall 6: Your own `brand-*` palette collides with zabi's
+
+zabi's `--color-brand-50` to `--color-brand-950` are semantic, not physical:
+in dark they mirror, `.dark { --color-brand-600: var(--zabi-brand-400) }` (step
+`n` reads `--zabi-brand-(1000 - n)`, 500 stays). An app that defines its own
+Tailwind `brand-*` palette (`--color-brand-600: #…` in its `@theme`) overwrites
+them in one mode or both, and the library's primary buttons, links and focus
+rings move with it.
+
+Name the app's own palette differently (`site-*`, or the product's name), and
+set `--zabi-brand-*`, not `--color-brand-*`, to change the brand at run time
+(see "A themed subtree" in THEMING.md for a part of a page). A separate prefix
+for the semantic steps is planned for 10.0, not 9.x: renaming them breaks every
+app that reads `--color-brand-*` today.
+
+### Pitfall 7: Your class has the same name as one of ours
+
+`.font-button`, `.font-button-strong` and `.rounded-button` are zabi's. They
+set only `font-weight` and `border-radius`, from `--zabi-button-font-weight`
+and `--zabi-button-radius`. A class of the same name in the app merges with
+them (both apply, the later or more specific declaration wins), so a Button
+changes when an unrelated component of the app defines `.rounded-button`.
+Prefer the custom properties to redefining the classes:
+
+```css
+:root { --zabi-button-radius: 9999px; --zabi-button-font-weight: 600; }
+```
+
+Prefixing zabi's classes is planned for 10.0, not 9.x.
+
 ## Troubleshooting
 
 ### Components Look Unstyled

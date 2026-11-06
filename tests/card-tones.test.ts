@@ -128,7 +128,10 @@ describe("what sits inside a brand, accent or custom block", () => {
         // Not on an element that is a block itself: a brand block inside an accent block keeps its fill.
         expect(css).toMatch(/:where\(\.bg-action-primary:not\(\.on-brand, \.on-accent, \.on-fill\)\):where\(\.on-brand \*, \.on-accent \*, \.on-fill \*\)\s*\{[^}]*--color-action-primary: var\(--zabi-inv-primary\)/);
         expect(css).toMatch(/:where\(\.on-brand\)\s*\{[^}]*--zabi-inv-primary: var\(--color-on-brand\)[^}]*--zabi-inv-primary-text: var\(--color-action-primary\)/);
-        expect(css).toMatch(/:where\(\.on-fill\)\s*\{[^}]*--zabi-inv-primary: var\(--zabi-on-fill, currentColor\)/);
+        // A fill the app chooses keeps the primary fill; only `on-fill on-fill-invert` inverts it (9.0 behaviour).
+        expect(css).toMatch(/:where\(\.on-fill\.on-fill-invert\)\s*\{[^}]*--zabi-inv-primary: var\(--zabi-on-fill, currentColor\)[^}]*--zabi-inv-primary-text: var\(--zabi-fill, var\(--color-card\)\)/);
+        expect(css).not.toMatch(/:where\(\.on-fill\)\s*\{[^}]*--zabi-inv-primary/);
+        expect(css).toMatch(/:where\(\.on-fill\)\s*\{\s*--zabi-inv-star: initial/);
     });
 
     it("a secondary Button on a brand block has the dark wash in both modes, and a surface inside gives the theme's back", () => {

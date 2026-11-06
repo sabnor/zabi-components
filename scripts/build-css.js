@@ -5,6 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { darkThemeCss, darkThemeCssMinified, expandDarkRule, LIGHT_SCHEME_CSS_MINIFIED } from './dark-selectors.js';
+import { readThemeMaps } from './resolve-tokens.js';
+import { themeScopeCss } from './theme-scope.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,6 +21,10 @@ const __dirname = path.dirname(__filename);
  * - zabi-components-theme-dark.css — @import tailwind + dark
  * - zabi-components-theme-dark-only.css — dark only (import after theme-only)
  * - zabi-components-colors.css — :root + dark custom properties (no @theme; vanilla CSS)
+ *
+ * Every file that carries the tokens also carries `.zabi-theme-scope` (the
+ * light half with the light tokens, the dark half with the dark ones), written
+ * by scripts/theme-scope.js from the same token maps.
  *
  * "dark" is the source's single `.dark { … }` rule, published under `.dark`,
  * `[data-theme="dark"]` and `[data-theme="auto"]` inside
@@ -279,12 +285,15 @@ async function buildCSS() {
 
   // Extract @theme and .dark block(s) for generated bundles using AST parsing.
   const { themeBlocks, darkModeContent } = extractThemeAndDarkBlocks(css, inputFile);
+  const scopeMaps = readThemeMaps(css);
+  const scope = themeScopeCss(scopeMaps);
+  const scopeMinified = themeScopeCss(scopeMaps, { minify: true });
   
   if (themeBlocks.length > 0) {
     // Merge all theme blocks (they should be at root level, not nested)
     const mergedTheme = themeBlocks.join('\n\n');
     const componentStyles = extractComponentStyles(css, inputFile);
-    const themeBody = `${SOURCE_DIRECTIVE}\n\n@theme {\n${mergedTheme}\n}\n\n${componentStyles}\n`;
+    const themeBody = `${SOURCE_DIRECTIVE}\n\n@theme {\n${mergedTheme}\n}\n\n${componentStyles}\n\n${scope.light}\n`;
     
     // Create theme file with Tailwind import (for standalone use)
     const themeBlock = `@import "tailwindcss";\n\n${themeBody}`;
@@ -312,7 +321,7 @@ async function buildCSS() {
   if (darkModeContent) {
     // Create dark mode theme file with Tailwind import
     // This file contains the .dark class with all dark mode CSS custom properties
-    const darkBlocks = darkThemeCss(darkModeContent);
+    const darkBlocks = `${darkThemeCss(darkModeContent)}\n\n${scope.dark}`;
     const darkThemeBlock = `@import "tailwindcss";\n\n/* Dark Mode Theme - CSS Custom Properties */\n/* Import this file after the main theme to enable dark mode support */\n${darkBlocks}\n`;
     const darkThemeOutputFile = path.join(__dirname, '../dist/zabi-components-theme-dark.css');
     fs.writeFileSync(darkThemeOutputFile, darkThemeBlock);
@@ -359,6 +368,8 @@ async function buildCSS() {
   }
   lowerUtilitySpecificity(compiled);
   lowerThemeTokenSpecificity(compiled);
+  // Last, unlayered: the scope's declarations have to come after the tokens they restate.
+  compiled.append(postcss.parse(`${scope.light}\n\n${scope.dark}`));
   css = compiled.toString();
 
   // Write the processed CSS (without :root block - colors.css is separate)
@@ -377,6 +388,7 @@ async function buildCSS() {
     colorsCss += ':root{' + themeChunks.join('') + '}\n';
     // Not a token, so it is not in the @theme block: the light theme's own scheme.
     colorsCss += LIGHT_SCHEME_CSS_MINIFIED + '\n';
+    colorsCss += scopeMinified.light + '\n';
   }
   // The materials' fallbacks and the reduced-motion block are token-only, so a vanilla-CSS app gets them too.
   const fallback = [];
@@ -401,6 +413,7 @@ async function buildCSS() {
   });
   if (darkChunks.length > 0) {
     colorsCss += darkThemeCssMinified(darkChunks.join('')) + '\n';
+    colorsCss += scopeMinified.dark + '\n';
   }
   if (fallback.length > 0) colorsCss += fallback.join('\n') + '\n';
 
