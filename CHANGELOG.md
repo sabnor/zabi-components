@@ -15,7 +15,7 @@ Whenever token or CSS import API surface changes, include:
 ## [9.1.0-alpha.11] - 2026-11-06
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.10, for cms-admin's rows 33-37 (their
-alpha.9 findings). Every new option, key and export is optional; nothing removed or renamed; `createTheme` `css` and
+alpha.9 findings) and projectsunshine's note on gap 27 (`Button` `background`). Every new option, key and export is optional; nothing removed or renamed; `createTheme` `css` and
 `tokens` for every existing input are byte-identical (the result gains a `labels` key). Contrast thresholds now compare
 exact ratios; no checked output moved. Run: `npm run check`, the whole vitest suite in six shards, the theme output
 tests, the library contrast guard, `npm run build:lib`, `npm pack`. Not run: Playwright, a QA pass; nothing in it has
@@ -25,6 +25,10 @@ CSS size of this build, raw / gzip -9 (`npm run size:css`): unchanged from alpha
 40,265 bytes, `theme-only` 109,912 / 22,560, `theme-dark-only` 98,146 / 12,292, `colors` 101,547 / 7,098.
 
 ### Added
+
+- `Button` `backgroundClass` (classes on the box that holds `background`, the button's direct child: `mix-blend-overlay`
+  blends with the fill, `[:hover>&]:` reveals work) and `backgroundWhileLoading` (keep the layer while `loading`; never
+  while `disabled`). Default output unchanged (projectsunshine on cms-admin 27; D335).
 
 - `createTheme` returns `labels`: `{ light: { brand, accent? }, dark: { brand, accent? } }`, the resolved `--color-on-brand`
   (and `--color-on-accent` when an `accent` is given) of each mode as lowercase `#rrggbb`, computed from the generated

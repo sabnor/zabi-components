@@ -49,9 +49,17 @@
          * an SVG or an image. It is drawn in an `aria-hidden` box that fills
          * the button and follows its corners, and the button gets
          * `relative isolate overflow-hidden`. Not drawn while `disabled` or
-         * `loading`, so that look stays; not drawn on an inline link.
+         * `loading` (see `backgroundWhileLoading`), so that look stays; not drawn on an inline link.
          */
         background?: Snippet;
+        /**
+         * Classes for the layer box that holds `background` (it is the
+         * button's direct child): for example `mix-blend-overlay` to blend
+         * with the fill, or `opacity-0 [:hover>&]:opacity-100` for a reveal.
+         */
+        backgroundClass?: string;
+        /** Keep drawing `background` while `loading` (not while `disabled`). Default false. */
+        backgroundWhileLoading?: boolean;
     };
 
     let {
@@ -68,6 +76,8 @@
         onclick,
         children,
         background,
+        backgroundClass = "",
+        backgroundWhileLoading = false,
         ...restProps
     }: Props = $props();
 
@@ -228,8 +238,10 @@
         }
     });
 
-    /** The decoration layer is drawn: asked for, and the button is neither disabled nor loading. */
-    const showsBackground = $derived(!!background && !isDisabled && !isInlineLink);
+    /** The decoration layer is drawn: asked for, and the button is neither disabled nor loading (unless `backgroundWhileLoading`). */
+    const showsBackground = $derived(
+        !!background && !isInlineLink && !disabled && (!loading || backgroundWhileLoading),
+    );
 
     const buttonClasses = $derived.by(() => {
         const s = sizeClass;
@@ -268,7 +280,7 @@
     {#if showsBackground && background}
         <!-- Under the label, over the fill: the button is an isolated stacking
         context, so -z-10 paints above its own background and below its content. -->
-        <span aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] overflow-hidden">
+        <span aria-hidden="true" class={cn("pointer-events-none absolute inset-0 -z-10 rounded-[inherit] overflow-hidden", backgroundClass)}>
             {@render background()}
         </span>
     {/if}

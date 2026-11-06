@@ -111,6 +111,10 @@ export interface ButtonProps extends Omit<HTMLButtonAttributes, 'class'> {
      * over it.
      */
     background?: Snippet;
+    /** Classes for the box that holds `background`, the button's direct child (`mix-blend-overlay`, a hover reveal). */
+    backgroundClass?: string;
+    /** Keep drawing `background` while `loading` (not while `disabled`). Default false. */
+    backgroundWhileLoading?: boolean;
     /** @deprecated never accepted by the component; use `class`. */
     className?: string;
     /** @deprecated never accepted by the component; render the icon in `children`. */

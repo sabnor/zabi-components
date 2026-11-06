@@ -52,6 +52,22 @@ describe("Button background", () => {
         expect(layerOf()).toBeNull();
     });
 
+    it("takes classes on the layer box, its direct child", () => {
+        render(Button, { text: "Go", background, backgroundClass: "mix-blend-overlay" });
+        const layer = layerOf()!;
+        expect(layer.className.split(/\s+/)).toEqual(expect.arrayContaining(["mix-blend-overlay", "absolute", "-z-10"]));
+        expect(layer.parentElement).toBe(screen.getByRole("button"));
+    });
+
+    it("stays while loading with backgroundWhileLoading, never while disabled", () => {
+        render(Button, { text: "Go", background, loading: true, backgroundWhileLoading: true });
+        expect(layerOf()).not.toBeNull();
+        expect(screen.getByRole("button").className).toContain("isolate");
+        cleanup();
+        render(Button, { text: "Go", background, disabled: true, backgroundWhileLoading: true });
+        expect(layerOf()).toBeNull();
+    });
+
     it("is ignored on the inline link", () => {
         render(Button, { text: "Go", href: "/x", variant: "link", background });
         expect(layerOf()).toBeNull();
