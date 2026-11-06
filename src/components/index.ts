@@ -5,6 +5,7 @@ export { default as SpeechBubble } from './atoms/SpeechBubble.svelte';
 export { default as Sparkline } from './atoms/Sparkline.svelte';
 export { default as Chip } from './atoms/Chip.svelte';
 export { default as Button } from './atoms/Button.svelte';
+export { default as Icon } from './atoms/Icon.svelte';
 export { default as IconButton } from './atoms/IconButton.svelte';
 export { default as Block } from './atoms/Block.svelte';
 export { default as Card } from './atoms/Card.svelte';

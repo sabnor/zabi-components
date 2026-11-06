@@ -1,3 +1,9 @@
+<!--
+  Other attributes land on the element, `{@attach ...}` included (Svelte
+  5.29+ passes an attachment on a component through the rest props). An
+  action (`use:`) cannot go on a component: wrap it with `fromAction` from
+  'svelte/attachments' and pass it with `{@attach}`.
+-->
 <script lang="ts">
     import type { Snippet } from 'svelte';
     import type { HTMLAttributes } from 'svelte/elements';

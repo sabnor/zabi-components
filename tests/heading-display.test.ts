@@ -14,7 +14,7 @@ describe("Heading variant display (server render)", () => {
         const plain = renderOnServer(Heading, { props: { level: 1, text: "Hej" } }).body;
         const explicit = renderOnServer(Heading, { props: { level: 1, text: "Hej", variant: "heading" } }).body;
         expect(explicit).toBe(plain);
-        expect(plain).toContain('<h1 class="text-headline text-4xl leading-10 tracking-[-0.02em] font-bold">');
+        expect(plain).toContain('<h1 class="text-headline text-4xl leading-10 tracking-[-0.02em] font-[weight:var(--zabi-heading-font-weight,700)]">');
         expect(plain).not.toContain("font-display");
     });
 

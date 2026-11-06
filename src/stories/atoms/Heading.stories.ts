@@ -67,6 +67,22 @@ export const H6: Story = {
     }
 };
 
+export const FluidDisplay: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'With `fluid`, display levels 1-3 grow smoothly with the viewport (24rem to 64rem wide) instead of jumping at `sm`. Ignored with the heading variant.'
+            }
+        }
+    },
+    args: {
+        level: 1,
+        variant: 'display',
+        fluid: true,
+        text: 'Built for the web'
+    }
+};
+
 export const AllLevels: Story = {
     args: {
         level: 1,

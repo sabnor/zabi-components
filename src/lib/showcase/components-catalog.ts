@@ -90,6 +90,59 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                 ],
             },
             {
+                name: "Icon",
+                category: "atoms",
+                description:
+                    "An icon on zabi's size scale. Decorative (hidden from assistive technology) unless given a label.",
+                props: [
+                    {
+                        name: "icon",
+                        type: "Component",
+                        required: true,
+                        description: "The icon component, such as an @lucide/svelte icon.",
+                    },
+                    {
+                        name: "size",
+                        type: "'xs' | 'sm' | 'md' | 'lg' | 'inherit'",
+                        required: false,
+                        defaultValue: "md",
+                        description:
+                            "xs 12px, sm 16px, md 20px, lg 24px; inherit is 1em, the size of the text around it.",
+                    },
+                    {
+                        name: "label",
+                        type: "string",
+                        required: false,
+                        description:
+                            "Gives the icon a name (role img and aria-label). Without it the icon is aria-hidden.",
+                    },
+                    {
+                        name: "strokeWidth",
+                        type: "number | string",
+                        required: false,
+                        description: "Stroke width passed to the icon.",
+                    },
+                    {
+                        name: "class",
+                        type: "string",
+                        required: false,
+                        description: "Extra classes on the svg, such as a colour.",
+                    },
+                ],
+                examples: [
+                    {
+                        title: "Decorative",
+                        description: "Next to text that already says it",
+                        code: "&lt;Icon icon={Heart} size=&quot;sm&quot; /&gt;",
+                    },
+                    {
+                        title: "Named",
+                        description: "An icon that stands alone",
+                        code: "&lt;Icon icon={TriangleAlert} label=&quot;Warning&quot; class=&quot;text-error&quot; /&gt;",
+                    },
+                ],
+            },
+            {
                 name: "IconButton",
                 category: "atoms",
                 description:
@@ -2420,7 +2473,15 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "heading",
                         description:
-                            "display sets the line in --font-family-display with larger steps (60px for level 1, 48 on a phone). Weight and tracking come from --zabi-display-weight and --zabi-display-tracking.",
+                            "display sets the line in --font-family-display with larger steps (60px for level 1, 48 on a phone). Weight and tracking come from --zabi-display-weight and --zabi-display-tracking. The heading variant's weight, at every level, is --zabi-heading-font-weight when the app sets it (otherwise bold for levels 1-2, semibold for 3-6).",
+                    },
+                    {
+                        name: "fluid",
+                        type: "boolean",
+                        required: false,
+                        defaultValue: "false",
+                        description:
+                            "With variant display: levels 1-3 grow smoothly with the viewport between the phone step and the desktop step (24rem to 64rem wide) instead of jumping at sm. Levels 4-6 have one step and stay as they are. Ignored with variant heading.",
                     },
                 ],
 
@@ -2434,6 +2495,16 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         title: "Display",
                         description: "The display face and larger steps",
                         code: '&lt;Heading level={1} variant="display"&gt;Display Heading&lt;/Heading&gt;\n&lt;Heading level={2} variant="display"&gt;Display level 2&lt;/Heading&gt;',
+                    },
+                    {
+                        title: "Fluid display",
+                        description: "A hero that scales with the viewport",
+                        code: '&lt;Heading level={1} variant="display" fluid&gt;Built for the web&lt;/Heading&gt;',
+                    },
+                    {
+                        title: "Motion attachment",
+                        description: "Heading and Text pass an attachment to the element; wrap an action with fromAction",
+                        code: "&lt;Heading level={1} {@attach reveal}&gt;Hello&lt;/Heading&gt;",
                     },
                 ],
             },

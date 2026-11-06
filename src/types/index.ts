@@ -144,10 +144,33 @@ export interface HeadingProps extends Omit<HTMLAttributes<HTMLHeadingElement>, '
     tone?: 'headline' | OnFillTone;
     /** `heading` (default) or `display`: the second face and larger steps. */
     variant?: 'heading' | 'display';
+    /**
+     * With `variant="display"`: the size grows smoothly with the viewport
+     * between the phone step and the desktop step, instead of jumping at `sm`.
+     */
+    fluid?: boolean;
     class?: string;
     children?: Snippet;
     /** @deprecated never accepted by the component; use `class`. */
     className?: string;
+}
+
+// Icon component props
+export interface IconProps {
+    /** The icon component, e.g. an `@lucide/svelte` icon. */
+    icon: Component<{ size?: number | string; class?: string; strokeWidth?: number | string }>;
+    /**
+     * On zabi's size scale: `xs` 12px, `sm` 16px, `md` 20px (default), `lg`
+     * 24px; `inherit` is 1em, the size of the text around it.
+     */
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'inherit';
+    /**
+     * Gives the icon a name (`role="img"`). Without it the icon is
+     * decorative and hidden from assistive technology.
+     */
+    label?: string;
+    strokeWidth?: number | string;
+    class?: string;
 }
 
 // Block component props

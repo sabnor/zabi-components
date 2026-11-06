@@ -28,6 +28,12 @@ Whenever token or CSS import API surface changes, include:
   `onchange(event)` is unchanged (cms-admin 25, D324).
 - `Button` `background` snippet: a layer under the label and over the fill (a texture or image), `aria-hidden`, not
   drawn while disabled or loading. Without it the button renders as before (cms-admin 27, D326).
+- `Heading` `fluid` (with `variant="display"`): levels 1-3 grow smoothly from the phone step to the desktop step
+  between 24rem and 64rem wide. Heading weights read `--zabi-heading-font-weight` (fallback 700 for levels 1-2, 600
+  for 3-6), one knob for every level; the class is now `font-[weight:…]` and computes as before. `Heading` and `Text`
+  forward `{@attach}` (documented; wrap a `use:` action with `fromAction`) (cms-admin 26, D325).
+- `Icon` atom: an icon component on zabi's scale, `xs` 12, `sm` 16, `md` 20 (default), `lg` 24px or `inherit` (1em);
+  decorative unless `label`, then `role="img"` (cms-admin 30, D329).
 
 ### Changed
 
