@@ -12,6 +12,7 @@ import type {
     HTMLAnchorAttributes,
     HTMLAttributes,
     HTMLButtonAttributes,
+    HTMLFieldsetAttributes,
     HTMLInputAttributes,
     HTMLTextareaAttributes,
     SVGAttributes,
@@ -377,7 +378,7 @@ export interface RadioGroupOptionState {
     disabled: boolean;
 }
 
-export interface RadioGroupProps extends Omit<HTMLAttributes<HTMLFieldSetElement>, 'class'> {
+export interface RadioGroupProps extends Omit<HTMLFieldsetAttributes, 'class' | 'name' | 'disabled'> {
     class?: string;
     options: RadioGroupOption[];
     /** Selected value; `bind:value`. Use `undefined` for no selection. */

@@ -21,10 +21,10 @@ npm install zabi-components
 
 Ensure `svelte@^5.43.8` is installed — SvelteKit apps usually already match; add `@sveltejs/kit@^2` only for Kit. The package is Svelte-only (the unmaintained `zabi-components/react` export was removed in 8.0.0).
 
-**Icons.** The library uses [`@lucide/svelte`](https://lucide.dev) for its own icons and re-exports only the dozen it needs. For your own tab, navigation and action icons, install it in your app at the range the library depends on, so both use one copy:
+**Icons.** The library uses [`@lucide/svelte`](https://lucide.dev) for its own icons and re-exports only the dozen it needs. For your own tab, navigation and action icons, install it in your app at a version inside the range the library depends on (any 0.x from 0.544), so both use one copy:
 
 ```bash
-npm install @lucide/svelte@"^0.544.0"
+npm install @lucide/svelte@">=0.544.0 <1.0.0"
 ```
 
 Import each icon from its own file, `import House from "@lucide/svelte/icons/house"`, not from the package's barrel, which makes a bundler compile every icon. See [docs/lucide-icons.md](./docs/lucide-icons.md).
