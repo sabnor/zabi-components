@@ -241,16 +241,32 @@ function inkTokens(ramp, modes) {
  * files. The file is last in the cascade and `:root` has the specificity of
  * `.dark`, so its declarations win in both modes.
  */
+/** The library's dark map before the app's tokens, built once. */
+const DARK_BASE = { ...data.light, ...data.darkOnly };
+
 function themeMaps(tokens, darkTokens = {}) {
     return {
         light: { ...data.light, ...tokens },
         // The generated dark rule comes after the generated `:root` rule.
-        dark: { ...data.light, ...data.darkOnly, ...tokens, ...darkTokens },
+        dark: { ...DARK_BASE, ...tokens, ...darkTokens },
     };
 }
 
 function checkPairs(tokens, darkTokens = {}, extraPairs = [], { gradients = true } = {}) {
     const maps = themeMaps(tokens, darkTokens);
+    // The maps do not change during the check and many pairs share a token,
+    // so each token is resolved once per mode. Same answers, a fraction of the work.
+    const memo = (fn) => {
+        const seen = { light: new Map(), dark: new Map() };
+        return (mode, token) => {
+            const cache = seen[mode];
+            if (!cache.has(token)) cache.set(token, fn(maps[mode], token));
+            return cache.get(token);
+        };
+    };
+    const colorIn = memo(resolveTokenColor);
+    const paintIn = memo(resolveTokenPaint);
+    const brightness = { light: backdropBrightness(maps.light), dark: backdropBrightness(maps.dark) };
     const warnings = [];
     let checked = 0;
     for (const mode of ['light', 'dark']) {
@@ -261,22 +277,22 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = [], { gradients = true
             // choice made before then must not be steered by them.
             if (!gradients && pair.gradient) continue;
             const behind = pair.behind ? (typeof pair.behind === 'string' ? pair.behind : pair.behind[mode]) : null;
-            let bg = resolveTokenColor(maps[mode], pair.bg);
+            let bg = colorIn(mode, pair.bg);
             if (behind) {
                 // A material: its fill (an alpha paint) laid over what is behind it.
-                const paint = resolveTokenPaint(maps[mode], pair.bg);
-                const flat = resolveTokenColor(maps[mode], behind);
+                const paint = paintIn(mode, pair.bg);
+                const flat = colorIn(mode, behind);
                 // A material's filter dims what is behind it (D137); other `behind` pairs are not filtered.
-                const backdrop = flat && pair.material ? dimBackdrop(flat, backdropBrightness(maps[mode])) : flat;
+                const backdrop = flat && pair.material ? dimBackdrop(flat, brightness[mode]) : flat;
                 bg = paint && backdrop ? backdrop : null;
                 // `layers`: the same paint stacked, each laid over the last (nested translucent cards).
                 for (let layer = 0; layer < (pair.layers ?? 1) && bg; layer += 1) bg = compositeOver(paint, bg);
             }
-            let fg = resolveTokenColor(maps[mode], pair.fg);
+            let fg = colorIn(mode, pair.fg);
             if (behind && pair.fgPaint) {
                 // `fgPaint`: the foreground is a fill too (a pressed field against the resting one), laid over the same backdrop.
-                const fgPaint = resolveTokenPaint(maps[mode], pair.fg);
-                let under = resolveTokenColor(maps[mode], behind);
+                const fgPaint = paintIn(mode, pair.fg);
+                let under = colorIn(mode, behind);
                 for (let layer = 0; layer < (pair.layers ?? 1) && under && fgPaint; layer += 1) under = compositeOver(fgPaint, under);
                 fg = fgPaint ? under : null;
             }
@@ -285,7 +301,7 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = [], { gradients = true
             const exact = contrastExact(bg, fg);
             if (exact >= pair.min) continue;
             // A pair with a second foreground passes when either one does.
-            const other = pair.orFg ? resolveTokenColor(maps[mode], pair.orFg) : null;
+            const other = pair.orFg ? colorIn(mode, pair.orFg) : null;
             if (other && contrastExact(bg, other) >= pair.min) continue;
             const ratio = failingRatioLabel(exact, pair.min);
             warnings.push({

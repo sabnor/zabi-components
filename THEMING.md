@@ -400,9 +400,27 @@ wins over the outer one.
   `css`, `colors`). The dark half needs the dark file, as `.dark` does.
 - Tokens `createTheme` writes on `:root` are not re-resolved. With `pin`, the
   roles that are the brand colour are plain values there, and inside a scope
-  they are replaced by the roles resolving from `--zabi-brand-*` again. So set
-  the `--zabi-brand-*` steps (or the role tokens themselves, which win on the
-  element) on the scope, not only on `:root`.
+  they are replaced by the roles resolving from `--zabi-brand-*` again. So a
+  pinned theme goes on the scope as its own declarations: the scope's light
+  declarations are `tokens`, its dark ones `{ ...tokens, ...darkTokens }`. Set
+  them inline on the scope element (declarations on the element win over the
+  scope rules), for the mode the scope is in:
+
+  ```svelte
+  <script>
+    import { createTheme } from 'zabi-components/create-theme';
+    let { brand, dark } = $props();
+    const theme = $derived(createTheme({ brand, pin: true, check: false }));
+    const declarations = $derived(dark ? { ...theme.tokens, ...theme.darkTokens } : theme.tokens);
+    const style = $derived(Object.entries(declarations).map(([k, v]) => `${k}: ${v}`).join('; '));
+  </script>
+
+  <div class="zabi-theme-scope" data-theme={dark ? 'dark' : 'light'} {style}>…</div>
+  ```
+
+  A scope without `data-theme` that follows the page needs both sets, so give
+  it `data-theme`. Without `pin`, the `--zabi-brand-*` steps alone are enough
+  (cms-admin 34).
 - Only declarations with a `var()` are restated, plus the tokens the dark theme
   replaces. A plain value nobody replaces inherits correctly.
 - The scope does not change anything else about the element; give it a
@@ -1106,9 +1124,11 @@ from it. The accent and the neutral are built as before.
 
 #### Per request: `check` and memoising
 
-`createTheme()` costs about 25 ms on its first call and 16 ms after, for a
-plain brand; a pinned theme or one with overrides costs more. Do not run it on
-every request. Memoise on the options:
+`createTheme()` costs about 5 ms for a plain brand and about 22 ms with `pin`
+(measured on an M-series Mac with Node 26, after the first call; 9.1.0-alpha.11
+resolves each token once per check, about three times faster than alpha.10,
+with byte-identical output). Do not run it on every request. Memoise on the
+options:
 
 ```js
 const themes = new Map();
@@ -1127,6 +1147,12 @@ needs to decide something still run: the label colours, `pin`, and the control
 veils. Run the full check where time is cheap, in CI (the `--strict` line
 above, or `createTheme()` without `check: false`), and do not read an empty
 `warnings` from a `check: false` result as a pass.
+
+While a colour is being dragged, do not build themes at all: call
+`brandContrast(hex, { ramp?, dark? })` from `zabi-components/color` (under
+1 ms) for the label, the states, the ratios and pass or fail, which are what
+`createTheme({ brand: hex, pin: true })` writes, and build the theme once the
+colour is committed (ColorPicker's `oncommit`).
 
 It throws a `TypeError` when neither `brand` nor `brandRamp` is given, a colour is not hex,
 `pin.dark` is not `"auto"`, `"force"`, `"ramp"` or `"fill"`,

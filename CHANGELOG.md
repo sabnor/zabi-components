@@ -26,6 +26,18 @@ Whenever token or CSS import API surface changes, include:
   control veil is still settled for contrast and may flip in dark. `'auto'`, `'force'` and `'ramp'` are unchanged
   (cms-admin 35; D332).
 
+### Changed
+
+- `createTheme` resolves each token once per contrast check: about 3x faster with `pin` (65 to 22 ms per theme here),
+  plain brands 14 to 5 ms. Output is byte-identical (1,248 results over 156 colours and 8 option sets compared with
+  alpha.10's). THEMING.md "Per request" now says to call `brandContrast` (under 1 ms) while a colour is dragged and
+  build the theme on commit (cms-admin 36; D333).
+
+### Documentation
+
+- THEMING.md "A themed subtree": a pinned theme in a `.zabi-theme-scope` goes inline on the scope, `tokens` in light
+  and `{ ...tokens, ...darkTokens }` in dark, with an example (cms-admin 34; D334).
+
 ### Fixed
 
 - Contrast thresholds compare exact ratios. Everywhere zabi decides pass or fail (the `createTheme` label and pair
