@@ -23,6 +23,17 @@ Whenever token or CSS import API surface changes, include:
 - `createTheme({ pin: { brand: 'nearest-aa' } })` pins `accessibleBrand(brand).hex`; `pinned.brand` then carries
   `requested` and `adjusted`. CLI: `--pin-nearest-aa` (implies `--pin`); no existing flag changed. Output for every
   existing input is byte-identical (cms-admin 32, D322).
+- `ColorPicker` `oncommit(value)`: once per committed change, the colour as lowercase `#rrggbb` (or `""` when
+  cleared), on blur or Enter, closing the panel, the end of a drag and a key step; never for a half-typed value.
+  `onchange(event)` is unchanged (cms-admin 25, D324).
+- `Button` `background` snippet: a layer under the label and over the fill (a texture or image), `aria-hidden`, not
+  drawn while disabled or loading. Without it the button renders as before (cms-admin 27, D326).
+
+### Changed
+
+- `Input` and `Textarea` show an asterisk after their own label when `required`, drawn by the label's `::after` with
+  empty alternative text, so the label's text and the field's name are unchanged. `DateField` and `TimeField` show it
+  too (cms-admin 28, D327).
 
 ## [9.1.0-alpha.9] - 2026-11-06
 

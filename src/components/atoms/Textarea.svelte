@@ -183,7 +183,10 @@
     });
 
     const labelClasses = $derived(
-        () => 'mb-1 block text-sm font-medium text-label',
+        // A required field's asterisk is drawn by the label's ::after, with an empty
+        // alternative text: the label's text and the field's name stay the words
+        // alone, and the native `required` is what a screen reader says.
+        () => (required ? "mb-1 block text-sm font-medium text-label after:ms-1 after:text-error after:content-['*'_/_'']" : 'mb-1 block text-sm font-medium text-label'),
     );
 
     function handleInput(event: Event) {

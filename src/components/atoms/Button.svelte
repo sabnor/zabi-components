@@ -44,6 +44,14 @@
         isFullWidth?: boolean;
         class?: string;
         children?: Snippet;
+        /**
+         * A decoration layer behind the label and above the fill: a texture,
+         * an SVG or an image. It is drawn in an `aria-hidden` box that fills
+         * the button and follows its corners, and the button gets
+         * `relative isolate overflow-hidden`. Not drawn while `disabled` or
+         * `loading`, so that look stays; not drawn on an inline link.
+         */
+        background?: Snippet;
     };
 
     let {
@@ -59,6 +67,7 @@
         class: className = "",
         onclick,
         children,
+        background,
         ...restProps
     }: Props = $props();
 
@@ -219,6 +228,9 @@
         }
     });
 
+    /** The decoration layer is drawn: asked for, and the button is neither disabled nor loading. */
+    const showsBackground = $derived(!!background && !isDisabled && !isInlineLink);
+
     const buttonClasses = $derived.by(() => {
         const s = sizeClass;
         const layout = fullWidth || isFullWidth ? "flex w-full" : "inline-flex";
@@ -247,11 +259,19 @@
                 : isBusy
                   ? `${BUSY_BUTTON} ${busyBox} ${FORCED_EDGE_DISABLED}`
                   : `${variantClass} ${disabledClass} ${drawnByFill ? FORCED_EDGE : ""} ${FORCED_EDGE_DISABLED_ONLY}`;
-        return cn(`${base} ${s.box} ${s.text} ${s.gap} ${state} ${className}`);
+        const layer = showsBackground ? "relative isolate overflow-hidden" : "";
+        return cn(`${base} ${s.box} ${s.text} ${s.gap} ${layer} ${state} ${className}`);
     });
 </script>
 
 {#snippet content()}
+    {#if showsBackground && background}
+        <!-- Under the label, over the fill: the button is an isolated stacking
+        context, so -z-10 paints above its own background and below its content. -->
+        <span aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] overflow-hidden">
+            {@render background()}
+        </span>
+    {/if}
     {#if loading}
         <span
             class="inline-block {sizeClass.spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80 motion-reduce:animate-pulse"

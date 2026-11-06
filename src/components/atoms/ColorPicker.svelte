@@ -2,7 +2,7 @@
     import { mergeStrings } from "../util/ready-made-strings.js";
     import { zabiStringsFor } from "../util/zabi-strings.js";
     import Input from "./Input.svelte";
-    import { onMount, tick } from "svelte";
+    import { onMount, tick, untrack } from "svelte";
     import { isInsideToastRegion } from "../util/focus-utils.js";
     import {
         measurePlacement,
@@ -24,6 +24,16 @@
         /** The accessible names of its parts, for another language. */
         strings?: Partial<ColorPickerStrings>;
         onchange?: (event: Event) => void;
+        /**
+         * Fires once per committed change, with the colour as lowercase
+         * `#rrggbb` (`#rgb` expanded, a missing `#` added), or `""` when the
+         * field is cleared. Committed is: blur or Enter on a valid hex, the
+         * end of a drag on the map or the hue, a key step on a slider, and
+         * closing the panel. Never for a half-typed or invalid value, and
+         * never twice in a row with the same value. The live value stays
+         * `bind:value`.
+         */
+        oncommit?: (value: string) => void;
     }
 
     let {
@@ -34,6 +44,7 @@
         placeholder = "#000000",
         strings,
         onchange,
+        oncommit,
         ...restProps
     }: Props = $props();
 
@@ -173,6 +184,33 @@
         }
     }
 
+    /** What `oncommit` last said; what it is opened with counts as said. */
+    let lastCommitted = untrack(() => canonicalHex(value ?? ""));
+
+    /** `#ABC` → `#aabbcc`, `""` → `""`, and `null` for what is not a colour. */
+    function canonicalHex(raw: string): string | null {
+        const hex = normalizeHexValue(raw);
+        if (hex === "") return "";
+        return isValidHex(hex) ? expandHex(hex).toLowerCase() : null;
+    }
+
+    /** Tells `oncommit` about the current value, if it is a colour and not the one it last told. */
+    function emitCommit() {
+        const hex = canonicalHex(value);
+        if (hex === null || hex === lastCommitted) return;
+        lastCommitted = hex;
+        oncommit?.(hex);
+    }
+
+    /** Enter in the hex field: the typed colour is taken, as on blur. */
+    function handleHexKeydown(event: KeyboardEvent) {
+        if (event.key !== "Enter") return;
+        const hex = canonicalHex(value);
+        if (hex === null) return;
+        updateFromHex(hex);
+        emitCommit();
+    }
+
     const variant = $derived(value && !isValidHex(value) ? "error" : "default");
 
     const message = $derived(
@@ -200,6 +238,7 @@
         if (normalizedHex === "" || isValidHex(normalizedHex)) {
             value = normalizedHex;
             updateFromHex(normalizedHex);
+            emitCommit();
             if (onchange) onchange(event);
         }
     }
@@ -327,6 +366,7 @@
     function handleMapPointerUp(event: PointerEvent) {
         if (dragPointer !== event.pointerId) return;
         dragPointer = null;
+        emitCommit();
     }
 
     function handleMapKeydown(event: KeyboardEvent) {
@@ -344,6 +384,7 @@
             lightnessInput?.focus({ preventScroll: true });
         }
         updateHexFromHsl();
+        emitCommit();
     }
 
     /** Home, End, Page Up and Down, and what assistive technology sets: the slider's own value. */
@@ -352,12 +393,23 @@
         if (axis === "saturation") saturation = next;
         else lightness = next;
         updateHexFromHsl();
+        emitCommit();
     }
 
     function handleHueChange(event: Event) {
         const target = event.target as HTMLInputElement;
         hue = parseInt(target.value);
         updateHexFromHsl();
+        // A drag is committed where it ends; a key step or an assistive
+        // technology sets one value, and that is the commit.
+        if (!huePointerDown) emitCommit();
+    }
+
+    /** The pointer is down on the hue slider. */
+    let huePointerDown = false;
+    function handleHuePointerUp() {
+        huePointerDown = false;
+        emitCommit();
     }
 
     function setPickerContainer(node: HTMLDivElement) {
@@ -443,6 +495,7 @@
                 {message}
                 oninput={handleInput}
                 onblur={handleBlur}
+                onkeydown={handleHexKeydown}
                 aria-label={label ? undefined : text.hexInput}
             />
         </div>
@@ -554,6 +607,9 @@
                                     max="360"
                                     value={hue}
                                     oninput={handleHueChange}
+                                    onpointerdown={() => (huePointerDown = true)}
+                                    onpointerup={handleHuePointerUp}
+                                    onpointercancel={handleHuePointerUp}
                                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     aria-label={text.hue}
                                 />

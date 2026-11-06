@@ -104,6 +104,13 @@ export interface ButtonProps extends Omit<HTMLButtonAttributes, 'class'> {
     isFullWidth?: boolean;
     class?: string;
     children?: Snippet;
+    /**
+     * A layer drawn behind the label and inside the button's shape, such as
+     * a texture or an image (`aria-hidden`, no pointer events). Hidden while
+     * the button is disabled or loading. The app checks the label's contrast
+     * over it.
+     */
+    background?: Snippet;
     /** @deprecated never accepted by the component; use `class`. */
     className?: string;
     /** @deprecated never accepted by the component; render the icon in `children`. */
