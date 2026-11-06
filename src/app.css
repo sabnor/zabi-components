@@ -1745,7 +1745,13 @@ body {
  * and the layer follows. Scrolled, the fill is --color-material-regular, so
  * every fallback above applies unchanged: page coloured, no blur, hairline kept.
  * The fill and the line change over the moderate duration, which the
- * reduced-motion block zeroes. */
+ * reduced-motion block zeroes.
+ *
+ * --zabi-bar-fill and --zabi-bar-edge are read in front of those, declared
+ * nowhere (as --zabi-badge-* are): set on the bar or an ancestor they tint the
+ * fill at rest and the hairline, which then shows at rest too. Scrolled under,
+ * the material stays and only the edge follows. bg-* and border-* classes on
+ * the bar do not reach this layer. */
 .material-bar {
   isolation: isolate;
   background-color: transparent;
@@ -1758,8 +1764,8 @@ body {
   z-index: -1;
   box-sizing: border-box;
   pointer-events: none;
-  background-color: var(--color-bar);
-  border: 0 solid transparent;
+  background-color: var(--zabi-bar-fill, var(--color-bar));
+  border: 0 solid var(--zabi-bar-edge, transparent);
   border-bottom-width: 1px;
   transition-property: background-color, border-color;
   transition-duration: var(--duration-moderate);
@@ -1775,7 +1781,7 @@ body {
   background-color: var(--color-material-regular);
   -webkit-backdrop-filter: var(--material-filter-regular);
   backdrop-filter: var(--material-filter-regular);
-  border-color: var(--color-bar-border);
+  border-color: var(--zabi-bar-edge, var(--color-bar-border));
 }
 
 @media (forced-colors: active) {

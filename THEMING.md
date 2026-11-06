@@ -1435,6 +1435,21 @@ settable per mode:
 `--color-bar` and headline are held at 4.5:1 as well. To get the raised bar fill
 back: `--color-surface-chrome: var(--color-surface-raised)`.
 
+**Tinting one bar.** `material-bar` reads two properties in front of the tokens,
+declared nowhere (the same pattern as `--zabi-badge-*`): `--zabi-bar-fill`, the
+fill at rest, and `--zabi-bar-edge`, the hairline. Set them on the bar or on any
+ancestor. Setting the edge shows the hairline at rest too, not only once content
+scrolls under; the scrolled-under bar keeps the regular material and takes only
+the edge from the property. Unset, the bar is as it was. Contrast of your fill
+against the bar's text is yours to check.
+
+```svelte
+<AppBar style="--zabi-bar-fill: var(--color-background); --zabi-bar-edge: var(--color-border)" />
+```
+
+`bg-*` and `border-*` classes on a bar do not change its surface: the fill and
+the line are on a `::before` layer, not on the element.
+
 ### Gradients
 
 Two gradients, as tokens, so a rebrand carries through. Contrast is never measured against a gradient; the guard checks the worst stop of each.

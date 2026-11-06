@@ -26,6 +26,9 @@ Whenever token or CSS import API surface changes, include:
   for a sidebar's project or account switcher: no edge, fill or shadow at rest, the hover and pressed fills, full
   width, the chevron kept. A status still colours its edge and shows its message (cms-admin 11, D308).
 
+- Bars take `--zabi-bar-fill` and `--zabi-bar-edge`, set on the bar or an ancestor: the fill at rest and a hairline
+  that then shows at rest too; scrolled under, the glass stays and only the edge follows. `bg-*` and `border-*`
+  classes on a bar still do not change its surface (cms-admin 10, D307).
 - `npm run size:css` prints the raw and gzip size of every built stylesheet (cms-admin 3, D302).
 
 ### Fixed
