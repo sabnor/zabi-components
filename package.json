@@ -133,6 +133,7 @@
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test --grep @smoke",
     "test:playwright": "npm run test:e2e",
+    "size:css": "node scripts/report-css-size.js",
     "test:themes": "node --test --test-concurrency=1 tests/theme-output.test.js tests/create-theme.test.js",
     "fix:lucide-types": "node scripts/fix-lucide-svelte-icon-dts.js",
     "prepublishOnly": "npm run build:lib",

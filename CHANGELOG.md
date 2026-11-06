@@ -26,8 +26,27 @@ Whenever token or CSS import API surface changes, include:
   for a sidebar's project or account switcher: no edge, fill or shadow at rest, the hover and pressed fills, full
   width, the chevron kept. A status still colours its edge and shows its message (cms-admin 11, D308).
 
+- `npm run size:css` prints the raw and gzip size of every built stylesheet (cms-admin 3, D302).
+
+### Fixed
+
+- `zabi-components/css` imported after an app's own Tailwind no longer beats the app's variants. Its plain utilities
+  are written as `:where(.hidden)`, `:where(.h-24)`, at specificity 0, so `hidden sm:inline` and `h-24 sm:h-32`
+  in the app work again; the package's own variants keep their specificity. Its hand-written classes are still
+  unlayered in `css` (in the theme files they are in `@layer components` since alpha.5) (cms-admin 1, D300).
+- An app's own `@theme` or `:root` declaration of a zabi token, such as `--font-family-heading` or
+  `--font-family-sans`, now wins over `zabi-components/css` imported after it: the compiled file declares its own
+  tokens on `:where(:root, :host)`. Tokens that share a name with Tailwind's default theme (`--font-sans`,
+  `--radius-lg`, `--color-red-500`) stay on `:root, :host`, so Tailwind's defaults in the app do not replace them
+  (cms-admin 2, D301).
+
 ### Docs
 
+- THEMING.md "Upgrading from 8.x": the font tokens and the `h1`–`h6` rule since 9.0, and the dark surface, card and
+  field values that moved from 8.0.0 to 9.0.0, with `--color-surface-inset` as the recessed-on-card role
+  (cms-admin 2, 6; D301, D305).
+- docs/theme-imports.md: with Tailwind in the app and `theme-only` imported, drop `css`; it is a duplicate
+  (cms-admin 1, 3).
 - `CodeField` says what it is for: one-time and verification codes, a box per character; for a slug, an identifier
   or source code use `Input` (cms-admin 12, D309).
 

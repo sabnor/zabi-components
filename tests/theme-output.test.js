@@ -722,3 +722,76 @@ test('no published token has been removed or renamed', () => {
   const unrecorded = [...current].filter((name) => !expected.includes(name)).sort();
   assert.deepEqual(unrecorded, [], 'new tokens not recorded yet: run UPDATE_SNAPSHOTS=1 npm run test:themes');
 });
+
+/* ------------------------------------------------------------------
+ * The prebuilt `zabi-components/css` next to an app's own Tailwind.
+ *
+ * It carries its own utilities in `@layer utilities`. Imported after the app,
+ * a plain `.hidden` of ours would come later in the same layer than the app's
+ * `sm:inline` and win. build-css.js therefore gives every plain utility zero
+ * specificity, and the token declarations that are not Tailwind's own sit in
+ * a rule of specificity 0 too, so an app's `@theme` wins over them.
+ * ------------------------------------------------------------------ */
+
+const utilityRules = () => {
+  const rules = [];
+  postcss.parse(read('dist/zabi-components.css')).each((node) => {
+    if (node.type === 'atrule' && node.name === 'layer' && node.params === 'utilities') {
+      node.each((child) => child.type === 'rule' && rules.push(child));
+    }
+  });
+  return rules;
+};
+
+test('prebuilt css: plain utilities are :where() wrapped, variants are not', () => {
+  const selectors = utilityRules().flatMap((rule) => rule.selectors);
+  assert.ok(selectors.includes(':where(.hidden)'));
+  assert.ok(selectors.includes('.sm\\:flex-row'));
+  assert.ok(!selectors.includes('.hidden'));
+  const unwrapped = selectors.filter((selector) => {
+    const name = selector.replace(/\\\[[^\]]*\\\]/g, '');
+    return !name.startsWith(':where(') && !/\\:/.test(name);
+  });
+  assert.deepEqual(unwrapped, []);
+});
+
+test('prebuilt css after an app Tailwind build: the app variant is not beaten by our plain class', async () => {
+  const { default: tailwindcss } = await import('@tailwindcss/postcss');
+  const css = [
+    '@import "tailwindcss";',
+    `@import "${path.join(projectRoot, 'dist/zabi-components.css')}";`,
+    '@source inline("hidden sm:inline");',
+  ].join('\n');
+  const { css: out } = await postcss([tailwindcss()]).process(css, { from: path.join(projectRoot, 'tests/app.css') });
+  const root = postcss.parse(out);
+  const hidden = [];
+  let variantAt = -1;
+  let index = 0;
+  root.walkRules((rule) => {
+    index += 1;
+    if (rule.selectors.includes('.sm\\:inline') && variantAt < 0) variantAt = index;
+    if (rule.selectors.some((s) => /^(:where\()?\.hidden\)?$/.test(s))) hidden.push({ selector: rule.selector, index });
+  });
+  assert.ok(variantAt > 0, 'the app generates sm:inline');
+  // Our copy comes after the app's variant, and must not out-rank it.
+  const ours = hidden.filter((rule) => rule.index > variantAt);
+  assert.ok(ours.length > 0, 'the package copy of .hidden follows the app variant');
+  for (const rule of ours) assert.equal(rule.selector, ':where(.hidden)');
+});
+
+test('prebuilt css: tokens that are not Tailwind defaults sit at specificity 0', () => {
+  const themeLayer = postcss.parse(read('dist/zabi-components.css')).nodes.find(
+    (node) => node.type === 'atrule' && node.name === 'layer' && node.params === 'theme',
+  );
+  const selectorOf = (prop) => {
+    const found = [];
+    themeLayer.each((rule) => {
+      if (rule.type === 'rule' && rule.some((decl) => decl.prop === prop)) found.push(rule.selector.replace(/\s+/g, ' '));
+    });
+    return found;
+  };
+  assert.deepEqual(selectorOf('--font-family-heading'), [':where(:root, :host)']);
+  assert.deepEqual(selectorOf('--font-family-sans'), [':where(:root, :host)']);
+  assert.deepEqual(selectorOf('--font-sans'), [':root, :host']);
+  assert.deepEqual(selectorOf('--color-red-500'), [':root, :host']);
+});

@@ -175,6 +175,82 @@ function isUtilityClassRule(node) {
 }
 
 /**
+ * The utilities in the prebuilt `css` get zero specificity, so an app that
+ * imports it after its own Tailwind keeps its variants.
+ *
+ * `css` carries its own copy of every utility in `@layer utilities`. Imported
+ * after the app's build, a plain `.hidden` of ours is later in the same layer
+ * than the app's `sm:inline` and wins, at every width. As `:where(.hidden)` it
+ * has specificity 0 and loses to any class of the app's, whichever file comes
+ * last. Variants (`.sm\:flex`, `.hover\:x`, `.dark\:x`, `.\[\&_svg\]\:size-4`)
+ * stay as they are: they still beat our own plain classes, which is the point.
+ *
+ * A class is plain when its name has no escaped colon once the escaped bracket
+ * groups are removed (`.\[mask\:x\]` and `.h-\[calc\(1px\+2px\)\]` are plain).
+ * Only rules at the top of the layer's blocks (also inside `@media` and the
+ * like) are touched; a nested rule such as `:where(& > :not(:last-child))`
+ * inherits the wrapped parent through `&`. Everything outside `@layer
+ * utilities` is left alone.
+ */
+function isPlainUtilitySelector(selector) {
+  return !/\\:/.test(selector.replace(/\\\[[^\]]*\\\]/g, ''));
+}
+
+function lowerUtilitySpecificity(root) {
+  root.each((layer) => {
+    if (layer.type !== 'atrule' || layer.name !== 'layer' || layer.params.trim() !== 'utilities') return;
+    layer.walkRules((rule) => {
+      for (let up = rule.parent; up && up !== layer; up = up.parent) {
+        // Nested rules and keyframe steps are not selectors of their own.
+        if (up.type === 'rule' || /keyframes$/.test(up.name)) return;
+      }
+      rule.selectors = rule.selectors.map((selector) =>
+        isPlainUtilitySelector(selector) && !selector.startsWith(':where(') ? `:where(${selector})` : selector,
+      );
+    });
+  });
+}
+
+/**
+ * Tailwind's own default theme names (`--font-sans`, `--color-red-500`,
+ * `--radius-lg`), read from the installed package.
+ */
+function tailwindDefaultThemeNames() {
+  const themeCss = fs.readFileSync(path.join(__dirname, '../node_modules/tailwindcss/theme.css'), 'utf8');
+  return new Set([...themeCss.matchAll(/^\s*(--[\w-]+)\s*:/gm)].map((match) => match[1]));
+}
+
+/**
+ * Lets an app's own `@theme` win over the prebuilt file's token declarations.
+ *
+ * The compiled `@layer theme { :root, :host { … } }` restates every token. Imported
+ * after the app's `@theme`, it would replace an app's `--font-family-heading`.
+ * The zabi-only names move to `:where(:root, :host)`, specificity 0, so any
+ * declaration of the app's wins. The names that are in Tailwind's default theme
+ * keep `:root, :host`: the app's Tailwind emits its defaults for those on
+ * `:root, :host`, and at specificity 0 they would replace our `--font-sans`,
+ * `--color-red-500` and `--radius-lg`.
+ */
+function lowerThemeTokenSpecificity(root) {
+  const tailwindNames = tailwindDefaultThemeNames();
+  root.each((layer) => {
+    if (layer.type !== 'atrule' || layer.name !== 'layer' || layer.params.trim() !== 'theme') return;
+    layer.each((rule) => {
+      if (rule.type !== 'rule' || rule.selector.replace(/\s+/g, ' ') !== ':root, :host') return;
+      const lowered = rule.clone({ selector: ':where(:root, :host)' });
+      lowered.removeAll();
+      rule.each((node) => {
+        if (node.type === 'decl' && node.prop.startsWith('--') && !tailwindNames.has(node.prop)) {
+          lowered.append(node.clone());
+          node.remove();
+        }
+      });
+      if (lowered.nodes.length > 0) rule.after(lowered);
+    });
+  });
+}
+
+/**
  * Tailwind does not scan node_modules, so without this the classes inside the
  * package are never generated. The path is relative to the theme file, which
  * sits in dist/ beside the compiled components.
@@ -281,6 +357,8 @@ async function buildCSS() {
   if (expanded !== 1) {
     throw new Error(`Expected one .dark token rule in the compiled CSS, found ${expanded}`);
   }
+  lowerUtilitySpecificity(compiled);
+  lowerThemeTokenSpecificity(compiled);
   css = compiled.toString();
 
   // Write the processed CSS (without :root block - colors.css is separate)

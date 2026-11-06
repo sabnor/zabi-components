@@ -1015,6 +1015,49 @@ the same way: removing one is breaking.
 
 ---
 
+## Upgrading from 8.x
+
+**Fonts.** Since 9.0 `--font-family-sans` is the platform UI stack (8.0 shipped
+`'Nunito Sans'`). Headings use `--font-family-heading`, which defaults to
+`var(--font-family-sans)`, through an `@layer base` rule on `h1` to `h6`. Set
+`--font-family-sans` once in your `@theme` and body text and headings both take
+it; set `--font-family-heading` to change the headings only. Both work from your
+own `@theme`, also when you import `zabi-components/css` after it: the compiled
+file declares its tokens at specificity 0, so yours win.
+
+**Dark surfaces.** 9.0.0 moved the dark surface tokens from literal greys to
+steps of the neutral ramp, and added levels. Moved values in the `.dark` block,
+8.0.0 to 9.0.0:
+
+| Token | 8.0.0 | 9.0.0 |
+|---|---|---|
+| `--color-surface-base`, `--color-background` | `#18181b` | `--zabi-base-900`, `#18181b` (same) |
+| `--color-surface-raised`, `--color-card` | `#262629` | `--zabi-base-850`, `#1f1f22` |
+| `--color-surface-elevated`, `--color-card-hover` | `#363638` | `--zabi-base-800`, `#27272a` |
+| `--color-surface-overlay` | `#454547` | `--zabi-base-800`, `#27272a` |
+| `--color-surface-overlay-hover` | `#52525b` | `--zabi-base-750`, `#333338` |
+| `--color-card-active` | `--color-surface-overlay`, `#454547` | `--color-surface-overlay-hover`, `#333338` |
+| `--color-surface-4` | `--color-base-400`, `#52525b` | `--color-surface-overlay-hover`, `#333338` |
+| `--color-input` | `--color-base-150`, `#1f1f22` | base-50 at 7% over what is under it (translucent) |
+| `--color-input-hover` | `--color-base-200`, `#27272a` | base-50 at 10% |
+| `--color-input-focus` | `--color-base-150`, `#1f1f22` | base-50 at 7% |
+| `--color-input-border` | `--color-base-300`, `#3f3f46` | `--color-base-500`, `#71717a` (3:1 edge) |
+| `--color-input-disabled` | `--color-base-100`, `#18181b` | `--color-base-75`, `#101013` |
+| `--color-input-placeholder` | `--color-base-500`, `#71717a` | a mix of base-350 and base-400 |
+
+New in 9.0.0, no 8.0.0 value: `--color-surface-inset`, `--color-surface-chrome`,
+`--color-card-tint`, `--color-card-flat*`, `--color-input-solid*`,
+`--color-input-active`, `--color-input-border-hover`. The light theme did not
+move for these tokens. Dark cards are darker and a step closer to the page than
+in 8.0.0, so a hard-coded `bg-base-150` or `#262629` inside a card no longer
+reads as raised.
+
+For a recessed area on a card, use `--color-surface-inset` (`bg-surface-inset`):
+dark base-900 under the raised base-850 card, light base-100. Do not pick raw
+ramp steps; the role follows the mode and your overrides. Fields on 9.0 are
+translucent in dark; `--color-input: var(--color-surface-inset)` in the dark
+block brings back an opaque one (see Surface elevation levels).
+
 ## Reference: how the theme is built
 
 Background for the tables above. An app does not need any of it to rebrand.
