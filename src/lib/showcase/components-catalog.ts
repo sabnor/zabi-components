@@ -1325,7 +1325,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "Snippet",
                         required: false,
                         description:
-                            "Drawn in place of the label text, for markup of your own such as a name in bdi translate=no. Give label too, with the same words.",
+                            "Drawn in place of the label text, for markup of your own such as a name in bdi translate=no or words with a link. It names the control; label is not needed with it.",
                     },
                     {
                         name: "leading",
@@ -1485,7 +1485,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         type: "Snippet",
                         required: false,
                         description:
-                            "Drawn in place of the label text, for markup of your own such as a name in bdi translate=no. Give label too, with the same words.",
+                            "Drawn in place of the label text, for markup of your own such as a name in bdi translate=no or words with a link. It names the control; label is not needed with it.",
                     },
                     {
                         name: "leading",

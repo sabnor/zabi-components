@@ -20,8 +20,9 @@
         label?: string;
         /**
          * Drawn in place of the label text, for markup of your own: a
-         * name in `<bdi translate=no>`, say. It is still the
-         * control's name; give `label` too, with the same words.
+         * name in `<bdi translate=no>`, or words with a link in them. It is
+         * inside the one `<label>`, so it names the control; `label` is not
+         * needed with it. A link in it opens without ticking the box.
          */
         labelContent?: Snippet;
         defaultChecked?: boolean;

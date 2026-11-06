@@ -41,6 +41,11 @@ Whenever token or CSS import API surface changes, include:
   empty alternative text, so the label's text and the field's name are unchanged. `DateField` and `TimeField` show it
   too (cms-admin 28, D327).
 
+### Fixed
+
+- Docs: `Checkbox` and `Radio` `labelContent` names the control on its own (it is inside the one `<label>`); the
+  JSDoc and catalog no longer ask for `label` with the same words. Tested with a link inside (cms-admin 29, D328).
+
 ## [9.1.0-alpha.9] - 2026-11-06
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.8, for cms-admin's rows 13-24 (per-project

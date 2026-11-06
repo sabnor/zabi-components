@@ -303,7 +303,7 @@ export interface CheckboxProps
     disabled?: boolean;
     loading?: boolean;
     label?: string;
-    /** Drawn in place of the label text: a name in `<bdi translate=no>`, say. Give `label` too. */
+    /** Drawn in place of the label text: a name in `<bdi translate=no>`, or words with a link. It names the control; `label` is not needed with it. */
     labelContent?: Snippet;
     /**
      * Drawn inside the one label, between the box and the label text. A

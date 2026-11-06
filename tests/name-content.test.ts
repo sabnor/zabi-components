@@ -59,6 +59,16 @@ describe("labelContent", () => {
         render(Checkbox, { props: { labelContent: name("Alan") } });
         expect(screen.getByRole("checkbox", { name: "Alan" })).toBeTruthy();
     });
+
+    it("names the box from words with a link, with no label string (cms-admin 29)", () => {
+        const consent = createRawSnippet(() => ({
+            render: () => `<span>I accept the <a href="#privacy">Privacy Policy</a></span>`,
+        }));
+        render(Checkbox, { props: { labelContent: consent } });
+        const box = screen.getByRole("checkbox", { name: "I accept the Privacy Policy" }) as HTMLInputElement;
+        screen.getByRole("link", { name: "Privacy Policy" }).click();
+        expect(box.checked).toBe(false);
+    });
 });
 
 describe("titleContent", () => {
