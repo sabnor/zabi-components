@@ -12,6 +12,18 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.11] - 2026-11-06
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.10, for cms-admin's rows 33-37 (their
+alpha.9 findings). Every new option, key and export is optional; nothing removed or renamed; `createTheme` `css` and
+`tokens` for every existing input are byte-identical (the result gains a `labels` key). Contrast thresholds now compare
+exact ratios; no checked output moved. Run: `npm run check`, the whole vitest suite in six shards, the theme output
+tests, the library contrast guard, `npm run build:lib`, `npm pack`. Not run: Playwright, a QA pass; nothing in it has
+been rendered in a browser (the theme-scope example included).
+
+CSS size of this build, raw / gzip -9 (`npm run size:css`): unchanged from alpha.10, `zabi-components.css` 355,074 /
+40,265 bytes, `theme-only` 109,912 / 22,560, `theme-dark-only` 98,146 / 12,292, `colors` 101,547 / 7,098.
+
 ### Added
 
 - `createTheme` returns `labels`: `{ light: { brand, accent? }, dark: { brand, accent? } }`, the resolved `--color-on-brand`
