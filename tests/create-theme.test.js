@@ -1925,3 +1925,64 @@ test('the bin takes --pin-nearest-aa, which implies --pin and keeps every other 
   assert.equal(run('--brand', '#128978', '--pin-nearest-aa', '--pin-dark', 'force').status, 0);
   assert.equal(run('--brand', '#128978', '--pin').stdout, createTheme({ brand: '#128978', pin: true }).css);
 });
+
+/* ---------- thresholds compare exact ratios (cms-admin report row 37) ---------- */
+
+test('getContrastRatio is rounded by default and unrounded with { exact: true }', () => {
+  // 2.996:1, which the rounded figure reads as 3.
+  assert.equal(color.getContrastRatio('#006fa5', '#1f1f1f'), 3);
+  const exact = color.getContrastRatio('#006fa5', '#1f1f1f', { exact: true });
+  assert.ok(exact < 3 && exact > 2.99, `expected just under 3, got ${exact}`);
+  assert.equal(color.getContrastRatio('#006fa5', '#1f1f1f', {}), 3);
+  assert.equal(color.getContrastRatio('#006fa5', '#1f1f1f', { exact: false }), 3);
+  assert.equal(color.meetsAA(color.getContrastRatio('#006fa5', '#1f1f1f', { exact: true }), 'ui'), false);
+  // Existing callers: two arguments, the same two-decimal figure as before.
+  assert.equal(color.getContrastRatio('#000000', '#ffffff'), 21);
+  assert.equal(color.getContrastRatio('#ffffff', '#ffffff', { exact: true }), 1);
+});
+
+test('readableOn compares the exact 4.5:1, not the rounded figure', () => {
+  // White on #008769 is 4.497:1: rounded 4.5, but it does not reach 4.5.
+  assert.equal(color.getContrastRatio('#ffffff', '#008769'), 4.5);
+  assert.ok(color.getContrastRatio('#ffffff', '#008769', { exact: true }) < 4.5);
+  assert.equal(color.readableOn('#008769', '#000000'), '#000000');
+  // A fill that does reach it keeps white.
+  assert.equal(color.readableOn('#0026ea', '#000000'), '#ffffff');
+});
+
+const VARIED_BRANDS = [
+  '#006fa5', '#037578', '#128978', '#06b6d4', '#f5c400', '#16a34a', '#1f6feb', '#0026ea', '#c17b00', '#ff0000',
+  '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff', '#808080', '#777777', '#ffffff', '#000000', '#e11d48',
+  '#7c3aed', '#db2777', '#ea580c', '#84cc16', '#14b8a6', '#0ea5e9', '#6366f1', '#a855f7', '#f43f5e', '#facc15',
+  '#4ade80', '#22d3ee', '#93c5fd', '#fca5a5', '#fde68a', '#15803d', '#1e3a8a', '#7f1d1d', '#3f6212', '#0f766e',
+  '#008769', '#a16207',
+];
+
+test('accessibleBrand never returns a found fill whose exact ratios fall short', () => {
+  const surfaces = {
+    light: { page: '#fafafa', card: '#ffffff' },
+    dark: { page: '#18181b', card: '#1f1f22' },
+  };
+  const exact = (a, b) => color.getContrastRatio(a, b, { exact: true });
+  for (const hex of VARIED_BRANDS) {
+    const result = color.accessibleBrand(hex);
+    if (!result.found) continue;
+    for (const mode of ['light', 'dark']) {
+      const side = result[mode];
+      const fill = result.hex;
+      const labelled = { fill, hover: side.states.hover, active: side.states.active };
+      for (const [name, colour] of Object.entries(labelled)) {
+        assert.ok(exact(side.label, colour) >= 4.5, `${hex} -> ${fill} ${mode}: label on ${name} is ${exact(side.label, colour)}:1`);
+      }
+      for (const surface of ['page', 'card']) {
+        assert.ok(exact(fill, surfaces[mode][surface]) >= 3, `${hex} -> ${fill} ${mode}: fill on ${surface} is ${exact(fill, surfaces[mode][surface])}:1`);
+      }
+    }
+  }
+  // The colours the 9.1 notes name stay put.
+  assert.equal(color.accessibleBrand('#128978').hex, '#088574');
+  assert.equal(color.accessibleBrand('#06b6d4').hex, '#009fba');
+  assert.equal(color.accessibleBrand('#f5c400').hex, '#b28d00');
+  assert.equal(color.accessibleBrand('#16a34a').changed, false);
+  assert.equal(color.accessibleBrand('#1f6feb').changed, false);
+});

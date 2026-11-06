@@ -457,7 +457,7 @@ function checkBlocks(css, themes, componentsDir) {
                 }
                 const ratio = contrast(fill, colour);
                 checked += 1;
-                if (ratio < min) {
+                if (contrastExact(fill, colour) < min) {
                     failures.push(`${themeName} · ${role} in the ${block.name} block: ${colour} on ${fill} = ${ratio}:1 (needs ${min}:1)`);
                 }
             }
@@ -553,11 +553,12 @@ function main() {
                 skipped.push(`${themeName} · ${pair.name} (${!bg ? pair.bg : pair.fg} is not a flat colour)`);
                 continue;
             }
-            const ratio = contrast(bg, fg);
+            const ratio = contrast(bg, fg); // printed
             // `orFg`: a second foreground that may carry the pair instead.
             const other = pair.orFg ? resolve(map, pair.orFg) : null;
             const otherRatio = other ? contrast(bg, other) : 0;
-            if (Math.max(ratio, otherRatio) < pair.min) {
+            // The pass/fail test compares unrounded ratios; the rounded ones are only printed.
+            if (Math.max(contrastExact(bg, fg), other ? contrastExact(bg, other) : 0) < pair.min) {
                 failures.push(
                     `${themeName} · ${pair.name}: ${fg} on ${bg} = ${ratio}:1` +
                         (other ? ` and ${other} on ${bg} = ${otherRatio}:1` : '') +

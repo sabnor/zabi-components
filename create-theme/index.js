@@ -48,7 +48,7 @@
 import data from './theme-data.js';
 import { RAMP_STEPS, hexAt, cieL, toOklch } from './lib/ramp-math.js';
 import { resolveTokenColor, resolveTokenPaint, compositeOver, dimBackdrop, backdropBrightness } from './lib/resolve.js';
-import { luminance, contrast } from './lib/wcag.js';
+import { luminance, contrastExact, failingRatioLabel } from './lib/wcag.js';
 import { parseHex, describe, MIN_USEFUL_CHROMA } from './lib/brand-ramp.js';
 import { generateBrandRamp, closestStep, accessibleBrand } from './color.js';
 import { WHITE, shades, SHADE_DIRECTIONS, shadeRecipe, labelCandidates, pickLabel } from './lib/pin-maths.js';
@@ -282,11 +282,12 @@ function checkPairs(tokens, darkTokens = {}, extraPairs = [], { gradients = true
             }
             if (!bg || !fg) continue; // an alpha tint: not one flat colour
             checked += 1;
-            const ratio = contrast(bg, fg);
-            if (ratio >= pair.min) continue;
+            const exact = contrastExact(bg, fg);
+            if (exact >= pair.min) continue;
             // A pair with a second foreground passes when either one does.
             const other = pair.orFg ? resolveTokenColor(maps[mode], pair.orFg) : null;
-            if (other && contrast(bg, other) >= pair.min) continue;
+            if (other && contrastExact(bg, other) >= pair.min) continue;
+            const ratio = failingRatioLabel(exact, pair.min);
             warnings.push({
                 type: 'contrast',
                 pair: pair.name,
@@ -332,7 +333,7 @@ function chooseOn(name, mode, tokens, darkTokens = {}) {
         const label = resolveTokenColor(map, role);
         return fills.map((fill) => {
             const colour = resolveTokenColor(map, fill);
-            return label && colour ? contrast(label, colour) : 0;
+            return label && colour ? contrastExact(label, colour) : 0;
         });
     });
     return [knob, value];
@@ -655,7 +656,7 @@ function settleProgressTrackEdge(tokens, darkTokens, modes) {
         const track = resolveTokenColor(maps, PROGRESS_TRACK);
         if (!track) continue; // an alpha tint: not one flat colour
         const surfaces = ['--color-surface-base', '--color-surface-raised'].map((role) => resolveTokenColor(maps, role));
-        if (surfaces.some((surface) => !surface || contrast(track, surface) < MIN_TRACK_AGAINST_SURFACE)) continue;
+        if (surfaces.some((surface) => !surface || contrastExact(track, surface) < MIN_TRACK_AGAINST_SURFACE)) continue;
         ({ tokens, darkTokens } = setRoles(tokens, darkTokens, mode, { [PROGRESS_TRACK_EDGE]: 'transparent' }));
     }
     return { tokens, darkTokens };

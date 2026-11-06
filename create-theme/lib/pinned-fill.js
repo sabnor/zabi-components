@@ -11,14 +11,14 @@
  * Runtime dependency: culori.
  */
 
-import { contrast } from './wcag.js';
+import { contrastExact } from './wcag.js';
 import { describe } from './brand-ramp.js';
 import { SHADE_DIRECTIONS, shades, shadeRecipe, labelCandidates, pickLabel } from './pin-maths.js';
 import { DEFAULT_SURFACES, PINNED_FILL_PAIRS } from './default-surfaces.js';
 
 /** The label for a fill and its two states, as chooseOn picks it. */
 function labelFor(mode, ramp, fills) {
-    return pickLabel(labelCandidates('brand', mode, ramp[950]), (label) => fills.map((fill) => contrast(label, fill)));
+    return pickLabel(labelCandidates('brand', mode, ramp[950]), (label) => fills.map((fill) => contrastExact(label, fill)));
 }
 
 /** Names of the guarded pairs that fail for a fill, its states and a label. */
@@ -27,7 +27,7 @@ function failingPairs(mode, { fill, hover, active }, label) {
     const colours = { fill, hover, active };
     const failed = new Set();
     for (const [name, which, other, min] of PINNED_FILL_PAIRS) {
-        if (contrast(colours[which], against[other]) < min) failed.add(name);
+        if (contrastExact(colours[which], against[other]) < min) failed.add(name);
     }
     return failed;
 }

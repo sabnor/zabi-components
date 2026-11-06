@@ -1142,9 +1142,9 @@ copying the maths. They live at `zabi-components/color` and by name from
 |---|---|
 | `generateBrandRamp(hex)` | `{ 50 … 950 }` as lowercase `#rrggbb`: the ramp `createTheme({ brand: hex })` writes as `--zabi-brand-*`. |
 | `closestStep(hex, ramp)` | `{ step, hex, deltaE, exact }`: what `createTheme` reports as `closest`. |
-| `getContrastRatio(a, b)` | WCAG 2.x, 1 to 21, to two decimals, as the library's guard computes it. |
+| `getContrastRatio(a, b, { exact? })` | WCAG 2.x, 1 to 21. Rounded to two decimals by default, for display: 2.996 reads 3. Pass `{ exact: true }` for the unrounded ratio, which is the one to compare with a threshold. |
 | `readableOn(fill, darkEnd?)` | `#ffffff` if it reaches 4.5:1 on `fill`, otherwise `darkEnd` (default `#09090b`, the library's near-black; pass a ramp's 950 to match a theme), and if neither reaches it, the one with more contrast. The rule the theme applies to a fill; the theme applies it to the fill and its hover and pressed states together. |
-| `meetsAA(ratio, kind)` | `kind` is `"text"` (4.5) or `"ui"` (3). |
+| `meetsAA(ratio, kind)` | `kind` is `"text"` (4.5) or `"ui"` (3). Pass an exact ratio; a rounded one can read 3 for 2.996. |
 | `brandContrast(hex, { ramp? })` | What `createTheme({ brand: hex, pin: true })` does with `hex`, per mode: the label, the hover and pressed states and which way they go, the ratios, pass or fail, and whether dark takes the colour. |
 | `accessibleBrand(hex, { ramp?, modes? })` | The nearest fill that passes, with the same report. |
 
@@ -1153,7 +1153,7 @@ import { generateBrandRamp, getContrastRatio, meetsAA, readableOn } from "zabi-c
 
 const ramp = generateBrandRamp("#128978");
 const label = readableOn(ramp[600], ramp[950]);
-meetsAA(getContrastRatio(label, ramp[600]), "text"); // true
+meetsAA(getContrastRatio(label, ramp[600], { exact: true }), "text"); // true
 ```
 
 #### A brand colour that fails contrast

@@ -12,6 +12,18 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Fixed
+
+- Contrast thresholds compare exact ratios. Everywhere zabi decides pass or fail (the `createTheme` label and pair
+  checks, `readableOn`, `brandContrast`, `accessibleBrand`, and the library's own `scripts/check-contrast.js`) the
+  unrounded WCAG ratio is compared, so 2.996 no longer passes 3:1 and 4.495 no longer passes 4.5:1. Rounding is for
+  display only. A warning that failed by rounding shows the ratio floored (4.49), never as if it met the threshold.
+  `getContrastRatio(a, b, { exact: true })` is new and returns the unrounded ratio; the default stays rounded to two
+  decimals for display, and `meetsAA` takes an exact ratio. `brandContrast().ratios` shows a ratio below its threshold
+  floored too, so it never reads 4.5 while `passes` is false. Nothing removed or renamed. No output moved: the `createTheme` snapshot, `accessibleBrand` for the colours checked (#128978, #06b6d4,
+  #f5c400, #16a34a, #1f6feb) and the library's own contrast guard are unchanged. Only a borderline ratio just under a
+  threshold, which rounding used to let through, now fails (cms-admin 37; D330).
+
 ## [9.1.0-alpha.10] - 2026-11-06
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.9, for cms-admin's rows 25-30 and 32 and

@@ -12,7 +12,7 @@
 import { clampChroma, formatHex } from 'culori';
 import { toLab, toOklch, RAMP_STEPS } from './lib/ramp-math.js';
 import { parseHex, describe, chromaticRamp } from './lib/brand-ramp.js';
-import { contrast } from './lib/wcag.js';
+import { contrast, contrastExact, failingRatioLabel } from './lib/wcag.js';
 import { WHITE as WHITE_LABEL } from './lib/pin-maths.js';
 import { pinnedFill } from './lib/pinned-fill.js';
 import { DEFAULT_SURFACES } from './lib/default-surfaces.js';
@@ -54,12 +54,19 @@ export function closestStep(hex, ramp) {
 }
 
 /**
- * The WCAG 2.x contrast ratio of two colours (`#rgb` or `#rrggbb`), 1 to 21,
- * rounded to two decimals, the figure the library's contrast guard compares.
- * Order does not matter. Opaque colours only.
+ * The WCAG 2.x contrast ratio of two colours (`#rgb` or `#rrggbb`), 1 to 21.
+ * By default it is rounded to two decimals, for display: 2.996 reads 3. Do
+ * not compare that figure with a threshold. For a pass/fail check pass
+ * `{ exact: true }`, which returns the unrounded ratio (2.996). Order does not
+ * matter. Opaque colours only.
+ *
+ * @param {string} a
+ * @param {string} b
+ * @param {{ exact?: boolean }} [options] `exact: true` for the unrounded ratio.
  */
-export function getContrastRatio(a, b) {
-    return contrast(parseHex(a, 'a'), parseHex(b, 'b'));
+export function getContrastRatio(a, b, options = {}) {
+    const [x, y] = [parseHex(a, 'a'), parseHex(b, 'b')];
+    return options?.exact === true ? contrastExact(x, y) : contrast(x, y);
 }
 
 /**
@@ -74,14 +81,15 @@ export function getContrastRatio(a, b) {
 export function readableOn(fill, darkEnd = NEAR_BLACK) {
     const base = parseHex(fill, 'fill');
     const dark = parseHex(darkEnd, 'darkEnd');
-    const white = contrast(WHITE, base);
+    const white = contrastExact(WHITE, base);
     if (white >= AA.text) return WHITE;
-    return contrast(dark, base) > white ? dark : WHITE;
+    return contrastExact(dark, base) > white ? dark : WHITE;
 }
 
 /**
  * Whether a ratio meets WCAG AA: 4.5 for `'text'`, 3 for `'ui'` (UI parts,
- * focus rings, large text).
+ * focus rings, large text). Pass an exact ratio (`getContrastRatio(a, b,
+ * { exact: true })`): the default rounded figure can read 3 for 2.996.
  *
  * @throws {TypeError} when `kind` is neither.
  */
@@ -118,19 +126,27 @@ export function brandContrast(hex, options = {}) {
     const report = (mode) => {
         const { direction, fill, hover, active, label, pinned } = result[mode];
         const surfaces = DEFAULT_SURFACES[mode];
-        const ratios = {
-            label: { fill: contrast(label, fill), hover: contrast(label, hover), active: contrast(label, active) },
-            page: contrast(fill, surfaces.page),
-            card: contrast(fill, surfaces.card),
+        // Reported to two decimals; a ratio below its threshold never reads as
+        // meeting it (4.495 shows 4.49). The pass/fail test uses the exact ones.
+        const shown = (a, b, min) => {
+            const exact = contrastExact(a, b);
+            return exact < min ? failingRatioLabel(exact, min) : contrast(a, b);
         };
+        const ratios = {
+            label: { fill: shown(label, fill, AA.text), hover: shown(label, hover, AA.text), active: shown(label, active, AA.text) },
+            page: shown(fill, surfaces.page, AA.ui),
+            card: shown(fill, surfaces.card, AA.ui),
+        };
+        const exactLabel = [fill, hover, active].map((colour) => contrastExact(label, colour));
+        const exactUi = [surfaces.page, surfaces.card].map((surface) => contrastExact(fill, surface));
         return {
             label,
             states: { hover, active },
             direction,
             ratios,
             passes: {
-                text: Object.values(ratios.label).every((ratio) => ratio >= AA.text),
-                ui: ratios.page >= AA.ui && ratios.card >= AA.ui,
+                text: exactLabel.every((ratio) => ratio >= AA.text),
+                ui: exactUi.every((ratio) => ratio >= AA.ui),
             },
             pinned,
         };

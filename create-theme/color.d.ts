@@ -18,8 +18,13 @@ export function generateBrandRamp(brand: HexColor): BrandRamp;
 /** Which step of `ramp` is nearest `hex` (CIELAB), as createTheme reports in `closest`. */
 export function closestStep(hex: HexColor, ramp: Record<string | number, string>): ClosestStep;
 
-/** WCAG 2.x contrast ratio, 1 to 21, to two decimals. Order does not matter. Opaque colours only. */
-export function getContrastRatio(a: HexColor, b: HexColor): number;
+/**
+ * WCAG 2.x contrast ratio, 1 to 21. Rounded to two decimals by default, for
+ * display (2.996 reads 3); do not compare that with a threshold. With
+ * `{ exact: true }` it is unrounded, for pass/fail checks. Order does not
+ * matter. Opaque colours only.
+ */
+export function getContrastRatio(a: HexColor, b: HexColor, options?: { exact?: boolean }): number;
 
 /**
  * The label createTheme chooses for a solid fill: `#ffffff` if it reaches 4.5:1
@@ -28,7 +33,7 @@ export function getContrastRatio(a: HexColor, b: HexColor): number;
  */
 export function readableOn(fill: HexColor, darkEnd?: HexColor): string;
 
-/** Whether `ratio` meets WCAG AA: 4.5 for `'text'`, 3 for `'ui'`. */
+/** Whether `ratio` meets WCAG AA: 4.5 for `'text'`, 3 for `'ui'`. Pass an exact ratio (`getContrastRatio(a, b, { exact: true })`). */
 export function meetsAA(ratio: number, kind: 'text' | 'ui'): boolean;
 
 /** What a pinned brand colour does in one mode, as createTheme writes it. */
