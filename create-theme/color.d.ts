@@ -71,9 +71,14 @@ export interface BrandContrast {
  * stored brand ramp (default: the ramp of `hex`); its step 950 is the label's
  * dark end.
  *
- * @throws {TypeError} when `hex` is not a hex colour or `ramp` lacks a step.
+ * `dark: 'fill'` is `createTheme`'s `pin.dark: 'fill'`: dark has light's fill,
+ * hover and pressed, `dark.pinned` is whether that fill reaches 3:1 on the dark
+ * page and card, and `dark.label` is the light label if it reaches 4.5:1 on the
+ * three fills, otherwise the first of the two that does. Default `'auto'`.
+ *
+ * @throws {TypeError} when `hex` is not a hex colour, `ramp` lacks a step or `dark` is neither `'auto'` nor `'fill'`.
  */
-export function brandContrast(hex: HexColor, options?: { ramp?: BrandRamp }): BrandContrast;
+export function brandContrast(hex: HexColor, options?: { ramp?: BrandRamp; dark?: 'auto' | 'fill' }): BrandContrast;
 
 export interface AccessibleBrand extends BrandContrast {
     /** The nearest passing fill; the input, lowercased, when it already passes. */
@@ -92,6 +97,6 @@ export interface AccessibleBrand extends BrandContrast {
  * needs. `createTheme({ brand, pin: { brand: 'nearest-aa' } })` pins this colour.
  * Pass the ramp built from the colour you were given as `ramp` if you store one.
  *
- * @throws {TypeError} when `hex` is not a hex colour, `ramp` lacks a step or `modes` names another mode.
+ * @throws {TypeError} when `hex` is not a hex colour, `ramp` lacks a step, `modes` names another mode or `dark` is neither `'auto'` nor `'fill'`.
  */
-export function accessibleBrand(hex: HexColor, options?: { ramp?: BrandRamp; modes?: ('light' | 'dark')[] }): AccessibleBrand;
+export function accessibleBrand(hex: HexColor, options?: { ramp?: BrandRamp; modes?: ('light' | 'dark')[]; dark?: 'auto' | 'fill' }): AccessibleBrand;

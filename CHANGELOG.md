@@ -12,6 +12,20 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+### Added
+
+- `createTheme` returns `labels`: `{ light: { brand, accent? }, dark: { brand, accent? } }`, the resolved `--color-on-brand`
+  (and `--color-on-accent` when an `accent` is given) of each mode as lowercase `#rrggbb`, computed from the generated
+  tokens after everything is settled. Always present, also without `pin` and with `check: false`. `tokens` still point at
+  the ramp (`var(--zabi-brand-950)`); nothing in `css` or `tokens` moved (cms-admin 33; D331).
+- `pin.dark: 'fill'` (CLI `--pin-dark fill`): dark takes only the fill, `--color-action-primary`, `-hover` and `-active`
+  (`--color-accent*` for the accent), with light's values, when the fill reaches 3:1 on dark's page and card, and
+  checks nothing else; the primary tints, focus ring, link and accent text stay as dark has them. Under 3:1 dark keeps
+  the ramp and `dark.failed` names the pairs. The dark label is the light one if it reaches 4.5:1 on the three fills,
+  otherwise the other candidate. `brandContrast` and `accessibleBrand` take `dark: 'fill'` for the same answer. The
+  control veil is still settled for contrast and may flip in dark. `'auto'`, `'force'` and `'ramp'` are unchanged
+  (cms-admin 35; D332).
+
 ### Fixed
 
 - Contrast thresholds compare exact ratios. Everywhere zabi decides pass or fail (the `createTheme` label and pair

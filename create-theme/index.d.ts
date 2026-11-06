@@ -103,7 +103,15 @@ export interface CreateThemeBaseOptions {
      * dark keeps the mirrored ramp step, as it does without `pin`. `dark`
      * changes that: `'auto'` (the default) is that rule, `'force'` takes the
      * colour in dark whatever fails (the failures are in `warnings` and in
-     * `pinned.<name>.dark.failed`), `'ramp'` never takes it. Read
+     * `pinned.<name>.dark.failed`), `'ramp'` never takes it, and
+     * `'fill'` takes only the fill: `--color-action-primary`, `-hover` and `-active`
+     * (`--color-accent*` for the accent) get light's values when the fill reaches
+     * 3:1 on dark's page and card, and nothing else is checked for that decision.
+     * The primary tints, focus ring, link and accent text stay as dark has them
+     * without `pin`. The dark label is the light one if it reaches 4.5:1 on the
+     * three fills, otherwise the other candidate. When the fill is under 3:1 dark
+     * keeps the ramp and `pinned.<name>.dark.failed` names the pairs. The control
+     * veil is still settled for contrast and may flip in dark. Read
      * `pinned.<name>.dark.pinned` and `.failed` to see what happened.
      *
      * A pair that fails with the pinned colour is reported in `warnings`. The
@@ -116,7 +124,7 @@ export interface CreateThemeBaseOptions {
      * `{ accent: true }` does the same for `--color-accent` and needs `accent`.
      * Omitted or `false`: the output is exactly what it is without the option.
      */
-    pin?: boolean | { brand?: boolean | 'nearest-aa'; accent?: boolean; dark?: 'auto' | 'force' | 'ramp' };
+    pin?: boolean | { brand?: boolean | 'nearest-aa'; accent?: boolean; dark?: 'auto' | 'force' | 'ramp' | 'fill' };
 }
 
 /**
@@ -182,18 +190,19 @@ export interface PinReport {
     };
     dark: {
         /**
-         * False when dark keeps the ramp: the colour fails there (`pin.dark: 'auto'`) or
-         * `pin.dark` is `'ramp'`. With `'force'` it is true even when pairs fail.
+         * False when dark keeps the ramp: the colour fails there (`pin.dark: 'auto'`), the
+         * fill is under 3:1 (`'fill'`) or `pin.dark` is `'ramp'`. With `'force'` it is true even when pairs fail.
          */
         pinned: boolean;
-        /** Set for `pin.dark: 'force'` and `'ramp'`; absent for `'auto'`. */
-        policy?: 'force' | 'ramp';
+        /** Set for `pin.dark: 'force'`, `'ramp'` and `'fill'`; absent for `'auto'`. */
+        policy?: 'force' | 'ramp' | 'fill';
         followed: string[];
         onRamp: string[];
         states?: 'darker' | 'lighter';
         /**
          * Not pinned: the pairs that would fail with the colour (act on this).
          * `'force'`: the pairs that fail in dark because of the colour; absent when none.
+         * `'fill'`, not pinned: the fill's pairs that are under 3:1.
          */
         failed?: string[];
     };
@@ -228,6 +237,13 @@ export interface CreateThemeResult {
     tokens: Record<string, string>;
     /** Only with `pin`, `neutralChroma`, `darkPrimary: 'mirror'` or `light` / `dark` overrides: every declaration of the dark rules. */
     darkTokens?: Record<string, string>;
+    /**
+     * The label colour as `#rrggbb` (lowercase) that the page computes in each
+     * mode with these tokens: `--color-on-brand`, and `--color-on-accent` when
+     * `accent` was given. `tokens['--zabi-on-brand']` can be `var(--zabi-brand-950)`;
+     * this is that resolved. Always present, also without `pin` and with `check: false`.
+     */
+    labels: { light: { brand: string; accent?: string }; dark: { brand: string; accent?: string } };
     /** Only with `pin`: what was pinned and which roles took the colour. */
     pinned?: { brand?: PinReport; accent?: PinReport };
     /** Contrast failures and input notes. Empty when everything passes. */
@@ -240,7 +256,7 @@ export interface CreateThemeResult {
  * every guarded role pair in light and dark. Deterministic: the same options
  * give the same bytes.
  *
- * @throws {TypeError} when neither `brand` nor `brandRamp` is given, `brandRamp` lacks a step, `pin.dark` is not `'auto'`, `'force'` or `'ramp'`, `pin.brand` is not a boolean or `'nearest-aa'`, a colour is not a hex value, `neutralChroma` is not a number from 0 to 0.1 or is given without `neutral`, or `darkPrimary` is not `'brand'` or `'mirror'`.
+ * @throws {TypeError} when neither `brand` nor `brandRamp` is given, `brandRamp` lacks a step, `pin.dark` is not `'auto'`, `'force'`, `'ramp'` or `'fill'`, `pin.brand` is not a boolean or `'nearest-aa'`, a colour is not a hex value, `neutralChroma` is not a number from 0 to 0.1 or is given without `neutral`, or `darkPrimary` is not `'brand'` or `'mirror'`.
  */
 export function createTheme(options: CreateThemeOptions): CreateThemeResult;
 export default createTheme;

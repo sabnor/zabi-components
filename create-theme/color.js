@@ -117,12 +117,18 @@ export function meetsAA(ratio, kind) {
  *
  * `options.ramp` is a stored brand ramp (default: the ramp of `hex`).
  *
- * @throws {TypeError} when `hex` is not a hex colour or `ramp` lacks a step.
+ * `options.dark: 'fill'` is `createTheme`'s `pin.dark: 'fill'`: dark has
+ * light's fill, hover and pressed; `dark.pinned` is whether the fill reaches
+ * 3:1 on the dark page and card (nothing else decides it); `dark.label` is the
+ * light label if it reaches 4.5:1 on the three fills, otherwise the first of
+ * the two that does. Default `'auto'`: as above.
+ *
+ * @throws {TypeError} when `hex` is not a hex colour, `ramp` lacks a step or `dark` is neither `'auto'` nor `'fill'`.
  */
 export function brandContrast(hex, options = {}) {
     const colour = parseHex(hex, 'hex');
     const ramp = readRamp(options.ramp) ?? generateBrandRamp(colour);
-    const result = pinnedFill(colour, ramp);
+    const result = pinnedFill(colour, ramp, readDarkPolicy(options.dark));
     const report = (mode) => {
         const { direction, fill, hover, active, label, pinned } = result[mode];
         const surfaces = DEFAULT_SURFACES[mode];
@@ -157,6 +163,15 @@ export function brandContrast(hex, options = {}) {
     return { hex: colour, passes: modePasses(light) && modePasses(dark) && dark.pinned, light, dark };
 }
 
+/** `dark` for brandContrast and accessibleBrand: 'auto' (the default) or 'fill'. */
+function readDarkPolicy(value) {
+    if (value === undefined || value === null) return 'auto';
+    if (value !== 'auto' && value !== 'fill') {
+        throw new TypeError(`zabi-theme: dark must be "auto" or "fill" (got ${typeof value === 'string' ? `"${value}"` : JSON.stringify(value)})`);
+    }
+    return value;
+}
+
 /** A stored ramp as lowercase hex, or undefined when none is given. */
 function readRamp(ramp) {
     if (ramp === undefined || ramp === null) return undefined;
@@ -187,15 +202,18 @@ const MAX_SEARCH = 0.6;
  * nothing within the search passes, `found` is false and `hex` is the best
  * effort: the colour failing the fewest checks, then the nearest.
  *
+ * `options.dark` is as for brandContrast ('auto' or 'fill'): with 'fill',
+ * "passes" in dark is the 3:1 condition for dark taking the fill.
  * `options.ramp` is the brand ramp, as for brandContrast. Pass the ramp built
  * from the colour you were given, as createTheme does, not one rebuilt from
  * the adjusted colour.
  *
- * @throws {TypeError} when `hex` is not a hex colour, `ramp` lacks a step or `modes` names another mode.
+ * @throws {TypeError} when `hex` is not a hex colour, `ramp` lacks a step, `modes` names another mode or `dark` is neither `'auto'` nor `'fill'`.
  */
 export function accessibleBrand(hex, options = {}) {
     const requested = parseHex(hex, 'hex');
     const ramp = readRamp(options.ramp) ?? generateBrandRamp(requested);
+    const dark = readDarkPolicy(options.dark);
     const modes = options.modes ?? ['light', 'dark'];
     if (!Array.isArray(modes) || modes.length === 0 || modes.some((mode) => mode !== 'light' && mode !== 'dark')) {
         throw new TypeError('zabi-theme: accessibleBrand modes must be "light", "dark" or both');
@@ -203,7 +221,7 @@ export function accessibleBrand(hex, options = {}) {
     // How many of the checks fail: light and dark each have text and ui, dark also has to take the colour.
     const failures = (report) =>
         modes.reduce((n, mode) => n + (report[mode].passes.text ? 0 : 1) + (report[mode].passes.ui ? 0 : 1) + (report[mode].pinned ? 0 : 1), 0);
-    const given = brandContrast(requested, { ramp });
+    const given = brandContrast(requested, { ramp, dark });
     if (failures(given) === 0) return { ...given, requested, changed: false, found: true };
 
     const start = toOklch(requested);
@@ -219,7 +237,7 @@ export function accessibleBrand(hex, options = {}) {
             const candidate = formatHex(clampChroma({ mode: 'oklch', l, c: chroma, h: hue }, 'oklch'));
             if (seen.has(candidate)) continue;
             seen.add(candidate);
-            const report = brandContrast(candidate, { ramp });
+            const report = brandContrast(candidate, { ramp, dark });
             const failed = failures(report);
             if (failed === 0) return { ...report, requested, changed: true, found: true };
             if (failed < best.failed) best = { report, failed, distance: n };

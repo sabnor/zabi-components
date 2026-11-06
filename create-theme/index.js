@@ -425,12 +425,13 @@ const PIN_ROLES = {
     },
 };
 
-const PIN_DARK_POLICIES = ['auto', 'force', 'ramp'];
+const PIN_DARK_POLICIES = ['auto', 'force', 'ramp', 'fill'];
 
 /**
  * Which of the two colours `pin` asks for, and what dark does with them:
  * `auto` (the default) takes the colour when no guarded pair fails because of
- * it, `force` takes it whatever fails, `ramp` never takes it. `brand` can also
+ * it, `force` takes it whatever fails, `ramp` never takes it, `fill` takes only
+ * the fill and its two states, when the fill reaches 3:1 on the page and a card. `brand` can also
  * be "nearest-aa": the colour pinned is accessibleBrand's nearest passing fill.
  */
 function readPin(pin) {
@@ -447,7 +448,7 @@ function readPin(pin) {
     const dark = pin.dark ?? 'auto';
     if (!PIN_DARK_POLICIES.includes(dark)) {
         throw new TypeError(
-            `${TOOL}: pin.dark must be "auto", "force" or "ramp" (got ${typeof dark === 'string' ? `"${dark}"` : JSON.stringify(dark)})`,
+            `${TOOL}: pin.dark must be "auto", "force", "ramp" or "fill" (got ${typeof dark === 'string' ? `"${dark}"` : JSON.stringify(dark)})`,
         );
     }
     // A string is the new policy word, so a misspelt one says so. Anything
@@ -473,7 +474,9 @@ const failing = (warnings, mode) => new Set(warnings.filter((w) => w.mode === mo
  * and otherwise keeps what it has without `pin`: the mirrored ramp step.
  * `darkPolicy` changes that: 'force' takes the colour in dark all the same, and
  * lists what fails with it in `report.dark.failed` (the pairs are warnings too);
- * 'ramp' never takes it. The roles that follow the fill keep their rule in
+ * 'ramp' never takes it; 'fill' takes only the fill roles (the action fill and
+ * its two states, exactly light's values) when the fill reaches 3:1 on the page
+ * and a card in dark, checks nothing else, and keeps the ramp otherwise. The roles that follow the fill keep their rule in
  * every policy: only where light followed, and only if no worse than the fill.
  */
 function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs, skip, darkPrimary = 'brand', darkPolicy = 'auto') {
@@ -543,6 +546,47 @@ function pinColour(name, colour, tokens, earlierDark, userOverrides, extraPairs,
 
     // Dark.
     const unpinned = attempt('dark', light, restated());
+    if (darkPolicy === 'fill') {
+        // Only the fill roles, with light's own values and nothing else moved.
+        const fillRoles = Object.keys(roles.fill(colour.hex, [colour.hex, colour.hex, colour.hex])).filter((role) => role.startsWith(name === 'brand' ? '--color-action-primary' : '--color-accent') && role in light);
+        const darkFill = Object.fromEntries(fillRoles.map((role) => [role, light[role]]));
+        const root = { ...tokens, ...knobs, ...light, ...userOverrides };
+        const darkRule = { ...earlierDark, ...restated(), ...darkFill };
+        const surfaces = themeMaps(root, darkRule).dark;
+        const failed = roles.pairs
+            .filter(({ bg, fg, min }) => {
+                const back = resolveTokenColor(surfaces, bg);
+                const front = resolveTokenColor(surfaces, fg);
+                return back && front && contrastExact(front, back) < min;
+            })
+            .map(({ name: pair }) => pair);
+        report.dark.policy = 'fill';
+        if (failed.length === 0) {
+            Object.assign(dark, darkFill);
+            report.dark.pinned = true;
+            report.dark.states = report.light.states;
+            report.dark.onRamp.push(...Object.keys(roles.follow));
+            // The light label first, then the other one: the first that reaches 4.5:1 on the three fills.
+            const { role, fills } = ON_ROLES[name];
+            const knob = `--zabi-on-${name}-dark`;
+            const lightValue = knobs[`--zabi-on-${name}`];
+            const candidates = [lightValue, labelCandidates(name, 'light', `var(--zabi-${name}-950)`).find((c) => c !== lightValue)].filter((c) => c !== undefined);
+            const value = pickLabel(candidates, (candidate) => {
+                const map = themeMaps({ ...root, [knob]: candidate }, darkRule).dark;
+                const label = resolveTokenColor(map, role);
+                return fills.map((fill) => {
+                    const colour = resolveTokenColor(map, fill);
+                    return label && colour ? contrastExact(label, colour) : 0;
+                });
+            });
+            knobs[knob] = value;
+            return { light, dark: { ...restated(), ...dark }, knobs, report };
+        }
+        report.dark.failed = failed;
+        report.dark.onRamp.push(...Object.keys(roles.follow));
+        knobs[unpinned.knob] = unpinned.value;
+        return { light, dark: { ...restated(), ...dark }, knobs, report };
+    }
     const darkBest = bestFill('dark', (group) => attempt('dark', light, { ...restated(), ...group }));
     const darkFill = keep(roles.fill(colour.hex, darkBest.states));
     let darkCurrent = darkBest.result;
@@ -804,7 +848,9 @@ function pinnedNotes(pinned) {
         }
         if (report.dark.pinned) {
             lines.push(
-                report.dark.policy === 'force'
+                report.dark.policy === 'fill'
+                    ? ` *   dark: only the fill and its two states, the same as light (pin dark: "fill"); hover and pressed go ${report.dark.states}`
+                    : report.dark.policy === 'force'
                     ? ` *   dark: the same colour, forced (pin dark: "force"); hover and pressed go ${report.dark.states}`
                     : ` *   dark: the same colour, since no guarded pair fails because of it; hover and pressed go ${report.dark.states}`,
             );
@@ -816,6 +862,10 @@ function pinnedNotes(pinned) {
             if (report.dark.onRamp.length) lines.push(` *   dark, left on the ramp: ${list(report.dark.onRamp)}`);
         } else if (report.dark.policy === 'ramp') {
             lines.push(' *   dark: NOT pinned (pin dark: "ramp"). Dark keeps the ramp step it has without pin.');
+        } else if (report.dark.policy === 'fill') {
+            lines.push(' *   dark: NOT pinned (pin dark: "fill"). The fill is under 3:1 on the page or a card there,');
+            lines.push(' *   so dark keeps the ramp step it has without pin. These would fail:');
+            for (const pair of report.dark.failed) lines.push(` *     - ${pair}`);
         } else {
             lines.push(' *   dark: NOT pinned. The colour fails there, so dark keeps the ramp step it has');
             lines.push(' *   without pin. With the colour, these would fail:');
@@ -859,7 +909,7 @@ function readBrandRamp(ramp) {
  * notes only, and the header says the check was skipped. Everything else is
  * what it is with the check on.
  *
- * @param {{ brand?: string, brandRamp?: Record<number, string>, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string> | { light?: Record<string, string>, dark?: Record<string, string>, both?: Record<string, string> } & Record<string, unknown>, pin?: boolean | { brand?: boolean | 'nearest-aa', accent?: boolean, dark?: 'auto' | 'force' | 'ramp' }, darkPrimary?: 'brand' | 'mirror', check?: boolean }} options
+ * @param {{ brand?: string, brandRamp?: Record<number, string>, accent?: string, neutral?: string, neutralChroma?: number, overrides?: Record<string, string> | { light?: Record<string, string>, dark?: Record<string, string>, both?: Record<string, string> } & Record<string, unknown>, pin?: boolean | { brand?: boolean | 'nearest-aa', accent?: boolean, dark?: 'auto' | 'force' | 'ramp' | 'fill' }, darkPrimary?: 'brand' | 'mirror', check?: boolean }} options
  */
 export function createTheme(options) {
     if (options === null || typeof options !== 'object') {
@@ -979,7 +1029,7 @@ export function createTheme(options) {
         const own = overrideMaps(modes, tokens, darkTokens);
         // "nearest-aa": the same hue at the nearest lightness that passes, found
         // by the helper an app calls (color.js), over this theme's own ramp.
-        const adjustedTo = pin[name] === 'nearest-aa' ? accessibleBrand(inputs[name], { ramp: rampOf[name] }) : null;
+        const adjustedTo = pin[name] === 'nearest-aa' ? accessibleBrand(inputs[name], { ramp: rampOf[name], ...(pin.dark === 'fill' ? { dark: 'fill' } : {}) }) : null;
         if (adjustedTo && !adjustedTo.found) {
             warnings.push({
                 type: 'input',
@@ -1017,6 +1067,14 @@ export function createTheme(options) {
         skippedCheck: !checkPairsAtEnd,
         givenRamp: brandRamp !== null,
     });
+    // What the page computes for the labels, with every generated token in place.
+    const maps = themeMaps(tokens, darkTokens);
+    const labelOf = (mode, role) => resolveTokenColor(maps[mode], role)?.toLowerCase();
+    const labels = { light: { brand: labelOf('light', '--color-on-brand') }, dark: { brand: labelOf('dark', '--color-on-brand') } };
+    if (inputs.accent) {
+        labels.light.accent = labelOf('light', '--color-on-accent');
+        labels.dark.accent = labelOf('dark', '--color-on-accent');
+    }
     const hasDark = pinning || neutralChroma !== undefined || Object.keys(darkTokens).length > 0;
     return {
         css,
@@ -1025,6 +1083,7 @@ export function createTheme(options) {
         ...(pinning ? { pinned } : {}),
         warnings,
         closest,
+        labels,
     };
 }
 

@@ -66,7 +66,7 @@ test('the build puts every generator file in dist, with fresh theme data', () =>
 test('createTheme returns css, tokens, warnings and closest', () => {
   const result = createTheme({ brand: '#0026EA' });
   assert.equal(defaultExport, createTheme);
-  assert.deepEqual(Object.keys(result).sort(), ['closest', 'css', 'tokens', 'warnings']);
+  assert.deepEqual(Object.keys(result).sort(), ['closest', 'css', 'labels', 'tokens', 'warnings']);
   assert.equal(typeof result.css, 'string');
   assert.ok(Array.isArray(result.warnings));
 
@@ -387,7 +387,7 @@ test('without pin the output is what it was: no dark rule, no new fields', () =>
     for (const off of [false, undefined, null, {}, { brand: false }]) {
       assert.deepEqual(createTheme({ ...options, pin: off }), plain);
     }
-    assert.deepEqual(Object.keys(plain), ['css', 'tokens', 'warnings', 'closest']);
+    assert.deepEqual(Object.keys(plain), ['css', 'tokens', 'warnings', 'closest', 'labels']);
     assert.ok(!plain.css.includes('.dark'));
     assert.ok(!plain.css.includes('PINNED'));
     assert.equal(plain.css.match(/\{/g).length, 1, 'one rule, :root');
@@ -1600,7 +1600,8 @@ test('meetsAA: 4.5 for text, 3 for ui', () => {
 
 test('the new options change nothing when they are not given: output is byte-identical to 9.1.0-alpha.8', () => {
   // Hashes of JSON.stringify(createTheme(options)) taken before the options existed.
-  const sha = (value) => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
+  // `labels` came after those hashes; everything else in the result is what they cover.
+  const sha = ({ labels, ...value }) => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
   const cases = [
     [{ brand: '#0026EA' }, 'ce23fc44c70f97be'],
     [{ brand: '#C17B00', accent: '#0a8f6a', neutral: '#607296', neutralChroma: 0.05, pin: { brand: true, accent: true } }, '84c3146fa8685e0b'],
@@ -1705,7 +1706,7 @@ test("pin.dark: 'ramp' never takes the pinned colour in dark", () => {
 
 test('pin takes dark as a key and still rejects unknown keys and values', () => {
   assert.throws(() => createTheme({ brand: '#0026EA', pin: { brand: true, darkk: 'force' } }), /pin has no "darkk"/);
-  assert.throws(() => createTheme({ brand: '#0026EA', pin: { brand: true, dark: 'always' } }), /pin\.dark must be "auto", "force" or "ramp"/);
+  assert.throws(() => createTheme({ brand: '#0026EA', pin: { brand: true, dark: 'always' } }), /pin\.dark must be "auto", "force", "ramp" or "fill"/);
 });
 
 test('the bin takes --pin-dark', () => {
@@ -1985,4 +1986,119 @@ test('accessibleBrand never returns a found fill whose exact ratios fall short',
   assert.equal(color.accessibleBrand('#f5c400').hex, '#b28d00');
   assert.equal(color.accessibleBrand('#16a34a').changed, false);
   assert.equal(color.accessibleBrand('#1f6feb').changed, false);
+});
+
+/* ---------- resolved labels and pin.dark: 'fill' (cms-admin 33, 35) ---------- */
+
+test('labels: the resolved label of each mode, next to the tokens that point at the ramp', () => {
+  const pinned = createTheme({ brand: '#f5c400', pin: true });
+  const ramp = color.generateBrandRamp('#f5c400');
+  assert.equal(pinned.tokens['--zabi-on-brand'], 'var(--zabi-brand-950)');
+  assert.equal(pinned.labels.light.brand, ramp[950]);
+  assert.equal(pinned.labels.light.brand, resolveTokenColor(themed(pinned.tokens).light, '--color-on-brand'));
+  assert.equal(pinned.labels.dark.brand, resolveTokenColor({ ...themed(pinned.tokens).dark, ...pinned.darkTokens }, '--color-on-brand'));
+  assert.match(pinned.labels.dark.brand, /^#[0-9a-f]{6}$/);
+  assert.equal('accent' in pinned.labels.light, false);
+
+  const plain = createTheme({ brand: '#0026EA' });
+  assert.deepEqual(plain.labels, { light: { brand: '#ffffff' }, dark: { brand: '#ffffff' } });
+
+  const withAccent = createTheme({ brand: '#0026EA', accent: '#FDD715', pin: { brand: true, accent: true } });
+  const maps = { light: themed(withAccent.tokens).light, dark: { ...themed(withAccent.tokens).dark, ...withAccent.darkTokens } };
+  for (const mode of ['light', 'dark']) {
+    assert.equal(withAccent.labels[mode].brand, resolveTokenColor(maps[mode], '--color-on-brand'));
+    assert.equal(withAccent.labels[mode].accent, resolveTokenColor(maps[mode], '--color-on-accent'));
+  }
+
+  const unchecked = createTheme({ brand: '#f5c400', pin: true, check: false });
+  assert.deepEqual(unchecked.labels, pinned.labels);
+});
+
+const FILL_SAMPLE = ['#128978', '#f5c400', '#ffffff', '#1f6feb', '#16a34a', '#0a1a4f'];
+const FILL_ROLES = ['--color-action-primary', '--color-action-primary-hover', '--color-action-primary-active'];
+
+test("pin.dark: 'fill' copies light's fill and states into dark when the fill holds 3:1, and nothing else", () => {
+  let pinnedCount = 0;
+  let rampCount = 0;
+  for (const brand of FILL_SAMPLE) {
+    const theme = createTheme({ brand, pin: { brand: true, dark: 'fill' } });
+    const none = createTheme({ brand });
+    const report = theme.pinned.brand.dark;
+    const surfaces = { ...themed(theme.tokens).dark, ...theme.darkTokens };
+    const against = ['--color-surface-base', '--color-surface-raised'].map((role) => resolveTokenColor(surfaces, role));
+    const holds = against.every((surface) => color.getContrastRatio(theme.tokens['--color-action-primary'], surface, { exact: true }) >= 3);
+    assert.equal(report.pinned, holds, `${brand} pinned is the 3:1 condition`);
+    assert.equal(report.policy, 'fill');
+    if (report.pinned) {
+      pinnedCount += 1;
+      for (const role of FILL_ROLES) assert.equal(theme.darkTokens[role], theme.tokens[role], `${brand} dark ${role}`);
+      assert.equal(report.states, theme.pinned.brand.light.states);
+      assert.deepEqual(report.followed, []);
+      assert.deepEqual(report.onRamp, ['focus ring', 'link']);
+      assert.equal(report.failed, undefined);
+      // The primary tints, focus ring and link are what dark has without pin.
+      for (const role of ['--color-primary', '--color-primary-weak', '--color-primary-medium', '--color-primary-strong', '--color-focus', '--color-link']) {
+        const withPin = resolveTokenColor({ ...themed(theme.tokens).dark, ...theme.darkTokens }, role);
+        const without = resolveTokenColor({ ...themed(none.tokens).dark, ...(none.darkTokens ?? {}) }, role);
+        assert.equal(withPin, without, `${brand} dark ${role}`);
+      }
+      // The label is the light one or the other, whichever reaches 4.5:1 first.
+      const label = resolveTokenColor({ ...themed(theme.tokens).dark, ...theme.darkTokens }, '--color-on-brand');
+      assert.equal(theme.labels.dark.brand, label);
+    } else {
+      rampCount += 1;
+      for (const role of FILL_ROLES) {
+        assert.equal(resolveTokenColor({ ...themed(theme.tokens).dark, ...theme.darkTokens }, role), resolveTokenColor({ ...themed(none.tokens).dark, ...(none.darkTokens ?? {}) }, role), `${brand} stays on the ramp`);
+      }
+      assert.ok(report.failed.length > 0);
+      assert.ok(report.failed.every((pair) => /^pinned primary fill against/.test(pair)));
+    }
+  }
+  assert.ok(pinnedCount >= 3 && rampCount >= 1, `${pinnedCount} pinned, ${rampCount} on the ramp`);
+  // The near-miss that 'auto' un-pins is pinned by 'fill'.
+  assert.equal(createTheme({ brand: '#128978', pin: true }).pinned.brand.dark.pinned, false);
+  assert.equal(createTheme({ brand: '#128978', pin: { brand: true, dark: 'fill' } }).pinned.brand.dark.pinned, true);
+});
+
+test("pin.dark: 'fill' pins the accent's fill roles only", () => {
+  const theme = createTheme({ brand: '#0026EA', accent: '#FDD715', pin: { accent: true, dark: 'fill' } });
+  const report = theme.pinned.accent.dark;
+  assert.equal(report.policy, 'fill');
+  if (report.pinned) {
+    for (const role of ['--color-accent', '--color-accent-hover', '--color-accent-active']) assert.equal(theme.darkTokens[role], theme.tokens[role]);
+    const none = createTheme({ brand: '#0026EA', accent: '#FDD715' });
+    const dark = (result) => ({ ...themed(result.tokens).dark, ...(result.darkTokens ?? {}) });
+    assert.equal(resolveTokenColor(dark(theme), '--color-accent-text'), resolveTokenColor(dark(none), '--color-accent-text'));
+  }
+  assert.throws(() => createTheme({ brand: '#0026EA', pin: { brand: true, dark: 'sometimes' } }), /"auto", "force", "ramp" or "fill"/);
+});
+
+test("brandContrast and accessibleBrand with dark: 'fill' match createTheme's pin.dark: 'fill'", () => {
+  const hexes = [...FILL_SAMPLE, '#C17B00', '#0026EA', '#e11d48', '#7c3aed', '#fde047', '#0a8f6a', '#b4005a', '#334155'];
+  for (const brand of hexes) {
+    const theme = createTheme({ brand, pin: { brand: true, dark: 'fill' } });
+    const report = color.brandContrast(brand, { dark: 'fill' });
+    assert.equal(theme.pinned.brand.dark.pinned, report.dark.pinned, `${brand} pinned`);
+    assert.equal(report.light.label, color.brandContrast(brand).light.label);
+    if (report.dark.pinned) {
+      const maps = { ...themed(theme.tokens).dark, ...theme.darkTokens };
+      assert.equal(resolveTokenColor(maps, '--color-on-brand'), report.dark.label, `${brand} dark label`);
+      assert.equal(theme.darkTokens['--color-action-primary-hover'], report.dark.states.hover);
+      assert.equal(theme.darkTokens['--color-action-primary-active'], report.dark.states.active);
+      assert.equal(theme.darkTokens['--color-action-primary'], brand.toLowerCase());
+    }
+    assert.deepEqual(color.brandContrast(brand, { dark: 'auto' }), color.brandContrast(brand));
+  }
+  assert.throws(() => color.brandContrast('#128978', { dark: 'force' }), /dark must be "auto" or "fill"/);
+  assert.throws(() => color.accessibleBrand('#128978', { dark: 'ramp' }), TypeError);
+  const nearest = createTheme({ brand: '#128978', pin: { brand: 'nearest-aa', dark: 'fill' } });
+  assert.equal(nearest.pinned.brand.hex, color.accessibleBrand('#128978', { dark: 'fill' }).hex);
+});
+
+test('the bin takes --pin-dark fill and writes the dark fill', () => {
+  const result = run('--brand', '#128978', '--pin', '--pin-dark', 'fill');
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout, createTheme({ brand: '#128978', pin: { brand: true, dark: 'fill' } }).css);
+  assert.match(result.stdout, /pin dark: "fill"/);
+  assert.match(result.stdout, /\.dark[^{]*\{[^}]*--color-action-primary: #128978/);
 });

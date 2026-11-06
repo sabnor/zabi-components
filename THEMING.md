@@ -802,7 +802,7 @@ npx zabi-theme --brand "#C17B00" --accent "#ff3366" --neutral "#78716c" --out sr
 | `--brand <hex>` | Required. Builds `--zabi-brand-50 … 950`. |
 | `--pin` | The primary action is the exact brand colour in light. See [`--pin`](#--pin-the-exact-brand-colour-on-buttons). |
 | `--accent <hex>` | Builds `--zabi-accent-50 … 950`. Omitted: the library's citron. |
-| `--pin-dark <auto\|force\|ramp>` | What dark does with a pinned colour: `auto` (default) takes it if nothing guarded fails, `force` takes it whatever fails (reported), `ramp` never. Needs `--pin` or `--pin-accent`. See [`--pin`](#--pin-the-exact-brand-colour-on-buttons). |
+| `--pin-dark <auto\|force\|ramp\|fill>` | What dark does with a pinned colour: `auto` (default) takes it if nothing guarded fails, `force` takes it whatever fails (reported), `ramp` never, `fill` only the action fill and its states, if the fill holds 3:1 on dark surfaces. Needs `--pin` or `--pin-accent`. See [`--pin`](#--pin-the-exact-brand-colour-on-buttons). |
 | `--pin-accent` | The same for the solid accent fill. Needs `--accent`. |
 | `--neutral <hex>` | Tints the 21-step `--zabi-base-50 … 950`. Omitted: the library's greys. Takes the hue only, at no more than 0.03 chroma. |
 | `--neutral-chroma <n>` | OKLCH chroma at the neutral ramp's peak, 0 to 0.1; needs `--neutral`. Lifts the 0.03 cap (0.04 to 0.06 gives a clearly tinted neutral such as a blue-slate), and makes the ink roles follow the neutral ramp. See [`--neutral-chroma`](#neutral-chroma-a-strongly-tinted-neutral). |
@@ -890,9 +890,13 @@ What it decides, and how:
   | `"auto"` (default) | The rule above: pinned only if no guarded pair fails because of it. |
   | `"force"` | Pinned whatever fails. The fill, its states and the roles that followed in light (under the same no-worse rule) take the colour; `dark.pinned` is `true`, the failures are in `dark.failed` (the pairs the fill and its label settle) and as `warnings`, and `--strict` exits 1. |
   | `"ramp"` | Never pinned. Dark keeps the ramp step; `dark.pinned` is `false` and `dark.failed` is absent. |
+  | `"fill"` | Only the fill. `--color-action-primary`, `-hover` and `-active` (`--color-accent*` for the accent) get exactly light's values when the fill reaches 3:1 on dark's page and card; nothing else is checked for that. The primary tints, focus ring, link and accent text stay as dark has them without `pin` (listed in `dark.onRamp`). Under 3:1, dark keeps the ramp and `dark.failed` names the pairs. The dark label is the light one if it reaches 4.5:1 on the three fills, otherwise the other candidate. The control veil is still settled for contrast and may flip in dark. |
 
   ```js
   createTheme({ brand: "#128978", pin: { brand: true, dark: "force" } });
+
+  // #128978 holds 3:1 on dark surfaces: dark action fill and states are light's.
+  createTheme({ brand: "#128978", pin: { brand: true, dark: "fill" } });
   ```
 
 The trade-off: a ramp step is guaranteed to pass, in both modes, for any
@@ -1054,6 +1058,7 @@ writeFileSync("src/lib/brand.generated.css", css);
 | `tokens` | Every declaration of the `:root` rule, name to value. |
 | `darkTokens` | Only with `pin`, `neutralChroma`, `darkPrimary: "mirror"` or `light` / `dark` overrides: every declaration of the dark rules. |
 | `pinned` | Only with `pin`: `{ brand?, accent? }`, each `{ hex, light: { followed, onRamp, states }, dark: { pinned, followed, onRamp, states?, failed?, policy? } }`. Where `dark.pinned` is `false`, `failed` lists what would fail with the colour. |
+| `labels` | Always: `{ light: { brand, accent? }, dark: { brand, accent? } }`, the resolved `--color-on-brand` (and `--color-on-accent` when `accent` was given) of each mode as lowercase `#rrggbb`. `tokens["--zabi-on-brand"]` can be `var(--zabi-brand-950)`; this is that colour, so a contrast check needs no ramp lookup. E.g. `createTheme({ brand: "#f5c400", pin: true }).labels.light.brand` is the ramp's 950, `#281e00`. |
 | `warnings` | `{ type: "contrast", pair, mode, ratio, required, foreground, background, message }` for each role pair below AA, and `{ type: "input", option, message }` notes about the colours given. Empty when everything passes. |
 | `closest` | `{ brand, accent?, neutral? }`, each `{ step, hex, deltaE, exact }`: where the input landed in its ramp. |
 
@@ -1124,7 +1129,7 @@ above, or `createTheme()` without `check: false`), and do not read an empty
 `warnings` from a `check: false` result as a pass.
 
 It throws a `TypeError` when neither `brand` nor `brandRamp` is given, a colour is not hex,
-`pin.dark` is not `"auto"`, `"force"` or `"ramp"`,
+`pin.dark` is not `"auto"`, `"force"`, `"ramp"` or `"fill"`,
 `pin.accent` is set without `accent`, `neutralChroma` is not a number from 0
 to 0.1 or is given without `neutral`, `darkPrimary` is not `"brand"` or `"mirror"`, or an override is not a custom property
 name with a non-empty string value (the message names the key path, for example
@@ -1145,7 +1150,7 @@ copying the maths. They live at `zabi-components/color` and by name from
 | `getContrastRatio(a, b, { exact? })` | WCAG 2.x, 1 to 21. Rounded to two decimals by default, for display: 2.996 reads 3. Pass `{ exact: true }` for the unrounded ratio, which is the one to compare with a threshold. |
 | `readableOn(fill, darkEnd?)` | `#ffffff` if it reaches 4.5:1 on `fill`, otherwise `darkEnd` (default `#09090b`, the library's near-black; pass a ramp's 950 to match a theme), and if neither reaches it, the one with more contrast. The rule the theme applies to a fill; the theme applies it to the fill and its hover and pressed states together. |
 | `meetsAA(ratio, kind)` | `kind` is `"text"` (4.5) or `"ui"` (3). Pass an exact ratio; a rounded one can read 3 for 2.996. |
-| `brandContrast(hex, { ramp? })` | What `createTheme({ brand: hex, pin: true })` does with `hex`, per mode: the label, the hover and pressed states and which way they go, the ratios, pass or fail, and whether dark takes the colour. |
+| `brandContrast(hex, { ramp?, dark? })` | What `createTheme({ brand: hex, pin: true })` does with `hex`, per mode (`dark: "fill"`: as `pin.dark: "fill"`, light's fill and states in dark, `dark.pinned` the 3:1 condition; `accessibleBrand` takes it too): the label, the hover and pressed states and which way they go, the ratios, pass or fail, and whether dark takes the colour. |
 | `accessibleBrand(hex, { ramp?, modes? })` | The nearest fill that passes, with the same report. |
 
 ```js

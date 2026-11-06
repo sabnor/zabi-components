@@ -17,7 +17,7 @@ import { createTheme } from './index.js';
 const HELP = `zabi-theme: generate brand tokens for zabi-components
 
 Usage
-  zabi-theme --brand <hex> [--pin | --pin-nearest-aa] [--pin-dark auto|force|ramp] [--accent <hex>] [--pin-accent] [--neutral <hex>]
+  zabi-theme --brand <hex> [--pin | --pin-nearest-aa] [--pin-dark auto|force|ramp|fill] [--accent <hex>] [--pin-accent] [--neutral <hex>]
              [--neutral-chroma <n>] [--dark-primary brand|mirror]
              [--out <file>] [--strict] [--set <token>=<value> ...]
              [--set-light <token>=<value> ...] [--set-dark <token>=<value> ...]
@@ -29,11 +29,12 @@ Options
                     that passes WCAG AA in light and dark (zabi-components/color:
                     accessibleBrand). A colour that passes is pinned as given.
   --accent <hex>    Second brand colour. Builds --zabi-accent-50 … 950.
-  --pin-dark <auto|force|ramp>
+  --pin-dark <auto|force|ramp|fill>
                     What dark does with a pinned colour. auto (default): takes it when
                     no guarded pair fails because of it. force: takes it whatever fails;
-                    the failures are reported. ramp: never takes it. Needs --pin or
-                    --pin-accent.
+                    the failures are reported. ramp: never takes it. fill: takes only
+                    the action fill and its hover and pressed states, when the fill
+                    reaches 3:1 on the dark page and a card. Needs --pin or --pin-accent.
   --pin-accent      The same for the solid accent fill. Needs --accent.
   --neutral <hex>   Tints the 21-step neutral ramp, --zabi-base-50 … 950.
   --neutral-chroma <n>
@@ -177,7 +178,9 @@ for (const [name, report] of Object.entries(result.pinned ?? {})) {
                     : ' and in dark.\n'
                 : report.dark.policy === 'ramp'
                   ? '; dark keeps the ramp (--pin-dark ramp).\n'
-                  : '; dark keeps the ramp, because the colour fails there.\n'),
+                  : report.dark.policy === 'fill'
+                    ? '; dark keeps the ramp, because the fill is under 3:1 there (--pin-dark fill).\n'
+                    : '; dark keeps the ramp, because the colour fails there.\n'),
     );
 }
 process.stderr.write(
