@@ -12,6 +12,18 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.9] - 2026-11-06
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.8, for cms-admin's rows 13-24 (per-project
+design controls and the projectsunshine site) and row 31. Every new prop, option and export is optional; nothing
+removed or renamed. One behaviour change as a fix: inside `.on-fill` the primary fill is no longer inverted (opt back
+in with `on-fill-invert`). Run: `npm run check`, the whole vitest suite in six shards, the theme output tests,
+`npm run build:lib`, `npm pack`. Not run: Playwright, a QA pass; nothing in it has been rendered in a browser.
+
+CSS size of this build, raw / gzip -9 (`npm run size:css`): `zabi-components.css` 353,734 / 40,030 bytes,
+`theme-only` 109,912 / 22,560, `theme-dark-only` 98,146 / 12,292, `colors` 101,547 / 7,098. The growth over alpha.8
+(35,044, 19,860, 9,860, 5,540 gzip) is the `.zabi-theme-scope` rules.
+
 ### Added
 
 - `RadioGroup` `appearance="tile"` and `optionVisual`: the options as a wrapping grid of tiles, each with a picture
