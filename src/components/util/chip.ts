@@ -7,7 +7,7 @@
  */
 
 export type ChipGroupType = "radio" | "checkbox";
-export type ChipGroupLayout = "wrap" | "row";
+export type ChipGroupLayout = "wrap" | "row" | "grid";
 export type ChipGroupEdge = "fade" | "none";
 
 /** What a ChipGroup hands to the chips (and groups) inside it. */
@@ -42,6 +42,18 @@ export function toggleValue(current: readonly string[] | undefined, value: strin
     const has = list.includes(value);
     if (checked) return has ? [...list] : [...list, value];
     return has ? list.filter((item) => item !== value) : [...list];
+}
+
+/**
+ * The index an Up or Down arrow moves to in a grid of `columns` equal cells
+ * laid out in reading order, or `undefined` at the top or bottom edge (the
+ * browser's own step then applies). A short last row is reached from the cell
+ * above it, and from a cell with none below it the last one is not jumped to.
+ */
+export function gridStep(index: number, count: number, columns: number, key: "ArrowUp" | "ArrowDown"): number | undefined {
+    if (columns < 1 || index < 0) return undefined;
+    const next = key === "ArrowDown" ? index + columns : index - columns;
+    return next >= 0 && next < count ? next : undefined;
 }
 
 export interface RowMetrics {

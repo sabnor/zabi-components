@@ -10,6 +10,8 @@ export interface SegmentedControlOption {
     label: string;
     /** Rendered before the label. Decorative: the label names the segment. */
     icon?: SegmentedControlIcon;
+    /** Language of this label (BCP 47, e.g. `sv`), for a label in another language than the page (WCAG 3.1.2). */
+    lang?: string;
     /** A disabled segment cannot be chosen, and the arrow keys skip it. */
     disabled?: boolean;
     /**

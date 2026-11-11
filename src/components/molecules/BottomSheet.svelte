@@ -83,6 +83,12 @@
          * `aria-hidden`: the title alone still names the sheet.
          */
         titlePicture?: Snippet;
+        /**
+         * Extra classes for the title heading, e.g. a mono face. Merged after
+         * the defaults, so it wins; the heading keeps its id and the
+         * `aria-labelledby` link.
+         */
+        titleClass?: string;
         description?: string;
         /**
          * The heights the sheet can rest at: `half` of the screen, `full`
@@ -153,6 +159,7 @@
         isOpen = $bindable<Exclude<Props["isOpen"], undefined>>(),
         title,
         titlePicture,
+        titleClass = "",
         description = "",
         snapPoints,
         snap = $bindable(),
@@ -570,7 +577,10 @@ a background is dropped there, and the grip would be gone. -->
                         {/if}
                         <h2
                             id={titleId}
-                            class="min-w-0 flex-1 {OVERLAY_TITLE_XL} font-semibold text-headline {OVERLAY_TITLE_WRAP} {enlargedText ? OVERLAY_TITLE_HYPHENS : ''}"
+                            class={cn(
+                                `min-w-0 flex-1 ${OVERLAY_TITLE_XL} font-semibold text-headline ${OVERLAY_TITLE_WRAP} ${enlargedText ? OVERLAY_TITLE_HYPHENS : ""}`,
+                                titleClass,
+                            )}
                         >
                             {title}
                         </h2>

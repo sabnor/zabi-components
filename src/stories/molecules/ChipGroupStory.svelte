@@ -3,7 +3,7 @@
     import ChipGroup from '../../components/molecules/ChipGroup.svelte';
 
     interface Props {
-        scenario?: 'wrap-checkbox' | 'radio' | 'row-links' | 'row-subgroups' | 'row-no-edge' | 'on-brand';
+        scenario?: 'wrap-checkbox' | 'radio' | 'row-links' | 'row-subgroups' | 'row-no-edge' | 'on-brand' | 'grid';
         edge?: 'fade' | 'none';
     }
 
@@ -11,6 +11,7 @@
 
     let toppings = $state<string[]>(['ham']);
     let plan = $state<string | undefined>('pro');
+    let decade = $state<string | undefined>('80s');
     let day = $state<string | undefined>('sat');
     let areas = $state<string[]>(['north']);
 
@@ -35,6 +36,14 @@
         <Chip value="legacy" disabled>Legacy</Chip>
     </ChipGroup>
     <p class="mt-4 text-sm text-description">Chosen: {plan ?? 'nothing'}</p>
+{:else if scenario === 'grid'}
+    <div class="max-w-xs">
+        <ChipGroup label="Decade" layout="grid" columns={3} type="radio" name="decade" bind:value={decade}>
+            {#each ['60s', '70s', '80s', '90s', '00s', '10s', '20s'] as id (id)}
+                <Chip value={id} size="xl">{id}</Chip>
+            {/each}
+        </ChipGroup>
+    </div>
 {:else if scenario === 'row-links'}
     <div class="w-[360px] max-w-full">
         <ChipGroup label="Filter pubs" layout="row" {edge}>

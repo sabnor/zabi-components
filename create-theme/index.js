@@ -695,6 +695,35 @@ function followPrimaryWithLink(tokens, darkTokens, modes) {
 }
 
 /**
+ * The focus tints (`--color-focus-weak`, `-medium`, `-strong`) are brand
+ * steps beside `--color-focus`. An app that sets its own `--color-focus` in a
+ * mode (and not the tints) would otherwise have brand tints beside a
+ * different focus colour; they are the same hue and chroma, moved along L*
+ * by the distances the curve puts between steps 600 and 700, 800, 900 (as a
+ * pinned fill's states are). A tint the app sets itself is never moved, and
+ * a focus colour that is not one flat colour (an alpha tint, a `currentColor`)
+ * leaves the library's tints where they are.
+ */
+const FOCUS = '--color-focus';
+const FOCUS_TINTS = ['--color-focus-weak', '--color-focus-medium', '--color-focus-strong'];
+
+function followFocusWithTints(tokens, darkTokens, modes) {
+    for (const mode of ['light', 'dark']) {
+        if (overrideIn(modes, mode, FOCUS) === undefined) continue;
+        const focus = resolveTokenColor(themeMaps(tokens, darkTokens)[mode], FOCUS);
+        if (!focus) continue;
+        const states = shades(describe(focus), 'light', 'darker');
+        if (!states) continue;
+        const roles = {};
+        FOCUS_TINTS.forEach((role, i) => {
+            if (overrideIn(modes, mode, role) === undefined) roles[role] = states[i];
+        });
+        ({ tokens, darkTokens } = setRoles(tokens, darkTokens, mode, roles));
+    }
+    return { tokens, darkTokens };
+}
+
+/**
  * The edge of the Progress track (`--color-progress-track-border`) is the field
  * edge by default, because the default track is the field fill and does not
  * reach 3:1 against the page or a card (WCAG 1.4.11). An app that overrides
@@ -1064,6 +1093,7 @@ export function createTheme(options) {
 
     // What the generator settles once the app's own values are in place.
     if (!pin.brand) ({ tokens, darkTokens } = followPrimaryWithLink(tokens, darkTokens, modes));
+    ({ tokens, darkTokens } = followFocusWithTints(tokens, darkTokens, modes));
     ({ tokens, darkTokens } = settleProgressTrackEdge(tokens, darkTokens, modes));
     ({ tokens, darkTokens } = settleControlGradients(tokens, darkTokens, modes));
 

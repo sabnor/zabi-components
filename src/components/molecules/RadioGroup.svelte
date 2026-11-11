@@ -66,6 +66,20 @@
          * name and `description` still describes it.
          */
         optionVisual?: Snippet<[RadioGroupOption, RadioGroupOptionState]>;
+        /**
+         * Tiles only: a fixed number of equal columns, in place of as many as
+         * fit at `tileMinWidth`. Three fit a 360px screen where the default
+         * makes two.
+         */
+        columns?: number;
+        /** Tiles only: the narrowest a tile gets before the grid drops a column (any CSS length). */
+        tileMinWidth?: string;
+        /**
+         * Tiles only. `"column"`: the picture above the label, centred.
+         * `"row"`: the picture beside the text, which starts at the inline
+         * start, for a wide tile with a picture and a description.
+         */
+        tileLayout?: "column" | "row";
     };
 
     let {
@@ -80,6 +94,9 @@
         chosenRing = true,
         appearance = "list",
         optionVisual,
+        columns,
+        tileMinWidth,
+        tileLayout = "column",
         ...restProps
     }: Props = $props();
 
@@ -224,9 +241,19 @@
     // The tile's edge is a 1px border plus a 2px inset outline when chosen (no
     // layout shift); keyboard focus is the library ring, a box-shadow.
     const tileClasses =
-        "relative flex flex-col items-center justify-center gap-2 p-3 text-center rounded-control border border-control-border bg-card cursor-pointer transition-colors duration-150 not-has-[:disabled]:hover:bg-surface-hover not-has-[:disabled]:active:bg-surface-active has-[:checked]:border-action-primary has-[:checked]:outline-2 has-[:checked]:-outline-offset-1 has-[:checked]:outline-action-primary forced-colors:has-[:checked]:border-[Highlight] forced-colors:has-[:checked]:outline-[Highlight] has-[:focus-visible]:shadow-[0_0_0_2px_var(--color-focus-ring-offset),0_0_0_4px_var(--color-focus-ring)] has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
-    const tileGridClasses =
-        "grid grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] gap-3";
+        "tile relative flex flex-col items-center justify-center gap-2 p-3 text-center rounded-control border border-control-border bg-card cursor-pointer transition-colors duration-150 not-has-[:disabled]:hover:bg-surface-hover not-has-[:disabled]:active:bg-surface-active has-[:checked]:border-action-primary has-[:checked]:outline-2 has-[:checked]:-outline-offset-1 has-[:checked]:outline-action-primary forced-colors:has-[:checked]:border-[Highlight] forced-colors:has-[:checked]:outline-[Highlight] has-[:focus-visible]:shadow-[0_0_0_2px_var(--color-focus-ring-offset),0_0_0_4px_var(--color-focus-ring)] has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
+    const tileGridClasses = "tile-grid grid gap-3";
+    const rowTile = $derived(tile && tileLayout === "row");
+    const gridStyle = $derived(
+        tile
+            ? [
+                  columns && columns > 0 ? `--zabi-tile-columns: ${Math.floor(columns)}` : "",
+                  tileMinWidth ? `--zabi-tile-min: ${tileMinWidth}` : "",
+              ]
+                  .filter(Boolean)
+                  .join("; ") || undefined
+            : undefined,
+    );
 </script>
 
 <fieldset
@@ -241,7 +268,7 @@
         </legend>
     {/if}
 
-    <div class={tile ? tileGridClasses : "space-y-3"}>
+    <div class={tile ? tileGridClasses : "space-y-3"} style={gridStyle}>
         {#each options as option, index (option.value)}
             {@const optionDisabled = isOptionDisabled(option)}
             {@const descriptionId = option.description ? `${fallbackName}-${index}-description` : undefined}
@@ -249,7 +276,7 @@
             <!-- A one-line row is centred in its height; with a description the radio stays at the top, by the label. -->
             <label
                 class={tile
-                    ? tileClasses
+                    ? cn(tileClasses, rowTile && "tile-row")
                     : cn(
                           optionLabelWrapperClasses,
                           !option.description && "items-center",
@@ -270,10 +297,14 @@
                         {@attach registerRadio(option.value)}
                     />
                     {#if optionVisual}
-                        <span class="flex items-center justify-center" aria-hidden="true">
+                        <span class="flex shrink-0 items-center justify-center" aria-hidden="true">
                             {@render optionVisual(option, state)}
                         </span>
                     {/if}
+                    <!-- The chosen mark besides the edge and the fill: a check, so the choice does not rest on colour. -->
+                    <span class="tile-badge" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7" /></svg>
+                    </span>
                 {:else}
                     <span class={cn(radioControlShellClasses, !option.description && "mt-0")}>
                         <input
@@ -297,7 +328,7 @@
                         </span>
                     {/if}
                 {/if}
-                <span class={cn("flex flex-col gap-1", tile && "items-center")}>
+                <span class={cn("flex flex-col gap-1", tile && !rowTile && "items-center")}>
                     <span class="text-sm font-medium text-label">
                         {option.label}
                     </span>
@@ -320,3 +351,78 @@
         {/each}
     </div>
 </fieldset>
+
+<style>
+    /*
+     * Tiles. `--zabi-tile-columns` (from `columns`) and `--zabi-tile-min` (from
+     * `tileMinWidth`) size the grid; `--zabi-tile-selected-bg` is the chosen
+     * tile's fill and `--zabi-tile-badge-size` its check badge, both settable
+     * on the group or above.
+     */
+    .tile-grid {
+        grid-template-columns: repeat(
+            var(--zabi-tile-columns, auto-fill),
+            minmax(var(--zabi-tile-columns-min, var(--zabi-tile-min, 7rem)), 1fr)
+        );
+    }
+
+    /* A fixed column count must not be held up by the minimum width. */
+    .tile-grid[style*="--zabi-tile-columns"] {
+        --zabi-tile-columns-min: 0px;
+    }
+
+    .tile:has(input:checked) {
+        background: var(
+            --zabi-tile-selected-bg,
+            color-mix(in srgb, var(--color-action-primary) 10%, var(--color-card))
+        );
+    }
+
+    .tile-row {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        text-align: start;
+        /* Room for the badge at the end. */
+        padding-inline-end: calc(var(--zabi-tile-badge-size, 1.25rem) + 1rem);
+    }
+
+    .tile-badge {
+        position: absolute;
+        inset-block-start: 0.375rem;
+        inset-inline-end: 0.375rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--zabi-tile-badge-size, 1.25rem);
+        height: var(--zabi-tile-badge-size, 1.25rem);
+        border-radius: 9999px;
+        background: var(--color-action-primary);
+        color: var(--color-action-primary-text);
+        opacity: 0;
+        transform: scale(0.8);
+        transition:
+            opacity var(--duration-base),
+            transform var(--duration-base) var(--ease-standard);
+        pointer-events: none;
+    }
+
+    .tile:has(input:checked) .tile-badge {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    @media (forced-colors: active) {
+        .tile-badge {
+            forced-color-adjust: none;
+            background: Highlight;
+            color: HighlightText;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .tile-badge {
+            transition: none;
+        }
+    }
+</style>

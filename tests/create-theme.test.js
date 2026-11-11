@@ -2102,3 +2102,15 @@ test('the bin takes --pin-dark fill and writes the dark fill', () => {
   assert.match(result.stdout, /pin dark: "fill"/);
   assert.match(result.stdout, /\.dark[^{]*\{[^}]*--color-action-primary: #128978/);
 });
+
+test('the focus tints follow an overridden --color-focus, per mode, unless the app sets them', () => {
+  const dark = createTheme({ brand: '#0026EA', overrides: { dark: { '--color-focus': '#fdba74' } } });
+  // Dark: the tints are of the new colour; light keeps the library's brand tints.
+  assert.match(dark.css, /\.dark,\n\[data-theme="dark"\] \{[\s\S]*--color-focus: #fdba74;\n {2}--color-focus-weak: #e3a15b;/);
+  assert.equal(dark.tokens['--color-focus-weak'], undefined);
+  const both = createTheme({ brand: '#0026EA', overrides: { '--color-focus': '#c2410c', '--color-focus-weak': '#000000' } });
+  assert.equal(both.tokens['--color-focus-weak'], '#000000');
+  assert.equal(both.tokens['--color-focus-medium'], '#7c2400');
+  // Nothing set: nothing written.
+  assert.doesNotMatch(createTheme({ brand: '#0026EA' }).css, /--color-focus/);
+});

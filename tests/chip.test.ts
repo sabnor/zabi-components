@@ -176,6 +176,7 @@ describe("Chip's look", () => {
         ["sm", "h-7", "px-[10px]"],
         ["md", "h-8", "px-3"],
         ["lg", "h-10", "px-4"],
+        ["xl", "h-11", "px-5"],
     ] as const)("%s is %s tall with %s, and the label never wraps", (size, height, padding) => {
         render(Chip, { props: { size, children: label("A") } });
         const own = classes(screen.getByRole("button"));
@@ -187,6 +188,15 @@ describe("Chip's look", () => {
         const own = classes(screen.getByRole("button"));
         expect(own).toContain("pointer-coarse:before:min-h-11");
         expect(own).not.toContain("pointer-coarse:min-h-11");
+    });
+
+    it("carries the selected edge hook on every form, and keeps data-chip-form", () => {
+        render(Chip, { props: { selected: true, children: label("A") } });
+        render(Chip, { props: { type: "checkbox", children: label("B") } });
+        expect(classes(screen.getByRole("button"))).toContain("chip-edge");
+        const box = screen.getByRole("checkbox").closest("label")!;
+        expect(box.getAttribute("data-chip-form")).toBe("checkbox");
+        expect(classes(box)).toContain("chip-edge");
     });
 
     it("is half transparent and out of reach when disabled", () => {

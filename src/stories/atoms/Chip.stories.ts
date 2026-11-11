@@ -15,7 +15,7 @@ const meta = {
     },
     tags: ['autodocs'],
     argTypes: {
-        size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] }
+        size: { control: 'inline-radio', options: ['sm', 'md', 'lg', 'xl'] }
     }
 } satisfies Meta<typeof ChipStory>;
 
@@ -49,7 +49,7 @@ export const Sizes: Story = {
     parameters: {
         docs: {
             description: {
-                story: '28, 32 and 40px tall. On a coarse pointer the touch target reaches 44px through an invisible layer; the chip itself does not grow.'
+                story: '28, 32, 40 and 44px tall. Below xl, on a coarse pointer the touch target reaches 44px through an invisible layer and the chip itself does not grow; xl is 44px itself, so the visible chip is the target. A selected chip has no edge unless --color-chip-selected-border and --chip-selected-border-width are set.'
             }
         }
     }

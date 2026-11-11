@@ -8,7 +8,6 @@
     import { cn } from "../util/cn.js";
     import { fieldDescribedBy, fieldMessageState } from "../util/field.js";
     import { generateId } from "../util/ssr-safe.js";
-    import { TOUCH_HIT_AREA } from "../util/touch-target.js";
     import FieldMessages from "./FieldMessages.svelte";
     import IconButton from "./IconButton.svelte";
 
@@ -255,7 +254,7 @@
          * field regardless of the layout around it.
          */
         const baseClasses =
-            "focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors duration-150 placeholder:text-input-placeholder placeholder-shown:text-ellipsis text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed";
+            "focus-ring w-full border bg-input hover:bg-input-hover focus-visible:bg-input-focus disabled:bg-input-disabled rounded-control transition-colors motion-reduce:transition-none duration-150 placeholder:text-input-placeholder placeholder-shown:text-ellipsis text-body focus:outline-none focus-visible:outline-none disabled:text-action-disabled-text disabled:cursor-not-allowed";
 
         // A search field that brings its own clear button in `trailing` would
         // show two crosses: the browser's is taken away.
@@ -339,8 +338,8 @@
                     <!-- A toggle with one name: "Show password", pressed or not.
                     A name that changed with the state would read as "Hide
                     password, pressed". The visible box is 4px inside the field
-                    at every size, so its corners are the field's less 4px; on a
-                    touch screen the layer around it is the 44px target. -->
+                    at every size, so its corners are the field's less 4px; the
+                    layer around it (every pointer, every size) is the 44px target. -->
                     <IconButton
                         variant="ghost"
                         size={revealSize}
@@ -348,8 +347,7 @@
                         label={revealLabel}
                         disabled={isDisabled}
                         class={cn(
-                            "rounded-[calc(var(--radius-control)-4px)] pointer-coarse:relative pointer-coarse:min-h-0 pointer-coarse:min-w-0",
-                            TOUCH_HIT_AREA,
+                            "relative rounded-[calc(var(--radius-control)-4px)] pointer-coarse:min-h-0 pointer-coarse:min-w-0 before:absolute before:top-1/2 before:left-1/2 before:size-full before:min-h-11 before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
                         )}
                         onmousedown={keepFocus}
                         onclick={restoreCaret}

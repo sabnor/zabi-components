@@ -106,6 +106,7 @@
   "--color-chip-hover",
   "--color-chip-selected",
   "--color-chip-selected-active",
+  "--color-chip-selected-border",
   "--color-chip-selected-hover",
   "--color-chip-selected-text",
   "--color-chip-text",

@@ -106,7 +106,11 @@
     let alertClasses = $derived({
         info: "bg-info-subtle border-info-border text-info-text",
         success: "bg-success-subtle border-success-border text-success-text",
-        warning: "bg-warning-subtle border-warning-border text-warning-text",
+        // Roles an app can set with `--set`, declared nowhere (the library's own
+        // warning tokens when unset): `--color-alert-warning-subtle` (fill),
+        // `-border`, `-text` (the icon); `-title` and `-body` are below.
+        warning:
+            "bg-(color:--color-alert-warning-subtle,var(--color-warning-subtle)) border-(color:--color-alert-warning-border,var(--color-warning-border)) text-(color:--color-alert-warning-text,var(--color-warning-text))",
         error: "bg-error-subtle border-error-border text-error-text",
         neutral: "bg-neutral-subtle border-neutral-border text-neutral-text",
         energetic:
@@ -116,6 +120,19 @@
         // `text-link`, which darkens on hover and an alert is not a link.
         brand: "bg-action-primary-subtle border-action-primary-border text-(color:--color-link)",
     });
+
+    // The title and the message are the headline and body inks; a warning's
+    // can be set apart (`--color-alert-warning-title`, `--color-alert-warning-body`).
+    let titleClass = $derived(
+        visualVariant === "warning"
+            ? "text-(color:--color-alert-warning-title,var(--color-headline))"
+            : "text-headline",
+    );
+    let bodyClass = $derived(
+        visualVariant === "warning"
+            ? "text-(color:--color-alert-warning-body,var(--color-body))"
+            : "text-body",
+    );
 
     let alertRole = $derived(
         variant === "success" || variant === "info" || variant === "brand"
@@ -177,12 +194,12 @@
 
         <div class="flex-1 min-w-0">
             {#if title}
-                <h4 class="font-semibold text-sm mb-1 text-headline">
+                <h4 class="font-semibold text-sm mb-1 {titleClass}">
                     {title}
                 </h4>
             {/if}
             {#if message}
-                <p class="text-sm leading-relaxed text-body">
+                <p class="text-sm leading-relaxed {bodyClass}">
                     {message}
                 </p>
             {/if}

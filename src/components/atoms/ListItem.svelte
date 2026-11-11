@@ -1,5 +1,6 @@
 <script lang="ts">
     import ArrowRight from "@lucide/svelte/icons/arrow-right";
+    import Check from "@lucide/svelte/icons/check";
     import type { Component, Snippet } from "svelte";
     import ListItemLeading from "./ListItemLeading.svelte";
 
@@ -27,6 +28,21 @@
     interface Props {
         item: ListItemData;
         selected?: boolean;
+        /**
+         * Shape of the leading image or picture: `circle` (default), `square`
+         * (no rounding, and the image is fitted whole, never cropped: album
+         * art) or `rounded` (the control radius, image covers the box).
+         */
+        leadingShape?: "circle" | "square" | "rounded";
+        /**
+         * Selected state of a button row (`onclick`, no `href`): sets
+         * `aria-pressed`, fills the row and adds a check mark and a bolder
+         * label, so it does not rely on colour alone. Ignored on links and
+         * plain rows.
+         */
+        pressed?: boolean;
+        /** Makes the description an `aria-live="polite"` region, for text that changes after the row is shown. */
+        descriptionLive?: boolean;
         /** The arrow at the end of a row that can be pressed. A row with nothing to do never has one. */
         showArrow?: boolean;
         /** Shown before the chevron when `showArrow` is true. */
@@ -41,6 +57,9 @@
     let {
         item,
         selected = false,
+        leadingShape = "circle",
+        pressed,
+        descriptionLive = false,
         showArrow = true,
         trailing,
         onclick,
@@ -53,6 +72,12 @@
      * and an arrow, and nothing happened when it was pressed.
      */
     const interactive = $derived(!!item.href || !!onclick);
+
+    const isPressed = $derived(!!onclick && !item.href && pressed === true);
+    const leadingClass = $derived(
+        leadingShape === "square" ? "rounded-none" : leadingShape === "rounded" ? "rounded-control" : "rounded-full",
+    );
+    const imageFit = $derived(leadingShape === "square" ? "object-contain" : "object-cover");
 
     const itemClasses = $derived.by(() => {
         const baseClasses =
@@ -77,7 +102,7 @@
         // Hover is for a pointer that can hover (the hand-written rule is
         // gated on it, so the tint does not stay on after a tap); the pressed
         // fill is for every pointer, and is what a finger sees.
-        const stateClasses = selected
+        const stateClasses = selected || isPressed
             ? "bg-action-primary-subtle border-action-primary active:bg-action-primary-subtle-active"
             : item.disabled
               ? edge
@@ -108,7 +133,7 @@
 
 {#snippet rowContent()}
     {#if item.avatarPicture}
-        <ListItemLeading class="rounded-full">
+        <ListItemLeading class={leadingClass}>
             <span
                 class="flex size-full items-center justify-center"
                 role={item.avatarAlt ? "img" : undefined}
@@ -119,11 +144,11 @@
             </span>
         </ListItemLeading>
     {:else if item.avatar}
-        <ListItemLeading class="rounded-full">
+        <ListItemLeading class={leadingClass}>
             <img
                 src={item.avatar}
                 alt={item.avatarAlt ?? ""}
-                class="block size-full min-h-0 min-w-0 object-cover"
+                class="block size-full min-h-0 min-w-0 {imageFit}"
                 loading="lazy"
                 decoding="async"
             />
@@ -136,10 +161,12 @@
         </ListItemLeading>
     {/if}
     <span class="min-w-0 flex-1">
-        <span class="block text-sm font-medium text-headline">{item.label}</span
+        <span class="block text-sm text-headline {isPressed ? 'font-semibold' : 'font-medium'}">{item.label}</span
         >
-        {#if item.description}
-            <span class="mt-0.5 block text-sm text-description"
+        {#if item.description || descriptionLive}
+            <span
+                class="mt-0.5 block text-sm text-description"
+                aria-live={descriptionLive ? "polite" : undefined}
                 >{item.description}</span
             >
         {/if}
@@ -148,6 +175,9 @@
         <span class="flex shrink-0 items-center gap-2 text-sm text-description">
             {@render trailing()}
         </span>
+    {/if}
+    {#if isPressed}
+        <Check size={16} class="shrink-0 text-headline" aria-hidden="true" data-pressed-mark />
     {/if}
     {#if showArrow && interactive}
         <ArrowRight
@@ -179,6 +209,8 @@
         class={itemClasses}
         data-selected={selected ? "true" : undefined}
         disabled={item.disabled}
+        aria-pressed={pressed === undefined ? undefined : pressed}
+        data-pressed={isPressed ? "true" : undefined}
         onclick={handleItemClick}
         {...restProps}
     >

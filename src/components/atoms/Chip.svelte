@@ -40,8 +40,12 @@
         selected?: boolean;
         required?: boolean;
         form?: string;
-        /** 28, 32 or 40px tall. On a coarse pointer the touch target reaches 44px; the box does not grow. */
-        size?: "sm" | "md" | "lg";
+        /**
+         * 28, 32, 40 or 44px tall. Below `xl`, on a coarse pointer the touch
+         * target reaches 44px; the box does not grow. `xl` is 44px itself, so
+         * the visible chip is the target and no layer reaches the next chip.
+         */
+        size?: "sm" | "md" | "lg" | "xl";
         /** An icon or an avatar before the label. */
         leading?: Snippet;
         /** A check icon before the label while selected. On for a checkbox and a toggle button, off for a link and a radio. */
@@ -196,14 +200,14 @@
     }
 
     /**
-     * 28 / 32 / 40px, a fixed height: a chip never wraps its label, so one
-     * line is all it ever holds. The padding is 10 / 12 / 16px.
+     * 28 / 32 / 40 / 44px, a fixed height: a chip never wraps its label, so
+     * one line is all it ever holds. The padding is 10 / 12 / 16 / 20px.
      */
-    const SIZE = { sm: "h-7 px-[10px]", md: "h-8 px-3", lg: "h-10 px-4" } as const;
+    const SIZE = { sm: "h-7 px-[10px]", md: "h-8 px-3", lg: "h-10 px-4", xl: "h-11 px-5" } as const;
     const FORCED = "forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[color:Highlight]";
 
     const base = $derived(
-        `group/chip relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-[6px] whitespace-nowrap rounded-pill text-sm transition-colors duration-(--duration-base) motion-reduce:transition-none ${SIZE[size] ?? SIZE.md} ${TOUCH_HIT_AREA} ${isDisabled ? "pointer-events-none cursor-not-allowed opacity-50" : ""}`,
+        `group/chip chip-edge relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-[6px] whitespace-nowrap rounded-pill text-sm transition-colors duration-(--duration-base) motion-reduce:transition-none ${SIZE[size] ?? SIZE.md} ${TOUCH_HIT_AREA} ${isDisabled ? "pointer-events-none cursor-not-allowed opacity-50" : ""}`,
     );
 
     /**

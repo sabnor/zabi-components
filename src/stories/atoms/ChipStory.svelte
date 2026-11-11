@@ -6,7 +6,7 @@
     interface Props {
         /** Which arrangement to show. */
         scenario?: 'forms' | 'states' | 'sizes' | 'leading' | 'disabled' | 'on-brand' | 'submit' | 'loading';
-        size?: 'sm' | 'md' | 'lg';
+        size?: 'sm' | 'md' | 'lg' | 'xl';
     }
 
     let { scenario = 'forms', size = 'md' }: Props = $props();
@@ -45,9 +45,11 @@
         <Chip size="sm" selected>Small, 28px</Chip>
         <Chip size="md" selected>Medium, 32px</Chip>
         <Chip size="lg" selected>Large, 40px</Chip>
+        <Chip size="xl" selected>Extra large, 44px</Chip>
         <Chip size="sm">Small</Chip>
         <Chip size="md">Medium</Chip>
         <Chip size="lg">Large</Chip>
+        <Chip size="xl">Extra large</Chip>
     </div>
 {:else if scenario === 'leading'}
     <div class="flex flex-wrap items-center gap-2">

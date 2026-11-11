@@ -87,3 +87,14 @@ export const OnABrandBlock: Story = {
         }
     }
 };
+
+export const EqualCellGrid: Story = {
+    args: { scenario: 'grid' },
+    parameters: {
+        docs: {
+            description: {
+                story: 'layout="grid" with columns={3}: equal cells, each chip filling its cell (here the 44px size, so the visible chip is the target). Without columns the columns fit the width, each at least 7rem. Tab reaches the chosen radio once; Left and Right step through the chips in order, Up and Down move a row. A repeat press on the chosen chip does nothing.'
+            }
+        }
+    }
+};

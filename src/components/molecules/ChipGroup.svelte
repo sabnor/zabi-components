@@ -8,6 +8,7 @@
         CHIP_GROUP_CONTEXT_KEY,
         SELECTED_CHIP_SELECTOR,
         chipBox,
+        gridStep,
         measureRowOverflow,
         scrollLeftToReveal,
         toggleValue,
@@ -21,9 +22,17 @@
         /**
          * `wrap` breaks onto as many lines as it needs; `row` is one line that
          * scrolls sideways, with the chosen chip brought into view on load.
-         * A group inside a group takes the layout of the one around it.
+         * `grid` lays the chips in equal cells (see `columns`), each chip
+         * filling its cell. A group inside a group takes the layout of the one
+         * around it.
          */
-        layout?: "wrap" | "row";
+        layout?: "wrap" | "row" | "grid";
+        /**
+         * With `layout="grid"`: the number of equal columns. Without it the
+         * columns fit the width, each at least 7rem wide, so a phone gets
+         * fewer than a desktop. A radio group moves by a row with Up and Down.
+         */
+        columns?: number;
         /** The group's accessible name. Not shown unless `showLabel`. */
         label?: string;
         /** Show `label` as text above the group (beside it, in a group inside a group). */
@@ -55,6 +64,7 @@
     let {
         class: className = "",
         layout = "wrap",
+        columns,
         label = "",
         showLabel = false,
         type,
@@ -126,6 +136,33 @@
     const isRow = $derived(effectiveLayout === "row");
     /** Only the outermost row scrolls; a sub-group is just inline. */
     const scrolls = $derived(isRow && !nested);
+    const isGrid = $derived(effectiveLayout === "grid" && !nested);
+    const columnCount = $derived(columns !== undefined && Number.isFinite(columns) && columns >= 1 ? Math.floor(columns) : undefined);
+
+    /**
+     * Radio chips are one Tab stop and the browser moves between them in
+     * order with all four arrows. In a grid Up and Down move by a row, which
+     * is what the eye expects; Left and Right keep the browser's own step.
+     */
+    function handleGridKeydown(event: KeyboardEvent) {
+        if (!isGrid || type !== "radio") return;
+        if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        const row = scroller;
+        const target = event.target;
+        if (!row || !(target instanceof HTMLInputElement) || target.type !== "radio") return;
+        const radios = Array.from(row.querySelectorAll<HTMLInputElement>('input[type="radio"]:not(:disabled)'));
+        let tracks = columnCount;
+        if (tracks === undefined) {
+            tracks = getComputedStyle(row).gridTemplateColumns.split(" ").filter(Boolean).length;
+        }
+        const next = gridStep(radios.indexOf(target), radios.length, tracks, event.key);
+        if (next === undefined) return;
+        event.preventDefault();
+        // A click on a radio checks it, focuses it and reports the change, as the arrow does.
+        radios[next].focus();
+        radios[next].click();
+    }
 
     // ---- The one-row layout: the chosen chip in view, and the edge cue. ----
 
@@ -213,6 +250,7 @@
         if (nested) {
             return cn(isRow ? "flex shrink-0 items-center gap-2" : "flex flex-wrap items-center gap-2", className);
         }
+        if (isGrid) return cn("chip-grid grid items-center gap-2", className);
         if (isRow) {
             // 4px of room on every side for the focus ring, which the scrolling box
             // would clip, taken back by the negative margin (as Tabs does).
@@ -234,6 +272,9 @@
         aria-labelledby={labelledBy}
         data-chip-subgroup={nested ? "" : undefined}
         data-layout={nested ? undefined : effectiveLayout}
+        data-columns={isGrid ? columnCount : undefined}
+        style:--chip-columns={isGrid ? columnCount : undefined}
+        onkeydown={handleGridKeydown}
         data-overflow-start={scrolls && edge === "fade" && overflowStart ? "" : undefined}
         data-overflow-end={scrolls && edge === "fade" && overflowEnd ? "" : undefined}
         {...restProps}
@@ -266,6 +307,23 @@
      * is none on the server. The mask is physical; start is the right edge
      * in a right-to-left row.
      */
+    /*
+     * Equal cells: the columns are the given number, or as many 7rem ones as
+     * fit. A cell may shrink below its content (minmax 0), and a chip fills it
+     * and cuts a long label with an ellipsis, as a chip does anywhere.
+     */
+    :global(.chip-grid) {
+        grid-template-columns: repeat(var(--chip-columns, auto-fill), minmax(var(--chip-column-min, 0px), 1fr));
+    }
+
+    :global(.chip-grid:not([data-columns])) {
+        --chip-column-min: 7rem;
+    }
+
+    :global(.chip-grid > *) {
+        min-width: 0;
+    }
+
     :global(.chip-row) {
         scrollbar-width: none;
     }

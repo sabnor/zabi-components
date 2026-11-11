@@ -28,7 +28,11 @@
         referrerpolicy?: HTMLAnchorAttributes["referrerpolicy"];
         ping?: HTMLAnchorAttributes["ping"];
         variant?: ButtonVariant;
-        /** `xl` is 56px, for a primary action on a phone. It is a Button size only. */
+        /**
+         * `xl` is 56px, for a primary action on a phone. `tv` is 96px with a 32px label,
+         * for a screen read from a sofa at 1080p; override `--button-height-tv`,
+         * `--button-text-tv` and `--button-padding-x-tv` to scale it. Both are Button sizes only.
+         */
         size?: ButtonSize;
         /**
          * Shows a spinner and makes the button unavailable without taking
@@ -44,6 +48,12 @@
         isFullWidth?: boolean;
         class?: string;
         children?: Snippet;
+        /**
+         * Replaces the built-in spinner while `loading`. Drawn in the spinner's
+         * place, `aria-hidden`; `aria-busy`, the label and the Tab stop are
+         * unchanged. Give it `animate-spin motion-reduce:animate-pulse` if it should move.
+         */
+        loadingIcon?: Snippet;
         /**
          * A decoration layer behind the label and above the fill: a texture,
          * an SVG or an image. It is drawn in an `aria-hidden` box that fills
@@ -75,6 +85,7 @@
         class: className = "",
         onclick,
         children,
+        loadingIcon,
         background,
         backgroundClass = "",
         backgroundWhileLoading = false,
@@ -158,6 +169,16 @@
             return { box: "min-h-8 px-3 py-1 pointer-coarse:min-h-11", text: "text-sm", gap: "gap-2", spinner: "size-3.5" };
         }
         // xl is 56px, like the FloatingActionButton; only Button has it.
+        // tv is 96px at 1080p, for a TV screen read from a distance. The three
+        // properties are the consumer's to override; the fallbacks are the 1080p values.
+        if (size === "tv") {
+            return {
+                box: "min-h-[var(--button-height-tv,6rem)] px-[var(--button-padding-x-tv,3rem)] py-4",
+                text: "text-[length:var(--button-text-tv,2rem)]",
+                gap: "gap-4",
+                spinner: "size-8",
+            };
+        }
         if (size === "xl") {
             return { box: "min-h-14 px-6 py-3", text: "text-base", gap: "gap-2", spinner: "size-5" };
         }
@@ -199,6 +220,16 @@
     const FORCED_EDGE_DISABLED =
         "forced-colors:border forced-colors:border-[color:GrayText] disabled:forced-colors:border-[color:GrayText]";
 
+    /**
+     * The transparent variants (ghost, text, link) keep their see-through
+     * background when disabled and only dim the label: a grey slab behind a
+     * text button reads as a filled control.
+     */
+    const DISABLED_QUIET_LINK = "bg-transparent text-action-disabled-text border border-transparent cursor-not-allowed";
+    const BUSY_QUIET_BUTTON = "bg-transparent text-action-disabled-text cursor-not-allowed";
+    const disabledQuietClass =
+        "disabled:text-action-disabled-text disabled:border-transparent disabled:no-underline disabled:bg-none disabled:inset-shadow-none disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
+
     const disabledClass =
         "disabled:bg-action-disabled disabled:text-action-disabled-text disabled:border-transparent disabled:no-underline disabled:bg-none disabled:inset-shadow-none disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100";
 
@@ -217,9 +248,11 @@
             case "danger":
                 return `${veil}bg-action-danger text-action-danger-text hover:bg-action-danger-hover active:bg-action-danger-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger`;
             case "ghost":
-                return "bg-transparent text-headline hover:bg-surface-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--muted";
+                return "bg-transparent text-headline enabled:hover:bg-surface-hover enabled:active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--muted";
             case "outline":
                 return "bg-transparent border border-action-outline text-headline hover:bg-surface-hover hover:border-action-outline-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100";
+            case "outline-danger":
+                return "bg-transparent border border-error text-error hover:bg-action-danger-subtle active:bg-action-danger-subtle-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--danger";
             case "link":
                 // A link variant has to look like a link at rest, not only on
                 // hover — otherwise it is indistinguishable from `ghost`.
@@ -229,7 +262,7 @@
                 // a stronger label, and the box of the other variants. The
                 // link role gives the primary colour, and the block's own
                 // on-colour inside `.on-brand` / `.on-accent`.
-                return "bg-transparent text-link px-2 hover:bg-surface-hover active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--muted";
+                return "bg-transparent text-link px-2 enabled:hover:bg-surface-hover enabled:active:bg-surface-active active:scale-[0.98] motion-reduce:active:scale-100 focus-ring--muted";
             case "accent":
                 return `${veilAccent}bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-active active:scale-[0.98] motion-reduce:active:scale-100`;
             case "primary":
@@ -263,14 +296,15 @@
         const base = `${layout} [max-inline-size:100%] hyphens-auto focus-ring items-center justify-center rounded-button text-center ${variant === "text" ? "font-button-strong" : "font-button"} text-balance transition-colors duration-(--duration-base) cursor-pointer select-none`;
         // `disabled:` does not match an `<a>`: a disabled link wears the
         // disabled pair itself, in place of its variant.
-        const busyBox = variant === "outline" ? "border border-transparent" : variant === "link" ? "px-0" : variant === "text" ? "px-2" : "";
-        const drawnByFill = variant !== "ghost" && variant !== "link" && variant !== "text" && variant !== "outline";
+        const busyBox = variant === "outline" || variant === "outline-danger" ? "border border-transparent" : variant === "link" ? "px-0" : variant === "text" ? "px-2" : "";
+        const drawnByFill = variant !== "ghost" && variant !== "link" && variant !== "text" && variant !== "outline" && variant !== "outline-danger";
+        const quiet = variant === "ghost" || variant === "text" || variant === "link";
         const state =
             isLink && isDisabled
-                ? `${DISABLED_LINK} ${FORCED_EDGE_DISABLED}`
+                ? `${quiet ? DISABLED_QUIET_LINK : DISABLED_LINK} ${FORCED_EDGE_DISABLED}`
                 : isBusy
-                  ? `${BUSY_BUTTON} ${busyBox} ${FORCED_EDGE_DISABLED}`
-                  : `${variantClass} ${disabledClass} ${drawnByFill ? FORCED_EDGE : ""} ${FORCED_EDGE_DISABLED_ONLY}`;
+                  ? `${quiet ? BUSY_QUIET_BUTTON : BUSY_BUTTON} ${busyBox} ${FORCED_EDGE_DISABLED}`
+                  : `${variantClass} ${quiet ? disabledQuietClass : disabledClass} ${drawnByFill ? FORCED_EDGE : ""} ${FORCED_EDGE_DISABLED_ONLY}`;
         const layer = showsBackground ? "relative isolate overflow-hidden" : "";
         return cn(`${base} ${s.box} ${s.text} ${s.gap} ${layer} ${state} ${className}`);
     });
@@ -284,7 +318,11 @@
             {@render background()}
         </span>
     {/if}
-    {#if loading}
+    {#if loading && loadingIcon}
+        <span aria-hidden="true" class="inline-flex shrink-0 items-center justify-center">
+            {@render loadingIcon()}
+        </span>
+    {:else if loading}
         <span
             class="inline-block {sizeClass.spinner} shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80 motion-reduce:animate-pulse"
             aria-hidden="true"

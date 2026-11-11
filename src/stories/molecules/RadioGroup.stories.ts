@@ -90,3 +90,23 @@ export const Tiles: Story = {
         }
     }
 };
+
+export const TilesRow: Story = {
+    args: {
+        legend: 'Button shape',
+        options: shapeOptions,
+        appearance: 'tile',
+        tileLayout: 'row',
+        columns: 1,
+        optionVisual: shapePreview,
+        defaultValue: 'md'
+    },
+    parameters: {
+        layout: 'padded',
+        docs: {
+            description: {
+                story: 'tileLayout="row": the picture beside the text. The chosen tile has a 2px edge, a tinted fill and a check badge, so the choice does not rest on colour alone. columns sets a fixed column count (tileMinWidth the narrowest tile otherwise).'
+            }
+        }
+    }
+};

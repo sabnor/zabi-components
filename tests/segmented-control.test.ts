@@ -286,24 +286,26 @@ describe("SegmentedControl", () => {
         expect(segment("List")).toBeTruthy();
     });
 
-    it("warns in development outside two to four options, and still renders", () => {
+    it("warns in development outside two to six options, and still renders", () => {
         const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const six = [...four, { value: "all", label: "All" }, { value: "ever", label: "Ever" }];
         render(SegmentedControl, { props: { label: "Period", options: four } });
         render(SegmentedControl, { props: { label: "Period", options: four.slice(0, 2) } });
+        render(SegmentedControl, { props: { label: "Period", options: six } });
         expect(warn).not.toHaveBeenCalled();
         cleanup();
 
         render(SegmentedControl, { props: { label: "Period", options: four.slice(0, 1) } });
         expect(warn).toHaveBeenCalledTimes(1);
-        expect(warn.mock.calls[0][0]).toContain("2 to 4 options and got 1");
+        expect(warn.mock.calls[0][0]).toContain("2 to 6 options and got 1");
         expect(segments()).toHaveLength(1);
         cleanup();
 
         render(SegmentedControl, {
-            props: { label: "Period", options: [...four, { value: "all", label: "All" }] },
+            props: { label: "Period", options: [...four, ...six.slice(4), { value: "x", label: "X" }] },
         });
         expect(warn).toHaveBeenCalledTimes(2);
-        expect(segments()).toHaveLength(5);
+        expect(segments()).toHaveLength(7);
     });
 });
 
@@ -336,5 +338,24 @@ describe("SegmentedControl option attrs (G3)", () => {
         expect(a.type).toBe("radio");
         expect(a.value).toBe("a");
         expect(a.tabIndex).toBe(0);
+    });
+});
+
+describe("SegmentedControl text tone, option lang (music-bingo)", () => {
+    it("tone text marks the host, with a native radio group and 44px faces by CSS", () => {
+        render(SegmentedControl, { props: { label: "Period", options: four, value: "day", tone: "text" } });
+        expect(group().getAttribute("data-tone")).toBe("text");
+        expect(segments()).toHaveLength(4);
+        expect(segment("Day").checked).toBe(true);
+    });
+
+    it("puts an option's lang on its label, not on the input", () => {
+        render(SegmentedControl, {
+            props: { label: "Language", options: [{ value: "sv", label: "Svenska", lang: "sv" }, { value: "en", label: "English" }] },
+        });
+        const label = screen.getByText("Svenska");
+        expect(label.getAttribute("lang")).toBe("sv");
+        expect(segment("Svenska").getAttribute("lang")).toBeNull();
+        expect(screen.getByText("English").hasAttribute("lang")).toBe(false);
     });
 });

@@ -331,7 +331,7 @@ describe("Input: revealable", () => {
         expect(button).toContain("size-8");
         expect(button).toContain("pointer-coarse:min-h-0");
         expect(button).not.toContain("pointer-coarse:min-h-11");
-        expect(button).toContain("pointer-coarse:before:min-h-11");
+        expect(button).toContain("before:min-h-11");
         expect(document.querySelector("[data-input-trailing]")!.className).toContain("pe-[4px]");
     });
 

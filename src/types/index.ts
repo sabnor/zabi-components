@@ -82,6 +82,8 @@ export interface ButtonProps extends Omit<HTMLButtonAttributes, 'class'> {
     size?: ButtonSize;
     disabled?: boolean;
     loading?: boolean;
+    /** Replaces the built-in spinner while `loading`; drawn `aria-hidden`. */
+    loadingIcon?: Snippet;
     type?: 'button' | 'submit' | 'reset';
     /**
      * Where the link goes. Makes this an `<a>` that looks the same. While
@@ -427,6 +429,12 @@ export interface RadioGroupProps extends Omit<HTMLFieldsetAttributes, 'class' | 
     appearance?: 'list' | 'tile';
     /** A picture of the option, hidden from assistive technology; the label stays the name. */
     optionVisual?: Snippet<[RadioGroupOption, RadioGroupOptionState]>;
+    /** Tiles: a fixed number of equal columns instead of as many as fit. */
+    columns?: number;
+    /** Tiles: the narrowest a tile gets (any CSS length, default `7rem`). */
+    tileMinWidth?: string;
+    /** Tiles: `"column"` (default) picture above the label; `"row"` picture beside the text. */
+    tileLayout?: 'column' | 'row';
 }
 
 // PickerField component props
@@ -710,8 +718,10 @@ export interface ChipProps
 export interface ChipGroupProps
     extends Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'onchange' | 'children'> {
     class?: string;
-    /** `wrap` (default) or `row`: one line that scrolls sideways. */
-    layout?: 'wrap' | 'row';
+    /** `wrap` (default), `row`: one line that scrolls sideways, or `grid`: equal cells. */
+    layout?: 'wrap' | 'row' | 'grid';
+    /** With `layout="grid"`: the number of equal columns. Without it, as many 7rem cells as fit. */
+    columns?: number;
     /** The group's accessible name. Not shown unless `showLabel`. */
     label?: string;
     showLabel?: boolean;
@@ -1057,7 +1067,7 @@ export interface SegmentedControlProps
         'class' | 'onchange' | 'aria-label' | 'aria-labelledby'
     > {
     class?: string;
-    /** Two to four choices. */
+    /** Two to six choices. */
     options: SegmentedControlOption[];
     /** Selected value. Bindable. */
     value?: string | undefined;
@@ -1070,7 +1080,7 @@ export interface SegmentedControlProps
     fullWidth?: boolean;
     name?: string;
     /** Look of the selected segment: a card-coloured thumb (`neutral`, default) or the solid primary fill. */
-    tone?: 'neutral' | 'primary';
+    tone?: 'neutral' | 'primary' | 'text';
     disabled?: boolean;
     onchange?: (value: string) => void;
 }
@@ -1111,6 +1121,8 @@ export interface BottomSheetProps
     title: string;
     /** A picture before the title, up to 40 × 40px, centred on its first line; `aria-hidden`. */
     titlePicture?: Snippet;
+    /** Extra classes on the title heading (e.g. a mono face); merged after the defaults. */
+    titleClass?: string;
     description?: string;
     /** The heights the sheet can rest at. */
     snapPoints?: BottomSheetSnap[];

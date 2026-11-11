@@ -11,7 +11,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    'Two to four choices in one row, such as List and Month, or Going, Maybe and Can\'t. It is a radio group of native radio inputs, not tabs: one segment is selected, the arrow keys move and select, the group is one Tab stop, and name submits the value with a form. Pressing the selected segment again does nothing. Give the group a name with label, or with aria-labelledby when a visible heading already says it. Segments share the row equally and stay at least 44px tall on a touch screen; a long label wraps onto a second line, and the segments fold into rows when the text is zoomed too far for one row.'
+                    'Two to six choices in one row, such as List and Month, or Going, Maybe and Can\'t. It is a radio group of native radio inputs, not tabs: one segment is selected, the arrow keys move and select, the group is one Tab stop, and name submits the value with a form. Pressing the selected segment again does nothing. Give the group a name with label, or with aria-labelledby when a visible heading already says it. Segments share the row equally and stay at least 44px tall on a touch screen; a long label wraps onto a second line, and the segments fold into rows when the text is zoomed too far for one row.'
             }
         }
     },
@@ -22,7 +22,7 @@ const meta = {
         },
         tone: {
             control: 'inline-radio',
-            options: ['neutral', 'primary']
+            options: ['neutral', 'primary', 'text']
         }
     },
     tags: ['autodocs']
@@ -62,6 +62,28 @@ export const PrimaryTone: Story = {
         docs: {
             description: {
                 story: 'tone="primary": the selected segment is the solid primary fill, as in 8.1. Neutral is the default so the control does not compete with the screen\'s main button.'
+            }
+        }
+    }
+};
+
+export const TextTone: Story = {
+    args: {
+        label: 'Period',
+        options: [
+            { value: 'day', label: 'Day' },
+            { value: 'week', label: 'Week' },
+            { value: 'month', label: 'Month' },
+            { value: 'year', label: 'Year' },
+            { value: 'all', label: 'All' }
+        ],
+        value: 'week',
+        tone: 'text'
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'tone="text": no track and no thumb. The chosen label is in the headline colour with an underline that slides (transform only); faces are 44px high. Up to six options fit one row. Set --zabi-segment-thumb-edge: 2px on the neutral tone for a heavier thumb edge, and give an option a lang when its label is in another language.'
             }
         }
     }

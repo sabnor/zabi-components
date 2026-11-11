@@ -31,6 +31,11 @@ export const RADIO_GROUP_OPTION_LABEL_ROW =
  * The checked fill is the primary action fill, so a ticked box and a primary
  * button are the same colour; it used to be a step paler (2.8:1 on the page).
  *
+ * Settable roles, declared nowhere (read through a fallback, like the Toggle
+ * thumb): `--color-control-checked` (fill), `-hover`, `-border`, `-text` (tick and
+ * dot), and `--zabi-control-checked-border-width` (2px). The square's corner is
+ * `--radius-sm` (4px), so `--radius-*: 0` squares it.
+ *
  * The unchecked edge is the only thing that says a control is here, so it is
  * the control boundary (3:1 on every surface, both themes); it was a fixed
  * ramp step, 2.5:1 in light and 1.9 to 2.3:1 in dark.
@@ -47,12 +52,12 @@ export const RADIO_GROUP_OPTION_LABEL_ROW =
  * hover is undone by a rule with one more `has-` in it, which outweighs it.
  */
 export const SELECTION_CONTROL_SHELL_STATE =
-    "selection-control-shell group/control relative inline-flex shrink-0 items-center justify-center w-5 h-5 transition duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-control-border bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-action-primary has-[:checked]:bg-action-primary has-[:checked]:group-hover:bg-action-primary-hover has-[:checked]:group-hover:border-action-primary-hover has-[:disabled]:has-[:checked]:group-hover:bg-action-primary has-[:disabled]:has-[:checked]:group-hover:border-action-primary has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
+    "selection-control-shell group/control relative inline-flex shrink-0 items-center justify-center w-5 h-5 transition duration-200 border-2 not-has-[:disabled]:group-active:scale-95 border-control-border bg-transparent not-has-[:disabled]:group-hover:border-brand-500 not-has-[:disabled]:group-hover:bg-brand-50 has-[:checked]:border-(color:--color-control-checked-border,var(--color-control-checked,var(--color-action-primary))) has-[:checked]:border-[length:var(--zabi-control-checked-border-width,2px)] has-[:checked]:bg-(color:--color-control-checked,var(--color-action-primary)) has-[:checked]:group-hover:bg-(color:--color-control-checked-hover,var(--color-control-checked,var(--color-action-primary-hover))) has-[:checked]:group-hover:border-(color:--color-control-checked-border,var(--color-control-checked-hover,var(--color-control-checked,var(--color-action-primary-hover)))) has-[:disabled]:has-[:checked]:group-hover:bg-(color:--color-control-checked,var(--color-action-primary)) has-[:disabled]:has-[:checked]:group-hover:border-(color:--color-control-checked-border,var(--color-control-checked,var(--color-action-primary))) has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
 
 export type SelectionControlShape = "square" | "circle";
 
 export function selectionControlShellClasses(shape: SelectionControlShape): string {
-    const rounding = shape === "circle" ? "rounded-full" : "rounded";
+    const rounding = shape === "circle" ? "rounded-full" : "rounded-sm";
     return `${SELECTION_CONTROL_SHELL_STATE} ${rounding}`.trim();
 }
 
@@ -82,7 +87,7 @@ export const SELECTION_CONTROL_INPUT =
 export function selectionControlRingOverlayClasses(
     shape: SelectionControlShape,
 ): string {
-    const rounding = shape === "circle" ? "rounded-full" : "rounded";
+    const rounding = shape === "circle" ? "rounded-full" : "rounded-sm";
     return `pointer-events-none absolute inset-0 ${rounding}`.trim();
 }
 
@@ -91,4 +96,4 @@ export const RADIO_GROUP_RING_OVERLAY = selectionControlRingOverlayClasses("circ
 
 /** Checked radio dot (shared with `Radio.svelte`). */
 export const RADIO_CHECKED_DOT_CLASSES =
-    "selection-control-dot absolute size-2 rounded-full bg-action-primary-text pointer-events-none z-10 opacity-0 group-has-checked/control:opacity-100";
+    "selection-control-dot absolute size-2 rounded-full bg-(color:--color-control-checked-text,var(--color-action-primary-text)) pointer-events-none z-10 opacity-0 group-has-checked/control:opacity-100";

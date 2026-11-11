@@ -65,3 +65,33 @@ describe("RadioGroup appearance=tile (cms-admin 16)", () => {
         expect(container.querySelectorAll(".selection-control-option-row")).toHaveLength(5);
     });
 });
+
+describe("RadioGroup tile columns, layout and chosen badge", () => {
+    it("draws a check badge on every tile, hidden from assistive technology", () => {
+        const { container } = render(RadioGroup, {
+            props: { legend: "Shape", options, appearance: "tile", defaultValue: "sm" },
+        });
+        const badges = container.querySelectorAll(".tile-badge");
+        expect(badges).toHaveLength(5);
+        badges.forEach((b) => expect(b.getAttribute("aria-hidden")).toBe("true"));
+        expect((screen.getByRole("radio", { name: /small/i }) as HTMLInputElement).checked).toBe(true);
+    });
+
+    it("sets columns and tileMinWidth as custom properties, and nothing by default", () => {
+        const a = render(RadioGroup, { props: { legend: "A", options, appearance: "tile", columns: 3, tileMinWidth: "5rem" } });
+        const grid = a.container.querySelector(".tile-grid") as HTMLElement;
+        expect(grid.getAttribute("style")).toContain("--zabi-tile-columns: 3");
+        expect(grid.getAttribute("style")).toContain("--zabi-tile-min: 5rem");
+        cleanup();
+        const b = render(RadioGroup, { props: { legend: "B", options, appearance: "tile" } });
+        expect((b.container.querySelector(".tile-grid") as HTMLElement).hasAttribute("style")).toBe(false);
+    });
+
+    it('tileLayout="row" marks the tiles; the default does not', () => {
+        const a = render(RadioGroup, { props: { legend: "A", options, appearance: "tile", tileLayout: "row" } });
+        expect(a.container.querySelectorAll(".tile-row")).toHaveLength(5);
+        cleanup();
+        const b = render(RadioGroup, { props: { legend: "B", options, appearance: "tile" } });
+        expect(b.container.querySelectorAll(".tile-row")).toHaveLength(0);
+    });
+});

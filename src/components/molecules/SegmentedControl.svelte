@@ -21,7 +21,7 @@
     > & {
         /** Extra classes for the host element. */
         class?: string;
-        /** Two to four choices, shown in one row. */
+        /** Two to six choices, shown in one row. */
         options: SegmentedControlOption[];
         /** Selected value; supports `bind:value`. `undefined` for no selection. */
         value?: string | undefined;
@@ -45,8 +45,10 @@
          * The look of the selected segment. `neutral`: a card-coloured thumb with
          * the headline colour on a tinted track, which does not compete with the
          * screen's main button. `primary`: a solid primary fill, as in 8.1.
+         * `text`: no track and no thumb; the chosen label is in the headline
+         * colour with an underline that slides, and every face is 44px high.
          */
-        tone?: "neutral" | "primary";
+        tone?: "neutral" | "primary" | "text";
         disabled?: boolean;
         /** Called with the new value when the user picks another segment. */
         onchange?: (value: string) => void;
@@ -69,9 +71,9 @@
     }: Props = $props();
 
     $effect(() => {
-        if (import.meta.env?.DEV && (options.length < 2 || options.length > 4)) {
+        if (import.meta.env?.DEV && (options.length < 2 || options.length > 6)) {
             console.warn(
-                `[zabi-components] SegmentedControl is made for 2 to 4 options and got ${options.length}. Use Tabs, RadioGroup or Select for more.`,
+                `[zabi-components] SegmentedControl is made for 2 to 6 options and got ${options.length}. Use Tabs, RadioGroup or Select for more.`,
             );
         }
     });
@@ -198,7 +200,7 @@ one changes nothing, and the value goes with a form. -->
             data-disabled={disabled || options.find((option) => option.value === value)?.disabled
                 ? ""
                 : undefined}
-            style="transform: translate({indicator.x}px, {indicator.y}px); width: {indicator.width}px; height: {indicator.height}px;"
+            style="transform: translate({indicator.x}px, {indicator.y}px); width: {indicator.width}px; height: {indicator.height}px; --ind-x: {indicator.x}; --ind-y: {indicator.y}; --ind-w: {indicator.width}; --ind-h: {indicator.height};"
         ></span>
     {/if}
     {#each options as option (option.value)}
@@ -222,7 +224,7 @@ one changes nothing, and the value goes with a form. -->
                 {#if Icon}
                     <span class="flex shrink-0" aria-hidden="true"><Icon size={16} /></span>
                 {/if}
-                <span class="segment-label">{option.label}</span>
+                <span class="segment-label" lang={option.lang}>{option.label}</span>
             </span>
         </label>
     {/each}
@@ -343,7 +345,7 @@ one changes nothing, and the value goes with a form. -->
         color: var(--color-segment-thumb-text);
         box-shadow:
             var(--shadow-sm),
-            0 0 0 1px var(--color-segment-thumb-border);
+            0 0 0 var(--zabi-segment-thumb-edge, 1px) var(--color-segment-thumb-border);
     }
 
     :where(.segmented[data-tone="primary"]) input:checked + .segment-face {
@@ -369,7 +371,7 @@ one changes nothing, and the value goes with a form. -->
         background: var(--color-segment-thumb);
         box-shadow:
             var(--shadow-sm),
-            0 0 0 1px var(--color-segment-thumb-border);
+            0 0 0 var(--zabi-segment-thumb-edge, 1px) var(--color-segment-thumb-border);
     }
 
     .segmented[data-tone="primary"] .segment-indicator {
@@ -385,6 +387,62 @@ one changes nothing, and the value goes with a form. -->
             transform var(--zabi-segment-duration, var(--duration-moderate)) var(--zabi-segment-ease, var(--ease-standard)),
             width var(--zabi-segment-duration, var(--duration-moderate)) var(--zabi-segment-ease, var(--ease-standard)),
             height var(--zabi-segment-duration, var(--duration-moderate)) var(--zabi-segment-ease, var(--ease-standard));
+    }
+
+    /*
+     * Text tone: no track, no thumb. The chosen label takes the headline colour
+     * and an underline (`--zabi-segment-underline`, 2px). Before the indicator
+     * is measured the face draws the underline itself; after, the indicator is
+     * a 1px-wide bar that only moves (translate) and stretches (scaleX).
+     */
+    .segmented[data-tone="text"] {
+        --zabi-segment-inset: 0px;
+        --zabi-segment-pad: 8px;
+        border: 0;
+        background: transparent;
+    }
+
+    .segmented[data-tone="text"],
+    .segmented[data-tone="text"][data-size] {
+        --zabi-segment-height: 2.75rem;
+    }
+
+    .segmented[data-tone="text"] .segment-face {
+        border-radius: var(--radius-control);
+    }
+
+    :where(.segmented[data-tone="text"]) input:checked + .segment-face {
+        background: transparent;
+        color: var(--color-headline);
+        box-shadow: inset 0 calc(-1 * var(--zabi-segment-underline, 2px)) 0 currentColor;
+    }
+
+    @media (forced-colors: none) {
+        :where(.segmented[data-tone="text"][data-indicator="ready"]) input:checked + .segment-face {
+            box-shadow: none;
+        }
+    }
+
+    .segmented[data-tone="text"] .segment-indicator {
+        width: 1px;
+        height: var(--zabi-segment-underline, 2px);
+        border-radius: 1px;
+        background: var(--color-headline);
+        box-shadow: none;
+        transform-origin: 0 0;
+        transform: translate(
+                calc(var(--ind-x) * 1px),
+                calc((var(--ind-y) + var(--ind-h)) * 1px - var(--zabi-segment-underline, 2px))
+            )
+            scaleX(var(--ind-w));
+    }
+
+    .segmented[data-tone="text"][data-indicator-motion] .segment-indicator {
+        transition: transform var(--zabi-segment-duration, var(--duration-moderate)) var(--zabi-segment-ease, var(--ease-standard));
+    }
+
+    .segmented[data-tone="text"] .segment-indicator[data-disabled] {
+        opacity: 0.5;
     }
 
     /* Forced colours keep the segment's own Highlight look below. */

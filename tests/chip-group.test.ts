@@ -6,6 +6,7 @@ import ChipGroup from "../src/components/molecules/ChipGroup.svelte";
 import ChipGroupHarness from "./fixtures/ChipGroupHarness.svelte";
 import ChipHarness from "./fixtures/ChipHarness.svelte";
 import {
+    gridStep,
     measureRowOverflow,
     scrollLeftToReveal,
     toggleValue,
@@ -279,5 +280,54 @@ describe("util/chip: toggleValue", () => {
         expect(toggleValue(["a", "b"], "a", false)).toEqual(["b"]);
         expect(toggleValue(undefined, "a", true)).toEqual(["a"]);
         expect(start).toEqual(["a"]);
+    });
+});
+
+describe("ChipGroup layout grid", () => {
+    it("lays the chips in the given number of equal columns", () => {
+        render(ChipGroupHarness, { props: { scenario: "grid" } });
+        const group = screen.getByRole("radiogroup", { name: "Pick" });
+        expect(group.getAttribute("data-layout")).toBe("grid");
+        expect(group.getAttribute("data-columns")).toBe("3");
+        expect(group.style.getPropertyValue("--chip-columns")).toBe("3");
+        expect(group.className).toContain("chip-grid");
+        expect(group.className).toContain("grid");
+    });
+
+    it("fits columns to the width without `columns`", () => {
+        render(ChipGroup, { props: { layout: "grid", label: "Auto" } });
+        const group = screen.getByRole("group", { name: "Auto" });
+        expect(group.hasAttribute("data-columns")).toBe(false);
+        expect(group.style.getPropertyValue("--chip-columns")).toBe("");
+    });
+
+    it("moves a row with Up and Down and keeps Left and Right as they were", async () => {
+        const user = userEvent.setup();
+        render(ChipGroupHarness, { props: { scenario: "grid" } });
+        const radios = screen.getAllByRole("radio") as HTMLInputElement[];
+        radios[0].focus();
+        await user.keyboard("{ArrowDown}");
+        expect(document.activeElement).toBe(radios[3]);
+        expect(radios[3].checked).toBe(true);
+        await user.keyboard("{ArrowUp}");
+        expect(document.activeElement).toBe(radios[0]);
+        expect(radios[0].checked).toBe(true);
+    });
+
+    it("leaves the edge to the browser's own step", () => {
+        expect(gridStep(0, 7, 3, "ArrowUp")).toBeUndefined();
+        expect(gridStep(5, 7, 3, "ArrowDown")).toBeUndefined();
+        expect(gridStep(1, 7, 3, "ArrowDown")).toBe(4);
+        expect(gridStep(4, 7, 3, "ArrowDown")).toBeUndefined();
+        expect(gridStep(6, 7, 3, "ArrowUp")).toBe(3);
+        expect(gridStep(0, 7, 0, "ArrowDown")).toBeUndefined();
+    });
+
+    it("never clears a single selection on a repeat press", async () => {
+        const user = userEvent.setup();
+        render(ChipGroupHarness, { props: { scenario: "grid" } });
+        const radios = screen.getAllByRole("radio") as HTMLInputElement[];
+        await user.click(radios[0]);
+        expect(radios[0].checked).toBe(true);
     });
 });

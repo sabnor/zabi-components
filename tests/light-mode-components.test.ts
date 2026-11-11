@@ -237,24 +237,24 @@ describe("checked controls use the primary action fill", () => {
 
         expect(shell).toEqual(
             expect.arrayContaining([
-                "has-[:checked]:bg-action-primary",
-                "has-[:checked]:border-action-primary",
-                "has-[:checked]:group-hover:bg-action-primary-hover",
+                "has-[:checked]:bg-(color:--color-control-checked,var(--color-action-primary))",
+                "has-[:checked]:border-(color:--color-control-checked-border,var(--color-control-checked,var(--color-action-primary)))",
+                "has-[:checked]:group-hover:bg-(color:--color-control-checked-hover,var(--color-control-checked,var(--color-action-primary-hover)))",
             ]),
         );
         expect(shell.join(" ")).not.toContain("has-[:checked]:bg-brand-500");
         // The tick is the primary button's text colour, in both themes.
-        expect(classesOf(container.querySelector("svg"))).toContain("text-action-primary");
+        expect(classesOf(container.querySelector("svg"))).toContain("text-(color:--color-control-checked-text,var(--color-action-primary-text))");
     });
 
     it("Radio", () => {
         const { container } = render(Radio, { props: { label: "Pro", checked: true } });
 
         expect(classesOf(container.querySelector(".group\\/control"))).toContain(
-            "has-[:checked]:bg-action-primary",
+            "has-[:checked]:bg-(color:--color-control-checked,var(--color-action-primary))",
         );
         const dot = classesOf(container.querySelector(".size-2"));
-        expect(dot).toContain("bg-action-primary-text");
+        expect(dot).toContain("bg-(color:--color-control-checked-text,var(--color-action-primary-text))");
         expect(dot).not.toContain("bg-base-50");
     });
 });

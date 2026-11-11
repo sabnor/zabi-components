@@ -966,3 +966,13 @@ describe("BottomSheet: a picture before the title (Z-142)", () => {
         expect(dialog.querySelector("[data-sheet-title-picture]")).toBeNull();
     });
 });
+
+describe("BottomSheet: titleClass", () => {
+    it("styles the title and keeps the aria-labelledby link", async () => {
+        render(BottomSheet, { props: { isOpen: true, title: "Spela", titleClass: "font-mono" } });
+        const dialog = await screen.findByRole("dialog", { name: "Spela" });
+        const heading = within(dialog).getByRole("heading", { name: "Spela" });
+        expect(heading.className).toContain("font-mono");
+        expect(dialog.getAttribute("aria-labelledby")).toBe(heading.id);
+    });
+});

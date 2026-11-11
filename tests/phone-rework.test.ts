@@ -531,8 +531,8 @@ describe("a disabled checkbox or radio", () => {
                 "not-has-[:disabled]:group-hover:border-brand-500",
                 "not-has-[:disabled]:group-hover:bg-brand-50",
                 // The checked hover is undone for a disabled control by a heavier rule.
-                "has-[:disabled]:has-[:checked]:group-hover:bg-action-primary",
-                "has-[:disabled]:has-[:checked]:group-hover:border-action-primary",
+                "has-[:disabled]:has-[:checked]:group-hover:bg-(color:--color-control-checked,var(--color-action-primary))",
+                "has-[:disabled]:has-[:checked]:group-hover:border-(color:--color-control-checked-border,var(--color-control-checked,var(--color-action-primary)))",
                 "has-[:disabled]:opacity-50",
             ]),
         );

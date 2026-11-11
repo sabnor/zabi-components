@@ -739,6 +739,10 @@
   --color-chip-selected-hover: var(--color-action-tonal-hover);
   --color-chip-selected-active: var(--color-action-tonal-active);
   --color-chip-selected-text: var(--color-action-tonal-text);
+  /* The edge of a selected chip: transparent, so a chip looks as it always did.
+   * Set it, and --chip-selected-border-width (0px until then) is drawn inside
+   * the chip as an inset ring, so the chip does not grow. */
+  --color-chip-selected-border: transparent;
 
   /* Outline Actions - the edge of an outline Button. The border role was the
    * card edge, 1.25:1 on the page: a label in a ghost box. This is the field
@@ -1446,6 +1450,7 @@ body {
   --color-chip-selected-hover: var(--color-action-tonal-hover);
   --color-chip-selected-active: var(--color-action-tonal-active);
   --color-chip-selected-text: var(--color-action-tonal-text);
+  --color-chip-selected-border: transparent;
 
   /* Outline Actions - the field edge, restated for the same reason. */
   --color-action-outline-border: var(--color-input-border);
@@ -1833,6 +1838,19 @@ body {
  * box-shadow list as the gradient, so `focus-ring` and `shadow-*` still draw. */
 .ring-toggle-track {
   --tw-inset-ring-shadow: inset 0 0 0 1px var(--color-toggle-track-border);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow, 0 0 #0000);
+}
+
+/* The edge of the on Toggle, for an app that sets `--color-toggle-track-checked-border`
+ * and `--zabi-toggle-checked-border-width` (declared nowhere: no edge by default,
+ * so the library's switch is unchanged). Drawn inside the box, like the off edge. */
+.ring-toggle-track-checked {
+  --tw-inset-ring-shadow: inset 0 0 0 var(--zabi-toggle-checked-border-width, 0px) var(--color-toggle-track-checked-border, transparent);
   box-shadow:
     var(--tw-inset-shadow, 0 0 #0000),
     var(--tw-inset-ring-shadow, 0 0 #0000),
@@ -3289,6 +3307,25 @@ body {
 
 .text-chip-selected-text {
   color: var(--color-chip-selected-text);
+}
+
+/* The selected edge of a chip: an inset ring in --color-chip-selected-border,
+ * --chip-selected-border-width wide (0px by default, so nothing is drawn).
+ * Written on the selected states themselves: a link says aria-current, a
+ * button aria-pressed, an input chip has the checked input inside. It is a
+ * shadow, not a border, so the chip keeps its size and the focus ring. */
+.chip-edge[aria-pressed="true"],
+.chip-edge[aria-current]:not([aria-current="false"]),
+.chip-edge:has(> input:checked) {
+  /* Composed with the ring variables, so the focus ring (.focus-ring:focus-visible
+   * sets --tw-ring-offset-shadow) still draws on a selected chip. */
+  --tw-inset-ring-shadow: inset 0 0 0 var(--chip-selected-border-width, 0px) var(--color-chip-selected-border);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000),
+    var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow, 0 0 #0000);
 }
 
 /* Card tint: the brand tint as a surface for content. */

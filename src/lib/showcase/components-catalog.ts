@@ -22,7 +22,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "md",
                         description:
-                            "sm, md, lg or xl: 32, 40, 48 or 56px tall (xl is Button only). On a touch screen sm and md are 44px tall, so a row of controls still lines up. Use lg or xl for the main action on a phone.",
+                            "sm, md, lg, xl or tv: 32, 40, 48, 56 or 96px tall (xl and tv are Button only; tv is for TV screens, tune it with --button-height-tv, --button-text-tv and --button-padding-x-tv). On a touch screen sm and md are 44px tall, so a row of controls still lines up. Use lg or xl for the main action on a phone.",
                     },
                     {
                         name: "disabled",
@@ -371,7 +371,7 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                         required: false,
                         defaultValue: "true",
                         description:
-                            "With type password: a button at the end of the field that shows the password as text and hides it again. On by default; false leaves it out. It keeps the caret, leaves autocomplete alone, and is a 44px target on a touch screen.",
+                            "With type password: a button at the end of the field that shows the password as text and hides it again. On by default; false leaves it out. It keeps the caret, leaves autocomplete alone, and has a 44px hit area at every size and pointer (the visible button may be smaller).",
                     },
                     {
                         name: "revealLabel",
@@ -1218,11 +1218,11 @@ export const componentsCatalog: Record<string, ComponentMetadata[]> = {
                     },
                     {
                         name: "size",
-                        type: '"sm" | "md" | "lg"',
+                        type: '"sm" | "md" | "lg" | "xl"',
                         required: false,
                         defaultValue: '"md"',
                         description:
-                            "28, 32 or 40px tall. On a coarse pointer the touch target reaches 44px; the box does not grow.",
+                            "28, 32, 40 or 44px tall. Below xl, on a coarse pointer the touch target reaches 44px; the box does not grow. xl is 44px itself, so the visible chip is the target and nothing reaches the next chip. A selected chip can have an edge: set --color-chip-selected-border and --chip-selected-border-width (transparent and 0px by default).",
                     },
                     {
                         name: "leading",
@@ -5708,7 +5708,30 @@ pushToast({
                         required: false,
                         defaultValue: '"list"',
                         description:
-                            'tile lays the options out as a wrapping grid of tiles (5 or more is fine); the chosen tile has a 2px edge. Same radios and keys as the list.',
+                            'tile lays the options out as a wrapping grid of tiles (5 or more is fine); the chosen tile has a 2px edge, a tinted fill (--zabi-tile-selected-bg) and a check badge. Same radios and keys as the list.',
+                    },
+                    {
+                        name: "columns",
+                        type: "number",
+                        required: false,
+                        description:
+                            "Tiles only: a fixed number of equal columns instead of as many as fit at tileMinWidth.",
+                    },
+                    {
+                        name: "tileMinWidth",
+                        type: "string",
+                        required: false,
+                        defaultValue: '"7rem"',
+                        description:
+                            "Tiles only: the narrowest a tile gets before the grid drops a column (any CSS length).",
+                    },
+                    {
+                        name: "tileLayout",
+                        type: '"column" | "row"',
+                        required: false,
+                        defaultValue: '"column"',
+                        description:
+                            "Tiles only. column: the picture above the label. row: the picture beside the text, start-aligned.",
                     },
                     {
                         name: "optionVisual",
@@ -5739,11 +5762,18 @@ pushToast({
                 props: [
                     {
                         name: "layout",
-                        type: '"wrap" | "row"',
+                        type: '"wrap" | "row" | "grid"',
                         required: false,
                         defaultValue: '"wrap"',
                         description:
-                            "wrap breaks onto as many lines as it needs. row is one line that scrolls sideways, with the chosen chip brought into view on load.",
+                            "wrap breaks onto as many lines as it needs. row is one line that scrolls sideways, with the chosen chip brought into view on load. grid lays the chips in equal cells, each chip filling its cell; a radio group moves a row with Up and Down.",
+                    },
+                    {
+                        name: "columns",
+                        type: "number",
+                        required: false,
+                        description:
+                            "With layout grid: the number of equal columns. Without it as many columns as fit, each at least 7rem wide, so a phone gets fewer than a desktop.",
                     },
                     {
                         name: "label",
@@ -5918,14 +5948,14 @@ pushToast({
                 name: "SegmentedControl",
                 category: "molecules",
                 description:
-                    "Two to four choices in one row, such as List and Month; a radio group, so one is selected and the arrow keys move between them.",
+                    "Two to six choices in one row, such as List and Month; a radio group, so one is selected and the arrow keys move between them.",
                 props: [
                     {
                         name: "options",
                         type: "SegmentedControlOption[]",
                         required: true,
                         description:
-                            "Two to four choices, each with a value, a label and optionally an icon and disabled.",
+                            "Two to six choices, each with a value, a label and optionally an icon, a lang for a label in another language, and disabled.",
                     },
                     {
                         name: "value",
@@ -5982,11 +6012,11 @@ pushToast({
                     },
                     {
                         name: "tone",
-                        type: "'neutral' | 'primary'",
+                        type: "'neutral' | 'primary' | 'text'",
                         required: false,
                         defaultValue: "neutral",
                         description:
-                            "Look of the selected segment. neutral: a card-coloured thumb with the headline colour on a tinted track. primary: the solid primary fill, as in 8.1.",
+                            "Look of the selected segment. neutral: a card-coloured thumb with the headline colour on a tinted track. primary: the solid primary fill, as in 8.1. text: no track or thumb; the chosen label in the headline colour with a sliding underline, 44px faces. --zabi-segment-thumb-edge (default 1px) sets the neutral thumb's edge width; --zabi-segment-underline (default 2px) the text underline.",
                     },
                     {
                         name: "disabled",
@@ -7989,6 +8019,14 @@ pushToast({
                         required: false,
                         description:
                             "A picture before the title in the header row, such as a portrait sticker: an inline drawing, up to 40 × 40px, centred on the title's first line, with the title wrapping beside it. It is aria-hidden; the title alone names the sheet.",
+                    },
+                    {
+                        name: "titleClass",
+                        type: "string",
+                        required: false,
+                        defaultValue: '""',
+                        description:
+                            "Extra classes on the title heading, merged after the defaults so they win: for example a mono face. The heading keeps its id and the dialog stays labelled by it.",
                     },
                     {
                         name: "description",

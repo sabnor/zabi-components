@@ -54,7 +54,7 @@ describe("Button looks (9.0)", () => {
         expect(classes).toContain("min-h-10");
         expect(classes).toContain("pointer-coarse:min-h-11");
         expect(classes).toContain("px-2");
-        expect(classes).toContain("hover:bg-surface-hover");
+        expect(classes).toContain("enabled:hover:bg-surface-hover");
     });
 
     it("text with href is still a boxed action, not an inline link", () => {
@@ -141,7 +141,7 @@ describe("Toggle looks (9.0)", () => {
         render(Toggle, { label: "Go", checked: true });
         classes = classesOf(screen.getByRole("switch"));
         expect(classes).toContain("bg-control-gradient");
-        expect(classes).toContain("bg-action-primary");
+        expect(classes).toContain("bg-(color:--color-toggle-track-checked,var(--color-action-primary))");
         expect(classes).not.toContain("ring-toggle-track");
     });
 
@@ -154,5 +154,53 @@ describe("Toggle looks (9.0)", () => {
         cleanup();
         render(Toggle, { label: "Go", disabled: true, checked: true });
         expect(classesOf(screen.getByRole("switch"))).not.toContain("bg-control-gradient");
+    });
+});
+
+describe("Button 9.1 additions (music-bingo)", () => {
+    it("tv size is 96px by default and overridable", () => {
+        render(Button, { text: "Go", size: "tv" });
+        const classes = classesOf(button()).join(" ");
+        expect(classes).toContain("min-h-[var(--button-height-tv,6rem)]");
+        expect(classes).toContain("--button-text-tv");
+    });
+
+    it("loadingIcon replaces the spinner and keeps aria-busy", async () => {
+        const { createRawSnippet } = await import("svelte");
+        const icon = createRawSnippet(() => ({ render: () => `<svg data-testid="mine"></svg>` }));
+        const { container } = render(Button, { text: "Go", loading: true, loadingIcon: icon });
+        const el = button();
+        expect(el.getAttribute("aria-busy")).toBe("true");
+        expect(container.querySelector("[data-testid=mine]")).not.toBeNull();
+        expect(container.querySelector(".animate-spin")).toBeNull();
+    });
+
+    it("built-in spinner stays without loadingIcon", () => {
+        const { container } = render(Button, { text: "Go", loading: true });
+        expect(container.querySelector(".animate-spin")).not.toBeNull();
+    });
+
+    it("disabled ghost, text and link stay transparent", () => {
+        for (const variant of ["ghost", "text", "link"] as const) {
+            cleanup();
+            render(Button, { text: "Go", variant, disabled: true });
+            const classes = classesOf(button());
+            expect(classes).toContain("bg-transparent");
+            expect(classes).not.toContain("disabled:bg-action-disabled");
+            expect(classes).not.toContain("disabled:bg-action-disabled");
+        }
+    });
+
+    it("disabled primary keeps the grey pair", () => {
+        render(Button, { text: "Go", disabled: true });
+        expect(classesOf(button())).toContain("disabled:bg-action-disabled");
+    });
+
+    it("outline-danger uses the danger roles on a transparent fill", () => {
+        render(Button, { text: "Go", variant: "outline-danger" });
+        const classes = classesOf(button());
+        expect(classes).toContain("border-error");
+        expect(classes).toContain("text-error");
+        expect(classes).toContain("bg-transparent");
     });
 });

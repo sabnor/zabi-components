@@ -4,7 +4,7 @@
 
     /** Row and sub-group layouts for tests/chip-group.test.ts. */
     interface Props {
-        scenario: "row" | "subgroups";
+        scenario: "row" | "subgroups" | "grid";
         edge?: "fade" | "none";
         scrollSelectedIntoView?: boolean;
     }
@@ -17,6 +17,12 @@
         <Chip href="/?f=1">One</Chip>
         <Chip href="/?f=2">Two</Chip>
         <Chip href="/?f=3" selected>Three</Chip>
+    </ChipGroup>
+{:else if scenario === "grid"}
+    <ChipGroup label="Pick" layout="grid" columns={3} type="radio" name="pick" value="a">
+        {#each ["a", "b", "c", "d", "e", "f", "g"] as id (id)}
+            <Chip value={id}>{id.toUpperCase()}</Chip>
+        {/each}
     </ChipGroup>
 {:else}
     <ChipGroup label="Filters" layout="row">
