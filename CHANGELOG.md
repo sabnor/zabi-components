@@ -12,6 +12,45 @@ Whenever token or CSS import API surface changes, include:
 
 ## [Unreleased]
 
+## [9.1.0-alpha.12] - 2026-11-11
+
+A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.11, for music-bingo's gaps list (D336).
+Every new prop, role and custom property is optional and defaults to today's look; nothing removed or renamed.
+Run: `npm run check`, the whole vitest suite once, the theme output tests (snapshot refreshed for the additive rules),
+`npm run build:lib`, `npm pack`. Not run: Playwright, a QA pass; nothing in it has been rendered in a browser.
+
+CSS size, raw / gzip -9: `zabi-components.css` 360,678 / 40,962 (+5.6 KB / +0.7 KB), `theme-only` 111,074 / 22,745,
+`theme-dark-only` 98,326 / 12,307, `colors` 101,793 / 7,107.
+
+### Added
+
+- `@sveltejs/kit` peer range is `^2.0.0 || ^3.0.0` (the dist imports nothing from Kit).
+- `Button` `size="tv"` (96px, 32px label; `--button-height-tv`, `--button-text-tv`, `--button-padding-x-tv`),
+  `loadingIcon` snippet (replaces the spinner), `variant="outline-danger"`.
+- `Chip` `size="xl"` (44px, the visible chip is the target); `--color-chip-selected-border` and
+  `--chip-selected-border-width` (0px) for a selected edge, drawn as an inset ring that keeps the focus ring.
+- `ChipGroup` `layout="grid"` and `columns`; Up/Down move by a row in a radio grid.
+- `Toggle` `--color-toggle-track-checked` (`-hover`, `-active`), `--color-toggle-track-checked-border` and
+  `--zabi-toggle-checked-border-width`; track and thumb read `--radius-pill`.
+- `Checkbox` (and `Radio`) `--color-control-checked`, `-hover`, `-border`, `-text`, `--zabi-control-checked-border-width`
+  (2px); the Checkbox box reads `--radius-sm`.
+- `Alert` warning roles `--color-alert-warning-subtle`, `-border`, `-text`, `-title`, `-body`.
+- `zabi-theme` / `createTheme`: a `--color-focus` set with `--set`, `--set-light` or `--set-dark` now also writes
+  `--color-focus-weak/-medium/-strong` for that mode (unless set too). No flag changed.
+- `SegmentedControl` `tone="text"` (no track or thumb, underlined choice, 44px faces), `--zabi-segment-thumb-edge`
+  (1px), `--zabi-segment-underline`, option `lang`; the dev warning now starts above 6 options.
+- `RadioGroup` tiles: a check badge and a tinted fill on the chosen tile (`--zabi-tile-selected-bg`,
+  `--zabi-tile-badge-size`), `columns`, `tileMinWidth`, `tileLayout="row"`.
+- `ListItem` `leadingShape` (`circle` | `square` | `rounded`; square is uncropped), `pressed` (`aria-pressed`, a
+  check and a selected fill), `descriptionLive`.
+- `BottomSheet` `titleClass`.
+
+### Fixed
+
+- A disabled `ghost`, `text` or `link` `Button` keeps a transparent background and only dims its label.
+- The `Input` show-password button has a 44px hit area at every size and pointer.
+- `Input` no longer fades its outline colour under `prefers-reduced-motion`.
+
 ## [9.1.0-alpha.11] - 2026-11-06
 
 A local preview build of 9.1, not published to npm, on top of 9.1.0-alpha.10, for cms-admin's rows 33-37 (their
